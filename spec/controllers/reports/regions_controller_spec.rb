@@ -34,7 +34,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :details, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
+        get :details, params: {id: @facility.facility_group.region_slug}
       end
       expect(response).to be_successful
     end
@@ -58,7 +58,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :cohort, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
+        get :cohort, params: {id: @facility.facility_group.region_slug}
       end
       expect(response).to be_successful
     end
@@ -72,11 +72,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if no report_scope param" do
+    it "raises error if matching region slug found" do
       expect {
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "bad-report_scope"}
-      }.to raise_error(ArgumentError, "unknown report_scope bad-report_scope")
+        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+      }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "retrieves district data" do
@@ -89,7 +89,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "facility_group"}
+        get :show, params: {id: @facility.facility_group.region_slug}
       end
       expect(response).to be_successful
       data = assigns(:data)
@@ -107,7 +107,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.slug, report_scope: "facility"}
+        get :show, params: {id: @facility.region_slug}
       end
       expect(response).to be_successful
       data = assigns(:data)

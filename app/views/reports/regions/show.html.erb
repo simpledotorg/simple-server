@@ -74,15 +74,18 @@
         </div>
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
-            <% if @data[:uncontrolled_patients_rate].values.last %>
-              <%= @data[:uncontrolled_patients_rate].values.last %>%
+          <%
+            current_uncontrolled_rate = @data[:uncontrolled_patients_rate]&.values&.last
+           %>
+            <% if current_uncontrolled_rate %>
+              <%= current_uncontrolled_rate %>%
             <% else %>
               No data
             <% end %>
           </h3>
-          <p class="<% if @data[:uncontrolled_patients].values.last %>c-black<% else %>c-grey-medium<% end %>">
-            <% if @data[:uncontrolled_patients].values.last %>
-              <span class="fw-bold"><%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
+          <p class="<% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
+            <% if current_uncontrolled_rate %>
+              <span class="fw-bold"><%= current_uncontrolled_rate %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
             <% else %>
               No control rate data available
             <% end %>
@@ -221,7 +224,7 @@
       Facilities
     </h2>
     <% @region.facilities.order(:name).each do |facility| %>
-      <%= link_to(reports_facility_path(facility.friendly_id), class: "link-row") do %>
+      <%= link_to(reports_region_path(facility.region_slug), class: "link-row") do %>
         <i class='fas fa-angle-right light'></i>
         <%= facility.name %>
       <% end %>

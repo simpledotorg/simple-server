@@ -6,7 +6,7 @@
     <%= link_to 'All reports', dashboard_districts_path %>
     <% if @region.respond_to?(:facility_group) %>
       <i class="fas fa-chevron-right"></i>
-      <%= link_to @region.facility_group.name, reports_district_path(@region.facility_group) %>
+      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.region_slug) %>
     <% end %>
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>
@@ -17,6 +17,7 @@
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
     <div class="d-flex order-2 order-lg-1">
       <p class="mr-24px mb-0 pb-8px fs-large fw-bold <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <%= request.params %>
         <%= link_to_unless_current "Overview", request.params.merge(action: "show") %>
       </p>
       <p class="mr-24px mb-0 pb-8px fs-large fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">

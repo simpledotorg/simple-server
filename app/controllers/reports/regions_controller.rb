@@ -66,11 +66,16 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    @region = report_scope.find_by!(slug: facility_params[:id])
+    region_class, slug = facility_params[:id].split("-")
+    unless region_class.in?(["facility_group", "facility"])
+      raise ActiveRecord::RecordNotFound
+    end
+    klass = region_class.classify.constantize
+    @region = klass.find_by!(slug: slug)
   end
 
-  def report_scope
-    @report_scope ||= case facility_params[:report_scope]
+  def region_class
+    @region_class ||= case facility_params[:report_scope]
     when "facility_group"
       then FacilityGroup
     when "facility"

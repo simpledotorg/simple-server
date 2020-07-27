@@ -143,6 +143,10 @@ class Facility < ApplicationRecord
     facilities
   end
 
+  def region_slug
+    "facility-#{slug}"
+  end
+
   def organization_exists
     organization = Organization.find_by(name: organization_name)
     errors.add(:organization, "doesn't exist") if organization_name.present? && organization.blank?
