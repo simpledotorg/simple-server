@@ -24,10 +24,11 @@
 // Overflow
 .o-hidden { overflow: hidden; }
 // Spacing
-.mt-0 { margin-top: 0; }
+.m-0px { margin-bottom: 0px; }
+.mt-0px { margin-top: 0; }
 .mr-12px { margin-right: 12px; }
 .mr-24px { margin-right: 24px; }
-.mb-0 { margin-bottom: 0; }
+.mb-0px { margin-bottom: 0; }
 .mb-8px { margin-bottom: 8px; }
 .mb-12px { margin-bottom: 12px; }
 .mb-24px { margin-bottom: 24px; }
@@ -47,8 +48,7 @@
 .h-200px { height: 200px; }
 // Typography
 .fs-14px { font-size: 14px; }
-.fs-18px { font-size: 18px; }
-.fs-large { font-size: 20px; }
+.fs-20px { font-size: 20px; }
 .fs-xlarge { font-size: 24px; }
 .fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
@@ -117,6 +117,8 @@
   .h-lg-full { width: 100%; }
   // Spacing
   .mb-lg-0 { margin-bottom: 0; }
+  .mb-lg-4px { margin-bottom: 4px; }
+  .mb-lg-16px { margin-bottom: 16px; }
   .pb-lg-0 { padding-bottom: 0; }
   // Typography
   .fw-lg-bold { font-weight: 700; }
