@@ -1,4 +1,5 @@
 class Quarter
+  include Comparable
   PARSE_REGEX = /\AQ(\d)-(\d{4})\z/
 
   def self.current
@@ -56,6 +57,14 @@ class Quarter
 
   def ==(other)
     to_s == other.to_s
+  end
+
+  def <=>(other)
+    return -1 if year < other.year
+    return -1 if year == other.year && number < other.number
+    return 0 if self == other
+    return 1 if year > other.year
+    return 1 if year == other.year && number > other.number
   end
 
   alias eql? ==

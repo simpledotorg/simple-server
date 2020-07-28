@@ -3,6 +3,10 @@ require "rails_helper"
 RSpec.describe Quarter, type: :model do
   let(:jan_1) { Time.parse("January 1st, 2020") }
 
+  let(:q1_2019) { Quarter.new(date: Time.parse("January 1st, 2019")) }
+  let(:q1_2020) { Quarter.new(date: Time.parse("January 1st, 2020")) }
+  let(:q3_2020) { Quarter.new(date: Time.parse("August 1st, 2020")) }
+
   it "can parse" do
     quarter = Quarter.parse("Q2-2020")
     expect(quarter.number).to eq(2)
@@ -25,6 +29,11 @@ RSpec.describe Quarter, type: :model do
     expect(q1_01.hash).to_not eq(q2.hash)
   end
 
+  it "can be compared" do
+    expect(q1_2019).to be < q1_2020
+    expect(q1_2020).to be < q3_2020
+    expect(q3_2020).to be > q1_2020
+  end
 
   it "can create from date" do
     date = Time.parse("January 1st, 2020")
