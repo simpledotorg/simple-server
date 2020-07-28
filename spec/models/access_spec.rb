@@ -7,6 +7,6 @@ RSpec.describe Access, type: :model do
 
   describe "Associations" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:resource).optional }
+    it { is_expected.to belong_to(:scope).optional }
   end
 end
