@@ -184,83 +184,8 @@
           </p>
         </div>
       </div>
-      <div>
-        <%
-          max_y_value = if @last_registration_value >= 0
-            @last_registration_value.ceil(-1)
-          else
-            0
-          end
-        %>
-        <div class="p-relative">
-          <div class="d-flex h-200px">
-            <% @registrations.each_with_index do |registrations, index| %>
-              <%
-                total_registrations = registrations[1]
-                registration_percent = compute_percentage(registrations[1], max_y_value)
-              %>
-              <div class="d-flex flex-1 fd-column jc-flex-end px-1px">
-                <% if total_registrations > 0 %>
-                  <table class="split-bars" style="height: <%= registration_percent %>;">
-                    <tr style="height: <%= registration_percent %>">
-                      <td
-                        class="bt-2px bt-purple-dark bg-purple-light"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        data-trigger="hover focus click"
-                        title="<%= number_with_delimiter(registrations[1]) %> patients in <%= registrations[0] %>"
-                      >
-                      </td>
-                    </tr>
-                  </table>
-                <% else %>
-                  <table class="split-bars h-10pt">
-                    <tr class="h-100pt">
-                      <td
-                        class="bt-2px bt-grey-medium bg-grey-light"
-                        data-toggle="tooltip"
-                        data-placement="top"
-                        data-trigger="hover focus click"
-                        title="No registration data available"
-                      >
-                      </td>
-                    </tr>
-                  </table>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
-            <% if @last_registration_value.zero? %>
-              <p class="c-grey-medium">
-                No data available
-              </p>
-            <% end %>
-          </div>
-          <% if @last_registration_value.nonzero? %>
-            <div class="p-absolute t-0 l-0 pe-none d-flex fd-column h-100pt">
-              <div class="flex-1 ml-8px">
-                <p class="c-grey-medium">
-                  <%= number_with_delimiter(max_y_value) %>
-                </p>
-              </div>
-              <div class="flex-1 ml-8px">
-                <p class="c-grey-medium">
-                  <%= number_with_delimiter((max_y_value/2).to_i) %>
-                </p>
-              </div>
-            </div>
-          <% end %>
-        </div>
-        <div class="d-flex justify-content-between mt-2">
-          <p class="mb-0px">
-            <%= @registrations.keys[0] %>
-          </p>
-          <p class="mb-0px">
-            <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
-            <%= @controlled_patients.keys[total_controlled_patient_periods] %>
-          </p>
-        </div>
+      <div class="h-200px">
+        <canvas id="cumulativeRegistrationsTrend"></canvas>
       </div>
     </div>
   </div>
