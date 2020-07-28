@@ -4,10 +4,11 @@ class AddAccessesToUsers < ActiveRecord::Migration[5.2]
       t.references :user, null: false, index: true, type: :uuid, foreign_key: true
       t.string :mode, null: false, index: true
 
-      t.references :scope,
+      t.references :resource,
         type: :uuid,
-        polymorphic: true,
-        index: {unique: true, name: "idx_accesses_on_scope_type_and_id"}
+        polymorphic: true
+
+      t.index [:user_id, :resource_id, :resource_type], unique: true
 
       t.timestamps null: false
       t.datetime :deleted_at, null: true
