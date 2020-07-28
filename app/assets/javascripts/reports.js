@@ -1,22 +1,74 @@
 window.addEventListener("DOMContentLoaded", initializeCharts);
 
-var lightGreenColor = "rgba(242, 248, 245, 1)";
-var darkGreenColor = "rgba(0, 122, 49, 1)";
-var lightRedColor = "rgba(255, 235, 238, 1)";
-var darkRedColor = "rgba(255, 51, 85, 1)";
+let lightGreenColor = "rgba(242, 248, 245, 1)";
+let darkGreenColor = "rgba(0, 122, 49, 1)";
+let mediumGreenColor = "rgba(92, 255, 157, 1)";
+let lightRedColor = "rgba(255, 235, 238, 1)";
+let darkRedColor = "rgba(255, 51, 85, 1)";
+let darkGreyColor = "rgba(108, 115, 122, 1)";
+let mediumGreyColor = "rgba(173, 178, 184, 1)";
+let lightGreyColor = "rgba(240, 242, 245, 1)";
 
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlledGraphConfig = createGraphConfig(data.controlRate, darkGreenColor, lightGreenColor);
-  controlledGraphConfig.options = createGraphOptions(data.controlRate, data.controlledPatients, "control rate");
-  const controlledGraphCanvas = document.getElementById("controlledPatientsTrend").getContext("2d");
-  new Chart(controlledGraphCanvas, controlledGraphConfig);
+  const controlledGraphConfig = createGraphConfig([{
+    data: data.controlRate,
+    rgbaLineColor: darkGreenColor,
+    rgbaBackgroundColor: lightGreenColor,
+    label: "control rate",
+  }], "line");
+  controlledGraphConfig.options = createGraphOptions(
+    data.controlRate,
+    data.controlledPatients,
+    false,
+  );
+  const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
+  if (controlledGraphCanvas) {
+    new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
+  }
 
-  const uncontrolledGraphConfig = createGraphConfig(data.uncontrolledRate, darkRedColor, lightRedColor);
-  uncontrolledGraphConfig.options = createGraphOptions(data.uncontrolledRate, data.uncontrolledPatients, "not under control rate");
-  const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend").getContext("2d");
-  new Chart(uncontrolledGraphCanvas, uncontrolledGraphConfig);
+  const uncontrolledGraphConfig = createGraphConfig([
+    {
+      data: data.uncontrolledRate,
+      rgbaBackgroundColor: lightRedColor,
+      rgbaLineColor: darkRedColor,
+      label: "not under control rate",
+    }
+  ], "line");
+  uncontrolledGraphConfig.options = createGraphOptions(
+    data.uncontrolledRate,
+    data.uncontrolledPatients,
+    false,
+  );
+  const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
+  if (uncontrolledGraphCanvas) {
+    new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
+  }
+
+  const visitDetailsGraphConfig = createGraphConfig([
+    {
+      data: data.controlRate,
+      rgbaBackgroundColor: mediumGreenColor,
+      rgbaLineColor: mediumGreenColor,
+      label: "control rate",
+    },
+    {
+      data: data.uncontrolledRate,
+      rgbaBackgroundColor: darkRedColor,
+      rgbaLineColor: darkRedColor,
+      label: "not under control rate",
+    },
+  ], "bar");
+  visitDetailsGraphConfig.options = createGraphOptions(
+   data.uncontrolledRate,
+   data.uncontrolledPatients,
+   true,
+  );
+  const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
+  if (visitDetailsGraphCanvas) {
+    new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
+  }
 };
 
 function getReportingData() {
@@ -41,23 +93,26 @@ function getReportingData() {
   return data;
 };
 
-function createGraphConfig(data, rgbaLineColor, rgbaBackgroundColor) {
+function createGraphConfig(datasetsConfig, graphType, label) {
   return {
-    type: "line",
+    type: graphType,
     data: {
-      labels: Object.keys(data),
-      datasets: [{
-        backgroundColor: rgbaBackgroundColor,
-        borderColor: rgbaLineColor,
-        borderWidth: 1,
-        pointBackgroundColor: rgbaLineColor,
-        data: Object.values(data),
-      }],
+      labels: Object.keys(datasetsConfig[0].data),
+      datasets: datasetsConfig.map(dataset => {
+        return {
+          label: dataset.label,
+          backgroundColor: dataset.rgbaBackgroundColor,
+          borderColor: dataset.rgbaLineColor,
+          borderWidth: 1,
+          pointBackgroundColor: dataset.rgbaLineColor,
+          data: Object.values(dataset.data),
+        };
+      }),
     },
   };
 };
 
-function createGraphOptions(rates, counts, label) {
+function createGraphOptions(rates, counts, isStacked) {
   return {
     animation: false,
     responsive: true,
@@ -82,6 +137,7 @@ function createGraphOptions(rates, counts, label) {
     },
     scales: {
       xAxes: [{
+        stacked: isStacked,
         display: true,
         gridLines: {
           display: true,
@@ -96,6 +152,7 @@ function createGraphOptions(rates, counts, label) {
         }
       }],
       yAxes: [{
+        stacked: isStacked,
         display: true,
         gridLines: {
           display: true,
@@ -131,13 +188,13 @@ function createGraphOptions(rates, counts, label) {
       yPadding: 12,
       callbacks: {
         title: function() {},
-        label: function(tooltipItem, _) {
+        label: function(tooltipItem, data) {
+          const datasetIndex = tooltipItem.datasetIndex;
           const index = tooltipItem.index;
           const date = Object.keys(rates)[index];
           const count = Object.values(counts)[index];
-          // const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           const percent = Math.round(tooltipItem.value);
-          return `${percent}% ${label} (${count} patients) in ${date}`;
+          return `${percent}% ${data.datasets[datasetIndex].label} (${count} patients) in ${date}`;
         },
       },
     }
