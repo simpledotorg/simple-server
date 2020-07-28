@@ -1,8 +1,8 @@
 class Access < ApplicationRecord
-  ALLOWED_RESOURCE_TYPES = %w[Organization FacilityGroup Facility].freeze
+  ALLOWED_SCOPES = %w[Organization FacilityGroup Facility].freeze
 
   belongs_to :user
-  belongs_to :resource, polymorphic: true, optional: true
+  belongs_to :scope, polymorphic: true, optional: true
 
   enum mode: {
     viewer: "viewer",
@@ -11,5 +11,5 @@ class Access < ApplicationRecord
   }
 
   validates :mode, presence: true
-  validates :resource_type, inclusion: {in: ALLOWED_RESOURCE_TYPES}, allow_nil: true
+  validates :scope_type, inclusion: {in: ALLOWED_SCOPES}, allow_nil: true
 end

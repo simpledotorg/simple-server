@@ -19,13 +19,13 @@ ActiveRecord::Schema.define(version: 2020_07_28_074416) do
   create_table "accesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false
     t.string "mode", null: false
-    t.string "resource_type"
-    t.uuid "resource_id"
+    t.string "scope_type"
+    t.uuid "scope_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["mode"], name: "index_accesses_on_mode"
-    t.index ["resource_type", "resource_id"], name: "idx_accesses_on_resource_type_and_id", unique: true
+    t.index ["scope_type", "scope_id"], name: "idx_accesses_on_scope_type_and_id", unique: true
     t.index ["user_id"], name: "index_accesses_on_user_id"
   end
 
