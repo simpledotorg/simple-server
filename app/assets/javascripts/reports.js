@@ -238,13 +238,14 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
 };
 
 function formatRateTooltipText(tooltipItem, data) {
+  console.log(tooltipItem, data);
   const datasetIndex = tooltipItem.datasetIndex;
   const index = tooltipItem.index;
   const date = Object.keys(data.datasets[datasetIndex])[index];
   const count = Object.values(data.datasets[datasetIndex])[index];
   const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
-  return `${percent}% ${label} (${count} patients) in ${date}`;
+  return `${percent}% ${label} (PENDING patients) in ${tooltipItem.label}`;
 }
 
 function formatSumTooltipText(tooltipItem) {

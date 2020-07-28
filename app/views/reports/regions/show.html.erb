@@ -4,7 +4,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             HTN controlled
           </h3>
           <p class="c-grey-dark">
@@ -48,7 +48,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             No BP measure
           </h3>
           <p class="c-grey-dark">
@@ -111,7 +111,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             HTN not under control
           </h3>
           <p class="c-grey-dark">
@@ -160,7 +160,7 @@
     <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
@@ -179,7 +179,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>)</span> controlled patients
+              <span class="fw-bold">PENDING new patients</span> registered in PENDING
             <% end %>
           </p>
         </div>
