@@ -2,26 +2,19 @@ class ControlRateService
   CACHE_VERSION = 1
   PERCENTAGE_PRECISION = 1
 
-  # Can be initialized with _either_ a date range or a single date to calculate
+  # Can be initialized with _either_ a Period range or a single date to calculate
   # control rates. Note that for the date range the returned values will be for each month going back
   # to the beginning of registrations for the region.
-  def initialize(region, range: nil, period: "month", date: nil)
-    raise ArgumentError, "Cannot provide both a range and date" if range && date
-    raise ArgumentError, "Must provide either a range or a single date" if range.nil? && date.nil?
+  def initialize(region, periods:)
     @region = region
     @facilities = region.facilities
-    @range = range
-    @period = period
-    @date = date
-    @end_of_date_range = date || range.end
-    logger.info "#{self.class} created for range: #{range} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
+    @periods = periods
+    logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
   delegate :logger, to: Rails
-  attr_reader :date
   attr_reader :facilities
-  attr_reader :period
-  attr_reader :range
+  attr_reader :periods
   attr_reader :region
 
   def call
@@ -34,36 +27,34 @@ class ControlRateService
         registrations: {}
       }
 
-      data[:cumulative_registrations] = registrations(@end_of_date_range)
-      registration_counts.each do |(date, count)|
-        formatted_period = date.is_a?(Quarter) ? date : date.to_s(:month_year)
-        data[:controlled_patients][formatted_period] = controlled_patients(date).count
-        data[:uncontrolled_patients][formatted_period] = uncontrolled_patients(date).count
-        data[:uncontrolled_patients_rate][formatted_period] = percentage(uncontrolled_patients(date).count, count)
-        data[:controlled_patients_rate][formatted_period] = percentage(controlled_patients(date).count, count)
-        data[:registrations][formatted_period] = count
+      data[:cumulative_registrations] = lookup_registrations(@periods.end)
+      registration_counts.each do |(key, count)|
+        data[:controlled_patients][key] = controlled_patients(key).count
+        data[:uncontrolled_patients][key] = uncontrolled_patients(key).count
+        data[:uncontrolled_patients_rate][key] = percentage(uncontrolled_patients(key).count, count)
+        data[:controlled_patients_rate][key] = percentage(controlled_patients(key).count, count)
+        data[:registrations][key] = count
       end
       data
     end
   end
 
-  def registrations(time)
-    registration_counts[time.beginning_of_month.to_date]
+  def lookup_registrations(period)
+    registration_counts[period]
   end
 
-  def quarterly_period?
-    period == "quarter"
+  def quarterly_report?
+    periods.begin.quarter?
   end
 
   # Calculate all registration counts for entire range, or for the single date provided
   def registration_counts
-    @registration_counts ||= if range
-      quarter_proc = lambda { |date| Quarter.new(date: date) }
-      options = {range: range}
-      options.merge!(format: quarter_proc) if quarterly_period?
-
+    @registration_counts ||= if periods
+      range = periods.begin.value.to_date..periods.end.value.to_date
       region.registered_patients.with_hypertension
-        .group_by_period(period, :recorded_at, options)
+        .group_by_period(periods.begin.type, :recorded_at, {
+          range: range,
+          format: ->(v) { quarterly_report? ? Period.quarter(v) : Period.month(v) }})
         .count
         .each_with_object(Hash.new(0)) { |(date, count), hsh|
           hsh[:running_total] += count
@@ -77,26 +68,27 @@ class ControlRateService
     end
   end
 
-  def controlled_patients(date_or_quarter)
-    if date_or_quarter.is_a?(Quarter)
-      bp_quarterly_query(date_or_quarter).under_control
+  def controlled_patients(period)
+    if period.quarter?
+      bp_quarterly_query(period).under_control
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_query(date_or_quarter).under_control,
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_query(period).under_control,
         "latest_blood_pressures_per_patient_per_months")
     end
   end
 
-  def uncontrolled_patients(date_or_quarter)
-    if date_or_quarter.is_a?(Quarter)
-      bp_quarterly_query(date_or_quarter).hypertensive
+  def uncontrolled_patients(period)
+    if period.quarter?
+      bp_quarterly_query(period).hypertensive
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_query(date_or_quarter).hypertensive,
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_query(period).hypertensive,
         "latest_blood_pressures_per_patient_per_months")
     end
   end
 
-  def bp_quarterly_query(quarter)
-    Rails.logger.info " ===> quarter #{quarter} number #{quarter.number}"
+  def bp_quarterly_query(period)
+    quarter = period.value
+    Rails.logger.info " ===> quarter #{period} number #{quarter.number}"
     LatestBloodPressuresPerPatientPerQuarter
       .where(registration_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
@@ -104,7 +96,8 @@ class ControlRateService
       .order("patient_id, bp_recorded_at DESC, bp_id")
   end
 
-  def bp_query(time)
+  def bp_query(period)
+    time = period.value
     end_range = time.end_of_month
     mid_range = time.advance(months: -1).end_of_month
     beg_range = time.advance(months: -2).end_of_month
@@ -125,15 +118,7 @@ class ControlRateService
   private
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{date_or_range_cache_key}"
-  end
-
-  def date_or_range_cache_key
-    if range
-      "#{range.min.to_s(:iso8601)}/#{range.max.to_s(:iso8601)}"
-    else
-      date.to_s(:iso8601)
-    end
+    "#{self.class}/#{region.model_name}/#{region.id}/#{periods.begin.type}_periods/#{periods.begin.value}/#{periods.end.value}"
   end
 
   def cache_version

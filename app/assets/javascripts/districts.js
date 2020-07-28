@@ -1,9 +1,17 @@
 window.addEventListener("DOMContentLoaded", initializeCharts);
+window.addEventListener("DOMContentLoaded", setDropdownPeriodType);
 
 var lightGreenColor = "rgba(242, 248, 245, 1)";
 var darkGreenColor = "rgba(0, 122, 49, 1)";
 var lightRedColor = "rgba(255, 235, 238, 1)";
 var darkRedColor = "rgba(255, 51, 85, 1)";
+
+function setDropdownPeriodType() {
+  $('.dropdown-item').click(function() {
+    let periodType = $(this).data("period-type");
+    $("#dropdown-period-type").val(periodType);
+  })
+}
 
 function initializeCharts() {
   const data = getReportingData();

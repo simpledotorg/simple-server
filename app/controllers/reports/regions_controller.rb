@@ -55,12 +55,9 @@ class Reports::RegionsController < AdminController
   private
 
   def set_selected_date
-    @period = facility_params[:period] || "month"
-    @selected_date = if facility_params[:selected_date]
-      Time.parse(facility_params[:selected_date])
-    else
-      Date.current.advance(months: -1)
-    end
+    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month}
+    @period = Period.new(period_params)
+    @selected_date = @period.value
   end
 
   def set_force_cache
@@ -77,7 +74,7 @@ class Reports::RegionsController < AdminController
   end
 
   def facility_params
-    params.permit(:selected_date, :id, :force_cache, :period, :report_scope)
+    params.permit(:selected_date, :id, :force_cache, {period: [:type, :value]}, :report_scope)
   end
 
   def force_cache?

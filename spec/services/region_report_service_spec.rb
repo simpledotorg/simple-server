@@ -152,7 +152,7 @@ RSpec.describe RegionReportService, type: :model do
       expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
     end
 
-    fit "can return data for past 8 quarters" do
+    it "can return data for quarters" do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
       facility_2 = create(:facility)
@@ -186,10 +186,12 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, selected_date: july_2020, period: "quarter", current_user: user)
+      period = Period.new(type: :quarter, value: Quarter.current)
+      service = RegionReportService.new(region: facility_group_1, selected_date: july_2020, period: period, current_user: user)
       result = service.call
 
       p result[:controlled_patients].keys
+      pp result[:controlled_patients]
       expect(result[:controlled_patients].size).to eq(8)
       # expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
       # june_controlled = controlled_in_jan_and_june << controlled_just_for_june

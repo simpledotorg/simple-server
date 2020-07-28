@@ -2,6 +2,10 @@ class Quarter
   include Comparable
   PARSE_REGEX = /\AQ(\d)-(\d{4})\z/
 
+  def self.for_date(date)
+    new(date: date)
+  end
+
   def self.current
     new(date: Date.current)
   end
@@ -31,6 +35,8 @@ class Quarter
     self.class.new(date: date.advance(months: 3))
   end
 
+  alias succ next_quarter
+
   def previous_quarter
     self.class.new(date: date.advance(months: -3))
   end
@@ -55,6 +61,10 @@ class Quarter
     @to_s
   end
 
+  def to_date
+    date
+  end
+
   def ==(other)
     to_s == other.to_s
   end
@@ -72,5 +82,4 @@ class Quarter
   def hash
     year.hash ^ number.hash
   end
-
 end

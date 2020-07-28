@@ -10,6 +10,7 @@ RSpec.describe ControlRateService, type: :model do
   let(:june_30_2020) { Time.parse("June 30, 2020") }
   let(:jan_2019) { Time.parse("January 1st, 2019") }
   let(:jan_2020) { Time.parse("January 1st, 2020") }
+  let(:july_2018) { Time.parse("July 1st, 2018") }
   let(:july_2020) { Time.parse("July 1st, 2020") }
 
   def refresh_views
@@ -32,10 +33,10 @@ RSpec.describe ControlRateService, type: :model do
 
     refresh_views
 
-    range = (june_2018..june_30_2020)
+    range = (Period.month(june_2018)..Period.month(june_30_2020))
     result = nil
     Timecop.freeze("July 1st 2020") do
-      service = ControlRateService.new(facility_group_1, range: range)
+      service = ControlRateService.new(facility_group_1, periods: range)
       result = service.call
     end
     # registrations from March, Apr, May, June
@@ -43,7 +44,7 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:registrations].size).to eq(4)
   end
 
-  it "correctly returns controlled patients from three month window" do
+  it "correctly returns controlled patients for past months" do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first
     facility_2 = create(:facility)
@@ -80,22 +81,22 @@ RSpec.describe ControlRateService, type: :model do
     refresh_views
 
     start_range = july_2020.advance(months: -24)
-    service = ControlRateService.new(facility_group_1, range: (start_range..july_2020))
+    service = ControlRateService.new(facility_group_1, periods: (Period.month(start_range)..Period.month(july_2020)))
     result = service.call
 
-    expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
-    expect(result[:controlled_patients_rate][jan_2020.to_s(:month_year)]).to eq(40.0)
+    expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
+    expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(40.0)
 
     # 3 controlled patients in june and 10 cumulative registered patients
     june_1_key = june_1.to_s(:month_year)
-    expect(result[:registrations][june_1_key]).to eq(10)
-    expect(result[:controlled_patients][june_1_key]).to eq(3)
-    expect(result[:controlled_patients_rate][june_1_key]).to eq(30.0)
-    expect(result[:uncontrolled_patients][june_1_key]).to eq(5)
-    expect(result[:uncontrolled_patients_rate][june_1_key]).to eq(50.0)
+    expect(result[:registrations][Period.month(june_1_key)]).to eq(10)
+    expect(result[:controlled_patients][Period.month(june_1_key)]).to eq(3)
+    expect(result[:controlled_patients_rate][Period.month(june_1_key)]).to eq(30.0)
+    expect(result[:uncontrolled_patients][Period.month(june_1_key)]).to eq(5)
+    expect(result[:uncontrolled_patients_rate][Period.month(june_1_key)]).to eq(50.0)
   end
 
-  fit "correctly returns quarterly control data from three month window" do
+  it "correctly returns quarterly control data" do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first
     facility_2 = create(:facility)
@@ -131,17 +132,15 @@ RSpec.describe ControlRateService, type: :model do
 
     refresh_views
 
-    start_range = july_2020.advance(months: -24)
-    service = ControlRateService.new(facility_group_1, range: (start_range..july_2020), period: "quarter")
+    periods = Period.quarter(july_2018)..Period.quarter(july_2020)
+    service = ControlRateService.new(facility_group_1, periods: periods)
     result = service.call
 
-    p result[:registrations].keys
     expect(result[:registrations].keys.size).to eq(3) # 3 quarters of data
     expect(result[:registrations].keys.first.to_s).to eq("Q1-2020")
-    expect(result[:registrations].keys.last).to eq("Q3-2020")
+    expect(result[:registrations].keys.last.to_s).to eq("Q3-2020")
 
-    p result[:controlled_patients]
-    q2_2020 = Quarter.parse("Q2-2020")
+    q2_2020 = Period.quarter("Q2-2020")
     expect(result[:registrations][q2_2020]).to eq(10)
     expect(result[:controlled_patients][q2_2020]).to eq(3)
     expect(result[:controlled_patients_rate][q2_2020]).to eq(30.0)
@@ -175,19 +174,19 @@ RSpec.describe ControlRateService, type: :model do
 
     refresh_views
 
-    start_range = july_2020.advance(months: -24)
-    service = ControlRateService.new(facility, range: (start_range..july_2020))
+    periods = Period.month(july_2018)..Period.month(july_2020)
+    service = ControlRateService.new(facility, periods: periods)
     result = service.call
 
-    expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled.size)
-    expect(result[:registrations][jan_2020.to_s(:month_year)]).to eq(6)
-    expect(result[:controlled_patients_rate][jan_2020.to_s(:month_year)]).to eq(33.3)
+    expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled.size)
+    expect(result[:registrations][Period.month(jan_2020)]).to eq(6)
+    expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(33.3)
   end
 
   it "has a reasonable cache key" do
-    range = (june_2018..june_30_2020)
-    service = ControlRateService.new(facility_group_1, range: range)
-    expected_key = "ControlRateService/FacilityGroup/#{facility_group_1.id}/#{june_2018.iso8601}/#{june_30_2020.iso8601}"
+    periods = Period.month(july_2018)..Period.month(july_2020)
+    service = ControlRateService.new(facility_group_1, periods: periods)
+    expected_key = "ControlRateService/FacilityGroup/#{facility_group_1.id}/month_periods/#{july_2018.to_date}/#{july_2020.to_date}"
     expect(service.send(:cache_key)).to eq(expected_key)
   end
 end
