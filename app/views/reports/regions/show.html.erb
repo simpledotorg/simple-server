@@ -12,13 +12,13 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
+          <p class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
               <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
             <% else %>
               No data
             <% end %>
-          </h3>
+          </p>
           <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
               <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
@@ -119,7 +119,7 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
+          <p class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
           <%
             current_uncontrolled_rate = @data[:uncontrolled_patients_rate]&.values&.last
            %>
@@ -128,7 +128,7 @@
             <% else %>
               No data
             <% end %>
-          </h3>
+          </p>
           <p class="<% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
             <% if current_uncontrolled_rate %>
               <span class="fw-bold">
@@ -168,13 +168,13 @@
           </p>
         </div>
         <div>
-          <h3 class="mb-1 fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
+          <p class="mb-1 fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
             <% if @last_registration_value.zero? %>
               No data
             <% else %>
-              <%= number_with_delimiter(@last_registration_value) %> patients
+              <%= number_with_delimiter(@last_registration_value) %> <span class="fs-16px">patients</span>
             <% end %>
-          </h3>
+          </p>
           <p class="<% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
             <% if @last_registration_value.zero? %>
               No registration data available
