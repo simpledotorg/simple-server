@@ -35,7 +35,7 @@ RSpec.describe Access, type: :model do
         expect(invalid_access.errors.messages[:resource]).to eq ["must be nil if super_admin"]
       end
 
-      it "is invalid if resource_type is not in the allow list" do
+      it "is invalid if resource_type is not in the allow-list" do
         valid_access_1 = build(:access, :viewer, user: admin, resource: create(:organization))
         valid_access_2 = build(:access, :viewer, user: admin, resource: create(:facility_group))
         valid_access_3 = build(:access, :viewer, user: admin, resource: create(:facility))
