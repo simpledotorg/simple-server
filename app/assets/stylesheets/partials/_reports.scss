@@ -7,6 +7,7 @@
 .pe-none { pointer-events: none; }
 // Display
 .d-none { display: none; }
+.d-block { display: block; }
 .d-flex { display: flex; }
 // Flex
 .flex-1 { flex: 1; }
@@ -15,12 +16,19 @@
 .jc-flex-end { justify-content: flex-end; }
 .jc-center { justify-content: center; }
 .jc-between { justify-content: space-between; }
+.order-1 { order: 1; }
+.order-2 { order: 2; }
 // Overflow
 .o-hidden { overflow: hidden; }
 // Spacing
 .mt-0 { margin-top: 0; }
+.mr-24px { margin-right: 24px; }
+.mb-0 { margin-bottom: 0; }
+.mb-12px { margin-bottom: 12px; }
+.mb-24px { margin-bottom: 24px; }
 .ml-8px { margin-left: 8px; }
 .p-0 { padding: 0; }
+.pb-8px { padding-bottom: 8px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 // Width
 .w-100pt { width: 100%; }
@@ -31,7 +39,9 @@
 .h-200px { height: 200px; }
 // Typography
 .fs-small { font-size: 14px; }
+.fs-large { font-size: 20px; }
 .fs-xlarge { font-size: 24px; }
+.fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
 .lh-1 { line-height: 1; }
 .ls-145 { letter-spacing: 1.45; }
@@ -52,22 +62,25 @@
 .bt-grey-light { border-top-color: $grey-light; }
 .bb-grey-light { border-bottom-color: $grey-light; }
 .bb-grey-medium { border-bottom-color: $grey-mid; }
+.bb-red { border-bottom-color: $red; }
 .bt-grey-medium { border-top-color: $grey-mid; }
 .bt-purple-dark { border-top-color: $purple; }
 .bl-grey-medium { border-left-color: $grey-mid; }
 // Background colors
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
-.bg-grey-light { background-color: $grey-light; } 
+.bg-grey-light { background-color: $grey-light; }
 // Media queries
 // Large
 @media screen and (min-width: 992px) {
   // Display
   .d-lg-block { display: block; }
+  .d-lg-inline-block { display: inline-block; }
   .d-lg-none { display: none; }
   .d-lg-flex { display: flex; }
   // Flexbox
   .fd-lg-column { flex-direction: column; }
+  .fd-lg-row { flex-direction: row; }
   .flex-lg-1 { flex: 1; }
   .flex-lg-2 { flex: 2; }
   .flex-lg-3 { flex: 3; }

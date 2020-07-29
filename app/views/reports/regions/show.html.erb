@@ -1,43 +1,8 @@
-<div class="alert alert-primary">
-  <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
-</div>
-<div class="dashboard">
-  <nav class="breadcrumb">
-    <%= link_to 'All reports', dashboard_districts_path %>
-    <% if @region.respond_to?(:facility_group) %>
-      <i class="fas fa-chevron-right"></i>
-      <%= link_to @region.facility_group.name, reports_district_path(@region.facility_group) %>
-    <% end %>
-    <i class="fas fa-chevron-right"></i>
-    <%= @region.name %>
-  </nav>
-  <div class="d-flex ai-center jc-between mb-3">
-    <h1>
-      <%= @region.name %>
-    </h1>
-    <div class="dropdown show">
-      <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
-        Report: <%= @selected_date.to_s(:month_year) %>
-      </a>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-      <% url = @report_scope == FacilityGroup ? reports_district_path(@region) : reports_facility_path(@region) %>
-        <%= form_tag url, method: :get do %>
-          <% last_n_months(n: 12, end_of_month: true).each do |time| %>
-            <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
-            <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
-                    name="selected_date"
-                    type="submit" value="<%= time %>">
-              <%= time.to_s(:month_year) %>
-            </button>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
+<%= render "header" %>
+
 <div class="d-lg-flex flex-lg-wrap">
-  <div class="d-lg-flex order-lg-1 w-lg-50 pr-lg-2">
+
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
@@ -51,7 +16,7 @@
         <div>
           <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
-              <%= @data[:controlled_patients_rate].values.last %>%
+              <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
             <% else %>
               No data
             <% end %>
@@ -67,44 +32,85 @@
       </div>
       <div>
         <div class="p-relative">
-          <div class="h-200px">
+          <div style="height: 300px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
               </p>
             <% end %>
           </div>
-          <% if @data[:controlled_patients_rate].values.last %>
-            <div class="p-absolute t-0 l-0 pe-none d-flex fd-column h-100pt">
-              <div class="flex-1 ml-8px">
-                <p class="c-grey-medium">
-                  60%
-                </p>
-              </div>
-              <div class="flex-1 ml-8px">
-                <p class="c-grey-medium">
-                  30%
-                </p>
-              </div>
-            </div>
-          <% end %>
         </div>
-        <div class="d-flex justify-content-between mt-2">
-          <p class="mb-0">
-            <%= @controlled_patients.keys[0] %>
-          </p>
-          <p class="mb-0">
-            <% total_controlled_patient_periods = @registrations.length - 1 %>
-            <%= @registrations.keys[total_controlled_patient_periods] %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div>
+        <div class="mb-2">
+          <h3>
+            No BP Measure card (coming soon...)
+          </h3>
+          <p class="c-grey-dark">
           </p>
         </div>
       </div>
     </div>
   </div>
-  <div class="d-lg-flex order-lg-3 w-lg-50 pr-lg-2">
+
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div>
+        <div class="mb-2">
+          <h3>
+            HTN not under control
+          </h3>
+          <p class="c-grey-dark">
+            Registered HTN patients with BP &ge;140/90 at their most recent visit in the last 3 months
+          </p>
+        </div>
+        <div>
+          <h3 class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
+          <%
+            current_uncontrolled_rate = @data[:uncontrolled_patients_rate]&.values&.last
+           %>
+            <% if current_uncontrolled_rate %>
+              <%= number_to_percentage(current_uncontrolled_rate, precision: 0) %>
+            <% else %>
+              No data
+            <% end %>
+          </h3>
+          <p class="<% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
+            <% if current_uncontrolled_rate %>
+              <span class="fw-bold">
+                <%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %>
+                </span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
+            <% else %>
+              No control rate data available
+            <% end %>
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="p-relative">
+          <div class="h-200px">
+            <canvas id="uncontrolledPatientsTrend"></canvas>
+          </div>
+          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt">
+            <% unless @data[:controlled_patients_rate].values.last %>
+              <p class="c-grey-medium">
+                No data available
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
@@ -127,7 +133,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= @data[:controlled_patients_rate].values.last %>)</span> controlled patients
+              <span class="fw-bold"><%= @controlled_patients.values.last %> (<%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>)</span> controlled patients
             <% end %>
           </p>
         </div>
@@ -212,216 +218,15 @@
       </div>
     </div>
   </div>
-  <div class="d-lg-flex order-lg-4 w-lg-50 pl-lg-2">
-    <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div>
-        <div class="mb-lg-2">
-          <h3>
-            Quarterly cohort trend
-          </h3>
-          <p class="mb-0 c-grey-dark">
-            The result for all HTN patients registered in a quarter at their follow-up visit in the following quarter
-          </p>
-        </div>
-        <div>
-          <div>
-            <% @quarterly_registrations.each_with_index do |cohort, index| %>
-              <div class="split-row mt-lg-1 pt-lg-1">
-                <div class="row px-lg-0">
-                  <div class="col-lg-5 nowrap order-lg-1">
-                    <h6 class="<% unless cohort["registered"] == 0 %>c-black<% else %>c-grey-medium<% end %>">
-                      <% unless cohort["registered"] == 0 %>
-                        <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
-                      <% else %>
-                        <span class="fw-bold">No data</span>
-                      <% end %>
-                    </h6>
-                    <p class="mb-2 fs-small c-grey-medium">
-                      <% unless cohort["registered"] == 0 %>
-                        Result from last visit in <%= cohort["results_in"] %>
-                      <% else %>
-                        No data available for <%= cohort["results_in"] %>
-                      <% end %>
-                    </p>
-                  </div>
-                  <div class="col-lg-7 order-lg-2">
-                    <table class="split-bars">
-                      <tr>
-                        <% if cohort["registered"] > 0 %>
-                          <%
-                            controlled_percent = compute_percentage(cohort["controlled"], cohort["registered"])
-                            uncontrolled_percent = compute_percentage(cohort["uncontrolled"], cohort["registered"])
-                            no_bp_percent = compute_percentage(cohort["no_bp"], cohort["registered"])
-                          %>
-                          <td
-                            class="bar bar-1"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            data-trigger="hover focus click"
-                            title="<%= number_with_delimiter(cohort["no_bp"]) %> patients didn't have a BP taken"
-                            style="width: <%= no_bp_percent %>;"
-                          >
-                            <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>
-                          </td>
-                          <td
-                            class="bar bar-2"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            data-trigger="hover focus click"
-                            title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with uncontrolled BP"
-                            style="width: <%= uncontrolled_percent %>;"
-                          >
-                            <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
-                          </td>
-                          <td
-                            class="bar bar-3"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            data-trigger="hover focus click"
-                            title="<%= number_with_delimiter(cohort["controlled"]) %> patients visited with controlled BP"
-                            style="width: <%= controlled_percent %>;"
-                          >
-                            <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>
-                          </td>
-                        <% else %>
-                          <td class="bar bar-none" style="width: 100%;">
-                            No data available
-                          </td>
-                        <% end %>
-                      </tr>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="mt-4 pt-4 bt-1px bt-grey-light d-lg-flex align-lg-center justify-lg-end mt-lg-3 pt-lg-3">
-          <div class="">
-            <p class="mb-2 c-grey-dark mb-lg-0 mr-lg-4">
-              No BP taken
-            </p>
-          </div>
-          <div class="">
-            <p class="mb-3 c-red mb-lg-0 mr-lg-4">
-              Visited and BP &ge;140/90
-            </p>
-          </div>
-          <div class="">
-            <p class="mb-0 lh-1 c-green-dark mb-lg-0">
-              Visited and BP &lt;140/90
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="d-lg-flex order-lg-2 w-lg-50 pl-lg-2">
-    <div class="card h-lg-full w-lg-full mt-lg-0">
-      <div class="mb-2">
-        <div class="d-lg-flex align-lg-baseline pb-lg-3 bb-1px bb-grey-light">
-          <div class="flex-lg-2 align-lg-center justify-lg-center">
-            <h3 class="mb-lg-0">
-              Benchmarks
-            </h3>
-          </div>
-          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-            <!-- <%= @top_region_benchmarks[:control_rate][:region].name %> -->
-              Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
-            </p>
-          </div>
-          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 fw-lg-bold tt-lg-uppercase ls-lg-145 c-lg-grey-dark">
-              <%= @region.name %>
-            </p>
-          </div>
-          <div class="d-none d-lg-block flex-lg-1 align-lg-center justify-lg-center">
-            <p class="ta-lg-center mb-lg-0 c-lg-grey-dark"></p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="mb-3 pb-3 bb-1px bb-grey-light d-lg-flex mb-lg-2 pb-lg-0">
-          <div class="mb-1 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145">
-              Control rate of all HTN patients
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Top <%= @report_scope == FacilityGroup ? "District" : "Facility" %>
-              </span>
-              <span>
-                <%= number_to_percentage(
-                   @top_region_benchmarks[:control_rate][:value],
-                   precision: 0
-                ) %>
-              </span>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                <%= @region.name %>:
-              </span>
-              <span>
-                <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
-              </span>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <span class="fw-bold d-lg-none">
-                Difference:
-              </span>
-              <% controlled_percentage = (@data[:controlled_patients_rate].values.last.to_f - @top_region_benchmarks[:control_rate][:value]).round %>
-              <span class="<%= controlled_percentage > 0 ? "c-green-dark" : "c-red" %>">
-                <%= controlled_percentage > 0 ? "+" : "" %><%= controlled_percentage %>%
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="mb-2 d-lg-flex mb-lg-2 pb-lg-0">
-          <div class="mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-2 align-lg-center justify-lg-center">
-            <p class="mb-0 ls-145">
-              Registrations
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <!-- <%= @top_region_benchmarks[:registrations][:region].name %> -->
-              <%= @top_region_benchmarks[:registrations][:value]%>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-              <%= @data[:registrations].values.last %>
-            </p>
-          </div>
-          <div class="mb-0 mb-lg-0 pt-lg-3 pb-lg-4 flex-lg-1 align-lg-center justify-lg-center">
-            <p class="mb-0 ta-lg-center c-grey-dark">
-            <% difference = @data[:registrations].values.last - @top_region_benchmarks[:registrations][:value] %>
-              <span class="<%= difference >= 0 ? "c-green-dark" : "c-red" %>">
-                <%= difference %>
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
+
 <% if @region.is_a?(FacilityGroup) %>
   <div class="card">
     <h2>
       Facilities
     </h2>
     <% @region.facilities.order(:name).each do |facility| %>
-      <%= link_to(reports_facility_path(facility.friendly_id), class: "link-row") do %>
+      <%= link_to(reports_region_path(facility.region_slug), class: "link-row") do %>
         <i class='fas fa-angle-right light'></i>
         <%= facility.name %>
       <% end %>
@@ -434,14 +239,9 @@
       :class => "mw-100pt"
   )%>
 </div>
-<!-- Dump all reporting data in a hidden div to parse in JS -->
-<%= content_tag :div,
-                id: "reporting",
-                data: {
-                  control_rate: @data[:controlled_patients_rate],
-                  controlled_patients: @controlled_patients,
-                  registrations: @registrations
-                },
-                style: "display: none;" do %>
-<% end %>
+
+<div id="data-json" style="display: none;">
+  <%= raw @data.to_json %>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>

@@ -1,6 +1,9 @@
 class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
+  before_action :set_force_cache
+  before_action :set_selected_date, except: :index
+  before_action :find_region, except: :index
   around_action :set_time_zone
 
   def index
@@ -10,15 +13,34 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @region = report_scope.find_by!(slug: facility_params[:id])
     authorize(:dashboard, :show?)
-    RequestStore.store[:force_cache] = true if force_cache?
 
-    @selected_date = if facility_params[:selected_date]
-      Time.parse(facility_params[:selected_date])
-    else
-      Date.current.advance(months: -1)
-    end
+    @data = RegionReportService.new(region: @region,
+                                    selected_date: @selected_date,
+                                    current_user: current_admin).call
+    @controlled_patients = @data[:controlled_patients]
+    @registrations = @data[:registrations]
+    @quarterly_registrations = @data[:quarterly_registrations]
+    @top_region_benchmarks = @data[:top_region_benchmarks]
+    @last_registration_value = @data[:registrations].values&.last || 0
+  end
+
+  def details
+    authorize(:dashboard, :show?)
+
+    @data = RegionReportService.new(region: @region,
+                                    selected_date: @selected_date,
+                                    current_user: current_admin).call
+    @controlled_patients = @data[:controlled_patients]
+    @registrations = @data[:registrations]
+    @quarterly_registrations = @data[:quarterly_registrations]
+    @top_region_benchmarks = @data[:top_region_benchmarks]
+    @last_registration_value = @data[:registrations].values&.last || 0
+  end
+
+  def cohort
+    authorize(:dashboard, :show?)
+
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
@@ -31,15 +53,25 @@ class Reports::RegionsController < AdminController
 
   private
 
-  def report_scope
-    @report_scope ||= case facility_params[:report_scope]
-    when "facility_group"
-      then FacilityGroup
-    when "facility"
-      then Facility
+  def set_selected_date
+    @selected_date = if facility_params[:selected_date]
+      Time.parse(facility_params[:selected_date])
     else
-      raise ArgumentError, "unknown report_scope #{facility_params[:report_scope]}"
+      Date.current.advance(months: -1)
     end
+  end
+
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def find_region
+    region_class, slug = facility_params[:id].split("-")
+    unless region_class.in?(["facility_group", "facility"])
+      raise ActiveRecord::RecordNotFound
+    end
+    klass = region_class.classify.constantize
+    @region = klass.find_by!(slug: slug)
   end
 
   def facility_params
