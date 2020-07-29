@@ -5,7 +5,7 @@ let darkGreenColor = "rgba(0, 122, 49, 1)";
 let mediumGreenColor = "rgba(92, 255, 157, 1)";
 let lightRedColor = "rgba(255, 235, 238, 1)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
-let lightPurpleColor = "rgba(83, 0, 224, 1)";
+let lightPurpleColor = "rgba(238, 229, 252, 1)";
 let darkGreyColor = "rgba(108, 115, 122, 1)";
 let mediumGreyColor = "rgba(173, 178, 184, 1)";
 let lightGreyColor = "rgba(240, 242, 245, 1)";
@@ -35,8 +35,8 @@ function initializeCharts() {
   const noBPMeasureGraphConfig = createGraphConfig([
     {
       data: data.controlRate,
-      rgbaLineColor: mediumGreyColor,
       rgbaBackgroundColor: mediumGreyColor,
+      hoverBackgroundColor: mediumGreyColor,
       label: "lost to follow-up",
     },
   ], "bar");
@@ -80,8 +80,8 @@ function initializeCharts() {
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
       data: data.registrations,
-      rgbaLineColor: lightPurpleColor,
       rgbaBackgroundColor: lightPurpleColor,
+      hoverBackgroundColor: lightPurpleColor,
     },
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
@@ -154,9 +154,10 @@ function createGraphConfig(datasetsConfig, graphType) {
         return {
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
-          borderColor: dataset.rgbaLineColor,
-          borderWidth: 1,
+          borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
+          borderWidth: dataset.rgbaLineColor ? 1 : undefined,
           pointBackgroundColor: dataset.rgbaLineColor,
+          hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
         };
       }),
