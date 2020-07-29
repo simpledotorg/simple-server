@@ -67,12 +67,12 @@ RSpec.describe RegionReportService, type: :model do
       service = RegionReportService.new(region: facility_group_1, period: Period.month(july_2020), current_user: user)
       result = service.call
 
-      expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
+      expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
       june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-      expect(result[:controlled_patients][june_1.to_s(:month_year)]).to eq(june_controlled.size)
+      expect(result[:controlled_patients][Period.month(june_1)]).to eq(june_controlled.size)
     end
 
-    it "returns counts for last n months for controlled patients and registrations" do
+    fit "returns counts for last n months for controlled patients and registrations" do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
 
@@ -99,7 +99,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, selected_date: june_1, current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1), current_user: user)
       result = service.call
 
       expected_controlled_patients = {
@@ -110,6 +110,7 @@ RSpec.describe RegionReportService, type: :model do
         "Dec 2018" => 0, "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
       }
       expected_registrations.default = 2
+      pp result
       expect(result[:controlled_patients].size).to eq(18)
       expect(result[:registrations].size).to eq(18)
 
@@ -147,7 +148,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: darrang, selected_date: june_1, current_user: user)
+      service = RegionReportService.new(region: darrang, period: Period.month(june_1), current_user: user)
       result = service.call
       expect(result[:top_region_benchmarks][:control_rate][:value]).to eq(100.0)
       expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
@@ -187,8 +188,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      period = Period.new(type: :quarter, value: Quarter.current)
-      service = RegionReportService.new(region: facility_group_1, selected_date: july_2020, period: period, current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.quarter(july_2020), current_user: user)
       result = service.call
 
       p result[:controlled_patients].keys
@@ -236,7 +236,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility, selected_date: july_2020, current_user: user)
+      service = RegionReportService.new(region: facility, period: Period.month(july_2020), current_user: user)
       result = service.call
 
       expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
