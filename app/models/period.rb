@@ -57,6 +57,10 @@ class Period
     end
   end
 
+  def advance(months:)
+    Period.new(type: type, value: value.advance(months: months))
+  end
+
   # def ==(other)
   #   value == other.value && type == other.type
   # end

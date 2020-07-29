@@ -53,6 +53,10 @@ class Quarter
     end
   end
 
+  def advance(months:)
+    self.class.new(date: date.advance(months: months))
+  end
+
   def inspect
     "#<Quarter:#{object_id} #{to_s.inspect}>"
   end

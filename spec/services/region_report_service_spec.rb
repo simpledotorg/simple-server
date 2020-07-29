@@ -22,9 +22,10 @@ RSpec.describe RegionReportService, type: :model do
   end
 
   it "normalizes the selected_date" do
-    service = RegionReportService.new(region: facility_group_1, selected_date: june_1, current_user: user)
+    period = Period.month(june_1)
+    service = RegionReportService.new(region: facility_group_1, period: period, current_user: user)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
-      expect(service.selected_date).to eq(june_1.end_of_month)
+      expect(service.selected_date).to eq(june_1.end_of_month.to_date)
     end
   end
 
@@ -63,7 +64,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, selected_date: july_2020, current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.month(july_2020), current_user: user)
       result = service.call
 
       expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)

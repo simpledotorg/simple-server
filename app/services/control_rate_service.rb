@@ -2,19 +2,32 @@ class ControlRateService
   CACHE_VERSION = 1
   PERCENTAGE_PRECISION = 1
 
-  # Can be initialized with _either_ a Period range or a single date to calculate
-  # control rates. Note that for the date range the returned values will be for each month going back
+  # Can be initialized with _either_ a Period range or a single Period to calculate
+  # control rates. We need to handle a single period for calculating point in time benchmarks.
+  #
+  # Note that for the range the returned values will be for each Period going back
   # to the beginning of registrations for the region.
   def initialize(region, periods:)
     @region = region
     @facilities = region.facilities
-    @periods = periods
+    # Normalize between a single period and range of periods
+    @periods = if !periods.is_a?(Range)
+      @single_period = periods
+      Range.new(periods, periods)
+    else
+      periods
+    end
     logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
+  end
+
+  def single_period?
+    @single_period
   end
 
   delegate :logger, to: Rails
   attr_reader :facilities
   attr_reader :periods
+  attr_reader :single_period
   attr_reader :region
 
   def call
@@ -49,7 +62,12 @@ class ControlRateService
 
   # Calculate all registration counts for entire range, or for the single date provided
   def registration_counts
-    @registration_counts ||= if periods
+    @registration_counts ||= if single_period
+      count = region.registered_patients.with_hypertension.where("recorded_at <= ?", single_period.value).count
+      {
+        single_period => count
+      }
+    else
       range = periods.begin.value.to_date..periods.end.value.to_date
       region.registered_patients.with_hypertension
         .group_by_period(periods.begin.type, :recorded_at, {
@@ -60,11 +78,6 @@ class ControlRateService
           hsh[:running_total] += count
           hsh[date] = hsh[:running_total]
         }.delete_if { |date, count| count == 0 }.except(:running_total)
-    else
-      count = region.registered_patients.with_hypertension.where("recorded_at <= ?", date).count
-      {
-        date => count
-      }
     end
   end
 
@@ -118,7 +131,15 @@ class ControlRateService
   private
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{periods.begin.type}_periods/#{periods.begin.value}/#{periods.end.value}"
+    "#{self.class}/#{region.model_name}/#{region.id}/#{periods.begin.type}_periods/#{periods_cache_key}"
+  end
+
+  def periods_cache_key
+    if periods.is_a?(Range)
+      "#{periods.begin.value}/#{periods.end.value}"
+    else
+      period.value
+    end
   end
 
   def cache_version
