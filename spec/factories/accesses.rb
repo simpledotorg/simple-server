@@ -3,15 +3,15 @@ FactoryBot.define do
     user
 
     trait :super_admin do
-      mode { :super_admin }
+      role { :super_admin }
     end
 
     trait :manager do
-      mode { :manager }
+      role { :manager }
     end
 
     trait :viewer do
-      mode { :viewer }
+      role { :viewer }
     end
   end
 end
