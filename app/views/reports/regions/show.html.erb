@@ -55,7 +55,7 @@
             Registered HTN patients with no BP measure recorded in the last 3 months
           </p>
           <div>
-            <% unless @data[:controlled_patients_rate].values.last %>
+            <% if @data[:controlled_patients_rate].values.last %>
               <div class="d-flex align-baseline mb-8px mb-lg-12px">
                 <div class="w-12px h-12px mr-12px br-4px bg-grey-lightest"></div>
                 <div class="d-flex flex-1 align-baseline">
@@ -101,7 +101,7 @@
         </div>
       </div>
       <div>
-        <% unless @data[:controlled_patients_rate].values.last %>
+        <% if @data[:controlled_patients_rate].values.last %>
           <div class="h-200px">
             <canvas id="noBPMeasureTrend"></canvas>
           </div>
