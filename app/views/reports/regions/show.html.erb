@@ -179,7 +179,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold">PENDING new patients</span> registered in PENDING
+              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last %> 
             <% end %>
           </p>
         </div>
