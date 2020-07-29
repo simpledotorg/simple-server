@@ -24,7 +24,8 @@ function initializeCharts() {
     25,
     100,
     formatValueAsPercent,
-    formatRateTooltipText
+    formatRateTooltipText,
+    [data.controlledPatients],
   );
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
   if (controlledGraphCanvas) {
@@ -44,7 +45,8 @@ function initializeCharts() {
     25,
     100,
     formatValueAsPercent,
-    formatRateTooltipText
+    formatRateTooltipText,
+    [data.uncontrolledPatients],
   );
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
@@ -64,13 +66,17 @@ function initializeCharts() {
     25,
     100,
     formatValueAsPercent,
-    formatRateTooltipText
+    formatRateTooltipText,
+    [data.uncontrolledPatients],
   );
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
   if (uncontrolledGraphCanvas) {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
   }
 
+  const maxRegistrations = Math.max(...Object.values(data.registrations));
+  const suggestedMax = Math.round(maxRegistrations) * 1.15;
+  const stepSize = Math.round(suggestedMax / 3);
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
       data: data.registrations,
@@ -80,10 +86,10 @@ function initializeCharts() {
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     false,
-    500,
-    Math.round(Math.max(...Object.values(data.registrations)))*1.25,
+    stepSize,
+    suggestedMax,
     formatNumberWithCommas,
-    formatSumTooltipText
+    formatSumTooltipText,
   );
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
   if (cumulativeRegistrationsGraphCanvas) {
@@ -108,7 +114,8 @@ function initializeCharts() {
     true,
     25,
     formatValueAsPercent,
-    formatRateTooltipText
+    formatRateTooltipText,
+    [data.controlledPatients, data.uncontrolledPatients],
   );
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {
@@ -138,7 +145,7 @@ function getReportingData() {
   return data;
 };
 
-function createGraphConfig(datasetsConfig, graphType, label) {
+function createGraphConfig(datasetsConfig, graphType) {
   return {
     type: graphType,
     data: {
@@ -157,7 +164,7 @@ function createGraphConfig(datasetsConfig, graphType, label) {
   };
 };
 
-function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction) {
+function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, dataSum) {
   return {
     animation: false,
     responsive: true,
@@ -231,21 +238,21 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       yPadding: 12,
       callbacks: {
         title: function() {},
-        label: tooltipCallbackFunction,
+        label: function(tooltipItem, data) {
+          return tooltipCallbackFunction(tooltipItem, data, dataSum);
+        },
       },
     }
   };
 };
 
-function formatRateTooltipText(tooltipItem, data) {
-  console.log(tooltipItem, data);
+function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
-  const index = tooltipItem.index;
-  const date = Object.keys(data.datasets[datasetIndex])[index];
-  const count = Object.values(data.datasets[datasetIndex])[index];
+  const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
+  const date = tooltipItem.label;
   const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
-  return `${percent}% ${label} (PENDING patients) in ${tooltipItem.label}`;
+  return `${percent}% ${label} (${total} patients) in ${date}`;
 }
 
 function formatSumTooltipText(tooltipItem) {
