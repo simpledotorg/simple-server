@@ -33,7 +33,7 @@
           <div class="h-200px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
@@ -96,7 +96,7 @@
           <div class="h-200px">
             <canvas id="noBPMeasureTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
@@ -145,7 +145,7 @@
           <div class="h-200px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
@@ -184,9 +184,17 @@
           </p>
         </div>
       </div>
-      <div class="h-200px">
-        <canvas id="cumulativeRegistrationsTrend"></canvas>
-      </div>
+      <% if @last_registration_value.zero? %>
+        <div class="d-flex align-center justify-center h-200px bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <p class="fs-14px c-grey-medium">
+            No data available
+          </p>
+        </div>
+      <% else %>
+        <div class="h-200px">
+          <canvas id="cumulativeRegistrationsTrend"></canvas>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>
