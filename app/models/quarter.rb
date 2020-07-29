@@ -22,7 +22,9 @@ class Quarter
 
   attr_reader :date
   attr_reader :number
+  attr_reader :to_s
   attr_reader :year
+  delegate :beginning_of_quarter, :end_of_quarter, to: :date
 
   def initialize(date:)
     @date = date.freeze
@@ -32,13 +34,17 @@ class Quarter
   end
 
   def next_quarter
-    self.class.new(date: date.advance(months: 3))
+    advance(months: 3)
   end
 
   alias succ next_quarter
 
   def previous_quarter
-    self.class.new(date: date.advance(months: -3))
+    advance(months: -3)
+  end
+
+  def advance(options)
+    self.class.new(date: date.advance(options))
   end
 
   def downto(number)
@@ -53,16 +59,8 @@ class Quarter
     end
   end
 
-  def advance(months:)
-    self.class.new(date: date.advance(months: months))
-  end
-
   def inspect
     "#<Quarter:#{object_id} #{to_s.inspect}>"
-  end
-
-  def to_s
-    @to_s
   end
 
   def to_date

@@ -29,12 +29,26 @@ class Period
     @type = type.intern if type
   end
 
+  # Convert this Period to a quarter period - so:
+  #   a Period month of June 2020 will return a quarter Period of Q2-2020
+  #   a Period quarter just returns itself
+  def to_quarter_period
+    return self if quarter?
+    self.class.quarter(value)
+  end
+
   def quarter?
     type == :quarter
   end
 
   def <=>(other)
+    raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless other.respond_to?(:type)
+    raise ArgumentError, "can only compare Periods of the same type" if type != other.type
     value <=> other.value
+  end
+
+  def inspect
+    "<Period type:#{type} value=#{value}>"
   end
 
   def to_s
@@ -57,13 +71,12 @@ class Period
     end
   end
 
-  def advance(months:)
-    Period.new(type: type, value: value.advance(months: months))
+  # Return a new period advanced a number of months. Note that the period returned will be of the
+  # same type. This is provided to be compatible with the underlying Rails advance method:
+  # https://api.rubyonrails.org/classes/Date.html#method-i-advance
+  def advance(options)
+    Period.new(type: type, value: value.advance(options))
   end
-
-  # def ==(other)
-  #   value == other.value && type == other.type
-  # end
 
   alias eql? ==
 

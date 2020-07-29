@@ -96,39 +96,44 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:uncontrolled_patients_rate][Period.month(june_1_key)]).to eq(50.0)
   end
 
-  it "correctly returns quarterly control data" do
+  it "quarterly control rate looks only at patients registered in the previous quarter" do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first
     facility_2 = create(:facility)
 
-    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
-    uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
-    controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
-    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facility_2, registration_user: user)
-
-    Timecop.freeze(jan_2020) do
-      controlled_in_jan_and_june.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
-      end
-      uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+    outside_the_quarter = create_list(:patient, 3, recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+    outside_the_quarter.each do |patient|
+      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
-    Timecop.freeze(june_1) do
-      controlled_in_jan_and_june.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
-      end
-
-      create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
-
-      uncontrolled_in_june = create_list(:patient, 5, recorded_at: 7.days.ago, registration_facility: facility, registration_user: user)
-      uncontrolled_in_june.map do |patient|
-        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-      end
+    controlled_in_q3 = create_list(:patient, 3, recorded_at: june_1, registration_facility: facility, registration_user: user)
+    controlled_in_q3.each do |patient|
+      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
+
+    # Timecop.freeze(jan_2020) do
+    #   controlled_in_jan_and_june.map do |patient|
+    #     create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+    #     create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+    #   end
+    #   uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
+    #   create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+    # end
+
+    # Timecop.freeze(june_1) do
+    #   controlled_in_jan_and_june.map do |patient|
+    #     create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+    #     create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+    #   end
+
+    #   create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+
+    #   uncontrolled_in_june = create_list(:patient, 5, recorded_at: 7.days.ago, registration_facility: facility, registration_user: user)
+    #   uncontrolled_in_june.map do |patient|
+    #     create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
+    #     create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+    #   end
+    # end
 
     refresh_views
 
@@ -139,6 +144,14 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:registrations].keys.size).to eq(3) # 3 quarters of data
     expect(result[:registrations].keys.first.to_s).to eq("Q1-2020")
     expect(result[:registrations].keys.last.to_s).to eq("Q3-2020")
+
+    pp result
+    q3_2020 = Period.quarter("Q3-2020")
+    # expect(result[:registrations][q3_2020]).to eq(10)
+    expect(result[:controlled_patients][q3_2020]).to eq(3)
+    expect(result[:controlled_patients_rate][q3_2020]).to eq(30.0)
+    expect(result[:uncontrolled_patients][q3_2020]).to eq(5)
+    expect(result[:uncontrolled_patients_rate][q3_2020]).to eq(50.0)
 
     q2_2020 = Period.quarter("Q2-2020")
     expect(result[:registrations][q2_2020]).to eq(10)

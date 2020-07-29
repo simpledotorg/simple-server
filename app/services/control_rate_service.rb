@@ -37,7 +37,9 @@ class ControlRateService
         controlled_patients_rate: {},
         uncontrolled_patients: {},
         uncontrolled_patients_rate: {},
-        registrations: {}
+        registrations: {},
+        # TODO need to seperate out the running total registrations with the registrations just for the period
+        period_registrations: {}
       }
 
       data[:cumulative_registrations] = lookup_registrations(@periods.end)
@@ -63,7 +65,7 @@ class ControlRateService
   # Calculate all registration counts for entire range, or for the single date provided
   def registration_counts
     @registration_counts ||= if single_period
-      count = region.registered_patients.with_hypertension.where("recorded_at <= ?", single_period.value).count
+      count = region.registered_patients.with_hypertension.where("recorded_at <= ?", single_period.to_date).count
       {
         single_period => count
       }
@@ -101,10 +103,12 @@ class ControlRateService
 
   def bp_quarterly_query(period)
     quarter = period.value
+    cohort_quarter = quarter.previous_quarter
     Rails.logger.info " ===> quarter #{period} number #{quarter.number}"
     LatestBloodPressuresPerPatientPerQuarter
       .where(registration_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
+      .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
       .with_hypertension
       .order("patient_id, bp_recorded_at DESC, bp_id")
   end

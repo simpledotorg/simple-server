@@ -17,6 +17,7 @@ RSpec.describe RegionReportService, type: :model do
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
+      LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
   end
@@ -25,7 +26,7 @@ RSpec.describe RegionReportService, type: :model do
     period = Period.month(june_1)
     service = RegionReportService.new(region: facility_group_1, period: period, current_user: user)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
-      expect(service.selected_date).to eq(june_1.end_of_month.to_date)
+      expect(service.period.value).to eq(june_1.to_date)
     end
   end
 
@@ -72,7 +73,7 @@ RSpec.describe RegionReportService, type: :model do
       expect(result[:controlled_patients][Period.month(june_1)]).to eq(june_controlled.size)
     end
 
-    fit "returns counts for last n months for controlled patients and registrations" do
+    it "returns counts for last n months for controlled patients and registrations" do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
 
@@ -114,13 +115,15 @@ RSpec.describe RegionReportService, type: :model do
       expect(result[:controlled_patients].size).to eq(18)
       expect(result[:registrations].size).to eq(18)
 
-      result[:controlled_patients].each do |month, count|
-        expect(count).to eq(expected_controlled_patients[month]),
-          "expected count for #{month} to be #{expected_controlled_patients[month]}, but was #{count}"
+      result[:controlled_patients].each do |period, count|
+        key = period.to_s
+        expect(count).to eq(expected_controlled_patients[key]),
+          "expected count for #{key} to be #{expected_controlled_patients[key]}, but was #{count}"
       end
-      result[:registrations].each do |month, count|
-        expect(count).to eq(expected_registrations[month]),
-          "expected count for #{month} to be #{expected_registrations[month]}, but was #{count}"
+      result[:registrations].each do |period, count|
+        key = period.to_s
+        expect(count).to eq(expected_registrations[key]),
+          "expected count for #{key} to be #{expected_registrations[key]}, but was #{count}"
       end
       expect(result[:cumulative_registrations]).to eq(6)
     end
@@ -154,7 +157,7 @@ RSpec.describe RegionReportService, type: :model do
       expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
     end
 
-    it "can return data for quarters" do
+    fit "can return data for quarters" do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
       facility_2 = create(:facility)
@@ -193,8 +196,9 @@ RSpec.describe RegionReportService, type: :model do
 
       p result[:controlled_patients].keys
       pp result[:controlled_patients]
-      expect(result[:controlled_patients].size).to eq(8)
-      # expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
+      expect(result[:controlled_patients].size).to eq(3)
+
+      expect(result[:controlled_patients][Period.quarter(jan_2020)]).to eq(controlled_in_jan_and_june.size)
       # june_controlled = controlled_in_jan_and_june << controlled_just_for_june
       # expect(result[:controlled_patients][june_1.to_s(:month_year)]).to eq(june_controlled.size)
     end

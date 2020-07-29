@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionsController, type: :controller do
+  let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
   let(:cvho) do
     create(:admin, :supervisor, organization: organization).tap do |user|
@@ -94,7 +95,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
-      expect(data[:controlled_patients]["Dec 2019"]).to eq(1)
+      expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
     it "can retrieve quarterly data" do
@@ -107,9 +108,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("December 1 2019") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.region_slug, selected_date: Time.current, period: "quarter"}
+        get :show, params: {id: @facility.facility_group.region_slug, period: { type: "quarter", value: "Q4 2019" }}
+        data = assigns(:data)
         expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
-        expect(data[:controlled_patients]["Q 2019"]).to eq(1)
+        expect(data[:controlled_patients]["Q4 2019"]).to eq(1)
       end
     end
 

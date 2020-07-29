@@ -42,10 +42,11 @@
         <%= form_for(@period, url: request.params, method: :get) do |f| %>
           <%= f.text_field :type, { id: "dropdown-period-type" } %>
 
-          <% last_n_months(n: 12, end_of_month: true).each do |time| %>
-            <% selected = (time.year == @selected_date.year && time.month == @selected_date.month)
-               period = Period.new(type: :month, value: time)
-            %>
+          <% (0..12).each do |num|
+              selected = false
+              date = Date.current.end_of_month.advance(months: -num)
+              period = Period.new(type: :month, value: date)
+          %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
                     type="submit" data-period-type="month" value="<%= period.value %>">
               <%= period.value.to_s(:month_year) %>

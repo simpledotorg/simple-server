@@ -16,7 +16,6 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = RegionReportService.new(region: @region,
-                                    selected_date: @selected_date,
                                     period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
@@ -30,7 +29,7 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = RegionReportService.new(region: @region,
-                                    selected_date: @selected_date,
+                                    period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
@@ -43,7 +42,7 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = RegionReportService.new(region: @region,
-                                    selected_date: @selected_date,
+                                    period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
