@@ -18,22 +18,22 @@ class Access < ApplicationRecord
 
   class << self
     def organizations(action)
-      scope_for(Organization, action)
+      resources_for(Organization, action)
     end
 
     def facility_groups(action)
-      scope_for(FacilityGroup, action)
+      resources_for(FacilityGroup, action)
         .or(FacilityGroup.where(organization: organizations(action)))
     end
 
     def facilities(action)
-      scope_for(Facility, action)
+      resources_for(Facility, action)
         .or(Facility.where(facility_group: facility_groups(action)))
     end
 
     private
 
-    def modes_for(action)
+    def roles_for(action)
       case action
         when :view
           [:manager, :viewer]
@@ -44,9 +44,9 @@ class Access < ApplicationRecord
       end
     end
 
-    def scope_for(scope, action)
-      return scope.all if super_admin?
-      scope.where(id: where(scope_type: scope.to_s, mode: modes_for(action)).pluck(:scope_id))
+    def resources_for(resource_model, action)
+      return resource_model.all if super_admin.exists?
+      resource_model.where(id: where(resource_type: resource_model.to_s, role: roles_for(action)).pluck(:resource_id))
     end
   end
 end
