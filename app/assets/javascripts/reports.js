@@ -28,6 +28,24 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
+  const noBPMeasureGraphConfig = createGraphConfig([
+    {
+      data: data.controlRate,
+      rgbaLineColor: mediumGreyColor,
+      rgbaBackgroundColor: mediumGreyColor,
+      label: "lost to follow-up",
+    },
+  ], "bar");
+  noBPMeasureGraphConfig.options = createGraphOptions(
+    data.controlRate,
+    data.controlledPatients,
+    true,
+  );
+  const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
+  if (noBPMeasureGraphCanvas) {
+    new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
+  }
+
   const uncontrolledGraphConfig = createGraphConfig([
     {
       data: data.uncontrolledRate,
