@@ -17,6 +17,7 @@ class ControlRateService
     else
       periods
     end
+    @quarterly_report = periods.begin.quarter?
     logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
@@ -42,17 +43,12 @@ class ControlRateService
       }
 
       data[:registrations] = registration_counts
-      previous_period = nil
-      data[:registrations].each do |(period, count)|
-        running_total = previous_period ? data[:cumulative_registrations][previous_period] : 0
-        data[:cumulative_registrations][period] = count + running_total
-        previous_period = period
-      end
+      data[:cumulative_registrations] = sum_cumulative_registrations(registration_counts)
       data[:registrations].each do |(period, count)|
         data[:controlled_patients][period] = controlled_patients(period).count
         registration_count = if quarterly_report?
-          previous_quarter = period.advance(months: -3)
-          data[:registrations][previous_quarter] || 0
+          # get the cohort counts for quarterly reports
+          data[:registrations][period.previous] || 0
         else
           data[:cumulative_registrations][period]
         end
@@ -64,12 +60,10 @@ class ControlRateService
     end
   end
 
-  def lookup_registrations(period)
-    registration_counts[period]
-  end
-
-  def quarterly_report?
-    periods.begin.quarter?
+  def sum_cumulative_registrations(registration_counts)
+    registration_counts.each_with_object(Hash.new(0)) { |(period, count), running_totals|
+      running_totals[period] = count + running_totals[period.previous]
+    }
   end
 
   def registration_counts
@@ -90,7 +84,7 @@ class ControlRateService
     if period.quarter?
       bp_quarterly_query(period).under_control
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_query(period).under_control,
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period).under_control,
         "latest_blood_pressures_per_patient_per_months")
     end
   end
@@ -99,7 +93,7 @@ class ControlRateService
     if period.quarter?
       bp_quarterly_query(period).hypertensive
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_query(period).hypertensive,
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period).hypertensive,
         "latest_blood_pressures_per_patient_per_months")
     end
   end
@@ -116,7 +110,7 @@ class ControlRateService
       .order("patient_id, bp_recorded_at DESC, bp_id")
   end
 
-  def bp_query(period)
+  def bp_monthly_query(period)
     time = period.value
     end_range = time.end_of_month
     mid_range = time.advance(months: -1).end_of_month
@@ -136,6 +130,10 @@ class ControlRateService
   end
 
   private
+
+  def quarterly_report?
+    @quarterly_report
+  end
 
   def cache_key
     "#{self.class}/#{region.model_name}/#{region.id}/#{periods.begin.type}_periods/#{periods_cache_key}"

@@ -62,6 +62,14 @@ class Period
     end
   end
 
+  def previous
+    if quarter?
+      Period.new(type: type, value: value.previous_quarter)
+    else
+      Period.new(type: type, value: value.last_month)
+    end
+  end
+
   # Return a new period advanced by some number of time units. Note that the period returned will be of the
   # same type. This is provided to be compatible with the underlying Rails advance method, see that method for details:
   # https://api.rubyonrails.org/classes/Date.html#method-i-advance
