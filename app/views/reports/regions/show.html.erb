@@ -55,7 +55,7 @@
             Registered HTN patients with no BP measure recorded in the last 3 months
           </p>
           <div>
-            <% if @data[:controlled_patients_rate].values.last %>
+            <!--
               <div class="d-flex align-baseline mb-8px mb-lg-12px">
                 <div class="w-12px h-12px mr-12px br-4px bg-grey-lightest"></div>
                 <div class="d-flex flex-1 align-baseline">
@@ -89,29 +89,27 @@
                   </p>
                 </div>
               </div>
-            <% else %>
-              <h3 class="mb-1 fs-xlarge fw-bold c-grey-medium">
-                No data
-              </h3>
-              <p class="c-grey-medium">
-                No data available
-              </p>
-            <% end %>
+            -->
+            <h3 class="mb-1 fs-xlarge fw-bold c-grey-medium">
+              No data
+            </h3>
+            <p class="c-grey-medium">
+              Data coming soon
+            </p>
           </div>
         </div>
       </div>
       <div>
-        <% if @data[:controlled_patients_rate].values.last %>
+        <!--
           <div class="h-200px">
             <canvas id="noBPMeasureTrend"></canvas>
           </div>
-        <% else %>
-          <div class="d-flex align-center jc-center h-200px bb-1px bl-1px bb-grey-medium bl-grey-medium">
-            <p class="c-grey-medium">
-              No data available
-            </p>
-          </div>
-        <% end %>
+        -->
+        <div class="d-flex align-center jc-center h-200px bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <p class="c-grey-medium">
+            Graphs coming soon
+          </p>
+        </div>
       </div>
     </div>
   </div>
