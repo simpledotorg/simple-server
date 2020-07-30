@@ -67,6 +67,10 @@ class Quarter
     date
   end
 
+  def to_period
+    Period.quarter(self)
+  end
+
   def ==(other)
     to_s == other.to_s
   end

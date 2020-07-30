@@ -50,6 +50,31 @@ class Period
     type == :quarter
   end
 
+  def to_date
+    value.to_date
+  end
+
+  def succ
+    if quarter?
+      Period.new(type: type, value: value.succ)
+    else
+      Period.new(type: type, value: value.next_month)
+    end
+  end
+
+  # Return a new period advanced by some number of time units. Note that the period returned will be of the
+  # same type. This is provided to be compatible with the underlying Rails advance method, see that method for details:
+  # https://api.rubyonrails.org/classes/Date.html#method-i-advance
+  def advance(options)
+    Period.new(type: type, value: value.advance(options))
+  end
+
+  alias eql? ==
+
+  def hash
+    value.hash ^ type.hash
+  end
+
   def <=>(other)
     raise ArgumentError, "you are trying to compare a #{other.class} with a Period" unless other.respond_to?(:type)
     raise ArgumentError, "can only compare Periods of the same type" if type != other.type
@@ -66,30 +91,5 @@ class Period
     else
       value.to_s(:month_year)
     end
-  end
-
-  def to_date
-    value.to_date
-  end
-
-  def succ
-    if quarter?
-      Period.new(type: type, value: value.succ)
-    else
-      Period.new(type: type, value: value.next_month)
-    end
-  end
-
-  # Return a new period advanced a number of months. Note that the period returned will be of the
-  # same type. This is provided to be compatible with the underlying Rails advance method:
-  # https://api.rubyonrails.org/classes/Date.html#method-i-advance
-  def advance(options)
-    Period.new(type: type, value: value.advance(options))
-  end
-
-  alias eql? ==
-
-  def hash
-    value.hash ^ type.hash
   end
 end
