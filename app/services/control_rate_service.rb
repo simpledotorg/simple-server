@@ -42,18 +42,23 @@ class ControlRateService
       }
 
       data[:registrations] = registration_counts
-      data[:registrations].each { |period, count| data[:cumulative_registrations][period] += count }
+      previous_period = nil
+      data[:registrations].each do |(period, count)|
+        running_total = previous_period ? data[:cumulative_registrations][previous_period] : 0
+        data[:cumulative_registrations][period] = count + running_total
+        previous_period = period
+      end
       data[:registrations].each do |(period, count)|
         data[:controlled_patients][period] = controlled_patients(period).count
-        registrations = if quarterly_report?
+        registration_count = if quarterly_report?
           previous_quarter = period.advance(months: -3)
           data[:registrations][previous_quarter] || 0
         else
-          count
+          data[:cumulative_registrations][period]
         end
-        data[:controlled_patients_rate][period] = percentage(controlled_patients(period).count, registrations)
+        data[:controlled_patients_rate][period] = percentage(controlled_patients(period).count, registration_count)
         data[:uncontrolled_patients][period] = uncontrolled_patients(period).count
-        data[:uncontrolled_patients_rate][period] = percentage(uncontrolled_patients(period).count, registrations)
+        data[:uncontrolled_patients_rate][period] = percentage(uncontrolled_patients(period).count, registration_count)
       end
       data
     end
@@ -74,10 +79,10 @@ class ControlRateService
         single_period => count
       }
     else
-      range = periods.begin.value.to_date..periods.end.value.to_date
-      region.registered_patients.with_hypertension.group_by_period(periods.begin.type,
-        :recorded_at, { range: range, format: ->(v) { quarterly_report? ? Period.quarter(v) : Period.month(v) }})
-        .count
+      range = (periods.begin.value.to_date..periods.end.value.to_date)
+      formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
+      result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, { range: range, format: formatter }).count
+      result.drop_while { |period, count| count == 0 }.to_h
     end
   end
 

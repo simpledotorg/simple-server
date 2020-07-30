@@ -1,4 +1,13 @@
 class Period
+  module ToPeriodExtensions
+    def to_period
+      Period.month(self)
+    end
+  end
+
+  Date.include ToPeriodExtensions
+  Time.include ToPeriodExtensions
+
   include Comparable
   include ActiveModel::Model
   validates :type, presence: true, inclusion: {in: [:month, :quarter], message: "must be month or quarter"}

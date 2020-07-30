@@ -22,6 +22,30 @@ RSpec.describe ControlRateService, type: :model do
     end
   end
 
+  it "counts registrations and cumulative registrations" do
+    facility = FactoryBot.create(:facility, facility_group: facility_group_1)
+    april_15_2020 = Time.parse("April 15th 2020")
+    Timecop.freeze(april_15_2020) do
+      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+    end
+    Timecop.freeze("May 1 2020") do
+      create_list(:patient, 3, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      create_list(:patient, 1, recorded_at: Time.current, registration_facility: create(:facility), registration_user: user)
+    end
+
+    refresh_views
+
+    range = (Period.month(june_2018)..Period.month(june_30_2020))
+    service = ControlRateService.new(facility_group_1, periods: range)
+    result = service.call
+    april_period = Date.parse("April 1 2020").to_period
+    may_period = Date.parse("May 1 2020").to_period
+    expect(result[:registrations][april_period]).to eq(2)
+    expect(result[:cumulative_registrations][april_period]).to eq(2)
+    expect(result[:registrations][may_period]).to eq(3)
+    expect(result[:cumulative_registrations][may_period]).to eq(5)
+  end
+
   it "does not include months without registration data" do
     facility = FactoryBot.create(:facility, facility_group: facility_group_1)
     Timecop.freeze("April 15th 2020") do
@@ -40,7 +64,7 @@ RSpec.describe ControlRateService, type: :model do
       service = ControlRateService.new(facility_group_1, periods: range)
       result = service.call
     end
-    # registrations from March, Apr, May, June
+    # registrations from March, Apr, May, June only ...should not include initial months of data w/ 0 results
     expect(result[:controlled_patients].size).to eq(4)
     expect(result[:registrations].size).to eq(4)
   end
@@ -53,7 +77,7 @@ RSpec.describe ControlRateService, type: :model do
     controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
     uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
     controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
-    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facility_2, registration_user: user)
+    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2020, registration_facility: facility_2, registration_user: user)
 
     Timecop.freeze(jan_2020) do
       controlled_in_jan_and_june.map do |patient|
@@ -85,16 +109,18 @@ RSpec.describe ControlRateService, type: :model do
     service = ControlRateService.new(facility_group_1, periods: (Period.month(start_range)..Period.month(july_2020)))
     result = service.call
 
+    expect(result[:cumulative_registrations][Period.month(jan_2020)]).to eq(5)
+    expect(result[:registrations][Period.month(jan_2020)]).to eq(5)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(40.0)
 
     # 3 controlled patients in june and 10 cumulative registered patients
-    june_1_key = june_1.to_s(:month_year)
-    expect(result[:registrations][Period.month(june_1_key)]).to eq(10)
-    expect(result[:controlled_patients][Period.month(june_1_key)]).to eq(3)
-    expect(result[:controlled_patients_rate][Period.month(june_1_key)]).to eq(30.0)
-    expect(result[:uncontrolled_patients][Period.month(june_1_key)]).to eq(5)
-    expect(result[:uncontrolled_patients_rate][Period.month(june_1_key)]).to eq(50.0)
+    expect(result[:cumulative_registrations][Period.month(june_1)]).to eq(10)
+    expect(result[:registrations][Period.month(june_1)]).to eq(0)
+    expect(result[:controlled_patients][Period.month(june_1)]).to eq(3)
+    expect(result[:controlled_patients_rate][Period.month(june_1)]).to eq(30.0)
+    expect(result[:uncontrolled_patients][Period.month(june_1)]).to eq(5)
+    expect(result[:uncontrolled_patients_rate][Period.month(june_1)]).to eq(50.0)
   end
 
   it "quarterly control rate looks only at patients registered in the previous quarter" do

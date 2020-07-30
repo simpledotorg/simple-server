@@ -107,11 +107,10 @@ RSpec.describe RegionReportService, type: :model do
         "Jan 2019" => 2, "Feb 2019" => 2, "Mar 2019" => 2, "Feb 2020" => 2, "Mar 2020" => 2, "Apr 2020" => 4, "May 2020" => 2, "Jun 2020" => 2
       }
       expected_controlled_patients.default = 0
-      expected_registrations = {
+      expected_cumulative_registrations = {
         "Dec 2018" => 0, "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
       }
-      expected_registrations.default = 2
-      pp result
+      expected_cumulative_registrations.default = 2
       expect(result[:controlled_patients].size).to eq(18)
       expect(result[:registrations].size).to eq(18)
 
@@ -120,12 +119,11 @@ RSpec.describe RegionReportService, type: :model do
         expect(count).to eq(expected_controlled_patients[key]),
           "expected count for #{key} to be #{expected_controlled_patients[key]}, but was #{count}"
       end
-      result[:registrations].each do |period, count|
+      result[:cumulative_registrations].each do |period, count|
         key = period.to_s
-        expect(count).to eq(expected_registrations[key]),
-          "expected count for #{key} to be #{expected_registrations[key]}, but was #{count}"
+        expect(count).to eq(expected_cumulative_registrations[key]),
+          "expected count for #{key} to be #{expected_cumulative_registrations[key]}, but was #{count}"
       end
-      expect(result[:cumulative_registrations]).to eq(6)
     end
 
     it "gets top district benchmarks" do
@@ -157,35 +155,30 @@ RSpec.describe RegionReportService, type: :model do
       expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
     end
 
-    fit "can return data for quarters" do
+    it "can return data for quarters" do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
       facility_2 = create(:facility)
 
-      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
-      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: june_1, registration_facility: facility, registration_user: user)
-      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: 8.months.ago, registration_facility: facility_2, registration_user: user)
+      controlled_in_q1 = create_list(:patient, 2, full_name: "controlled", recorded_at: Time.parse("December 1st 2019"), registration_facility: facility, registration_user: user)
+      controlled_in_q2 = create(:patient, full_name: "just for june", recorded_at: Time.parse("March 1st 2020"), registration_facility: facility, registration_user: user)
+      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: Time.parse("December 1st 2019"), registration_facility: facility_2, registration_user: user)
 
       Timecop.freeze(jan_2020) do
-        controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
+        controlled_in_q1.map do |patient|
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.from_now)
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 8.days.from_now)
         end
-        create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+        create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.from_now)
       end
 
       Timecop.freeze(june_1) do
-        controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago)
-        end
+        create(:blood_pressure, :under_control, facility: facility, patient: controlled_in_q2, recorded_at: 4.days.from_now)
 
-        create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago)
-
-        uncontrolled = create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+        uncontrolled = create_list(:patient, 2, recorded_at: 3.days.ago, registration_facility: facility, registration_user: user)
         uncontrolled.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago)
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
+          create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.from_now)
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.from_now)
         end
       end
 
@@ -194,13 +187,10 @@ RSpec.describe RegionReportService, type: :model do
       service = RegionReportService.new(region: facility_group_1, period: Period.quarter(july_2020), current_user: user)
       result = service.call
 
-      p result[:controlled_patients].keys
-      pp result[:controlled_patients]
-      expect(result[:controlled_patients].size).to eq(3)
-
-      expect(result[:controlled_patients][Period.quarter(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-      # june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-      # expect(result[:controlled_patients][june_1.to_s(:month_year)]).to eq(june_controlled.size)
+      expect(result[:registrations][Period.quarter("Q1-2020")]).to eq(1)
+      expect(result[:registrations][Period.quarter("Q2-2020")]).to eq(2)
+      expect(result[:controlled_patients][Period.quarter("Q1-2020")]).to eq(2)
+      expect(result[:controlled_patients][Period.quarter("Q2-2020")]).to eq(1)
     end
   end
 
@@ -243,13 +233,15 @@ RSpec.describe RegionReportService, type: :model do
       service = RegionReportService.new(region: facility, period: Period.month(july_2020), current_user: user)
       result = service.call
 
-      expect(result[:controlled_patients][jan_2020.to_s(:month_year)]).to eq(controlled_in_jan_and_june.size)
-      expect(result[:controlled_patients_rate][jan_2020.to_s(:month_year)]).to eq(100)
-      expect(result[:registrations][jan_2020.to_s(:month_year)]).to eq(2)
+      expect(result[:controlled_patients][jan_2020.to_period]).to eq(controlled_in_jan_and_june.size)
+      expect(result[:controlled_patients_rate][jan_2020.to_period]).to eq(100)
+      expect(result[:registrations][jan_2020.to_period]).to eq(2)
+      expect(result[:cumulative_registrations][jan_2020.to_period]).to eq(2)
       june_controlled = controlled_in_jan_and_june << controlled_just_for_june
-      expect(result[:controlled_patients][june_1.to_s(:month_year)]).to eq(june_controlled.size)
-      expect(result[:controlled_patients_rate][june_1.to_s(:month_year)]).to eq(60.0)
-      expect(result[:registrations][june_1.to_s(:month_year)]).to eq(5)
+      expect(result[:controlled_patients][june_1.to_period]).to eq(june_controlled.size)
+      expect(result[:controlled_patients_rate][june_1.to_period]).to eq(60.0)
+      expect(result[:registrations][june_1.to_period]).to eq(3)
+      expect(result[:cumulative_registrations][june_1.to_period]).to eq(5)
     end
   end
 end
