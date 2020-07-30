@@ -8,6 +8,7 @@ RSpec.describe ControlRateService, type: :model do
   let(:june_2018) { Time.parse("June 1, 2018") }
   let(:june_1) { Time.parse("June 1, 2020") }
   let(:june_30_2020) { Time.parse("June 30, 2020") }
+  let(:july_2020) { Time.parse("July 15, 2020") }
   let(:jan_2019) { Time.parse("January 1st, 2019") }
   let(:jan_2020) { Time.parse("January 1st, 2020") }
   let(:july_2018) { Time.parse("July 1st, 2018") }
@@ -101,8 +102,8 @@ RSpec.describe ControlRateService, type: :model do
     facility = facilities.first
     facility_2 = create(:facility)
 
-    outside_the_quarter = create_list(:patient, 3, recorded_at: jan_2020, registration_facility: facility, registration_user: user)
-    outside_the_quarter.each do |patient|
+    controlled_in_q1 = create_list(:patient, 3, recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+    controlled_in_q1.each do |patient|
       create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
@@ -111,29 +112,15 @@ RSpec.describe ControlRateService, type: :model do
       create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
-    # Timecop.freeze(jan_2020) do
-    #   controlled_in_jan_and_june.map do |patient|
-    #     create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-    #     create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
-    #   end
-    #   uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago) }
-    #   create(:blood_pressure, :under_control, facility: facility, patient: patient_from_other_facility, recorded_at: 2.days.ago)
-    # end
+    controlled_in_q3_other_facility = create_list(:patient, 3, recorded_at: june_1, registration_facility: facility_2, registration_user: user)
+    controlled_in_q3_other_facility.each do |patient|
+      create(:blood_pressure, :under_control, facility: facility_2, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
+    end
 
-    # Timecop.freeze(june_1) do
-    #   controlled_in_jan_and_june.map do |patient|
-    #     create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-    #     create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
-    #   end
-
-    #   create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
-
-    #   uncontrolled_in_june = create_list(:patient, 5, recorded_at: 7.days.ago, registration_facility: facility, registration_user: user)
-    #   uncontrolled_in_june.map do |patient|
-    #     create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
-    #     create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-    #   end
-    # end
+    uncontrolled_in_q3 = create_list(:patient, 7, recorded_at: june_1, registration_facility: facility, registration_user: user)
+    uncontrolled_in_q3.each do |patient|
+      create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
+    end
 
     refresh_views
 
@@ -141,24 +128,16 @@ RSpec.describe ControlRateService, type: :model do
     service = ControlRateService.new(facility_group_1, periods: periods)
     result = service.call
 
-    expect(result[:registrations].keys.size).to eq(3) # 3 quarters of data
-    expect(result[:registrations].keys.first.to_s).to eq("Q1-2020")
-    expect(result[:registrations].keys.last.to_s).to eq("Q3-2020")
+    # expect(result[:registrations].keys.size).to eq(3) # 3 quarters of data
+    # expect(result[:registrations].keys.first.to_s).to eq("Q1-2020")
+    # expect(result[:registrations].keys.last.to_s).to eq("Q3-2020")
 
-    pp result
     q3_2020 = Period.quarter("Q3-2020")
     # expect(result[:registrations][q3_2020]).to eq(10)
     expect(result[:controlled_patients][q3_2020]).to eq(3)
     expect(result[:controlled_patients_rate][q3_2020]).to eq(30.0)
-    expect(result[:uncontrolled_patients][q3_2020]).to eq(5)
-    expect(result[:uncontrolled_patients_rate][q3_2020]).to eq(50.0)
-
-    q2_2020 = Period.quarter("Q2-2020")
-    expect(result[:registrations][q2_2020]).to eq(10)
-    expect(result[:controlled_patients][q2_2020]).to eq(3)
-    expect(result[:controlled_patients_rate][q2_2020]).to eq(30.0)
-    expect(result[:uncontrolled_patients][q2_2020]).to eq(5)
-    expect(result[:uncontrolled_patients_rate][q2_2020]).to eq(50.0)
+    expect(result[:uncontrolled_patients][q3_2020]).to eq(7)
+    expect(result[:uncontrolled_patients_rate][q3_2020]).to eq(70.0)
   end
 
   it "returns control rate for a single facility" do
