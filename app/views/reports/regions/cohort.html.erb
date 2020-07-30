@@ -7,7 +7,7 @@
         <h3>
           Quarterly cohort trend
         </h3>
-        <p class="mb-0 c-grey-dark">
+        <p class="mb-0px c-grey-dark">
           The result for all HTN patients registered in a quarter at their follow-up visit in the following quarter
         </p>
       </div>
@@ -24,7 +24,7 @@
                       <span class="fw-bold">No data</span>
                     <% end %>
                   </h6>
-                  <p class="mb-2 fs-small c-grey-medium">
+                  <p class="mb-2 fs-14px c-grey-medium">
                     <% unless cohort["registered"] == 0 %>
                       Result from last visit in <%= cohort["results_in"] %>
                     <% else %>
@@ -98,7 +98,7 @@
           </p>
         </div>
         <div class="">
-          <p class="mb-0 lh-1 c-green-dark mb-lg-0">
+          <p class="mb-0px lh-1 c-green-dark mb-lg-0">
             Visited and BP &lt;140/90
           </p>
         </div>
@@ -106,3 +106,7 @@
     </div>
   </div>
 </div>
+<div id="data-json" style="display: none;">
+  <%= raw @data.to_json %>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>

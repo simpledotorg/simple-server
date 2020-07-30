@@ -35,7 +35,7 @@
           <div style="height: 300px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
@@ -99,7 +99,7 @@
           <div class="h-200px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt">
             <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
@@ -184,7 +184,7 @@
               </div>
             <% end %>
           </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex ai-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center jc-center w-100pt h-100pt bb-1px bl-1px bb-grey-medium bl-grey-medium">
             <% if @last_registration_value.zero? %>
               <p class="c-grey-medium">
                 No data available
@@ -207,10 +207,10 @@
           <% end %>
         </div>
         <div class="d-flex justify-content-between mt-2">
-          <p class="mb-0">
+          <p class="mb-0px">
             <%= @registrations.keys[0] %>
           </p>
-          <p class="mb-0">
+          <p class="mb-0px">
             <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
             <%= @controlled_patients.keys[total_controlled_patient_periods] %>
           </p>
@@ -239,9 +239,7 @@
       :class => "mw-100pt"
   )%>
 </div>
-
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
