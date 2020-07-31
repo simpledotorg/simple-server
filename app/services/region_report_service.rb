@@ -69,7 +69,7 @@ class RegionReportService
   private
 
   def cohort_cache_key
-    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{period.to_s}/#{CACHE_VERSION}"
+    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{period}/#{CACHE_VERSION}"
   end
 
   def cohort_cache_version

@@ -108,7 +108,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("December 1 2019") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.region_slug, period: { type: "quarter", value: "Q4 2019" }}
+        get :show, params: {id: @facility.facility_group.region_slug, period: {type: "quarter", value: "Q4 2019"}}
         data = assigns(:data)
         expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
         expect(data[:controlled_patients]["Q4 2019"]).to eq(1)

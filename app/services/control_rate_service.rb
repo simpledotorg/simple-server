@@ -75,7 +75,7 @@ class ControlRateService
     else
       range = (periods.begin.value.to_date..periods.end.value.to_date)
       formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-      result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, { range: range, format: formatter }).count
+      result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {range: range, format: formatter}).count
       result.drop_while { |period, count| count == 0 }.to_h
     end
   end
