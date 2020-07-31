@@ -19,10 +19,10 @@ class Reports::RegionsController < AdminController
                                     period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
+    @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
-    @last_registration_value = @data[:registrations].values&.last || 0
+    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
   def details
@@ -32,7 +32,7 @@ class Reports::RegionsController < AdminController
                                     period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
+    @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
@@ -45,7 +45,7 @@ class Reports::RegionsController < AdminController
                                     period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
+    @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
@@ -55,7 +55,8 @@ class Reports::RegionsController < AdminController
 
   def set_selected_date
     period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month}
-    @period = Period.new(period_params)
+    # TODO this will all go away, no need for building Period from the params
+    @period = Period.new(type: period_params[:type], value: period_params[:value].to_date)
     @selected_date = @period.value
   end
 
