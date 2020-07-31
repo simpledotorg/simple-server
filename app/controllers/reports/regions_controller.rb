@@ -16,13 +16,13 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = RegionReportService.new(region: @region,
-                                    selected_date: @selected_date,
+                                    period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
+    @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
-    @last_registration_value = @data[:registrations].values&.last || 0
+    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @registrations.values[-2]
   end
 
@@ -30,10 +30,10 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = RegionReportService.new(region: @region,
-                                    selected_date: @selected_date,
+                                    period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
+    @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
@@ -43,10 +43,10 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = RegionReportService.new(region: @region,
-                                    selected_date: @selected_date,
+                                    period: @period,
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:registrations]
+    @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
@@ -55,11 +55,14 @@ class Reports::RegionsController < AdminController
   private
 
   def set_selected_date
-    @selected_date = if facility_params[:selected_date]
-      Time.parse(facility_params[:selected_date])
+    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month}
+    # TODO this will all go away, no need for building Period from the params
+    @period = if period_params[:type] == "quarter"
+      Period.new(type: period_params[:type], value: Quarter.parse(period_params[:value]))
     else
-      Date.current.advance(months: -1)
+      Period.new(type: period_params[:type], value: period_params[:value].to_date)
     end
+    @selected_date = @period.value
   end
 
   def set_force_cache
@@ -76,7 +79,7 @@ class Reports::RegionsController < AdminController
   end
 
   def facility_params
-    params.permit(:selected_date, :id, :force_cache, :report_scope)
+    params.permit(:selected_date, :id, :force_cache, {period: [:type, :value]}, :report_scope)
   end
 
   def force_cache?
