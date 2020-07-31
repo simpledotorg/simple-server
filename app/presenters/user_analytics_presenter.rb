@@ -11,24 +11,35 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   TROPHY_MILESTONE_INCR = 10_000
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
-  def daily_stats_by_date(stat, day_date)
-    zero_if_unavailable statistics.dig(:daily, :grouped_by_date, stat, day_date)
+  def daily_stats_by_date(*stats)
+    zero_if_unavailable statistics.dig(:daily, :grouped_by_date, *stats)
   end
 
-  def monthly_htn_stats_by_date(stat, month_date)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :hypertension, stat, month_date)
+  def monthly_htn_stats_by_date(*stats)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :hypertension, *stats)
   end
 
-  def monthly_dm_stats_by_date(stat, month_date)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :diabetes, stat, month_date)
+  def monthly_dm_stats_by_date(*stats)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :diabetes, *stats)
   end
 
-  def monthly_htn_or_dm_stats_by_date(stat, month_date)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, stat, month_date)
+  def monthly_htn_or_dm_stats_by_date(*stats)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, *stats)
   end
 
   def monthly_htn_control_rate(month_date, precision: 1)
     monthly_htn_stats_by_date(:control_rates, month_date.to_s(:month_year)).truncate(precision)
+  end
+
+  def monthly_htn_control_last_period
+    htn_control_monthly_period_list.last.to_s(:month_year)
+  end
+
+  def monthly_htn_control_last_period_patient_counts
+    controlled_patients = monthly_htn_stats_by_date(:controlled_visits, :controlled_patients, htn_control_monthly_period_list.last.to_s(:month_year))
+    registrations = monthly_htn_stats_by_date(:controlled_visits, :registrations, htn_control_monthly_period_list.last.to_s(:month_year))
+
+    "#{h.number_with_delimiter(controlled_patients)} of #{h.number_with_delimiter(registrations)}"
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
@@ -84,7 +95,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def htn_control_monthly_period_list
-    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO).reverse[1..12]
+    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO)[1..12].reverse
   end
 
   def display_percentage(numerator, denominator)
@@ -261,10 +272,12 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
     control_rate_end = Date.current.advance(months: -1).to_date
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO).to_date
-    control_rates = ControlRateService.new(
+    result = ControlRateService.new(
       current_facility,
       range: control_rate_start..control_rate_end
-    ).call[:controlled_patients_rate]
+    ).call
+
+    control_rates = result[:controlled_patients_rate]
 
     registrations =
       current_facility
@@ -284,7 +297,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       grouped_by_date: {
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
-          controlled_visits: controlled_visits,
+          controlled_visits: result,
           control_rates: control_rates,
           registrations: sum_by_date(registrations)
         }

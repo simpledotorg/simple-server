@@ -19,6 +19,7 @@ class Reports::RegionsController < AdminController
     else
       Date.current.advance(months: -1)
     end
+
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
