@@ -15,9 +15,13 @@ class Quarter
     raise ArgumentError, "String to parse as Quarter must match QX-YYYY format" unless match
     number = Integer(match[1])
     year = Integer(match[2])
-    quarter_month = ((number - 1) * 3) + 1
+    quarter_month = month_to_quarter(number)
     date = Date.new(year, quarter_month).beginning_of_month
     new(date: date)
+  end
+
+  def self.month_to_quarter(month_number)
+    ((month_number - 1) * 3) + 1
   end
 
   attr_reader :date
