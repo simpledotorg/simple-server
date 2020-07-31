@@ -41,6 +41,13 @@
             <% end %>
           </div>
         </div>
+        <% if @data[:controlled_patients_rate].values.last %>
+          <div class="mt-16px pt-16px bt-1px bt-grey-light">
+            <p class="m-0px ta-center c-grey-dark">
+              Top <%= @region.is_a?(FacilityGroup) ? "district" : "facility" %>: PENDING (PENDING%)
+            </p>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -111,6 +118,11 @@
           </p>
         </div>
       </div>
+      <div class="mt-16px pt-16px bt-1px bt-grey-light">
+        <p class="m-0px ta-center c-grey-dark">
+          Top <%= @region.is_a?(FacilityGroup) ? "district" : "facility" %>: PENDING (PENDING%)
+        </p>
+      </div>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pr-lg-2">
@@ -158,6 +170,11 @@
               </p>
             <% end %>
           </div>
+        </div>
+        <div class="mt-16px pt-16px bt-1px bt-grey-light">
+          <p class="m-0px ta-center c-grey-dark">
+            Top <%= @region.is_a?(FacilityGroup) ? "district" : "facility" %>: PENDING (PENDING%)
+          </p>
         </div>
       </div>
     </div>
@@ -265,6 +282,11 @@
           <p class="mb-0px">
             <% total_controlled_patient_periods = @controlled_patients.length - 1 %>
             <%= @controlled_patients.keys[total_controlled_patient_periods] %>
+          </p>
+        </div>
+        <div class="mt-16px pt-16px bt-1px bt-grey-light">
+          <p class="m-0px ta-center c-grey-dark">
+            Top <%= @region.is_a?(FacilityGroup) ? "district" : "facility" %>: PENDING (PENDING%)
           </p>
         </div>
       </div>

@@ -26,6 +26,7 @@
 // Spacing
 .m-0px { margin-bottom: 0px; }
 .mt-0px { margin-top: 0; }
+.mt-16px { margin-top: 16px; }
 .mr-12px { margin-right: 12px; }
 .mr-24px { margin-right: 24px; }
 .mb-0px { margin-bottom: 0; }
@@ -34,6 +35,7 @@
 .mb-24px { margin-bottom: 24px; }
 .ml-8px { margin-left: 8px; }
 .p-0 { padding: 0; }
+.pt-16px { padding-top: 16px; }
 .pb-8px { padding-bottom: 8px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 // Width
@@ -52,6 +54,7 @@
 .fs-xlarge { font-size: 24px; }
 .fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
+.ta-center { text-align: center; }
 .lh-1 { line-height: 1; }
 .ls-145 { letter-spacing: 1.45; }
 .c-grey-dark { color: $grey-dark; }
