@@ -36,7 +36,7 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <%= @selected_date.to_s(:month_year) %> report
+        <%= @selected_date.to_s %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <%= form_for(@period, url: request.params, method: :get) do |f| %>
