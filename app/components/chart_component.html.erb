@@ -1,0 +1,42 @@
+<div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+  <div>
+    <div class="mb-2">
+      <h3 class="c-black">
+        <%= header %>
+      </h3>
+      <p class="c-grey-dark">
+        <%= summary %>
+      </p>
+    </div>
+    <div>
+      <p class="mb-1 fs-xlarge fw-bold <% if most_recent_value %><%= percentage_class %><% else %>c-grey-medium<% end %>">
+        <% if most_recent_value %>
+          <%= number_to_percentage(most_recent_value, precision: 0) %>
+        <% else %>
+          No data
+        <% end %>
+      </p>
+      <p class="<% if most_recent_value %>c-black<% else %>c-grey-medium<% end %>">
+        <% if most_recent_value %>
+          <%= description %>
+        <% else %>
+          No control rate data available
+        <% end %>
+      </p>
+    </div>
+  </div>
+  <div>
+    <div class="p-relative">
+      <div class="h-200px">
+        <canvas id="<%= canvas_id %>"></canvas>
+      </div>
+      <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+        <% unless most_recent_value %>
+          <p class="c-grey-medium">
+            No data available
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
