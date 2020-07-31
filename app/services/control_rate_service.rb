@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
   PERCENTAGE_PRECISION = 1
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
@@ -17,7 +17,7 @@ class ControlRateService
     else
       periods
     end
-    @quarterly_report = periods.begin.quarter?
+    @quarterly_report = @periods.begin.quarter?
     logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
