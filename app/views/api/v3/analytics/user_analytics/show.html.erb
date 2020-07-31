@@ -10,7 +10,7 @@
 
   <%= inline_stylesheet('common_webview.css') %>
   <%= inline_stylesheet('user_analytics.css') %>
-    
+
      <script type="text/javascript">// Hides and shows each page of Progress
 
         function open_window(id) {
@@ -30,7 +30,7 @@
 <body id="progress">
 <div id="progress-start" class="progress-body">
   <div class="progress-contents">
-      
+
   <div class="updated-date">
     Updated: <span><%= @user_analytics.last_updated_at %></span>
   </div>
@@ -131,71 +131,31 @@
     <p class="desc">
       Hypertension patients with BP &lt;140/90 at their most recent visit in the last 3 months
     </p>
-    
+
     <p class="desc control-desc">
         <strong>June-2020</strong>
         <br>1,210 of 1,613 patients
         <br><strong class="green">75%</strong>
     </p>
-    
+
     <table class="bar-chart">
         <tbody>
             <tr>
-                <td class="bar-row">
-                    <div class="bar-value"><span>26%</span></div>
-                    <div style="height: 52px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>32%</span></div>
-                    <div style="height: 64px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>31%</span></div>
-                    <div style="height: 62px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>27%</span></div>
-                    <div style="height: 54px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>30%</span></div>
-                    <div style="height: 60px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>25%</span></div>
-                    <div style="height: 50px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>26%</span></div>
-                    <div style="height: 52px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>30%</span></div>
-                    <div style="height: 60px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>35%</span></div>
-                    <div style="height: 70px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>50%</span></div>
-                    <div style="height: 100px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>64%</span></div>
-                    <div style="height: 128px;" class="bar"><span></span></div>
-                </td>
-                <td class="bar-row">
-                    <div class="bar-value"><span>75%</span></div>
-                    <div style="height: 150px;" class="bar current"><span></span></div>
-                </td>
+                <% @user_analytics.htn_control_monthly_period_list.each do |month_date| %>
+                  <% control_rate = @user_analytics.monthly_htn_control_rate(month_date, precision: 0) %>
+                  <td class="bar-row">
+                    <div class="bar-value"><span><%= control_rate %>%</span></div>
+                    <div style="height: <%= control_rate * 2 %>px;" class="bar"><span></span></div>
+                  </td>
+                <% end %>
             </tr>
         </tbody>
     </table>
     <p class="center">Last 12 months</p>
   </div>
+
   <div class="card">
-     <a href="#"  onclick="open_window('progress-cohort'); return false" class="nav-next">Cohort report</a>  
+     <a href="#"  onclick="open_window('progress-cohort'); return false" class="nav-next">Cohort report</a>
   </div>
 
   <!-- all trophies view -->
@@ -240,7 +200,7 @@
   </footer>
   </div>
 </div>
-    
+
 <div id="progress-cohort" class="progress-body" style="display: none; padding-bottom: 1200px;">
     <div class="progress-contents">
         <a href="#" onclick="close_window('progress-cohort'); return false" class="help-back">
@@ -264,7 +224,7 @@
                 <div class="cohort-nobp" style="width: 60%;">60%</div>
             </div>
         </div>
-        
+
         <div class="card cohort">
             <h6>56 patients registered in Q4-2019</h6>
             <p>Result from last visit in Q1-2020</p>
@@ -274,7 +234,7 @@
                 <div class="cohort-nobp" style="width: 60%;">60%</div>
             </div>
         </div>
-        
+
         <div class="card cohort">
             <h6>93 patients registered in Q3-2019</h6>
             <p>Result from last visit in Q4-2019</p>
@@ -284,7 +244,7 @@
                 <div class="cohort-nobp" style="width: 60%;">60%</div>
             </div>
         </div>
-        
+
         <div class="card cohort">
             <h6>0 patients registered in Q2-2019</h6>
             <p>Result from last visit in Q3-2019</p>
@@ -292,14 +252,14 @@
                 <div class="cohort-none" style="width: 100%;">0</div>
             </div>
         </div>
-        
+
         <h3 style="padding-top: 40px; padding-left: 8px;">Notes</h3>
         <ul class="footnotes">
             <li><strong>Numerator:</strong> Latest follow-up visit at any facility in quarter after registration.</li>
             <li><strong>Denominator:</strong> All HTN patients assigned to at CHC Buccho, registered in the quarter.</li>
             <li>If a patient has multiple visits, their last BP is used to calculate BP control.</li>
         </ul>
-        
+
     </div>
 </div>
 </body>

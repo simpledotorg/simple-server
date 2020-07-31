@@ -6,6 +6,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
+  HTN_CONTROL_MONTHS_AGO = 24
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
@@ -26,9 +27,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, stat, month_date)
   end
 
-  def monthly_htn_control_rate(month_date)
-    display_percentage(monthly_htn_stats_by_date(:controlled_visits, month_date),
-      monthly_htn_stats_by_date(:follow_ups, month_date))
+  def monthly_htn_control_rate(month_date, precision: 1)
+    monthly_htn_stats_by_date(:control_rates, month_date.to_s(:month_year)).truncate(precision)
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
@@ -81,6 +81,10 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def monthly_period_list
     period_list_as_dates(:month, MONTHS_AGO)
+  end
+
+  def htn_control_monthly_period_list
+    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO).reverse[1..12]
   end
 
   def display_percentage(numerator, denominator)
@@ -254,6 +258,14 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .merge(BloodPressure.under_control)
         .count
 
+
+    control_rate_end = Date.current.advance(months: -1).to_date
+    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO).to_date
+    control_rates = ControlRateService.new(
+      current_facility,
+      range: control_rate_start..control_rate_end
+    ).call[:controlled_patients_rate]
+
     registrations =
       current_facility
         .registered_hypertension_patients
@@ -273,6 +285,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
           controlled_visits: controlled_visits,
+          control_rates: control_rates,
           registrations: sum_by_date(registrations)
         }
       }
