@@ -4,7 +4,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             HTN controlled
           </h3>
           <p class="c-grey-dark">
@@ -48,7 +48,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             No BP measure
           </h3>
           <p class="c-grey-dark">
@@ -117,7 +117,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             HTN not under control
           </h3>
           <p class="c-grey-dark">
@@ -166,7 +166,7 @@
     <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
         <div class="mb-2">
-          <h3>
+          <h3 class="c-black">
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
@@ -283,13 +283,45 @@
       <% end %>
     <% end %>
   </div>
+  <div class="d-lg-flex flex-lg-wrap">
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            HTN controlled
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pl-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            No BP measure
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            HTN not under control
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pl-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            Cumulative registrations
+          </h3>
+        </div>
+      </div>
+    </div>
+  </div>
 <% end %>
-<div class="card o-hidden mt-0 p-0">
-  <%= image_tag(
-      @region.is_a?(FacilityGroup) ? "screenshot.png" : "facility-screenshot.png",
-      :class => "mw-100pt"
-  )%>
-</div>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
