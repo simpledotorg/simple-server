@@ -136,15 +136,16 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{periods.begin.type}_periods/#{periods_cache_key}"
+    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
   end
 
   def periods_cache_key
-    if periods.is_a?(Range)
+    value = if periods.is_a?(Range)
       "#{periods.begin.value}/#{periods.end.value}"
     else
       period.value
     end
+    "#{periods.begin.type}_periods/#{value}"
   end
 
   def cache_version
