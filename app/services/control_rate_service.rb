@@ -67,7 +67,7 @@ class ControlRateService
   end
 
   def registration_counts
-    @registration_counts ||= if single_period
+    @registration_counts ||= if single_period?
       count = region.registered_patients.with_hypertension.where("recorded_at <= ?", single_period.to_date).count
       {
         single_period => count
