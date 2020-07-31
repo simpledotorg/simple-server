@@ -21,8 +21,8 @@ class RegionReportService
   attr_reader :current_user
   attr_reader :data
   attr_reader :facilities
-  attr_reader :period
   attr_reader :organizations
+  attr_reader :period
   attr_reader :region
 
   def call
