@@ -2,7 +2,7 @@
   <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
 </div>
 <div class="dashboard">
-  <nav class="breadcrumb mb-0">
+  <nav class="breadcrumb mb-0px">
     <%= link_to 'All reports', dashboard_districts_path %>
     <% if @region.respond_to?(:facility_group) %>
       <i class="fas fa-chevron-right"></i>
@@ -16,13 +16,13 @@
   </p>
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
     <div class="d-flex order-2 order-lg-1">
-      <p class="mr-24px mb-0 pb-8px fs-large fw-bold <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Overview", request.params.merge(action: "show") %>
       </p>
-      <p class="mr-24px mb-0 pb-8px fs-large fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort") %>
       </p>
-      <p class="mr-24px mb-0 pb-8px fs-large fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Details trend", request.params.merge(action: "details") %>
       </p>
     </div>
