@@ -134,7 +134,7 @@
 
     <p class="desc control-desc">
         <strong>June-2020</strong>
-        <br>1,210 of 1,613 patients
+        <br>1,210 of 1,613 patients <a href="#"  onclick="open_window('progress-control'); return false">info</a>
         <br><strong class="green">75%</strong>
     </p>
 
@@ -201,6 +201,21 @@
   </div>
 </div>
 
+<div id="progress-control" class="progress-body" style="display: none; padding-bottom: 1200px;">
+    <div class="progress-contents">
+        <a href="#" onclick="close_window('progress-cohort'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
+        </a>
+
+        <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension controlled</h2>
+        <p>How is "Patients with controlled hypertension" calculated?</p>
+        <p>Numerator: Hypertension patients with BP &lt;140/90 at their most recent visit in the last 3 months</p>
+        
+        <p>Denominator: All hypertension patients registered &gt; 3 months prior.</p>
+        
+    </div>
+</div>
+    
 <div id="progress-cohort" class="progress-body" style="display: none; padding-bottom: 1200px;">
     <div class="progress-contents">
         <a href="#" onclick="close_window('progress-cohort'); return false" class="help-back">
