@@ -70,7 +70,7 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    region_class, slug = facility_params[:id].split("-")
+    region_class, slug = facility_params[:id].split("-", 2)
     unless region_class.in?(["facility_group", "facility"])
       raise ActiveRecord::RecordNotFound
     end
