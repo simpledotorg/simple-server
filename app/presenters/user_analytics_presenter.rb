@@ -3,6 +3,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   include DayHelper
   include PeriodHelper
   include DashboardHelper
+  include ActionView::Helpers::NumberHelper
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
@@ -39,7 +40,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     controlled_patients = monthly_htn_stats_by_date(:controlled_visits, :controlled_patients, htn_control_monthly_period_list.last.to_s(:month_year))
     registrations = monthly_htn_stats_by_date(:controlled_visits, :registrations, htn_control_monthly_period_list.last.to_s(:month_year))
 
-    "#{controlled_patients} of #{registrations}"
+    "#{number_with_delimiter(controlled_patients)} of #{number_with_delimiter(registrations)}"
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
