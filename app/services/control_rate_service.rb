@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
   PERCENTAGE_PRECISION = 1
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
@@ -158,6 +158,6 @@ class ControlRateService
 
   def percentage(numerator, denominator)
     return 0 if denominator == 0
-    ((numerator.to_f / denominator) * 100).truncate(PERCENTAGE_PRECISION)
+    ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
   end
 end

@@ -34,10 +34,10 @@ function initializeCharts() {
 
   const noBPMeasureGraphConfig = createGraphConfig([
     {
-      data: data.controlRate,
-      rgbaBackgroundColor: mediumGreyColor,
-      hoverBackgroundColor: mediumGreyColor,
-      label: "lost to follow-up",
+      data: data.visitButNoBPMeasureRate,
+      rgbaBackgroundColor: darkGreyColor,
+      hoverBackgroundColor: darkGreyColor,
+      label: "visited but no BP measure",
     },
   ], "bar");
   noBPMeasureGraphConfig.options = createGraphOptions(
@@ -46,7 +46,7 @@ function initializeCharts() {
     100,
     formatValueAsPercent,
     formatRateTooltipText,
-    [data.uncontrolledPatients],
+    [data.visitButNoBPMeasure],
   );
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
@@ -140,6 +140,8 @@ function getReportingData() {
     registrations: registrations,
     uncontrolledRate: uncontrolledRate,
     uncontrolledPatients: uncontrolledPatients,
+    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
+    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
   };
 
   return data;

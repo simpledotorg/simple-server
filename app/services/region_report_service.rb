@@ -8,7 +8,9 @@ class RegionReportService
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @region = region
     @period = period
-    @facilities = region.facilities
+    @facilities = region.facilities.to_a
+    start_period = period.advance(months: -MAX_MONTHS_OF_DATA)
+    @range = start_period..@period
     @data = {
       controlled_patients: {},
       registrations: {},
@@ -23,20 +25,56 @@ class RegionReportService
   attr_reader :facilities
   attr_reader :organizations
   attr_reader :period
+  attr_reader :range
   attr_reader :region
 
   def call
     compile_control_and_registration_data
     data.merge! compile_cohort_trend_data
+    data[:visited_without_bp_taken] = count_visited_without_bp_taken
+    data[:visited_without_bp_taken_rate] = percentage_visited_without_bp_taken
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data
   end
 
+  # visited in last 3 months but had no BP taken
+  def count_visited_without_bp_taken
+    range.each_with_object({}) do |period, hsh|
+      visits_without_bp = Appointment.from(patients_visited_without_bp_taken(period), "appointments").count("appointments.patient_id")
+      hsh[period] = visits_without_bp
+    end
+  end
+
+  def percentage_visited_without_bp_taken
+    data[:visited_without_bp_taken].each_with_object({}) do |(period, count), hsh|
+      hsh[period] = if count&.zero?
+        0
+      else
+        percentage(count, data[:cumulative_registrations].fetch(period))
+      end
+    end
+  end
+
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0
+    ((numerator.to_f / denominator) * 100).round(0)
+  end
+
+  def patients_visited_without_bp_taken(period)
+    end_date = period.to_date
+    begin_date = period.advance(months: -3).to_date
+    Appointment.select("DISTINCT ON (appointments.patient_id) appointments.*")
+      .joins(:patient)
+      .joins("LEFT OUTER JOIN blood_pressures ON blood_pressures.patient_id = appointments.patient_id")
+      .order("appointments.patient_id")
+      .where("blood_pressures.id IS NULL")
+      .where("appointments.device_created_at :: DATE BETWEEN :begin AND :end", begin: begin_date, end: end_date)
+      .where("patients.registration_facility_id in (?)", facilities)
+  end
+
   def compile_control_and_registration_data
-    start_period = period.advance(months: -MAX_MONTHS_OF_DATA)
-    periods = start_period..@period
-    result = ControlRateService.new(region, periods: periods).call
+    result = ControlRateService.new(region, periods: range).call
     @data.merge! result
   end
 

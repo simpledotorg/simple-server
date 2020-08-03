@@ -55,7 +55,7 @@ class Reports::RegionsController < AdminController
   private
 
   def set_selected_date
-    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month}
+    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month.beginning_of_month}
     # TODO this will all go away, no need for building Period from the params
     @period = if period_params[:type] == "quarter"
       Period.new(type: period_params[:type], value: Quarter.parse(period_params[:value]))
