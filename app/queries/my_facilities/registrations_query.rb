@@ -26,7 +26,7 @@ class MyFacilities::RegistrationsQuery
 
   def total_registrations_per_facility
     @total_registrations_per_facility ||=
-        total_registrations.group(:registration_facility_id).count
+      total_registrations.group(:registration_facility_id).count
   end
 
   def total_registrations
