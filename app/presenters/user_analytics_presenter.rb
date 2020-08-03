@@ -39,7 +39,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     controlled_patients = monthly_htn_stats_by_date(:controlled_visits, :controlled_patients, htn_control_monthly_period_list.last.to_s(:month_year))
     registrations = monthly_htn_stats_by_date(:controlled_visits, :registrations, htn_control_monthly_period_list.last.to_s(:month_year))
 
-    "#{h.number_with_delimiter(controlled_patients)} of #{h.number_with_delimiter(registrations)}"
+    "#{controlled_patients} of #{registrations}"
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
