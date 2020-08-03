@@ -43,6 +43,10 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     "#{number_with_delimiter(controlled_patients)} of #{number_with_delimiter(registrations)}"
   end
 
+  def monthly_htn_control_last_control_rate
+    monthly_htn_control_rate(htn_control_monthly_period_list.last)
+  end
+
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
     zero_if_unavailable statistics.dig(:monthly, :grouped_by_date_and_gender, :diabetes, stat, [month_date, gender])
   end
