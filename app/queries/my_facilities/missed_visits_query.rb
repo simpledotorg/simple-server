@@ -33,18 +33,6 @@ class MyFacilities::MissedVisitsQuery
         .group("facilities.id::uuid")
   end
 
-  def bp_query_by_cohort
-    @bp_query_by_cohort ||=
-      @periods.map { |year, period|
-        bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                               cohort_period: {cohort_period: @period,
-                                                                               registration_year: year,
-                                                                               registration_month: period,
-                                                                               registration_quarter: period})
-        [[year, period], bp_query]
-      }.to_h
-  end
-
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
       bp_query_by_cohort.map { |(year, period), bp_query|
@@ -67,12 +55,24 @@ class MyFacilities::MissedVisitsQuery
       }.to_h
   end
 
-  def total_patients
+  def total_patients_per_facility
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities)
     @total_patients ||= bp_query.overall_patients_per_facility
   end
 
   private
+
+  def bp_query_by_cohort
+    @bp_query_by_cohort ||=
+      @periods.map { |year, period|
+        bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                               cohort_period: {cohort_period: @period,
+                                                                               registration_year: year,
+                                                                               registration_month: period,
+                                                                               registration_quarter: period})
+        [[year, period], bp_query]
+      }.to_h
+  end
 
   def period_list(period, last_n)
     case period

@@ -109,7 +109,7 @@
           <% end %>
 
           <td class="type-number"><%= @calls_made.values.sum %></td>
-          <td class="type-number"><%= @total_patients.values.sum %></td>
+          <td class="type-number"><%= @total_patients_per_facility.values.sum %></td>
         </tr>
 
         <% @facilities.each do |facility| %>
@@ -128,7 +128,7 @@
               </td>
             <% end %>
             <td class="type-number"><%= @calls_made.dig(facility.id) || 0 %></td>
-            <td class="type-number"><%= @total_patients[facility.id].to_i %></td>
+            <td class="type-number"><%= @total_patients_per_facility[facility.id].to_i %></td>
           </tr>
         <% end %>
         </tbody>
