@@ -28,8 +28,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, *stats)
   end
 
-  def monthly_htn_control_rate(month_date, precision: 1)
-    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, month_date.to_s(:month_year)).truncate(precision)
+  def monthly_htn_control_rate(month_date)
+    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, month_date.to_s(:month_year)).truncate(0)
   end
 
   def monthly_htn_control_last_period

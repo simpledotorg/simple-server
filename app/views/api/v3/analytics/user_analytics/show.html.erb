@@ -142,7 +142,7 @@
         <tbody>
             <tr>
                 <% @user_analytics.htn_control_monthly_period_list.each do |month_date| %>
-                  <% control_rate = @user_analytics.monthly_htn_control_rate(month_date, precision: 0) %>
+                  <% control_rate = @user_analytics.monthly_htn_control_rate(month_date) %>
                   <td class="bar-row">
                     <div class="bar-value"><span><%= control_rate %>%</span></div>
                     <div style="height: <%= control_rate * 2 %>px;" class="bar"><span></span></div>
