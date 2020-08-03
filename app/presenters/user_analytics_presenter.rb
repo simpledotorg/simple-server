@@ -83,6 +83,22 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
   end
 
+  def cohorts
+    statistics.dig(:cohorts, :quarterly_registrations)
+  end
+
+  def cohort_controlled(cohort)
+    display_percentage(cohort[:controlled], cohort[:registered])
+  end
+
+  def cohort_uncontrolled(cohort)
+    display_percentage(cohort[:uncontrolled], cohort[:registered])
+  end
+
+  def cohort_no_bp(cohort)
+    display_percentage(cohort[:no_bp], cohort[:registered])
+  end
+
   def locked_trophy
     statistics.dig(:trophies, :locked_trophy_value)
   end
@@ -129,6 +145,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
           daily: daily_stats,
           monthly: monthly_stats,
           all_time: all_time_stats,
+          cohorts: cohort_stats,
           trophies: trophy_stats,
           metadata: {
             is_diabetes_enabled: diabetes_enabled?,
@@ -202,6 +219,10 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     [all_time_htn_or_dm_stats,
       all_time_htn_stats,
       all_time_dm_stats].inject(:deep_merge)
+  end
+
+  def cohort_stats
+    CohortService.new(region: current_facility).call
   end
 
   #

@@ -107,11 +107,7 @@
 
   <!-- monthly follow-up patients view -->
   <div class="card">
-    <% if @user_analytics.diabetes_enabled? %>
-      <h3>Follow-up patients</h3>
-    <% else %>
-      <h3>Follow-up hypertension patients</h3>
-    <% end %>
+    <h3>Follow-up patients</h3>
 
     <% follow_ups_table_name = 'follow_ups' %>
 
@@ -227,46 +223,26 @@
         <div class="key">
             <p class="left"><span class="key-color green"></span> Visited with BP &lt;140/90</p>
             <p class="left"><span class="key-color red"></span> Visited with BP &ge;140/90</p>
-            <p class="left"><span class="key-color grey-dark"></span> Visited but no BP</p>
             <p class="left"><span class="key-color grey"></span> Did not have a BP measure</p>
         </div>
-        <div class="card cohort">
-            <h6>43 patients registered in Q1-2020</h6>
-            <p>Result from last visit in Q2-2020</p>
-            <div class="cohort-bars">
-                <div class="cohort-controlled" style="width: 26%;">26%</div>
-                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
-                <div class="cohort-nobp" style="width: 60%;">60%</div>
-            </div>
-        </div>
 
-        <div class="card cohort">
-            <h6>56 patients registered in Q4-2019</h6>
-            <p>Result from last visit in Q1-2020</p>
-            <div class="cohort-bars">
-                <div class="cohort-controlled" style="width: 26%;">26%</div>
-                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
-                <div class="cohort-nobp" style="width: 60%;">60%</div>
-            </div>
-        </div>
-
-        <div class="card cohort">
-            <h6>93 patients registered in Q3-2019</h6>
-            <p>Result from last visit in Q4-2019</p>
-            <div class="cohort-bars">
-                <div class="cohort-controlled" style="width: 26%;">26%</div>
-                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
-                <div class="cohort-nobp" style="width: 60%;">60%</div>
-            </div>
-        </div>
-
-        <div class="card cohort">
-            <h6>0 patients registered in Q2-2019</h6>
-            <p>Result from last visit in Q3-2019</p>
-            <div class="cohort-bars">
-                <div class="cohort-none" style="width: 100%;">0</div>
-            </div>
-        </div>
+        <% @user_analytics.cohorts.each do |cohort| %>
+          <div class="card cohort">
+              <h6><%= cohort[:registered] %> patients registered in <%= cohort[:patients_registered] %></h6>
+              <p>Result from last visit in <%= cohort[:results_in] %></p>
+              <div class="cohort-bars">
+                  <div class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
+                    <%= @user_analytics.cohort_controlled(cohort) %>
+                  </div>
+                  <div class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
+                    <%= @user_analytics.cohort_uncontrolled(cohort) %>
+                  </div>
+                  <div class="cohort-nobp" style="width: calc(<%= @user_analytics.cohort_no_bp(cohort) %> - 1%);">
+                    <%= @user_analytics.cohort_no_bp(cohort) %>
+                  </div>
+              </div>
+          </div>
+        <% end %>
 
         <h3 style="padding-top: 40px; padding-left: 8px;">Notes</h3>
         <ul class="footnotes">
