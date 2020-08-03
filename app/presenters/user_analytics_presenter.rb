@@ -29,7 +29,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_control_rate(month_date)
-    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, month_date.to_s(:month_year)).truncate(0)
+    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, Period.month(month_date)).truncate(0)
   end
 
   def monthly_htn_control_last_period
@@ -37,8 +37,16 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_control_last_period_patient_counts
-    controlled_patients = monthly_htn_stats_by_date(:controlled_visits, :controlled_patients, htn_control_monthly_period_list.last.to_s(:month_year))
-    registrations = monthly_htn_stats_by_date(:controlled_visits, :registrations, htn_control_monthly_period_list.last.to_s(:month_year))
+    controlled_patients = monthly_htn_stats_by_date(
+      :controlled_visits,
+      :controlled_patients,
+      Period.month(htn_control_monthly_period_list.last)
+    )
+    registrations = monthly_htn_stats_by_date(
+      :controlled_visits,
+      :cumulative_registrations,
+      Period.month(htn_control_monthly_period_list.last)
+    )
 
     "#{number_with_delimiter(controlled_patients)} of #{number_with_delimiter(registrations)}"
   end
@@ -268,9 +276,9 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .group(:gender)
         .count
 
-    control_rate_end = Date.current.advance(months: -1).end_of_month.to_date
-    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO).to_date
-    controlled_visits = ControlRateService.new(current_facility, range: control_rate_start..control_rate_end).call
+    control_rate_end = Period.month(Date.current.advance(months: -1))
+    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
+    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
 
     registrations =
       current_facility
