@@ -47,4 +47,8 @@ $(function () {
   if($('#cumulative-registrations-table').length) {
     new Tablesort(document.getElementById('cumulative-registrations-table'), { descending: true })
   }
+
+  if($('#recent-bps').length) {
+    new Tablesort(document.getElementById('recent-bps'), { descending: true })
+  }
 });

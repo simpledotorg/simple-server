@@ -85,6 +85,66 @@
     <% end %>
   </div>
 </div>
+<% unless @region.is_a?(FacilityGroup) %>
+  <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="mb-2">
+      <h3>
+        Recent BPs
+      </h3>
+    </div>
+    <div class="table-responsive">
+      <table id="recent-bps" class="table-compact">
+        <colgroup>
+          <col>
+          <col class="table-divider">
+          <col class="table-divider">
+          <col class="table-divider">
+          <col class="table-divider">
+        </colgroup>
+        <thead>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+              Date
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left">
+              Time
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left">
+              Recorded BP
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left">
+              Visit type
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left">
+              Recorded by
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% (1..25).step(1) do |i| %>
+            <tr>
+              <td class="ta-left">
+                PENDING
+              </td>
+              <td class="ta-left">
+                PENDING
+              </td>
+              <td class="ta-left <%= i % 2 == 0 ? "c-red" : "c-grey-medium" %>">
+                <i class="fas fa-heart mr-4px"></i> PENDING
+              </td>
+              <td class="ta-left <%= i % 4 == 0 ? "c-green-dark" : "c-black" %>">
+                PENDING
+              </td>
+              <td class="ta-left c-blue">
+                PENDING
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
