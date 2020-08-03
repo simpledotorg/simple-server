@@ -387,6 +387,7 @@ p.control-desc {
         margin: 0 auto;
         position: relative;
         border-radius: 100px;
+        min-height: 20px;
         
         &.current {
             background: #78E0A0;
