@@ -1,5 +1,5 @@
 <%= render "header" %>
-<div class="d-lg-flex flex-lg-wrap mb-48px">
+<div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
@@ -272,7 +272,7 @@
   </div>
 </div>
 <% if @region.is_a?(FacilityGroup) %>
-  <h3 class="mb-8px fs-28px c-black">
+  <h3 class="mt-40px mb-8px fs-28px c-black">
     Facilities in <%= @region.name %>
   </h3>
   <p class="mb-24px fs-16px c-grey-dark">
@@ -477,6 +477,88 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+<% else %>
+  <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="mb-2">
+      <h3 class="c-black">
+        Users
+      </h3>
+    </div>
+    <div class="table-responsive">
+      <table id="users" class="table-compact">
+        <colgroup>
+          <col>
+          <col class="table-divider">
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th></th>
+            <th class="row-label">
+              <strong>Registered</strong>
+            </th>
+            <th class="row-label" colspan="6">
+              <strong>Follow-up patients</strong>
+            </th>
+            <th class="row-label" colspan="6">
+              <strong>New registrations</strong>
+            </th>
+          </tr>
+          <tr class="sorts">
+            <th class="row-label sort-label sort-label-small ta-left">
+              Name
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+              Total
+            </th>
+            <% (1..6).step(1) do |i| %>
+              <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                PENDING
+              </th>
+            <% end %>
+            <% (1..6).step(1) do |i| %>
+              <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                PENDING
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% (1..25).step(1) do |i| %>
+            <tr>
+              <td class="ta-left c-blue">
+                PENDING
+              </td>
+              <td class="ta-left">
+                PENDING
+              </td>
+              <% (1..6).step(1) do |i| %>
+                <td class="ta-left">
+                  PENDING
+                </td>
+              <% end %>
+              <% (1..6).step(1) do |i| %>
+                <td class="ta-left">
+                  PENDING
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
 <% end %>

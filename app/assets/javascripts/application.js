@@ -51,4 +51,8 @@ $(function () {
   if($('#recent-bps').length) {
     new Tablesort(document.getElementById('recent-bps'), { descending: true })
   }
+
+  if($('#users').length) {
+    new Tablesort(document.getElementById('users'), { descending: true })
+  }
 });
