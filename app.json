@@ -138,6 +138,9 @@
     "HELP_SCREEN_YOUTUBE_VIDEO_URL": {
       "value": "https://youtu.be/zthrk6XfpjQ"
     },
+    "HELP_SCREEN_YOUTUBE_TRAINING_URL": {
+      "value": "https://youtu.be/MC_45DoRw2g"
+    },  
     "IHCI_ORGANIZATION_UUID": {
       "value": "89008920-021e-4116-b74c-8edf86180dd6"
     },
