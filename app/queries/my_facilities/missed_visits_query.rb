@@ -56,8 +56,11 @@ class MyFacilities::MissedVisitsQuery
   end
 
   def total_patients_per_facility
-    bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities)
-    @total_patients ||= bp_query.overall_patients_per_facility
+    @total_patients_per_facility ||=
+      facilities
+        .assigned_patients
+        .group(:assigned_facility_id)
+        .count
   end
 
   private

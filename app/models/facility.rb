@@ -36,6 +36,10 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "registration_facility_id"
+  has_many :assigned_patients,
+    -> { with_hypertension },
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
 
