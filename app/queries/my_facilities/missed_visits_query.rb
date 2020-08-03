@@ -6,7 +6,7 @@ class MyFacilities::MissedVisitsQuery
   include QuarterHelper
   include MonthHelper
 
-  attr_reader :periods
+  attr_reader :facilities, :periods
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month.
