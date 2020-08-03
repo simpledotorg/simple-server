@@ -55,7 +55,7 @@ class RegionReportService
         result[:quarterly_registrations] << {
           results_in: format_quarter(results_quarter),
           patients_registered: format_quarter(cohort_quarter),
-          registered: query.cohort_registrations.count,
+          registered: query.cohort_patients.count,
           controlled: query.cohort_controlled_bps.count,
           no_bp: query.cohort_missed_visits_count,
           uncontrolled: query.cohort_uncontrolled_bps.count

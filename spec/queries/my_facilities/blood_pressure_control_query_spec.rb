@@ -124,9 +124,9 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       context "considers only htn diagnosed patients" do
-        describe "#cohort_registrations" do
+        describe "#cohort_patients" do
           specify do
-            expect(query.cohort_registrations).to match_array(patients_with_controlled_bp +
+            expect(query.cohort_patients).to match_array(patients_with_controlled_bp +
                                                                 patients_with_uncontrolled_bp +
                                                                 patients_with_missed_visit)
           end
@@ -283,9 +283,9 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
       end
 
       context "considers only htn diagnosed patients" do
-        describe "#cohort_registrations" do
+        describe "#cohort_patients" do
           specify do
-            expect(query.cohort_registrations).to match_array(patients_with_controlled_bp +
+            expect(query.cohort_patients).to match_array(patients_with_controlled_bp +
                                                                 patients_with_uncontrolled_bp +
                                                                 patients_with_missed_visit)
           end

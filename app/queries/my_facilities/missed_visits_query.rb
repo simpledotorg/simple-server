@@ -47,7 +47,7 @@ class MyFacilities::MissedVisitsQuery
   def missed_visit_totals
     @missed_visit_totals ||=
       bp_query_by_cohort.map { |(year, period), bp_query|
-        cohort_registrations = bp_query.cohort_registrations.count
+        cohort_registrations = bp_query.cohort_patients.count
         cohort_missed_visits_count = bp_query.cohort_missed_visits_count
         [[year, period],
           {patients: cohort_registrations.to_i,
