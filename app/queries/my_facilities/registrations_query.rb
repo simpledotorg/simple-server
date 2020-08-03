@@ -24,6 +24,11 @@ class MyFacilities::RegistrationsQuery
         .where("(year, #{@period}) IN (#{periods_as_sql_list})")
   end
 
+  def total_registrations_per_facility
+    @total_registrations_per_facility ||=
+        total_registrations.group(:registration_facility_id).count
+  end
+
   def total_registrations
     @total_registrations ||=
       Patient
