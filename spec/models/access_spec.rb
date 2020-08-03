@@ -3,13 +3,12 @@ require "rails_helper"
 RSpec.describe Access, type: :model do
   describe "Validations" do
     it { is_expected.to validate_presence_of(:role) }
-    it do
-      is_expected.to(
-        define_enum_for(:role)
-          .with_values(super_admin: "super_admin", manager: "manager", viewer: "viewer")
-          .backed_by_column_of_type(:string)
-      )
-    end
+
+    it {
+      is_expected.to define_enum_for(:role)
+        .with_values(super_admin: "super_admin", manager: "manager", viewer: "viewer")
+        .backed_by_column_of_type(:string)
+    }
 
     context "resource" do
       let(:admin) { create(:admin) }
