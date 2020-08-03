@@ -151,9 +151,9 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
         end
 
         context "per facility counts" do
-          describe "#cohort_registrations_per_facility" do
+          describe "#cohort_patients_per_facility" do
             specify do
-              expect(query.cohort_registrations_per_facility[assigned_facility.id]).to eq (patients_with_controlled_bp +
+              expect(query.cohort_patients_per_facility[assigned_facility.id]).to eq (patients_with_controlled_bp +
                   patients_with_uncontrolled_bp +
                   patients_with_missed_visit).length
             end
