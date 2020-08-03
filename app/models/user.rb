@@ -188,4 +188,22 @@ class User < ApplicationRecord
 
     true
   end
+
+  def can?(action, model, record = nil)
+    case model
+    when :facility
+      accessible_resources(accesses.facilities(action), record).exists?
+    when :organization
+      accessible_resources(accesses.organizations(action), record).exists?
+    when :facility_group
+      accessible_resources(accesses.facility_groups(action), record).exists?
+    else
+      raise ArgumentError, "Invalid model: #{model}"
+    end
+  end
+
+  def accessible_resources(resources, record)
+    return resources.where(id: record) if record
+    resources
+  end
 end
