@@ -20,7 +20,7 @@ class MyFacilities::BloodPressureControlQuery
     @facilities = facilities
   end
 
-  def cohort_registrations_per_facility
+  def cohort_patients_per_facility
     cohort_registrations.group(:assigned_facility_id).count
   end
 
@@ -58,11 +58,11 @@ class MyFacilities::BloodPressureControlQuery
   end
 
   def cohort_missed_visits_count_by_facility
-    registrations = cohort_registrations_per_facility
+    patients = cohort_patients_per_facility
     bps = cohort_bps_per_facility
 
     @facilities.map { |f|
-      [f.id, (registrations[f.id].to_i - bps[f.id].to_i)]
+      [f.id, (patients[f.id].to_i - bps[f.id].to_i)]
     }.to_h
   end
 
