@@ -38,14 +38,14 @@ class MyFacilitiesController < AdminController
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
 
-    @totals = {registered: bp_query.cohort_patients.count,
+    @totals = {cohort_patients: bp_query.cohort_patients.count,
                controlled: bp_query.cohort_controlled_bps.count,
                uncontrolled: bp_query.cohort_uncontrolled_bps.count,
                missed: bp_query.cohort_missed_visits_count,
                overall_patients: bp_query.overall_patients.count,
                overall_controlled_bps: bp_query.overall_controlled_bps.count}
 
-    @registered_patients_per_facility = bp_query.cohort_patients_per_facility
+    @cohort_patients_per_facility = bp_query.cohort_patients_per_facility
     @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
     @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
     @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
