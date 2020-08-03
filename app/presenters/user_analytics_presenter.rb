@@ -29,7 +29,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_control_rate(month_date, precision: 1)
-    monthly_htn_stats_by_date(:control_rates, month_date.to_s(:month_year)).truncate(precision)
+    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, month_date.to_s(:month_year)).truncate(precision)
   end
 
   def monthly_htn_control_last_period
@@ -268,21 +268,9 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .group(:gender)
         .count
 
-    controlled_visits =
-      current_facility
-        .hypertension_follow_ups_by_period(:month, last: MONTHS_AGO)
-        .merge(BloodPressure.under_control)
-        .count
-
-
-    control_rate_end = Date.current.advance(months: -1).to_date
+    control_rate_end = Date.current.advance(months: -1).end_of_month.to_date
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO).to_date
-    result = ControlRateService.new(
-      current_facility,
-      range: control_rate_start..control_rate_end
-    ).call
-
-    control_rates = result[:controlled_patients_rate]
+    controlled_visits = ControlRateService.new(current_facility, range: control_rate_start..control_rate_end).call
 
     registrations =
       current_facility
@@ -302,8 +290,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       grouped_by_date: {
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
-          controlled_visits: result,
-          control_rates: control_rates,
+          controlled_visits: controlled_visits,
           registrations: sum_by_date(registrations)
         }
       }
