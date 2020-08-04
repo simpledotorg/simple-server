@@ -79,4 +79,11 @@ RSpec.describe Quarter, type: :model do
       end
     end
   end
+
+  it "can return its start and end dates" do
+    date = Time.parse("May 21st, 2020")
+    quarter = Quarter.new(date: date)
+    expect(quarter.start_date).to eq(Date.parse("April 1, 2020"))
+    expect(quarter.end_date).to eq(Date.parse("June 30, 2020"))
+  end
 end

@@ -71,6 +71,14 @@ class Quarter
     date
   end
 
+  def start_date
+    Date.new(year, self.class.quarter_to_month(number)).beginning_of_month
+  end
+
+  def end_date
+    Date.new(year, self.class.quarter_to_month(number) + 2).end_of_month
+  end
+
   def to_period
     Period.quarter(self)
   end
