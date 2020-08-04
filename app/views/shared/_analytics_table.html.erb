@@ -22,15 +22,15 @@
       <thead>
       <tr>
         <th></th>
-        <th class="row-label"><strong>Registered</strong></th>
-        <th class="row-label" colspan="6"><strong>Follow-up patients</strong></th>
+        <th class="row-label"><strong>Total</strong></th>
+        <th class="row-label" colspan="6"><strong>BP Taken</strong></th>
         <th class="row-label" colspan="6"><strong>New registrations</strong></th>
       </tr>
 
       <tr class="sorts" data-sort-method="thead">
         <th class="row-label sort-label sort-label-small" style="text-align: left;" data-sort-default>Name</th>
         <!--Registered patients-->
-        <th class="row-label sort-label" data-sort-default data-sort-method="number">Total</th>
+        <th class="row-label sort-label" data-sort-default data-sort-method="number">Total patients</th>
 
         <!--Follow-up patients-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
@@ -55,13 +55,13 @@
 
         <!--Registered patients-->
         <td class="row-total" style="text-align: center;">
-          <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+          <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_assigned_patients] || 0 }) %>
         </td>
 
         <!--Follow-up patients-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <td class="row-total" style="text-align: center;">
-            <%= dash_if_zero(analytics_totals(dashboard_analytics, :follow_up_patients_by_period, date)) %>
+            <%= dash_if_zero(analytics_totals(dashboard_analytics, :assigned_patient_visits_by_period, date)) %>
           </td>
         <% end %>
 
@@ -87,13 +87,13 @@
 
             <!--Registered patients-->
             <td style="text-align: center;">
-              <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+              <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_assigned_patients)) %>
             </td>
 
             <!--Follow-up patients-->
             <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :assigned_patient_visits_by_period, date)) %>
               </td>
             <% end %>
 
