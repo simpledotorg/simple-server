@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe CohortAnalyticsQuery do
   let!(:facility1) { create(:facility) }
   let!(:facility2) { create(:facility) }
-  let(:analytics) { CohortAnalyticsQuery.new(Patient.where(registration_facility: [facility1, facility2])) }
+  let(:analytics) { CohortAnalyticsQuery.new(Patient.where(assigned_facility: [facility1, facility2])) }
 
   let(:jan) { DateTime.new(2019, 1, 1) }
   let(:feb) { DateTime.new(2019, 2, 1) }
@@ -65,15 +65,21 @@ RSpec.describe CohortAnalyticsQuery do
   end
 
   describe "#patient_counts" do
-    let!(:jan_registered_patients_1) do
+    let!(:jan_patients_1) do
       travel_to(jan) do
-        create_list(:patient, 10, registration_facility: facility1)
+        create_list(:patient, 10, assigned_facility: facility1)
       end
     end
 
-    let!(:jan_registered_patients_2) do
+    let!(:jan_patients_2) do
       travel_to(jan) do
-        create_list(:patient, 5, registration_facility: facility2)
+        create_list(:patient, 5, assigned_facility: facility2)
+      end
+    end
+
+    let!(:jan_patients_3) do
+      travel_to(jan) do
+        create_list(:patient, 2, registration_facility: facility1, assigned_facility: facility2)
       end
     end
 
@@ -86,24 +92,25 @@ RSpec.describe CohortAnalyticsQuery do
     it "calculates return and control patient counts in Q2 for patients registered in Q1" do
       travel_to(april) do
         # Facility 1: 2 patients under control, 3 not controlled
-        jan_registered_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-        jan_registered_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+        jan_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+        jan_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
 
-        # Facility 2: 3 patients under control, 1 not controlled
-        jan_registered_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-        jan_registered_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+        # Facility 2: 3 patients under control, 3 not controlled
+        jan_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+        jan_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+        jan_patients_3.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
       end
 
       expected_result = {
-        registered: {
-          :total => 15,
+        cohort_patients: {
+          :total => 17,
           facility1.id => 10,
-          facility2.id => 5
+          facility2.id => 7
         },
         followed_up: {
-          :total => 9,
+          :total => 11,
           facility1.id => 5,
-          facility2.id => 4
+          facility2.id => 6
         },
         defaulted: {
           :total => 6,
@@ -116,9 +123,9 @@ RSpec.describe CohortAnalyticsQuery do
           facility2.id => 3
         },
         uncontrolled: {
-          :total => 4,
+          :total => 6,
           facility1.id => 3,
-          facility2.id => 1
+          facility2.id => 3
         }
       }.deep_symbolize_keys
 
@@ -126,15 +133,15 @@ RSpec.describe CohortAnalyticsQuery do
     end
 
     context "when a patient makes multiple follow-up visits" do
-      it "only counts the patient once in the registration facility" do
+      it "only counts the patient once in the assigned facility" do
         travel_to(april) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+          jan_patients_3[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_patients_3[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
         end
 
         expected_follow_ups = {
           :total => 1,
-          facility1.id => 1
+          facility2.id => 1
         }.deep_symbolize_keys
 
         expect(counts[:followed_up].deep_symbolize_keys).to eq(expected_follow_ups)
@@ -142,10 +149,10 @@ RSpec.describe CohortAnalyticsQuery do
 
       it "marks patient uncontrolled if most recent bp is hypertensive" do
         travel_to(april) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
         end
         travel_to(may) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
         end
 
         expect(counts[:controlled][:total]).to eq(0)
@@ -154,10 +161,10 @@ RSpec.describe CohortAnalyticsQuery do
 
       it "marks patient controlled if most recent bp is under control" do
         travel_to(april) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
+          jan_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
         end
         travel_to(may) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+          jan_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
         end
 
         expect(counts[:controlled][:total]).to eq(1)
@@ -174,24 +181,25 @@ RSpec.describe CohortAnalyticsQuery do
       it "calculates return and control patient counts in Feb-Mar for patients registered in Jan" do
         travel_to(march) do
           # Facility 1: 2 patients under control, 3 not controlled
-          jan_registered_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_registered_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
 
-          # Facility 2: 3 patients under control, 1 not controlled
-          jan_registered_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_registered_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          # Facility 2: 3 patients under control, 3 not controlled
+          jan_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          jan_patients_3.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
         end
 
         expected_result = {
-          registered: {
-            :total => 15,
+            cohort_patients: {
+            :total => 17,
             facility1.id => 10,
-            facility2.id => 5
+            facility2.id => 7
           },
           followed_up: {
-            :total => 9,
+            :total => 11,
             facility1.id => 5,
-            facility2.id => 4
+            facility2.id => 6
           },
           defaulted: {
             :total => 6,
@@ -204,9 +212,9 @@ RSpec.describe CohortAnalyticsQuery do
             facility2.id => 3
           },
           uncontrolled: {
-            :total => 4,
+            :total => 6,
             facility1.id => 3,
-            facility2.id => 1
+            facility2.id => 3
           }
         }.deep_symbolize_keys
 
@@ -215,10 +223,10 @@ RSpec.describe CohortAnalyticsQuery do
     end
 
     context "with discarded patients" do
-      before { jan_registered_patients_1[0..2].each(&:discard_data) }
+      before { jan_patients_1[0..2].each(&:discard_data) }
 
       it "does not count discarded patients" do
-        expect(counts[:registered][:total]).to eq(12)
+        expect(counts[:cohort_patients][:total]).to eq(14)
       end
     end
   end
