@@ -74,6 +74,8 @@ class User < ApplicationRecord
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
 
+  delegate :can?, to: :accesses, allow_nil: true
+
   after_destroy :destroy_email_authentications
 
   def phone_number_authentication
@@ -187,23 +189,5 @@ class User < ApplicationRecord
     destroyable_email_authentications.each(&:destroy)
 
     true
-  end
-
-  def can?(action, model, record = nil)
-    case model
-    when :facility
-      accessible_resources(accesses.facilities(action), record).exists?
-    when :organization
-      accessible_resources(accesses.organizations(action), record).exists?
-    when :facility_group
-      accessible_resources(accesses.facility_groups(action), record).exists?
-    else
-      raise ArgumentError, "Invalid model: #{model}"
-    end
-  end
-
-  def accessible_resources(resources, record)
-    return resources.where(id: record) if record
-    resources
   end
 end
