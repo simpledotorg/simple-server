@@ -54,6 +54,22 @@ class Period
     value.to_date
   end
 
+  def start_date
+    if quarter?
+      Quarter.for_date(to_date).start_date
+    else
+      value.beginning_of_month.to_date
+    end
+  end
+
+  def end_date
+    if quarter?
+      Quarter.for_date(to_date).end_date
+    else
+      value.end_of_month.to_date
+    end
+  end
+
   def succ
     if quarter?
       Period.new(type: type, value: value.succ)

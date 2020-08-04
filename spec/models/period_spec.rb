@@ -3,13 +3,17 @@ require "rails_helper"
 RSpec.describe Period, type: :model do
   let(:jan_1_2019) { Time.parse("January 1st, 2019") }
   let(:jan_1_2020) { Time.parse("January 1st, 2020") }
+  let(:may_8_2020) { Time.parse("May 8th, 2020") }
   let(:jan_1_2019_month_period) { Period.month(jan_1_2019) }
   let(:jan_1_2020_month_period) { Period.month(jan_1_2020) }
+  let(:may_8_2020_month_period) { Period.month(may_8_2020) }
 
   let(:quarter_1_2019) { Quarter.new(date: jan_1_2019) }
   let(:quarter_1_2020) { Quarter.new(date: jan_1_2020) }
+  let(:quarter_2_2020) { Quarter.new(date: may_8_2020) }
   let(:q1_2019_period) { Period.quarter(quarter_1_2019) }
   let(:q1_2020_period) { Period.quarter(quarter_1_2020) }
+  let(:q2_2020_period) { Period.quarter(quarter_2_2020) }
 
   it "validations" do
     period = Period.new(type: "invalid", value: jan_1_2020)
@@ -74,5 +78,15 @@ RSpec.describe Period, type: :model do
     period = Period.quarter("Q1-2020")
     expect(period.value).to be_instance_of(Quarter)
     expect(period.value).to eq(quarter_1_2020)
+  end
+
+  it "months provide start and end dates" do
+    expect(may_8_2020_month_period.start_date).to eq(Date.parse("May 1st, 2020"))
+    expect(may_8_2020_month_period.end_date).to eq(Date.parse("May 31st, 2020"))
+  end
+
+  it "quarters provide start and end dates" do
+    expect(q2_2020_period.start_date).to eq(Date.parse("April 1st, 2020"))
+    expect(q2_2020_period.end_date).to eq(Date.parse("June 30, 2020"))
   end
 end
