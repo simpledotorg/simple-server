@@ -10,6 +10,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   HTN_CONTROL_MONTHS_AGO = 24
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
+  CACHE_VERSION = 2
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   def daily_stats_by_date(*stats)
@@ -427,7 +428,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def statistics_cache_key
-    "user_analytics/#{current_facility.id}"
+    "user_analytics/#{current_facility.id}/#{CACHE_VERSION}"
   end
 
   def sum_by_date(data)
