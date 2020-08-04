@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Quarter, type: :model do
-  let(:jan_1) { Time.parse("January 1st, 2020") }
+  let(:jan_1) { Time.parse("January 1st, 2020 00:00:00+00:00") }
 
   let(:q1_2019) { Quarter.new(date: Time.parse("January 1st, 2019")) }
   let(:q1_2020) { Quarter.new(date: Time.parse("January 1st, 2020")) }
