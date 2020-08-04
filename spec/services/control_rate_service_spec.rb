@@ -33,6 +33,10 @@ RSpec.describe ControlRateService, type: :model do
       create_list(:patient, 1, recorded_at: Time.current, registration_facility: create(:facility), registration_user: user)
     end
 
+    Timecop.freeze(june_30_2020) do
+      create_list(:patient, 4, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+    end
+
     refresh_views
 
     range = (Period.month(june_2018)..Period.month(june_30_2020))
@@ -40,10 +44,13 @@ RSpec.describe ControlRateService, type: :model do
     result = service.call
     april_period = Date.parse("April 1 2020").to_period
     may_period = Date.parse("May 1 2020").to_period
+    june_period = Date.parse("June 1 2020").to_period
     expect(result[:registrations][april_period]).to eq(2)
     expect(result[:cumulative_registrations][april_period]).to eq(2)
     expect(result[:registrations][may_period]).to eq(3)
     expect(result[:cumulative_registrations][may_period]).to eq(5)
+    expect(result[:registrations][june_period]).to eq(4)
+    expect(result[:cumulative_registrations][june_period]).to eq(9)
   end
 
   it "does not include months without registration data" do
