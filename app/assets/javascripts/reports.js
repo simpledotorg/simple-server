@@ -39,18 +39,67 @@ function initializeCharts() {
       hoverBackgroundColor: darkGreyColor,
       label: "visited but no BP measure",
     },
+    {
+      data: data.missedVisitsRate,
+      rgbaBackgroundColor: mediumGreyColor,
+      rgbaLineColor: mediumGreyColor,
+      label: "Missed visit",
+    },
   ], "bar");
-  noBPMeasureGraphConfig.options = createGraphOptions(
-    false,
-    25,
-    100,
-    formatValueAsPercent,
-    formatRateTooltipText,
-    [data.visitButNoBPMeasure],
-  );
+  // noBPMeasureGraphConfig.options = createGraphOptions(
+  //   true,
+  //   25,
+  //   100,
+  //   formatValueAsPercent,
+  //   formatRateTooltipText,
+  //   [data.visitButNoBPMeasure, data.missedVisits],
+  // );
+
+  console.log(Object.values(data.visitButNoBPMeasureRate));
+
+  const newConfig = {
+    type: "bar",
+    data: {
+      labels: Object.keys(data.registrations),
+      datasets: [
+        {
+          backgroundColor: darkGreyColor,
+          hoverBackgroundColor: darkGreyColor,
+          data: Object.values(data.visitButNoBPMeasureRate),
+          borderWidth: 1,
+          label: "Visited but no BP measure",
+        },
+        {
+          backgroundColor: mediumGreyColor,
+          data: Object.values(data.missedVisitsRate),
+          label: "Missed visit",
+        },
+      ]
+    },
+    options: {
+      legend: { display: true },
+      responsive: true,
+      scales: {
+        xAxes: [{ stacked: true,
+          gridLines: {
+            display: false
+          }
+        }],
+        yAxes: [{ stacked: true,
+          ticks: {
+            beginAtZero: true,
+            suggestedMin: 0,
+            suggestedMax: 100,
+            stepSize: 25,
+          }
+        }],
+      }
+    }
+  };
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
-    new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
+    // new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
+    new Chart(noBPMeasureGraphCanvas.getContext("2d"), newConfig);
   }
 
   const uncontrolledGraphConfig = createGraphConfig([
@@ -137,6 +186,8 @@ function getReportingData() {
   let data = {
     controlRate: controlRate,
     controlledPatients: controlledPatients,
+    missedVisits: jsonData.missed_visits,
+    missedVisitsRate: jsonData.missed_visits_rate,
     registrations: registrations,
     uncontrolledRate: uncontrolledRate,
     uncontrolledPatients: uncontrolledPatients,
@@ -240,8 +291,8 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       yAlign: "bottom",
       yPadding: 12,
       callbacks: {
-        title: function() {},
-        label: function(tooltipItem, data) {
+        title: function () { },
+        label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, dataSum);
         },
       },

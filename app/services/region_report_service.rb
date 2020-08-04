@@ -13,9 +13,11 @@ class RegionReportService
     @range = start_period..@period
     @data = {
       controlled_patients: {},
-      registrations: {},
       cumulative_registrations: 0,
+      missed_visits: {},
+      missed_visits_rate: {},
       quarterly_registrations: [],
+      registrations: {},
       top_region_benchmarks: {}
     }.with_indifferent_access
   end
@@ -33,14 +35,29 @@ class RegionReportService
     data.merge! compile_cohort_trend_data
     data[:visited_without_bp_taken] = count_visited_without_bp_taken
     data[:visited_without_bp_taken_rate] = percentage_visited_without_bp_taken
+    data[:missed_visits] = calculate_missed_visits
+    data[:missed_visits_rate] = calculate_missed_visits_rate
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data
   end
 
+  def calculate_missed_visits
+    data[:cumulative_registrations].each_with_object({}) do |(period, count), hsh|
+      hsh[period] = count - data[:controlled_patients][period] - data[:uncontrolled_patients][period]
+    end
+  end
+
+  def calculate_missed_visits_rate
+    data[:missed_visits].each_with_object({}) do |(period, count), hsh|
+      hsh[period] = percentage(count, data[:cumulative_registrations][period].to_f)
+    end
+  end
+
   # visited in last 3 months but had no BP taken
   def count_visited_without_bp_taken
-    range.each_with_object({}) do |period, hsh|
+    periods = data[:registrations].keys
+    periods.each_with_object({}) do |period, hsh|
       visits_without_bp = Appointment.from(patients_visited_without_bp_taken(period), "appointments").count("appointments.patient_id")
       hsh[period] = visits_without_bp
     end
@@ -65,7 +82,7 @@ class RegionReportService
     end_date = period.to_date
     begin_date = period.advance(months: -3).to_date
     Appointment.select("DISTINCT ON (appointments.patient_id) appointments.*")
-      .joins(:patient)
+      .joins(:patient).merge(Patient.with_hypertension)
       .joins("LEFT OUTER JOIN blood_pressures ON blood_pressures.patient_id = appointments.patient_id")
       .order("appointments.patient_id")
       .where("blood_pressures.id IS NULL")
