@@ -5,14 +5,14 @@ RSpec.describe ControlRateService, type: :model do
   let(:user) { create(:admin, :supervisor, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
-  let(:june_2018) { Time.parse("June 1, 2018") }
-  let(:june_1) { Time.parse("June 1, 2020") }
-  let(:june_30_2020) { Time.parse("June 30, 2020") }
-  let(:july_2020) { Time.parse("July 15, 2020") }
-  let(:jan_2019) { Time.parse("January 1st, 2019") }
-  let(:jan_2020) { Time.parse("January 1st, 2020") }
-  let(:july_2018) { Time.parse("July 1st, 2018") }
-  let(:july_2020) { Time.parse("July 1st, 2020") }
+  let(:june_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
+  let(:june_1) { Time.parse("June 1, 2020 00:00:00+00:00") }
+  let(:june_30_2020) { Time.parse("June 30, 2020 00:00:00+00:00") }
+  let(:july_2020) { Time.parse("July 15, 2020 00:00:00+00:00") }
+  let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
+  let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
+  let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
