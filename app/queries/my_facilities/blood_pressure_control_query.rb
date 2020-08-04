@@ -19,7 +19,7 @@ class MyFacilities::BloodPressureControlQuery
     @registration_quarter = cohort_period[:registration_quarter]
     @registration_month = cohort_period[:registration_month]
     @registration_year = cohort_period[:registration_year]
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
   end
 
   def cohort_patients_per_facility

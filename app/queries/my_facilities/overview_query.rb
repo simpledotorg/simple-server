@@ -12,7 +12,7 @@ class MyFacilities::OverviewQuery
   attr_reader :facilities
 
   def initialize(facilities: Facility.all)
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
   end
 
   def total_bps_in_last_n_days(n: INACTIVITY_THRESHOLD_DAYS)

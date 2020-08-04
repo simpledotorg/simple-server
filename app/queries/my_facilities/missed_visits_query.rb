@@ -11,7 +11,7 @@ class MyFacilities::MissedVisitsQuery
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month.
     # last_n is the number of quarters/months for which data is to be returned
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
     @period = period
     @periods = period_list(period, last_n)
     @latest_period = @periods.first
