@@ -58,7 +58,7 @@ class Period
     if quarter?
       Period.new(type: type, value: value.succ)
     else
-      Period.new(type: type, value: value.next_month)
+      Period.new(type: type, value: value.advance(months: 1))
     end
   end
 
