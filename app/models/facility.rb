@@ -98,7 +98,7 @@ class Facility < ApplicationRecord
   end
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
+    query = CohortAnalyticsQuery.new(assigned_patients)
     query.patient_counts_by_period(period, prev_periods)
   end
 
