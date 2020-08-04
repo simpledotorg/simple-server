@@ -39,10 +39,10 @@ RSpec.describe TopRegionService, type: :model do
 
     refresh_views
 
-    service = TopRegionService.new([organization], june_1.end_of_month)
+    service = TopRegionService.new([organization], Period.month(june_1.end_of_month))
     result = service.call
-    expect(result[:district]).to eq(koriya)
-    expect(result[:controlled_percentage]).to eq(100.0)
+    expect(result[:control_rate][:region]).to eq(koriya)
+    expect(result[:control_rate][:value]).to eq(100.0)
   end
 
   it "gets top facility benchmarks" do
@@ -72,6 +72,9 @@ RSpec.describe TopRegionService, type: :model do
           create(:blood_pressure, :under_control, facility: kadapa_facility, patient: patient, recorded_at: Time.current)
         end
       end
+      # Kadapa facility has 6 registrations
+      _other_kadapa_patients = create_list(:patient, 3, recorded_at: 1.month.ago, registration_facility: kadapa_facility, registration_user: user)
+
       # darrang_facility_2 control rate is 0%
       other_darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facility_2, registration_user: user)
       other_darrang_patients.each do |patient|
@@ -86,9 +89,11 @@ RSpec.describe TopRegionService, type: :model do
 
     refresh_views
 
-    service = TopRegionService.new([organization], june_1.end_of_month, scope: :facility)
+    service = TopRegionService.new([organization], Period.month(june_1.end_of_month), scope: :facility)
     result = service.call
-    expect(result[:controlled_percentage]).to eq(75.0)
-    expect(result[:region]).to eq(darrang_facility_1)
+    expect(result[:control_rate][:region]).to eq(darrang_facility_1)
+    expect(result[:control_rate][:value]).to eq(75.0)
+    expect(result[:registrations][:region]).to eq(kadapa_facility)
+    expect(result[:registrations][:value]).to eq(6)
   end
 end

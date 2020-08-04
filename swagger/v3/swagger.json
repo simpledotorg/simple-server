@@ -15,7 +15,7 @@
     "version": "v3",
     "title": "Simple Server",
     "x-logo": {
-      "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
+      "url": "/assets/rtsl_logo-e002504a420ebae71c6bafaf666d301d4eb9ae6712946bbac229ac7b580fbc66.png",
       "backgroundColor": "#FFFFFF"
     },
     "contact": {
@@ -1451,6 +1451,14 @@
       "format": "uuid",
       "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
     },
+    "nullable_uuid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
+    },
     "non_empty_string": {
       "type": "string",
       "minLength": 1,
@@ -1524,6 +1532,12 @@
         },
         "recorded_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "assigned_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
         },
         "reminder_consent": {
           "type": "string",
@@ -1721,6 +1735,12 @@
         },
         "recorded_at": {
           "$ref": "#/definitions/timestamp"
+        },
+        "registration_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
+        },
+        "assigned_facility_id": {
+          "$ref": "#/definitions/nullable_uuid"
         },
         "reminder_consent": {
           "type": "string",
@@ -2204,7 +2224,8 @@
           "enum": [
             "voip_call",
             "manual_call",
-            "missed_visit_sms_reminder"
+            "missed_visit_sms_reminder",
+            "missed_visit_whatsapp_reminder"
           ]
         },
         "communication_result": {

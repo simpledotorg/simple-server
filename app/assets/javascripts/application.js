@@ -28,5 +28,7 @@
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 
-  new Tablesort(document.getElementById('analytics-table'), { descending: true })
+  if($('analytics-table').length) {
+    new Tablesort(document.getElementById('analytics-table'), { descending: true })
+  }
 });

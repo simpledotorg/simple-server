@@ -12,6 +12,10 @@ class Api::V3::Models
        pattern: '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}'}
     end
 
+    def nullable_uuid
+      uuid.merge(type: [:string, "null"])
+    end
+
     def non_empty_string
       {type: :string,
        minLength: 1,
@@ -48,6 +52,8 @@ class Api::V3::Models
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"},
          recorded_at: {"$ref" => "#/definitions/timestamp"},
+         registration_facility_id: {"$ref" => "#/definitions/nullable_uuid"},
+         assigned_facility_id: {"$ref" => "#/definitions/nullable_uuid"},
          reminder_consent: {type: :string, enum: Patient.reminder_consents.keys},
          deleted_reason: {type: ["null", :string], enum: Patient::DELETED_REASONS + [nil]}
        },
@@ -350,6 +356,7 @@ class Api::V3::Models
     def definitions
       {timestamp: timestamp,
        uuid: uuid,
+       nullable_uuid: nullable_uuid,
        non_empty_string: non_empty_string,
        nullable_timestamp: nullable_timestamp,
        bcrypt_password: bcrypt_password,

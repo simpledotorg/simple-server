@@ -15,7 +15,7 @@
     "version": "v4",
     "title": "Simple Server",
     "x-logo": {
-      "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
+      "url": "/assets/rtsl_logo-e002504a420ebae71c6bafaf666d301d4eb9ae6712946bbac229ac7b580fbc66.png",
       "backgroundColor": "#FFFFFF"
     },
     "contact": {
@@ -50,14 +50,12 @@
           {
             "name": "HTTP_X_USER_ID",
             "in": "header",
-            "type": "uuid",
-            "document": false
+            "type": "uuid"
           },
           {
             "name": "HTTP_X_FACILITY_ID",
             "in": "header",
-            "type": "uuid",
-            "description": "potato"
+            "type": "uuid"
           },
           {
             "name": "blood_sugars",
