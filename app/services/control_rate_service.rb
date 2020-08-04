@@ -61,8 +61,10 @@ class ControlRateService
   end
 
   def sum_cumulative_registrations(registration_counts)
-    registration_counts.each_with_object(Hash.new(0)) { |(period, count), running_totals|
-      running_totals[period] = count + running_totals[period.previous]
+    initial_count = region.registered_patients.with_hypertension.where("recorded_at < ?", periods.begin.to_date).count
+    registration_counts.each_with_object({}) { |(period, count), running_totals|
+      running_total = running_totals[period.previous] || initial_count
+      running_totals[period] = count + running_total
     }
   end
 
