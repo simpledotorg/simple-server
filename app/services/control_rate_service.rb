@@ -60,7 +60,7 @@ class ControlRateService
       end
       first_registration_period = registration_counts.keys.first
       if first_registration_period
-        data.each {|(_key, hsh)| hsh.delete_if { |period, count| period < first_registration_period } }
+        data.each { |(_key, hsh)| hsh.delete_if { |period, count| period < first_registration_period } }
       end
       data
     end
