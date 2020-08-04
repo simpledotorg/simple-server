@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
   PERCENTAGE_PRECISION = 1
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
