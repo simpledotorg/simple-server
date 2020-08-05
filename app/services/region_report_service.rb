@@ -34,7 +34,7 @@ class RegionReportService
   end
 
   def compile_control_and_registration_data
-    start_period = period.advance(months: -MAX_MONTHS_OF_DATA)
+    start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
     periods = start_period..@period
     result = ControlRateService.new(region, periods: periods).call
     @data.merge! result
