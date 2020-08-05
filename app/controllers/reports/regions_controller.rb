@@ -24,7 +24,7 @@ class Reports::RegionsController < AdminController
         hsh[facility.name] = RegionReportService.new(region: facility,
                                                      selected_date: @selected_date,
                                                      current_user: current_admin).call
-      } 
+      }
     end
 
     @controlled_patients = @data[:controlled_patients]
