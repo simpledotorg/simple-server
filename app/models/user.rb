@@ -12,6 +12,12 @@ class User < ApplicationRecord
     denied: "denied"
   }, _prefix: true
 
+  enum access_level: {
+    viewer: "viewer",
+    manager: "manager",
+    super_admin: "super_admin"
+  }
+
   belongs_to :organization, optional: true
 
   has_many :user_authentications
@@ -37,7 +43,7 @@ class User < ApplicationRecord
   has_many :prescription_drugs
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-  has_many :accesses, dependent: :destroy
+  has_many :user_resources, dependent: :destroy
 
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
@@ -54,6 +60,7 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
+  validates :access_level, presence: true, if: -> { email_authentication.present? }
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true

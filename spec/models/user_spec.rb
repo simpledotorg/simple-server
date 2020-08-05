@@ -8,6 +8,11 @@ RSpec.describe User, type: :model do
   describe "Validations" do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"
+    it {
+      is_expected.to define_enum_for(:access_level)
+        .with_values(super_admin: "super_admin", manager: "manager", viewer: "viewer")
+        .backed_by_column_of_type(:string)
+    }
   end
 
   describe ".build_with_phone_number_authentication" do
