@@ -315,10 +315,10 @@
                     <% end %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
                   </td>
                 </tr>
               <% end %>
@@ -367,13 +367,13 @@
                     <% end %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    N/A 
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    N/A
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    N/A
                   </td>
                 </tr>
               <% end %>
@@ -418,10 +418,10 @@
                     <% end %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    <%= number_to_percentage(@data_for_facility[facility.name]["uncontrolled_patients_rate"].values.last, precision: 0) %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["uncontrolled_patients"].values.last) %>
                   </td>
                 </tr>
               <% end %>
@@ -450,7 +450,7 @@
                   Name
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                  Registrations in PENDING
+                  Registrations in <%= @selected_date.to_s(:month_year) %>
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
                   Cumulative
@@ -466,10 +466,12 @@
                     <% end %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    <!-- <%= JSON.pretty_generate(@data_for_facility[facility.name]).gsub(":", " =>") %> -->
+                    <% new_registrations = @data_for_facility[facility.name]["registrations"].values.last - @data_for_facility[facility.name]["registrations"].values[-2] %>
+                    <%= number_with_delimiter(new_registrations) %>
                   </td>
                   <td class="ta-left">
-                    PENDING
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"]) %>
                   </td>
                 </tr>
               <% end %>

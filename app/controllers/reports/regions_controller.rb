@@ -18,6 +18,15 @@ class Reports::RegionsController < AdminController
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
+
+    if @region.is_a?(FacilityGroup)
+      @data_for_facility = @region.facilities.each_with_object({}) do |facility, hsh|
+        hsh[facility.name] = RegionReportService.new(region: facility,
+                                        selected_date: @selected_date,
+                                        current_user: current_admin).call
+      end
+    end
+
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
