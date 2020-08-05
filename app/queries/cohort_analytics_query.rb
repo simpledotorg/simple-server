@@ -38,7 +38,7 @@ class CohortAnalyticsQuery
     controlled_patients = controlled(followed_up_patients)
     uncontrolled_patients = followed_up_patients - controlled_patients
 
-    cohort_patient_counts = registrations.group(:assigned_facility_id).size.symbolize_keys
+    cohort_patient_counts = cohort_patients.group(:assigned_facility_id).size.symbolize_keys
     followed_up_counts = followed_up_patients.group(:assigned_facility_id).size.symbolize_keys
     defaulted_counts = cohort_patient_counts.merge(followed_up_counts) { |_, cohort_patients, followed_up|
       cohort_patients - followed_up
