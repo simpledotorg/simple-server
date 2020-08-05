@@ -9,7 +9,7 @@ class RegionReportService
     @region = region
     @period = period
     @facilities = region.facilities.to_a
-    start_period = period.advance(months: -MAX_MONTHS_OF_DATA)
+    start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
     @range = start_period..@period
     @data = {
       controlled_patients: {},
@@ -79,15 +79,27 @@ class RegionReportService
   end
 
   def patients_visited_without_bp_taken(period)
-    end_date = period.to_date
-    begin_date = period.advance(months: -3).to_date
-    Appointment.select("DISTINCT ON (appointments.patient_id) appointments.*")
-      .joins(:patient).merge(Patient.with_hypertension)
-      .joins("LEFT OUTER JOIN blood_pressures ON blood_pressures.patient_id = appointments.patient_id")
-      .order("appointments.patient_id")
-      .where("blood_pressures.id IS NULL")
-      .where("appointments.device_created_at :: DATE BETWEEN :begin AND :end", begin: begin_date, end: end_date)
-      .where("patients.registration_facility_id in (?)", facilities)
+    begin_date = period.advance(months: -3).start_date
+    end_date = period.end_date
+    control_range = begin_date..end_date
+    clause = Patient.sanitize_sql_for_conditions(["bps.recorded_at >= ? AND bps.recorded_at < ?", begin_date, end_date])
+    created_at_clause = Appointment.sanitize_sql_for_conditions(["appointments.device_created_at >= ? AND appointments.device_created_at <= ?", begin_date, end_date])
+    not_exists =<<-SQL
+      NOT EXISTS (
+        SELECT 1
+        FROM blood_pressures bps
+        WHERE patients.id = bps.patient_id
+          AND #{clause}
+      )
+    SQL
+    Patient
+      .distinct
+      .with_hypertension
+      .where(registration_facility: facilities)
+      .joins("LEFT OUTER JOIN appointments on appointments.patient_id = patients.id AND #{created_at_clause}")
+      .where(not_exists)
+      # .left_joins(:blood_sugars).where(appointments: { device_created_at: control_range })
+      # .left_joins(:prescription_drugs).where(appointments: { device_created_at: control_range })
   end
 
   def compile_control_and_registration_data
