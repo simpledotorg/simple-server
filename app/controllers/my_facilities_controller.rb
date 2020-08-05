@@ -38,19 +38,19 @@ class MyFacilitiesController < AdminController
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
 
-    @totals = {registered: bp_query.cohort_registrations.count,
+    @totals = {cohort_patients: bp_query.cohort_patients.count,
                controlled: bp_query.cohort_controlled_bps.count,
                uncontrolled: bp_query.cohort_uncontrolled_bps.count,
                missed: bp_query.cohort_missed_visits_count,
                overall_patients: bp_query.overall_patients.count,
                overall_controlled_bps: bp_query.overall_controlled_bps.count}
 
-    @registered_patients_per_facility = bp_query.cohort_registrations.group(:registration_facility_id).count
-    @controlled_bps_per_facility = bp_query.cohort_controlled_bps.group(:registration_facility_id).count
-    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps.group(:registration_facility_id).count
+    @cohort_patients_per_facility = bp_query.cohort_patients_per_facility
+    @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
+    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
     @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
-    @overall_patients_per_facility = bp_query.overall_patients.group(:registration_facility_id).count
-    @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps.group(:registration_facility_id).count
+    @overall_patients_per_facility = bp_query.overall_patients_per_facility
+    @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
   end
 
   def registrations
@@ -64,7 +64,7 @@ class MyFacilitiesController < AdminController
       .group(:facility_id, :year, @selected_period)
       .sum(:registration_count)
 
-    @total_registrations = registrations_query.total_registrations.group(:registration_facility_id).count
+    @total_registrations = registrations_query.total_registrations_per_facility
     @total_registrations_by_period =
       @registrations.each_with_object({}) { |(key, registrations), total_registrations_by_period|
         period = [key.second.to_i, key.third.to_i]
@@ -84,7 +84,7 @@ class MyFacilitiesController < AdminController
     @display_periods = missed_visits_query.periods
     @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
     @calls_made = missed_visits_query.calls_made.count
-    @total_registrations = missed_visits_query.total_registrations
+    @total_patients_per_facility = missed_visits_query.total_patients_per_facility
     @totals_by_period = missed_visits_query.missed_visit_totals
   end
 

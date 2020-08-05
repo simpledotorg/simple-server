@@ -21,7 +21,7 @@
       <div class="row">
         <div class="col-lg-9 pr-5 pr-md-0">
           <h3>BP control</h3>
-          <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:registered]) %> patients registered in <%= registration_period %>,
+          <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:cohort_patients]) %> patients registered in <%= registration_period %>,
             at their last visit in <%= visited_in_period %>.
         </div>
 
@@ -95,18 +95,18 @@
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">No BP taken<br>in <%= visited_in_period %>
           </th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-percent" colspan="2">Controlled BP<br>in last 90 days</th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-registered">Registered<br>&gt; 2 months ago</th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-patients">Total patients registered<br>before <%= display_date(3.months.ago) %></th>
           <th class="mobile"></th>
         </tr>
         </thead>
         <tbody>
         <tr class="row-total" data-sort-method="none">
           <td class="type-title">All</td>
-          <td class="type-percent"><em><%= percentage(@totals[:controlled], @totals[:registered]) %></em></td>
+          <td class="type-percent"><em><%= percentage(@totals[:controlled], @totals[:cohort_patients]) %></em></td>
           <td class="type-number"><%= @totals[:controlled] %></td>
-          <td class="type-percent"><em><%= percentage(@totals[:uncontrolled], @totals[:registered]) %></em></td>
+          <td class="type-percent"><em><%= percentage(@totals[:uncontrolled], @totals[:cohort_patients]) %></em></td>
           <td class="type-number"><%= @totals[:uncontrolled] %></td>
-          <td class="type-percent"><em><%= percentage(@totals[:missed], @totals[:registered]) %></em></td>
+          <td class="type-percent"><em><%= percentage(@totals[:missed], @totals[:cohort_patients]) %></em></td>
           <td class="type-number"><%= @totals[:missed] %></td>
           <td class="type-percent">
             <em><%= percentage(@totals[:overall_controlled_bps], @totals[:overall_patients]) %></em></td>
@@ -114,7 +114,7 @@
           <td class="type-number"><%= @totals[:overall_patients] %></td>
         </tr>
         <% @facilities.each do |facility| %>
-          <% bp_stats = { registered: @registered_patients_per_facility[facility.id].to_i,
+          <% bp_stats = { cohort_patients: @cohort_patients_per_facility[facility.id].to_i,
                           controlled: @controlled_bps_per_facility[facility.id].to_i,
                           uncontrolled: @uncontrolled_bps_per_facility[facility.id].to_i,
                           missed: @missed_visits_by_facility[facility.id].to_i,
@@ -123,15 +123,15 @@
           <tr>
             <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
             <td class="type-percent" data-sort-column-key="controlled">
-              <em><%= percentage(bp_stats[:controlled], bp_stats[:registered]) %></em>
+              <em><%= percentage(bp_stats[:controlled], bp_stats[:cohort_patients]) %></em>
             </td>
             <td class="type-number"><%= bp_stats[:controlled] %></td>
             <td class="type-percent" data-sort-column-key="uncontrolled">
-              <em><%= percentage(bp_stats[:uncontrolled], bp_stats[:registered]) %></em>
+              <em><%= percentage(bp_stats[:uncontrolled], bp_stats[:cohort_patients]) %></em>
             </td>
             <td class="type-number"><%= bp_stats[:uncontrolled] %></td>
             <td class="type-percent" data-sort-column-key="missed">
-              <em><%= percentage(bp_stats[:missed], bp_stats[:registered]) %></em>
+              <em><%= percentage(bp_stats[:missed], bp_stats[:cohort_patients]) %></em>
             </td>
             <td class="type-number"><%= bp_stats[:missed] %></td>
             <td class="type-percent" data-sort-column-key="overall-percent">
@@ -140,7 +140,7 @@
             <td class="type-number" data-sort-column-key="overall-controlled">
               <%= bp_stats[:overall_controlled_bps] %>
             </td>
-            <td class="type-number" data-sort-column-key="overall-registered">
+            <td class="type-number" data-sort-column-key="overall-patients">
               <%= bp_stats[:overall_patients] %>
             </td>
           </tr>
@@ -152,9 +152,9 @@
       <ol>
         <li><strong>Overall BP control:</strong>
           <ul>
-            <li>Numerator: Patients registered at this facility whose most recent BP in the past 90 days was &lt;140/90.</li>
-            <li>Denominator: Patients registered at this facility.</li>
-            <li>Patients registered in the last 2 months are excluded from both the <i>Numerator</i> and <i>Denominator</i>.</li>
+            <li>Numerator: Patients whose last BP in the past 90 days was &lt;140/90.</li>
+            <li>Denominator: Patients with this preferred facility.</li>
+            <li>Patients registered in the last 3 months are excluded from both the <i>Numerator</i> and <i>Denominator</i>.</li>
             <li>Note: Follow-up BPs may be recorded at any facility.</li>
           </ul>
       </ol>

@@ -6,12 +6,12 @@ class MyFacilities::MissedVisitsQuery
   include QuarterHelper
   include MonthHelper
 
-  attr_reader :periods
+  attr_reader :facilities, :periods
 
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month.
     # last_n is the number of quarters/months for which data is to be returned
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
     @period = period
     @periods = period_list(period, last_n)
     @latest_period = @periods.first
@@ -33,28 +33,10 @@ class MyFacilities::MissedVisitsQuery
         .group("facilities.id::uuid")
   end
 
-  def bp_query_by_cohort
-    @bp_query_by_cohort ||=
-      @periods.map { |year, period|
-        bp_query = if @period == :month
-          MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                      cohort_period: {cohort_period: :month,
-                                                                      registration_year: year,
-                                                                      registration_month: period})
-        else
-          MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                      cohort_period: {cohort_period: :quarter,
-                                                                      registration_year: year,
-                                                                      registration_quarter: period})
-        end
-        [[year, period], bp_query]
-      }.to_h
-  end
-
   def missed_visits_by_facility
     @missed_visits_by_facility ||=
       bp_query_by_cohort.map { |(year, period), bp_query|
-        bp_query.cohort_registrations.group(:registration_facility_id).count.map { |facility_id, patient_count|
+        bp_query.cohort_patients_per_facility.map { |facility_id, patient_count|
           [[facility_id, year, period],
             {patients: patient_count.to_i,
              missed: bp_query.cohort_missed_visits_count_by_facility[facility_id].to_i}]
@@ -65,7 +47,7 @@ class MyFacilities::MissedVisitsQuery
   def missed_visit_totals
     @missed_visit_totals ||=
       bp_query_by_cohort.map { |(year, period), bp_query|
-        cohort_registrations = bp_query.cohort_registrations.count
+        cohort_registrations = bp_query.cohort_patients.count
         cohort_missed_visits_count = bp_query.cohort_missed_visits_count
         [[year, period],
           {patients: cohort_registrations.to_i,
@@ -73,15 +55,27 @@ class MyFacilities::MissedVisitsQuery
       }.to_h
   end
 
-  def total_registrations
-    registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
-                                                               period: @selected_period,
-                                                               last_n: @last_n)
-    @total_registrations ||=
-      registrations_query.total_registrations.group(:registration_facility_id).count
+  def total_patients_per_facility
+    @total_patients_per_facility ||=
+      facilities
+        .assigned_patients
+        .group(:assigned_facility_id)
+        .count
   end
 
   private
+
+  def bp_query_by_cohort
+    @bp_query_by_cohort ||=
+      @periods.map { |year, period|
+        bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                               cohort_period: {cohort_period: @period,
+                                                                               registration_year: year,
+                                                                               registration_month: period,
+                                                                               registration_quarter: period})
+        [[year, period], bp_query]
+      }.to_h
+  end
 
   def period_list(period, last_n)
     case period

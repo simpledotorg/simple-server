@@ -12,7 +12,7 @@ class MyFacilities::RegistrationsQuery
   def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
     # period can be :quarter, :month, :day.
     # last_n is the number of quarters/months/days for which data is to be returned
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
     @period = period
     @periods = period_list(period, last_n)
   end
@@ -22,6 +22,11 @@ class MyFacilities::RegistrationsQuery
       PatientRegistrationsPerDayPerFacility
         .where(facility: @facilities)
         .where("(year, #{@period}) IN (#{periods_as_sql_list})")
+  end
+
+  def total_registrations_per_facility
+    @total_registrations_per_facility ||=
+      total_registrations.group(:registration_facility_id).count
   end
 
   def total_registrations

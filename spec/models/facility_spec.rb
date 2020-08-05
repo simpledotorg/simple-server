@@ -30,6 +30,23 @@ RSpec.describe Facility, type: :model do
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
   end
 
+  context ".assigned_patients" do
+    let!(:assigned_facilities) { create_list(:facility, 2) }
+    let!(:registration_facility) { create(:facility) }
+    let!(:patients) do
+      [create(:patient, assigned_facility: assigned_facilities.first, registration_facility: registration_facility),
+        create(:patient, assigned_facility: assigned_facilities.second, registration_facility: registration_facility)]
+    end
+
+    it "returns assigned patients for facilities" do
+      expect(Facility.where(id: assigned_facilities).assigned_patients).to match_array patients
+    end
+
+    it "ignores registration patients" do
+      expect(Facility.where(id: registration_facility).assigned_patients).to be_empty
+    end
+  end
+
   describe "Delegates" do
     context "#patient_follow_ups_by_period" do
       it "counts follow_ups across HTN and DM" do
