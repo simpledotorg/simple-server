@@ -33,12 +33,12 @@ class CohortAnalyticsQuery
   end
 
   def patient_counts(cohort_start, cohort_end, report_start, report_end)
-    cohort_patients = cohort_patients(cohort_start, cohort_end)
+    registrations = registrations(cohort_start, cohort_end)
     followed_up_patients = followed_up(cohort_patients, report_start, report_end)
     controlled_patients = controlled(followed_up_patients)
     uncontrolled_patients = followed_up_patients - controlled_patients
 
-    cohort_patient_counts = cohort_patients.group(:assigned_facility_id).size.symbolize_keys
+    cohort_patient_counts = registrations.group(:assigned_facility_id).size.symbolize_keys
     followed_up_counts = followed_up_patients.group(:assigned_facility_id).size.symbolize_keys
     defaulted_counts = cohort_patient_counts.merge(followed_up_counts) { |_, cohort_patients, followed_up|
       cohort_patients - followed_up
@@ -58,7 +58,7 @@ class CohortAnalyticsQuery
     }.with_indifferent_access
   end
 
-  def cohort_patients(cohort_start, cohort_end)
+  def registrations(cohort_start, cohort_end)
     @patients.where(recorded_at: cohort_start..cohort_end)
   end
 
