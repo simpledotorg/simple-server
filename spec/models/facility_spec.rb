@@ -30,20 +30,30 @@ RSpec.describe Facility, type: :model do
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
   end
 
-  context ".assigned_patients" do
-    let!(:assigned_facilities) { create_list(:facility, 2) }
+  context ".assigned_hypertension_patients" do
+    let!(:assigned_facilities) { create_list(:facility, 3) }
     let!(:registration_facility) { create(:facility) }
     let!(:patients) do
-      [create(:patient, assigned_facility: assigned_facilities.first, registration_facility: registration_facility),
-        create(:patient, assigned_facility: assigned_facilities.second, registration_facility: registration_facility)]
+      [create(:patient,
+        assigned_facility: assigned_facilities.first,
+        registration_facility: registration_facility),
+
+        create(:patient,
+          assigned_facility: assigned_facilities.second,
+          registration_facility: registration_facility),
+
+        create(:patient,
+          :without_hypertension,
+          assigned_facility: assigned_facilities.third,
+          registration_facility: registration_facility)]
     end
 
     it "returns assigned patients for facilities" do
-      expect(Facility.where(id: assigned_facilities).assigned_patients).to match_array patients
+      expect(Facility.where(id: assigned_facilities).assigned_hypertension_patients).to match_array(patients.first(2))
     end
 
     it "ignores registration patients" do
-      expect(Facility.where(id: registration_facility).assigned_patients).to be_empty
+      expect(Facility.where(id: registration_facility).assigned_hypertension_patients).to be_empty
     end
   end
 
@@ -190,27 +200,27 @@ RSpec.describe Facility, type: :model do
     it "parses the facilities" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.first).to include(organization_name: "OrgOne",
-                                          facility_group_name: "FGTwo",
-                                          name: "Test Facility",
-                                          facility_type: "CHC",
-                                          district: "Bhatinda",
-                                          state: "Punjab",
-                                          country: "India",
-                                          enable_diabetes_management: "true",
-                                          teleconsultation_phone_number: nil,
-                                          teleconsultation_isd_code: nil,
-                                          import: true)
+        facility_group_name: "FGTwo",
+        name: "Test Facility",
+        facility_type: "CHC",
+        district: "Bhatinda",
+        state: "Punjab",
+        country: "India",
+        enable_diabetes_management: "true",
+        teleconsultation_phone_number: nil,
+        teleconsultation_isd_code: nil,
+        import: true)
       expect(facilities.second).to include(organization_name: "OrgOne",
-                                           facility_group_name: "FGTwo",
-                                           name: "Test Facility 2",
-                                           facility_type: "CHC",
-                                           district: "Bhatinda",
-                                           state: "Punjab",
-                                           country: "India",
-                                           enable_teleconsultation: "true",
-                                           teleconsultation_phone_number: "9999999999",
-                                           teleconsultation_isd_code: "91",
-                                           import: true)
+        facility_group_name: "FGTwo",
+        name: "Test Facility 2",
+        facility_type: "CHC",
+        district: "Bhatinda",
+        state: "Punjab",
+        country: "India",
+        enable_teleconsultation: "true",
+        teleconsultation_phone_number: "9999999999",
+        teleconsultation_isd_code: "91",
+        import: true)
     end
 
     it "defaults enable_teleconsultation to false if blank" do
