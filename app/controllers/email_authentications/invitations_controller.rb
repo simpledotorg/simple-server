@@ -60,6 +60,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   def user_params
     {full_name: params[:full_name],
      role: params[:role],
+     access_level: params[:access_level],
      organization_id: params[:organization_id],
      device_created_at: Time.current,
      device_updated_at: Time.current,

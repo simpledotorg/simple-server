@@ -23,10 +23,12 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
     let(:full_name) { Faker::Name.name }
     let(:email) { Faker::Internet.email }
     let(:role) { "Test User Role" }
+    let(:access_level) { "manager" }
     let(:params) do
       {full_name: full_name,
        email: email,
        role: role,
+       access_level: access_level,
        organization_id: organization.id}
     end
 
