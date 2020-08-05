@@ -120,10 +120,6 @@
         <tr>
           <td class="row-label no-padding"><%= month_date.strftime("%B") %></td>
           <td>
-            <p>
-              <%= month_date %>
-              <%= @user_analytics.monthly_htn_control_rate(month_date) %>
-            </p>
             <span class="percent">
               <%= @user_analytics.monthly_htn_control_rate(month_date) %>
             </span>
