@@ -1,13 +1,4 @@
 class Period
-  module ToPeriodExtensions
-    def to_period
-      Period.month(self)
-    end
-  end
-
-  Date.include ToPeriodExtensions
-  Time.include ToPeriodExtensions
-
   include Comparable
   include ActiveModel::Model
   validates :type, presence: true, inclusion: {in: [:month, :quarter], message: "must be month or quarter"}
@@ -74,7 +65,7 @@ class Period
     if quarter?
       Period.new(type: type, value: value.succ)
     else
-      Period.new(type: type, value: value.next_month)
+      Period.new(type: type, value: value.advance(months: 1))
     end
   end
 
