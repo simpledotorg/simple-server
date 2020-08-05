@@ -12,7 +12,7 @@
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
-<%= render 'shared/analytics_table',
+<%= render 'analytics/districts/analytics_table',
   dashboard_analytics: @dashboard_analytics,
   row_resource: Facility.order(:name),
   row_resource_description: "Facilities",

@@ -17,7 +17,7 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%= render 'shared/analytics_table',
+<%= render 'analytics/facilities/analytics_table',
   dashboard_analytics: @dashboard_analytics,
   row_resource: User.order(:full_name),
   row_resource_description: "Users",
