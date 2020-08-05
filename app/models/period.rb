@@ -15,7 +15,7 @@ class Period
     when String
       Quarter.parse(value)
     when Date, Time, DateTime
-      Quarter.for_date(value)
+      Quarter.new(date: value)
     when Quarter
       value
     else

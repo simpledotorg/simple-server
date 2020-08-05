@@ -2,10 +2,6 @@ class Quarter
   include Comparable
   PARSE_REGEX = /\AQ(\d)-(\d{4})\z/
 
-  def self.for_date(date)
-    new(date: date)
-  end
-
   def self.current
     new(date: Date.current)
   end
