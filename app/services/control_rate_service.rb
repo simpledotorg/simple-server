@@ -13,7 +13,9 @@ class ControlRateService
     # Normalize between a single period and range of periods
     @periods = if !periods.is_a?(Range)
       @single_period = periods
-      Range.new(periods, periods)
+      # If calling code is asking for a single period,
+      # we set the range to be the current period to the start of the next period.
+      Range.new(periods, periods.succ)
     else
       periods
     end
@@ -43,8 +45,8 @@ class ControlRateService
       }
 
       data[:registrations] = registration_counts
-      data[:cumulative_registrations] = sum_cumulative_registrations(registration_counts)
-      data[:registrations].each do |(period, count)|
+      data[:cumulative_registrations] = sum_cumulative_registrations
+      periods.each do |(period, count)|
         data[:controlled_patients][period] = controlled_patients(period).count
         registration_count = if quarterly_report?
           # get the cohort counts for quarterly reports
@@ -56,28 +58,28 @@ class ControlRateService
         data[:uncontrolled_patients][period] = uncontrolled_patients(period).count
         data[:uncontrolled_patients_rate][period] = percentage(uncontrolled_patients(period).count, registration_count)
       end
+      first_registration_period = registration_counts.keys.first
+      if first_registration_period
+        data.each { |(_key, hsh)| hsh.delete_if { |period, count| period < first_registration_period } }
+      end
       data
     end
   end
 
-  def sum_cumulative_registrations(registration_counts)
-    registration_counts.each_with_object(Hash.new(0)) { |(period, count), running_totals|
-      running_totals[period] = count + running_totals[period.previous]
+  def sum_cumulative_registrations
+    initial_count = region.registered_patients.with_hypertension.where("recorded_at < ?", periods.begin.to_date).count
+    periods.each_with_object({}) { |period, running_totals|
+      previous_registrations = running_totals[period.previous] || initial_count
+      current_registrations = registration_counts[period] || 0
+      running_totals[period] = current_registrations + previous_registrations
     }
   end
 
   def registration_counts
-    @registration_counts ||= if single_period?
-      count = region.registered_patients.with_hypertension.where("recorded_at <= ?", single_period.to_date).count
-      {
-        single_period => count
-      }
-    else
-      range = (periods.begin.value.to_date..periods.end.value.to_date)
-      formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-      result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {range: range, format: formatter}).count
-      result.drop_while { |period, count| count == 0 }.to_h
-    end
+    range = (periods.begin.value.to_date..periods.end.value.to_date)
+    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
+    result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {range: range, format: formatter}).count
+    result.drop_while { |period, count| count == 0 }.to_h
   end
 
   def controlled_patients(period)

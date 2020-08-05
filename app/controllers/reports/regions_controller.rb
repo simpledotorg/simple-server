@@ -37,7 +37,7 @@ class Reports::RegionsController < AdminController
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
-    @last_registration_value = @data[:registrations].values&.last || 0
+    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
   def cohort
@@ -50,7 +50,7 @@ class Reports::RegionsController < AdminController
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
-    @last_registration_value = @data[:registrations].values&.last || 0
+    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
   private
