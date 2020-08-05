@@ -56,5 +56,4 @@ RSpec.describe VisitedButNoBPService do
       expect(count).to eq(3)
     end
   end
-
 end
