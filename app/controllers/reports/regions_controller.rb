@@ -36,7 +36,7 @@ class Reports::RegionsController < AdminController
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
-    @last_registration_value = @data[:registrations].values&.last || 0
+    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
   def cohort
@@ -49,13 +49,13 @@ class Reports::RegionsController < AdminController
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
-    @last_registration_value = @data[:registrations].values&.last || 0
+    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
   private
 
   def set_selected_date
-    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month}
+    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month.beginning_of_month}
     # TODO this will all go away, no need for building Period from the params
     @period = if period_params[:type] == "quarter"
       Period.new(type: period_params[:type], value: Quarter.parse(period_params[:value]))
@@ -70,7 +70,7 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    region_class, slug = facility_params[:id].split("-")
+    region_class, slug = facility_params[:id].split("-", 2)
     unless region_class.in?(["facility_group", "facility"])
       raise ActiveRecord::RecordNotFound
     end

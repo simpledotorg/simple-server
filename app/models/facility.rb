@@ -87,8 +87,18 @@ class Facility < ApplicationRecord
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
-  delegate :diabetes_follow_ups_by_period, to: :patients
-  delegate :hypertension_follow_ups_by_period, to: :patients
+
+  def hypertension_follow_ups_by_period(*args)
+    patients
+      .hypertension_follow_ups_by_period(*args)
+      .where(blood_pressures: {facility: self})
+  end
+
+  def diabetes_follow_ups_by_period(*args)
+    patients
+      .diabetes_follow_ups_by_period(*args)
+      .where(blood_sugars: {facility: self})
+  end
 
   friendly_id :name, use: :slugged
 
