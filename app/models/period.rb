@@ -47,7 +47,7 @@ class Period
 
   def start_date
     if quarter?
-      Quarter.for_date(to_date).start_date
+      to_quarter_period.start_date
     else
       value.beginning_of_month.to_date
     end

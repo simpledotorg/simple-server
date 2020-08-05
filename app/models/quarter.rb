@@ -28,10 +28,11 @@ class Quarter
   attr_reader :number
   attr_reader :to_s
   attr_reader :year
-  delegate :beginning_of_quarter, :end_of_quarter, to: :date
 
+  # Create a Quarter with any date-like object, needs to respond to `to_date`. So Date, DateTime, and Time will
+  # all work. Note that the stored date is normalized to a proper Date object to keep things consistent.
   def initialize(date:)
-    @date = date.freeze
+    @date = date.to_date.freeze
     @year = date.year.freeze
     @number = QuarterHelper.quarter(date).freeze
     @to_s = "Q#{number}-#{year}".freeze
@@ -63,24 +64,28 @@ class Quarter
     end
   end
 
-  def inspect
-    "#<Quarter:#{object_id} #{to_s.inspect}>"
-  end
-
   def to_date
     date
   end
 
   def start_date
-    Date.new(year, self.class.quarter_to_month(number)).beginning_of_month
+    date.beginning_of_quarter
   end
 
+  alias beginning_of_quarter start_date
+
   def end_date
-    Date.new(year, self.class.quarter_to_month(number) + 2).end_of_month
+    date.end_of_quarter
   end
+
+  alias end_of_quarter end_date
 
   def to_period
     Period.quarter(self)
+  end
+
+  def inspect
+    "#<Quarter:#{object_id} #{to_s.inspect}>"
   end
 
   def ==(other)
