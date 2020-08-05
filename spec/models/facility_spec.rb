@@ -200,27 +200,27 @@ RSpec.describe Facility, type: :model do
     it "parses the facilities" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.first).to include(organization_name: "OrgOne",
-        facility_group_name: "FGTwo",
-        name: "Test Facility",
-        facility_type: "CHC",
-        district: "Bhatinda",
-        state: "Punjab",
-        country: "India",
-        enable_diabetes_management: "true",
-        teleconsultation_phone_number: nil,
-        teleconsultation_isd_code: nil,
-        import: true)
+                                          facility_group_name: "FGTwo",
+                                          name: "Test Facility",
+                                          facility_type: "CHC",
+                                          district: "Bhatinda",
+                                          state: "Punjab",
+                                          country: "India",
+                                          enable_diabetes_management: "true",
+                                          teleconsultation_phone_number: nil,
+                                          teleconsultation_isd_code: nil,
+                                          import: true)
       expect(facilities.second).to include(organization_name: "OrgOne",
-        facility_group_name: "FGTwo",
-        name: "Test Facility 2",
-        facility_type: "CHC",
-        district: "Bhatinda",
-        state: "Punjab",
-        country: "India",
-        enable_teleconsultation: "true",
-        teleconsultation_phone_number: "9999999999",
-        teleconsultation_isd_code: "91",
-        import: true)
+                                           facility_group_name: "FGTwo",
+                                           name: "Test Facility 2",
+                                           facility_type: "CHC",
+                                           district: "Bhatinda",
+                                           state: "Punjab",
+                                           country: "India",
+                                           enable_teleconsultation: "true",
+                                           teleconsultation_phone_number: "9999999999",
+                                           teleconsultation_isd_code: "91",
+                                           import: true)
     end
 
     it "defaults enable_teleconsultation to false if blank" do
