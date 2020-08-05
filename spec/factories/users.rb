@@ -69,11 +69,13 @@ FactoryBot.define do
     email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
     user_permissions { [] }
     organization
+    access_level { :manager }
 
     role { :owner }
 
     trait(:owner) do
       role { :owner }
+      access_level { :manager }
 
       after :create do |user, _options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
@@ -85,6 +87,7 @@ FactoryBot.define do
 
     trait(:supervisor) do
       role { :supervisor }
+      access_level { :manager }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
@@ -95,6 +98,7 @@ FactoryBot.define do
 
     trait(:analyst) do
       role { :analyst }
+      access_level { :viewer }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
@@ -105,6 +109,7 @@ FactoryBot.define do
 
     trait(:counsellor) do
       role { :counsellor }
+      access_level { :viewer }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
@@ -115,6 +120,7 @@ FactoryBot.define do
 
     trait(:organization_owner) do
       role { :organization_owner }
+      access_level { :manager }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|
