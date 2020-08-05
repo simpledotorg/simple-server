@@ -58,7 +58,7 @@ class RegionReportService
   def count_visited_without_bp_taken
     periods = data[:registrations].keys
     periods.each_with_object({}) do |period, hsh|
-      visits_without_bp = Appointment.from(patients_visited_without_bp_taken(period), "appointments").count("appointments.patient_id")
+      visits_without_bp = patients_visited_without_bp_taken(period).count
       hsh[period] = visits_without_bp
     end
   end

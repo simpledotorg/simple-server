@@ -38,19 +38,21 @@ RSpec.describe RegionReportService, type: :model do
       facility = create(:facility, facility_group: facility_group_1)
       facility_2 = create(:facility)
       patient_without_bp = FactoryBot.create(:patient, registration_facility: facility)
-      patient_with_bp_taken = FactoryBot.create(:patient, registration_facility: facility)
+      patient_with_bp = FactoryBot.create(:patient, registration_facility: facility)
       appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
       appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_without_bp)
-      appointment_3 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp_taken)
-      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp_taken, recorded_at: may_15)
+      appointment_3 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
+      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
       patient_from_different_facility = FactoryBot.create(:patient, registration_facility: facility_2)
       appointment_2 = create(:appointment, creation_facility: facility_2, scheduled_date: may_15, device_created_at: may_15, patient: patient_from_different_facility)
 
       (Period.month(may_1)..Period.month(august_1)).each do |period|
+        p period
         service = RegionReportService.new(region: facility, period: period, current_user: user)
         result = service.patients_visited_without_bp_taken(period)
-        expect(result).to_not include(appointment_3)
-        expect(result).to contain_exactly(appointment_1)
+        pp result
+        expect(result).to_not include(patient_with_bp)
+        expect(result).to contain_exactly(patient_without_bp)
         result = service.count_visited_without_bp_taken
         expect(result[period]).to eq(1)
       end
