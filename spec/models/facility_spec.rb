@@ -103,6 +103,20 @@ RSpec.describe Facility, type: :model do
 
         expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
       end
+
+      it "counts the patients' hypertension follow ups at the facility only" do
+        facilities = create_list(:facility, 2)
+        patient = create(:patient, :hypertension, recorded_at: 10.months.ago)
+
+        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facilities.first, patient: patient)
+        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facilities.second, patient: patient)
+
+        expect(facilities.first.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
+        expect(facilities.second.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
+
+        expect(facilities.first.hypertension_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
+        expect(facilities.second.hypertension_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
+      end
     end
 
     context "#diabetes_follow_ups_by_period" do
@@ -125,6 +139,20 @@ RSpec.describe Facility, type: :model do
         }
 
         expect(facility.diabetes_follow_ups_by_period(:month).count).to eq(expected_output)
+      end
+
+      it "counts the patients' diabetes follow ups at the facility only" do
+        facilities = create_list(:facility, 2)
+        patient = create(:patient, :diabetes, recorded_at: 10.months.ago)
+
+        create(:blood_sugar, :with_encounter, recorded_at: 3.months.ago, facility: facilities.first, patient: patient)
+        create(:blood_sugar, :with_encounter, recorded_at: 1.month.ago, facility: facilities.second, patient: patient)
+
+        expect(facilities.first.diabetes_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
+        expect(facilities.second.diabetes_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
+
+        expect(facilities.first.diabetes_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
+        expect(facilities.second.diabetes_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
       end
     end
   end

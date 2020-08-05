@@ -95,7 +95,7 @@
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed" colspan="2">No BP taken<br>in <%= visited_in_period %>
           </th>
           <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-percent" colspan="2">Controlled BP<br>in last 90 days</th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-patients">Total patients registered<br>&gt; 3 months ago</th>
+          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="overall-patients">Total patients registered<br>before <%= display_date(3.months.ago) %></th>
           <th class="mobile"></th>
         </tr>
         </thead>
