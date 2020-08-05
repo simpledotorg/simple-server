@@ -48,42 +48,55 @@ RSpec.describe DistrictAnalyticsQuery do
       context "considers only htn diagnosed patients" do
         it "groups the registered patients by facility and beginning of month" do
           expected_result =
-            {facility.id =>
-                {registered_patients_by_period: {
-                  four_months_back => 3,
-                  three_months_back => 3
-                }}}
+            {
+              facility.id =>
+                {
+                  registered_patients_by_period: {
+                    four_months_back => 3,
+                    three_months_back => 3
+                  }
+                }
+            }
 
           expect(analytics.registered_patients_by_period).to eq(expected_result)
         end
       end
     end
 
-    describe "#total_registered_patients" do
+    describe "#total_assigned_patients" do
       context "considers only htn diagnosed patients" do
-        it "groups the registered patients by facility" do
+        it "groups the assigned patients by facility" do
           expected_result =
-            {facility.id =>
+            {
+              facility.id =>
                 {
-                  total_registered_patients: 6
-                }}
+                  total_assigned_patients: 6
+                }
+            }
 
-          expect(analytics.total_registered_patients).to eq(expected_result)
+          expect(analytics.total_assigned_patients).to eq(expected_result)
         end
       end
     end
 
-    describe "#follow_up_patients_by_period" do
+    describe "#assigned_patient_visits_by_period" do
       context "considers only htn diagnosed patients" do
-        it "groups the follow up patients by facility and beginning of month" do
+        it "groups the assigned patient visits by facility and beginning of month" do
           expected_result =
-            {facility.id =>
-                {follow_up_patients_by_period: {four_months_back => 0,
-                                                three_months_back => 3,
-                                                two_months_back => 6,
-                                                one_month_back => 3}}}
+            {
+              facility.id =>
+                {
+                  assigned_patient_visits_by_period:
+                    {
+                      four_months_back => 0,
+                      three_months_back => 3,
+                      two_months_back => 6,
+                      one_month_back => 3
+                    }
+                }
+            }
 
-          expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+          expect(analytics.assigned_patient_visits_by_period).to eq(expected_result)
         end
       end
     end
@@ -93,8 +106,8 @@ RSpec.describe DistrictAnalyticsQuery do
       let!(:bp_in_another_org) { create(:blood_pressure, facility: facility_in_another_org) }
       it "does not contain data from a different organization" do
         expect(analytics.registered_patients_by_period.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.total_registered_patients.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.follow_up_patients_by_period.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.total_assigned_patients.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.assigned_patient_visits_by_period.keys).not_to include(facility_in_another_org.id)
       end
     end
   end
@@ -102,8 +115,8 @@ RSpec.describe DistrictAnalyticsQuery do
   context "when there is no data available" do
     it "returns nil for all analytics queries" do
       expect(analytics.registered_patients_by_period).to eq(nil)
-      expect(analytics.total_registered_patients).to eq(nil)
-      expect(analytics.follow_up_patients_by_period).to eq(nil)
+      expect(analytics.total_assigned_patients).to eq(nil)
+      expect(analytics.assigned_patient_visits_by_period).to eq(nil)
     end
   end
 
@@ -124,39 +137,49 @@ RSpec.describe DistrictAnalyticsQuery do
     describe "#registered_patients_by_period" do
       it "excludes count discarded patients" do
         expected_result =
-          {facility.id =>
-              {registered_patients_by_period: {
-                four_months_back => 1
-              }}}
+          {
+            facility.id =>
+              {
+                registered_patients_by_period: {
+                  four_months_back => 1
+                }
+              }
+          }
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
       end
     end
 
-    describe "#follow_up_patients_by_period" do
+    describe "#assigned_patient_visits_by_period" do
       it "excludes count discarded patients" do
         expected_result =
-          {facility.id =>
-              {follow_up_patients_by_period: {
-                four_months_back => 0,
-                three_months_back => 1,
-                two_months_back => 0,
-                one_month_back => 0
-              }}}
+          {
+            facility.id =>
+              {
+                assigned_patient_visits_by_period: {
+                  four_months_back => 0,
+                  three_months_back => 1,
+                  two_months_back => 0,
+                  one_month_back => 0
+                }
+              }
+          }
 
-        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+        expect(analytics.assigned_patient_visits_by_period).to eq(expected_result)
       end
     end
 
-    describe "#total_registered_patients" do
+    describe "#total_assigned_patients" do
       it "excludes count discarded patients" do
         expected_result =
-          {facility.id =>
+          {
+            facility.id =>
               {
-                total_registered_patients: 1
-              }}
+                total_assigned_patients: 1
+              }
+          }
 
-        expect(analytics.total_registered_patients).to eq(expected_result)
+        expect(analytics.total_assigned_patients).to eq(expected_result)
       end
     end
   end
