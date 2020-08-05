@@ -1,4 +1,4 @@
-class UserResource < ApplicationRecord
+class AccessibleResource < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
 
   belongs_to :user

@@ -43,7 +43,7 @@ class User < ApplicationRecord
   has_many :prescription_drugs
 
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-  has_many :user_resources, dependent: :destroy
+  has_many :accessible_resources, dependent: :destroy
 
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,

@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :user_resource do
+  factory :accessible_resource do
     user
   end
 end

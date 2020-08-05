@@ -16,6 +16,18 @@ ActiveRecord::Schema.define(version: 2020_08_05_101208) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
+  create_table "accessible_resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "resource_type"
+    t.uuid "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["resource_type", "resource_id"], name: "index_accessible_resources_on_resource_type_and_resource_id"
+    t.index ["user_id", "resource_id", "resource_type"], name: "index_accessible_resources", unique: true
+    t.index ["user_id"], name: "index_accessible_resources_on_user_id"
+  end
+
   create_table "addresses", id: :uuid, default: nil, force: :cascade do |t|
     t.string "street_address"
     t.string "village_or_colony"
@@ -476,18 +488,6 @@ ActiveRecord::Schema.define(version: 2020_08_05_101208) do
     t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
   end
 
-  create_table "user_resources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.string "resource_type"
-    t.uuid "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["resource_type", "resource_id"], name: "index_user_resources_on_resource_type_and_resource_id"
-    t.index ["user_id", "resource_id", "resource_type"], name: "index_user_resources", unique: true
-    t.index ["user_id"], name: "index_user_resources_on_user_id"
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -505,6 +505,7 @@ ActiveRecord::Schema.define(version: 2020_08_05_101208) do
     t.index ["organization_id"], name: "index_users_on_organization_id"
   end
 
+  add_foreign_key "accessible_resources", "users"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
@@ -519,7 +520,6 @@ ActiveRecord::Schema.define(version: 2020_08_05_101208) do
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "user_resources", "users"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
