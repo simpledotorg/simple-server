@@ -18,6 +18,11 @@ class Reports::RegionsController < AdminController
     @data = RegionReportService.new(region: @region,
                                     selected_date: @selected_date,
                                     current_user: current_admin).call
+
+    # unless @region.is_a?(FacilityGroup)
+    #   set_dashboard_analytics(@period, 6)
+    # end
+
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -90,4 +95,27 @@ class Reports::RegionsController < AdminController
     Time.use_zone(time_zone) { yield }
     Groupdate.time_zone = "UTC"
   end
+
+  # def set_dashboard_analytics(period, prev_periods)
+  #   @dashboard_analytics =
+  #     set_analytics_cache(analytics_cache_key_dashboard(period)) {
+  #       @region.dashboard_analytics(period: period,
+  #                                     prev_periods: prev_periods,
+  #                                     include_current_period: @show_current_period)
+  #     }
+  # end
+
+  # def analytics_cache_key
+  #   "reports/regions/facility-#{@region.name}"
+  # end
+
+  # def set_analytics_cache(key)
+  #   Rails.cache.fetch(key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) { yield }
+  # end
+
+  # def analytics_cache_key_dashboard(time_period)
+  #   key = "#{analytics_cache_key}/dashboard/#{time_period}"
+  #   key = "#{key}/#{@quarter}/#{@year}" if @quarter && @year
+  #   key
+  # end
 end

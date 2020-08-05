@@ -524,39 +524,37 @@
             <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
               Total
             </th>
-            <% (1..6).step(1) do |i| %>
+            <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                PENDING
+                <%= format_period(:month, date) %>
               </th>
             <% end %>
-            <% (1..6).step(1) do |i| %>
+            <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                PENDING
+                <%= format_period(:month, date) %>
               </th>
             <% end %>
           </tr>
         </thead>
         <tbody>
-          <% (1..25).step(1) do |i| %>
-            <tr>
-              <td class="ta-left c-blue">
-                PENDING
-              </td>
+          <tr>
+            <td class="ta-left c-blue">
+              PENDING
+            </td>
+            <td class="ta-left">
+              PENDING
+            </td>
+            <% (1..6).step(1) do |i| %>
               <td class="ta-left">
                 PENDING
               </td>
-              <% (1..6).step(1) do |i| %>
-                <td class="ta-left">
-                  PENDING
-                </td>
-              <% end %>
-              <% (1..6).step(1) do |i| %>
-                <td class="ta-left">
-                  PENDING
-                </td>
-              <% end %>
-            </tr>
-          <% end %>
+            <% end %>
+            <% (1..6).step(1) do |i| %>
+              <td class="ta-left">
+                PENDING
+              </td>
+            <% end %>
+          </tr>
         </tbody>
       </table>
     </div>
