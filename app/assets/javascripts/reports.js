@@ -5,6 +5,7 @@ let darkGreenColor = "rgba(0, 122, 49, 1)";
 let mediumGreenColor = "rgba(92, 255, 157, 1)";
 let lightRedColor = "rgba(255, 235, 238, 1)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
+let lightPurpleColor = "rgba(238, 229, 252, 1)";
 let darkGreyColor = "rgba(108, 115, 122, 1)";
 let mediumGreyColor = "rgba(173, 178, 184, 1)";
 let lightGreyColor = "rgba(240, 242, 245, 1)";
@@ -19,9 +20,12 @@ function initializeCharts() {
     label: "control rate",
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
-    data.controlRate,
-    data.controlledPatients,
     false,
+    25,
+    100,
+    formatValueAsPercent,
+    formatRateTooltipText,
+    [data.controlledPatients],
   );
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
   if (controlledGraphCanvas) {
@@ -31,15 +35,18 @@ function initializeCharts() {
   const noBPMeasureGraphConfig = createGraphConfig([
     {
       data: data.controlRate,
-      rgbaLineColor: mediumGreyColor,
       rgbaBackgroundColor: mediumGreyColor,
+      hoverBackgroundColor: mediumGreyColor,
       label: "lost to follow-up",
     },
   ], "bar");
   noBPMeasureGraphConfig.options = createGraphOptions(
-    data.controlRate,
-    data.controlledPatients,
-    true,
+    false,
+    25,
+    100,
+    formatValueAsPercent,
+    formatRateTooltipText,
+    [data.uncontrolledPatients],
   );
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
@@ -55,13 +62,38 @@ function initializeCharts() {
     }
   ], "line");
   uncontrolledGraphConfig.options = createGraphOptions(
-    data.uncontrolledRate,
-    data.uncontrolledPatients,
     false,
+    25,
+    100,
+    formatValueAsPercent,
+    formatRateTooltipText,
+    [data.uncontrolledPatients],
   );
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
   if (uncontrolledGraphCanvas) {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
+  }
+
+  const maxRegistrations = Math.max(...Object.values(data.registrations));
+  const suggestedMax = Math.round(maxRegistrations) * 1.15;
+  const stepSize = Math.round(suggestedMax / 3);
+  const cumulativeRegistrationsGraphConfig = createGraphConfig([
+    {
+      data: data.registrations,
+      rgbaBackgroundColor: lightPurpleColor,
+      hoverBackgroundColor: lightPurpleColor,
+    },
+  ], "bar");
+  cumulativeRegistrationsGraphConfig.options = createGraphOptions(
+    false,
+    stepSize,
+    suggestedMax,
+    formatNumberWithCommas,
+    formatSumTooltipText,
+  );
+  const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
+  if (cumulativeRegistrationsGraphCanvas) {
+    new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
   }
 
   const visitDetailsGraphConfig = createGraphConfig([
@@ -79,9 +111,11 @@ function initializeCharts() {
     },
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(
-   data.uncontrolledRate,
-   data.uncontrolledPatients,
-   true,
+    true,
+    25,
+    formatValueAsPercent,
+    formatRateTooltipText,
+    [data.controlledPatients, data.uncontrolledPatients],
   );
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {
@@ -111,7 +145,7 @@ function getReportingData() {
   return data;
 };
 
-function createGraphConfig(datasetsConfig, graphType, label) {
+function createGraphConfig(datasetsConfig, graphType) {
   return {
     type: graphType,
     data: {
@@ -120,9 +154,10 @@ function createGraphConfig(datasetsConfig, graphType, label) {
         return {
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
-          borderColor: dataset.rgbaLineColor,
-          borderWidth: 1,
+          borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
+          borderWidth: dataset.rgbaLineColor ? 1 : undefined,
           pointBackgroundColor: dataset.rgbaLineColor,
+          hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
         };
       }),
@@ -130,7 +165,7 @@ function createGraphConfig(datasetsConfig, graphType, label) {
   };
 };
 
-function createGraphOptions(rates, counts, isStacked) {
+function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, dataSum) {
   return {
     animation: false,
     responsive: true,
@@ -180,12 +215,10 @@ function createGraphOptions(rates, counts, isStacked) {
           fontColor: "#ADB2B8",
           fontSize: 12,
           fontFamily: "Roboto Condensed",
-          stepSize: 25,
-          suggestedMax: 100,
+          stepSize,
+          suggestedMax,
           suggestedMin: 0,
-          callback: function(value, index, values) {
-            return value + "%";
-          }
+          callback: tickCallbackFunction,
         }
       }],
     },
@@ -207,14 +240,30 @@ function createGraphOptions(rates, counts, isStacked) {
       callbacks: {
         title: function() {},
         label: function(tooltipItem, data) {
-          const datasetIndex = tooltipItem.datasetIndex;
-          const index = tooltipItem.index;
-          const date = Object.keys(rates)[index];
-          const count = Object.values(counts)[index];
-          const percent = Math.round(tooltipItem.value);
-          return `${percent}% ${data.datasets[datasetIndex].label} (${count} patients) in ${date}`;
+          return tooltipCallbackFunction(tooltipItem, data, dataSum);
         },
       },
     }
   };
 };
+
+function formatRateTooltipText(tooltipItem, data, sumData) {
+  const datasetIndex = tooltipItem.datasetIndex;
+  const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
+  const date = tooltipItem.label;
+  const label = data.datasets[datasetIndex].label;
+  const percent = Math.round(tooltipItem.value);
+  return `${percent}% ${label} (${total} patients) in ${date}`;
+}
+
+function formatSumTooltipText(tooltipItem) {
+  return `${formatNumberWithCommas(tooltipItem.value)} patients registered in ${tooltipItem.label}`;
+}
+
+function formatValueAsPercent(value) {
+  return `${value}%`;
+}
+
+function formatNumberWithCommas(value) {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

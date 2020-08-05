@@ -27,11 +27,7 @@
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
-
-  if($('analytics-table').length) {
-    new Tablesort(document.getElementById('analytics-table'), { descending: true })
-  }
-
+  
   if($('#htn-controlled-table').length) {
     new Tablesort(document.getElementById('htn-controlled-table'), { descending: true })
   }
@@ -46,5 +42,9 @@ $(function () {
 
   if($('#cumulative-registrations-table').length) {
     new Tablesort(document.getElementById('cumulative-registrations-table'), { descending: true })
+  }
+
+  if($('#analytics-table').length) {
+    new Tablesort(document.getElementById('analytics-table'), { descending: true })
   }
 });

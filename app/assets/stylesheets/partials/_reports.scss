@@ -17,7 +17,7 @@
 .align-start { align-items: flex-start; }
 .align-end { align-items: flex-end; }
 .jc-flex-end { justify-content: flex-end; }
-.jc-center { justify-content: center; }
+.justify-center { justify-content: center; }
 .jc-between { justify-content: space-between; }
 .order-1 { order: 1; }
 .order-2 { order: 2; }
@@ -25,16 +25,16 @@
 .o-hidden { overflow: hidden; }
 // Spacing
 .m-0px { margin-bottom: 0px; }
-.mt-0px { margin-top: 0; }
+.mt-0px { margin-top: 0px; }
 .mr-12px { margin-right: 12px; }
 .mr-24px { margin-right: 24px; }
-.mb-0px { margin-bottom: 0; }
+.mb-0px { margin-bottom: 0px; }
 .mb-8px { margin-bottom: 8px; }
 .mb-12px { margin-bottom: 12px; }
 .mb-24px { margin-bottom: 24px; }
 .mb-48px { margin-bottom: 48px; }
 .ml-8px { margin-left: 8px; }
-.p-0 { padding: 0; }
+.p-0px { padding: 0px; }
 .pb-8px { padding-bottom: 8px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 // Width
@@ -49,6 +49,7 @@
 .h-200px { height: 200px; }
 // Typography
 .fs-14px { font-size: 14px; }
+.fs-16px { font-size: 16px; }
 .fs-20px { font-size: 20px; }
 .fs-xlarge { font-size: 24px; }
 .fs-28px { font-size: 28px; }

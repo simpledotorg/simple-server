@@ -1,14 +1,58 @@
 require "rails_helper"
 
 RSpec.describe Quarter, type: :model do
-  let(:jan_1) { Time.parse("January 1st, 2020") }
+  let(:jan_1) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:jan_1_date) { Date.parse("January 1st, 2020") }
+
+  let(:q1_2019) { Quarter.new(date: Time.parse("January 1st, 2019")) }
+  let(:q1_2020) { Quarter.new(date: Time.parse("January 1st, 2020")) }
+  let(:q3_2020) { Quarter.new(date: Time.parse("August 1st, 2020")) }
+
+  it "can parse" do
+    quarter = Quarter.parse("Q2-2020")
+    expect(quarter.number).to eq(2)
+    expect(quarter.year).to eq(2020)
+  end
+
+  it "raises for bad string parsing" do
+    expect {
+      Quarter.parse("Qx-2020")
+    }.to raise_error(ArgumentError)
+  end
+
+  it "same quarters are equal and have same hash code" do
+    q1_01 = Quarter.new(date: Time.parse("January 1st, 2020"))
+    q1_02 = Quarter.new(date: Time.parse("March 1st, 2020"))
+    q2 = Quarter.new(date: Time.parse("April 1st, 2020"))
+    expect(q1_01).to eq(q1_02)
+    expect(q1_01.hash).to eq(q1_02.hash)
+    expect(q1_01).to_not eq(q2)
+    expect(q1_01.hash).to_not eq(q2.hash)
+  end
+
+  it "can be compared" do
+    expect(q1_2019).to be < q1_2020
+    expect(q1_2020).to be < q3_2020
+    expect(q3_2020).to be > q1_2020
+  end
+
+  it "normalizes non-Dates into Dates when created" do
+    time = Time.parse("January 1st, 2020")
+    quarter = Quarter.new(date: time)
+    expect(quarter.date).to be_instance_of(Date)
+    expect(quarter.date).to eq(jan_1_date)
+    datetime = DateTime.parse("January 1st 2020 00:00:00+00:00")
+    quarter = Quarter.new(date: datetime)
+    expect(quarter.date).to be_instance_of(Date)
+    expect(quarter.date).to eq(jan_1_date)
+  end
 
   it "can create from date" do
-    date = Time.parse("January 1st, 2020")
-    quarter = Quarter.new(date: date)
+    time = Time.parse("January 1st, 2020")
+    quarter = Quarter.new(date: time)
     expect(quarter.number).to eq(1)
     expect(quarter.year).to eq(2020)
-    expect(quarter.date).to eq(date)
+    expect(quarter.date).to eq(time.to_date)
   end
 
   it "can return previous and next quarter" do
@@ -46,5 +90,12 @@ RSpec.describe Quarter, type: :model do
         expect(quarter.year).to eq(expected_years[index])
       end
     end
+  end
+
+  it "can return its start and end dates" do
+    date = Time.parse("May 21st, 2020")
+    quarter = Quarter.new(date: date)
+    expect(quarter.start_date).to eq(Date.parse("April 1, 2020"))
+    expect(quarter.end_date).to eq(Date.parse("June 30, 2020"))
   end
 end
