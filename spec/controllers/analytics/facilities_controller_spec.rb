@@ -104,42 +104,42 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
           {
             cohort: {
               [mar_2019, apr_2019] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
+                cohort_patients: {:total => 3, facility.id.to_sym => 3},
                 followed_up: {total: 0},
                 defaulted: {:total => 3, facility.id.to_sym => 3},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [feb_2019, mar_2019] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
+                cohort_patients: {:total => 3, facility.id.to_sym => 3},
                 followed_up: {:total => 3, facility.id.to_sym => 3},
                 defaulted: {:total => 0, facility.id.to_sym => 0},
                 controlled: {:total => 3, facility.id.to_sym => 3},
                 uncontrolled: {:total => 0, facility.id.to_sym => 0}
               },
               [jan_2019, feb_2019] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [dec_2018, jan_2019] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [nov_2018, dec_2018] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [oct_2018, nov_2018] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},

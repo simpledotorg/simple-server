@@ -79,35 +79,35 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
           {
             cohort: {
               [cohort_date1.prev_quarter, cohort_date1] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [cohort_date2.prev_quarter, cohort_date2] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
+                cohort_patients: {:total => 3, facility.id.to_sym => 3},
                 followed_up: {:total => 3, facility.id.to_sym => 3},
                 defaulted: {:total => 0, facility.id.to_sym => 0},
                 controlled: {:total => 3, facility.id.to_sym => 3},
                 uncontrolled: {:total => 0, facility.id.to_sym => 0}
               },
               [cohort_date3.prev_quarter, cohort_date3] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [cohort_date4.prev_quarter, cohort_date4] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [cohort_date5.prev_quarter, cohort_date5] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
