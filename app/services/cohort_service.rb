@@ -6,7 +6,7 @@ class CohortService
     @quarters = quarters || default_quarters
   end
 
-  # Each quarter cohort is made up of patients registered in the previous quarter 
+  # Each quarter cohort is made up of patients registered in the previous quarter
   # who has had a follow up visit in the current quarter.
   def call
     result = {quarterly_registrations: []}

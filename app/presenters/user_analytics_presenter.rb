@@ -10,6 +10,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   HTN_CONTROL_MONTHS_AGO = 24
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
+  CACHE_VERSION = 2
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
   def daily_stats_by_date(*stats)
@@ -28,8 +29,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, *stats)
   end
 
-  def monthly_htn_control_rate(month_date, precision: 1)
-    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, month_date.to_s(:month_year)).truncate(precision)
+  def monthly_htn_control_rate(month_date)
+    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, Period.month(month_date)).truncate(0)
   end
 
   def monthly_htn_control_last_period
@@ -37,8 +38,16 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_control_last_period_patient_counts
-    controlled_patients = monthly_htn_stats_by_date(:controlled_visits, :controlled_patients, htn_control_monthly_period_list.last.to_s(:month_year))
-    registrations = monthly_htn_stats_by_date(:controlled_visits, :registrations, htn_control_monthly_period_list.last.to_s(:month_year))
+    controlled_patients = monthly_htn_stats_by_date(
+      :controlled_visits,
+      :controlled_patients,
+      Period.month(htn_control_monthly_period_list.last)
+    )
+    registrations = monthly_htn_stats_by_date(
+      :controlled_visits,
+      :cumulative_registrations,
+      Period.month(htn_control_monthly_period_list.last)
+    )
 
     "#{number_with_delimiter(controlled_patients)} of #{number_with_delimiter(registrations)}"
   end
@@ -73,6 +82,22 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def all_time_htn_stats_by_gender(stat, gender)
     zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
+  end
+
+  def cohorts
+    statistics.dig(:cohorts, :quarterly_registrations)
+  end
+
+  def cohort_controlled(cohort)
+    display_percentage(cohort[:controlled], cohort[:registered])
+  end
+
+  def cohort_uncontrolled(cohort)
+    display_percentage(cohort[:uncontrolled], cohort[:registered])
+  end
+
+  def cohort_no_bp(cohort)
+    display_percentage(cohort[:no_bp], cohort[:registered])
   end
 
   def locked_trophy
@@ -121,6 +146,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
           daily: daily_stats,
           monthly: monthly_stats,
           all_time: all_time_stats,
+          cohorts: cohort_stats,
           trophies: trophy_stats,
           metadata: {
             is_diabetes_enabled: diabetes_enabled?,
@@ -196,6 +222,10 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       all_time_dm_stats].inject(:deep_merge)
   end
 
+  def cohort_stats
+    CohortService.new(region: current_facility).call
+  end
+
   #
   # After exhausting the initial TROPHY_MILESTONES, subsequent milestones must follow the following pattern:
   #
@@ -268,9 +298,9 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .group(:gender)
         .count
 
-    control_rate_end = Date.current.advance(months: -1).end_of_month.to_date
-    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO).to_date
-    controlled_visits = ControlRateService.new(current_facility, range: control_rate_start..control_rate_end).call
+    control_rate_end = Period.month(Date.current.advance(months: -1))
+    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
+    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
 
     registrations =
       current_facility
@@ -398,7 +428,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def statistics_cache_key
-    "user_analytics/#{current_facility.id}"
+    "user_analytics/#{current_facility.id}/#{CACHE_VERSION}"
   end
 
   def sum_by_date(data)

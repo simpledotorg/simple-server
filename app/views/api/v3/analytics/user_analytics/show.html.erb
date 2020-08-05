@@ -13,16 +13,29 @@
 
      <script type="text/javascript">// Hides and shows each page of Progress
 
-        function open_window(id) {
+        function open_window(id, parentId) {
            var element = document.getElementById(id);
            element.style.display = 'block';
+
+           if (parentId) {
+             var parent = document.getElementById(parentId);
+             parent.style.display = 'none';
+             parent.style.height = '0';
+           }
+
            document.body.scrollTop = 0; // For Safari
            document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
         }
 
-        function close_window(id) {
+        function close_window(id, parentId) {
            var element = document.getElementById(id);
            element.style.display = 'none';
+
+           if (parentId) {
+             var parent = document.getElementById(parentId);
+             parent.style.display = 'block';
+             parent.style.height = 'auto';
+           }
         }
      </script>
 </head>
@@ -107,11 +120,7 @@
 
   <!-- monthly follow-up patients view -->
   <div class="card">
-    <% if @user_analytics.diabetes_enabled? %>
-      <h3>Follow-up patients</h3>
-    <% else %>
-      <h3>Follow-up hypertension patients</h3>
-    <% end %>
+    <h3>Follow-up patients</h3>
 
     <% follow_ups_table_name = 'follow_ups' %>
 
@@ -142,7 +151,7 @@
         <tbody>
             <tr>
                 <% @user_analytics.htn_control_monthly_period_list.each do |month_date| %>
-                  <% control_rate = @user_analytics.monthly_htn_control_rate(month_date, precision: 0) %>
+                  <% control_rate = @user_analytics.monthly_htn_control_rate(month_date) %>
                   <td class="bar-row">
                     <div class="bar-value"><span><%= control_rate %>%</span></div>
                     <div style="height: <%= control_rate * 2 %>px;" class="bar"><span></span></div>
@@ -155,7 +164,7 @@
   </div>
 
   <div class="card">
-     <a href="#"  onclick="open_window('progress-cohort'); return false" class="nav-next">Cohort report</a>
+     <a href="#"  onclick="open_window('progress-cohort', 'progress-start'); return false" class="nav-next">Cohort report</a>
   </div>
 
   <!-- all trophies view -->
@@ -201,24 +210,9 @@
   </div>
 </div>
 
-<div id="progress-control" class="progress-body" style="display: none; padding-bottom: 1200px;">
+<div id="progress-cohort" class="progress-body" style="display: none;">
     <div class="progress-contents">
-        <a href="#" onclick="close_window('progress-cohort'); return false" class="help-back">
-            <%= inline_svg('icon_back.svg') %>
-        </a>
-
-        <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension controlled</h2>
-        <p>How is "Patients with controlled hypertension" calculated?</p>
-        <p>Numerator: Hypertension patients with BP &lt;140/90 at their most recent visit in the last 3 months</p>
-
-        <p>Denominator: All hypertension patients registered &gt; 3 months prior.</p>
-
-    </div>
-</div>
-
-<div id="progress-cohort" class="progress-body" style="display: none; padding-bottom: 1200px;">
-    <div class="progress-contents">
-        <a href="#" onclick="close_window('progress-cohort'); return false" class="help-back">
+        <a href="#" onclick="close_window('progress-cohort', 'progress-start'); return false" class="help-back">
             <%= inline_svg('icon_back.svg') %>
         </a>
 
@@ -227,46 +221,26 @@
         <div class="key">
             <p class="left"><span class="key-color green"></span> Visited with BP &lt;140/90</p>
             <p class="left"><span class="key-color red"></span> Visited with BP &ge;140/90</p>
-            <p class="left"><span class="key-color grey-dark"></span> Visited but no BP</p>
             <p class="left"><span class="key-color grey"></span> Did not have a BP measure</p>
         </div>
-        <div class="card cohort">
-            <h6>43 patients registered in Q1-2020</h6>
-            <p>Result from last visit in Q2-2020</p>
-            <div class="cohort-bars">
-                <div class="cohort-controlled" style="width: 26%;">26%</div>
-                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
-                <div class="cohort-nobp" style="width: 60%;">60%</div>
-            </div>
-        </div>
 
-        <div class="card cohort">
-            <h6>56 patients registered in Q4-2019</h6>
-            <p>Result from last visit in Q1-2020</p>
-            <div class="cohort-bars">
-                <div class="cohort-controlled" style="width: 26%;">26%</div>
-                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
-                <div class="cohort-nobp" style="width: 60%;">60%</div>
-            </div>
-        </div>
-
-        <div class="card cohort">
-            <h6>93 patients registered in Q3-2019</h6>
-            <p>Result from last visit in Q4-2019</p>
-            <div class="cohort-bars">
-                <div class="cohort-controlled" style="width: 26%;">26%</div>
-                <div class="cohort-uncontrolled" style="width: 14%;">14%</div>
-                <div class="cohort-nobp" style="width: 60%;">60%</div>
-            </div>
-        </div>
-
-        <div class="card cohort">
-            <h6>0 patients registered in Q2-2019</h6>
-            <p>Result from last visit in Q3-2019</p>
-            <div class="cohort-bars">
-                <div class="cohort-none" style="width: 100%;">0</div>
-            </div>
-        </div>
+        <% @user_analytics.cohorts.each do |cohort| %>
+          <div class="card cohort">
+              <h6><%= cohort[:registered] %> patients registered in <%= cohort[:patients_registered] %></h6>
+              <p>Result from last visit in <%= cohort[:results_in] %></p>
+              <div class="cohort-bars">
+                  <div class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
+                    <%= @user_analytics.cohort_controlled(cohort) %>
+                  </div>
+                  <div class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
+                    <%= @user_analytics.cohort_uncontrolled(cohort) %>
+                  </div>
+                  <div class="cohort-nobp" style="width: calc(<%= @user_analytics.cohort_no_bp(cohort) %> - 1%);">
+                    <%= @user_analytics.cohort_no_bp(cohort) %>
+                  </div>
+              </div>
+          </div>
+        <% end %>
 
         <h3 style="padding-top: 40px; padding-left: 8px;">Notes</h3>
         <ul class="footnotes">

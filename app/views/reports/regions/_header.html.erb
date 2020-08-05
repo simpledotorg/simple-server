@@ -1,0 +1,69 @@
+<div class="alert alert-primary">
+  <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
+</div>
+<div class="dashboard">
+  <nav class="breadcrumb mb-0px">
+    <%= link_to 'All reports', dashboard_districts_path %>
+    <% if @region.respond_to?(:facility_group) %>
+      <i class="fas fa-chevron-right"></i>
+      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.region_slug) %>
+    <% end %>
+    <i class="fas fa-chevron-right"></i>
+    <%= @region.name %>
+  </nav>
+  <p class="mb-12px fs-xxlarge fw-bold">
+    <%= @region.name %>
+  </p>
+  <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
+    <div class="d-flex order-2 order-lg-1">
+      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Overview", request.params.merge(action: "show") %>
+      </p>
+      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort") %>
+      </p>
+      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Details trend", request.params.merge(action: "details") %>
+      </p>
+    </div>
+    <div class="dropdown show order-1 mb-24px order-lg-2 mb-lg-0">
+      <a
+        class="d-block d-lg-inline-block btn btn-primary btn-sm dropdown-toggle"
+        href="#"
+        role="button"
+        id="dropdownMenuLink"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <%= @selected_date.to_s %> report
+      </a>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <%= form_for(@period, url: request.params, method: :get) do |f| %>
+          <%= f.text_field :type, { id: "dropdown-period-type" } %>
+
+          <% (0..12).each do |num|
+              selected = false
+              date = Date.current.end_of_month.advance(months: -num)
+              period = Period.new(type: :month, value: date)
+          %>
+            <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
+                    type="submit" data-period-type="month" value="<%= period.value %>">
+              <%= period.value.to_s(:mon_year) %>
+            </button>
+          <% end %>
+
+          <div class="dropdown-divider"></div>
+
+          <% Quarter.current.downto(6).each do |quarter| %>
+            <% period = Period.new(type: :quarter, value: quarter) %>
+            <button class="dropdown-item query-filter-month <%= 'active' if false %>" name="period[value]"
+                    type="submit" data-period-type="quarter" value="<%= period.value %>">
+              <%= period.value.to_s %>
+            </button>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
