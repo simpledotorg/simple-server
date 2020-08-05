@@ -33,7 +33,7 @@ class CohortAnalyticsQuery
   end
 
   def patient_counts(cohort_start, cohort_end, report_start, report_end)
-    registrations = registrations(cohort_start, cohort_end)
+    cohort_patients = registrations(cohort_start, cohort_end)
     followed_up_patients = followed_up(cohort_patients, report_start, report_end)
     controlled_patients = controlled(followed_up_patients)
     uncontrolled_patients = followed_up_patients - controlled_patients
