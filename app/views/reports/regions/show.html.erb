@@ -1,4 +1,5 @@
 <%= render "header" %>
+
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
@@ -185,7 +186,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last %> 
+              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last %>
             <% end %>
           </p>
         </div>
