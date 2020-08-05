@@ -191,7 +191,7 @@ RSpec.describe CohortAnalyticsQuery do
         end
 
         expected_result = {
-            cohort_patients: {
+          cohort_patients: {
             :total => 17,
             facility1.id => 10,
             facility2.id => 7
