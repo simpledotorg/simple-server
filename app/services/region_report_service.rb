@@ -57,49 +57,18 @@ class RegionReportService
   # visited in last 3 months but had no BP taken
   def count_visited_without_bp_taken
     periods = data[:registrations].keys
-    periods.each_with_object({}) do |period, hsh|
-      visits_without_bp = patients_visited_without_bp_taken(period).count
-      hsh[period] = visits_without_bp
-    end
+    VisitedButNoBPService.new(region, periods: periods).call
   end
 
   def percentage_visited_without_bp_taken
     data[:visited_without_bp_taken].each_with_object({}) do |(period, count), hsh|
-      hsh[period] = if count&.zero?
-        0
-      else
-        percentage(count, data[:cumulative_registrations].fetch(period))
-      end
+      hsh[period] = percentage(count, data[:cumulative_registrations].fetch(period))
     end
   end
 
   def percentage(numerator, denominator)
     return 0 if denominator == 0
-    ((numerator.to_f / denominator) * 100).round(0)
-  end
-
-  def patients_visited_without_bp_taken(period)
-    begin_date = period.advance(months: -3).start_date
-    end_date = period.end_date
-    control_range = begin_date..end_date
-    clause = Patient.sanitize_sql_for_conditions(["bps.recorded_at >= ? AND bps.recorded_at < ?", begin_date, end_date])
-    created_at_clause = Appointment.sanitize_sql_for_conditions(["appointments.device_created_at >= ? AND appointments.device_created_at <= ?", begin_date, end_date])
-    not_exists =<<-SQL
-      NOT EXISTS (
-        SELECT 1
-        FROM blood_pressures bps
-        WHERE patients.id = bps.patient_id
-          AND #{clause}
-      )
-    SQL
-    Patient
-      .distinct
-      .with_hypertension
-      .where(registration_facility: facilities)
-      .joins("LEFT OUTER JOIN appointments on appointments.patient_id = patients.id AND #{created_at_clause}")
-      .where(not_exists)
-      # .left_joins(:blood_sugars).where(appointments: { device_created_at: control_range })
-      # .left_joins(:prescription_drugs).where(appointments: { device_created_at: control_range })
+    ((numerator.to_f / denominator.to_f) * 100).round(0)
   end
 
   def compile_control_and_registration_data
