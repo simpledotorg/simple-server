@@ -11,6 +11,11 @@ RSpec.describe Period, type: :model do
   let(:q1_2019_period) { Period.quarter(quarter_1_2019) }
   let(:q1_2020_period) { Period.quarter(quarter_1_2020) }
 
+  it "times and dates can convert themselves into periods" do
+    expect(jan_1_2019.to_period).to eq(Date.parse("January 1st 2019").to_period)
+    expect(jan_1_2019.to_period.value).to eq(Date.parse("January 1st 2019").to_period.value)
+  end
+
   it "validations" do
     period = Period.new(type: "invalid", value: jan_1_2020)
     expect(period).to be_invalid
