@@ -44,7 +44,7 @@
 
           <% (0..12).each do |num|
               selected = false
-              date = Date.current.end_of_month.advance(months: -num)
+              date = Date.current.beginning_of_month.advance(months: -num)
               period = Period.new(type: :month, value: date)
           %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"

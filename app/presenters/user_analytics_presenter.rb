@@ -30,7 +30,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_control_rate(month_date)
-    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, Period.month(month_date)).truncate(0)
+    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, Period.month(month_date)).round
   end
 
   def monthly_htn_control_last_period
