@@ -17,6 +17,7 @@ class Access < ApplicationRecord
 
   validates :role, presence: true
   validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have one access per resource."}
+  validates :user, uniqueness: {scope: [:role], message: "can only have one role."}
   validates :resource, presence: {unless: :super_admin?, message: "is required if not a super_admin."}
   validates :resource, absence: {if: :super_admin?, message: "must be nil if super_admin"}
   validates :resource_type, inclusion: {in: ALLOWED_RESOURCES, unless: :super_admin?}
