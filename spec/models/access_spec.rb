@@ -102,22 +102,79 @@ RSpec.describe Access, type: :model do
     end
   end
 
-  pending ".facility_groups" do
-    let(:admin) { create(:admin) }
-    let!(:facility_group_1) { create(:facility_group) }
-    let!(:facility_group_2) { create(:facility_group) }
-    let!(:facility_group_3) { create(:facility_group) }
-    let!(:access_1) { create(:access, user: admin, mode: :manager, resource: facility_group_1) }
-    let!(:access_2) { create(:access, user: admin, mode: :viewer, resource: facility_group_2) }
+  describe ".facility_groups" do
+    let(:viewer) { create(:admin) }
+    let(:manager) { create(:admin) }
 
-    it "returns all facility_groups the user has access to" do
-      expect(admin.accesses.facility_groups).to contain_exactly(facility_group_1, facility_group_2)
-      expect(admin.accesses.facility_groups).not_to contain_exactly(facility_group_3)
+    context "for a direct facility-group-level access" do
+      let!(:facility_group_1) { create(:facility_group) }
+      let!(:facility_group_2) { create(:facility_group) }
+      let!(:facility_group_3) { create(:facility_group) }
+      let!(:manager_access) { create(:access, :manager, user: manager, resource: facility_group_1) }
+      let!(:viewer_access) { create(:access, :viewer, user: viewer, resource: facility_group_2) }
+
+      context "view action" do
+        it "returns all facility_groups the manager can view" do
+          expect(manager.accesses.facility_groups(:view)).to contain_exactly(facility_group_1)
+          expect(manager.accesses.facility_groups(:view)).not_to contain_exactly(facility_group_2, facility_group_3)
+        end
+
+        it "returns all facility_groups the viewer can view" do
+          expect(viewer.accesses.facility_groups(:view)).to contain_exactly(facility_group_2)
+          expect(viewer.accesses.facility_groups(:view)).not_to contain_exactly(facility_group_1, facility_group_3)
+        end
+      end
+
+      context "manage action" do
+        it "returns all facility_groups the manager can manage" do
+          expect(manager.accesses.facility_groups(:manage)).to contain_exactly(facility_group_1)
+          expect(manager.accesses.facility_groups(:manage)).not_to contain_exactly(facility_group_2, facility_group_3)
+        end
+
+        it "returns all facility_groups the viewer can manage" do
+          expect(viewer.accesses.facility_groups(:manage)).to be_empty
+        end
+      end
     end
 
-    it "returns all facility_groups the user has admin access to" do
-      expect(admin.accesses.admin.facility_groups).to contain_exactly(facility_group_1)
-      expect(admin.accesses.admin.facility_groups).not_to contain_exactly(facility_group_2, facility_group_3)
+    context "for a direct org-level access" do
+      let!(:organization_1) { create(:organization) }
+      let!(:organization_2) { create(:organization) }
+      let!(:organization_3) { create(:organization) }
+
+      let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+      let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+      let!(:facility_group_3) { create(:facility_group, organization: organization_3) }
+      let!(:facility_group_4) { create(:facility_group, organization: organization_3) }
+
+      let!(:org_manager_access) { create(:access, :manager, user: manager, resource: organization_1) }
+      let!(:fg_manager_access) { create(:access, :manager, user: manager, resource: facility_group_3) }
+
+      let!(:org_viewer_access) { create(:access, :viewer, user: viewer, resource: organization_2) }
+      let!(:fg_viewer_access) { create(:access, :viewer, user: viewer, resource: facility_group_4) }
+
+      context "view action" do
+        it "returns all facilities the manager can view" do
+          expect(manager.accesses.facility_groups(:view)).to contain_exactly(facility_group_1, facility_group_3)
+          expect(manager.accesses.facility_groups(:view)).not_to contain_exactly(facility_group_2, facility_group_4)
+        end
+
+        it "returns all facility_groups the viewer can view" do
+          expect(viewer.accesses.facility_groups(:view)).to contain_exactly(facility_group_2, facility_group_4)
+          expect(viewer.accesses.facility_groups(:view)).not_to contain_exactly(facility_group_1, facility_group_3)
+        end
+      end
+
+      context "manage action" do
+        it "returns all facility_groups the manager can manage" do
+          expect(manager.accesses.facility_groups(:manage)).to contain_exactly(facility_group_1, facility_group_3)
+          expect(manager.accesses.facility_groups(:manage)).not_to contain_exactly(facility_group_2, facility_group_4)
+        end
+
+        it "returns all facility_groups the viewer can manage" do
+          expect(viewer.accesses.facility_groups(:manage)).to be_empty
+        end
+      end
     end
   end
 
