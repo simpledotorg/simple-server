@@ -27,16 +27,16 @@ class TopRegionService
       result[:controlled_patients_rate][period]
     }
     top_region_for_registrations, registrations_result = all_region_data.max_by { |region, result|
-      result[:registrations][period]
+      result[:cumulative_registrations][period]
     }
     {
       control_rate: {
         region: top_region_for_rate,
         value: control_rate_result[:controlled_patients_rate][period]
       },
-      registrations: {
+      cumulative_registrations: {
         region: top_region_for_registrations,
-        value: registrations_result[:registrations][period]
+        value: registrations_result[:cumulative_registrations][period]
       }
     }
   end

@@ -1,13 +1,4 @@
 class Period
-  module ToPeriodExtensions
-    def to_period
-      Period.month(self)
-    end
-  end
-
-  Date.include ToPeriodExtensions
-  Time.include ToPeriodExtensions
-
   include Comparable
   include ActiveModel::Model
   validates :type, presence: true, inclusion: {in: [:month, :quarter], message: "must be month or quarter"}
@@ -24,7 +15,7 @@ class Period
     when String
       Quarter.parse(value)
     when Date, Time, DateTime
-      Quarter.for_date(value)
+      Quarter.new(date: value)
     when Quarter
       value
     else
@@ -54,11 +45,27 @@ class Period
     value.to_date
   end
 
+  def start_date
+    if quarter?
+      value.start_date
+    else
+      value.beginning_of_month.to_date
+    end
+  end
+
+  def end_date
+    if quarter?
+      value.end_date
+    else
+      value.end_of_month.to_date
+    end
+  end
+
   def succ
     if quarter?
       Period.new(type: type, value: value.succ)
     else
-      Period.new(type: type, value: value.next_month)
+      Period.new(type: type, value: value.advance(months: 1))
     end
   end
 
