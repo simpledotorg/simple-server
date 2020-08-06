@@ -471,21 +471,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="ta-left c-blue">
-              PENDING
+          <tr class="row-total" data-sort-method="none">
+            <td class="row-title row-total">
+              All
             </td>
-            <td class="ta-left">
-              PENDING
+            <td class="row-total" style="text-align: center;">
+              <%= dash_if_zero(@region.dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
             </td>
-            <% (1..6).step(1) do |i| %>
-              <td class="ta-left">
-                PENDING
+            <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
+              <td class="row-total" style="text-align: center;">
+                <%= dash_if_zero(analytics_totals(@region.dashboard_analytics, :follow_up_patients_by_period, date)) %>
               </td>
             <% end %>
-            <% (1..6).step(1) do |i| %>
-              <td class="ta-left">
-                PENDING
+            <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
+              <td class="row-total" style="text-align: center;">
+                <%= dash_if_zero(analytics_totals(@region.dashboard_analytics, :registered_patients_by_period, date)) %>
               </td>
             <% end %>
           </tr>
@@ -494,12 +494,6 @@
     </div>
   </div>
 <% end %>
-<div class="card o-hidden mt-0 p-0px">
-  <%= image_tag(
-      @region.is_a?(FacilityGroup) ? "screenshot.png" : "facility-screenshot.png",
-      :class => "mw-100pt"
-  )%>
-</div>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
