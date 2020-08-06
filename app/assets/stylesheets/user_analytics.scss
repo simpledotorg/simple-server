@@ -356,15 +356,16 @@ p.control-desc {
 
 .card {
     .tip {
-        display: none;
+        opacity: 0;
         color: $grey-mid;
         font-weight: normal;
-        margin-right: 8px;
+        margin-right: 16px;
+        transition: 0.3s ease-in-out;
     }
     
     &:active {
         .tip {
-            display: inline;
+            opacity: 1;
         }
     }
 }
