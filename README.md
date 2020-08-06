@@ -63,9 +63,9 @@ rails db:setup
 
 ##### Issues with MacOS Catalina and Puma
 
-If you encounter issues installing the `puma` gem on MacOS Catalina, it may be due to compiler upgrades Apple issued.
+When running `bin/setup` on MacOS Catalina, you may encounter issues installing the `puma` gem related to compiler upgrades Apple issued.
 
-You may see errors like this:
+If you see errors like this:
 
 ```
 compiling puma_http11.c
