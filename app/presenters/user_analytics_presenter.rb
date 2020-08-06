@@ -7,7 +7,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
-  HTN_CONTROL_MONTHS_AGO = 24
+  HTN_CONTROL_MONTHS_AGO = 12
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
   CACHE_VERSION = 2
@@ -125,7 +125,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def htn_control_monthly_period_list
-    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO)[1..12].reverse
+    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO + 1).reverse.tap(&:pop)
   end
 
   def display_percentage(numerator, denominator)

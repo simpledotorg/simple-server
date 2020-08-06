@@ -30,7 +30,7 @@ class CohortService
   end
 
   def format_quarter(quarter)
-    "#{quarter.year} Q#{quarter.number}"
+    "Q#{quarter.number} #{quarter.year}"
   end
 
   def default_quarters
