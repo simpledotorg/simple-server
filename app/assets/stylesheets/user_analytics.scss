@@ -101,6 +101,7 @@ body#progress {
 
 .key {
     margin: 24px 0 32px 0;
+    font-size: 16px;
     
     span {
         display: inline-block;
@@ -369,6 +370,7 @@ p.control-desc {
     &:active {
         .tip {
             opacity: 1;
+            background: rgba(255,255,255,0.8);
         }
     }
 }
@@ -423,6 +425,7 @@ p.control-desc {
             display: block;
             color: $green;
             text-align: right;
+            z-index: 100000;
         }
     }
     
