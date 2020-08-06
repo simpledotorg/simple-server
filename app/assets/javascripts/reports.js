@@ -258,25 +258,6 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
   };
 };
 
-function defaultTooltips() {
-  return {
-    backgroundColor: "rgb(0, 0, 0)",
-    bodyAlign: "center",
-    bodyFontFamily: "Roboto Condensed",
-    bodyFontSize: 12,
-    caretSize: 6,
-    displayColors: false,
-    position: "nearest",
-    titleAlign: "center",
-    titleFontFamily: "Roboto Condensed",
-    titleFontSize: 16,
-    xAlign: "center",
-    xPadding: 12,
-    yAlign: "bottom",
-    yPadding: 12,
-  }
-}
-
 function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
   const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
