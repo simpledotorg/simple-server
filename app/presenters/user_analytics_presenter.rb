@@ -299,7 +299,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .group(:gender)
         .count
 
-    control_rate_end = Period.month(Date.current.advance(months: -1))
+    control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
     controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
 
