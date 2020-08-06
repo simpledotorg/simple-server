@@ -31,8 +31,9 @@ class RegionReportService
   attr_reader :region
 
   def call
-    compile_control_and_registration_data
+    data.merge! ControlRateService.new(region, periods: range).call
     data.merge! compile_cohort_trend_data
+    # data[:lost_to_followup] = count_lost_to_followup
     data[:visited_without_bp_taken] = count_visited_without_bp_taken
     data[:visited_without_bp_taken_rate] = percentage_visited_without_bp_taken
     data[:missed_visits] = calculate_missed_visits
@@ -40,6 +41,19 @@ class RegionReportService
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data
+  end
+
+  def count_lost_to_followup
+    data[:cumulative_registrations].each_with_object({}) do |(period, count), hsh|
+      year_ago = period.advance(years: -1).to_date
+      lost_to_followup = Patient
+        .with_hypertension
+        .where("patients.recorded_at <= ?", year_ago)
+        .where(registration_facility: facilities)
+        .includes(:latest_blood_pressures).where("blood_pressures.recorded_at <= ? OR blood_pressures.recorded_at IS NULL", year_ago)
+        .references(:latest_blood_pressures)
+      hsh[period] = lost_to_followup.count
+    end
   end
 
   def calculate_missed_visits
@@ -69,11 +83,6 @@ class RegionReportService
   def percentage(numerator, denominator)
     return 0 if denominator == 0
     ((numerator.to_f / denominator.to_f) * 100).round(0)
-  end
-
-  def compile_control_and_registration_data
-    result = ControlRateService.new(region, periods: range).call
-    @data.merge! result
   end
 
   # We want to return cohort data for the current quarter for the selected date, and then
