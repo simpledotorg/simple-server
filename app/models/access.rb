@@ -36,30 +36,37 @@ class Access < ApplicationRecord
         .or(Facility.where(facility_group: facility_groups(action)))
     end
 
-    def can?(action, model, record = nil)
+    def can?(action, model, records = nil)
       case model
-      when :facility
-        accessible_resources(facilities(action), record).exists?
-      when :organization
-        accessible_resources(organizations(action), record).exists?
-      when :facility_group
-        accessible_resources(facility_groups(action), record).exists?
-      else
-        raise ArgumentError, "Invalid model: #{model}"
+        when :facility
+          can_access_records?(facilities(action), records)
+        when :organization
+          can_access_records?(organizations(action), records)
+        when :facility_group
+          can_access_records?(facility_groups(action), records)
+        else
+          raise ArgumentError, "Access to #{model} is unsupported."
       end
-    end
-
-    def accessible_resources(resources, record)
-      return resources.where(id: record) if record
-      resources
     end
 
     private
 
+    def can_access_records?(resources, records)
+      return resources.exists? if super_admin?
+      return resources.where(id: records).exists? if records
+
+      resources.exists?
+    end
+
     def resources_for(resource_model, action)
-      return resource_model.all if super_admin.exists?
-      resource_model.where(id: where(resource_type: resource_model.to_s, role: ACTION_TO_ROLE[action])
-                                 .pluck(:resource_id))
+      return resource_model.all if super_admin?
+
+      resource_ids = where(resource_type: resource_model.to_s, role: ACTION_TO_ROLE[action]).pluck(:resource_id)
+      resource_model.where(id: resource_ids)
+    end
+
+    def super_admin?
+      super_admin.exists?
     end
   end
 end
