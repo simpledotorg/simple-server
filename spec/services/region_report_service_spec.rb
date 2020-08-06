@@ -31,7 +31,7 @@ RSpec.describe RegionReportService, type: :model do
   end
 
   context "visited but no BP taken" do
-    fit "counts visits for range of periods" do
+    it "counts visits for range of periods" do
       may_1 = Time.parse("May 1st, 2020")
       may_15 = Time.parse("May 15th, 2020")
       facility = create(:facility, facility_group: facility_group_1)
