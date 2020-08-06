@@ -489,6 +489,28 @@
               </td>
             <% end %>
           </tr>
+          <% policy_scope([:cohort_report, User.order(:full_name)]).each do |user| %>
+            <% if @region.dashboard_analytics[user.id].present? %>
+              <tr>
+                <td class="row-title">
+                  <%= link_to user.send(:full_name), send(:admin_user_path, user) %>
+                </td>
+                <td class="ta-center">
+                  <%= dash_if_zero(@region.dashboard_analytics.dig(user.id, :total_registered_patients)) %>
+                </td>
+                <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= dash_if_zero(@region.dashboard_analytics.dig(user.id, :follow_up_patients_by_period, date)) %>
+                  </td>
+                <% end %>
+                <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= dash_if_zero(@region.dashboard_analytics.dig(user.id, :registered_patients_by_period, date)) %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          <% end %>
         </tbody>
       </table>
     </div>
