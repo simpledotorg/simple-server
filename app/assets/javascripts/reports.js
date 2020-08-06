@@ -46,97 +46,18 @@ function initializeCharts() {
       label: "Missed visit",
     },
   ], "bar");
-  // noBPMeasureGraphConfig.options = createGraphOptions(
-  //   true,
-  //   25,
-  //   100,
-  //   formatValueAsPercent,
-  //   formatRateTooltipText,
-  //   [data.visitButNoBPMeasure, data.missedVisits],
-  // );
-
-  console.log(Object.values(data.visitButNoBPMeasureRate));
-
-  const newConfig = {
-    type: "bar",
-    data: {
-      labels: Object.keys(data.registrations),
-      datasets: [
-        {
-          backgroundColor: darkGreyColor,
-          hoverBackgroundColor: darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate),
-          borderWidth: 1,
-          label: "Visited but no BP measure",
-        },
-        {
-          backgroundColor: mediumGreyColor,
-          data: Object.values(data.missedVisitsRate),
-          label: "Missed visit",
-        },
-      ]
-    },
-    options: {
-      animation: false,
-      legend: { display: false },
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0
-        }
-      },
-      scales: {
-        xAxes: [{
-          stacked: true,
-          gridLines: {
-            display: true,
-            drawBorder: false
-          },
-          ticks: {
-            fontColor: "#ADB2B8",
-            fontSize: 14,
-            fontFamily: "Roboto Condensed",
-            maxRotation: 0,
-            minRotation: 0
-          }
-        }],
-        yAxes: [{
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          stacked: true,
-          ticks: {
-            fontColor: "#ADB2B8",
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            stepSize: 25,
-            suggestedMin: 0,
-            suggestedMin: 0,
-            suggestedMax: 100,
-          }
-        }],
-      },
-      tooltips: _.merge(defaultTooltips(), { callbacks: { label: noBpMeasureTooltip }})
-    }
-  };
-
-  function noBpMeasureTooltip(item, data) {
-    console.log(item)
-    const label = data.datasets[item.datasetIndex].label;
-    return `${item.value}% ${label}`
-
-  }
+  noBPMeasureGraphConfig.options = createGraphOptions(
+    true,
+    25,
+    100,
+    formatValueAsPercent,
+    formatRateTooltipText,
+    [data.visitButNoBPMeasure, data.missedVisits],
+  );
 
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
-    // new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
-    new Chart(noBPMeasureGraphCanvas.getContext("2d"), newConfig);
+    new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
   }
 
   const uncontrolledGraphConfig = createGraphConfig([
