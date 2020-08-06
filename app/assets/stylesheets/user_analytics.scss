@@ -372,6 +372,19 @@ p.control-desc {
         #fff 255px, $grey-lightest 255px, #fff 256px,
     );
     
+    .tip {
+        display: none;
+        color: $grey-mid;
+        font-weight: normal;
+        margin-right: 8px;
+    }
+    
+    &:active {
+        .tip {
+            display: inline;
+        }
+    }
+    
     .bar {
         background: $green-light;
         width: 12px;
@@ -379,10 +392,6 @@ p.control-desc {
         position: relative;
         border-radius: 100px;
         min-height: 20px;
-        
-        &.current {
-            background: #78E0A0;
-        }
         
         span {
             display: block;
@@ -403,9 +412,11 @@ p.control-desc {
         
         span {
             font-size: 14px;
-            transform: rotate(90deg);
+            transform: translate(-96px, -80px) rotate(90deg);
+            width: 200px;
             display: block;
             color: $green;
+            text-align: right;
         }
     }
     

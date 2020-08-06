@@ -108,9 +108,9 @@
 
   <!-- monthly hypertension control view -->
   <div class="card">
-    <h3>Patients with hypertension controlled</h3>
+    <h3>Hypertension controlled</h3>
     <p class="desc">
-      Hypertension patients with BP &lt;140/90 at their most recent visit in the last 3 months
+      Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months
     </p>
 
     <p class="desc control-desc">
@@ -125,7 +125,7 @@
                 <% @user_analytics.htn_control_monthly_period_list.each do |month_date| %>
                   <% control_rate = @user_analytics.monthly_htn_control_rate(month_date) %>
                   <td class="bar-row">
-                    <div class="bar-value"><span><%= control_rate %>%</span></div>
+                    <div class="bar-value"><span><b class="tip"><%= month_date %></b> <%= control_rate %>%</span></div>
                     <div style="height: <%= control_rate * 2 %>px;" class="bar"><span></span></div>
                   </td>
                 <% end %>
@@ -191,9 +191,9 @@
         <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension cohort report</h2>
         <p class="left">Cohort reports show the outcome for newly registered hypertension patients in their first few months of treatment.</p>
         <div class="key">
-            <p class="left"><span class="key-color green"></span> Visited with BP &lt;140/90</p>
-            <p class="left"><span class="key-color red"></span> Visited with BP &ge;140/90</p>
-            <p class="left"><span class="key-color grey"></span> Did not have a BP measure</p>
+            <p class="left" style="color: #007A31;"><span class="key-color green"></span> Visited with BP &lt;140/90</p>
+            <p class="left" style="color: #FF3355;"><span class="key-color red"></span> Visited with BP &ge;140/90</p>
+            <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> Did not have a BP measure</p>
         </div>
 
         <% @user_analytics.cohorts.each do |cohort| %>
