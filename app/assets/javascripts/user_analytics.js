@@ -2,11 +2,12 @@
 // stats
 //
 function statistics() {
-  return JSON.parse(document
-    .getElementById('statistics')
-    .attributes
-    .getNamedItem('data-statistics')
-    .value);
+  if(document.getElementById('statistics')) {
+    let statistics = document.getElementById('statistics');
+    return JSON.parse(statistics.attributes.getNamedItem('data-statistics').value);
+  } else {
+    return null;
+  }
 }
 
 function dailyStatistics() {
@@ -160,6 +161,10 @@ function refreshCarousel(slidePosition) {
 // loads at page refresh
 //
 window.onload = function () {
+  if(statistics() === null) {
+    return;
+  }
+
   window.lastSlidePositionForProgressCards = 1;
   refreshCarousel(window.lastSlidePositionForProgressCards)
 };

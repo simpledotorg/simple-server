@@ -36,16 +36,30 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <%= @selected_date.to_s(:month_year) %> report
+        <%= @selected_date.to_s %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_tag({}, method: :get) do %>
-          <% last_n_months(n: 12, end_of_month: true).each do |time| %>
-            <% selected = (time.year == @selected_date.year && time.month == @selected_date.month) %>
-            <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
-                    name="selected_date"
-                    type="submit" value="<%= time %>">
-              <%= time.to_s(:month_year) %>
+        <%= form_for(@period, url: request.params, method: :get) do |f| %>
+          <%= f.text_field :type, { id: "dropdown-period-type" } %>
+
+          <% (0..12).each do |num|
+              selected = false
+              date = Date.current.beginning_of_month.advance(months: -num)
+              period = Period.new(type: :month, value: date)
+          %>
+            <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
+                    type="submit" data-period-type="month" value="<%= period.value %>">
+              <%= period.value.to_s(:month_year) %>
+            </button>
+          <% end %>
+
+          <div class="dropdown-divider"></div>
+
+          <% Quarter.current.downto(6).each do |quarter| %>
+            <% period = Period.new(type: :quarter, value: quarter) %>
+            <button class="dropdown-item query-filter-month <%= 'active' if false %>" name="period[value]"
+                    type="submit" data-period-type="quarter" value="<%= period.value %>">
+              <%= period.value.to_s %>
             </button>
           <% end %>
         <% end %>

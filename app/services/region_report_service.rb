@@ -1,14 +1,14 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 3
+  CACHE_VERSION = 4
 
-  def initialize(region:, selected_date:, current_user:)
+  def initialize(region:, period:, current_user:)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @region = region
+    @period = period
     @facilities = region.facilities
-    @selected_date = selected_date.end_of_month
     @data = {
       controlled_patients: {},
       registrations: {},
@@ -20,10 +20,10 @@ class RegionReportService
 
   attr_reader :current_user
   attr_reader :data
-  attr_reader :region
   attr_reader :facilities
   attr_reader :organizations
-  attr_reader :selected_date
+  attr_reader :period
+  attr_reader :region
 
   def call
     compile_control_and_registration_data
@@ -34,8 +34,9 @@ class RegionReportService
   end
 
   def compile_control_and_registration_data
-    start_range = selected_date.advance(months: -MAX_MONTHS_OF_DATA).to_date
-    result = ControlRateService.new(region, range: (start_range..selected_date.to_date)).call
+    start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
+    periods = start_period..@period
+    result = ControlRateService.new(region, periods: periods).call
     @data.merge! result
   end
 
@@ -45,7 +46,7 @@ class RegionReportService
   def compile_cohort_trend_data
     Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
       result = {quarterly_registrations: []}
-      Quarter.new(date: selected_date).downto(3).each do |results_quarter|
+      period.to_quarter_period.value.downto(3).each do |results_quarter|
         cohort_quarter = results_quarter.previous_quarter
 
         period = {cohort_period: :quarter,
@@ -68,7 +69,7 @@ class RegionReportService
   private
 
   def cohort_cache_key
-    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{selected_date.to_s(:iso8601)}/#{CACHE_VERSION}"
+    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{period}/#{CACHE_VERSION}"
   end
 
   def cohort_cache_version
@@ -85,6 +86,6 @@ class RegionReportService
 
   def top_region_benchmarks
     scope = region.class.to_s.underscore.to_sym
-    TopRegionService.new(organizations, selected_date, scope: scope).call
+    TopRegionService.new(organizations, period, scope: scope).call
   end
 end
