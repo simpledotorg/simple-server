@@ -202,6 +202,9 @@
               <div style="font-size: 16px; margin: 8px 0 12px 0;">Result from last visit in <%= cohort[:results_in] %></div>
               <table class="cohort-bars">
                   <tr>
+                    <% if cohort[:registered].zero? %>
+                      <td class="cohort-none">No patients</td>
+                    <% else %>
                       <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
                         <%= @user_analytics.cohort_no_bp(cohort) %>
                       </td>
@@ -211,9 +214,7 @@
                       <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
                         <%= @user_analytics.cohort_controlled(cohort) %>
                       </td>
-
-                      <!--td class="cohort-none">No patients</td-->
-                    
+                    <% end %>
                   </tr>
               </table>
           </div>
