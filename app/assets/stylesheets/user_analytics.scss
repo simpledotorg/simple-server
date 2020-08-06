@@ -354,6 +354,21 @@ p.control-desc {
     }
 }
 
+.card {
+    .tip {
+        display: none;
+        color: $grey-mid;
+        font-weight: normal;
+        margin-right: 8px;
+    }
+    
+    &:active {
+        .tip {
+            display: inline;
+        }
+    }
+}
+
 .bar-chart {
     width: 100%;
     margin-bottom: 8px;
@@ -371,19 +386,6 @@ p.control-desc {
         #fff 235px, $grey-lightest 235px, #fff 236px,
         #fff 255px, $grey-lightest 255px, #fff 256px,
     );
-    
-    .tip {
-        display: none;
-        color: $grey-mid;
-        font-weight: normal;
-        margin-right: 8px;
-    }
-    
-    &:active {
-        .tip {
-            display: inline;
-        }
-    }
     
     .bar {
         background: $green-light;
