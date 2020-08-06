@@ -1,1 +1,91 @@
 <%= render "header"%>
+<div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+  <div>
+    <div class="mb-2">
+      <h3>
+        Visit details of all HTN patients
+      </h3>
+      <p class="c-grey-dark">
+        <% if @last_registration_value %>
+          <%= number_with_delimiter(@last_registration_value) %> total registered HTN patients
+        <% else %>
+          No registration data available
+        <% end %>
+      </p>
+    </div>
+    <% if @last_registration_value %>
+      <div class="d-flex fd-column fd-lg-row">
+        <div class="order-lg-2 w-lg-224px ml-lg-24px">
+          <div class="d-flex align-baseline mb-8px mb-lg-16px">
+            <div class="w-12px h-12px mr-12px br-4px bg-grey-lightest"></div>
+            <div class="d-flex flex-1 align-baseline fd-lg-column">
+              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+                PENDING
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Lost to follow-up
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-baseline mb-8px mb-lg-16px">
+            <div class="w-12px h-12px mr-12px br-4px bg-grey-light"></div>
+            <div class="d-flex flex-1 align-baseline fd-lg-column">
+              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+                PENDING
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Missed visit
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-baseline mb-8px mb-lg-16px">
+            <div class="w-12px h-12px mr-12px br-4px bg-grey-medium"></div>
+            <div class="d-flex flex-1 align-baseline fd-lg-column">
+              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+                PENDING
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Visited in the last 3 months but no BP measure
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-baseline mb-8px mb-lg-16px">
+            <div class="w-12px h-12px mr-12px br-4px bg-red-medium"></div>
+            <div class="d-flex flex-1 align-baseline fd-lg-column">
+              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+                <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Visited with BP &ge;140/90 in last 3 months
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-baseline mb-8px mb-lg-16px">
+            <div class="w-12px h-12px mr-12px br-4px bg-green-medium"></div>
+            <div class="d-flex flex-1 align-baseline fd-lg-column">
+              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+                <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Visited with BP &lt;140/90 in last 3 months
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="flex-lg-1 order-lg-1">
+          <canvas id="missedVisitDetails"></canvas>
+        </div>
+      </div>
+    <% else %>
+      <div class="d-flex align-center justify-center w-100pt h-200px h-lg-380px bl-1px bb-1px bl-grey-medium bb-grey-medium">
+        <p class="c-grey-medium">
+          No data available
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div id="data-json" style="display: none;">
+  <%= raw @data.to_json %>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
