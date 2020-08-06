@@ -5,14 +5,14 @@ RSpec.describe ControlRateService, type: :model do
   let(:user) { create(:admin, :supervisor, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
-  let(:june_1_2018) { Time.parse("June 1, 2018") }
-  let(:june_1_2020) { Time.parse("June 1, 2020") }
-  let(:june_30_2020) { Time.parse("June 30, 2020") }
-  let(:july_2020) { Time.parse("July 15, 2020") }
-  let(:jan_2019) { Time.parse("January 1st, 2019") }
-  let(:jan_2020) { Time.parse("January 1st, 2020") }
-  let(:july_2018) { Time.parse("July 1st, 2018") }
-  let(:july_2020) { Time.parse("July 1st, 2020") }
+  let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
+  let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
+  let(:june_30_2020) { Time.parse("June 30, 2020 00:00:00+00:00") }
+  let(:july_2020) { Time.parse("July 15, 2020 00:00:00+00:00") }
+  let(:jan_2019) { Time.parse("January 1st, 2019 00:00:00+00:00") }
+  let(:jan_2020) { Time.parse("January 1st, 2020 00:00:00+00:00") }
+  let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
+  let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -41,6 +41,10 @@ RSpec.describe ControlRateService, type: :model do
       create_list(:patient, 1, recorded_at: Time.current, registration_facility: create(:facility), registration_user: user)
     end
 
+    Timecop.freeze(june_30_2020) do
+      create_list(:patient, 4, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+    end
+
     refresh_views
 
     range = (Period.month(june_1_2018)..Period.month(june_30_2020))
@@ -48,12 +52,15 @@ RSpec.describe ControlRateService, type: :model do
     result = service.call
     april_period = Date.parse("April 1 2020").to_period
     may_period = Date.parse("May 1 2020").to_period
+    june_period = Date.parse("June 1 2020").to_period
     expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
     expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(6)
     expect(result[:registrations][april_period]).to eq(2)
     expect(result[:cumulative_registrations][april_period]).to eq(8)
     expect(result[:registrations][may_period]).to eq(3)
     expect(result[:cumulative_registrations][may_period]).to eq(11)
+    expect(result[:registrations][june_period]).to eq(4)
+    expect(result[:cumulative_registrations][june_period]).to eq(15)
   end
 
   it "does not include months without registration data" do
