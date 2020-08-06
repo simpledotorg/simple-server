@@ -86,80 +86,13 @@
   </div>
 </div>
 <% unless @region.is_a?(FacilityGroup) %>
-  <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-    <div class="mb-2">
-      <h3>
-        Recent BPs
-      </h3>
-    </div>
-    <% if @region.blood_pressures.any? %>
-      <div class="table-responsive">
-        <table id="recent-bps" class="table-compact">
-          <colgroup>
-            <col>
-            <col>
-            <col>
-            <col>
-            <col class="table-divider">
-          </colgroup>
-          <thead>
-            <tr>
-              <th colspan="4"></th>
-              <th class="pl-1 pb-3">
-                Recorded by
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <% last_date = nil %>
-            <% @region.blood_pressures.each do |bp| %>
-              <% next if bp.patient.blank? %>
-              <% if print_date = (bp.recorded_at.to_date != last_date) %>
-                <% last_date = bp.recorded_at.to_date %>
-              <% end %>
-              <tr class="<%= "date-row" if print_date %>">
-                <td class="nowrap w-160px" style="<%= "border: none;" if !print_date %>">
-                  <% if print_date %>
-                    <strong>
-                      <%= l bp.recorded_at.to_date %>
-                    </strong>
-                  <% end %>
-                </td>
-                <td class="nowrap text-muted">
-                  <%= bp.recorded_at.strftime("%I:%M %p") %>
-                </td>
-                <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>">
-                  <i class="fas fa-heart mr-2"></i> <%= bp.to_s %>
-                </td>
-                <td class="nowrap">
-                  <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
-                    <span class="patient-return text-muted">
-                      Follow-up patient
-                    </span>
-                  <% else %>
-                    <span class="patient-new">
-                      New registration
-                    </span>
-                  <% end %>
-                </td>
-                <td class="nowrap">
-                  <%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-    <% else %>
-      <p class="text-muted mb-0">
-        <i class="fas fa-chevron-left"></i>
-          No BPs recorded
-        <i class="fas fa-chevron-right"></i>
-      </p>
-    <% end %>
-  </div>
+  <% if policy([:cohort_report, @region]).view_health_worker_activity? %>
+    <%= render 'shared/recent_bp_log',
+              blood_pressures: @recent_blood_pressures,
+              display_model: :facility %>
+  <% end %>
 <% end %>
-<div id="data-json d-none">
+<div id="data-json" class="d-none">
   <%= raw @data.to_json %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>

@@ -1,4 +1,4 @@
-<div class="card" id="recent-bps">
+<div class="card">
   <h3>Recent BPs</h3>
   <p> A log of the BPs recorded
     <% if display_model == :facility %>
@@ -7,8 +7,8 @@
       by this user.
     <% end %></p>
   <% if blood_pressures.any? %>
-    <div class="table-responsive table-compact pb-3">
-      <table>
+    <div>
+      <table id="recent-bps" class="table-responsive table-compact">
         <colgroup>
           <col>
           <col>

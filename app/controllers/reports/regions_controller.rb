@@ -1,8 +1,13 @@
 class Reports::RegionsController < AdminController
+  include Pagination
+
   layout "application"
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
   before_action :set_selected_date, except: :index
+  # Overriding included `before_action` from Pagination
+  before_action :set_page, only: [:details]
+  before_action :set_per_page, only: [:details]
   before_action :find_region, except: :index
   around_action :set_time_zone
 
@@ -36,6 +41,15 @@ class Reports::RegionsController < AdminController
     @quarterly_registrations = @data[:quarterly_registrations]
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
+
+    unless @region.is_a?(FacilityGroup)
+      @recent_blood_pressures = @region
+        .blood_pressures
+        .includes(:patient, :user)
+        .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
+
+      @recent_blood_pressures = paginate(@recent_blood_pressures)
+    end
   end
 
   def cohort

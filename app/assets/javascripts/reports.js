@@ -11,7 +11,6 @@ let lightGreyColor = "rgba(240, 242, 245, 1)";
 
 function initializeCharts() {
   const data = getReportingData();
-
   const controlledGraphConfig = createGraphConfig([{
     data: data.controlRate,
     rgbaLineColor: darkGreenColor,
