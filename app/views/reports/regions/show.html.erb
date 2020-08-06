@@ -475,16 +475,16 @@
             <td class="row-title row-total">
               All
             </td>
-            <td class="row-total" style="text-align: center;">
+            <td class="row-total ta-center">
               <%= dash_if_zero(@region.dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
             </td>
             <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
-              <td class="row-total" style="text-align: center;">
+              <td class="row-total ta-center">
                 <%= dash_if_zero(analytics_totals(@region.dashboard_analytics, :follow_up_patients_by_period, date)) %>
               </td>
             <% end %>
             <% dates_for_periods(:month, 6, include_current_period: @show_current_period).each do |date| %>
-              <td class="row-total" style="text-align: center;">
+              <td class="row-total ta-center"> 
                 <%= dash_if_zero(analytics_totals(@region.dashboard_analytics, :registered_patients_by_period, date)) %>
               </td>
             <% end %>
