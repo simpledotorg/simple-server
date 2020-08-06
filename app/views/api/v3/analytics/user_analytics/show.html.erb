@@ -115,7 +115,7 @@
 
     <p class="desc control-desc">
         <strong><%= @user_analytics.monthly_htn_control_last_period %></strong>
-        <br><%= @user_analytics.monthly_htn_control_last_period_patient_counts %>
+        <br><%= @user_analytics.monthly_htn_control_last_period_patient_counts %> patients
         <br><strong class="green"><%= @user_analytics.monthly_htn_control_last_control_rate %>%</strong>
     </p>
 
@@ -132,7 +132,7 @@
             </tr>
         </tbody>
     </table>
-    <p class="center">Last 12 months</p>
+    <p class="center" style="margin: 12px 0 0 0;">Last 12 months</p>
   </div>
 
   <div class="card">
@@ -189,7 +189,7 @@
         </a>
 
         <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension cohort report</h2>
-        <p class="left">Cohort reports show the outcome for new hypertension patients in the months after registration.</p>
+        <p class="left">Cohort reports show the outcome for newly registered hypertension patients in their first few months of treatment.</p>
         <div class="key">
             <p class="left"><span class="key-color green"></span> Visited with BP &lt;140/90</p>
             <p class="left"><span class="key-color red"></span> Visited with BP &ge;140/90</p>
@@ -199,25 +199,30 @@
         <% @user_analytics.cohorts.each do |cohort| %>
           <div class="card cohort">
               <h6><%= cohort[:registered] %> patients registered in <%= cohort[:patients_registered] %></h6>
-              <p>Result from last visit in <%= cohort[:results_in] %></p>
-              <div class="cohort-bars">
-                  <div class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
-                    <%= @user_analytics.cohort_controlled(cohort) %>
-                  </div>
-                  <div class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
-                    <%= @user_analytics.cohort_uncontrolled(cohort) %>
-                  </div>
-                  <div class="cohort-nobp" style="width: calc(<%= @user_analytics.cohort_no_bp(cohort) %> - 1%);">
-                    <%= @user_analytics.cohort_no_bp(cohort) %>
-                  </div>
-              </div>
+              <div style="font-size: 16px; margin: 8px 0 12px 0;">Result from last visit in <%= cohort[:results_in] %></div>
+              <table class="cohort-bars">
+                  <tr>
+                      <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
+                        <%= @user_analytics.cohort_no_bp(cohort) %>
+                      </td>
+                      <td class="cohort-uncontrolled" style="width: <%= @user_analytics.cohort_uncontrolled(cohort) %>;">
+                        <%= @user_analytics.cohort_uncontrolled(cohort) %>
+                      </td>
+                      <td class="cohort-controlled" style="width: <%= @user_analytics.cohort_controlled(cohort) %>;">
+                        <%= @user_analytics.cohort_controlled(cohort) %>
+                      </td>
+
+                      <!--td class="cohort-none">No patients</td-->
+                    
+                  </tr>
+              </table>
           </div>
         <% end %>
 
         <h3 style="padding-top: 40px; padding-left: 8px;">Notes</h3>
         <ul class="footnotes">
             <li><strong>Numerator:</strong> Latest follow-up visit at any facility in quarter after registration.</li>
-            <li><strong>Denominator:</strong> All HTN patients assigned to at CHC Buccho, registered in the quarter.</li>
+            <li><strong>Denominator:</strong> All HTN patients assigned to this facility, registered in the quarter.</li>
             <li>If a patient has multiple visits, their last BP is used to calculate BP control.</li>
         </ul>
     </div>

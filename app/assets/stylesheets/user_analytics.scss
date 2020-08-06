@@ -67,8 +67,8 @@ body#progress {
     text-align: center;
     min-height: 46px;
     
-    div {
-        padding: 12px 0;
+    td {
+        padding: 12px 6px;
         font-weight: bold;
         font-size: 16px;
     }
@@ -76,29 +76,25 @@ body#progress {
     .cohort-controlled {
         background: $green;
         color: #fff;
-        border-radius: 3px 0 0 3px;
-        float: left;
+        border-radius: 0 3px 3px 0;
     }
     
     .cohort-uncontrolled {
         background: $red;
         color: #fff;
         border-radius: none;
-        float: left;
     }
     
     .cohort-nobp {
         background: $grey-light;
         color: #444;
-        border-radius: 0 3px 3px 0;
-        float: left;
+        border-radius: 3px 0 0 3px;
     }
     
     .cohort-none {
         background: $grey-light;
         color: #444;
         border-radius: 3px;
-        float: left;
     }
 }
 
@@ -108,10 +104,10 @@ body#progress {
     span {
         display: inline-block;
         width: 16px;
-        height: 8px;
+        height: 12px;
         vertical-align: middle;
         background: #999;
-        margin: 0 8px 0 0;
+        margin: -3px 8px 0 0;
         border-radius: 3px;
         
         &.green {
@@ -254,7 +250,7 @@ h4 {
 
 p {
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   padding: 0 8px;
 }
 
@@ -331,7 +327,7 @@ span.percent {
   text-align: center;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
-  padding: 6px 0 16px 0;
+  padding: 16px 0;
   clear: both;
 
   span {
@@ -375,12 +371,6 @@ p.control-desc {
         #fff 255px, $grey-light 255px, #fff 256px,
     );
     
-    tbody td {
-        height: 160px;
-        vertical-align: bottom;
-        text-align: center;
-    }
-    
     .bar {
         background: $green-light;
         width: 12px;
@@ -415,6 +405,18 @@ p.control-desc {
             transform: rotate(90deg);
             display: block;
             color: $green;
+        }
+    }
+    
+    tbody td {
+        height: 160px;
+        vertical-align: bottom;
+        text-align: center;
+        
+        &:last-of-type {
+            .bar {
+                background: #00B849;
+            }
         }
     }
 }
