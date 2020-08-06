@@ -359,17 +359,17 @@ p.control-desc {
     margin-bottom: 8px;
     background-image: linear-gradient(to top, 
         #fff 35px, $grey-lightest 35px, #fff 36px,
-        #fff 55px, $grey-light 55px, #fff 56px,
+        #fff 55px, $grey-lightest 55px, #fff 56px,
         #fff 75px, $grey-lightest 75px, #fff 76px,
-        #fff 95px, $grey-light 95px, #fff 96px,
+        #fff 95px, $grey-lightest 95px, #fff 96px,
         #fff 115px, $grey-lightest 115px, #fff 116px,
-        #fff 135px, $grey-light 135px, #fff 136px,
+        #fff 135px, $grey-lightest 135px, #fff 136px,
         #fff 155px, $grey-lightest 155px, #fff 156px,
-        #fff 175px, $grey-light 175px, #fff 176px,
+        #fff 175px, $grey-lightest 175px, #fff 176px,
         #fff 195px, $grey-lightest 195px, #fff 196px,
-        #fff 215px, $grey-light 215px, #fff 216px,
+        #fff 215px, $grey-lightest 215px, #fff 216px,
         #fff 235px, $grey-lightest 235px, #fff 236px,
-        #fff 255px, $grey-light 255px, #fff 256px,
+        #fff 255px, $grey-lightest 255px, #fff 256px,
     );
     
     .bar {
@@ -415,6 +415,9 @@ p.control-desc {
         text-align: center;
         
         &:last-of-type {
+            .bar-value {
+                font-weight: bold;
+            }
             .bar {
                 background: #00B849;
             }
