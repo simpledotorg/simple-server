@@ -18,9 +18,6 @@ class Reports::RegionsController < AdminController
     @data = RegionReportService.new(region: @region,
                                     period: @period,
                                     current_user: current_admin).call
-    unless @region.is_a?(FacilityGroup)
-      @facilities = @region.facilities
-    end
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
