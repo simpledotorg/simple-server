@@ -1,4 +1,4 @@
-desc 'Get user credentials to attach to request headers'
+desc "Get user credentials to attach to request headers"
 task get_user_credentials: :environment do
   abort "This task can only be run in development!" unless Rails.env.development?
 
