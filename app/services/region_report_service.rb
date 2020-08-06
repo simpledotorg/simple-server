@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 3
+  CACHE_VERSION = 4
 
   def initialize(region:, period:, current_user:)
     @current_user = current_user
@@ -34,7 +34,7 @@ class RegionReportService
   end
 
   def compile_control_and_registration_data
-    start_period = period.advance(months: -MAX_MONTHS_OF_DATA)
+    start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
     periods = start_period..@period
     result = ControlRateService.new(region, periods: periods).call
     @data.merge! result

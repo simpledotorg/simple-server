@@ -2,10 +2,6 @@ class Quarter
   include Comparable
   PARSE_REGEX = /\AQ(\d)-(\d{4})\z/
 
-  def self.for_date(date)
-    new(date: date)
-  end
-
   def self.current
     new(date: Date.current)
   end
@@ -15,23 +11,24 @@ class Quarter
     raise ArgumentError, "String to parse as Quarter must match QX-YYYY format" unless match
     number = Integer(match[1])
     year = Integer(match[2])
-    quarter_month = month_to_quarter(number)
+    quarter_month = quarter_to_month(number)
     date = Date.new(year, quarter_month).beginning_of_month
     new(date: date)
   end
 
-  def self.month_to_quarter(month_number)
-    ((month_number - 1) * 3) + 1
+  def self.quarter_to_month(quarter_number)
+    ((quarter_number - 1) * 3) + 1
   end
 
   attr_reader :date
   attr_reader :number
   attr_reader :to_s
   attr_reader :year
-  delegate :beginning_of_quarter, :end_of_quarter, to: :date
 
+  # Create a Quarter with any date-like object, needs to respond to `to_date`. So Date, DateTime, and Time will
+  # all work. Note that the stored date is normalized to a proper Date object to keep things consistent.
   def initialize(date:)
-    @date = date.freeze
+    @date = date.to_date.freeze
     @year = date.year.freeze
     @number = QuarterHelper.quarter(date).freeze
     @to_s = "Q#{number}-#{year}".freeze
@@ -63,16 +60,28 @@ class Quarter
     end
   end
 
-  def inspect
-    "#<Quarter:#{object_id} #{to_s.inspect}>"
-  end
-
   def to_date
     date
   end
 
+  def start_date
+    date.beginning_of_quarter
+  end
+
+  alias beginning_of_quarter start_date
+
+  def end_date
+    date.end_of_quarter
+  end
+
+  alias end_of_quarter end_date
+
   def to_period
     Period.quarter(self)
+  end
+
+  def inspect
+    "#<Quarter:#{object_id} #{to_s.inspect}>"
   end
 
   def ==(other)
