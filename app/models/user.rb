@@ -74,6 +74,7 @@ class User < ApplicationRecord
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
 
+  delegate :organizations, :facility_groups, :facilities, to: :accesses, allow_nil: true, prefix: :accessible
   delegate :can?, to: :accesses, allow_nil: true
 
   after_destroy :destroy_email_authentications
