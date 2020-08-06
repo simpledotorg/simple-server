@@ -6,7 +6,7 @@ class Access < ApplicationRecord
   }
 
   belongs_to :user
-  belongs_to :resource, polymorphic: true
+  belongs_to :resource, polymorphic: true, optional: true
 
   enum role: {
     viewer: "viewer",
@@ -36,14 +36,18 @@ class Access < ApplicationRecord
         .or(Facility.where(facility_group: facility_groups(action)))
     end
 
-    def can?(action, model, records = nil)
+    def can?(action, model, record = nil)
+      if record&.is_a? ActiveRecord::Relation
+        raise ArgumentError, "record should not be an ActiveRecord::Relation."
+      end
+
       case model
         when :facility
-          can_access_records?(facilities(action), records)
+          can_access_record?(facilities(action), record)
         when :organization
-          can_access_records?(organizations(action), records)
+          can_access_record?(organizations(action), record)
         when :facility_group
-          can_access_records?(facility_groups(action), records)
+          can_access_record?(facility_groups(action), record)
         else
           raise ArgumentError, "Access to #{model} is unsupported."
       end
@@ -51,9 +55,9 @@ class Access < ApplicationRecord
 
     private
 
-    def can_access_records?(resources, records)
+    def can_access_record?(resources, record)
       return resources.exists? if super_admin?
-      return resources.where(id: records).exists? if records
+      return resources.find_by_id(record).present? if record
 
       resources.exists?
     end

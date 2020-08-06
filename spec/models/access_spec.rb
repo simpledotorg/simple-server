@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Access, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:resource) }
+    pending { is_expected.to belong_to(:resource).optional }
   end
 
   describe "Validations" do
@@ -42,7 +42,7 @@ RSpec.describe Access, type: :model do
         invalid_access = build(:access, :viewer, user: admin, resource: nil)
 
         expect(invalid_access).to be_invalid
-        expect(invalid_access.errors.messages[:resource]).to eq ["must exist", "is required if not a super_admin."]
+        expect(invalid_access.errors.messages[:resource]).to eq ["is required if not a super_admin."]
       end
 
       it "is invalid if super_admin has a resource" do
@@ -67,7 +67,337 @@ RSpec.describe Access, type: :model do
     end
   end
 
-  pending ".can?"
+  describe ".can?" do
+    let(:viewer) { create(:admin) }
+    let(:manager) { create(:admin) }
+    let(:super_admin) do
+      user = create(:admin)
+      create(:access, :super_admin, user: user)
+      user
+    end
+
+    context "organizations" do
+      let!(:organization_1) { create(:organization) }
+      let!(:organization_2) { create(:organization) }
+      let!(:organization_3) { create(:organization) }
+
+      context "view action" do
+        it "allows super admin to view anything" do
+          expect(super_admin.can?(:view, :organization, organization_1)).to be true
+          expect(super_admin.can?(:view, :organization, organization_2)).to be true
+          expect(super_admin.can?(:view, :organization, organization_3)).to be true
+          expect(super_admin.can?(:view, :organization)).to be true
+        end
+
+        it "allows manager to view" do
+          create(:access, :manager, user: manager, resource: organization_1)
+
+          expect(manager.can?(:view, :organization, organization_1)).to be true
+          expect(manager.can?(:view, :organization, organization_2)).to be false
+          expect(manager.can?(:view, :organization, organization_3)).to be false
+          expect(manager.can?(:view, :organization)).to be true
+        end
+
+        it "allows viewer to view" do
+          create(:access, :viewer, user: viewer, resource: organization_3)
+
+          expect(viewer.can?(:view, :organization, organization_1)).to be false
+          expect(viewer.can?(:view, :organization, organization_2)).to be false
+          expect(viewer.can?(:view, :organization, organization_3)).to be true
+          expect(viewer.can?(:view, :organization)).to be true
+        end
+      end
+
+      context "manage action" do
+        it "allows super admin to manage anything" do
+          expect(super_admin.can?(:manage, :organization, organization_1)).to be true
+          expect(super_admin.can?(:manage, :organization, organization_2)).to be true
+          expect(super_admin.can?(:manage, :organization, organization_3)).to be true
+          expect(super_admin.can?(:manage, :organization)).to be true
+        end
+
+        it "allows manager to manage" do
+          create(:access, :manager, user: manager, resource: organization_1)
+
+          expect(manager.can?(:manage, :organization, organization_1)).to be true
+          expect(manager.can?(:manage, :organization, organization_2)).to be false
+          expect(manager.can?(:manage, :organization, organization_3)).to be false
+          expect(manager.can?(:manage, :organization)).to be true
+        end
+
+        it "allows viewer to manage" do
+          create(:access, :viewer, user: viewer, resource: organization_3)
+
+          expect(viewer.can?(:manage, :organization, organization_1)).to be false
+          expect(viewer.can?(:manage, :organization, organization_2)).to be false
+          expect(viewer.can?(:manage, :organization, organization_3)).to be false
+          expect(viewer.can?(:manage, :organization)).to be false
+        end
+      end
+    end
+
+    context "facility_groups" do
+      let!(:facility_group_1) { create(:facility_group) }
+      let!(:facility_group_2) { create(:facility_group) }
+      let!(:facility_group_3) { create(:facility_group) }
+
+      context "view action" do
+        it "allows super admin to view anything" do
+          expect(super_admin.can?(:view, :facility_group, facility_group_1)).to be true
+          expect(super_admin.can?(:view, :facility_group, facility_group_2)).to be true
+          expect(super_admin.can?(:view, :facility_group, facility_group_3)).to be true
+          expect(super_admin.can?(:view, :facility_group)).to be true
+        end
+
+        it "allows manager to view" do
+          create(:access, :manager, user: manager, resource: facility_group_1)
+
+          expect(manager.can?(:view, :facility_group, facility_group_1)).to be true
+          expect(manager.can?(:view, :facility_group, facility_group_2)).to be false
+          expect(manager.can?(:view, :facility_group, facility_group_3)).to be false
+          expect(manager.can?(:view, :facility_group)).to be true
+        end
+
+        it "allows viewer to view" do
+          create(:access, :viewer, user: viewer, resource: facility_group_3)
+
+          expect(viewer.can?(:view, :facility_group, facility_group_1)).to be false
+          expect(viewer.can?(:view, :facility_group, facility_group_2)).to be false
+          expect(viewer.can?(:view, :facility_group, facility_group_3)).to be true
+          expect(viewer.can?(:view, :facility_group)).to be true
+        end
+      end
+
+      context "manage action" do
+        it "allows super admin to manage anything" do
+          expect(super_admin.can?(:manage, :facility_group, facility_group_1)).to be true
+          expect(super_admin.can?(:manage, :facility_group, facility_group_2)).to be true
+          expect(super_admin.can?(:manage, :facility_group, facility_group_3)).to be true
+          expect(super_admin.can?(:manage, :facility_group)).to be true
+        end
+
+        it "allows manager to manage" do
+          create(:access, :manager, user: manager, resource: facility_group_1)
+
+          expect(manager.can?(:manage, :facility_group, facility_group_1)).to be true
+          expect(manager.can?(:manage, :facility_group, facility_group_2)).to be false
+          expect(manager.can?(:manage, :facility_group, facility_group_3)).to be false
+          expect(manager.can?(:manage, :facility_group)).to be true
+        end
+
+        it "allows viewer to manage" do
+          create(:access, :viewer, user: viewer, resource: facility_group_3)
+
+          expect(viewer.can?(:manage, :facility_group, facility_group_1)).to be false
+          expect(viewer.can?(:manage, :facility_group, facility_group_2)).to be false
+          expect(viewer.can?(:manage, :facility_group, facility_group_3)).to be false
+          expect(viewer.can?(:manage, :facility_group)).to be false
+        end
+      end
+
+      context "when org-level access" do
+        let!(:organization_1) { create(:organization) }
+        let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+        let!(:facility_group_2) { create(:facility_group) }
+        let!(:facility_group_3) { create(:facility_group) }
+
+        it "allows manager to view" do
+          create(:access, :manager, user: manager, resource: organization_1)
+          create(:access, :manager, user: manager, resource: facility_group_2)
+
+          expect(manager.can?(:view, :facility_group, facility_group_1)).to be true
+          expect(manager.can?(:view, :facility_group, facility_group_2)).to be true
+          expect(manager.can?(:view, :facility_group, facility_group_3)).to be false
+          expect(manager.can?(:view, :facility_group)).to be true
+        end
+
+        it "allows viewer to view" do
+          create(:access, :viewer, user: viewer, resource: organization_1)
+          create(:access, :viewer, user: viewer, resource: facility_group_2)
+
+          expect(viewer.can?(:view, :facility_group, facility_group_1)).to be true
+          expect(viewer.can?(:view, :facility_group, facility_group_2)).to be true
+          expect(viewer.can?(:view, :facility_group, facility_group_3)).to be false
+          expect(viewer.can?(:view, :facility_group)).to be true
+        end
+
+        it "does not allow viewer to manage" do
+          create(:access, :viewer, user: viewer, resource: organization_1)
+          create(:access, :viewer, user: viewer, resource: facility_group_2)
+
+          expect(viewer.can?(:manage, :facility_group, facility_group_1)).to be false
+          expect(viewer.can?(:manage, :facility_group, facility_group_2)).to be false
+          expect(viewer.can?(:manage, :facility_group, facility_group_3)).to be false
+          expect(viewer.can?(:manage, :facility_group)).to be false
+        end
+
+        it "allows manager to manage" do
+          create(:access, :manager, user: manager, resource: organization_1)
+          create(:access, :manager, user: manager, resource: facility_group_2)
+
+          expect(manager.can?(:manage, :facility_group, facility_group_1)).to be true
+          expect(manager.can?(:manage, :facility_group, facility_group_2)).to be true
+          expect(manager.can?(:manage, :facility_group, facility_group_3)).to be false
+          expect(manager.can?(:manage, :facility_group)).to be true
+        end
+      end
+    end
+
+    context "facility" do
+      let!(:facility_1) { create(:facility) }
+      let!(:facility_2) { create(:facility) }
+      let!(:facility_3) { create(:facility) }
+
+      context "view action" do
+        it "allows super admin to view anything" do
+          expect(super_admin.can?(:view, :facility, facility_1)).to be true
+          expect(super_admin.can?(:view, :facility, facility_2)).to be true
+          expect(super_admin.can?(:view, :facility, facility_3)).to be true
+          expect(super_admin.can?(:view, :facility)).to be true
+        end
+
+        it "allows manager to view" do
+          create(:access, :manager, user: manager, resource: facility_1)
+
+          expect(manager.can?(:view, :facility, facility_1)).to be true
+          expect(manager.can?(:view, :facility, facility_2)).to be false
+          expect(manager.can?(:view, :facility, facility_3)).to be false
+          expect(manager.can?(:view, :facility)).to be true
+        end
+
+        it "allows viewer to view" do
+          create(:access, :viewer, user: viewer, resource: facility_3)
+
+          expect(viewer.can?(:view, :facility, facility_1)).to be false
+          expect(viewer.can?(:view, :facility, facility_2)).to be false
+          expect(viewer.can?(:view, :facility, facility_3)).to be true
+          expect(viewer.can?(:view, :facility)).to be true
+        end
+      end
+
+      context "manage action" do
+        it "allows super admin to manage anything" do
+          expect(super_admin.can?(:manage, :facility, facility_1)).to be true
+          expect(super_admin.can?(:manage, :facility, facility_2)).to be true
+          expect(super_admin.can?(:manage, :facility, facility_3)).to be true
+          expect(super_admin.can?(:manage, :facility)).to be true
+        end
+
+        it "allows manager to manage" do
+          create(:access, :manager, user: manager, resource: facility_1)
+
+          expect(manager.can?(:manage, :facility, facility_1)).to be true
+          expect(manager.can?(:manage, :facility, facility_2)).to be false
+          expect(manager.can?(:manage, :facility, facility_3)).to be false
+          expect(manager.can?(:manage, :facility)).to be true
+        end
+
+        it "allows viewer to manage" do
+          create(:access, :viewer, user: viewer, resource: facility_3)
+
+          expect(viewer.can?(:manage, :facility, facility_1)).to be false
+          expect(viewer.can?(:manage, :facility, facility_2)).to be false
+          expect(viewer.can?(:manage, :facility, facility_3)).to be false
+          expect(viewer.can?(:manage, :facility)).to be false
+        end
+      end
+
+      context "when facility-group-level access" do
+        let!(:facility_group_1) { create(:facility_group) }
+        let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+        let!(:facility_2) { create(:facility) }
+        let!(:facility_3) { create(:facility) }
+
+        it "allows manager to view" do
+          create(:access, :manager, user: manager, resource: facility_group_1)
+          create(:access, :manager, user: manager, resource: facility_2)
+
+          expect(manager.can?(:view, :facility, facility_1)).to be true
+          expect(manager.can?(:view, :facility, facility_2)).to be true
+          expect(manager.can?(:view, :facility, facility_3)).to be false
+          expect(manager.can?(:view, :facility)).to be true
+        end
+
+        it "allows viewer to view" do
+          create(:access, :viewer, user: viewer, resource: facility_group_1)
+          create(:access, :viewer, user: viewer, resource: facility_2)
+
+          expect(viewer.can?(:view, :facility, facility_1)).to be true
+          expect(viewer.can?(:view, :facility, facility_2)).to be true
+          expect(viewer.can?(:view, :facility, facility_3)).to be false
+          expect(viewer.can?(:view, :facility)).to be true
+        end
+
+        it "does not allow viewer to manage" do
+          create(:access, :viewer, user: viewer, resource: facility_group_1)
+          create(:access, :viewer, user: viewer, resource: facility_2)
+
+          expect(viewer.can?(:manage, :facility, facility_1)).to be false
+          expect(viewer.can?(:manage, :facility, facility_2)).to be false
+          expect(viewer.can?(:manage, :facility, facility_3)).to be false
+          expect(viewer.can?(:manage, :facility)).to be false
+        end
+
+        it "allows manager to manage" do
+          create(:access, :manager, user: manager, resource: facility_group_1)
+          create(:access, :manager, user: manager, resource: facility_2)
+
+          expect(manager.can?(:manage, :facility, facility_1)).to be true
+          expect(manager.can?(:manage, :facility, facility_2)).to be true
+          expect(manager.can?(:manage, :facility, facility_3)).to be false
+          expect(manager.can?(:manage, :facility)).to be true
+        end
+      end
+
+      context "when org-level access" do
+        let!(:organization_1) { create(:organization) }
+        let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+        let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+        let!(:facility_2) { create(:facility) }
+        let!(:facility_3) { create(:facility) }
+
+        it "allows manager to view" do
+          create(:access, :manager, user: manager, resource: organization_1)
+          create(:access, :manager, user: manager, resource: facility_2)
+
+          expect(manager.can?(:view, :facility, facility_1)).to be true
+          expect(manager.can?(:view, :facility, facility_2)).to be true
+          expect(manager.can?(:view, :facility, facility_3)).to be false
+          expect(manager.can?(:view, :facility)).to be true
+        end
+
+        it "allows viewer to view" do
+          create(:access, :viewer, user: viewer, resource: organization_1)
+          create(:access, :viewer, user: viewer, resource: facility_2)
+
+          expect(viewer.can?(:view, :facility, facility_1)).to be true
+          expect(viewer.can?(:view, :facility, facility_2)).to be true
+          expect(viewer.can?(:view, :facility, facility_3)).to be false
+          expect(viewer.can?(:view, :facility)).to be true
+        end
+
+        it "does not allow viewer to manage" do
+          create(:access, :viewer, user: viewer, resource: organization_1)
+          create(:access, :viewer, user: viewer, resource: facility_2)
+
+          expect(viewer.can?(:manage, :facility, facility_1)).to be false
+          expect(viewer.can?(:manage, :facility, facility_2)).to be false
+          expect(viewer.can?(:manage, :facility, facility_3)).to be false
+          expect(viewer.can?(:manage, :facility)).to be false
+        end
+
+        it "allows manager to manage" do
+          create(:access, :manager, user: manager, resource: organization_1)
+          create(:access, :manager, user: manager, resource: facility_2)
+
+          expect(manager.can?(:manage, :facility, facility_1)).to be true
+          expect(manager.can?(:manage, :facility, facility_2)).to be true
+          expect(manager.can?(:manage, :facility, facility_3)).to be false
+          expect(manager.can?(:manage, :facility)).to be true
+        end
+      end
+    end
+  end
 
   describe ".organizations" do
     let(:viewer) { create(:admin) }
