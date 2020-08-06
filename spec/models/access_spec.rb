@@ -6,8 +6,8 @@ RSpec.describe Access, type: :model do
 
     it {
       is_expected.to define_enum_for(:role)
-        .with_values(super_admin: "super_admin", manager: "manager", viewer: "viewer")
-        .backed_by_column_of_type(:string)
+                       .with_values(super_admin: "super_admin", manager: "manager", viewer: "viewer")
+                       .backed_by_column_of_type(:string)
     }
 
     context "resource" do
@@ -99,26 +99,36 @@ RSpec.describe Access, type: :model do
   end
 
   describe ".facilities" do
-    let(:admin) { create(:admin) }
+    let(:viewer) { create(:admin) }
+    let(:manager) { create(:admin) }
 
     context "for a direct facility-level access" do
       let!(:facility_1) { create(:facility) }
       let!(:facility_2) { create(:facility) }
       let!(:facility_3) { create(:facility) }
-      let!(:manager_access) { create(:access, :manager, user: admin, resource: facility_1) }
-      let!(:viewer_access) { create(:access, :viewer, user: admin, resource: facility_2) }
+      let!(:manager_access) { create(:access, :manager, user: manager, resource: facility_1) }
+      let!(:viewer_access) { create(:access, :viewer, user: viewer, resource: facility_2) }
 
       context "view action" do
-        it "returns all facilities the user can view" do
-          expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2)
-          expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_3)
+        it "returns all facilities the manager can view" do
+          expect(manager.accesses.facilities(:view)).to contain_exactly(facility_1)
+          expect(manager.accesses.facilities(:view)).not_to contain_exactly(facility_2, facility_3)
+        end
+
+        it "returns all facilities the viewer can view" do
+          expect(viewer.accesses.facilities(:view)).to contain_exactly(facility_2)
+          expect(viewer.accesses.facilities(:view)).not_to contain_exactly(facility_1, facility_3)
         end
       end
 
       context "manage action" do
-        it "returns all facilities the user can manage" do
-          expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_1)
-          expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_3)
+        it "returns all facilities the manager can manage" do
+          expect(manager.accesses.facilities(:manage)).to contain_exactly(facility_1)
+          expect(manager.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_3)
+        end
+
+        it "returns all facilities the viewer can manage" do
+          expect(viewer.accesses.facilities(:manage)).to be_empty
         end
       end
     end
@@ -135,23 +145,32 @@ RSpec.describe Access, type: :model do
       let!(:facility_5) { create(:facility) }
       let!(:facility_6) { create(:facility) }
 
-      let!(:manager_access) { create(:access, :manager, user: admin, resource: facility_group_1) }
-      let!(:facility_manager_access) { create(:access, :manager, user: admin, resource: facility_4) }
+      let!(:manager_access) { create(:access, :manager, user: manager, resource: facility_group_1) }
+      let!(:facility_manager_access) { create(:access, :manager, user: manager, resource: facility_4) }
 
-      let!(:viewer_access) { create(:access, :viewer, user: admin, resource: facility_group_2) }
-      let!(:facility_viewer_access) { create(:access, :viewer, user: admin, resource: facility_5) }
+      let!(:viewer_access) { create(:access, :viewer, user: viewer, resource: facility_group_2) }
+      let!(:facility_viewer_access) { create(:access, :viewer, user: viewer, resource: facility_5) }
 
       context "view action" do
-        it "returns all facilities the user can view" do
-          expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2, facility_4, facility_5)
-          expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_3, facility_6)
+        it "returns all facilities the manager can view" do
+          expect(manager.accesses.facilities(:view)).to contain_exactly(facility_1, facility_4)
+          expect(manager.accesses.facilities(:view)).not_to contain_exactly(facility_2, facility_3, facility_5, facility_6)
+        end
+
+        it "returns all facilities the viewer can view" do
+          expect(viewer.accesses.facilities(:view)).to contain_exactly(facility_2, facility_5)
+          expect(viewer.accesses.facilities(:view)).not_to contain_exactly(facility_1, facility_3, facility_4, facility_6)
         end
       end
 
       context "manage action" do
-        it "returns all facilities the user can manage" do
-          expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_1, facility_4)
-          expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_3, facility_5, facility_6)
+        it "returns all facilities the manager can manage" do
+          expect(manager.accesses.facilities(:manage)).to contain_exactly(facility_1, facility_4)
+          expect(manager.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_3, facility_5, facility_6)
+        end
+
+        it "returns all facilities the viewer can manage" do
+          expect(viewer.accesses.facilities(:manage)).to be_empty
         end
       end
     end
@@ -173,84 +192,34 @@ RSpec.describe Access, type: :model do
       let!(:facility_5) { create(:facility) }
       let!(:facility_6) { create(:facility) }
 
-      let!(:org_manager_access) { create(:access, :manager, user: admin, resource: organization_1) }
-      let!(:fg_manager_access) { create(:access, :manager, user: admin, resource: facility_group_3) }
-      let!(:facility_manager_access) { create(:access, :manager, user: admin, resource: facility_5) }
+      let!(:org_manager_access) { create(:access, :manager, user: manager, resource: organization_1) }
+      let!(:fg_manager_access) { create(:access, :manager, user: manager, resource: facility_group_3) }
+      let!(:facility_manager_access) { create(:access, :manager, user: manager, resource: facility_5) }
 
-      let!(:viewer_access) { create(:access, :viewer, user: admin, resource: organization_2) }
-      let!(:facility_viewer_access) { create(:access, :viewer, user: admin, resource: facility_6) }
+      let!(:viewer_access) { create(:access, :viewer, user: viewer, resource: organization_2) }
+      let!(:facility_viewer_access) { create(:access, :viewer, user: viewer, resource: facility_6) }
 
       context "view action" do
-        it "returns all facilities the user can view" do
-          expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2, facility_3, facility_5, facility_6)
-          expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_4)
+        it "returns all facilities the manager can view" do
+          expect(manager.accesses.facilities(:view)).to contain_exactly(facility_1, facility_3, facility_5)
+          expect(manager.accesses.facilities(:view)).not_to contain_exactly(facility_2, facility_4, facility_6)
+        end
+
+        it "returns all facilities the viewer can view" do
+          expect(viewer.accesses.facilities(:view)).to contain_exactly(facility_2, facility_6)
+          expect(viewer.accesses.facilities(:view)).not_to contain_exactly(facility_1, facility_3, facility_4, facility_5)
         end
       end
 
       context "manage action" do
-        it "returns all facilities the user can manage" do
-          expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_1, facility_3, facility_5)
-          expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_4, facility_6)
+        it "returns all facilities the manager can manage" do
+          expect(manager.accesses.facilities(:manage)).to contain_exactly(facility_1, facility_3, facility_5)
+          expect(manager.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_4, facility_6)
         end
-      end
-    end
 
-    context "nested access to facilities in a facility_group" do
-      let!(:facility_group_1) { create(:facility_group) }
-
-      let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
-      let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
-      let!(:facility_3) { create(:facility) }
-
-      it "returns manageable facilities even if facility group role is viewer" do
-        create(:access, :viewer, user: admin, resource: facility_group_1)
-        create(:access, :manager, user: admin, resource: facility_2)
-
-        expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2)
-        expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_3)
-        expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_2)
-        expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_3)
-      end
-
-      it "returns view-only facilities as manageable if facility group role is manager" do
-        create(:access, :manager, user: admin, resource: facility_group_1)
-        create(:access, :viewer, user: admin, resource: facility_2)
-
-        expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2)
-        expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_3)
-        expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_1, facility_2)
-        expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_3)
-      end
-    end
-
-    context "nested access to facilities in a organization" do
-      let!(:organization_1) { create(:organization) }
-
-      let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
-      let!(:facility_group_2) { create(:facility_group, organization: organization_1) }
-
-      let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
-      let!(:facility_2) { create(:facility, facility_group: facility_group_2) }
-      let!(:facility_3) { create(:facility) }
-
-      it "returns manageable facilities even if organization role is viewer" do
-        create(:access, :viewer, user: admin, resource: organization_1)
-        create(:access, :manager, user: admin, resource: facility_group_1)
-
-        expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2)
-        expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_3)
-        expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_1)
-        expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_2, facility_3)
-      end
-
-      it "returns view-only facilities as manageable if facility group role is manager" do
-        create(:access, :manager, user: admin, resource: organization_1)
-        create(:access, :viewer, user: admin, resource: facility_group_1)
-
-        expect(admin.accesses.facilities(:view)).to contain_exactly(facility_1, facility_2)
-        expect(admin.accesses.facilities(:view)).not_to contain_exactly(facility_3)
-        expect(admin.accesses.facilities(:manage)).to contain_exactly(facility_1, facility_2)
-        expect(admin.accesses.facilities(:manage)).not_to contain_exactly(facility_3)
+        it "returns all facilities the viewer can manage" do
+          expect(viewer.accesses.facilities(:manage)).to be_empty
+        end
       end
     end
   end
