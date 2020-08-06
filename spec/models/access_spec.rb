@@ -1,6 +1,11 @@
 require "rails_helper"
 
 RSpec.describe Access, type: :model do
+  describe "Associations" do
+    it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:resource) }
+  end
+
   describe "Validations" do
     it { is_expected.to validate_presence_of(:role) }
 
@@ -10,29 +15,40 @@ RSpec.describe Access, type: :model do
                        .backed_by_column_of_type(:string)
     }
 
+    it "does not allow creating accesses for user with multiple roles" do
+      admin = create(:admin)
+      valid_access_1 = create(:access, role: :manager, user: admin, resource: create(:facility))
+      valid_access_2 = build(:access, role: :manager, user: admin, resource: create(:facility_group))
+      invalid_access = build(:access, role: :viewer, user: admin, resource: create(:facility))
+
+      expect(valid_access_1).to be_valid
+      expect(valid_access_2).to be_valid
+      expect(invalid_access).to be_invalid
+    end
+
     context "resource" do
       let(:admin) { create(:admin) }
       let!(:resource) { create(:facility) }
 
       it "is invalid if user has more than one access per resource" do
         __valid_access = create(:access, :viewer, user: admin, resource: resource)
-        invalid_access = build(:access, :manager, user: admin, resource: resource)
+        invalid_access = build(:access, :viewer, user: admin, resource: resource)
 
-        expect(invalid_access).to_not be_valid
+        expect(invalid_access).to be_invalid
         expect(invalid_access.errors.messages[:user]).to eq ["can only have one access per resource."]
       end
 
       it "is invalid if non super-admins don't have a resource" do
         invalid_access = build(:access, :viewer, user: admin, resource: nil)
 
-        expect(invalid_access).to_not be_valid
+        expect(invalid_access).to be_invalid
         expect(invalid_access.errors.messages[:resource]).to eq ["must exist", "is required if not a super_admin."]
       end
 
       it "is invalid if super_admin has a resource" do
         invalid_access = build(:access, :super_admin, user: admin, resource: create(:facility))
 
-        expect(invalid_access).to_not be_valid
+        expect(invalid_access).to be_invalid
         expect(invalid_access.errors.messages[:resource]).to eq ["must be nil if super_admin"]
       end
 
@@ -45,36 +61,43 @@ RSpec.describe Access, type: :model do
         expect(valid_access_1).to be_valid
         expect(valid_access_2).to be_valid
         expect(valid_access_3).to be_valid
-        expect(invalid_access).to_not be_valid
+        expect(invalid_access).to be_invalid
         expect(invalid_access.errors.messages[:resource_type]).to eq ["is not included in the list"]
       end
     end
   end
 
-  describe "Associations" do
-    it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:resource) }
-  end
+  pending ".can?"
 
   describe ".organizations" do
-    let(:admin) { create(:admin) }
+    let(:viewer) { create(:admin) }
+    let(:manager) { create(:admin) }
     let!(:organization_1) { create(:organization) }
     let!(:organization_2) { create(:organization) }
     let!(:organization_3) { create(:organization) }
-    let!(:manager_access) { create(:access, :manager, user: admin, resource: organization_1) }
-    let!(:viewer_access) { create(:access, :viewer, user: admin, resource: organization_2) }
+    let!(:manager_access) { create(:access, :manager, user: manager, resource: organization_1) }
+    let!(:viewer_access) { create(:access, :viewer, user: viewer, resource: organization_2) }
 
     context "view action" do
-      it "returns all organizations the user can view" do
-        expect(admin.accesses.organizations(:view)).to contain_exactly(organization_1, organization_2)
-        expect(admin.accesses.organizations(:view)).not_to contain_exactly(organization_3)
+      it "returns all organizations the manager can view" do
+        expect(manager.accesses.organizations(:view)).to contain_exactly(organization_1)
+        expect(manager.accesses.organizations(:view)).not_to contain_exactly(organization_2)
+      end
+
+      it "returns all organizations the viewer can view" do
+        expect(viewer.accesses.organizations(:view)).to contain_exactly(organization_2)
+        expect(viewer.accesses.organizations(:view)).not_to contain_exactly(organization_1)
       end
     end
 
     context "manage action" do
-      it "returns all organizations the user can manage" do
-        expect(admin.accesses.organizations(:manage)).to contain_exactly(organization_1)
-        expect(admin.accesses.organizations(:manage)).not_to contain_exactly(organization_2, organization_3)
+      it "returns all organizations the manager can manage" do
+        expect(manager.accesses.organizations(:manage)).to contain_exactly(organization_1)
+        expect(manager.accesses.organizations(:manage)).not_to contain_exactly(organization_2)
+      end
+
+      it "returns all organizations the viewer can manage" do
+        expect(viewer.accesses.organizations(:manage)).to be_empty
       end
     end
   end

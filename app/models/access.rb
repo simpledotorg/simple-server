@@ -20,17 +20,7 @@ class Access < ApplicationRecord
   validates :resource, presence: {unless: :super_admin?, message: "is required if not a super_admin."}
   validates :resource, absence: {if: :super_admin?, message: "must be nil if super_admin"}
   validates :resource_type, inclusion: {in: ALLOWED_RESOURCES, unless: :super_admin?}
-  validate :validate_user_has_only_one_role
-
-  def validate_user_has_only_one_role
-    existing_role = user.accesses.pluck(:role).uniq.first
-
-    if existing_role.nil? || existing_role == role
-      true
-    else
-      errors.add(:user, "can only have one role.")
-    end
-  end
+  validate :user_has_only_one_role, if: -> { user.present? }
 
   class << self
     def organizations(action)
@@ -78,6 +68,16 @@ class Access < ApplicationRecord
 
     def super_admin?
       super_admin.exists?
+    end
+  end
+
+  private
+
+  def user_has_only_one_role
+    existing_role = user.accesses.pluck(:role).uniq.first
+
+    if existing_role.present? && existing_role != role
+      errors.add(:user, "can only have one role.")
     end
   end
 end
