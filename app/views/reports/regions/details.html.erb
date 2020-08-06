@@ -92,60 +92,74 @@
         Recent BPs
       </h3>
     </div>
-    <div class="table-responsive">
-      <table id="recent-bps" class="table-compact">
-        <colgroup>
-          <col>
-          <col class="table-divider">
-          <col class="table-divider">
-          <col class="table-divider">
-          <col class="table-divider">
-        </colgroup>
-        <thead>
-          <tr class="sorts" data-sort-method="thead">
-            <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
-              Date
-            </th>
-            <th class="row-label sort-label sort-label-small ta-left">
-              Time
-            </th>
-            <th class="row-label sort-label sort-label-small ta-left">
-              Recorded BP
-            </th>
-            <th class="row-label sort-label sort-label-small ta-left">
-              Visit type
-            </th>
-            <th class="row-label sort-label sort-label-small ta-left">
-              Recorded by
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <% (1..25).step(1) do |i| %>
+    <% if @region.blood_pressures.any? %>
+      <div class="table-responsive">
+        <table id="recent-bps" class="table-compact">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+          </colgroup>
+          <thead>
             <tr>
-              <td class="ta-left">
-                PENDING
-              </td>
-              <td class="ta-left">
-                PENDING
-              </td>
-              <td class="ta-left <%= i % 2 == 0 ? "c-red" : "c-grey-medium" %>">
-                <i class="fas fa-heart mr-4px"></i> PENDING
-              </td>
-              <td class="ta-left <%= i % 4 == 0 ? "c-green-dark" : "c-black" %>">
-                PENDING
-              </td>
-              <td class="ta-left c-blue">
-                PENDING
-              </td>
+              <th colspan="4"></th>
+              <th class="pl-1 pb-3">
+                Recorded by
+              </th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            <% last_date = nil %>
+            <% @region.blood_pressures.each do |bp| %>
+              <% next if bp.patient.blank? %>
+              <% if print_date = (bp.recorded_at.to_date != last_date) %>
+                <% last_date = bp.recorded_at.to_date %>
+              <% end %>
+              <tr class="<%= "date-row" if print_date %>">
+                <td class="nowrap w-160px" style="<%= "border: none;" if !print_date %>">
+                  <% if print_date %>
+                    <strong>
+                      <%= l bp.recorded_at.to_date %>
+                    </strong>
+                  <% end %>
+                </td>
+                <td class="nowrap text-muted">
+                  <%= bp.recorded_at.strftime("%I:%M %p") %>
+                </td>
+                <td class="nowrap <%= bp.hypertensive? ? "bp-uncontrolled" : "bp-controlled text-muted" %>">
+                  <i class="fas fa-heart mr-2"></i> <%= bp.to_s %>
+                </td>
+                <td class="nowrap">
+                  <% if bp.recorded_at.to_date > bp.patient.recorded_at.to_date %>
+                    <span class="patient-return text-muted">
+                      Follow-up patient
+                    </span>
+                  <% else %>
+                    <span class="patient-new">
+                      New registration
+                    </span>
+                  <% end %>
+                </td>
+                <td class="nowrap">
+                  <%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-muted mb-0">
+        <i class="fas fa-chevron-left"></i>
+          No BPs recorded
+        <i class="fas fa-chevron-right"></i>
+      </p>
+    <% end %>
   </div>
 <% end %>
-<div id="data-json" style="display: none;">
+<div id="data-json d-none">
   <%= raw @data.to_json %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>

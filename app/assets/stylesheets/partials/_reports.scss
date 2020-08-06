@@ -41,6 +41,7 @@
 // Width
 .w-12px { width: 12px; }
 .w-48px { width: 48px; }
+.w-160px { width: 160px; }
 .w-100pt { width: 100%; }
 .mw-100pt { max-width: 100%; }
 // Height
@@ -68,6 +69,7 @@
 .c-blue { color: $blue; }
 .tt-uppercase { text-transform: uppercase; }
 // Borders
+.b-none { border: none; }
 .bt-1px { border-top: 1px solid; }
 .bt-2px { border-top: 2px solid; }
 .bb-1px { border-bottom: 1px solid; }
