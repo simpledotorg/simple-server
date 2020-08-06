@@ -77,25 +77,62 @@ function initializeCharts() {
       ]
     },
     options: {
-      legend: { display: true },
+      animation: false,
+      legend: { display: false },
       responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0
+        }
+      },
       scales: {
-        xAxes: [{ stacked: true,
+        xAxes: [{
+          stacked: true,
           gridLines: {
-            display: false
+            display: true,
+            drawBorder: false
+          },
+          ticks: {
+            fontColor: "#ADB2B8",
+            fontSize: 14,
+            fontFamily: "Roboto Condensed",
+            maxRotation: 0,
+            minRotation: 0
           }
         }],
-        yAxes: [{ stacked: true,
+        yAxes: [{
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          stacked: true,
           ticks: {
-            beginAtZero: true,
+            fontColor: "#ADB2B8",
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            stepSize: 25,
+            suggestedMin: 0,
             suggestedMin: 0,
             suggestedMax: 100,
-            stepSize: 25,
           }
         }],
-      }
+      },
+      tooltips: _.merge(defaultTooltips(), { callbacks: { label: noBpMeasureTooltip }})
     }
   };
+
+  function noBpMeasureTooltip(item, data) {
+    console.log(item)
+    const label = data.datasets[item.datasetIndex].label;
+    return `${item.value}% ${label}`
+
+  }
+
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
     // new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
@@ -299,6 +336,25 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
     }
   };
 };
+
+function defaultTooltips() {
+  return {
+    backgroundColor: "rgb(0, 0, 0)",
+    bodyAlign: "center",
+    bodyFontFamily: "Roboto Condensed",
+    bodyFontSize: 12,
+    caretSize: 6,
+    displayColors: false,
+    position: "nearest",
+    titleAlign: "center",
+    titleFontFamily: "Roboto Condensed",
+    titleFontSize: 16,
+    xAlign: "center",
+    xPadding: 12,
+    yAlign: "bottom",
+    yPadding: 12,
+  }
+}
 
 function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
