@@ -1,5 +1,9 @@
 class Access < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
+  ACTION_TO_ROLE = {
+    view: [:manager, :viewer],
+    manage: [:manager]
+  }
 
   belongs_to :user
   belongs_to :resource, polymorphic: true
@@ -8,11 +12,6 @@ class Access < ApplicationRecord
     viewer: "viewer",
     manager: "manager",
     super_admin: "super_admin"
-  }
-
-  ACTION_TO_ROLE = {
-    view: [:manager, :viewer],
-    manage: [:manager]
   }
 
   validates :role, presence: true
