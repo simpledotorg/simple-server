@@ -23,7 +23,7 @@
       <tr>
         <th></th>
         <th class="row-label"><strong>Total</strong></th>
-        <th class="row-label" colspan="6"><strong>BP Taken</strong></th>
+        <th class="row-label" colspan="6"><strong>Patients with BP taken</strong></th>
         <th class="row-label" colspan="6"><strong>New registrations</strong></th>
       </tr>
 
@@ -61,7 +61,7 @@
         <!--Follow-up patients-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <td class="row-total" style="text-align: center;">
-            <%= dash_if_zero(analytics_totals(dashboard_analytics, :assigned_patient_visits_by_period, date)) %>
+            <%= dash_if_zero(analytics_totals(dashboard_analytics, :patients_with_bp_by_period, date)) %>
           </td>
         <% end %>
 
@@ -93,7 +93,7 @@
             <!--Follow-up patients-->
             <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :assigned_patient_visits_by_period, date)) %>
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :patients_with_bp_by_period, date)) %>
               </td>
             <% end %>
 

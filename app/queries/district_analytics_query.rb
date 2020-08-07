@@ -42,15 +42,15 @@ class DistrictAnalyticsQuery
     group_by_facility_and_date(@registered_patients_by_period, :registered_patients_by_period)
   end
 
-  def assigned_patient_visits_by_period
-    @assigned_patient_visits_by_period ||=
+  def patients_with_bp_by_period
+    @patients_with_bp_by_period ||=
       Patient
         .group("assigned_facility_id")
         .where(assigned_facility: facilities)
         .hypertension_follow_ups_by_period(@period, last: @prev_periods)
         .count
 
-    group_by_facility_and_date(@assigned_patient_visits_by_period, :assigned_patient_visits_by_period)
+    group_by_facility_and_date(@patients_with_bp_by_period, :patients_with_bp_by_period)
   end
 
   private
