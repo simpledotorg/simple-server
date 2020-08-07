@@ -6,6 +6,7 @@ let mediumGreenColor = "rgba(92, 255, 157, 1)";
 let lightRedColor = "rgba(255, 235, 238, 1)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
 let lightPurpleColor = "rgba(238, 229, 252, 1)";
+let darkPurpleColor = "#5300E0";
 let darkGreyColor = "rgba(108, 115, 122, 1)";
 let mediumGreyColor = "rgba(173, 178, 184, 1)";
 let lightGreyColor = "rgba(240, 242, 245, 1)";
@@ -15,6 +16,7 @@ function initializeCharts() {
 
   const controlledGraphConfig = createGraphConfig([{
     data: data.controlRate,
+    borderWidth: 1,
     rgbaLineColor: darkGreenColor,
     rgbaBackgroundColor: lightGreenColor,
     label: "control rate",
@@ -64,6 +66,7 @@ function initializeCharts() {
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: lightRedColor,
+      borderWidth: 1,
       rgbaLineColor: darkRedColor,
       label: "not under control rate",
     }
@@ -88,7 +91,9 @@ function initializeCharts() {
     {
       data: data.registrations,
       rgbaBackgroundColor: lightPurpleColor,
-      hoverBackgroundColor: lightPurpleColor,
+      borderWidth: { top: 2 },
+      rgbaLineColor: darkPurpleColor,
+      hoverBackgroundColor: darkPurpleColor,
     },
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
@@ -107,13 +112,13 @@ function initializeCharts() {
     {
       data: data.controlRate,
       rgbaBackgroundColor: mediumGreenColor,
-      rgbaLineColor: mediumGreenColor,
+      hoverBackgroundColor: mediumGreenColor,
       label: "control rate",
     },
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: darkRedColor,
-      rgbaLineColor: darkRedColor,
+      hoverBackgroundColor: darkRedColor,
       label: "not under control rate",
     },
   ], "bar");
@@ -166,7 +171,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
           borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
-          borderWidth: dataset.rgbaLineColor ? 1 : undefined,
+          borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           pointBackgroundColor: dataset.rgbaLineColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
