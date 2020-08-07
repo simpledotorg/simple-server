@@ -2,10 +2,10 @@
 
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div>
+    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="c-black">
+          <h3 class="m-8px c-black">
             HTN controlled
           </h3>
           <p class="c-grey-dark">
@@ -20,7 +20,7 @@
               No data
             <% end %>
           </p>
-          <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
+          <p class="m-0px <% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
               <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> patients
             <% else %>
@@ -31,7 +31,7 @@
       </div>
       <div>
         <div class="p-relative">
-          <div class="h-200px">
+          <div class="h-200px mb-16px ml-13px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
@@ -47,10 +47,10 @@
   </div>
 
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div>
+    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="c-black">
+          <h3 class="m-8px c-black">
             No BP measure
           </h3>
           <p class="c-grey-dark">
@@ -102,17 +102,17 @@
         </div>
       </div>
       <div>
-        <div class="h-200px">
+        <div class="h-200px mr-13px mb-16px ml-13px">
           <canvas id="noBPMeasureTrend"></canvas>
         </div>
       </div>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div>
+    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="c-black">
+          <h3 class="m-8px c-black">
             HTN not under control
           </h3>
           <p class="c-grey-dark">
@@ -130,7 +130,7 @@
               No data
             <% end %>
           </p>
-          <p class="<% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
+          <p class="m-0px <% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
             <% if current_uncontrolled_rate %>
               <span class="fw-bold">
                 <%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %>
@@ -143,7 +143,7 @@
       </div>
       <div>
         <div class="p-relative">
-          <div class="h-200px">
+          <div class="h-200px mb-16px ml-13px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
@@ -158,10 +158,10 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div class="card d-lg-flex justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div>
+    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="c-black">
+          <h3 class="m-8px c-black">
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
@@ -179,7 +179,7 @@
               </span>
             <% end %>
           </p>
-          <p class="<% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
+          <p class="m-0px <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
@@ -195,7 +195,7 @@
           </p>
         </div>
       <% else %>
-        <div class="h-200px">
+        <div class="h-200px mr-13px mb-16px ml-13px">
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
       <% end %>
