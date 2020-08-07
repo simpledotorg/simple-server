@@ -43,10 +43,6 @@ class Facility < ApplicationRecord
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
 
-  def self.assigned_hypertension_patients
-    Patient.where(assigned_facility: all)
-  end
-
   enum facility_size: {
     community: "community",
     small: "small",

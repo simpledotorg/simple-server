@@ -78,8 +78,9 @@ class MyFacilities::BloodPressureControlQuery
 
   def overall_patients
     @overall_patients ||=
-      facilities
-        .assigned_hypertension_patients
+      Patient
+        .with_hypertension
+        .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
 
@@ -97,9 +98,12 @@ class MyFacilities::BloodPressureControlQuery
 
   def quarterly_patients
     @quarterly_patients ||=
-      facilities.assigned_hypertension_patients.where("recorded_at >= ? AND recorded_at <= ?",
-        local_quarter_start(@registration_year, @registration_quarter),
-        local_quarter_end(@registration_year, @registration_quarter))
+      Patient
+        .with_hypertension
+        .where(assigned_facility: facilities)
+        .where("recorded_at >= ? AND recorded_at <= ?",
+          local_quarter_start(@registration_year, @registration_quarter),
+          local_quarter_end(@registration_year, @registration_quarter))
   end
 
   def quarterly_bps
@@ -120,9 +124,12 @@ class MyFacilities::BloodPressureControlQuery
 
   def monthly_patients
     @monthly_patients ||=
-      facilities.assigned_hypertension_patients.where("recorded_at >= ? AND recorded_at <= ?",
-        local_month_start(@registration_year, @registration_month),
-        local_month_end(@registration_year, @registration_month))
+      Patient
+        .with_hypertension
+        .where(assigned_facility: facilities)
+        .where("recorded_at >= ? AND recorded_at <= ?",
+          local_month_start(@registration_year, @registration_month),
+          local_month_end(@registration_year, @registration_month))
   end
 
   def monthly_bps
