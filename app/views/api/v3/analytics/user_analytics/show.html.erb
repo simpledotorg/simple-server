@@ -110,12 +110,12 @@
   <div class="card">
     <h3>Hypertension controlled</h3>
     <p class="desc">
-      Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months
+      Patient with hypertension with BP &lt;140/90 at their most recent visit in the last 3 months
     </p>
 
     <p class="desc control-desc">
         <strong><%= @user_analytics.monthly_htn_control_last_period %></strong>
-        <br><%= @user_analytics.monthly_htn_control_last_period_patient_counts %> patients
+        <br><%= @user_analytics.monthly_htn_control_last_period_patient_counts %>
         <br><strong class="green"><%= @user_analytics.monthly_htn_control_last_control_rate %>%</strong>
     </p>
 
@@ -189,7 +189,7 @@
         </a>
 
         <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension cohort report</h2>
-        <p class="left">Cohort reports show the outcome for newly registered hypertension patients in their first few months of treatment.</p>
+        <p class="left">Cohort reports show the outcome for newly registered patients with hypertension in their first few months of treatment.</p>
         <div class="key">
             <p class="left" style="color: #007A31;"><span class="key-color green"></span> Patients visited with BP &lt;140/90</p>
             <p class="left" style="color: #FF3355;"><span class="key-color red"></span> Patients visited with BP &ge;140/90</p>
@@ -198,7 +198,7 @@
 
         <% @user_analytics.cohorts.each do |cohort| %>
           <div class="card cohort">
-              <h6><%= cohort[:registered] %> patients registered in <%= cohort[:patients_registered] %></h6>
+              <h6><%= pluralize(cohort[:registered], "patient") %> registered in <%= cohort[:patients_registered] %></h6>
               <div style="font-size: 16px; margin: 8px 0 12px 0;">Result from last visit in <%= cohort[:results_in] %></div>
               <table class="cohort-bars">
                   <tr>

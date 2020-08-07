@@ -49,7 +49,10 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       Period.month(htn_control_monthly_period_list.last)
     )
 
-    "#{number_with_delimiter(controlled_patients)} of #{number_with_delimiter(registrations)}"
+    numerator = number_with_delimiter(controlled_patients)
+    denominator = number_with_delimiter(registrations)
+    unit = "patient".pluralize(registrations)
+    "#{numerator} of #{denominator} #{unit}"
   end
 
   def monthly_htn_control_last_control_rate
