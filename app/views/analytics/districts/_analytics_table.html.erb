@@ -1,5 +1,5 @@
 <div class="card pr-0 pr-md-3">
-  <h2><%= row_resource_description %></h2>
+  <h2>Facilities</h2>
 
   <div class="table-responsive">
     <table id="analytics-table" class="table-compact">
@@ -29,10 +29,10 @@
 
       <tr class="sorts" data-sort-method="thead">
         <th class="row-label sort-label sort-label-small" style="text-align: left;" data-sort-default>Name</th>
-        <!--Registered patients-->
+        <!--Total assigned patients-->
         <th class="row-label sort-label" data-sort-default data-sort-method="number">Total patients</th>
 
-        <!--Follow-up patients-->
+        <!--Patients with BP taken-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <th class="row-label sort-label sort-label-small" data-sort-method="number">
             <%= format_period(@period, date) %>
@@ -53,12 +53,12 @@
       <tr class="row-total" data-sort-method="none">
         <td class="row-title row-total">All</td>
 
-        <!--Registered patients-->
+        <!--Total assigned patients-->
         <td class="row-total" style="text-align: center;">
-          <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_assigned_patients] || 0 }) %>
+          <%= dash_if_zero(dashboard_analytics.sum { |_, row| row[:total_patients] || 0 }) %>
         </td>
 
-        <!--Follow-up patients-->
+        <!--Patients with BP taken-->
         <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
           <td class="row-total" style="text-align: center;">
             <%= dash_if_zero(analytics_totals(dashboard_analytics, :patients_with_bp_by_period, date)) %>
@@ -73,34 +73,29 @@
         <% end %>
       </tr>
 
-      <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
-        <% if dashboard_analytics[resource.id].present? %>
+      <% policy_scope([:cohort_report, Facility.order(:name)]).each do |facility| %>
+        <% if dashboard_analytics[facility.id].present? %>
           <tr>
             <td class="row-title">
-              <% if row_resource_link == :analytics_facility_path %>
-                <%= link_to resource.send(row_resource_display_field),
-                            send(row_resource_link, resource, period: @period) %>
-              <% else %>
-                <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
-              <% end %>
+              <%= link_to facility.name, analytics_facility_path(facility, period: @period) %>
             </td>
 
-            <!--Registered patients-->
+            <!--Total assigned patients-->
             <td style="text-align: center;">
-              <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_assigned_patients)) %>
+              <%= dash_if_zero(dashboard_analytics.dig(facility.id, :total_patients)) %>
             </td>
 
-            <!--Follow-up patients-->
+            <!--Patients with BP taken-->
             <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :patients_with_bp_by_period, date)) %>
+                <%= dash_if_zero(dashboard_analytics.dig(facility.id, :patients_with_bp_by_period, date)) %>
               </td>
             <% end %>
 
             <!--New registrations-->
             <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                <%= dash_if_zero(dashboard_analytics.dig(facility.id, :registered_patients_by_period, date)) %>
               </td>
             <% end %>
           </tr>

@@ -1,5 +1,5 @@
 <div class="card pr-0 pr-md-3">
-  <h2><%= row_resource_description %></h2>
+  <h2>Users</h2>
 
   <div class="table-responsive">
     <table id="analytics-table" class="table-compact">
@@ -57,27 +57,22 @@
         <% end %>
       </tr>
 
-      <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
-        <% if dashboard_analytics[resource.id].present? %>
+      <% policy_scope([:cohort_report, User.order(:full_name)]).each do |user| %>
+        <% if dashboard_analytics[user.id].present? %>
           <tr>
             <td class="row-title">
-              <% if row_resource_link == :analytics_facility_path %>
-                <%= link_to resource.send(row_resource_display_field),
-                            send(row_resource_link, resource, period: @period) %>
-              <% else %>
-                <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
-              <% end %>
+              <%= link_to user.full_name, admin_user_path(user) %>
             </td>
 
             <!--Registered patients-->
             <td style="text-align: center;">
-              <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+              <%= dash_if_zero(dashboard_analytics.dig(user.id, :total_registered_patients)) %>
             </td>
 
             <!--New registrations-->
             <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
               <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                <%= dash_if_zero(dashboard_analytics.dig(user.id, :registered_patients_by_period, date)) %>
               </td>
             <% end %>
           </tr>

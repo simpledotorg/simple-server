@@ -13,8 +13,8 @@ class DistrictAnalyticsQuery
     @include_current_period = include_current_period
   end
 
-  def total_assigned_patients
-    @total_assigned_patients ||=
+  def total_patients
+    @total_patients ||=
       Patient
         .with_hypertension
         .joins(:assigned_facility)
@@ -22,10 +22,10 @@ class DistrictAnalyticsQuery
         .group("facilities.id")
         .count
 
-    return if @total_assigned_patients.blank?
+    return if @total_patients.blank?
 
-    @total_assigned_patients
-      .map { |facility_id, count| [facility_id, {total_assigned_patients: count}] }
+    @total_patients
+      .map { |facility_id, count| [facility_id, {total_patients: count}] }
       .to_h
   end
 

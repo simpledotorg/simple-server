@@ -91,23 +91,23 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
-    describe "#total_assigned_patients" do
+    describe "#total_patients" do
       context "considers only htn diagnosed patients" do
         it "groups the assigned patients by facility" do
           expected_result =
             {
               facility_1.id =>
                 {
-                  total_assigned_patients: 6
+                  total_patients: 6
                 },
 
               facility_2.id =>
                 {
-                  total_assigned_patients: 6
+                  total_patients: 6
                 }
             }
 
-          expect(analytics.total_assigned_patients).to eq(expected_result)
+          expect(analytics.total_patients).to eq(expected_result)
         end
       end
     end
@@ -137,10 +137,11 @@ RSpec.describe DistrictAnalyticsQuery do
     context "facilities in the same district but belonging to different organizations" do
       let!(:facility_in_another_org) { create(:facility) }
       let!(:bp_in_another_org) { create(:blood_pressure, facility: facility_in_another_org) }
+
       it "does not contain data from a different organization" do
         expect(analytics.registered_patients_by_period.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.total_assigned_patients.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.assigned_patient_visits_by_period.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.total_patients.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.patients_with_bp_by_period.keys).not_to include(facility_in_another_org.id)
       end
     end
   end
@@ -148,7 +149,7 @@ RSpec.describe DistrictAnalyticsQuery do
   context "when there is no data available" do
     it "returns nil for all analytics queries" do
       expect(analytics.registered_patients_by_period).to eq(nil)
-      expect(analytics.total_assigned_patients).to eq(nil)
+      expect(analytics.total_patients).to eq(nil)
       expect(analytics.patients_with_bp_by_period).to eq(nil)
     end
   end
@@ -214,11 +215,11 @@ RSpec.describe DistrictAnalyticsQuery do
           {
             facility_1.id =>
               {
-                total_assigned_patients: 1
+                total_patients: 1
               }
           }
 
-        expect(analytics.total_assigned_patients).to eq(expected_result)
+        expect(analytics.total_patients).to eq(expected_result)
       end
     end
   end

@@ -17,12 +17,7 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 
-<%= render 'analytics/facilities/analytics_table',
-  dashboard_analytics: @dashboard_analytics,
-  row_resource: User.order(:full_name),
-  row_resource_description: "Users",
-  row_resource_display_field: :full_name,
-  row_resource_link: :admin_user_path %>
+<%= render 'analytics/facilities/analytics_table', dashboard_analytics: @dashboard_analytics%>
 
 <% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
   <%= render 'shared/recent_bp_log',
