@@ -81,9 +81,10 @@ RSpec.describe ControlRateService, type: :model do
       service = ControlRateService.new(facility_group_1, periods: range)
       result = service.call
     end
-    # registrations from March, Apr, May, June only ...should not include initial months of data w/ 0 results
-    expect(result[:controlled_patients].size).to eq(4)
+    # cumulative registrations from March, Apr, May, June only ...should not include initial months of data w/ 0 results
+    expect(result[:cumulative_registrations].size).to eq(4)
     expect(result[:registrations].size).to eq(4)
+    expect(result[:controlled_patients].size).to eq(4)
   end
 
   it "correctly returns controlled patients for past months" do
