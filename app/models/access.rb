@@ -1,7 +1,9 @@
 class Access < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
   ACTION_TO_ROLE = {
-    view: [:manager, :viewer],
+    manage_overdue_list: [:manager, :health_care_worker, :call_center_worker],
+    view_reports: [:manager, :health_care_worker, :health_administrator],
+    view_pii: [:manager, :health_care_worker],
     manage: [:manager]
   }
 
@@ -9,9 +11,11 @@ class Access < ApplicationRecord
   belongs_to :resource, polymorphic: true, optional: true
 
   enum role: {
-    viewer: "viewer",
+    super_admin: "super_admin",
     manager: "manager",
-    super_admin: "super_admin"
+    health_care_worker: "health_care_worker",
+    health_administrator: "health_administrator",
+    call_center_worker: "call_center_worker"
   }
 
   validates :role, presence: true
@@ -53,6 +57,10 @@ class Access < ApplicationRecord
       end
     end
 
+    def super_admin?
+      super_admin.exists?
+    end
+
     private
 
     def can_access_record?(resources, record)
@@ -67,10 +75,6 @@ class Access < ApplicationRecord
 
       resource_ids = where(resource_type: resource_model.to_s, role: ACTION_TO_ROLE[action]).pluck(:resource_id)
       resource_model.where(id: resource_ids)
-    end
-
-    def super_admin?
-      super_admin.exists?
     end
   end
 

@@ -10,8 +10,8 @@ FactoryBot.define do
       role { :manager }
     end
 
-    trait :viewer do
-      role { :viewer }
+    trait :health_care_worker do
+      role { :health_care_worker }
     end
   end
 end

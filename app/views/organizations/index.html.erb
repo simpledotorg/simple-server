@@ -1,14 +1,11 @@
 <div class="container">
   <div class="row">
-
       <div class="col-sm-5 col-lg-7">
         <% @organizations.each do |organization| %>
             <section id="facility-groups">
               <div class="card" title="<%=organization.name%>">
                 <h2><%= organization.name %></h2>
-
-
-                    <% policy_scope([:cohort_report, organization.facility_groups])
+                    <% current_admin.accessible_facility_groups(:view_reports).where(organization: organization)
                            .flat_map(&:facilities)
                            .group_by(&:district)
                            .keys
