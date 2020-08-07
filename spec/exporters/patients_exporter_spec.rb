@@ -7,8 +7,8 @@ RSpec.describe PatientsExporter do
   let!(:registration_facility) { create(:facility) }
   let!(:patient) {
     create(:patient,
-      registration_facility: registration_facility,
       assigned_facility: facility,
+      registration_facility: registration_facility,
       status: "dead",
       address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
   }
