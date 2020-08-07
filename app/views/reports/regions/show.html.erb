@@ -9,11 +9,11 @@
             HTN controlled
           </h3>
           <p class="c-grey-dark">
-            Registered HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
+            HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
         <div>
-          <p class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
+          <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
               <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
             <% else %>
@@ -22,7 +22,7 @@
           </p>
           <p class="<% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data[:controlled_patients_rate].values.last %>
-              <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
+              <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> patients
             <% else %>
               No control rate data available
             <% end %>
@@ -54,7 +54,7 @@
             No BP measure
           </h3>
           <p class="c-grey-dark">
-            Registered HTN patients with no BP measure recorded in the last 3 months
+            HTN patients with no BP measure recorded in the last 3 months
           </p>
           <div>
             <div class="d-flex align-baseline mb-8px mb-lg-12px">
@@ -87,6 +87,14 @@
                 </p>
                 <p class="flex-1 m-0px fs-14px">
                   Visited in the last 3 months but no BP measure
+                  <span
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    data-trigger="hover"
+                    title="Patients with an appointment scheduled, updated medicines, or blood sugar taken"
+                  >
+                    <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+                  </span>
                 </p>
               </div>
             </div>
@@ -108,11 +116,11 @@
             HTN not under control
           </h3>
           <p class="c-grey-dark">
-            Registered HTN patients with BP &ge;140/90 at their most recent visit in the last 3 months
+            HTN patients with BP &ge;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
         <div>
-          <p class="mb-1 fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
+          <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
           <%
             current_uncontrolled_rate = @data[:uncontrolled_patients_rate]&.values&.last
            %>
@@ -126,7 +134,7 @@
             <% if current_uncontrolled_rate %>
               <span class="fw-bold">
                 <%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %>
-                </span> of <%= number_with_delimiter(@last_registration_value) %> registered patients
+                </span> of <%= number_with_delimiter(@last_registration_value) %> patients
             <% else %>
               No control rate data available
             <% end %>
@@ -157,22 +165,25 @@
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            Total number of HTN patient registrations in <%= @region.name %>
+            Total number of HTN patient registrations
           </p>
         </div>
         <div>
-          <p class="mb-1 fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
+          <p class="mb-0px fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
             <% if @last_registration_value.zero? %>
               No data
             <% else %>
-              <%= number_with_delimiter(@last_registration_value) %> <span class="fs-16px">patients</span>
+              <%= number_with_delimiter(@last_registration_value) %>
+              <span class="fs-16px">
+                patients
+              </span>
             <% end %>
           </p>
           <p class="<% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last %>
+              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last.value.strftime('%b-%Y') %>
             <% end %>
           </p>
         </div>
