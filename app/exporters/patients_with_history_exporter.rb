@@ -21,6 +21,7 @@ module PatientsWithHistoryExporter
       patients.in_batches(of: BATCH_SIZE).each do |batch|
         batch.includes(
           :registration_facility,
+          :assigned_facility,
           :phone_numbers,
           :address
         ).each do |patient|
@@ -52,6 +53,10 @@ module PatientsWithHistoryExporter
       "Patient District",
       (zone_column if Rails.application.config.country[:patient_line_list_show_zone]),
       "Patient State",
+      "Assigned Facility Type",
+      "Assigned Facility Name",
+      "Assigned Facility District",
+      "Assigned Facility State",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -90,6 +95,7 @@ module PatientsWithHistoryExporter
 
   def self.csv_fields(patient)
     registration_facility = patient.registration_facility
+    assigned_facility = patient.assigned_facility
     latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
     latest_blood_sugar = patient.latest_blood_sugar
     latest_appointment = patient.latest_scheduled_appointment
@@ -111,6 +117,10 @@ module PatientsWithHistoryExporter
       patient.address.village_or_colony,
       patient.address.district,
       patient.address.state,
+      assigned_facility&.name,
+      assigned_facility&.facility_type,
+      assigned_facility&.district,
+      assigned_facility&.state,
       registration_facility&.name,
       registration_facility&.facility_type,
       registration_facility&.district,
