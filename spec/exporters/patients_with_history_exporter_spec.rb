@@ -5,7 +5,11 @@ RSpec.describe PatientsWithHistoryExporter do
 
   let!(:now) { Time.current }
 
-  let!(:patient) { create(:patient, status: "dead", address: create(:address, village_or_colony: Faker::Address.city)) } # avoid same village and zone
+  let!(:patient) {
+    create(:patient,
+      status: "dead",
+      address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
+  }
   let!(:facility) { patient.registration_facility }
   let!(:user) { patient.registration_user }
 
