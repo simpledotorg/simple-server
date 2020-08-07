@@ -44,7 +44,6 @@
       </div>
     </div>
   </div>
-
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div>
@@ -286,13 +285,13 @@
                     <% end %>
                   </td>
                   <td class="ta-left">
-                    N/A 
+                    <%= @data_for_facility[facility.name]["missed_visits_rate"].values.last %>%
                   </td>
                   <td class="ta-left">
                     N/A
                   </td>
                   <td class="ta-left">
-                    N/A
+                    <%= @data_for_facility[facility.name]["visited_without_bp_taken_rate"].values.last %>%
                   </td>
                 </tr>
               <% end %>
