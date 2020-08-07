@@ -13,6 +13,10 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     Patient.where(registration_facility: facilities)
   end
 
+  def assigned_patients
+    Patient.where(assigned_facility: facilities)
+  end
+
   def cohort_analytics(period, prev_periods)
     patients =
       Patient
