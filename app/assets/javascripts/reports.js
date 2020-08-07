@@ -34,20 +34,27 @@ function initializeCharts() {
 
   const noBPMeasureGraphConfig = createGraphConfig([
     {
-      data: data.controlRate,
+      data: data.visitButNoBPMeasureRate,
+      rgbaBackgroundColor: darkGreyColor,
+      hoverBackgroundColor: darkGreyColor,
+      label: "visited but no BP measure",
+    },
+    {
+      data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
-      hoverBackgroundColor: mediumGreyColor,
-      label: "lost to follow-up",
+      rgbaLineColor: mediumGreyColor,
+      label: "Missed visit",
     },
   ], "bar");
   noBPMeasureGraphConfig.options = createGraphOptions(
-    false,
+    true,
     25,
     100,
     formatValueAsPercent,
     formatRateTooltipText,
-    [data.uncontrolledPatients],
+    [data.visitButNoBPMeasure, data.missedVisits],
   );
+
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
   if (noBPMeasureGraphCanvas) {
     new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
@@ -137,9 +144,13 @@ function getReportingData() {
   let data = {
     controlRate: controlRate,
     controlledPatients: controlledPatients,
+    missedVisits: jsonData.missed_visits,
+    missedVisitsRate: jsonData.missed_visits_rate,
     registrations: registrations,
     uncontrolledRate: uncontrolledRate,
     uncontrolledPatients: uncontrolledPatients,
+    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
+    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
   };
 
   return data;
@@ -238,8 +249,8 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       yAlign: "bottom",
       yPadding: 12,
       callbacks: {
-        title: function() {},
-        label: function(tooltipItem, data) {
+        title: function () { },
+        label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, dataSum);
         },
       },
