@@ -4,9 +4,11 @@ RSpec.describe PatientsExporter do
   include QuarterHelper
 
   let!(:facility) { create(:facility) }
+  let!(:registration_facility) { create(:facility) }
   let!(:patient) {
     create(:patient,
-      registration_facility: facility,
+      registration_facility: registration_facility,
+      assigned_facility: facility,
       status: "dead",
       address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
   }
@@ -58,6 +60,10 @@ RSpec.describe PatientsExporter do
       "Patient District",
       "Patient Zone",
       "Patient State",
+      "Assigned Facility Name",
+      "Assigned Facility Type",
+      "Assigned Facility District",
+      "Assigned Facility State",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -110,6 +116,10 @@ RSpec.describe PatientsExporter do
       facility.facility_type,
       facility.district,
       facility.state,
+      registration_facility.name,
+      registration_facility.facility_type,
+      registration_facility.district,
+      registration_facility.state,
       I18n.l(blood_pressure.recorded_at),
       blood_pressure.systolic,
       blood_pressure.diastolic,
@@ -157,10 +167,10 @@ RSpec.describe PatientsExporter do
     end
 
     it "uses fetches patients in batches" do
-      expect_any_instance_of(facility.registered_patients.class)
+      expect_any_instance_of(facility.assigned_patients.class)
         .to receive(:in_batches).and_return([patient_batch])
 
-      subject.csv(facility.registered_patients)
+      subject.csv(facility.assigned_patients)
     end
 
     it "does not include the zone column if the country config is set to false" do
