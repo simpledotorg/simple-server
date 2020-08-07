@@ -121,13 +121,26 @@ function initializeCharts() {
       hoverBackgroundColor: darkRedColor,
       label: "not under control rate",
     },
+    {
+      data: data.visitButNoBPMeasureRate,
+      rgbaBackgroundColor: darkGreyColor,
+      hoverBackgroundColor: darkGreyColor,
+      label: "Visited but no BP measure",
+    },
+    {
+      data: data.missedVisitsRate,
+      rgbaBackgroundColor: mediumGreyColor,
+      hoverBackgroundColor: mediumGreyColor,
+      label: "Missed visit",
+    }
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(
     true,
     25,
+    100,
     formatValueAsPercent,
     formatRateTooltipText,
-    [data.controlledPatients, data.uncontrolledPatients],
+    [data.controlRate, data.uncontrolledRate, data.visitButNoBPMeasureRate, data.missedVisitsRate],
   );
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {

@@ -5,13 +5,6 @@
       <h3>
         Visit details of all HTN patients
       </h3>
-      <p class="c-grey-dark">
-        <% if @last_registration_value %>
-          <%= number_with_delimiter(@last_registration_value) %> total registered HTN patients
-        <% else %>
-          No registration data available
-        <% end %>
-      </p>
     </div>
     <% if @last_registration_value %>
       <div class="d-flex fd-column fd-lg-row">
@@ -31,7 +24,7 @@
             <div class="w-12px h-12px mr-12px br-4px bg-grey-light"></div>
             <div class="d-flex flex-1 align-baseline fd-lg-column">
               <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                PENDING
+                <%= number_to_percentage(@data[:missed_visits_rate].values.last, precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
                 Missed visit
@@ -42,10 +35,18 @@
             <div class="w-12px h-12px mr-12px br-4px bg-grey-medium"></div>
             <div class="d-flex flex-1 align-baseline fd-lg-column">
               <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                PENDING
+                <%= number_to_percentage(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
                 Visited in the last 3 months but no BP measure
+                <span
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover"
+                  title="Patients with an appointment scheduled, updated medicines, or blood sugar taken"
+                >
+                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+                </span>
               </p>
             </div>
           </div>
