@@ -183,7 +183,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last.value.strftime('%b-%Y') %>
+              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last.value %>
             <% end %>
           </p>
         </div>
