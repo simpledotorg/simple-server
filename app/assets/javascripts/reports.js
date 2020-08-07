@@ -139,7 +139,7 @@ function initializeCharts() {
     25,
     100,
     formatValueAsPercent,
-    formatRateTooltipText,
+    formatSubtotalTooltipText,
     [data.controlRate, data.uncontrolledRate, data.visitButNoBPMeasureRate, data.missedVisitsRate],
   );
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
@@ -283,6 +283,15 @@ function formatRateTooltipText(tooltipItem, data, sumData) {
   const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
   return `${percent}% ${label} (${total} patients) in ${date}`;
+}
+
+function formatSubtotalTooltipText(tooltipItem, data, sumData) {
+  const datasetIndex = tooltipItem.datasetIndex;
+  const total = formatNumberWithCommas(Math.ceil(sumData[datasetIndex][tooltipItem.label]));
+  const date = tooltipItem.label;
+  const label = data.datasets[datasetIndex].label.toLowerCase();
+  const percent = Math.ceil(tooltipItem.value);
+  return `${percent}% ${label} (${total} patients)`;
 }
 
 function formatSumTooltipText(tooltipItem) {
