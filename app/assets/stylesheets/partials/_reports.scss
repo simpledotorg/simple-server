@@ -24,9 +24,10 @@
 // Overflow
 .o-hidden { overflow: hidden; }
 // Spacing
-.m-0px { margin-bottom: 0px; }
+.m-0px { margin: 0px; }
 .mt-0px { margin-top: 0px; }
 .mr-12px { margin-right: 12px; }
+.mr-16px { margin-right: 16px; }
 .mr-24px { margin-right: 24px; }
 .mb-0px { margin-bottom: 0px; }
 .mb-8px { margin-bottom: 8px; }
@@ -64,6 +65,9 @@
 .c-purple { color: $purple; }
 .c-red { color: $red; }
 .c-black { color: $black; }
+.c-grey-dark:hover { color: $grey-dark; }
+.td-none { text-decoration: none; }
+.td-none:hover { text-decoration: none; }
 .tt-uppercase { text-transform: uppercase; }
 // Borders
 .bt-1px { border-top: 1px solid; }
@@ -120,6 +124,7 @@
   .h-lg-380px { height: 380px; }
   .h-lg-full { width: 100%; }
   // Spacing
+  .mr-lg-24px { margin-right: 24px; }
   .mb-lg-0 { margin-bottom: 0; }
   .mb-lg-4px { margin-bottom: 4px; }
   .mb-lg-12px { margin-bottom: 12px; }
