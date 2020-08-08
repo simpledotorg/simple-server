@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 3
+  CACHE_VERSION = 4
   PERCENTAGE_PRECISION = 1
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
@@ -46,17 +46,25 @@ class ControlRateService
 
       data[:registrations] = registration_counts
       data[:cumulative_registrations] = sum_cumulative_registrations
+      data[:registrations].delete_if { |period, value| !periods.cover?(period) }
+      data[:cumulative_registrations].delete_if { |period, value| !periods.cover?(period) }
+
       periods.each do |(period, count)|
-        data[:controlled_patients][period] = controlled_patients(period).count
+        controlled = controlled_patients(period).count
+        uncontrolled = uncontrolled_patients(period).count
+
+        data[:controlled_patients][period] = controlled
+        data[:uncontrolled_patients][period] = uncontrolled
+
+        # For quarterly reports the registration count is based on the cohort, so its from the previous period.
         registration_count = if quarterly_report?
-          # get the cohort counts for quarterly reports
           data[:registrations][period.previous] || 0
         else
           data[:cumulative_registrations][period]
         end
-        data[:controlled_patients_rate][period] = percentage(controlled_patients(period).count, registration_count)
-        data[:uncontrolled_patients][period] = uncontrolled_patients(period).count
-        data[:uncontrolled_patients_rate][period] = percentage(uncontrolled_patients(period).count, registration_count)
+
+        data[:controlled_patients_rate][period] = percentage(controlled, registration_count)
+        data[:uncontrolled_patients_rate][period] = percentage(uncontrolled, registration_count)
       end
       first_registration_period = registration_counts.keys.first
       if first_registration_period
@@ -67,19 +75,26 @@ class ControlRateService
   end
 
   def sum_cumulative_registrations
-    initial_count = region.registered_patients.with_hypertension.where("recorded_at < ?", periods.begin.to_date).count
-    periods.each_with_object({}) { |period, running_totals|
-      previous_registrations = running_totals[period.previous] || initial_count
+    earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
+    (earliest_registration_period..periods.end).each_with_object({}) { |period, running_totals|
+      previous_registrations = running_totals[period.previous] || 0
       current_registrations = registration_counts[period] || 0
-      running_totals[period] = current_registrations + previous_registrations
+      total = current_registrations + previous_registrations
+      running_totals[period] = total
     }
   end
 
   def registration_counts
-    range = (periods.begin.start_date..periods.end.end_date)
+    return @registration_counts if @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {range: range, format: formatter}).count
-    result.drop_while { |period, count| count == 0 }.to_h
+    result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {format: formatter}).count
+    # The group_by_period query will only return values for months where we had registrations, but we want to
+    # have a value for every month in the periods we are reporting on. So we iterate over every period and set
+    # the count to 0 if there is no value.
+    periods.each do |period|
+      result[period] ||= 0
+    end
+    @registration_counts = result
   end
 
   def controlled_patients(period)
@@ -89,6 +104,25 @@ class ControlRateService
       LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period).under_control,
         "latest_blood_pressures_per_patient_per_months")
     end
+  end
+
+  def bp_monthly_query(period)
+    time = period.value
+    end_range = time.end_of_month
+    mid_range = time.advance(months: -1).end_of_month
+    beg_range = time.advance(months: -2).end_of_month
+    # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
+    # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
+    LatestBloodPressuresPerPatientPerMonth
+      .with_discarded
+      .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
+      .with_hypertension
+      .where(registration_facility_id: facilities)
+      .where("(year = ? AND month = ?) OR (year = ? AND month = ?) OR (year = ? AND month = ?)",
+        beg_range.year.to_s, beg_range.month.to_s,
+        mid_range.year.to_s, mid_range.month.to_s,
+        end_range.year.to_s, end_range.month.to_s)
+      .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
   end
 
   def uncontrolled_patients(period)
@@ -110,25 +144,6 @@ class ControlRateService
       .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
       .with_hypertension
       .order("patient_id, bp_recorded_at DESC, bp_id")
-  end
-
-  def bp_monthly_query(period)
-    time = period.value
-    end_range = time.end_of_month
-    mid_range = time.advance(months: -1).end_of_month
-    beg_range = time.advance(months: -2).end_of_month
-    # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
-    # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
-    LatestBloodPressuresPerPatientPerMonth
-      .with_discarded
-      .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
-      .with_hypertension
-      .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
-      .where(registration_facility_id: facilities)
-      .where("(year = ? AND month = ?) OR (year = ? AND month = ?) OR (year = ? AND month = ?)",
-        beg_range.year.to_s, beg_range.month.to_s,
-        mid_range.year.to_s, mid_range.month.to_s,
-        end_range.year.to_s, end_range.month.to_s)
   end
 
   private
@@ -159,7 +174,7 @@ class ControlRateService
   end
 
   def percentage(numerator, denominator)
-    return 0 if denominator == 0
-    ((numerator.to_f / denominator) * 100).truncate(PERCENTAGE_PRECISION)
+    return 0 if denominator == 0 || numerator == 0
+    ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
   end
 end
