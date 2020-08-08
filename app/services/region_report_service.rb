@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 4
+  CACHE_VERSION = 5
 
   def initialize(region:, period:, current_user:)
     @current_user = current_user
