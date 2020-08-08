@@ -2,24 +2,28 @@
 <div id="help-section" class="help-body">
     <div class="help-contents">
         <nav class="help-nav">
+            <a href="#" onclick="open_window('help-videos'); return false">
+                Videos
+                %{icon_chevron_right_svg}
+            </a>
             <a href="#" onclick="open_window('help-start'); return false">
-                Getting started
+                1. Getting started
                 %{icon_chevron_right_svg}
             </a>
             <a href="#" onclick="open_window('help-register'); return false">
-                Register a patient
+                2. Register a patient
                 %{icon_chevron_right_svg}
             </a>
             <a href="#" onclick="open_window('help-search'); return false">
-                Find the correct patient
+                3. Find the correct patient
                 %{icon_chevron_right_svg}
             </a>
             <a href="#" onclick="open_window('help-record'); return false">
-                Record a patient’s visit
+                4. Record a patient’s visit
                 %{icon_chevron_right_svg}
             </a>
             <a href="#" onclick="open_window('help-overdue'); return false">
-                Call overdue patients
+                5. Call overdue patients
                 %{icon_chevron_right_svg}
             </a>
             <a href="#" onclick="open_window('help-faq'); return false">
@@ -41,6 +45,86 @@
     </div>
 </div>
     
+<div id="help-videos" class="help-body" style="display: none;">
+    <div class="help-contents">
+        <a href="#" onclick="close_window('help-videos'); return false" class="help-back">
+            %{icon_back_svg}
+        </a>
+
+        <h2>Training videos</h2>
+        
+        <div class="card">
+            <h3>Take the class</h3>
+            <p>Watch a class to learn to use Simple.</p>
+            <a href="%{help_screen_youtube_training_url}" class="video">
+                %{thumb_training_svg}
+            </a>
+            <p>
+                <a href="%{help_screen_youtube_training_url}">Training: All Chapters</a><br>English with Hindi subtitles 36:15
+            </p>
+        </div>
+        <div class="card">
+            <h3>Class chapters</h3>
+            <div class="video-small">
+                <a href="https://youtu.be/r0mbu1s0l7A">1: Install the app</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/YPySS9sL-EU">2: Introduction</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/5P5mGQVQFOU">3: Register a patient</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/6hR1vQ8hoTU">4: Search for a follow-up patient</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/o3klwHrMEi0">5: Find the right patient</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/PuM29XINOn4">6: Call overdue patients</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/elCBnApJLIM">7: Important features</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/Aj-dKn_kmlw">8: FAQ</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/wF4t_pFuugY">9: How to get help</a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/kls4QnWz1Nw">10: Start using Simple</a>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Tele-consultation training</h3>
+            <p>If your hospital is using Simple for tele-consultation, this training is for you.</p>
+            <div class="video-small">
+                <a href="https://youtu.be/LpLeFFKhXd4">Tele-consultation with Simple<span>English</span></a>
+            </div>
+            <div class="video-small">
+                <a href="https://youtu.be/lMS1GiqbKps">सिम्पल द्वारा टेली-मेडिसिन<span>Hindi</span></a>
+            </div>
+        </div>
+        <div class="card">
+            <h3>BP Passports</h3>
+            <p>Learn how to use BP Passport cards or BP Passport stickers in your hospital.</p>
+            <div class="video-small">
+                <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s">How to use a BP Passport<span>Hindi with English subtitles</span></a>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Simple film</h3>
+            <a href="https://www.youtube.com/watch?v=C26CoyeExmU" class="video">
+                %{thumb_documentary_svg}
+            </a>
+            <p>
+                <a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.
+            </p>
+        </div>
+    </div>
+</div>
+    
 <div id="help-start" class="help-body" style="display: none;">
     <div class="help-contents">
         <a href="#" onclick="close_window('help-start'); return false" class="help-back">
@@ -56,7 +140,7 @@
                 %{thumb_demo_svg}
             </a>
 
-            <p>Learn how to use Simple in 5 minutes.</p>
+            <p>Learn the basics of Simple in 5 minutes.</p>
         </div>
         
         <div class="card">
