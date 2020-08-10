@@ -20,7 +20,7 @@ class AppointmentsController < AdminController
     @patient_summaries = PatientSummaryQuery.call(relation: scope, filters: @search_filters)
 
     if current_facility
-      @patient_summaries = @patient_summaries.where(next_appointment_facility_id: current_facility.id)
+      @patient_summaries = @patient_summaries.where(assigned_facility_id: current_facility.id)
     end
     @patient_summaries = @patient_summaries.order(risk_level: :desc, next_appointment_scheduled_date: :desc, id: :asc)
 
