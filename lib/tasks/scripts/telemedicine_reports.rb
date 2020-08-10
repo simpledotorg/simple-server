@@ -6,38 +6,41 @@ module TelemedicineReports
   class << self
     def parse_mixpanel(mixpanel_csv_path)
       mixpanel_csv = File.read(mixpanel_csv_path)
-      mixpanel = CSV.parse(mixpanel_csv, headers: false)
+      mixpanel_data = CSV.parse(mixpanel_csv, headers: false)
 
-      mixpanel.drop(1).map { |row|
+      mixpanel_data.drop(1).map { |row|
         facility = User.find(row[1]).registration_facility
-        { user_id: row[1],
-          date: Date.parse(row[2]),
-          clicks: [row[3].to_i, row[4].to_i].max,
-          facility_id: facility.id,
-          district: facility.district,
-          state: facility.state,
-          type: facility.facility_type }
+        {user_id: row[1],
+         date: Date.parse(row[2]),
+         clicks: row[3].to_i,
+         facility_id: facility.id,
+         district: facility.district,
+         state: facility.state,
+         type: facility.facility_type}
       }
     end
 
     def generate_report(mixpanel_data, period_start, period_end)
-      period_mixpanel_data = format_mixpanel_data(mixpanel_data.select { |row| (row[:date] >= period_start) && (row[:date] <= period_end) })
+      raw_mixpanel_data = mixpanel_data.select { |row|
+        (row[:date] >= period_start) && (row[:date] <= period_end)
+      }
+      mixpanel_data = format_mixpanel_data(raw_mixpanel_data)
 
       facilities = Facility.where(enable_teleconsultation: true).map { |facility|
-        if (facility.facility_type == "HWC" || facility.facility_type == "SC")
-          { id: facility.id,
-            name: facility.name,
-            state: facility.state,
-            district: facility.district,
-            type: facility.facility_type,
-            period: facility_measures(facility, period_start, period_end),
-            users: facility.users.count }
+        if facility.facility_type == "HWC" || facility.facility_type == "SC"
+          {id: facility.id,
+           name: facility.name,
+           state: facility.state,
+           district: facility.district,
+           type: facility.facility_type,
+           telemed_data: facility_measures(facility, period_start, period_end),
+           users: facility.users.count}
         else
-          { id: facility.id,
-            name: facility.name,
-            state: facility.state,
-            district: facility.district,
-            type: facility.facility_type }
+          {id: facility.id,
+           name: facility.name,
+           state: facility.state,
+           district: facility.district,
+           type: facility.facility_type}
         end
       }
 
@@ -77,7 +80,7 @@ module TelemedicineReports
         ]
 
         facilities_data.each do |state|
-          period_clicks = fetch_clicks(period_mixpanel_data, state, true)
+          telemed_clicks = fetch_clicks_for_region(mixpanel_data, state, :state)
           csv << [
             state[:state],
             "",
@@ -86,16 +89,16 @@ module TelemedicineReports
             state[:hwc_and_sc],
             state[:users],
             "",
-            state[:period][:visits],
-            state[:period][:high_bp],
-            state[:period][:high_bs],
-            state[:period][:high_bp_or_bs],
-            period_clicks,
-            percentage(period_clicks, state[:period][:high_bp_or_bs]),
+            state[:telemed_data][:visits],
+            state[:telemed_data][:high_bp],
+            state[:telemed_data][:high_bs],
+            state[:telemed_data][:high_bp_or_bs],
+            telemed_clicks,
+            percentage(telemed_clicks, state[:telemed_data][:high_bp_or_bs])
           ]
 
           state[:districts].each do |district|
-            period_clicks = fetch_clicks(period_mixpanel_data, district, false)
+            telemed_clicks = fetch_clicks_for_region(mixpanel_data, district, :district)
             csv << [
               "",
               district[:district],
@@ -104,16 +107,15 @@ module TelemedicineReports
               district[:hwc_and_sc],
               district[:users],
               "",
-              district[:period][:visits],
-              district[:period][:high_bp],
-              district[:period][:high_bs],
-              district[:period][:high_bp_or_bs],
-              period_clicks,
-              percentage(period_clicks, district[:period][:high_bp_or_bs]),
+              district[:telemed_data][:visits],
+              district[:telemed_data][:high_bp],
+              district[:telemed_data][:high_bs],
+              district[:telemed_data][:high_bp_or_bs],
+              telemed_clicks,
+              percentage(telemed_clicks, district[:telemed_data][:high_bp_or_bs])
             ]
-
-            end
           end
+        end
 
         csv << []
         csv << []
@@ -151,7 +153,7 @@ module TelemedicineReports
         ]
 
         facilities_data.each do |state|
-          period_clicks = fetch_clicks(period_mixpanel_data, state, true)
+          telemed_clicks = fetch_clicks_for_region(mixpanel_data, state, :state)
           csv << [
             state[:state],
             "",
@@ -160,16 +162,16 @@ module TelemedicineReports
             state[:hwc_and_sc],
             state[:users],
             "",
-            state[:period][:visits],
-            state[:period][:high_bp],
-            state[:period][:high_bs],
-            state[:period][:high_bp_or_bs],
-            period_clicks,
-            percentage(period_clicks, state[:period][:high_bp_or_bs]),
+            state[:telemed_data][:visits],
+            state[:telemed_data][:high_bp],
+            state[:telemed_data][:high_bs],
+            state[:telemed_data][:high_bp_or_bs],
+            telemed_clicks,
+            percentage(telemed_clicks, state[:telemed_data][:high_bp_or_bs])
           ]
 
           state[:districts].each do |district|
-            period_clicks = fetch_clicks(period_mixpanel_data, district, false)
+            telemed_clicks = fetch_clicks_for_region(mixpanel_data, district, :district)
             csv << [
               "",
               district[:district],
@@ -178,12 +180,12 @@ module TelemedicineReports
               district[:hwc_and_sc],
               district[:users],
               "",
-              district[:period][:visits],
-              district[:period][:high_bp],
-              district[:period][:high_bs],
-              district[:period][:high_bp_or_bs],
-              period_clicks,
-              percentage(period_clicks, district[:period][:high_bp_or_bs]),
+              district[:telemed_data][:visits],
+              district[:telemed_data][:high_bp],
+              district[:telemed_data][:high_bs],
+              district[:telemed_data][:high_bp_or_bs],
+              telemed_clicks,
+              percentage(telemed_clicks, district[:telemed_data][:high_bp_or_bs])
             ]
 
             district[:facilities].each do |facility|
@@ -195,10 +197,10 @@ module TelemedicineReports
                 "",
                 facility[:users],
                 "",
-                facility[:period][:visits],
-                facility[:period][:high_bp],
-                facility[:period][:high_bs],
-                facility[:period][:high_bp_or_bs],
+                facility[:telemed_data][:visits],
+                facility[:telemed_data][:high_bp],
+                facility[:telemed_data][:high_bs],
+                facility[:telemed_data][:high_bp_or_bs],
                 "",
                 ""
               ]
@@ -209,8 +211,8 @@ module TelemedicineReports
         csv << []
         csv << []
 
-        daily_activity_data = mixpanel_data.group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
-          [date.strftime("%d %b %Y"), rows.uniq { |row| row[:user_id] }.count, sum_rows(rows, :clicks)]
+        daily_activity_data = raw_mixpanel_data.group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
+          [date.strftime("%d %b %Y"), rows.uniq { |row| row[:user_id] }.count, sum_values(rows, :clicks)]
         }
 
         csv << ["Date", "Unique users", "Total TC requests"]
@@ -222,33 +224,35 @@ module TelemedicineReports
 
     private
 
-    def format_mixpanel_data(period_data)
-      period_data.group_by { |row| row[:state] }.map { |state, districts|
-        { state: state,
-          clicks: sum_rows(districts, :clicks),
-          districts: districts.group_by { |row| row[:district] }.map { |district, users|
-            { district: district,
-              clicks: sum_rows(users, :clicks) }
-          } }
+    def format_mixpanel_data(mixpanel_data)
+      mixpanel_data.group_by { |row| row[:state] }.map { |state, districts|
+        {state: state,
+         clicks: sum_values(districts, :clicks),
+         districts: districts.group_by { |row| row[:district] }.map { |district, users|
+                      {district: district,
+                       clicks: sum_values(users, :clicks)}
+                    }}
       }
     end
 
     def format_facility_data(facility_data)
-      facility_data.group_by { |row| row[:state] }.map { |state, districts|
-        { state: state,
-          count: districts.count,
-          hwc_and_sc: hwc_and_sc_count(districts),
-          period: aggregate_period(:period, districts),
-          users: sum_rows(districts, :users),
-          districts: districts.group_by { |row| row[:district] }.map { |district, facilities|
-            { district: district,
-              state: state,
-              count: facilities.count,
-              hwc_and_sc: hwc_and_sc_count(facilities),
-              period: aggregate_period(:period, facilities),
-              users: sum_rows(facilities, :users),
-              facilities: facilities.select { |facility| %w[HWC SC].include? facility[:type] }.sort_by { |facility| facility[:name] } }
-          }.sort_by { |district| district[:district] } }
+      facility_data.group_by { |facility| facility[:state] }.map { |state, state_facilities|
+        {state: state,
+         count: state_facilities.count,
+         hwc_and_sc_count: hwc_and_sc_count(state_facilities),
+         telemed_data: calculate_aggregates(state_facilities),
+         users: sum_values(state_facilities, :users),
+         districts: state_facilities.group_by { |facility| facility[:district] }.map { |district, district_facilities|
+                      {district: district,
+                       state: state,
+                       count: district_facilities.count,
+                       hwc_and_sc_count: hwc_and_sc_count(district_facilities),
+                       telemed_data: calculate_aggregates(district_facilities),
+                       users: sum_values(district_facilities, :users),
+                       facilities: district_facilities
+                         .select { |facility| %w[HWC SC].include? facility[:type] }
+                         .sort_by { |facility| facility[:name] }}
+                    }.sort_by { |district| district[:district] }}
       }.sort_by { |state| state[:state] }
     end
 
@@ -269,34 +273,38 @@ module TelemedicineReports
       high_bps = high_bps(bps)
       high_sugars = high_sugars(sugars)
 
-      { high_bp: high_bps.count,
-        high_bs: high_sugars.count,
-        high_bp_or_bs: (high_bps + high_sugars).uniq { |record| record[:patient_id] }.count,
-        visits: visits.count }
+      {high_bp: high_bps.count,
+       high_bs: high_sugars.count,
+       high_bp_or_bs: (high_bps + high_sugars).uniq { |record| record[:patient_id] }.count,
+       visits: visits.count}
     end
 
-    def sum_rows(rows, key)
-      rows.compact.map { |row| row[key] || 0 }.sum
+    def sum_values(facilities, key)
+      facilities.compact.map { |facility| facility[key] || 0 }.sum
     end
 
     def hwc_and_sc_count(facilities)
       facilities.count { |facility| facility[:type] == "HWC" || facility[:type] == "SC" }
     end
 
-    def aggregate_period(period, facilities)
-      hwc_and_sc_data = facilities.map { |facility| facility[period] }
-      { high_bp: sum_rows(hwc_and_sc_data, :high_bp),
-        high_bs: sum_rows(hwc_and_sc_data, :high_bs),
-        high_bp_or_bs: sum_rows(hwc_and_sc_data, :high_bp_or_bs),
-        visits: sum_rows(hwc_and_sc_data, :visits) }
+    def calculate_aggregates(facilities)
+      hwcs_and_scs = facilities.map { |facility| facility[:telemed_data] }
+      {high_bp: sum_values(hwcs_and_scs, :high_bp),
+       high_bs: sum_values(hwcs_and_scs, :high_bs),
+       high_bp_or_bs: sum_values(hwcs_and_scs, :high_bp_or_bs),
+       visits: sum_values(hwcs_and_scs, :visits)}
     end
 
-    def fetch_clicks(data, record, is_state)
-      if is_state
-        return data.find { |state| state[:state] == record[:state] }&.dig(:clicks) || 0
+    def fetch_clicks_for_region(formatted_data, region, region_type)
+      case region_type
+      when :state
+        formatted_data.find { |state| state[:state] == region[:state] }&.dig(:clicks) || 0
+      when :district
+        districts = formatted_data.find { |state| state[:state] == region[:state] }&.dig(:districts) || []
+        districts.find { |district| district[:district] == region[:district] }&.dig(:clicks) || 0
+      else
+        0
       end
-      districts = data.find { |state| state[:state] == record[:state] }&.dig(:districts) || []
-      districts.find { |district| district[:district] == record[:district] }&.dig(:clicks) || 0
     end
 
     def percentage(numerator, denominator)
