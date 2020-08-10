@@ -31,7 +31,7 @@ RSpec.describe CohortService, type: :model do
       create(:patient, registration_facility: facility, recorded_at: jan_5 + 60.days)
     ]
 
-    q1_bps = [
+    _q1_bps = [
       create(:blood_pressure, :under_control, recorded_at: apr_5, facility: facility, patient: q1_patients[0]),
       create(:blood_pressure, :under_control, recorded_at: apr_5 + 10.days, facility: facility, patient: q1_patients[1]),
       create(:blood_pressure, :under_control, recorded_at: apr_5 + 30.days, facility: facility, patient: q1_patients[2]),
@@ -55,7 +55,7 @@ RSpec.describe CohortService, type: :model do
       create(:patient, registration_facility: facility, recorded_at: apr_5 + 70.days)
     ]
 
-    q2_bps = [
+    _q2_bps = [
       create(:blood_pressure, :under_control, recorded_at: jul_5, facility: facility, patient: q2_patients[0]),
       create(:blood_pressure, :under_control, recorded_at: jul_5 + 10.days, facility: facility, patient: q2_patients[1]),
       create(:blood_pressure, :under_control, recorded_at: jul_5 + 20.days, facility: facility, patient: q2_patients[2]),
@@ -73,7 +73,7 @@ RSpec.describe CohortService, type: :model do
       create(:patient, recorded_at: jul_5)
     ]
 
-    other_bps = [
+    _other_bps = [
       create(:blood_pressure, :under_control, recorded_at: jul_5, facility: facility, patient: other_patients[0]),
       create(:blood_pressure, :hypertensive, recorded_at: jul_5 + 10.days, facility: facility, patient: other_patients[1])
     ]
