@@ -27,7 +27,8 @@ RSpec.describe DistrictAnalyticsQuery do
             3,
             :hypertension,
             registration_facility: reg_facility,
-            assigned_facility: facility_1)
+            assigned_facility: facility_1
+          )
         }
         Timecop.travel(month) do
           create_list(
@@ -35,13 +36,15 @@ RSpec.describe DistrictAnalyticsQuery do
             3,
             :hypertension,
             registration_facility: facility_1,
-            assigned_facility: facility_2)
+            assigned_facility: facility_2
+          )
         end
         Timecop.travel(month) do
           create(
             :patient,
             :without_hypertension,
-            registration_facility: facility_1)
+            registration_facility: facility_1
+          )
         end
 
         #
@@ -161,7 +164,8 @@ RSpec.describe DistrictAnalyticsQuery do
           :patient,
           2,
           :hypertension,
-          registration_facility: facility_1)
+          registration_facility: facility_1
+        )
       end
     end
 
