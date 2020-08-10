@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_17_062323) do
+ActiveRecord::Schema.define(version: 2020_08_10_095935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -734,6 +734,7 @@ ActiveRecord::Schema.define(version: 2020_07_17_062323) do
           END AS current_age,
       p.gender,
       p.status,
+      p.assigned_facility_id,
       latest_phone_number.number AS latest_phone_number,
       addresses.village_or_colony,
       addresses.street_address,
