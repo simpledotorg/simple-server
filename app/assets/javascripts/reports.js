@@ -137,7 +137,7 @@ function getReportingData() {
 
   const controlRate = jsonData.controlled_patients_rate;
   const controlledPatients = jsonData.controlled_patients;
-  const registrations = jsonData.registrations;
+  const registrations = jsonData.cumulative_registrations;
   const uncontrolledRate = jsonData.uncontrolled_patients_rate;
   const uncontrolledPatients = jsonData.uncontrolled_patients;
 
