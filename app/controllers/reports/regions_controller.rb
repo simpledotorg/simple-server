@@ -43,12 +43,7 @@ class Reports::RegionsController < AdminController
     @last_registration_value = @data[:registrations].values&.last || 0
 
     if @region.is_a?(Facility)
-      @recent_blood_pressures = @region
-        .blood_pressures
-        .includes(:patient, :user)
-        .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
-
-      @recent_blood_pressures = paginate(@recent_blood_pressures)
+      @recent_blood_pressures = paginate(@region.recent_blood_pressures)
     end
   end
 

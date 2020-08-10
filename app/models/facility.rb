@@ -89,6 +89,10 @@ class Facility < ApplicationRecord
     [self]
   end
 
+  def recent_blood_pressures
+    blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
+  end
+
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
