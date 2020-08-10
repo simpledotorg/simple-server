@@ -21,7 +21,7 @@ namespace :reports do
     abort "Requires valid start and end dates." unless period_start.is_a?(ActiveSupport::TimeWithZone) &&
       period_end.is_a?(ActiveSupport::TimeWithZone)
 
-    mixpanel_data = TelemedicineReports.parse_mixpanel(mixpanel_csv)
-    TelemedicineReports.generate_report(mixpanel_data, period_start, period_end)
+    report = TelemedicineReports.new(mixpanel_csv, period_start, period_end)
+    report.generate
   end
 end
