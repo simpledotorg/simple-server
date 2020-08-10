@@ -172,7 +172,7 @@
             <% if @last_registration_value.zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @registrations.keys&.last %>
+              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @data[:cumulative_registrations].keys&.last %>
             <% end %>
           </p>
         </div>
