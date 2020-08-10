@@ -42,7 +42,7 @@ RSpec.describe RegionReportService, type: :model do
     lost_in_jan_2020 = create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2018"))
     create(:blood_pressure, :under_control, facility: facility, patient: lost_in_jan_2020, recorded_at: jan_2019.prev_day)
 
-    lost_in_jan_2020_with_no_bps = create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2018"))
+    _lost_in_jan_2020_with_no_bps = create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2018"))
 
     not_lost_1 = create(:patient, registration_facility: facility, recorded_at: july_1_2019)
     create(:blood_pressure, :under_control, facility: facility, patient: not_lost_1, recorded_at: Time.parse("August 1 2019"))
