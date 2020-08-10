@@ -21,6 +21,7 @@ class TopRegionService
     end
     all_region_data = accessible_regions.each_with_object({}) { |region, hsh|
       result = ControlRateService.new(region, periods: period).call
+      next if result.blank? || result[:controlled_patients_rate][period].blank?
       hsh[region] = result
     }
     top_region_for_rate, control_rate_result = all_region_data.max_by { |region, result|

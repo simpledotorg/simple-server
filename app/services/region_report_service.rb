@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 4
+  CACHE_VERSION = 5
 
   def initialize(region:, period:, current_user:)
     @current_user = current_user
@@ -33,11 +33,8 @@ class RegionReportService
   def call
     data.merge! ControlRateService.new(region, periods: range).call
     data.merge! compile_cohort_trend_data
-    # data[:lost_to_followup] = count_lost_to_followup
     data[:visited_without_bp_taken] = count_visited_without_bp_taken
     data[:visited_without_bp_taken_rate] = percentage_visited_without_bp_taken
-    data[:missed_visits] = calculate_missed_visits
-    data[:missed_visits_rate] = calculate_missed_visits_rate
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     data
@@ -53,18 +50,6 @@ class RegionReportService
         .includes(:latest_blood_pressures).where("blood_pressures.recorded_at <= ? OR blood_pressures.recorded_at IS NULL", year_ago)
         .references(:latest_blood_pressures)
       hsh[period] = lost_to_followup.count
-    end
-  end
-
-  def calculate_missed_visits
-    data[:cumulative_registrations].each_with_object({}) do |(period, count), hsh|
-      hsh[period] = count - data[:controlled_patients][period] - data[:uncontrolled_patients][period]
-    end
-  end
-
-  def calculate_missed_visits_rate
-    data[:missed_visits].each_with_object({}) do |(period, count), hsh|
-      hsh[period] = percentage(count, data[:cumulative_registrations][period].to_f)
     end
   end
 
