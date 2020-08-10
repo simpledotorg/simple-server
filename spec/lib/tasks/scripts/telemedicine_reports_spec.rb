@@ -50,7 +50,6 @@ RSpec.describe TelemedicineReports do
         ["07 Aug 2020", 1, 2],
         ["08 Aug 2020", 1, 1]]
 
-
       expect(CSV).to receive(:open).with(filename, "w")
 
       report = TelemedicineReports.new(file_path, period_start, period_end)

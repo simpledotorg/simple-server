@@ -19,13 +19,13 @@ class TelemedicineReports
 
     @mixpanel_data[:hydrated] = mixpanel_data.drop(1).map { |row|
       facility = User.find(row[1]).registration_facility
-      { user_id: row[1],
-        date: Date.parse(row[2]),
-        clicks: row[3].to_i,
-        facility_id: facility.id,
-        district: facility.district,
-        state: facility.state,
-        type: facility.facility_type }
+      {user_id: row[1],
+       date: Date.parse(row[2]),
+       clicks: row[3].to_i,
+       facility_id: facility.id,
+       district: facility.district,
+       state: facility.state,
+       type: facility.facility_type}
     }
   end
 
@@ -37,19 +37,19 @@ class TelemedicineReports
 
     facilities = Facility.where(enable_teleconsultation: true).map { |facility|
       if facility.facility_type == "HWC" || facility.facility_type == "SC"
-        { id: facility.id,
-          name: facility.name,
-          state: facility.state,
-          district: facility.district,
-          type: facility.facility_type,
-          telemed_data: facility_measures(facility, period_start, period_end),
-          users: facility.users.count }
+        {id: facility.id,
+         name: facility.name,
+         state: facility.state,
+         district: facility.district,
+         type: facility.facility_type,
+         telemed_data: facility_measures(facility, period_start, period_end),
+         users: facility.users.count}
       else
-        { id: facility.id,
-          name: facility.name,
-          state: facility.state,
-          district: facility.district,
-          type: facility.facility_type }
+        {id: facility.id,
+         name: facility.name,
+         state: facility.state,
+         district: facility.district,
+         type: facility.facility_type}
       end
     }
 
@@ -247,33 +247,33 @@ class TelemedicineReports
 
   def format_mixpanel_data(mixpanel_data)
     mixpanel_data.group_by { |row| row[:state] }.map { |state, districts|
-      { state: state,
-        clicks: sum_values(districts, :clicks),
-        districts: districts.group_by { |row| row[:district] }.map { |district, users|
-          { district: district,
-            clicks: sum_values(users, :clicks) }
-        } }
+      {state: state,
+       clicks: sum_values(districts, :clicks),
+       districts: districts.group_by { |row| row[:district] }.map { |district, users|
+                    {district: district,
+                     clicks: sum_values(users, :clicks)}
+                  }}
     }
   end
 
   def format_facility_data(facility_data)
     facility_data.group_by { |facility| facility[:state] }.map { |state, state_facilities|
-      { state: state,
-        count: state_facilities.count,
-        hwc_and_sc_count: hwc_and_sc_count(state_facilities),
-        telemed_data: calculate_aggregates(state_facilities),
-        users: sum_values(state_facilities, :users),
-        districts: state_facilities.group_by { |facility| facility[:district] }.map { |district, district_facilities|
-          { district: district,
-            state: state,
-            count: district_facilities.count,
-            hwc_and_sc_count: hwc_and_sc_count(district_facilities),
-            telemed_data: calculate_aggregates(district_facilities),
-            users: sum_values(district_facilities, :users),
-            facilities: district_facilities
-                          .select { |facility| %w[HWC SC].include? facility[:type] }
-                          .sort_by { |facility| facility[:name] } }
-        }.sort_by { |district| district[:district] } }
+      {state: state,
+       count: state_facilities.count,
+       hwc_and_sc_count: hwc_and_sc_count(state_facilities),
+       telemed_data: calculate_aggregates(state_facilities),
+       users: sum_values(state_facilities, :users),
+       districts: state_facilities.group_by { |facility| facility[:district] }.map { |district, district_facilities|
+                    {district: district,
+                     state: state,
+                     count: district_facilities.count,
+                     hwc_and_sc_count: hwc_and_sc_count(district_facilities),
+                     telemed_data: calculate_aggregates(district_facilities),
+                     users: sum_values(district_facilities, :users),
+                     facilities: district_facilities
+                       .select { |facility| %w[HWC SC].include? facility[:type] }
+                       .sort_by { |facility| facility[:name] }}
+                  }.sort_by { |district| district[:district] }}
     }.sort_by { |state| state[:state] }
   end
 
@@ -294,10 +294,10 @@ class TelemedicineReports
     high_bps = high_bps(bps)
     high_sugars = high_sugars(sugars)
 
-    { high_bp: high_bps.count,
-      high_bs: high_sugars.count,
-      high_bp_or_bs: (high_bps + high_sugars).uniq { |record| record[:patient_id] }.count,
-      visits: visits.count }
+    {high_bp: high_bps.count,
+     high_bs: high_sugars.count,
+     high_bp_or_bs: (high_bps + high_sugars).uniq { |record| record[:patient_id] }.count,
+     visits: visits.count}
   end
 
   def sum_values(facilities, key)
@@ -310,10 +310,10 @@ class TelemedicineReports
 
   def calculate_aggregates(facilities)
     hwcs_and_scs = facilities.map { |facility| facility[:telemed_data] }
-    { high_bp: sum_values(hwcs_and_scs, :high_bp),
-      high_bs: sum_values(hwcs_and_scs, :high_bs),
-      high_bp_or_bs: sum_values(hwcs_and_scs, :high_bp_or_bs),
-      visits: sum_values(hwcs_and_scs, :visits) }
+    {high_bp: sum_values(hwcs_and_scs, :high_bp),
+     high_bs: sum_values(hwcs_and_scs, :high_bs),
+     high_bp_or_bs: sum_values(hwcs_and_scs, :high_bp_or_bs),
+     visits: sum_values(hwcs_and_scs, :visits)}
   end
 
   def fetch_clicks_for_region(formatted_data, region, region_type)
