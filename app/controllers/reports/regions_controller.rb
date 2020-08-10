@@ -42,7 +42,7 @@ class Reports::RegionsController < AdminController
     @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:registrations].values&.last || 0
 
-    unless @region.is_a?(FacilityGroup)
+    if @region.is_a?(Facility)
       @recent_blood_pressures = @region
         .blood_pressures
         .includes(:patient, :user)
