@@ -44,15 +44,14 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         end
 
         expect(response.status).to eq(200)
-        expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array(%i[follow_up_patients_by_period
-          registered_patients_by_period
-          total_registered_patients])
+        expect(assigns(:dashboard_analytics)[facility.id].keys)
+          .to(match_array(%i[patients_with_bp_by_period registered_patients_by_period total_patients]))
       end
     end
 
     it "renders the analytics table view" do
       get :show, params: {organization_id: organization.id, id: district_name}
-      expect(response).to render_template(partial: "shared/_analytics_table")
+      expect(response).to render_template(partial: "analytics/districts/_analytics_table")
     end
 
     context "analytics caching for districts" do
@@ -118,13 +117,15 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
             dashboard: {
               facility.id => {
                 registered_patients_by_period: {cohort_date3 => 3},
-                total_registered_patients: 3,
-                follow_up_patients_by_period: {cohort_date1 => 0,
-                                               cohort_date2 => 3,
-                                               cohort_date3 => 0,
-                                               cohort_date4 => 0,
-                                               cohort_date5 => 0,
-                                               cohort_date6 => 0}
+                total_patients: 3,
+                patients_with_bp_by_period: {
+                  cohort_date1 => 0,
+                  cohort_date2 => 3,
+                  cohort_date3 => 0,
+                  cohort_date4 => 0,
+                  cohort_date5 => 0,
+                  cohort_date6 => 0
+                }
               }
             }
           }
@@ -177,7 +178,7 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
         "district",
         {district_name: district_name,
-         organization_id: organization.id},
+          organization_id: organization.id},
         with_medication_history: true)
 
       get :patient_list_with_history, params: {organization_id: organization.id, district_id: district_name}
