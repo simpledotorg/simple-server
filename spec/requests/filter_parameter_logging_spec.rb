@@ -27,7 +27,6 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     output = stringio.string
     patients.each do |patient|
       expect(output).to_not match(/\b#{patient.full_name}\b/)
-      expect(output).to_not match(/\b#{patient.age}\b/) if patient.age
       expect(output).to_not match(/\b#{patient.date_of_birth}\b/) if patient.date_of_birth
       if patient.address
         expect(output).to_not match(/\b#{patient.address.street_address}\b/)

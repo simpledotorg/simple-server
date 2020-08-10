@@ -27,6 +27,10 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
 
+  def region_slug
+    "#{model_name.to_s.underscore}-#{slug}"
+  end
+
   def toggle_diabetes_management
     if enable_diabetes_management
       set_diabetes_management(true)
