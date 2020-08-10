@@ -12,6 +12,7 @@ RSpec.describe RegionReportService, type: :model do
   let(:jan_2019) { Time.parse("January 1st, 2019") }
   let(:jan_2020) { Time.parse("January 1st, 2020") }
   let(:june_1) { Time.parse("June 1st, 2020") }
+  let(:july_1_2019) { Time.parse("July 1st, 2019") }
   let(:july_2020) { Time.parse("July 1st, 2020") }
 
   def refresh_views
@@ -27,6 +28,52 @@ RSpec.describe RegionReportService, type: :model do
     service = RegionReportService.new(region: facility_group_1, period: period, current_user: user)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
       expect(service.period.value).to eq(june_1.to_date)
+    end
+  end
+
+  it "lost to followup" do
+    pending "need to look at doing this all in one query"
+    june_30_2019 = Time.parse("June 30th 2019")
+    facility = create(:facility, facility_group: facility_group_1)
+
+    lost_in_july_2020 = create(:patient, registration_facility: facility, recorded_at: june_30_2019)
+    create(:blood_pressure, :under_control, facility: facility, patient: lost_in_july_2020, recorded_at: jan_2019)
+    create(:blood_pressure, :under_control, facility: facility, patient: lost_in_july_2020, recorded_at: june_30_2019)
+    lost_in_jan_2020 = create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2018"))
+    create(:blood_pressure, :under_control, facility: facility, patient: lost_in_jan_2020, recorded_at: jan_2019.prev_day)
+
+    lost_in_jan_2020_with_no_bps = create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2018"))
+
+    not_lost_1 = create(:patient, registration_facility: facility, recorded_at: july_1_2019)
+    create(:blood_pressure, :under_control, facility: facility, patient: not_lost_1, recorded_at: Time.parse("August 1 2019"))
+    not_lost_2 = create(:patient, registration_facility: facility, recorded_at: july_1_2019)
+    create(:blood_pressure, :under_control, facility: facility, patient: not_lost_2, recorded_at: Time.parse("July 30 2019"))
+    _not_lost_3_with_no_bps = create(:patient, registration_facility: facility, recorded_at: jan_2020)
+
+    refresh_views
+
+    service = RegionReportService.new(region: facility, period: july_2020.to_period, current_user: user)
+    result = service.call
+
+    expect(result[:lost_to_followup][jan_2020.to_period]).to eq(2)
+    expect(result[:lost_to_followup][july_2020.to_period]).to eq(3)
+  end
+
+  context "visited but no BP taken" do
+    it "counts visits for range of periods" do
+      may_1 = Time.parse("May 1st, 2020")
+      may_15 = Time.parse("May 15th, 2020")
+      facility = create(:facility, facility_group: facility_group_1)
+      patient_without_bp = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
+      patient_with_bp = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
+      _appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
+      _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
+      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
+
+      service = RegionReportService.new(region: facility, period: july_2020.to_period, current_user: user)
+      result = service.call
+      expect(result[:visited_without_bp_taken][may_1.to_period]).to eq(1)
+      expect(result[:visited_without_bp_taken_rate][may_1.to_period]).to eq(50)
     end
   end
 
