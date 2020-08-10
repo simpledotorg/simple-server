@@ -2,7 +2,7 @@ class VisitedButNoBPService
   def initialize(region, periods:)
     @region = region
     @periods = periods
-    @facilities = region.facilities
+    @facilities = region.facilities.to_a
   end
 
   attr_reader :facilities
@@ -12,6 +12,12 @@ class VisitedButNoBPService
   def call
     periods.each_with_object({}) do |period, result|
       result[period] = patients_visited_with_no_bp_taken(period).count
+    end
+  end
+
+  def missed_visits
+    periods.each_with_object({}) do |period, result|
+      result[period] = missed_visits_for(period)
     end
   end
 
