@@ -83,7 +83,7 @@
               <div class="w-12px h-12px mr-12px br-4px bg-grey-medium"></div>
               <div class="d-flex flex-1 align-baseline">
                 <p class="w-48px m-0px fw-bold fs-20px lh-1">
-                  <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
+                  <%= percentage_or_na(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
                 </p>
                 <p class="flex-1 m-0px fs-14px">
                   Visited in the last 3 months but no BP measure
