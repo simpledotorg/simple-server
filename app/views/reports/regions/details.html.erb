@@ -24,7 +24,7 @@
             <div class="w-12px h-12px mr-12px br-4px bg-grey-light"></div>
             <div class="d-flex flex-1 align-baseline fd-lg-column">
               <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                <%= number_to_percentage(@data[:missed_visits_rate].values.last, precision: 0) %>
+                <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
                 Missed visit
