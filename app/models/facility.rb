@@ -102,7 +102,7 @@ class Facility < ApplicationRecord
 
     results = [
       query.registered_patients_by_period,
-      query.total_registered_patients,
+      query.total_registered_patients
     ].compact
 
     return {} if results.blank?

@@ -177,8 +177,10 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     it "should queue job for line list with history download" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
         "district",
-        {district_name: district_name,
-          organization_id: organization.id},
+        {
+          district_name: district_name,
+          organization_id: organization.id
+        },
         with_medication_history: true)
 
       get :patient_list_with_history, params: {organization_id: organization.id, district_id: district_name}

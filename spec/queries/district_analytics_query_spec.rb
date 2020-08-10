@@ -29,20 +29,20 @@ RSpec.describe DistrictAnalyticsQuery do
             registration_facility: reg_facility,
             assigned_facility: facility_1)
         }
-        Timecop.travel(month) {
+        Timecop.travel(month) do
           create_list(
             :patient,
             3,
             :hypertension,
             registration_facility: facility_1,
             assigned_facility: facility_2)
-        }
-        Timecop.travel(month) {
+        end
+        Timecop.travel(month) do
           create(
             :patient,
             :without_hypertension,
             registration_facility: facility_1)
-        }
+        end
 
         #
         # add blood_pressures next month
@@ -156,13 +156,13 @@ RSpec.describe DistrictAnalyticsQuery do
 
   context "for discarded patients" do
     let!(:patients) do
-      Timecop.travel(four_months_back) {
+      Timecop.travel(four_months_back) do
         create_list(
           :patient,
           2,
           :hypertension,
           registration_facility: facility_1)
-      }
+      end
     end
 
     before do
