@@ -1,9 +1,9 @@
 require "rails_helper"
 
 RSpec.describe CohortService, type: :model do
-  let(:jan_5) { Time.parse("Jan 5th, 2020 00:00:00+00:00")}
-  let(:apr_5) { Time.parse("Apr 5th, 2020 00:00:00+00:00")}
-  let(:jul_5) { Time.parse("Jul 5th, 2020 00:00:00+00:00")}
+  let(:jan_5) { Time.parse("Jan 5th, 2020 00:00:00+00:00") }
+  let(:apr_5) { Time.parse("Apr 5th, 2020 00:00:00+00:00") }
+  let(:jul_5) { Time.parse("Jul 5th, 2020 00:00:00+00:00") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -89,20 +89,20 @@ RSpec.describe CohortService, type: :model do
     expect(cohort_service.call).to eq(
       quarterly_registrations: [
         {
-          "controlled"=>3,
-          "no_bp"=>2,
-          "patients_registered"=>"2020 Q1",
-          "registered"=>6,
-          "results_in"=>"2020 Q2",
-          "uncontrolled"=>1
+          "controlled" => 3,
+          "no_bp" => 2,
+          "patients_registered" => "2020 Q1",
+          "registered" => 6,
+          "results_in" => "2020 Q2",
+          "uncontrolled" => 1
         },
         {
-          "controlled"=>4,
-          "no_bp"=>1,
-          "patients_registered"=>"2020 Q2",
-          "registered"=>8,
-          "results_in"=>"2020 Q3",
-          "uncontrolled"=>3
+          "controlled" => 4,
+          "no_bp" => 1,
+          "patients_registered" => "2020 Q2",
+          "registered" => 8,
+          "results_in" => "2020 Q3",
+          "uncontrolled" => 3
         }
       ]
     )
