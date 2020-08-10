@@ -91,17 +91,17 @@ RSpec.describe CohortService, type: :model do
         {
           "controlled" => 3,
           "no_bp" => 2,
-          "patients_registered" => "2020 Q1",
+          "patients_registered" => "Q1 2020",
           "registered" => 6,
-          "results_in" => "2020 Q2",
+          "results_in" => "Q2 2020",
           "uncontrolled" => 1
         },
         {
           "controlled" => 4,
           "no_bp" => 1,
-          "patients_registered" => "2020 Q2",
+          "patients_registered" => "Q2 2020",
           "registered" => 8,
-          "results_in" => "2020 Q3",
+          "results_in" => "Q3 2020",
           "uncontrolled" => 3
         }
       ]
