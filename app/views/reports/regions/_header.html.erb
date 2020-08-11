@@ -15,15 +15,15 @@
     <%= @region.name %>
   </p>
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
-    <div class="d-flex order-2 order-lg-1">
-      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Overview", request.params.merge(action: "show") %>
+    <div class="d-flex order-2 order-lg-1 jc-between">
+      <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold td-none <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Overview", request.params.merge(action: "show"), :class => "c-grey-dark td-none" %>
       </p>
-      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort") %>
+      <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Details trend", request.params.merge(action: "details"), :class => "c-grey-dark td-none" %>
       </p>
-      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Details trend", request.params.merge(action: "details") %>
+      <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort"), :class => "c-grey-dark td-none" %>
       </p>
     </div>
     <div class="dropdown show order-1 mb-24px order-lg-2 mb-lg-0">
