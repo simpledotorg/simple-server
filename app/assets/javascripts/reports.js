@@ -27,6 +27,8 @@ function getReportingData() {
     controlledPatients: controlledPatients,
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
+    lostToFollowup: jsonData.lost_to_followup,
+    lostToFollowupRate: jsonData.lost_to_followup_rate,
     registrations: registrations,
     uncontrolledRate: uncontrolledRate,
     uncontrolledPatients: uncontrolledPatients,
@@ -73,6 +75,12 @@ function initializeCharts() {
       rgbaLineColor: mediumGreyColor,
       label: "Missed visit",
     },
+    {
+      data: data.lostToFollowupRate,
+      rgbaBackgroundColor: lightGreyColor,
+      rgbaLineColor: lightGreyColor,
+      label: "Lost to follow-up",
+    },
   ], "bar");
   noBPMeasureGraphConfig.options = createGraphOptions(
     true,
@@ -80,7 +88,7 @@ function initializeCharts() {
     100,
     formatValueAsPercent,
     formatRateTooltipText,
-    [data.visitButNoBPMeasure, data.missedVisits],
+    [data.visitButNoBPMeasure, data.missedVisits, data.lostToFollowup],
   );
 
   const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");

@@ -1,17 +1,21 @@
 class NoBPMeasureService
-  CACHE_VERSION = 1
+  CACHE_VERSION = 3
+  VALID_GROUPS = [:missed_visits, :lost_to_followup]
 
-  def initialize(region, periods:, type: :missed_visits)
+  def initialize(region, periods:, group: :missed_visits)
+    unless VALID_GROUPS.include?(group)
+      raise ArgumentError, "invalid group #{group}, must be one of #{VALID_GROUPS}"
+    end
     @region = region
     @periods = periods
     @facilities = region.facilities.to_a
-    @type = type
+    @group = group
   end
 
   attr_reader :facilities
   attr_reader :periods
   attr_reader :region
-  attr_reader :type
+  attr_reader :group
 
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
@@ -22,7 +26,7 @@ class NoBPMeasureService
   end
 
   def missed_visits_for(period)
-    if type == :missed_visits
+    if group == :missed_visits
       visit_start_range = period.advance(years: -1).start_date
       visit_end_range = period.advance(months: -3).start_date
     else
@@ -32,10 +36,11 @@ class NoBPMeasureService
     bind_attributes = {
       hypertension: "yes",
       facilities: facilities.map(&:id),
+      bp_start_range: period.advance(months: -3).start_date,
+      bp_end_range: period.end_date,
+      registration_date: period.end_date,
       visit_start_range: visit_start_range,
       visit_end_range: visit_end_range,
-      bp_start_range: period.advance(months: -3).start_date,
-      bp_end_range: period.end_date
     }
     sql = GitHub::SQL.new(<<-SQL, bind_attributes)
       SELECT COUNT(DISTINCT "patients"."id")
@@ -55,7 +60,8 @@ class NoBPMeasureService
         AND "medical_histories"."deleted_at" IS NULL
         AND "medical_histories"."hypertension" = :hypertension
         AND "patients"."registration_facility_id" in :facilities
-        AND (appointments.id IS NOT NULL OR prescription_drugs.id IS NOT NULL OR blood_sugars.id IS NOT NULL)
+        AND patients.recorded_at >= :visit_start_range
+        AND patients.recorded_at < :visit_end_range
         AND (NOT EXISTS (
           SELECT
             1
@@ -71,7 +77,7 @@ class NoBPMeasureService
   end
 
   def cache_key
-    "#{self.class}/#{type}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
+    "#{self.class}/#{group}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
   end
 
   def cache_version

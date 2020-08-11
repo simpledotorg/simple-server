@@ -34,30 +34,20 @@ class RegionReportService
     data.merge! ControlRateService.new(region, periods: range).call
     data.merge! compile_cohort_trend_data
     data[:missed_visits] = NoBPMeasureService.new(region, periods: range).call
-    data[:missed_visits_rate] = calc_missed_visits_rate
+    data[:missed_visits_rate] = calculate_percentages(data[:missed_visits])
+    data[:lost_to_followup] = NoBPMeasureService.new(region, periods: range, group: :lost_to_followup).call
+    data[:lost_to_followup_rate] = calculate_percentages(data[:lost_to_followup])
     data[:visited_without_bp_taken] = count_visited_without_bp_taken
     data[:visited_without_bp_taken_rate] = percentage_visited_without_bp_taken
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
+    pp data
     data
   end
 
-  def count_lost_to_followup
-    data[:cumulative_registrations].each_with_object({}) do |(period, count), hsh|
-      year_ago = period.advance(years: -1).to_date
-      lost_to_followup = Patient
-        .with_hypertension
-        .where("patients.recorded_at <= ?", year_ago)
-        .where(registration_facility: facilities)
-        .includes(:latest_blood_pressures).where("blood_pressures.recorded_at <= ? OR blood_pressures.recorded_at IS NULL", year_ago)
-        .references(:latest_blood_pressures)
-      hsh[period] = lost_to_followup.count
-    end
-  end
-
-  def calc_missed_visits_rate
-    data[:missed_visits].each_with_object({}) do |(period, missed_visits_count), hsh|
-      hsh[period] = percentage(missed_visits_count, data[:cumulative_registrations][period])
+  def calculate_percentages(dataseries)
+    dataseries.each_with_object({}) do |(period, count), hsh|
+      hsh[period] = percentage(count, data[:cumulative_registrations][period])
     end
   end
 
