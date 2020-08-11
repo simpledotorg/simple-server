@@ -34,7 +34,7 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         # register patients in facility_2 and assign it facility_3
         #
-        patients_2 = Timecop.travel(month) do
+        patients_2 = Timecop.travel(month) {
           create_list(
             :patient,
             3,
@@ -42,7 +42,7 @@ RSpec.describe DistrictAnalyticsQuery do
             registration_facility: facility_2,
             assigned_facility: facility_3
           )
-        end
+        }
 
         #
         # register patient without HTN in facility_2
