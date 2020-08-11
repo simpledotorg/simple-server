@@ -1,5 +1,5 @@
 class NoBPMeasureService
-  CACHE_VERSION = 3
+  CACHE_VERSION = 5
   VALID_GROUPS = [:missed_visits, :lost_to_followup]
 
   def initialize(region, periods:, group: :missed_visits)
@@ -36,8 +36,8 @@ class NoBPMeasureService
     bind_attributes = {
       hypertension: "yes",
       facilities: facilities.map(&:id),
-      bp_start_range: period.advance(months: -3).start_date,
-      bp_end_range: period.end_date,
+      bp_start_range: period.blood_pressure_control_range.begin,
+      bp_end_range: period.blood_pressure_control_range.end,
       registration_date: period.end_date,
       visit_start_range: visit_start_range,
       visit_end_range: visit_end_range,
@@ -45,8 +45,7 @@ class NoBPMeasureService
     sql = GitHub::SQL.new(<<-SQL, bind_attributes)
       SELECT COUNT(DISTINCT "patients"."id")
       FROM "patients"
-        INNER JOIN "medical_histories" ON "medical_histories"."deleted_at" IS NULL
-          AND "medical_histories"."patient_id" = "patients"."id"
+        INNER JOIN "medical_histories" ON "medical_histories"."patient_id" = "patients"."id"
         LEFT OUTER JOIN appointments ON appointments.patient_id = patients.id
           AND appointments.device_created_at >= :visit_start_range
           AND appointments.device_created_at < :visit_end_range
@@ -60,8 +59,12 @@ class NoBPMeasureService
         AND "medical_histories"."deleted_at" IS NULL
         AND "medical_histories"."hypertension" = :hypertension
         AND "patients"."registration_facility_id" in :facilities
-        AND patients.recorded_at >= :visit_start_range
-        AND patients.recorded_at < :visit_end_range
+        AND (appointments.id IS NOT NULL
+            OR prescription_drugs.id IS NOT NULL
+            OR blood_sugars.id IS NOT NULL
+            OR (patients.recorded_at >= :visit_start_range
+                AND patients.recorded_at < :visit_end_range)
+        )
         AND (NOT EXISTS (
           SELECT
             1
@@ -69,7 +72,7 @@ class NoBPMeasureService
             blood_pressures bps
           WHERE
             patients.id = bps.patient_id
-            AND bps.recorded_at >= :bp_start_range
+            AND bps.recorded_at > :bp_start_range
             AND bps.recorded_at <= :bp_end_range)
         ) -- For Period #{period}
     SQL

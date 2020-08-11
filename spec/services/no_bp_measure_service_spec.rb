@@ -70,7 +70,7 @@ RSpec.describe NoBPMeasureService do
     not_lost_2.blood_sugars << build(:blood_sugar, device_created_at: Time.find_zone("UTC").parse("July 1st 2019 00:00:00"))
 
     periods = (july_2018.to_period..july_2020.to_period)
-    service = NoBPMeasureService.new(facility, periods: periods, type: :lost_to_folloup)
+    service = NoBPMeasureService.new(facility, periods: periods, group: :lost_to_followup)
     results = service.call
 
     old_visit_results = results.fetch_values(june_1_2020.to_period, july_2020.to_period)
