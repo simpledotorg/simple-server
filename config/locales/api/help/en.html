@@ -37,7 +37,7 @@
             <p>If you have problems or questions, please press the button for our
                 WhatsApp group. Our friendly team will help you.</p>
             <div class="card-footer">
-                <a href="%{help_screen_whatsapp_support_group_url}" class="whatsapp-button">
+                <a href="%{help_screen_whatsapp_support_group_url}" class="whatsapp-button button">
                     %{icon_whatsapp_icon_svg} %{help_screen_whatsapp_support_number}
                 </a>
             </div>
@@ -50,7 +50,7 @@
             <h3><span style="color: #FF3355; font-size: 90%; float: right;">NEW!</span> App for your patients</h3>
             <p>Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.</p>
             <p>Ask your patients to go to the Android or iOS app store and install the "BP Passport" app.</p>
-            <p><a href="#" onclick="open_window('help-bp-passport-app'); return false">Learn more...</a></p>
+            <p class="card-footer-button"><a href="#" onclick="open_window('help-bp-passport-app'); return false">Learn more...</a></p>
             
         </div>
         
@@ -484,27 +484,29 @@
         <h2>BP Passport app</h2>
         
         <div class="card">
-            <h3>What does the app do?</h3>
+            <h3>A free app for patients</h3>
             <p>Patients can scan their paper BP Passports and the app will show the current measures and medications that you add in your hospital or clinic, right on their smartphone.</p>
             <ol>
                 <li class="num">Chart BPs</li>
                 <li class="num">Chart blood sugars</li>
-                <li class="num">Remember to take medicines</li>
+                <li class="num">Reminders to take medicines</li>
                 <li class="num">Healthy advice</li>
+                <li class="num">Free, with no ads</li>
             </ol>
-            <p>Learn more: <a href="http://simple.org/bp-passport">simple.org/bp-passport</a></p>
+            <p style="margin-top: 2.5em;">Learn more: <a href="http://simple.org/bp-passport">simple.org/bp-passport</a></p>
         </div>
         
         <div class="card">
             <h3>Apple and Android</h3>
-            <p style="margin-bottom: 2.5em;">Tell your patients to get the app by searching for "BP Passsport" on the Google Play Store or Apple App Store.</p>
-            <a href="#" class="app-button">Apple App Store</a>
-            <a href="#" class="app-button">Google Play Store</a>
+            <p style="margin-bottom: 2.5em;">Tell your patients to get the app by searching for <span class="code">BP Passsport</span> on the Google Play Store or Apple App Store.</p>
+            <a href="#" class="app-button button">%{icon_apple_icon_svg} Apple App Store</a>
+            <a href="#" class="app-button button">%{icon_google_play_icon_svg} Google Play Store</a>
         </div>
         
         <div class="card">
             <h3>Languages</h3>
-            <ul>
+            <p>The BP Passport app is available in:</p>
+            <ul class="big-list">
                 <li>Amharic</li>
                 <li>Bengali</li>
                 <li>English</li>
