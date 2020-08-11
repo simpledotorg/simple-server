@@ -40,6 +40,11 @@ RSpec.describe NoBPMeasureService do
     range = service.visit_range_for(july_2020.to_period)
     expect(range.begin).to eq(Date.parse("July 31st 2019"))
     expect(range.end).to eq(Date.parse("April 30th 2020"))
+
+    service = NoBPMeasureService.new(facility, periods: july_2020_range, group: :no_recent_bp)
+    range = service.visit_range_for(july_2020.to_period)
+    expect(range.begin).to eq(Date.parse("April 30th 2020"))
+    expect(range.end).to eq(Date.parse("July 31st 2020"))
   end
 
   it "counts missed visits for 3 month to 1 year window" do

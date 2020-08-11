@@ -50,6 +50,7 @@ class NoBPMeasureService
       facilities: facilities.map(&:id),
       bp_start_date: period.blood_pressure_control_range.begin,
       bp_end_date: period.blood_pressure_control_range.end,
+      registration_date: period.end_date,
       visit_start_date: visit_start_date,
       visit_end_date: visit_end_date,
     }
@@ -70,6 +71,7 @@ class NoBPMeasureService
         AND "medical_histories"."deleted_at" IS NULL
         AND "medical_histories"."hypertension" = :hypertension
         AND "patients"."registration_facility_id" in :facilities
+        AND patients.recorded_at <= :registration_date
         AND (appointments.id IS NOT NULL
             OR prescription_drugs.id IS NOT NULL
             OR blood_sugars.id IS NOT NULL
@@ -87,7 +89,7 @@ class NoBPMeasureService
             patients.id = bps.patient_id
             AND bps.recorded_at > :bp_start_date
             AND bps.recorded_at <= :bp_end_date)
-        ) -- For Period #{period}
+        ) -- #{self.class.name} group #{group} period #{period}
     SQL
     sql.value
   end
