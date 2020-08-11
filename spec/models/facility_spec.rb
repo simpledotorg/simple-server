@@ -34,7 +34,7 @@ RSpec.describe Facility, type: :model do
   context ".assigned_hypertension_patients" do
     let!(:assigned_facility) { create(:facility) }
     let!(:registration_facility) { create(:facility) }
-    let!(:assigned_hypertension_patients) do
+    let!(:assigned_patients) do
       [create(:patient,
         assigned_facility: assigned_facility,
         registration_facility: registration_facility),
