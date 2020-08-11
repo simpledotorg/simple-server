@@ -10,6 +10,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:appointments) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+    it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
     context "patients" do
       it "has distinct patients" do
@@ -28,6 +29,28 @@ RSpec.describe Facility, type: :model do
 
     it { should belong_to(:facility_group).optional }
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
+  end
+
+  context ".assigned_hypertension_patients" do
+    let!(:assigned_facility) { create(:facility) }
+    let!(:registration_facility) { create(:facility) }
+    let!(:assigned_patients) do
+      [create(:patient,
+        assigned_facility: assigned_facility,
+        registration_facility: registration_facility),
+        create(:patient,
+          :without_hypertension,
+          assigned_facility: assigned_facility,
+          registration_facility: registration_facility)]
+    end
+
+    it "returns assigned hypertensive patients for facilities" do
+      expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
+    end
+
+    it "ignores registration patients" do
+      expect(registration_facility.assigned_hypertension_patients).to be_empty
+    end
   end
 
   describe "Delegates" do

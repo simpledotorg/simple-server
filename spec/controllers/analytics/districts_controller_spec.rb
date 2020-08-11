@@ -9,8 +9,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   let(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
   let(:organization_district) { OrganizationDistrict.new(district_name, organization) }
   let(:sanitized_district_name) { organization_district.district_name.downcase.split(" ").join("-") }
-  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter" }
-  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter" }
+  let(:cache_version) { 1 }
+  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter/#{cache_version}" }
+  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter/#{cache_version}" }
 
   before do
     #

@@ -4,6 +4,7 @@ class AnalyticsController < AdminController
   before_action :set_period
 
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
+  CACHE_VERSION = 1
 
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
@@ -48,11 +49,11 @@ class AnalyticsController < AdminController
   end
 
   def analytics_cache_key_cohort(period)
-    "#{analytics_cache_key}/cohort/#{period}"
+    "#{analytics_cache_key}/cohort/#{period}/#{CACHE_VERSION}"
   end
 
   def analytics_cache_key_dashboard(time_period)
-    key = "#{analytics_cache_key}/dashboard/#{time_period}"
+    key = "#{analytics_cache_key}/dashboard/#{time_period}/#{CACHE_VERSION}"
     key = "#{key}/#{@quarter}/#{@year}" if @quarter && @year
     key
   end

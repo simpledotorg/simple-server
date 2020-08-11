@@ -19,8 +19,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:oct_2018) { Date.new(2018, 10, 1) }
   let(:sep_2018) { Date.new(2018, 9, 1) }
 
-  let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month" }
-  let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
+  let(:cache_version) { 1 }
+  let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month/#{cache_version}" }
+  let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month/#{cache_version}" }
 
   let!(:registered_patients) do
     travel_to(feb_2019) {

@@ -20,7 +20,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
   def cohort_analytics(period, prev_periods)
     patients =
       Patient
-        .joins(:registration_facility)
+        .joins(:assigned_facility)
         .where(facilities: {id: facilities})
         .with_hypertension
 
