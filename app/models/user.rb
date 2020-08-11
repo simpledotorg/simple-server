@@ -12,6 +12,12 @@ class User < ApplicationRecord
     denied: "denied"
   }, _prefix: true
 
+  enum access_level: {
+    viewer: "viewer",
+    manager: "manager",
+    super_admin: "super_admin"
+  }
+
   belongs_to :organization, optional: true
 
   has_many :user_authentications
@@ -54,6 +60,9 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
+  validates :access_level, presence: true, if: -> { email_authentication.present? }
+  validates :accesses, absence: true, if: -> { super_admin? && email_authentication.present? }
+  validates :accesses, presence: true, unless: -> { super_admin? }, if: -> { email_authentication.present? }
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
@@ -73,9 +82,6 @@ class User < ApplicationRecord
     :password,
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
-
-  delegate :organizations, :facility_groups, :facilities, to: :accesses, allow_nil: true, prefix: :accessible
-  delegate :can?, to: :accesses, allow_nil: true
 
   after_destroy :destroy_email_authentications
 
@@ -181,6 +187,26 @@ class User < ApplicationRecord
 
   def resources
     user_permissions.map(&:resource)
+  end
+
+  def accessible_organizations(action)
+    return Organization.all if super_admin?
+    accesses.organizations(action)
+  end
+
+  def accessible_facility_groups(action)
+    return FacilityGroup.all if super_admin?
+    accesses.facility_groups(action)
+  end
+
+  def accessible_facilities(action)
+    return Facility.all if super_admin?
+    accesses.facilities(action)
+  end
+
+  def can?(action, model, record)
+    return true if super_admin?
+    accesses.can?(action, model, record)
   end
 
   def destroy_email_authentications
