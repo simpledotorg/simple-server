@@ -44,7 +44,7 @@ RSpec.describe Facility, type: :model do
           registration_facility: registration_facility)]
     end
 
-    it "returns assigned patients for facilities" do
+    it "returns assigned hypertensive patients for facilities" do
       expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
     end
 
