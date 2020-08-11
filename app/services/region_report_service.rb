@@ -56,7 +56,6 @@ class RegionReportService
   end
 
   def calc_missed_visits_rate
-    pp data
     data[:missed_visits].each_with_object({}) do |(period, missed_visits_count), hsh|
       hsh[period] = percentage(missed_visits_count, data[:cumulative_registrations][period])
     end
