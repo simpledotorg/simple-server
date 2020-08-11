@@ -25,5 +25,5 @@ window.onload = function() {
           panel.style.maxHeight = panel.scrollHeight + "px";
         }
       });
-    } 
+    }
 }
