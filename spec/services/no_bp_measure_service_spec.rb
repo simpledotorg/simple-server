@@ -25,7 +25,7 @@ RSpec.describe NoBPMeasureService do
     end
   end
 
-  fit "counts missed visits for 3 month to 1 year window" do
+  it "counts missed visits for 3 month to 1 year window" do
     facility = create(:facility, facility_group: facility_group_1)
     facility_2 = create(:facility)
     patient_visited_one_year_ago_1 = create(:patient, full_name: "visited one year ago 1", registration_facility: facility, recorded_at: Time.parse("June 1st 2019"))
