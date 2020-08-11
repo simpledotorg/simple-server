@@ -27,7 +27,6 @@ RSpec.describe VisitedButNoBPService do
 
   it "counts missed visits as patients who have visitede between 3 to 12 months ago" do
     may_1 = Time.parse("May 1st, 2020")
-    august_1 = Time.parse("August 1st 2020")
     facility = create(:facility, facility_group: facility_group_1)
     facility_2 = create(:facility)
     patient_visited_via_appt = create(:patient, registration_facility: facility)
@@ -50,7 +49,7 @@ RSpec.describe VisitedButNoBPService do
 
     periods = (july_2018.to_period..july_2020.to_period)
     service = VisitedButNoBPService.new(facility, periods: periods)
-    (Period.month(may_1)..Period.month(august_1)).each do |period|
+    (Period.month(may_1)..Period.month(july_2020)).each do |period|
       result = service.patients_visited_with_no_bp_taken(period)
       expect(result).to_not include(patient_with_bp, patient_without_visit_and_bp)
       expect(result).to include(patient_visited_via_appt, patient_visited_via_drugs, patient_visited_via_blood_sugar)
@@ -58,7 +57,7 @@ RSpec.describe VisitedButNoBPService do
     results = service.call
     old_visit_results = results.fetch_values(july_1_2019.to_period, Period.month("August 1st 2019"),
       Period.month("September 1st 2019"), Period.month("October 1st 2019"))
-    expect(old_visit_results).to eq([1, 1, 1, 1])
+    expect(old_visit_results).to eq([1, 1, 1, 0])
 
     actual = results.fetch_values(may_1.to_period, june_1_2020.to_period, july_2020.to_period)
     expect(actual).to eq([3, 3, 3])

@@ -34,9 +34,9 @@ class VisitedButNoBPService
   end
 
   def between_clause(table, field, period)
-    begin_date = period.advance(months: -3).start_date
-    end_date = period.end_date
-    sql = ["#{table}.#{field} >= ? AND #{table}.#{field} <= ?", begin_date, end_date]
+    begin_date = period.blood_pressure_control_range.begin
+    end_date = period.blood_pressure_control_range.end
+    sql = ["#{table}.#{field} > ? AND #{table}.#{field} <= ?", begin_date, end_date]
     ActiveRecord::Base.sanitize_sql_for_conditions(sql)
   end
 
