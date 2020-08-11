@@ -74,6 +74,6 @@ RSpec.describe NoBPMeasureService do
     results = service.call
 
     old_visit_results = results.fetch_values(june_1_2020.to_period, july_2020.to_period)
-    expect(old_visit_results).to eq([2,2])
+    expect(old_visit_results).to eq([2, 2])
   end
 end

@@ -63,5 +63,4 @@ RSpec.describe VisitedButNoBPService do
     actual = results.fetch_values(may_1.to_period, june_1_2020.to_period, july_2020.to_period)
     expect(actual).to eq([3, 3, 3])
   end
-
 end
