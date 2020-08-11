@@ -10,6 +10,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:appointments) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+    it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
     it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
     context "patients" do
