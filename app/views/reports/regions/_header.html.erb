@@ -52,16 +52,6 @@
               <%= period.value.to_s(:mon_year) %>
             </button>
           <% end %>
-
-          <div class="dropdown-divider"></div>
-
-          <% Quarter.current.downto(6).each do |quarter| %>
-            <% period = Period.new(type: :quarter, value: quarter) %>
-            <button class="dropdown-item query-filter-month <%= 'active' if false %>" name="period[value]"
-                    type="submit" data-period-type="quarter" value="<%= period.value %>">
-              <%= period.value.to_s %>
-            </button>
-          <% end %>
         <% end %>
       </div>
     </div>
