@@ -81,7 +81,7 @@
 
               <% if policy(:dashboard).overdue_list? %>
                 <li class="nav-item">
-                  <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+                  <%= link_to "Overdue", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                 </li>
               <% end %>
 
