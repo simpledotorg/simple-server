@@ -16,6 +16,7 @@ RSpec.describe ControlRateService, type: :model do
 
   def refresh_views
     ActiveRecord::Base.transaction do
+      LatestBloodPressuresPerPatientPerDay.refresh
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
@@ -110,6 +111,7 @@ RSpec.describe ControlRateService, type: :model do
       controlled_in_jan_and_june.map do |patient|
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
         create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 4.days.ago, user: user)
+        create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 35.days.ago, user: user)
       end
 
       create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
@@ -139,6 +141,7 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:controlled_patients_rate][Period.month(june_1_2020)]).to eq(30.0)
     expect(result[:uncontrolled_patients][Period.month(june_1_2020)]).to eq(5)
     expect(result[:uncontrolled_patients_rate][Period.month(june_1_2020)]).to eq(50.0)
+    pp result
   end
 
   it "quarterly control rate looks only at patients registered in the previous quarter" do
