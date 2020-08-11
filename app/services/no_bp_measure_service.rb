@@ -1,4 +1,6 @@
 class NoBPMeasureService
+  CACHE_VERSION = 1
+
   def initialize(region, periods:, type: :missed_visits)
     @region = region
     @periods = periods
@@ -12,8 +14,10 @@ class NoBPMeasureService
   attr_reader :type
 
   def call
-    periods.each_with_object({}) do |period, result|
-      result[period] = missed_visits_for(period)
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
+      periods.each_with_object({}) do |period, result|
+        result[period] = missed_visits_for(period)
+      end
     end
   end
 
@@ -64,5 +68,21 @@ class NoBPMeasureService
         ) -- For Period #{period}
     SQL
     sql.value
+  end
+
+  def cache_key
+    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
+  end
+
+  def cache_version
+    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
+  end
+
+  def periods_cache_key
+    "#{periods.begin.value}/#{periods.end.value}"
+  end
+
+  def force_cache?
+    RequestStore.store[:force_cache]
   end
 end
