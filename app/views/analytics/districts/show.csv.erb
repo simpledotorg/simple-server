@@ -21,7 +21,7 @@ end) %>
 <% @facility_keys.each do |facility| %>
 <% csv << [facility[:name], facility[:type]].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), _|
   cohort_start, report_start = report_dates
-  registered = analytics.dig(:registered, facility[:id]) || 0
+  registered = analytics.dig(:cohort_patients, facility[:id]) || 0
   followed_up = analytics.dig(:followed_up, facility[:id]) || 0
   defaulted = analytics.dig(:defaulted, facility[:id]) || 0
   controlled = analytics.dig(:controlled, facility[:id]) || 0

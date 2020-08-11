@@ -17,7 +17,7 @@
 <% @cohort_analytics.each_with_index do |(report_dates, analytics), _| %>
   <%
     cohort_start, report_start = report_dates
-    registered = analytics.dig(:registered, :total) || 0
+    registered = analytics.dig(:cohort_patients, :total) || 0
     followed_up = analytics.dig(:followed_up, :total) || 0
     defaulted = analytics.dig(:defaulted, :total) || 0
     controlled = analytics.dig(:controlled, :total) || 0
