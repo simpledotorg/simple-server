@@ -3,7 +3,20 @@ require "rails_helper"
 RSpec.describe Access, type: :model do
   describe "Associations" do
     it { is_expected.to belong_to(:user) }
-    pending { is_expected.to belong_to(:resource).optional }
+
+    context "belongs to resource" do
+      context "for super admins" do
+        subject { create(:access, :super_admin) }
+        it { is_expected.to_not belong_to(:resource) }
+        it { expect(subject.resource).to_not be_present }
+      end
+
+      context "for everyone else" do
+        let(:facility) { create(:facility) }
+        subject { create(:access, :viewer, resource: facility) }
+        it { expect(subject.resource).to be_present }
+      end
+    end
   end
 
   describe "Validations" do
