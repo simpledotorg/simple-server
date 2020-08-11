@@ -71,7 +71,7 @@ class NoBPMeasureService
   end
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
+    "#{self.class}/#{type}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
   end
 
   def cache_version
