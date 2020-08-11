@@ -1,35 +1,5 @@
-$accent-color: #FF3355; /* PINK */
-
-$red-dark: #B81631;
-$red: #FF3355;
-$red-light: #FFD6DD;
-$green-dark: #007A31;
-$green: #00B849;
-$yellow-dark: #E0B000;
-$yellow: #FFC800;
-
-$offwhite: #f8f9fa;
-
-$grey-lightest: #F0F2F5;
-$grey-light: #dce4e8;
-$grey-mid: #ADB2B8;
-$grey-dark: #6C737A;
-$grey-darkest: #2F363D;
-
-$highlight: #E9F3FF; /* LIGHT BLUE */
-$blue: #0075EB;
-$blue-mid: #9db8d2;
-$blue-light: #E9F3FF;
-$blue-dark: #0c3966;
-$green-light: #E0FFED;
-$green-mid: #5CFF9D;
-$green: #00B849;
-$green-dark: #007A31;
-
-$font-condensed: 'Roboto Condensed', sans-serif;
-$font-small: 11px;
-
-/********/
+// Universal variables
+@import "partials/variables";
 
 .progress-contents {
     padding: 0 8px 100px 8px;
