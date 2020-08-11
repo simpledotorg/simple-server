@@ -36,11 +36,11 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <%= @selected_date.to_s %> report
+        <%= @period.to_s %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         <%= form_for(@period, url: request.params, method: :get) do |f| %>
-          <%= f.text_field :type, { id: "dropdown-period-type" } %>
+          <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
           <% (0..12).each do |num|
               selected = false
