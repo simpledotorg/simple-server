@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 4
+  CACHE_VERSION = 5
   PERCENTAGE_PRECISION = 1
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
@@ -101,8 +101,8 @@ class ControlRateService
     if period.quarter?
       bp_quarterly_query(period).under_control
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period).under_control,
-        "latest_blood_pressures_per_patient_per_months")
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period),
+        "latest_blood_pressures_per_patient_per_months").under_control
     end
   end
 
@@ -129,8 +129,8 @@ class ControlRateService
     if period.quarter?
       bp_quarterly_query(period).hypertensive
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period).hypertensive,
-        "latest_blood_pressures_per_patient_per_months")
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period),
+        "latest_blood_pressures_per_patient_per_months").hypertensive
     end
   end
 

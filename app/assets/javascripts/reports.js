@@ -16,15 +16,13 @@ function getReportingData() {
   const $newData = document.getElementById("data-json");
   const jsonData = JSON.parse($newData.textContent);
 
-  const controlRate = jsonData.controlled_patients_rate;
-  const controlledPatients = jsonData.controlled_patients;
   const registrations = jsonData.cumulative_registrations;
   const uncontrolledRate = jsonData.uncontrolled_patients_rate;
   const uncontrolledPatients = jsonData.uncontrolled_patients;
 
   let data = {
-    controlRate: controlRate,
-    controlledPatients: controlledPatients,
+    controlRate: jsonData.controlled_patients_rate,
+    controlledPatients: jsonData.controlled_patients,
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
     lostToFollowup: jsonData.lost_to_followup,

@@ -4,6 +4,7 @@ RSpec.describe NoBPMeasureService do
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) { create(:admin, :supervisor, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
+  let(:facility) { create(:facility, facility_group: facility_group_1) }
 
   let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
   let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
@@ -17,6 +18,10 @@ RSpec.describe NoBPMeasureService do
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
+  let(:july_2020_range) {
+    (july_2018.to_period..july_2020.to_period)
+  }
+
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
@@ -25,8 +30,19 @@ RSpec.describe NoBPMeasureService do
     end
   end
 
+  it "has correct ranges" do
+    service = NoBPMeasureService.new(facility, periods: july_2020_range, group: :lost_to_followup)
+    range = service.visit_range_for(july_2020.to_period)
+    expect(range.begin).to eq(Date.parse("January 1st 1970"))
+    expect(range.end).to eq(Date.parse("July 31st 2019"))
+
+    service = NoBPMeasureService.new(facility, periods: july_2020_range, group: :missed_visits)
+    range = service.visit_range_for(july_2020.to_period)
+    expect(range.begin).to eq(Date.parse("July 31st 2019"))
+    expect(range.end).to eq(Date.parse("April 30th 2020"))
+  end
+
   it "counts missed visits for 3 month to 1 year window" do
-    facility = create(:facility, facility_group: facility_group_1)
     facility_2 = create(:facility)
     patient_visited_one_year_ago_1 = create(:patient, full_name: "visited one year ago 1", registration_facility: facility, recorded_at: Time.parse("June 1st 2019"))
     patient_visited_one_year_ago_1.prescription_drugs << build(:prescription_drug, device_created_at: july_1_2019)

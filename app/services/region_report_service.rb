@@ -37,8 +37,8 @@ class RegionReportService
     data[:missed_visits_rate] = calculate_percentages(data[:missed_visits])
     data[:lost_to_followup] = NoBPMeasureService.new(region, periods: range, group: :lost_to_followup).call
     data[:lost_to_followup_rate] = calculate_percentages(data[:lost_to_followup])
-    data[:visited_without_bp_taken] = count_visited_without_bp_taken
-    data[:visited_without_bp_taken_rate] = percentage_visited_without_bp_taken
+    data[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range, group: :no_recent_bp).call
+    data[:visited_without_bp_taken_rate] = calculate_percentages(data[:visited_without_bp_taken])
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     pp data
