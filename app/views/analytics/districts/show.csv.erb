@@ -73,7 +73,7 @@ end) %>
     "Total patients"
   ]
   dates = dates_for_periods(@period, 3, include_current_period: @show_current_period)
-  ["Patients with BP taken", "Registered patients"].each do |metric|
+  ["Patients with BP recorded", "Registered patients"].each do |metric|
     dates.each do |date|
       headers << "#{metric} #{format_period(@period, date)}"
     end
