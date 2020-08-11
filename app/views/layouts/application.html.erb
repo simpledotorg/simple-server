@@ -58,13 +58,24 @@
 
               <% if policy(:dashboard).view_my_facilities? %>
                 <li class="nav-item">
-                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                  <%= link_to "Home", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
               <% end %>
 
               <% if policy(:dashboard).show? %>
                 <li class="nav-item">
-                  <%= link_to "Dashboard", root_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                  <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
+                    Reports
+                    <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
+                      New
+                    </span>
+                  <% end %>
+                </li>
+              <% end %>
+
+              <% if policy(:dashboard).show? %>
+                <li class="nav-item">
+                  <%= link_to "Old Reports", organizations_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
               <% end %>
 
@@ -81,7 +92,7 @@
               <% if policy(:dashboard).manage? %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Manage
+                  Settings
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <% if policy([:dashboard]).manage_organizations? %>
