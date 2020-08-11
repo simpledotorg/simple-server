@@ -107,7 +107,7 @@ class ControlRateService
   end
 
   def bp_monthly_query(period)
-    time = period.value
+    time = period.to_date
     end_range = time.end_of_month
     mid_range = time.advance(months: -1).end_of_month
     beg_range = time.advance(months: -2).end_of_month

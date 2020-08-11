@@ -61,10 +61,10 @@
               <div class="w-12px h-12px mr-12px br-4px bg-grey-lightest"></div>
               <div class="d-flex flex-1 align-baseline">
                 <p class="w-48px m-0px fw-bold fs-20px lh-1">
-                  N/A
+                  <%= percentage_or_na(@data[:lost_to_followup_rate].values.last, precision: 0) %>
                 </p>
                 <p class="flex-1 m-0px fs-14px">
-                  Lost to follow-up
+                  Lost to follow-up - visited over 12 months ago
                 </p>
               </div>
             </div>
@@ -75,7 +75,7 @@
                   <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
                 </p>
                 <p class="flex-1 m-0px fs-14px">
-                  Missed visit
+                  Missed visit - visited between 3 to 12 months ago
                 </p>
               </div>
             </div>
