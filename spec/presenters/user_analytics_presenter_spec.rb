@@ -172,6 +172,38 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           expect(data.dig(:monthly, :grouped_by_date)).to eq(expected_output)
         end
 
+        it "fetches control rate data from the control rate service" do
+          control_rate_service = double("ControlRateService")
+          allow(ControlRateService).to receive(:new).and_return(control_rate_service)
+          allow(control_rate_service).to receive(:call).and_return(control_rate: :statistics)
+
+          control_rate_start = Period.month(request_date - 12.months)
+          control_rate_end = Period.month(request_date - 1.month)
+          expect(ControlRateService).to receive(:new).with(
+            current_facility,
+            periods: control_rate_start..control_rate_end
+          )
+
+          travel_to(request_date) {
+            described_class.new(current_facility).statistics
+          }
+        end
+
+        it "fetches cohort data from the cohort service" do
+          cohort_service = double("CohortService")
+          allow(CohortService).to receive(:new).and_return(cohort_service)
+          allow(cohort_service).to receive(:totals).and_return(cohort: :statistics)
+
+          expect(CohortService).to receive(:new).with(
+            region: current_facility,
+            quarters: Quarter.new(date: request_date).previous_quarter.downto(3)
+          )
+
+          travel_to(request_date) {
+            described_class.new(current_facility).statistics
+          }
+        end
+
         it "has no data if facility has not recorded anything recently" do
           data = described_class.new(current_facility).statistics
 

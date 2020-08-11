@@ -227,7 +227,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def cohort_stats
     quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
-    CohortService.new(region: current_facility, quarters: quarters).call
+    CohortService.new(region: current_facility, quarters: quarters).totals
   end
 
   #
@@ -303,7 +303,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .count
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
-    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
+    control_rate_start = control_rate_end.advance(months: -(HTN_CONTROL_MONTHS_AGO - 1))
     controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
 
     registrations =

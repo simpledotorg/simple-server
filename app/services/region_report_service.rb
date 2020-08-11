@@ -74,7 +74,7 @@ class RegionReportService
   # the previous three quarters.
   def compile_cohort_trend_data
     Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
-      CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(3)).call
+      CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(3)).totals
     end
   end
 
