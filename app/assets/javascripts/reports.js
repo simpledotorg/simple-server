@@ -6,6 +6,7 @@ let mediumGreenColor = "rgba(92, 255, 157, 1)";
 let lightRedColor = "rgba(255, 235, 238, 1)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
 let lightPurpleColor = "rgba(238, 229, 252, 1)";
+let darkPurpleColor = "#5300E0";
 let darkGreyColor = "rgba(108, 115, 122, 1)";
 let mediumGreyColor = "rgba(173, 178, 184, 1)";
 let lightGreyColor = "rgba(240, 242, 245, 1)";
@@ -15,6 +16,7 @@ function initializeCharts() {
 
   const controlledGraphConfig = createGraphConfig([{
     data: data.controlRate,
+    borderWidth: 1,
     rgbaLineColor: darkGreenColor,
     rgbaBackgroundColor: lightGreenColor,
     label: "control rate",
@@ -64,6 +66,7 @@ function initializeCharts() {
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: lightRedColor,
+      borderWidth: 1,
       rgbaLineColor: darkRedColor,
       label: "not under control rate",
     }
@@ -88,7 +91,9 @@ function initializeCharts() {
     {
       data: data.registrations,
       rgbaBackgroundColor: lightPurpleColor,
-      hoverBackgroundColor: lightPurpleColor,
+      borderWidth: { top: 2 },
+      rgbaLineColor: darkPurpleColor,
+      hoverBackgroundColor: darkPurpleColor,
     },
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
@@ -107,22 +112,35 @@ function initializeCharts() {
     {
       data: data.controlRate,
       rgbaBackgroundColor: mediumGreenColor,
-      rgbaLineColor: mediumGreenColor,
+      hoverBackgroundColor: mediumGreenColor,
       label: "control rate",
     },
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: darkRedColor,
-      rgbaLineColor: darkRedColor,
+      hoverBackgroundColor: darkRedColor,
       label: "not under control rate",
     },
+    {
+      data: data.visitButNoBPMeasureRate,
+      rgbaBackgroundColor: darkGreyColor,
+      hoverBackgroundColor: darkGreyColor,
+      label: "Visited but no BP measure",
+    },
+    {
+      data: data.missedVisitsRate,
+      rgbaBackgroundColor: mediumGreyColor,
+      hoverBackgroundColor: mediumGreyColor,
+      label: "Missed visit",
+    }
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(
     true,
     25,
+    100,
     formatValueAsPercent,
     formatRateTooltipText,
-    [data.controlledPatients, data.uncontrolledPatients],
+    [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
   );
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {
@@ -137,7 +155,7 @@ function getReportingData() {
 
   const controlRate = jsonData.controlled_patients_rate;
   const controlledPatients = jsonData.controlled_patients;
-  const registrations = jsonData.registrations;
+  const registrations = jsonData.cumulative_registrations;
   const uncontrolledRate = jsonData.uncontrolled_patients_rate;
   const uncontrolledPatients = jsonData.uncontrolled_patients;
 
@@ -166,7 +184,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
           borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
-          borderWidth: dataset.rgbaLineColor ? 1 : undefined,
+          borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           pointBackgroundColor: dataset.rgbaLineColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
@@ -185,7 +203,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       padding: {
         left: 0,
         right: 0,
-        top: 0,
+        top: 40,
         bottom: 0
       }
     },
@@ -261,10 +279,9 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
 function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
   const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
-  const date = tooltipItem.label;
-  const label = data.datasets[datasetIndex].label;
+  const label = data.datasets[datasetIndex].label.toLowerCase();
   const percent = Math.round(tooltipItem.value);
-  return `${percent}% ${label} (${total} patients) in ${date}`;
+  return `${percent}% ${label} (${total} patients)`;
 }
 
 function formatSumTooltipText(tooltipItem) {
