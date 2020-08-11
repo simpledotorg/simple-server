@@ -47,8 +47,7 @@ class NoBPMeasureService
         LEFT OUTER JOIN blood_sugars ON blood_sugars.patient_id = patients.id
           AND blood_sugars.recorded_at >= :visit_start_range
           AND blood_sugars.recorded_at < :visit_end_range
-      WHERE
-            "patients"."deleted_at" IS NULL
+      WHERE "patients"."deleted_at" IS NULL
         AND "medical_histories"."deleted_at" IS NULL
         AND "medical_histories"."hypertension" = :hypertension
         AND "patients"."registration_facility_id" in :facilities

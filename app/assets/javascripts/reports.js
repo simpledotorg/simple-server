@@ -11,6 +11,32 @@ let darkGreyColor = "rgba(108, 115, 122, 1)";
 let mediumGreyColor = "rgba(173, 178, 184, 1)";
 let lightGreyColor = "rgba(240, 242, 245, 1)";
 
+function getReportingData() {
+  const $reportingDiv = document.getElementById("reporting");
+  const $newData = document.getElementById("data-json");
+  const jsonData = JSON.parse($newData.textContent);
+
+  const controlRate = jsonData.controlled_patients_rate;
+  const controlledPatients = jsonData.controlled_patients;
+  const registrations = jsonData.cumulative_registrations;
+  const uncontrolledRate = jsonData.uncontrolled_patients_rate;
+  const uncontrolledPatients = jsonData.uncontrolled_patients;
+
+  let data = {
+    controlRate: controlRate,
+    controlledPatients: controlledPatients,
+    missedVisits: jsonData.missed_visits,
+    missedVisitsRate: jsonData.missed_visits_rate,
+    registrations: registrations,
+    uncontrolledRate: uncontrolledRate,
+    uncontrolledPatients: uncontrolledPatients,
+    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
+    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
+  };
+
+  return data;
+};
+
 function initializeCharts() {
   const data = getReportingData();
 
@@ -146,32 +172,6 @@ function initializeCharts() {
   if (visitDetailsGraphCanvas) {
     new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
   }
-};
-
-function getReportingData() {
-  const $reportingDiv = document.getElementById("reporting");
-  const $newData = document.getElementById("data-json");
-  const jsonData = JSON.parse($newData.textContent);
-
-  const controlRate = jsonData.controlled_patients_rate;
-  const controlledPatients = jsonData.controlled_patients;
-  const registrations = jsonData.cumulative_registrations;
-  const uncontrolledRate = jsonData.uncontrolled_patients_rate;
-  const uncontrolledPatients = jsonData.uncontrolled_patients;
-
-  let data = {
-    controlRate: controlRate,
-    controlledPatients: controlledPatients,
-    missedVisits: jsonData.missed_visits,
-    missedVisitsRate: jsonData.missed_visits_rate,
-    registrations: registrations,
-    uncontrolledRate: uncontrolledRate,
-    uncontrolledPatients: uncontrolledPatients,
-    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
-    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
-  };
-
-  return data;
 };
 
 function createGraphConfig(datasetsConfig, graphType) {
