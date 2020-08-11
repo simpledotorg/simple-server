@@ -42,7 +42,7 @@
         <%= form_for(@period, url: request.params, method: :get) do |f| %>
           <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
-          <% (0..12).each do |num|
+          <% (1..13).each do |num|
               selected = false
               date = Date.current.beginning_of_month.advance(months: -num)
               period = Period.new(type: :month, value: date)
