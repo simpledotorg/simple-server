@@ -21,7 +21,7 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         # register patients in facility_1 and assign it facility_2
         #
-        patients_on_jan_1 = Timecop.travel(month) {
+        patients_1 = Timecop.travel(month) {
           create_list(
             :patient,
             3,
@@ -34,7 +34,7 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         # register patients in facility_2 and assign it facility_3
         #
-        Timecop.travel(month) do
+        patients_2 = Timecop.travel(month) do
           create_list(
             :patient,
             3,
@@ -56,20 +56,28 @@ RSpec.describe DistrictAnalyticsQuery do
         end
 
         #
-        # add blood_pressures next month
+        # add blood_pressures next month to facility_1 & facility_2
         #
         Timecop.travel(month + 1.month) do
-          patients_on_jan_1.each do |patient|
+          patients_1.each do |patient|
             create(:blood_pressure, patient: patient, facility: facility_1)
+          end
+
+          patients_2.each do |patient|
+            create(:blood_pressure, patient: patient, facility: facility_2)
           end
         end
 
         #
-        # add blood_pressures after a couple of months
+        # add blood_pressures after a couple of months to facility_1 & facility_2
         #
         Timecop.travel(month + 2.months) do
-          patients_on_jan_1.each do |patient|
+          patients_1.each do |patient|
             create(:blood_pressure, patient: patient, facility: facility_1)
+          end
+
+          patients_2.each do |patient|
+            create(:blood_pressure, patient: patient, facility: facility_2)
           end
         end
       end
@@ -129,6 +137,17 @@ RSpec.describe DistrictAnalyticsQuery do
           expected_result =
             {
               facility_2.id =>
+                {
+                  patients_with_bp_by_period:
+                    {
+                      four_months_back => 0,
+                      three_months_back => 3,
+                      two_months_back => 6,
+                      one_month_back => 3
+                    }
+                },
+
+              facility_3.id =>
                 {
                   patients_with_bp_by_period:
                     {
