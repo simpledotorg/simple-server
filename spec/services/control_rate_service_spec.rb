@@ -141,7 +141,6 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:controlled_patients_rate][Period.month(june_1_2020)]).to eq(30.0)
     expect(result[:uncontrolled_patients][Period.month(june_1_2020)]).to eq(5)
     expect(result[:uncontrolled_patients_rate][Period.month(june_1_2020)]).to eq(50.0)
-    pp result
   end
 
   it "quarterly control rate looks only at patients registered in the previous quarter" do
