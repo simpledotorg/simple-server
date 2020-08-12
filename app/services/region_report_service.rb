@@ -51,12 +51,6 @@ class RegionReportService
     end
   end
 
-  # visited in last 3 months but had no BP taken
-  def count_visited_without_bp_taken
-    periods = data[:registrations].keys
-    VisitedButNoBPService.new(region, periods: periods).call
-  end
-
   def percentage_visited_without_bp_taken
     data[:visited_without_bp_taken].each_with_object({}) do |(period, count), hsh|
       hsh[period] = percentage(count, data[:cumulative_registrations].fetch(period))
