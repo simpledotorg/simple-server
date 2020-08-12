@@ -107,10 +107,10 @@ class ControlRateService
   end
 
   def bp_monthly_query(period)
-    time = period.to_date
-    end_range = time.end_of_month
-    mid_range = time.advance(months: -1).end_of_month
-    beg_range = time.advance(months: -2).end_of_month
+    date = period.to_date
+    end_range = date.end_of_month
+    mid_range = date.advance(months: -1).end_of_month
+    beg_range = date.advance(months: -2).end_of_month
     # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
     # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
     LatestBloodPressuresPerPatientPerMonth
