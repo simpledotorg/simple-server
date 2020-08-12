@@ -2,6 +2,7 @@
   "name": "simple-server",
   "private": true,
   "dependencies": {
+    "react-checkbox-tree": "^1.6.0",
     "tablesort": "^5.2.0"
   }
 }
