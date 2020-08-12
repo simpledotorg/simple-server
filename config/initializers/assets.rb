@@ -18,6 +18,7 @@ Rails.application.config.assets.precompile += %w[
   components.js
   teleconsultation-fields.js
   common_webview.scss
+  print.scss
   help.js
   help.scss
   user_analytics.js
