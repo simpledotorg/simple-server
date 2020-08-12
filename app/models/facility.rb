@@ -36,16 +36,12 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "registration_facility_id"
-  has_many :assigned_patients,
+  has_many :assigned_hypertension_patients,
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
-
-  def self.assigned_patients
-    Patient.where(id: joins(:assigned_patients).pluck(:patient_id))
-  end
 
   enum facility_size: {
     community: "community",
@@ -108,7 +104,7 @@ class Facility < ApplicationRecord
   end
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
+    query = CohortAnalyticsQuery.new(assigned_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
   end
 

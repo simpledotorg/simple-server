@@ -57,8 +57,9 @@ class MyFacilities::MissedVisitsQuery
 
   def total_patients_per_facility
     @total_patients_per_facility ||=
-      facilities
-        .assigned_patients
+      Patient
+        .with_hypertension
+        .where(assigned_facility: facilities)
         .group(:assigned_facility_id)
         .count
   end

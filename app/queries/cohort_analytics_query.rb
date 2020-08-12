@@ -33,26 +33,26 @@ class CohortAnalyticsQuery
   end
 
   def patient_counts(cohort_start, cohort_end, report_start, report_end)
-    registered_patients = registered(cohort_start, cohort_end)
-    followed_up_patients = followed_up(registered_patients, report_start, report_end)
+    cohort_patients = registered(cohort_start, cohort_end)
+    followed_up_patients = followed_up(cohort_patients, report_start, report_end)
     controlled_patients = controlled(followed_up_patients)
     uncontrolled_patients = followed_up_patients - controlled_patients
 
-    registered_counts = registered_patients.group(:registration_facility_id).size.symbolize_keys
-    followed_up_counts = followed_up_patients.group(:registration_facility_id).size.symbolize_keys
-    defaulted_counts = registered_counts.merge(followed_up_counts) { |_, registered, followed_up|
-      registered - followed_up
+    cohort_patient_counts = cohort_patients.group(:assigned_facility_id).size.symbolize_keys
+    followed_up_counts = followed_up_patients.group(:assigned_facility_id).size.symbolize_keys
+    defaulted_counts = cohort_patient_counts.merge(followed_up_counts) { |_, cohort_patients, followed_up|
+      cohort_patients - followed_up
     }
 
-    controlled_counts = controlled_patients.group(:registration_facility_id).size.symbolize_keys
+    controlled_counts = controlled_patients.group(:assigned_facility_id).size.symbolize_keys
     uncontrolled_counts = followed_up_counts.merge(controlled_counts) { |_, followed_up, controlled|
       followed_up - controlled
     }
 
     {
-      registered: {total: registered_patients.size, **registered_counts},
+      cohort_patients: {total: cohort_patients.size, **cohort_patient_counts},
       followed_up: {total: followed_up_patients.size, **followed_up_counts},
-      defaulted: {total: registered_patients.size - followed_up_patients.size, **defaulted_counts},
+      defaulted: {total: cohort_patients.size - followed_up_patients.size, **defaulted_counts},
       controlled: {total: controlled_patients.size, **controlled_counts},
       uncontrolled: {total: uncontrolled_patients.size, **uncontrolled_counts}
     }.with_indifferent_access
@@ -62,8 +62,8 @@ class CohortAnalyticsQuery
     @patients.where(recorded_at: cohort_start..cohort_end)
   end
 
-  def followed_up(registered_patients, report_start, report_end)
-    registered_patients.select(%(
+  def followed_up(cohort_patients, report_start, report_end)
+    cohort_patients.select(%(
       patients.*,
       newest_bps.recorded_at as bp_recorded_at,
       newest_bps.systolic as bp_systolic,

@@ -9,8 +9,9 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   let(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
   let(:organization_district) { OrganizationDistrict.new(district_name, organization) }
   let(:sanitized_district_name) { organization_district.district_name.downcase.split(" ").join("-") }
-  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter" }
-  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter" }
+  let(:cache_version) { 1 }
+  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter/#{cache_version}" }
+  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter/#{cache_version}" }
 
   before do
     #
@@ -79,35 +80,35 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
           {
             cohort: {
               [cohort_date1.prev_quarter, cohort_date1] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [cohort_date2.prev_quarter, cohort_date2] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
+                cohort_patients: {:total => 3, facility.id.to_sym => 3},
                 followed_up: {:total => 3, facility.id.to_sym => 3},
                 defaulted: {:total => 0, facility.id.to_sym => 0},
                 controlled: {:total => 3, facility.id.to_sym => 3},
                 uncontrolled: {:total => 0, facility.id.to_sym => 0}
               },
               [cohort_date3.prev_quarter, cohort_date3] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [cohort_date4.prev_quarter, cohort_date4] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},
                 uncontrolled: {total: 0}
               },
               [cohort_date5.prev_quarter, cohort_date5] => {
-                registered: {total: 0},
+                cohort_patients: {total: 0},
                 followed_up: {total: 0},
                 defaulted: {total: 0},
                 controlled: {total: 0},

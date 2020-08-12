@@ -10,6 +10,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:appointments) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+    it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
     context "patients" do
       it "has distinct patients" do
@@ -28,22 +29,27 @@ RSpec.describe Facility, type: :model do
 
     it { should belong_to(:facility_group).optional }
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
-  end
 
-  context ".assigned_patients" do
-    let!(:assigned_facilities) { create_list(:facility, 2) }
-    let!(:registration_facility) { create(:facility) }
-    let!(:patients) do
-      [create(:patient, assigned_facility: assigned_facilities.first, registration_facility: registration_facility),
-        create(:patient, assigned_facility: assigned_facilities.second, registration_facility: registration_facility)]
-    end
+    describe ".assigned_hypertension_patients" do
+      let!(:assigned_facility) { create(:facility) }
+      let!(:registration_facility) { create(:facility) }
+      let!(:assigned_patients) do
+        [create(:patient,
+          assigned_facility: assigned_facility,
+          registration_facility: registration_facility),
+          create(:patient,
+            :without_hypertension,
+            assigned_facility: assigned_facility,
+            registration_facility: registration_facility)]
+      end
 
-    it "returns assigned patients for facilities" do
-      expect(Facility.where(id: assigned_facilities).assigned_patients).to match_array patients
-    end
+      it "returns assigned hypertensive patients for facilities" do
+        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
+      end
 
-    it "ignores registration patients" do
-      expect(Facility.where(id: registration_facility).assigned_patients).to be_empty
+      it "ignores registration patients" do
+        expect(registration_facility.assigned_hypertension_patients).to be_empty
+      end
     end
   end
 
@@ -163,8 +169,8 @@ RSpec.describe Facility, type: :model do
     it "considers only registered hypertensive patients" do
       facility = create(:facility)
 
-      _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility)
-      htn_patients = create_list(:patient, 2, registration_facility: facility)
+      _non_htn_patients = create_list(:patient, 2, :without_hypertension, assigned_facility: facility)
+      htn_patients = create_list(:patient, 2, assigned_facility: facility)
 
       expect(CohortAnalyticsQuery).to receive(:new).with(match_array(htn_patients)).and_call_original
 

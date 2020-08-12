@@ -4,7 +4,12 @@ RSpec.describe PatientsExporter do
   include QuarterHelper
 
   let!(:facility) { create(:facility) }
-  let!(:patient) { create(:patient, registration_facility: facility, status: "dead") }
+  let!(:patient) {
+    create(:patient,
+      registration_facility: facility,
+      status: "dead",
+      address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
+  }
   let!(:blood_pressure) { create(:blood_pressure, :with_encounter, :critical, facility: facility, patient: patient) }
   let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient) }
   let!(:appointment) { create(:appointment, :overdue, facility: facility, patient: patient) }
