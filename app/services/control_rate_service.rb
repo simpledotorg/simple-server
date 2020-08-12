@@ -12,7 +12,6 @@ class ControlRateService
     @facilities = region.facilities
     # Normalize between a single period and range of periods
     @periods = if !periods.is_a?(Range)
-      @single_period = periods
       # If calling code is asking for a single period,
       # we set the range to be the current period to the start of the next period.
       Range.new(periods, periods.succ)
@@ -23,14 +22,9 @@ class ControlRateService
     logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
-  def single_period?
-    @single_period
-  end
-
   delegate :logger, to: Rails
   attr_reader :facilities
   attr_reader :periods
-  attr_reader :single_period
   attr_reader :region
 
   def call

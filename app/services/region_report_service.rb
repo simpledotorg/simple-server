@@ -40,7 +40,6 @@ class RegionReportService
     data[:missed_visits_rate] = calculate_percentages(data[:missed_visits])
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
-    pp data
     data
   end
 
@@ -49,7 +48,6 @@ class RegionReportService
       controlled = data[:controlled_patients][period]
       uncontrolled = data[:uncontrolled_patients][period]
       registrations = data[:cumulative_registrations][period]
-      p visit_count, controlled, uncontrolled, registrations
       result[period] = registrations - visit_count - controlled - uncontrolled
     end
   end
