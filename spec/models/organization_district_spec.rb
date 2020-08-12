@@ -20,4 +20,21 @@ RSpec.describe OrganizationDistrict, type: :model do
       org_district.cohort_analytics(:month, 3)
     end
   end
+
+  describe "#assigned_patients" do
+    let!(:organization) { create(:organization) }
+    let!(:facility_group) { create(:facility_group, organization: organization) }
+    let!(:assigned_facility) { create(:facility, district: "Bathinda", facility_group: facility_group) }
+    let!(:registration_facility) { create(:facility, district: "Bathinda", facility_group: facility_group) }
+    let!(:other_district_facility) { create(:facility, district: "Mansa") }
+    let!(:assigned_patients) do
+      [create(:patient, assigned_facility: assigned_facility, registration_facility: other_district_facility),
+        create(:patient, assigned_facility: other_district_facility, registration_facility: registration_facility)]
+    end
+    let!(:org_district) { OrganizationDistrict.new("Bathinda", organization) }
+
+    it "returns assigned patients for OrganizationDistrict" do
+      expect(org_district.assigned_patients).to contain_exactly assigned_patients.first
+    end
+  end
 end

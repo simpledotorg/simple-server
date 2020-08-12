@@ -19,6 +19,7 @@ module PatientsExporter
       patients.in_batches(of: BATCH_SIZE).each do |batch|
         batch.includes(
           :registration_facility,
+          :assigned_facility,
           :phone_numbers,
           :address,
           :medical_history,
@@ -51,6 +52,10 @@ module PatientsExporter
       "Patient District",
       (zone_column if Rails.application.config.country[:patient_line_list_show_zone]),
       "Patient State",
+      "Assigned Facility Name",
+      "Assigned Facility Type",
+      "Assigned Facility District",
+      "Assigned Facility State",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -89,6 +94,7 @@ module PatientsExporter
     # We cannot rely on the ordered scopes on Patient (eg. latest_blood_pressures) to find most recent records because
     # the batching done here will invalidate any ordering on patients, as well as its associations.
     registration_facility = patient.registration_facility
+    assigned_facility = patient.assigned_facility
     latest_bp = patient.blood_pressures.order(recorded_at: :desc).first
     latest_bp_facility = latest_bp&.facility
     latest_blood_sugar = patient.blood_sugars.order(recorded_at: :desc).first
@@ -108,6 +114,10 @@ module PatientsExporter
       patient.address.village_or_colony,
       patient.address.district,
       patient.address.state,
+      assigned_facility&.name,
+      assigned_facility&.facility_type,
+      assigned_facility&.district,
+      assigned_facility&.state,
       registration_facility&.name,
       registration_facility&.facility_type,
       registration_facility&.district,

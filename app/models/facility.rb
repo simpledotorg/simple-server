@@ -36,6 +36,9 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "registration_facility_id"
+  has_many :assigned_patients,
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
   has_many :assigned_hypertension_patients,
     -> { with_hypertension },
     class_name: "Patient",
