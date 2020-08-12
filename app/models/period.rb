@@ -104,7 +104,7 @@ class Period
     if quarter?
       value.to_s
     else
-      value.to_s(:month_year)
+      value.to_s(:mon_year)
     end
   end
 end

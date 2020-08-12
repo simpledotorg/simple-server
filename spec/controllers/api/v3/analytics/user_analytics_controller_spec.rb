@@ -53,7 +53,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
             expect(response.body).to match(/Tap "Sync" on the home screen for new data/)
             expect(response.body).to match(/Registered/)
             expect(response.body).to match(/Follow-up patients/)
-            expect(response.body).to match(/Hypertension control/)
+            expect(response.body).to match(/Hypertension controlled/)
             expect(response.body).to match(/Notes/)
           end
 
@@ -107,7 +107,7 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         it "has the follow-ups card" do
           get :show, format: :html
 
-          expect(response.body).to match(/Follow-up hypertension patients/)
+          expect(response.body).to match(/Follow-up patients/)
         end
       end
     end

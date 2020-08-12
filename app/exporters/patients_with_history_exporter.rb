@@ -22,7 +22,8 @@ module PatientsWithHistoryExporter
         batch.includes(
           :registration_facility,
           :phone_numbers,
-          :address
+          :address,
+          :medical_history
         ).each do |patient|
           csv << csv_fields(patient)
         end
@@ -56,6 +57,8 @@ module PatientsWithHistoryExporter
       "Registration Facility Type",
       "Registration Facility District",
       "Registration Facility State",
+      "Diagnosed with Hypertension",
+      "Diagnosed with Diabetes",
       "Risk Level",
       "Days Overdue For Next Follow-up",
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
@@ -115,6 +118,8 @@ module PatientsWithHistoryExporter
       registration_facility&.facility_type,
       registration_facility&.district,
       registration_facility&.state,
+      patient.medical_history&.hypertension,
+      patient.medical_history&.diabetes,
       ("High" if patient.high_risk?),
       latest_appointment&.days_overdue,
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
