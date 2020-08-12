@@ -18,7 +18,7 @@ class NoBPMeasureService
   attr_reader :region
   attr_reader :group
 
-  def visited_without_bp_taken
+  def call
     periods.each_with_object({}) do |period, result|
       result[period] = visited_without_bp_taken_for(period)
     end
@@ -30,7 +30,7 @@ class NoBPMeasureService
       facilities: facilities.map(&:id),
       start_date: period.blood_pressure_control_range.begin,
       end_date: period.blood_pressure_control_range.end,
-      registration_date: period.end_date,
+      registration_date: period.end_date
     }
     sql = GitHub::SQL.new(<<-SQL, attributes)
       SELECT COUNT(DISTINCT "patients"."id")
