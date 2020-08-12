@@ -58,24 +58,13 @@
           </p>
           <div>
             <div class="d-flex align-baseline mb-8px mb-lg-12px">
-              <div class="w-12px h-12px mr-12px br-4px bg-grey-lightest"></div>
-              <div class="d-flex flex-1 align-baseline">
-                <p class="w-48px m-0px fw-bold fs-20px lh-1">
-                  <%= percentage_or_na(@data[:lost_to_followup_rate].values.last, precision: 0) %>
-                </p>
-                <p class="flex-1 m-0px fs-14px">
-                  Lost to follow-up (Last BP was 12+ months ago)
-                </p>
-              </div>
-            </div>
-            <div class="d-flex align-baseline mb-8px mb-lg-12px">
               <div class="w-12px h-12px mr-12px br-4px bg-grey-light"></div>
               <div class="d-flex flex-1 align-baseline">
                 <p class="w-48px m-0px fw-bold fs-20px lh-1">
                   <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
                 </p>
                 <p class="flex-1 m-0px fs-14px">
-                  Last BP was taken 3 to 12 months ago
+                  Last BP &gt;3 months ago
                 </p>
               </div>
             </div>

@@ -14,6 +14,8 @@ class RegionReportService
     @data = {
       controlled_patients: {},
       cumulative_registrations: 0,
+      lost_to_followup: {},
+      lost_to_followup_rate: {},
       missed_visits: {},
       missed_visits_rate: {},
       quarterly_registrations: [],
@@ -33,16 +35,24 @@ class RegionReportService
   def call
     data.merge! ControlRateService.new(region, periods: range).call
     data.merge! compile_cohort_trend_data
-    data[:missed_visits] = NoBPMeasureService.new(region, periods: range).call
-    data[:missed_visits_rate] = calculate_percentages(data[:missed_visits])
-    data[:lost_to_followup] = NoBPMeasureService.new(region, periods: range, group: :lost_to_followup).call
-    data[:lost_to_followup_rate] = calculate_percentages(data[:lost_to_followup])
-    data[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range, group: :no_recent_bp).call
+    no_bps = NoBPMeasureService.new(region, periods: range)
+    data[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range).visited_without_bp_taken
     data[:visited_without_bp_taken_rate] = calculate_percentages(data[:visited_without_bp_taken])
+    data[:missed_visits] = count_missed_visits
+    data[:missed_visits_rate] = calculate_percentages(data[:missed_visits])
     data[:top_region_benchmarks].merge!(top_region_benchmarks)
 
     pp data
     data
+  end
+
+  def count_missed_visits
+    data[:visited_without_bp_taken].each_with_object({}) do |(period, visit_count), result|
+      controlled = data[:controlled_patients][period]
+      uncontrolled = data[:uncontrolled_patients][period]
+      registrations = data[:cumulative_registrations][period]
+      result[period] = registrations - visit_count - controlled - uncontrolled
+    end
   end
 
   def calculate_percentages(dataseries)

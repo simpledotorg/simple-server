@@ -1,6 +1,6 @@
 class ControlRateService
-  CACHE_VERSION = 5
-  PERCENTAGE_PRECISION = 1
+  CACHE_VERSION = 6
+  PERCENTAGE_PRECISION = 0
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
