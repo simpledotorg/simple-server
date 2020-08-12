@@ -1,6 +1,7 @@
 // Position
 .p-relative { position: relative; }
 .p-absolute { position: absolute; }
+.t--1px { top: -1px; }
 .t-0 { top: 0; }
 .l-0 { left: 0; }
 // Pointer events
@@ -27,6 +28,7 @@
 .m-0px { margin: 0px; }
 .mt-0px { margin-top: 0px; }
 .mt-8px { margin-top: 8px; }
+.mr-4px { margin-right: 4px; }
 .mr-12px { margin-right: 12px; }
 .mr-13px { margin-right: 13px; }
 .mr-16px { margin-right: 16px; }
