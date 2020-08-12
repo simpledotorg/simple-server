@@ -3,6 +3,7 @@
 .p-absolute { position: absolute; }
 .t--1px { top: -1px; }
 .t-0 { top: 0; }
+.t-1px { top: 1px; }
 .l-0 { left: 0; }
 // Pointer events
 .pe-none { pointer-events: none; }
@@ -43,7 +44,10 @@
 .ml-13px { margin-left: 13px; }
 .mx-0px { margin-right: 0px; margin-left: 0px; }
 .p-0px { padding: 0px; }
+.pt-0px { padding-top: 0px; }
+.pt-4px { padding-top: 4px; }
 .pt-20px { padding-top: 20px; }
+.pt-24px { padding-top: 24px; }
 .pb-8px { padding-bottom: 8px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 .px-20px { padding-right: 20px; padding-left: 20px; }
@@ -93,6 +97,7 @@
 .bt-purple-dark { border-top-color: $purple; }
 .bl-grey-medium { border-left-color: $grey-mid; }
 // Border radius
+.br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
 // Background colors
 .bg-red-medium { background-color: $red; }
@@ -137,12 +142,15 @@
   .h-lg-380px { height: 380px; }
   .h-lg-full { width: 100%; }
   // Spacing
+  .mt-lg-0px { margin-top: 0px; }
   .mr-lg-24px { margin-right: 24px; }
   .mb-lg-0 { margin-bottom: 0; }
   .mb-lg-4px { margin-bottom: 4px; }
   .mb-lg-12px { margin-bottom: 12px; }
   .mb-lg-16px { margin-bottom: 16px; }
+  .mb-lg-24px { margin-bottom: 24px; }
   .ml-lg-24px { margin-left: 24px; }
+  .pt-lg-16px { padding-top: 16px; }
   .pb-lg-0 { padding-bottom: 0; }
   // Typography
   .fw-lg-bold { font-weight: 700; }

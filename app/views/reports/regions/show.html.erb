@@ -50,15 +50,15 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <h3 class="m-8px c-black">
-          No BP measure
+          No recent BP
         </h3>
         <p class="c-grey-dark">
           HTN patients with no BP measure recorded in the last 3 months
         </p>
         <div>
           <div class="d-flex align-baseline mb-8px mb-lg-4px">
-            <div class="w-12px h-12px mr-12px br-4px bg-grey-lightest"></div>
-          <div class="d-flex align-baseline">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-lightest"></div>
+            <div class="d-flex align-baseline">
               <p class="w-32px m-0px fs-16px fw-bold">
                 N/A
               </p>
@@ -76,7 +76,7 @@
             </div>
           </div>
           <div class="d-flex align-baseline mb-8px mb-lg-4px">
-            <div class="w-12px h-12px mr-12px br-4px bg-grey-light"></div>
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-light"></div>
             <div class="d-flex align-baseline">
               <p class="w-32px m-0px fs-16px fw-bold">
                 <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
@@ -87,7 +87,7 @@
             </div>
           </div>
           <div class="d-flex align-baseline">
-            <div class="w-12px h-12px mr-12px br-4px bg-grey-medium"></div>
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
             <div class="d-flex align-baseline">
               <p class="w-32px m-0px fs-16px fw-bold">
                 <%= percentage_or_na(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
