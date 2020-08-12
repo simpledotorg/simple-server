@@ -57,6 +57,8 @@ RSpec.describe PatientsExporter do
       "Registration Facility Type",
       "Registration Facility District",
       "Registration Facility State",
+      "Diagnosed with Hypertension",
+      "Diagnosed with Diabetes",
       "Latest BP Date",
       "Latest BP Systolic",
       "Latest BP Diastolic",
@@ -105,6 +107,8 @@ RSpec.describe PatientsExporter do
       facility.facility_type,
       facility.district,
       facility.state,
+      "no",
+      "yes",
       I18n.l(blood_pressure.recorded_at),
       blood_pressure.systolic,
       blood_pressure.diastolic,
@@ -134,6 +138,7 @@ RSpec.describe PatientsExporter do
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
 
     blood_sugar.update!(encounter: blood_pressure.encounter)
+    patient.medical_history.update!(hypertension: "no", diabetes: "yes")
   end
 
   describe "#csv" do
