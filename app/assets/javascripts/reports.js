@@ -93,7 +93,7 @@ function initializeCharts() {
       rgbaBackgroundColor: lightPurpleColor,
       borderWidth: { top: 2 },
       rgbaLineColor: darkPurpleColor,
-      hoverBackgroundColor: darkPurpleColor,
+      hoverBackgroundColor: lightPurpleColor,
     },
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
@@ -227,10 +227,12 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
         },
         ticks: {
           fontColor: "#ADB2B8",
-          fontSize: 14,
+          fontSize: 12,
           fontFamily: "Roboto Condensed",
+          padding: 8,
           maxRotation: 0,
-          minRotation: 0
+          minRotation: 0,
+          autoSkip: true,
         }
       }],
       yAxes: [{
@@ -244,6 +246,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           fontColor: "#ADB2B8",
           fontSize: 12,
           fontFamily: "Roboto Condensed",
+          padding: 8,
           stepSize,
           suggestedMax,
           suggestedMin: 0,
