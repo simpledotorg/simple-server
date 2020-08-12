@@ -17,15 +17,12 @@ RSpec.describe NoBPMeasureService do
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
     end
   end
 
   it "counts visits in past three months for appts, drugs updated, blood sugar taken without blood pressures" do
     may_1 = Time.parse("May 1st, 2020")
     may_15 = Time.parse("May 15th, 2020")
-    august_1 = Time.parse("August 1st 2020")
     facility = create(:facility, facility_group: facility_group_1)
     facility_2 = create(:facility)
     Timecop.freeze(may_1) do # freeze time so all patients are registered at a set time

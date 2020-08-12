@@ -1,25 +1,18 @@
 class NoBPMeasureService
   CACHE_VERSION = 5
-  VALID_GROUPS = [:missed_visits, :lost_to_followup, :no_recent_bp]
 
-  def initialize(region, periods:, group: :missed_visits)
-    unless VALID_GROUPS.include?(group)
-      raise ArgumentError, "invalid group #{group}, must be one of #{VALID_GROUPS}"
-    end
+  def initialize(region, periods:)
     @region = region
     @periods = periods
     @facilities = region.facilities.to_a
-    @group = group
   end
 
   attr_reader :facilities
   attr_reader :periods
-  attr_reader :visit_end_date
   attr_reader :region
-  attr_reader :group
 
   def call
-    periods.each_with_object({}) do |period, result|
+    periods.each_with_object(Hash.new(0)) do |period, result|
       result[period] = visited_without_bp_taken_for(period)
     end
   end
@@ -67,13 +60,13 @@ class NoBPMeasureService
             patients.id = bps.patient_id
             AND bps.recorded_at > :start_date
             AND bps.recorded_at <= :end_date)
-        ) -- #{self.class.name} group #{group} period #{period}
+        ) -- #{self.class.name} period #{period} facilities #{facilities.map(&:id)}
     SQL
     sql.value
   end
 
   def cache_key
-    "#{self.class}/#{group}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
+    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
   end
 
   def cache_version

@@ -84,7 +84,7 @@ RSpec.describe ControlRateService, type: :model do
     end
     # cumulative registrations from March, Apr, May, June only ...should not include initial months of data w/ 0 results
     expect(result[:cumulative_registrations].size).to eq(4)
-    expect(result[:registrations].size).to eq(4)
+    expect(result[:registrations].size).to eq(1)
     expect(result[:controlled_patients].size).to eq(4)
   end
 
@@ -218,7 +218,7 @@ RSpec.describe ControlRateService, type: :model do
 
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled.size)
     expect(result[:registrations][Period.month(jan_2020)]).to eq(6)
-    expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(33.3)
+    expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(33)
   end
 
   it "has a reasonable cache key" do

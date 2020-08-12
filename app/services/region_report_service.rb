@@ -13,7 +13,6 @@ class RegionReportService
     @range = start_period..@period
     @data = {
       controlled_patients: {},
-      cumulative_registrations: 0,
       lost_to_followup: {},
       lost_to_followup_rate: {},
       missed_visits: {},

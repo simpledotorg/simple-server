@@ -36,11 +36,11 @@ class ControlRateService
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       data = {
-        controlled_patients: {},
+        controlled_patients: Hash.new(0),
         controlled_patients_rate: {},
-        uncontrolled_patients: {},
+        uncontrolled_patients: Hash.new(0),
         uncontrolled_patients_rate: {},
-        registrations: {},
+        registrations: Hash.new(0),
         cumulative_registrations: Hash.new(0)
       }
 
@@ -76,24 +76,21 @@ class ControlRateService
 
   def sum_cumulative_registrations
     earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
-    (earliest_registration_period..periods.end).each_with_object({}) { |period, running_totals|
-      previous_registrations = running_totals[period.previous] || 0
-      current_registrations = registration_counts[period] || 0
+    (earliest_registration_period..periods.end).each_with_object(Hash.new(0)) { |period, running_totals|
+      previous_registrations = running_totals[period.previous]
+      current_registrations = registration_counts[period]
       total = current_registrations + previous_registrations
       running_totals[period] = total
     }
   end
 
   def registration_counts
-    return @registration_counts if @registration_counts
+    return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
     result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {format: formatter}).count
     # The group_by_period query will only return values for months where we had registrations, but we want to
-    # have a value for every month in the periods we are reporting on. So we iterate over every period and set
-    # the count to 0 if there is no value.
-    periods.each do |period|
-      result[period] ||= 0
-    end
+    # have a value for every month in the periods we are reporting on. So we set the default to 0 for results.
+    result.default = 0
     @registration_counts = result
   end
 
