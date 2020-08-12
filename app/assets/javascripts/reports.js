@@ -29,6 +29,7 @@ function initializeCharts() {
     formatRateTooltipText,
     [data.controlledPatients],
   );
+
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
   if (controlledGraphCanvas) {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
@@ -71,6 +72,7 @@ function initializeCharts() {
       label: "not under control rate",
     }
   ], "line");
+
   uncontrolledGraphConfig.options = createGraphOptions(
     false,
     25,
@@ -79,6 +81,7 @@ function initializeCharts() {
     formatRateTooltipText,
     [data.uncontrolledPatients],
   );
+
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
   if (uncontrolledGraphCanvas) {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
@@ -96,6 +99,7 @@ function initializeCharts() {
       hoverBackgroundColor: darkPurpleColor,
     },
   ], "bar");
+
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     false,
     stepSize,
@@ -103,6 +107,7 @@ function initializeCharts() {
     formatNumberWithCommas,
     formatSumTooltipText,
   );
+
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
   if (cumulativeRegistrationsGraphCanvas) {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
@@ -134,6 +139,7 @@ function initializeCharts() {
       label: "Missed visit",
     }
   ], "bar");
+
   visitDetailsGraphConfig.options = createGraphOptions(
     true,
     25,
@@ -142,11 +148,12 @@ function initializeCharts() {
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
   );
+
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {
     new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
   }
-};
+}
 
 function getReportingData() {
   const $reportingDiv = document.getElementById("reporting");
@@ -159,7 +166,7 @@ function getReportingData() {
   const uncontrolledRate = jsonData.uncontrolled_patients_rate;
   const uncontrolledPatients = jsonData.uncontrolled_patients;
 
-  let data = {
+  return {
     controlRate: controlRate,
     controlledPatients: controlledPatients,
     missedVisits: jsonData.missed_visits,
@@ -170,9 +177,7 @@ function getReportingData() {
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
     visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
   };
-
-  return data;
-};
+}
 
 function createGraphConfig(datasetsConfig, graphType) {
   return {
@@ -191,8 +196,8 @@ function createGraphConfig(datasetsConfig, graphType) {
         };
       }),
     },
-  };
-};
+  }
+}
 
 function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, dataSum) {
   return {
@@ -274,7 +279,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       },
     }
   };
-};
+}
 
 function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
