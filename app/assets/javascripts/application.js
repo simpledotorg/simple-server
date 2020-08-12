@@ -18,11 +18,7 @@
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min
 //= require bs-custom-file-input
-
-// TODO: load these selectively as necessary
-//= require teleconsultation-fields
-
-//= require_tree .
+//= require_tree ./common
 
 $(function () {
   // initialize tooltips via bootstrap (uses popper underneath)
