@@ -33,10 +33,10 @@ class NoBPMeasureService
   attr_reader :group
 
   def call
-    # Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       periods.each_with_object({}) do |period, result|
         result[period] = missed_visits_for(period)
-      # end
+      end
     end
   end
 
@@ -52,7 +52,7 @@ class NoBPMeasureService
       bp_end_date: period.blood_pressure_control_range.end,
       registration_date: period.end_date,
       visit_start_date: visit_start_date,
-      visit_end_date: visit_end_date,
+      visit_end_date: visit_end_date
     }
     sql = GitHub::SQL.new(<<-SQL, bind_attributes)
       SELECT COUNT(DISTINCT "patients"."id")
