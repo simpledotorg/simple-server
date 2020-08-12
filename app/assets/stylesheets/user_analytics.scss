@@ -1,5 +1,4 @@
-// Universal variables
-@import "partials/variables";
+@import "partials/webview";
 
 .progress-contents {
     padding: 0 8px 100px 8px;
@@ -19,7 +18,7 @@
     visibility: hidden;
     position: absolute;
     left: -100000px;
-    
+
     h3.stat-day {
         opacity: 0;
         transition: opacity 0.6s ease-in;
@@ -30,7 +29,7 @@
     visibility: visible;
     position: relative;
     left: 0;
-    
+
     h3.stat-day {
         opacity: 1;
     }
