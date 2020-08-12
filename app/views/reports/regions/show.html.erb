@@ -65,6 +65,14 @@
                 </p>
                 <p class="flex-1 m-0px fs-14px">
                   Lost to follow-up
+                  <span
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    data-trigger="hover"
+                    title="Last BP was taken 12+ months ago"
+                  >
+                    <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+                  </span>
                 </p>
               </div>
             </div>
@@ -75,7 +83,7 @@
                   <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
                 </p>
                 <p class="flex-1 m-0px fs-14px">
-                  Missed visit
+                  Last BP was taken 3 - 12 months ago
                 </p>
               </div>
             </div>
