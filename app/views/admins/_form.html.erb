@@ -1,5 +1,8 @@
-<% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
+<% javascript_include_tag "react" %>
+<% javascript_include_tag "react_ujs" %>
+<% javascript_include_tag "components" %>
 
+<% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
 <%= react_component "InviteAdminForm",
                     admin: admin,
                     email: admin.email,
