@@ -39,7 +39,7 @@
         <%= @period.to_s %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_for(@period, url: request.params, method: :get) do |f| %>
+        <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
           <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
           <% (1..13).each do |num|
