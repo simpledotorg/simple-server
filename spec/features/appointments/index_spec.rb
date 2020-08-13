@@ -23,8 +23,8 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     end
 
     it "landing page -with no overdue patient" do
-      expect(page).to have_content("Overdue")
-      nav_page.click_main_menu_tab("Overdue")
+      expect(page).to have_content("Overdue patients")
+      nav_page.click_main_menu_tab("Overdue patients")
       appoint_page.verify_overdue_landing_page
       expect(page).to have_content("All facilities")
       expect(page).to have_content("20 per page")
@@ -33,7 +33,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
 
     it "landing page -Facility and page dropdown " do
       create_list(:facility, 5)
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
       appoint_page.select_facility_drop_down
       expect(appoint_page.get_all_facility_count).to eq(7)
 
@@ -52,7 +52,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
         create(:blood_pressure, :critical, facility: test_facility, patient: patient)
       end
 
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(appoint_page.get_all_patient_count.size).to eq(2)
     end
 
@@ -67,7 +67,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
         create(:blood_pressure, :critical, facility: test_facility, patient: patient)
       end
 
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(page).to have_content("All facilities")
       expect(page).to have_content("20 per page")
 
@@ -84,7 +84,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       var_appointment = create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 10.days.ago)
       var_bp = create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
 
       within(".card") do
         expect(page).to have_content(var_patients.full_name)
@@ -127,7 +127,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
 
         puts Capybara.default_selector
 
-        nav_page.click_main_menu_tab("Overdue")
+        nav_page.click_main_menu_tab("Overdue patients")
         expect(page).to have_content("Select a facility to download Overdue Patients list")
 
         appoint_page.select_facility("test_facility")
@@ -160,7 +160,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
           create(:blood_pressure, :critical, facility: var_path_facility, patient: patient)
         end
 
-        nav_page.click_main_menu_tab("Overdue")
+        nav_page.click_main_menu_tab("Overdue patients")
 
         # selecting first facility and asserting its result
         appoint_page.select_facility(test_facility.name)
@@ -181,7 +181,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
         create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 10.days.ago)
         create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
 
-        nav_page.click_main_menu_tab("Overdue")
+        nav_page.click_main_menu_tab("Overdue patients")
 
         within(".card") do
           select "Agreed to visit", from: "appointment[call_result]"
@@ -204,7 +204,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 365.days.ago)
 
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(page).to have_content(var_patients.full_name)
     end
 
@@ -213,7 +213,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 366.days.ago)
 
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(page).not_to have_content(var_patients.full_name)
     end
 
@@ -222,7 +222,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
       create(:blood_pressure, :critical, facility: test_facility, patient: var_patients)
       create(:appointment, :overdue, facility: test_facility, patient: var_patients, scheduled_date: 0.days.ago)
 
-      nav_page.click_main_menu_tab("Overdue")
+      nav_page.click_main_menu_tab("Overdue patients")
       expect(page).not_to have_content(var_patients.full_name)
     end
   end
