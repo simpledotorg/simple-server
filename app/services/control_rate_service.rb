@@ -92,6 +92,7 @@ class ControlRateService
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .with_hypertension
       .where(registration_facility_id: facilities)
+      .where("patient_recorded_at < ?", period.blood_pressure_control_range.begin)
       .where("(year = ? AND month = ?) OR (year = ? AND month = ?) OR (year = ? AND month = ?)",
         beg_range.year.to_s, beg_range.month.to_s,
         mid_range.year.to_s, mid_range.month.to_s,

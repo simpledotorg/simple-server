@@ -69,7 +69,7 @@ module Reports
     # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
     def count_missed_visits
       self[:missed_visits] = range.each_with_object({}) { |(period, visit_count), hsh|
-        registrations = cumulative_registrations_for(period)
+        registrations = adjusted_registrations_for(period)
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
         visited_without_bp_taken = visited_without_bp_taken_for(period)
