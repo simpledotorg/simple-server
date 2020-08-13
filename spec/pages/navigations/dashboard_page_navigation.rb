@@ -19,7 +19,7 @@ module Navigations
     end
 
     def select_manage_option(option)
-      select_main_menu_tab("Settings")
+      select_main_menu_tab("Manage")
       find(:xpath, "//a[text()='" + option + "']").click
     end
 
