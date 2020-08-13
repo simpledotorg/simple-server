@@ -19,6 +19,7 @@ class ControlRateService
       periods
     end
     @quarterly_report = @periods.begin.quarter?
+    @results = Reports::Result.new(@periods)
     logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
@@ -27,21 +28,14 @@ class ControlRateService
   attr_reader :periods
   attr_reader :region
 
+  def data
+    @results
+  end
+
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
-      data = {
-        controlled_patients: Hash.new(0),
-        controlled_patients_rate: Hash.new(0),
-        uncontrolled_patients: Hash.new(0),
-        uncontrolled_patients_rate: Hash.new(0),
-        registrations: Hash.new(0),
-        cumulative_registrations: Hash.new(0)
-      }
-
       data[:registrations] = registration_counts
       data[:cumulative_registrations] = sum_cumulative_registrations
-      data[:registrations].delete_if { |period, value| !periods.cover?(period) }
-      data[:cumulative_registrations].delete_if { |period, value| !periods.cover?(period) }
 
       periods.each do |(period, count)|
         controlled = controlled_patients(period).count
@@ -59,10 +53,6 @@ class ControlRateService
 
         data[:controlled_patients_rate][period] = percentage(controlled, registration_count)
         data[:uncontrolled_patients_rate][period] = percentage(uncontrolled, registration_count)
-      end
-      first_registration_period = registration_counts.keys.first
-      if first_registration_period
-        data.each { |(_key, hsh)| hsh.delete_if { |period, count| period < first_registration_period } }
       end
       data
     end

@@ -155,20 +155,21 @@ RSpec.describe RegionReportService, type: :model do
       }
       expected_controlled_patients.default = 0
       expected_cumulative_registrations = {
+        "Jul 2018" => 0, "Aug 2018" => 0, "Sep 2018" => 0, "Oct 2018" => 0, "Nov 2018" => 0,
         "Dec 2018" => 0, "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
       }
       expected_cumulative_registrations.default = 2
-      expect(result[:controlled_patients].size).to eq(18)
+      expect(result[:controlled_patients].size).to eq(24)
 
       result[:controlled_patients].each do |period, count|
         key = period.to_s
         expect(count).to eq(expected_controlled_patients[key]),
-          "expected count for #{key} to be #{expected_controlled_patients[key]}, but was #{count}"
+          "expected controlled patients #{key} to be #{expected_controlled_patients[key]}, but was #{count}"
       end
       result[:cumulative_registrations].each do |period, count|
         key = period.to_s
         expect(count).to eq(expected_cumulative_registrations[key]),
-          "expected count for #{key} to be #{expected_cumulative_registrations[key]}, but was #{count}"
+          "expected cumulative registrations for #{key} to be #{expected_cumulative_registrations[key]}, but was #{count}"
       end
     end
 

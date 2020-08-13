@@ -76,16 +76,15 @@ RSpec.describe ControlRateService, type: :model do
 
     refresh_views
 
-    range = (Period.month(june_1_2018)..Period.month(june_30_2020))
+    range = (Period.month(july_2018)..Period.month(june_1_2020))
     result = nil
     Timecop.freeze("July 1st 2020") do
       service = ControlRateService.new(facility_group_1, periods: range)
       result = service.call
     end
-    # cumulative registrations from March, Apr, May, June only ...should not include initial months of data w/ 0 results
-    expect(result[:cumulative_registrations].size).to eq(4)
+    expect(result[:cumulative_registrations].size).to eq(24)
     expect(result[:registrations].size).to eq(1)
-    expect(result[:controlled_patients].size).to eq(4)
+    expect(result[:controlled_patients].size).to eq(24)
   end
 
   it "correctly returns controlled patients for past months" do

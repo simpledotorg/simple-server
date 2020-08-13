@@ -12,16 +12,7 @@ class RegionReportService
     start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
     @range = start_period..@period
     @top_region_benchmarks_enabled = top_region_benchmarks_enabled
-    @data = {
-      controlled_patients: {},
-      lost_to_followup: {},
-      lost_to_followup_rate: {},
-      missed_visits: {},
-      missed_visits_rate: {},
-      quarterly_registrations: [],
-      registrations: {},
-      top_region_benchmarks: {}
-    }.with_indifferent_access
+    @data = Reports::Result.new(@range)
   end
 
   attr_reader :current_user
