@@ -1,6 +1,5 @@
 class ControlRateService
   CACHE_VERSION = 6
-  PERCENTAGE_PRECISION = 0
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -43,17 +42,10 @@ class ControlRateService
 
         data[:controlled_patients][period] = controlled
         data[:uncontrolled_patients][period] = uncontrolled
-
-        # For quarterly reports the registration count is based on the cohort, so its from the previous period.
-        registration_count = if quarterly_report?
-          data[:registrations][period.previous] || 0
-        else
-          data[:cumulative_registrations][period]
-        end
-
-        data[:controlled_patients_rate][period] = percentage(controlled, registration_count)
-        data[:uncontrolled_patients_rate][period] = percentage(uncontrolled, registration_count)
       end
+
+      data.calculate_percentages(:controlled_patients)
+      data.calculate_percentages(:uncontrolled_patients)
       data
     end
   end
@@ -154,8 +146,4 @@ class ControlRateService
     RequestStore.store[:force_cache]
   end
 
-  def percentage(numerator, denominator)
-    return 0 if denominator == 0 || numerator == 0
-    ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
-  end
 end
