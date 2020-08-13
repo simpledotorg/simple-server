@@ -1,19 +1,25 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 4
+  CACHE_VERSION = 6
 
-  def initialize(region:, period:, current_user:)
+  def initialize(region:, period:, current_user:, top_region_benchmarks_enabled: false)
     @current_user = current_user
     @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @region = region
     @period = period
-    @facilities = region.facilities
+    @facilities = region.facilities.to_a
+    start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
+    @range = start_period..@period
+    @top_region_benchmarks_enabled = top_region_benchmarks_enabled
     @data = {
       controlled_patients: {},
-      registrations: {},
-      cumulative_registrations: 0,
+      lost_to_followup: {},
+      lost_to_followup_rate: {},
+      missed_visits: {},
+      missed_visits_rate: {},
       quarterly_registrations: [],
+      registrations: {},
       top_region_benchmarks: {}
     }.with_indifferent_access
   end
@@ -23,50 +29,65 @@ class RegionReportService
   attr_reader :facilities
   attr_reader :organizations
   attr_reader :period
+  attr_reader :range
   attr_reader :region
 
+  def top_region_benchmarks_enabled?
+    @top_region_benchmarks_enabled
+  end
+
   def call
-    compile_control_and_registration_data
+    data.merge! ControlRateService.new(region, periods: range).call
     data.merge! compile_cohort_trend_data
-    data[:top_region_benchmarks].merge!(top_region_benchmarks)
+    data[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range).call
+    data[:visited_without_bp_taken_rate] = calculate_percentages(data[:visited_without_bp_taken])
+    data[:missed_visits] = count_missed_visits
+    data[:missed_visits_rate] = calculate_missed_visits_percentages
+    data[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
 
     data
   end
 
-  def compile_control_and_registration_data
-    start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
-    periods = start_period..@period
-    result = ControlRateService.new(region, periods: periods).call
-    @data.merge! result
-  end
+  private
 
-  # We want to return cohort data for the current quarter for the selected date, and then
-  # the previous three quarters. Each quarter cohort is made up of patients registered
-  # in the previous quarter who has had a follow up visit in the current quarter.
-  def compile_cohort_trend_data
-    Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
-      result = {quarterly_registrations: []}
-      period.to_quarter_period.value.downto(3).each do |results_quarter|
-        cohort_quarter = results_quarter.previous_quarter
-
-        period = {cohort_period: :quarter,
-                  registration_quarter: cohort_quarter.number,
-                  registration_year: cohort_quarter.year}
-        query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
-        result[:quarterly_registrations] << {
-          results_in: format_quarter(results_quarter),
-          patients_registered: format_quarter(cohort_quarter),
-          registered: query.cohort_registrations.count,
-          controlled: query.cohort_controlled_bps.count,
-          no_bp: query.cohort_missed_visits_count,
-          uncontrolled: query.cohort_uncontrolled_bps.count
-        }.with_indifferent_access
-      end
-      result
+  # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
+  def count_missed_visits
+    data[:visited_without_bp_taken].each_with_object({}) do |(period, visit_count), result|
+      controlled = data[:controlled_patients][period]
+      uncontrolled = data[:uncontrolled_patients][period]
+      registrations = data[:cumulative_registrations][period]
+      result[period] = registrations - visit_count - controlled - uncontrolled
     end
   end
 
-  private
+  # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
+  # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
+  # due to rounding and losing precision.
+  def calculate_missed_visits_percentages
+    range.each_with_object({}) do |period, result|
+      remaining_percentages = data[:controlled_patients_rate][period] + data[:uncontrolled_patients_rate][period] + data[:visited_without_bp_taken_rate][period]
+      result[period] = 100 - remaining_percentages
+    end
+  end
+
+  # We want to return cohort data for the current quarter for the selected date, and then
+  # the previous three quarters.
+  def compile_cohort_trend_data
+    Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
+      CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(3)).totals
+    end
+  end
+
+  def calculate_percentages(result_hash)
+    result_hash.each_with_object(Hash.new(0)) do |(period, count), hsh|
+      hsh[period] = percentage(count, data[:cumulative_registrations][period])
+    end
+  end
+
+  def percentage(numerator, denominator)
+    return 0 if numerator == 0 || denominator == 0
+    ((numerator.to_f / denominator.to_f) * 100).round(0)
+  end
 
   def cohort_cache_key
     "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{period}/#{CACHE_VERSION}"
@@ -78,10 +99,6 @@ class RegionReportService
 
   def force_cache?
     RequestStore.store[:force_cache]
-  end
-
-  def format_quarter(quarter)
-    "#{quarter.year} Q#{quarter.number}"
   end
 
   def top_region_benchmarks
