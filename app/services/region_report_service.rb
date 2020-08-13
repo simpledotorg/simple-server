@@ -31,7 +31,7 @@ class RegionReportService
     data.merge! ControlRateService.new(region, periods: range).call
     data.merge! compile_cohort_trend_data
     data[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range).call
-    data[:visited_without_bp_taken_rate] = calculate_percentages(data[:visited_without_bp_taken])
+    data.calculate_percentages(:visited_without_bp_taken)
     data[:missed_visits] = count_missed_visits
     data[:missed_visits_rate] = calculate_missed_visits_percentages
     data[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
