@@ -1,3 +1,9 @@
+html * {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;
+}
+
 html, body {
   height: 100%;
   scroll-behavior: smooth;

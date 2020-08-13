@@ -159,7 +159,6 @@ RSpec.describe RegionReportService, type: :model do
       }
       expected_cumulative_registrations.default = 2
       expect(result[:controlled_patients].size).to eq(18)
-      expect(result[:registrations].size).to eq(18)
 
       result[:controlled_patients].each do |period, count|
         key = period.to_s
@@ -196,7 +195,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: darrang, period: Period.month(june_1), current_user: user)
+      service = RegionReportService.new(region: darrang, period: Period.month(june_1), current_user: user, top_region_benchmarks_enabled: true)
       result = service.call
       expect(result[:top_region_benchmarks][:control_rate][:value]).to eq(100.0)
       expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
