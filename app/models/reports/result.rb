@@ -31,6 +31,5 @@ module Reports
     def merge!(other)
       @data.merge! other
     end
-
   end
 end
