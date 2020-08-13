@@ -44,10 +44,6 @@ $font-small: 11px;
 @import "partials/search";
 @import "partials/reports";
 
-#help * {
-  scroll-behavior: smooth;
-}
-
 body {
     padding-top: 5rem;
     font-size: 15px;
