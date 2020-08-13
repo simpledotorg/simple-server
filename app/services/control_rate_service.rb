@@ -26,28 +26,22 @@ class ControlRateService
   attr_reader :facilities
   attr_reader :periods
   attr_reader :region
-
-  def data
-    @results
-  end
+  attr_reader :results
 
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
-      data[:registrations] = registration_counts
-      data[:cumulative_registrations] = sum_cumulative_registrations
-      data.count_adjusted_registrations
+      results.registrations = registration_counts
+      results.cumulative_registrations = sum_cumulative_registrations
+      results.count_adjusted_registrations
 
       periods.each do |(period, count)|
-        controlled = controlled_patients(period).count
-        uncontrolled = uncontrolled_patients(period).count
-
-        data[:controlled_patients][period] = controlled
-        data[:uncontrolled_patients][period] = uncontrolled
+        results.controlled_patients[period] = controlled_patients(period).count
+        results.uncontrolled_patients[period] = uncontrolled_patients(period).count
       end
 
-      data.calculate_percentages(:controlled_patients)
-      data.calculate_percentages(:uncontrolled_patients)
-      data
+      results.calculate_percentages(:controlled_patients)
+      results.calculate_percentages(:uncontrolled_patients)
+      results
     end
   end
 
@@ -147,5 +141,4 @@ class ControlRateService
   def force_cache?
     RequestStore.store[:force_cache]
   end
-
 end
