@@ -1,4 +1,4 @@
-<% javascript_include_tag "standalone/components" %>
+<%= javascript_include_tag "standalone/react_components" %>
 
 <% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
 <%= react_component "InviteAdminForm",
