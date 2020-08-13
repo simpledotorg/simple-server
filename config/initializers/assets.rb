@@ -14,7 +14,6 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules")
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )
 Rails.application.config.assets.precompile += %w[
   standalone/react_components.js
-  teleconsultation-fields.js
   common_webview.scss
   print.scss
   standalone/help.js
