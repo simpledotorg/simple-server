@@ -1,14 +1,14 @@
 class Access < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
   ACTION_TO_USER_ROLE = {
-    view: [User.access_levels[:manager], User.access_levels[:viewer]],
-    manage: [User.access_levels[:manager]]
+    view: User.access_levels.fetch_values(:manager, :viewer),
+    manage: User.access_levels.fetch_values(:manager)
   }
 
   belongs_to :user
   belongs_to :resource, polymorphic: true
 
-  validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have one access per resource."}
+  validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have 1 access per resource."}
   validates :resource_type, inclusion: {in: ALLOWED_RESOURCES}
   validates :resource, presence: true
 
