@@ -1,11 +1,11 @@
 // Hides and shows each page of Help
 
-function open_window(id) {
+function openWindow(id) {
    const element = document.getElementById(id);
    element.style.display = 'block';
 }
 
-function close_window(id) {
+function closeWindow(id) {
    const element = document.getElementById(id);
    element.style.display = 'none';
 }
