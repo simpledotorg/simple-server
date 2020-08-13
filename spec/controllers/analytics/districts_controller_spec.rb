@@ -49,11 +49,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       end
     end
 
-    it "renders the analytics table view" do
-      get :show, params: {organization_id: organization.id, id: district_name}
-      expect(response).to render_template(partial: "analytics/districts/_analytics_table")
-    end
-
     context "analytics caching for districts" do
       before do
         Rails.cache.delete(analytics_cohort_cache_key)

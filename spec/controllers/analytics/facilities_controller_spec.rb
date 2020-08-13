@@ -70,11 +70,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       expect(response).to render_template(partial: "shared/_cohort_charts")
     end
 
-    it "renders the analytics table view" do
-      get :show, params: {id: facility.id}
-      expect(response).to render_template(partial: "analytics/facilities/_analytics_table")
-    end
-
     it "renders the recent BP view" do
       get :show, params: {id: facility.id}
       expect(response).to render_template(partial: "shared/_recent_bp_log")
