@@ -54,7 +54,7 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const noBPMeasureGraphConfig = createGraphConfig([
+  const noRecentBPConfig = createGraphConfig([
     {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
@@ -68,7 +68,7 @@ function initializeCharts() {
       label: "Missed visit",
     },
   ], "bar");
-  noBPMeasureGraphConfig.options = createGraphOptions(
+  noRecentBPConfig.options = createGraphOptions(
     true,
     25,
     100,
@@ -77,9 +77,9 @@ function initializeCharts() {
     [data.visitButNoBPMeasure, data.missedVisits],
   );
 
-  const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
-  if (noBPMeasureGraphCanvas) {
-    new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
+  const noRecentBPGraphCanvas = document.getElementById("noRecentBPTrend");
+  if (noRecentBPGraphCanvas) {
+    new Chart(noRecentBPGraphCanvas.getContext("2d"), noRecentBPConfig);
   }
 
   const uncontrolledGraphConfig = createGraphConfig([
@@ -197,7 +197,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       padding: {
         left: 0,
         right: 0,
-        top: 40,
+        top: 48,
         bottom: 0
       }
     },
@@ -261,9 +261,9 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       titleFontFamily: "Roboto Condensed",
       titleFontSize: 16,
       xAlign: "center",
-      xPadding: 12,
+      xPadding: 10,
       yAlign: "bottom",
-      yPadding: 12,
+      yPadding: 10,
       callbacks: {
         title: function () { },
         label: function (tooltipItem, data) {
