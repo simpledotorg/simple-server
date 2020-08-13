@@ -233,6 +233,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           maxRotation: 0,
           minRotation: 0,
           autoSkip: true,
+          maxTicksLimit: 10 
         }
       }],
       yAxes: [{
@@ -282,9 +283,10 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
 function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
   const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
+  const date = tooltipItem.label;
   const label = data.datasets[datasetIndex].label.toLowerCase();
   const percent = Math.round(tooltipItem.value);
-  return `${percent}% ${label} (${total} patients)`;
+  return `${percent}% ${label} (${total} patients) in ${date}`;
 }
 
 function formatSumTooltipText(tooltipItem) {
