@@ -54,21 +54,21 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const noBPMeasureGraphConfig = createGraphConfig([
+  const noRecentBPConfig = createGraphConfig([
     {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited but no BP measure",
+      label: "visited in the last 3 months but no BP measure",
     },
     {
       data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
       rgbaLineColor: mediumGreyColor,
-      label: "Missed visit",
+      label: "last BP >3 months ago",
     },
   ], "bar");
-  noBPMeasureGraphConfig.options = createGraphOptions(
+  noRecentBPConfig.options = createGraphOptions(
     true,
     25,
     100,
@@ -77,9 +77,9 @@ function initializeCharts() {
     [data.visitButNoBPMeasure, data.missedVisits],
   );
 
-  const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
-  if (noBPMeasureGraphCanvas) {
-    new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
+  const noRecentBPGraphCanvas = document.getElementById("noRecentBPTrend");
+  if (noRecentBPGraphCanvas) {
+    new Chart(noRecentBPGraphCanvas.getContext("2d"), noRecentBPConfig);
   }
 
   const uncontrolledGraphConfig = createGraphConfig([
@@ -113,7 +113,7 @@ function initializeCharts() {
       rgbaBackgroundColor: lightPurpleColor,
       borderWidth: { top: 2 },
       rgbaLineColor: darkPurpleColor,
-      hoverBackgroundColor: darkPurpleColor,
+      hoverBackgroundColor: lightPurpleColor,
     },
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
@@ -145,13 +145,13 @@ function initializeCharts() {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "Visited but no BP measure",
+      label: "visited in the last 3 months but no BP measure",
     },
     {
       data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
       hoverBackgroundColor: mediumGreyColor,
-      label: "Missed visit",
+      label: "last BP >3 months ago",
     }
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(
@@ -197,7 +197,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       padding: {
         left: 0,
         right: 0,
-        top: 40,
+        top: 48,
         bottom: 0
       }
     },
@@ -221,10 +221,13 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
         },
         ticks: {
           fontColor: "#ADB2B8",
-          fontSize: 14,
+          fontSize: 12,
           fontFamily: "Roboto Condensed",
+          padding: 8,
           maxRotation: 0,
-          minRotation: 0
+          minRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 10 
         }
       }],
       yAxes: [{
@@ -238,6 +241,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           fontColor: "#ADB2B8",
           fontSize: 12,
           fontFamily: "Roboto Condensed",
+          padding: 8,
           stepSize,
           suggestedMax,
           suggestedMin: 0,
@@ -257,9 +261,9 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       titleFontFamily: "Roboto Condensed",
       titleFontSize: 16,
       xAlign: "center",
-      xPadding: 12,
+      xPadding: 10,
       yAlign: "bottom",
-      yPadding: 12,
+      yPadding: 10,
       callbacks: {
         title: function () { },
         label: function (tooltipItem, data) {
@@ -273,9 +277,10 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
 function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
   const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
-  const label = data.datasets[datasetIndex].label.toLowerCase();
+  const date = tooltipItem.label;
+  const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
-  return `${percent}% ${label} (${total} patients)`;
+  return `${percent}% ${label} (${total} patients) in ${date}`;
 }
 
 function formatSumTooltipText(tooltipItem) {
