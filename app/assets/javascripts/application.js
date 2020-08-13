@@ -11,9 +11,9 @@
 // about supported directives.
 //
 //= require rails-ujs
-//= require bootstrap-sprockets
 //= require jquery3
 //= require popper
+//= require bootstrap-sprockets
 //= require lodash
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min
@@ -23,11 +23,6 @@
 $(function () {
   // initialize tooltips via bootstrap (uses popper underneath)
   $('[data-toggle="tooltip"]').tooltip()
-
-  // initialize tablesort on analytics dashboard table
-  if($('#analytics-table').length) {
-    new Tablesort(document.getElementById('analytics-table'), { descending: true })
-  }
 
   // initialize bootstrap file input
   bsCustomFileInput.init();
