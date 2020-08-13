@@ -76,6 +76,7 @@
 
   <!-- monthly registered patients view -->
   <div class="card">
+    <a href="#"  onclick="openWindow('progress-help-registered'); return false" class="info"><span>?</span></a>
     <h3>Registered patients</h3>
 
     <% registrations_table_name = 'registrations' %>
@@ -92,6 +93,7 @@
 
   <!-- monthly follow-up patients view -->
   <div class="card">
+    <a href="#"  onclick="openWindow('progress-help-followup'); return false" class="info"><span>?</span></a>
     <h3>Follow-up patients</h3>
 
     <% follow_ups_table_name = 'follow_ups' %>
@@ -108,9 +110,10 @@
 
   <!-- monthly hypertension control view -->
   <div class="card">
+    <a href="#"  onclick="openWindow('progress-help-controlled'); return false" class="info"><span>?</span></a>
     <h3>Hypertension controlled</h3>
     <p class="desc">
-      How many patients with hypertension had at least one BP recorded in the last 3 months and the most recent BP was &lt;140/90?
+      How many patients with hypertension BP&nbsp;&lt;140/90 in the last 3 months?
     </p>
 
     <p class="desc control-desc">
@@ -132,7 +135,7 @@
             </tr>
         </tbody>
     </table>
-    <p class="center" style="margin: 12px 0 0 0;">Last 12 months</p>
+    <p class="center" style="margin: 12px 0 0 0; text-align: center;">Last 12 months</p>
   </div>
 
   <div class="card">
@@ -180,6 +183,62 @@
     <div style="height: 100px;"></div>
   </footer>
   </div>
+</div>
+
+<div id="progress-help-registered" class="progress-body" style="display: none;">
+    <div class="progress-contents">
+        <a href="#" onclick="closeWindow('progress-help-registered', 'progress-start'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
+        </a>
+
+        <h2 style="padding-top: 80px; padding-left: 8px;">Registered patients</h2>
+        
+        <div class="card">
+            <h3 style="margin-bottom: 1em;">Definition:</h3>
+            <p class="desc" style="margin-bottom: 1em;">
+                Patients who were registered into Simple by staff at this facility.
+            </p>
+        </div>
+    </div>
+</div>
+    
+<div id="progress-help-followup" class="progress-body" style="display: none;">
+    <div class="progress-contents">
+        <a href="#" onclick="closeWindow('progress-help-followup', 'progress-start'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
+        </a>
+
+        <h2 style="padding-top: 80px; padding-left: 8px;">Follow-up patients</h2>
+        
+        <div class="card">
+            <h3 style="margin-bottom: 1em;">Definition:</h3>
+            <p class="desc" style="margin-bottom: 1em;">
+                Patients with a BP or blood sugar measure recorded at this facility. The follow-up patients count is not affected by where the patient was registered or what the patient's "Preferred Facility" is.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div id="progress-help-controlled" class="progress-body" style="display: none;">
+    <div class="progress-contents">
+        <a href="#" onclick="closeWindow('progress-help-controlled', 'progress-start'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
+        </a>
+
+        <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension controlled</h2>
+        
+        <div class="card">
+            <h3 style="margin-bottom: 1em;">Definition:</h3>
+            <p class="desc" style="margin-bottom: 1em;">
+                <b>Numerator</b><br>
+                Patients with at least one BP measure recorded in the last 3 months at <em>any facility</em>. At the most recent visit the patient had BP&nbsp;&lt;140 and &lt;90.
+            </p>
+            <p class="desc">
+                <b>Denominator</b><br>
+                All patients diagnosed with hypertension who have this facility as their "Preferred Facility." Patients registered in the most recent 3 months are excluded, so the facility has the opportunity to get their BP controlled.
+            </p>
+        </div>
+    </div>
 </div>
 
 <div id="progress-cohort" class="progress-body" style="display: none;">
