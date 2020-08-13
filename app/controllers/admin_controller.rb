@@ -5,6 +5,7 @@ class AdminController < ApplicationController
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from User::NotAuthorizedError, with: :user_not_authorized
 
   rescue_from ActiveRecord::RecordInvalid do
     head :bad_request
@@ -24,9 +25,13 @@ class AdminController < ApplicationController
   end
 
   def root
-    redirect_to default_root_paths.find { |policy, _path|
-                  DashboardPolicy.new(pundit_user, :dashboard).send(policy)
-                }.second
+    if pundit_user.accesses.exists?
+      redirect_to role_root_paths
+    else
+      redirect_to default_root_paths.find { |policy, _path|
+        DashboardPolicy.new(pundit_user, :dashboard).send(policy)
+      }.second
+    end
   end
 
   helper_method :current_admin
@@ -41,6 +46,14 @@ class AdminController < ApplicationController
      manage_protocols?: admin_protocols_path,
      manage_admins?: admins_path,
      manage_users?: admin_users_path}
+  end
+
+  def role_root_paths
+    if current_admin.accesses.first.call_center?
+      appointments_path
+    else
+    organizations_path
+    end
   end
 
   def current_admin
