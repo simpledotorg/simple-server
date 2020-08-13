@@ -1,9 +1,9 @@
 class Access < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
   ACTION_TO_ROLE = {
-    manage_overdue_list: [:manager, :health_care_worker, :call_center_worker],
-    view_reports: [:manager, :health_care_worker, :health_administrator],
-    view_pii: [:manager, :health_care_worker],
+    manage_overdue_list: [:manager, :viewer_all, :call_center],
+    view_reports: [:manager, :viewer_all, :viewer_reports_only],
+    view_pii: [:manager, :viewer_all],
     manage: [:manager]
   }
 
@@ -13,9 +13,9 @@ class Access < ApplicationRecord
   enum role: {
     super_admin: "super_admin",
     manager: "manager",
-    health_care_worker: "health_care_worker",
-    health_administrator: "health_administrator",
-    call_center_worker: "call_center_worker"
+    viewer_all: "viewer_all",
+    viewer_reports_only: "viewer_reports_only",
+    call_center: "call_center"
   }
 
   validates :role, presence: true
