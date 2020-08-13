@@ -19,6 +19,8 @@ module Reports
       }.with_indifferent_access
     end
 
+    attr_reader :range
+
     def []=(key, values)
       @data[key] = values
     end
@@ -33,6 +35,23 @@ module Reports
 
     def merge!(other)
       @data.merge! other
+    end
+
+    [:cumulative_registrations, :registrations, :uncontrolled_patients, :controlled_patients, :visited_without_bp_taken].each do |key|
+      define_method(key) do |period|
+        self[key][period]
+      end
+    end
+
+    # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
+    def count_missed_visits
+      self[:missed_visits] = range.each_with_object({}) do |(period, visit_count), hsh|
+        registrations = cumulative_registrations(period)
+        controlled = controlled_patients(period)
+        uncontrolled = uncontrolled_patients(period)
+        visited_without_bp_taken = visited_without_bp_taken(period)
+        hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
+      end
     end
 
     def registrations_for_percentage_calculation(period)
