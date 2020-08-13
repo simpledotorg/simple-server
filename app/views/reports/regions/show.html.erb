@@ -60,7 +60,7 @@
             <div class="w-12px h-12px mr-12px br-2px bg-grey-lightest"></div>
             <div class="d-flex align-baseline">
               <p class="w-32px m-0px fs-16px fw-bold">
-                N/A
+                <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
                 Last BP &gt;3 months ago
@@ -202,12 +202,6 @@
     <% end %>
   </div>
 <% end %>
-<div class="card o-hidden mt-0 p-0px">
-  <%= image_tag(
-      @region.is_a?(FacilityGroup) ? "screenshot.png" : "facility-screenshot.png",
-      :class => "mw-100pt"
-  )%>
-</div>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
