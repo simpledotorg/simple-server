@@ -59,13 +59,13 @@ function initializeCharts() {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited but no BP measure",
+      label: "visited in the last 3 months but no BP measure",
     },
     {
       data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
       rgbaLineColor: mediumGreyColor,
-      label: "Missed visit",
+      label: "last BP >3 months ago",
     },
   ], "bar");
   noRecentBPConfig.options = createGraphOptions(
@@ -145,13 +145,13 @@ function initializeCharts() {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "Visited but no BP measure",
+      label: "visited in the last 3 months but no BP measure",
     },
     {
       data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
       hoverBackgroundColor: mediumGreyColor,
-      label: "Missed visit",
+      label: "last BP >3 months ago",
     }
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(
@@ -278,7 +278,7 @@ function formatRateTooltipText(tooltipItem, data, sumData) {
   const datasetIndex = tooltipItem.datasetIndex;
   const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
   const date = tooltipItem.label;
-  const label = data.datasets[datasetIndex].label.toLowerCase();
+  const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
   return `${percent}% ${label} (${total} patients) in ${date}`;
 }
