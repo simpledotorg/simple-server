@@ -8,8 +8,8 @@ module MyFacilitiesFiltering
     before_action :populate_facility_sizes, :populate_zones,
       :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
 
-    def filter_facilities(scope_namespace = [])
-      facilities = policy_scope(scope_namespace.concat([Facility]))
+    def filter_facilities
+      facilities = current_admin.accessible_facilities(:view_reports)
       filtered_facilities = facilities_by_size(facilities)
       facilities_by_zone(filtered_facilities)
     end
