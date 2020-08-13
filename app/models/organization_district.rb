@@ -37,8 +37,8 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
 
     results = [
       query.registered_patients_by_period,
-      query.total_registered_patients,
-      query.follow_up_patients_by_period
+      query.total_patients,
+      query.patients_with_bp_by_period
     ].compact
 
     return {} if results.blank?

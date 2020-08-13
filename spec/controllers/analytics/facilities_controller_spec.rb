@@ -61,20 +61,14 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         end
 
         expect(response.status).to eq(200)
-        expect(assigns(:dashboard_analytics)[user.id].keys).to match_array(%i[follow_up_patients_by_period
-          registered_patients_by_period
-          total_registered_patients])
+        expect(assigns(:dashboard_analytics)[user.id].keys)
+          .to(match_array(%i[registered_patients_by_period total_registered_patients]))
       end
     end
 
     it "renders the cohort chart view" do
       get :show, params: {id: facility.id}
       expect(response).to render_template(partial: "shared/_cohort_charts")
-    end
-
-    it "renders the analytics table view" do
-      get :show, params: {id: facility.id}
-      expect(response).to render_template(partial: "shared/_analytics_table")
     end
 
     it "renders the recent BP view" do
@@ -151,8 +145,7 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
             dashboard: {
               user.id => {
                 registered_patients_by_period: {feb_2019 => 3, mar_2019 => 3},
-                total_registered_patients: 6,
-                follow_up_patients_by_period: {mar_2019 => 3}
+                total_registered_patients: 6
               }
             }
           }

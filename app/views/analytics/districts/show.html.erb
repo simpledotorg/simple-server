@@ -12,12 +12,114 @@
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
-<%= render 'shared/analytics_table',
-  dashboard_analytics: @dashboard_analytics,
-  row_resource: Facility.order(:name),
-  row_resource_description: "Facilities",
-  row_resource_display_field: :name,
-  row_resource_link: :analytics_facility_path %>
+
+<div class="card pr-0 pr-md-3">
+  <h2>Facilities</h2>
+
+  <div class="table-responsive">
+    <table id="analytics-table" class="table-compact">
+      <colgroup>
+        <col>
+        <col class="table-divider">
+        <col class="table-divider">
+        <col>
+        <col>
+        <col>
+        <col>
+        <col>
+        <col class="table-divider">
+        <col>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+      <tr>
+        <th></th>
+        <th class="row-label"><strong>Total</strong></th>
+        <th class="row-label" colspan="6"><strong>Patients with BP taken</strong></th>
+        <th class="row-label" colspan="6"><strong>New registrations</strong></th>
+      </tr>
+
+      <tr class="sorts" data-sort-method="thead">
+        <th class="row-label sort-label sort-label-small" style="text-align: left;" data-sort-default>Name</th>
+        <!--Total assigned patients-->
+        <th class="row-label sort-label" data-sort-default data-sort-method="number">Total patients</th>
+
+        <!--Patients with BP taken-->
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
+          <th class="row-label sort-label sort-label-small" data-sort-method="number">
+            <%= format_period(@period, date) %>
+          </th>
+        <% end %>
+
+        <!--New registrations-->
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
+          <th class="row-label sort-label sort-label-small" data-sort-method="number">
+            <%= format_period(@period, date) %>
+          </th>
+        <% end %>
+      </tr>
+
+      </thead>
+      <tbody>
+
+      <tr class="row-total" data-sort-method="none">
+        <td class="row-title row-total">All</td>
+
+        <!--Total assigned patients-->
+        <td class="row-total" style="text-align: center;">
+          <%= dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_patients] || 0 }) %>
+        </td>
+
+        <!--Patients with BP taken-->
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
+          <td class="row-total" style="text-align: center;">
+            <%= dash_if_zero(analytics_totals(@dashboard_analytics, :patients_with_bp_by_period, date)) %>
+          </td>
+        <% end %>
+
+        <!--New registrations-->
+        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
+          <td class="row-total" style="text-align: center;">
+            <%= dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date)) %>
+          </td>
+        <% end %>
+      </tr>
+
+      <% policy_scope([:cohort_report, Facility.order(:name)]).each do |facility| %>
+        <% if @dashboard_analytics[facility.id].present? %>
+          <tr>
+            <td class="row-title">
+              <%= link_to facility.name, analytics_facility_path(facility, period: @period) %>
+            </td>
+
+            <!--Total assigned patients-->
+            <td style="text-align: center;">
+              <%= dash_if_zero(@dashboard_analytics.dig(facility.id, :total_patients)) %>
+            </td>
+
+            <!--Patients with BP taken-->
+            <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
+              <td style="text-align: center;">
+                <%= dash_if_zero(@dashboard_analytics.dig(facility.id, :patients_with_bp_by_period, date)) %>
+              </td>
+            <% end %>
+
+            <!--New registrations-->
+            <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
+              <td style="text-align: center;">
+                <%= dash_if_zero(@dashboard_analytics.dig(facility.id, :registered_patients_by_period, date)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 <div class="downloads">
   <h4>Downloads</h4>
@@ -38,14 +140,14 @@
   <% if policy([:cohort_report, @organization_district]).patient_list? %>
     <p>
       <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id,
-                                                                    district_id: @organization_district.district_name) do %>
+          district_id: @organization_district.district_name) do %>
         <i class="far fa-file-excel mr-2"></i>
         Patient line list
       <% end %>
     </p>
     <p>
       <%= link_to analytics_organization_district_patient_list_with_history_path(organization_id: @organization_district.organization.id,
-                                                                                 district_id: @organization_district.district_name) do %>
+          district_id: @organization_district.district_name) do %>
         <i class="far fa-file-excel mr-2"></i>
         Patient line list (with medication history)
       <% end %>
@@ -56,11 +158,11 @@
     <% if policy([:cohort_report, @organization_district]).whatsapp_graphics? %>
       <%=
         render "shared/graphics/graphics_download_links",
-               graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
-               options: {
-                   organization_id: @organization_district.organization.id,
-                   district_id: @organization_district.district_name
-               }
+            graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
+            options: {
+                organization_id: @organization_district.organization.id,
+                district_id: @organization_district.district_name
+            }
       %>
     <% end %>
   <% end %>
