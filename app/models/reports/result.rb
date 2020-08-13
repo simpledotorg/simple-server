@@ -13,7 +13,6 @@ module Reports
         missed_visits: {},
         quarterly_registrations: [],
         registrations: Hash.new(0),
-        top_region_benchmarks: {},
         uncontrolled_patients: Hash.new(0),
         uncontrolled_patients_rate: Hash.new(0)
       }.with_indifferent_access
@@ -37,21 +36,32 @@ module Reports
       @data.merge! other
     end
 
-    [:cumulative_registrations, :registrations, :uncontrolled_patients, :controlled_patients, :visited_without_bp_taken].each do |key|
-      define_method(key) do |period|
+    def last_value(key)
+      self[key].values.last
+    end
+
+    [:controlled_patients, :controlled_patients_rate, :cumulative_registrations,
+      :missed_visits, :missed_visits_rate,
+      :registrations, :uncontrolled_patients, :uncontrolled_patients_rate,
+      :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
+      define_method(key) do
+        self[key]
+      end
+
+      define_method("#{key}_for") do |period|
         self[key][period]
       end
     end
 
     # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
     def count_missed_visits
-      self[:missed_visits] = range.each_with_object({}) do |(period, visit_count), hsh|
-        registrations = cumulative_registrations(period)
-        controlled = controlled_patients(period)
-        uncontrolled = uncontrolled_patients(period)
-        visited_without_bp_taken = visited_without_bp_taken(period)
+      self[:missed_visits] = range.each_with_object({}) { |(period, visit_count), hsh|
+        registrations = cumulative_registrations_for(period)
+        controlled = controlled_patients_for(period)
+        uncontrolled = uncontrolled_patients_for(period)
+        visited_without_bp_taken = visited_without_bp_taken_for(period)
         hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
-      end
+      }
     end
 
     def registrations_for_percentage_calculation(period)

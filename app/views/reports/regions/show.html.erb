@@ -13,16 +13,16 @@
           </p>
         </div>
         <div>
-          <p class="mb-0px fs-xlarge fw-bold <% if @result[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
-            <% if @result[:controlled_patients_rate].values.last %>
-              <%= number_to_percentage(@result[:controlled_patients_rate].values.last, precision: 0) %>
+          <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:controlled_patients_rate) %>
+              <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
             <% else %>
               No data
             <% end %>
           </p>
-          <p class="m-0px <% if @result[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
-            <% if @result[:controlled_patients_rate].values.last %>
-              <span class="fw-bold"><%= number_with_delimiter(@result[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> patients
+          <p class="m-0px <% if @data.last_value(:controlled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:controlled_patients_rate) %>
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %> patients
             <% else %>
               No control rate data available
             <% end %>
@@ -35,7 +35,7 @@
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-            <% unless @result[:controlled_patients_rate].values.last %>
+            <% unless @data.last_value(:controlled_patients_rate) %>
               <p class="c-grey-medium">
                 No data available
               </p>
@@ -60,7 +60,7 @@
             <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
             <div class="d-flex align-baseline">
               <p class="w-32px m-0px fs-16px fw-bold">
-                <%= percentage_or_na(@result[:missed_visits_rate].values.last, precision: 0) %>
+                <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
                 Last BP &gt;3 months ago
@@ -71,7 +71,7 @@
             <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
             <div class="d-flex align-baseline">
               <p class="w-32px m-0px fs-16px fw-bold">
-                <%= percentage_or_na(@result[:visited_without_bp_taken_rate].values.last, precision: 0) %>
+                <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
                 Visited in the last 3 months but no BP measure
@@ -107,21 +107,18 @@
           </p>
         </div>
         <div>
-          <p class="mb-0px fs-xlarge fw-bold <% if @result[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
-          <%
-            current_uncontrolled_rate = @result[:uncontrolled_patients_rate]&.values&.last
-           %>
-            <% if current_uncontrolled_rate %>
-              <%= number_to_percentage(current_uncontrolled_rate, precision: 0) %>
+          <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-red<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:uncontrolled_patients_rate) %>
+              <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
             <% else %>
               No data
             <% end %>
           </p>
-          <p class="m-0px <% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
-            <% if current_uncontrolled_rate %>
+          <p class="m-0px <% if @data.last_value(:uncontrolled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:uncontrolled_patients_rate) %>
               <span class="fw-bold">
-                <%= number_with_delimiter(@result[:uncontrolled_patients].values.last) %>
-                </span> of <%= number_with_delimiter(@last_registration_value) %> patients
+                <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
+                </span> of <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %> patients
             <% else %>
               No control rate data available
             <% end %>
@@ -134,7 +131,7 @@
             <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-            <% unless @result[:controlled_patients_rate].values.last %>
+            <% unless @data[:controlled_patients_rate].values.last %>
               <p class="c-grey-medium">
                 No data available
               </p>
@@ -156,26 +153,26 @@
           </p>
         </div>
         <div>
-          <p class="mb-0px fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
-            <% if @last_registration_value.zero? %>
+          <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %>">
+            <% if @data.last_value(:cumulative_registrations).zero? %>
               No data
             <% else %>
-              <%= number_with_delimiter(@last_registration_value) %>
+              <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
               <span class="fs-16px">
                 patients
               </span>
             <% end %>
           </p>
-          <p class="m-0px <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
-            <% if @last_registration_value.zero? %>
+          <p class="m-0px <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-black<% end %>">
+            <% if @data.last_value(:cumulative_registrations).zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @result[:cumulative_registrations].keys&.last %>
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:registrations)) %> new patients</span> registered in <%= @data[:cumulative_registrations].keys&.last %>
             <% end %>
           </p>
         </div>
       </div>
-      <% if @last_registration_value.zero? %>
+      <% if @data.last_value(:cumulative_registrations).zero? %>
         <div class="d-flex align-center justify-center h-200px bb-1px bl-1px bb-grey-medium bl-grey-medium">
           <p class="fs-14px c-grey-medium">
             No data available
@@ -203,6 +200,6 @@
   </div>
 <% end %>
 <div id="data-json" style="display: none;">
-  <%= raw @result.to_json %>
+  <%= raw @data.to_json %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
