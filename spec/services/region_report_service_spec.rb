@@ -145,6 +145,8 @@ RSpec.describe RegionReportService, type: :model do
         "Jul 2018" => 0, "Aug 2018" => 0, "Sep 2018" => 0, "Oct 2018" => 0, "Nov 2018" => 0,
         "Dec 2018" => 0, "Jan 2020" => 4, "Feb 2020" => 4, "Mar 2020" => 6, "Apr 2020" => 6, "May 2020" => 6, "Jun 2020" => 6
       }
+      # NOTE: we set the default for the values that are excluded in the hash, otherwise we'd have to enumerate all 24
+      # months of data in the hash
       expected_cumulative_registrations.default = 2
       expect(result[:controlled_patients].size).to eq(24)
 

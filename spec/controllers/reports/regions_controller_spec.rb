@@ -99,7 +99,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
+      expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
@@ -130,7 +130,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
+      expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
   end

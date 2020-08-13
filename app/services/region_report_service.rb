@@ -33,7 +33,8 @@ class RegionReportService
     result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
     result.calculate_percentages(:visited_without_bp_taken)
     result.count_missed_visits
-    result[:missed_visits_rate] = calculate_missed_visits_percentages
+    result.missed_visits_rate = calculate_missed_visits_percentages
+    # TODO refactor top region benchmarks - this isn't used right now and doesn't follow the most recent refactoring
     result[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
 
     result
