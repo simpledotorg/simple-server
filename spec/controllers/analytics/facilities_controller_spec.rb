@@ -178,6 +178,13 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         expect(assigns(:recent_blood_pressures).count).to eq(2)
       end
     end
+
+    context "csv download" do
+      it "renders a csv" do
+        get :show, params: {id: facility.id}, format: :csv
+        expect(response).to be_successful
+      end
+    end
   end
 
   describe "#patient_list" do

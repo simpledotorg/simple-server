@@ -14,21 +14,28 @@
   'Uncontrolled rate',
   'Default rate'
 ] %>
-<% @cohort_analytics.each_with_index do |(report_dates, analytics), index| %>
+<% @cohort_analytics.each_with_index do |(report_dates, analytics), _| %>
   <%
     cohort_start, report_start = report_dates
-    registered = analytics.dig(:registered, :total) || 0
+    registered = analytics.dig(:cohort_patients, :total) || 0
     followed_up = analytics.dig(:followed_up, :total) || 0
     defaulted = analytics.dig(:defaulted, :total) || 0
     controlled = analytics.dig(:controlled, :total) || 0
     uncontrolled = analytics.dig(:uncontrolled, :total) || 0
+
     if @period == :quarter
       report_period = quarter_string(report_start)
       cohort_period = quarter_string(cohort_start)
     else
-      report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("-")
+      report_end = (report_start + 1.month).end_of_month
+
+      formatted_report_start_date = report_start.strftime("%B #{report_start.day.ordinalize}")
+      formatted_report_end_date = report_end.strftime("%B #{report_end.day.ordinalize}")
+
+      report_period = [formatted_report_start_date, formatted_report_end_date].join(" – ")
       cohort_period = cohort_start.strftime("%b %Y")
     end
+
     if registered > 0
       controlled_percent = (controlled.to_f / registered * 100).round
       uncontrolled_percent = (uncontrolled.to_f / registered * 100).round
