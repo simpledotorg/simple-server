@@ -35,6 +35,7 @@ class ControlRateService
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       data[:registrations] = registration_counts
       data[:cumulative_registrations] = sum_cumulative_registrations
+      data.count_adjusted_registrations
 
       periods.each do |(period, count)|
         controlled = controlled_patients(period).count

@@ -6,6 +6,7 @@ module Reports
       @range = range
       @quarterly_report = @range.begin.quarter?
       @data = {
+        adjusted_registrations: Hash.new(0),
         controlled_patients_rate: Hash.new(0),
         controlled_patients: Hash.new(0),
         cumulative_registrations: Hash.new(0),
@@ -13,6 +14,7 @@ module Reports
         missed_visits: {},
         quarterly_registrations: [],
         registrations: Hash.new(0),
+        top_region_benchmarks: {},
         uncontrolled_patients: Hash.new(0),
         uncontrolled_patients_rate: Hash.new(0)
       }.with_indifferent_access
@@ -40,16 +42,27 @@ module Reports
       self[key].values.last
     end
 
-    [:controlled_patients, :controlled_patients_rate, :cumulative_registrations,
-      :missed_visits, :missed_visits_rate,
-      :registrations, :uncontrolled_patients, :uncontrolled_patients_rate,
-      :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
+    [:adjusted_registrations, :controlled_patients, :controlled_patients_rate, :cumulative_registrations, :missed_visits, :missed_visits_rate,
+      :registrations, :uncontrolled_patients, :uncontrolled_patients_rate, :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
       define_method(key) do
         self[key]
       end
 
+      setter = "#{key}="
+      define_method(setter) do |value|
+        self[key] = value
+      end
+
       define_method("#{key}_for") do |period|
         self[key][period]
+      end
+    end
+
+    # Adjusted registrations are the registrations as of three months ago - we use these for all the percentage
+    # calculations to exclude recent registrations.
+    def count_adjusted_registrations
+      self.adjusted_registrations = range.each_with_object(Hash.new(0)) do |period, hsh|
+        hsh[period] = cumulative_registrations_for(period.advance(months: -3))
       end
     end
 
@@ -68,7 +81,7 @@ module Reports
       if quarterly_report?
         self[:registrations][period.previous] || 0
       else
-        self[:cumulative_registrations][period]
+        adjusted_registrations_for(period)
       end
     end
 

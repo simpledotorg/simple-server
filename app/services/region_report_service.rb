@@ -30,7 +30,7 @@ class RegionReportService
   def call
     result.merge! ControlRateService.new(region, periods: range).call
     result.merge! compile_cohort_trend_data
-    result[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range).call
+    result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
     result.calculate_percentages(:visited_without_bp_taken)
     result.count_missed_visits
     result[:missed_visits_rate] = calculate_missed_visits_percentages

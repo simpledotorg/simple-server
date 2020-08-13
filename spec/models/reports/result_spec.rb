@@ -17,6 +17,13 @@ describe Reports::Result, type: :model do
     expect(result.controlled_patients).to be(result[:controlled_patients])
   end
 
+  it "has setters" do
+    result = Reports::Result.new(range)
+    hsh = { june_2020 => 30 }
+    result.uncontrolled_patients = hsh
+    expect(result.uncontrolled_patients).to eq(hsh)
+  end
+
   it "can get last value for the data" do
     result = Reports::Result.new(range)
     result[:uncontrolled_patients][may_2020] = 20

@@ -22,7 +22,7 @@
           </p>
           <p class="m-0px <% if @data.last_value(:controlled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:controlled_patients_rate) %>
-              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %> patients
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
             <% else %>
               No control rate data available
             <% end %>
@@ -118,7 +118,7 @@
             <% if @data.last_value(:uncontrolled_patients_rate) %>
               <span class="fw-bold">
                 <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
-                </span> of <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %> patients
+                </span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
             <% else %>
               No control rate data available
             <% end %>
