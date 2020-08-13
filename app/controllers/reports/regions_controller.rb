@@ -20,7 +20,6 @@ class Reports::RegionsController < AdminController
                                     current_user: current_admin).call
     @controlled_patients = @data[:controlled_patients]
     @quarterly_registrations = @data[:quarterly_registrations]
-    @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
   end
@@ -34,7 +33,6 @@ class Reports::RegionsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
@@ -47,7 +45,6 @@ class Reports::RegionsController < AdminController
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
-    @top_region_benchmarks = @data[:top_region_benchmarks]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 

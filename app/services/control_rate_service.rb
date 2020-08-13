@@ -31,9 +31,9 @@ class ControlRateService
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       data = {
         controlled_patients: Hash.new(0),
-        controlled_patients_rate: {},
+        controlled_patients_rate: Hash.new(0),
         uncontrolled_patients: Hash.new(0),
-        uncontrolled_patients_rate: {},
+        uncontrolled_patients_rate: Hash.new(0),
         registrations: Hash.new(0),
         cumulative_registrations: Hash.new(0)
       }
