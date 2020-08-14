@@ -22,6 +22,7 @@ class Reports::RegionsController < AdminController
     @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
+    @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
   end
 
   def details
@@ -34,6 +35,7 @@ class Reports::RegionsController < AdminController
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
+    @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
   end
 
   def cohort

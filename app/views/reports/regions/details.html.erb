@@ -1,79 +1,78 @@
 <%= render "header"%>
-<div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-  <div>
-    <div class="mb-2">
-      <h3>
-        Visit details of all HTN patients
-      </h3>
+<div class="card">
+  <h3 class="m-8px c-black">
+    Visit details of all HTN patients
+  </h3>
+  <p class="mb-0px c-grey-dark">
+    <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> patients registered until the end of <%= @adjusted_registration_date %>
+  </p>
+  <% if @last_registration_value %>
+    <div class="d-flex fd-column fd-lg-row">
+      <div class="order-lg-2 w-lg-224px mt-lg-48px ml-lg-24px">
+        <div class="d-flex align-baseline mb-8px mb-lg-16px">
+          <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
+          <div class="d-flex flex-1 align-baseline fd-lg-column">
+            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+              <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
+            </p>
+            <p class="flex-1 m-0px fs-14px">
+              Last BP &gt;3 months ago
+            </p>
+          </div>
+        </div>
+        <div class="d-flex align-baseline mb-8px mb-lg-16px">
+          <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
+          <div class="d-flex flex-1 align-baseline fd-lg-column">
+            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+              <%= number_to_percentage(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
+            </p>
+            <p class="flex-1 m-0px fs-14px">
+              Visited in the last 3 months but no BP measure
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                data-trigger="hover"
+                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
+              >
+                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="d-flex align-baseline mb-8px mb-lg-16px">
+          <div class="w-12px h-12px mr-12px br-2px bg-red-medium"></div>
+          <div class="d-flex flex-1 align-baseline fd-lg-column">
+            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+              <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
+            </p>
+            <p class="flex-1 m-0px fs-14px">
+              Visited with BP &ge;140/90 in last 3 months
+            </p>
+          </div>
+        </div>
+        <div class="d-flex align-baseline mb-8px mb-lg-16px">
+          <div class="w-12px h-12px mr-12px br-2px bg-green-medium"></div>
+          <div class="d-flex flex-1 align-baseline fd-lg-column">
+            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
+              <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
+            </p>
+            <p class="flex-1 m-0px fs-14px">
+              Visited with BP &lt;140/90 in last 3 months
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="flex-lg-1 order-lg-1">
+        <canvas id="missedVisitDetails"></canvas>
+      </div>
     </div>
-    <% if @last_registration_value %>
-      <div class="d-flex fd-column fd-lg-row">
-        <div class="order-lg-2 w-lg-224px ml-lg-24px">
-          <div class="d-flex align-baseline mb-8px mb-lg-16px">
-            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
-            <div class="d-flex flex-1 align-baseline fd-lg-column">
-              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                Last BP &gt;3 months ago
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-baseline mb-8px mb-lg-16px">
-            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
-            <div class="d-flex flex-1 align-baseline fd-lg-column">
-              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                <%= number_to_percentage(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                Visited in the last 3 months but no BP measure
-                <span
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  data-trigger="hover"
-                  title="Patients with an appointment scheduled, updated medicines, or blood sugar taken"
-                >
-                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-                </span>
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-baseline mb-8px mb-lg-16px">
-            <div class="w-12px h-12px mr-12px br-2px bg-red-medium"></div>
-            <div class="d-flex flex-1 align-baseline fd-lg-column">
-              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                Visited with BP &ge;140/90 in last 3 months
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-baseline mb-8px mb-lg-16px">
-            <div class="w-12px h-12px mr-12px br-2px bg-green-medium"></div>
-            <div class="d-flex flex-1 align-baseline fd-lg-column">
-              <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-                <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                Visited with BP &lt;140/90 in last 3 months
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="flex-lg-1 order-lg-1">
-          <canvas id="missedVisitDetails"></canvas>
-        </div>
-      </div>
-    <% else %>
-      <div class="d-flex align-center justify-center w-100pt h-200px h-lg-380px bl-1px bb-1px bl-grey-medium bb-grey-medium">
-        <p class="c-grey-medium">
-          No data available
-        </p>
-      </div>
-    <% end %>
-  </div>
+  <% else %>
+    <div class="d-flex align-center justify-center w-100pt h-200px h-lg-380px bl-1px bb-1px bl-grey-medium bb-grey-medium">
+      <p class="c-grey-medium">
+        No data available
+      </p>
+    </div>
+  <% end %>
 </div>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
