@@ -73,8 +73,8 @@ FactoryBot.define do
     role { :owner }
     access_level { :viewer }
 
-    trait :super_admin do
-      access_level { :super_admin }
+    trait :power_user do
+      access_level { :power_user }
     end
 
     trait :viewer do

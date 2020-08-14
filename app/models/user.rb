@@ -14,8 +14,8 @@ class User < ApplicationRecord
   enum access_level: {
     viewer: "viewer",
     manager: "manager",
-    super_admin: "super_admin"
-  }
+    power_user: "power_user"
+  }, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -54,7 +54,6 @@ class User < ApplicationRecord
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :access_level, presence: true, if: -> { email_authentication.present? }
-  validates :accesses, absence: true, if: -> { super_admin? && email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -183,22 +182,22 @@ class User < ApplicationRecord
   # User Access (permissions)
   #
   def accessible_organizations(action)
-    return Organization.all if super_admin?
+    return Organization.all if power_user?
     accesses.organizations(action)
   end
 
   def accessible_facility_groups(action)
-    return FacilityGroup.all if super_admin?
+    return FacilityGroup.all if power_user?
     accesses.facility_groups(action)
   end
 
   def accessible_facilities(action)
-    return Facility.all if super_admin?
+    return Facility.all if power_user?
     accesses.facilities(action)
   end
 
   def can?(action, model, record = nil)
-    return true if super_admin?
+    return true if power_user?
     accesses.can?(action, model, record)
   end
   #
@@ -211,5 +210,9 @@ class User < ApplicationRecord
     destroyable_email_auths.each(&:destroy)
 
     true
+  end
+
+  def power_user?
+    power_user_access? && email_authentication.present?
   end
 end

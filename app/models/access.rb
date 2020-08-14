@@ -11,6 +11,7 @@ class Access < ApplicationRecord
   validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have 1 access per resource."}
   validates :resource_type, inclusion: {in: ALLOWED_RESOURCES}
   validates :resource, presence: true
+  validate :user_is_not_a_power_user, if: -> { user.present? }
 
   class << self
     def organizations(action)
@@ -58,6 +59,14 @@ class Access < ApplicationRecord
           .map(&:resource_id)
 
       resource_model.where(id: resource_ids)
+    end
+  end
+
+  private
+
+  def user_is_not_a_power_user
+    if user.power_user?
+      errors.add(:user, "cannot have accesses if they are a power user.")
     end
   end
 end

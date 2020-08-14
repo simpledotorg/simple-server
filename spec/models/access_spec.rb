@@ -8,39 +8,13 @@ RSpec.describe Access, type: :model do
     it { is_expected.to belong_to(:user) }
 
     context "belongs to resource" do
-      pending "for super admins" do
-        subject { create(:access, :super_admin) }
-        it { is_expected.to_not belong_to(:resource) }
-        it { expect(subject.resource).to_not be_present }
-      end
-
-      context "for everyone else" do
-        let(:facility) { create(:facility) }
-        subject { create(:access, user: viewer, resource: facility) }
-        it { expect(subject.resource).to be_present }
-      end
+      let(:facility) { create(:facility) }
+      subject { create(:access, user: viewer, resource: facility) }
+      it { expect(subject.resource).to be_present }
     end
   end
 
   describe "Validations" do
-    pending { is_expected.to validate_presence_of(:role) }
-
-    pending {
-      is_expected.to define_enum_for(:role)
-                       .with_values(super_admin: "super_admin", manager: "manager", viewer: "viewer")
-                       .backed_by_column_of_type(:string)
-    }
-
-    pending "does not allow creating accesses for user with multiple roles" do
-      valid_access_1 = create(:access, user: manager, resource: create(:facility))
-      valid_access_2 = build(:access, user: manager, resource: create(:facility_group))
-      invalid_access = build(:access, user: viewer, resource: create(:facility))
-
-      expect(valid_access_1).to be_valid
-      expect(valid_access_2).to be_valid
-      expect(invalid_access).to be_invalid
-    end
-
     context "resource" do
       let(:admin) { create(:admin) }
       let!(:resource) { create(:facility) }
@@ -60,11 +34,12 @@ RSpec.describe Access, type: :model do
         expect(invalid_access.errors.messages[:resource]).to eq ["must exist", "can't be blank"]
       end
 
-      pending "is invalid if super_admin has a resource" do
-        invalid_access = build(:access, :super_admin, user: admin, resource: create(:facility))
+      it "does not allow power_user to have accesses (because they have all the access)" do
+        power_user = create(:admin, :power_user)
+        invalid_access = build(:access, user: power_user, resource: create(:facility))
 
         expect(invalid_access).to be_invalid
-        expect(invalid_access.errors.messages[:resource]).to eq ["must be nil if super_admin"]
+        expect(invalid_access.errors.messages[:user]).to eq ["cannot have accesses if they are a power user."]
       end
 
       it "is invalid if resource_type is not in the allow-list" do
