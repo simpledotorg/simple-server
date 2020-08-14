@@ -33,7 +33,7 @@ class RegionReportService
     result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
     result.calculate_percentages(:visited_without_bp_taken)
     result.count_missed_visits
-    result.missed_visits_rate = calculate_missed_visits_percentages
+    result.calculate_missed_visits_percentages
     # TODO refactor top region benchmarks - this isn't used right now and doesn't follow the most recent refactoring
     result[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
 
@@ -41,16 +41,6 @@ class RegionReportService
   end
 
   private
-
-  # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
-  # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
-  # due to rounding and losing precision.
-  def calculate_missed_visits_percentages
-    range.each_with_object({}) do |period, hsh|
-      remaining_percentages = result[:controlled_patients_rate][period] + result[:uncontrolled_patients_rate][period] + result[:visited_without_bp_taken_rate][period]
-      hsh[period] = 100 - remaining_percentages
-    end
-  end
 
   # We want to return cohort result for the current quarter for the selected date, and then
   # the previous three quarters.
@@ -75,11 +65,6 @@ class RegionReportService
       end
       result
     end
-  end
-
-  def percentage(numerator, denominator)
-    return 0 if numerator == 0 || denominator == 0
-    ((numerator.to_f / denominator.to_f) * 100).round(0)
   end
 
   def cohort_cache_key

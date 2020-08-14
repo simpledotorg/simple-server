@@ -68,13 +68,23 @@ module Reports
 
     # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
     def count_missed_visits
-      self[:missed_visits] = range.each_with_object({}) { |(period, visit_count), hsh|
+      self.missed_visits = range.each_with_object({}) { |(period, visit_count), hsh|
         registrations = adjusted_registrations_for(period)
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
         visited_without_bp_taken = visited_without_bp_taken_for(period)
         hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
       }
+    end
+
+    # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
+    # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
+    # due to rounding and losing precision.
+    def calculate_missed_visits_percentages
+      self.missed_visits_rate = range.each_with_object({}) do |period, hsh|
+        remaining_percentages = controlled_patients_rate_for(period) + uncontrolled_patients_rate_for(period) + visited_without_bp_taken_rate_for(period)
+        hsh[period] = 100 - remaining_percentages
+      end
     end
 
     def registrations_for_percentage_calculation(period)
