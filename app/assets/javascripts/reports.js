@@ -284,7 +284,7 @@ function formatRateTooltipText(tooltipItem, data, sumData) {
 }
 
 function formatSumTooltipText(tooltipItem) {
-  return `${formatNumberWithCommas(tooltipItem.value)} patients registered in ${tooltipItem.label}`;
+  return `${formatNumberWithCommas(tooltipItem.value)} cumulative registrations in ${tooltipItem.label}`;
 }
 
 function formatValueAsPercent(value) {
