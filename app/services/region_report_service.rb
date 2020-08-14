@@ -56,7 +56,24 @@ class RegionReportService
   # the previous three quarters.
   def compile_cohort_trend_data
     Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
-      CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(3)).totals
+      result = {quarterly_registrations: []}
+      period.to_quarter_period.value.downto(3).each do |results_quarter|
+        cohort_quarter = results_quarter.previous_quarter
+
+        period = {cohort_period: :quarter,
+                  registration_quarter: cohort_quarter.number,
+                  registration_year: cohort_quarter.year}
+        query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities, cohort_period: period)
+        result[:quarterly_registrations] << {
+          results_in: format_quarter(results_quarter),
+          patients_registered: format_quarter(cohort_quarter),
+          registered: query.cohort_registrations.count,
+          controlled: query.cohort_controlled_bps.count,
+          no_bp: query.cohort_missed_visits_count,
+          uncontrolled: query.cohort_uncontrolled_bps.count
+        }.with_indifferent_access
+      end
+      result
     end
   end
 
@@ -75,6 +92,10 @@ class RegionReportService
 
   def force_cache?
     RequestStore.store[:force_cache]
+  end
+
+  def format_quarter(quarter)
+    "#{quarter.year} Q#{quarter.number}"
   end
 
   def top_region_benchmarks
