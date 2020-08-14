@@ -4,11 +4,6 @@ RSpec.describe User, type: :model do
   describe "Associations" do
     it { should have_many(:user_authentications) }
     it { should have_many(:accesses) }
-
-    pending "accesses for super admins should not exist" do
-      subject { create(:admin, :power_user) }
-      it { should_not have_many(:accesses) }
-    end
   end
 
   describe "Validations" do
@@ -25,6 +20,75 @@ RSpec.describe User, type: :model do
           .backed_by_column_of_type(:string)
       )
     }
+  end
+
+  describe "Access (permissions)" do
+    context ".accessible_organizations" do
+      it "returns all organizations for power users" do
+        admin = create(:admin, :power_user)
+        create_list(:organization, 5)
+
+        expect(admin.accessible_organizations(:any_action)).to match_array(Organization.all)
+      end
+
+      it "calls into Access for non-power users" do
+        admin = create(:admin)
+
+        expect(admin.accesses).to receive(:organizations)
+        admin.accessible_organizations(:any_action)
+      end
+    end
+
+    context ".accessible_facility_groups" do
+      it "returns all facility_groups for power users" do
+        admin = create(:admin, :power_user)
+        create_list(:facility_group, 5)
+
+        expect(admin.accessible_facility_groups(:any_action)).to match_array(FacilityGroup.all)
+      end
+
+      it "calls into Access for non-power users" do
+        admin = create(:admin)
+
+        expect(admin.accesses).to receive(:facility_groups)
+        admin.accessible_facility_groups(:any_action)
+      end
+    end
+
+    context ".accessible_facilities" do
+      it "returns all facilities for power users" do
+        admin = create(:admin, :power_user)
+        create_list(:facility, 5)
+
+        expect(admin.accessible_facilities(:any_action)).to match_array(Facility.all)
+      end
+
+      it "calls into Access for non-power users" do
+        admin = create(:admin)
+
+        expect(admin.accesses).to receive(:facilities)
+        admin.accessible_facilities(:any_action)
+      end
+    end
+
+    context ".can?" do
+      it "returns true for power users regardless of the resource" do
+        admin = create(:admin, :power_user)
+
+        expect(admin.can?(:any_action, Organization)).to be true
+        expect(admin.can?(:any_action, FacilityGroup)).to be true
+        expect(admin.can?(:any_action, Facility)).to be true
+      end
+
+      it "calls into Access for non-power users" do
+        admin = create(:admin)
+
+        expect(admin.accesses).to receive(:can?).exactly(3).times
+        admin.can?(:any_action, Organization)
+        admin.can?(:any_action, FacilityGroup)
+        admin.can?(:any_action, Facility)
+      end
+    end
   end
 
   describe ".build_with_phone_number_authentication" do

@@ -19,6 +19,14 @@ RSpec.describe Access, type: :model do
       let(:admin) { create(:admin) }
       let!(:resource) { create(:facility) }
 
+      it "does not allow a power_user to have accesses (because they have all the access)" do
+        power_user = create(:admin, :power_user)
+        invalid_access = build(:access, user: power_user, resource: create(:facility))
+
+        expect(invalid_access).to be_invalid
+        expect(invalid_access.errors.messages[:user]).to eq ["cannot have accesses if they are a power user."]
+      end
+
       it "is invalid if user has more than one access per resource" do
         __valid_access = create(:access, user: viewer, resource: resource)
         invalid_access = build(:access, user: viewer, resource: resource)
@@ -32,14 +40,6 @@ RSpec.describe Access, type: :model do
 
         expect(invalid_access).to be_invalid
         expect(invalid_access.errors.messages[:resource]).to eq ["must exist", "can't be blank"]
-      end
-
-      it "does not allow power_user to have accesses (because they have all the access)" do
-        power_user = create(:admin, :power_user)
-        invalid_access = build(:access, user: power_user, resource: create(:facility))
-
-        expect(invalid_access).to be_invalid
-        expect(invalid_access.errors.messages[:user]).to eq ["cannot have accesses if they are a power user."]
       end
 
       it "is invalid if resource_type is not in the allow-list" do
@@ -58,25 +58,12 @@ RSpec.describe Access, type: :model do
   end
 
   describe ".can?" do
-    # let(:super_admin) do
-    #   user = create(:admin)
-    #   create(:access, :super_admin, user: user)
-    #   user
-    # end
-
     context "organizations" do
       let!(:organization_1) { create(:organization) }
       let!(:organization_2) { create(:organization) }
       let!(:organization_3) { create(:organization) }
 
       context "view action" do
-        pending "allows super admin to view anything" do
-          expect(super_admin.can?(:view, :organization, organization_1)).to be true
-          expect(super_admin.can?(:view, :organization, organization_2)).to be true
-          expect(super_admin.can?(:view, :organization, organization_3)).to be true
-          expect(super_admin.can?(:view, :organization)).to be true
-        end
-
         it "allows manager to view" do
           create(:access, user: manager, resource: organization_1)
 
@@ -97,13 +84,6 @@ RSpec.describe Access, type: :model do
       end
 
       context "manage action" do
-        pending "allows super admin to manage anything" do
-          expect(super_admin.can?(:manage, :organization, organization_1)).to be true
-          expect(super_admin.can?(:manage, :organization, organization_2)).to be true
-          expect(super_admin.can?(:manage, :organization, organization_3)).to be true
-          expect(super_admin.can?(:manage, :organization)).to be true
-        end
-
         it "allows manager to manage" do
           create(:access, user: manager, resource: organization_1)
 
@@ -130,13 +110,6 @@ RSpec.describe Access, type: :model do
       let!(:facility_group_3) { create(:facility_group) }
 
       context "view action" do
-        pending "allows super admin to view anything" do
-          expect(super_admin.can?(:view, :facility_group, facility_group_1)).to be true
-          expect(super_admin.can?(:view, :facility_group, facility_group_2)).to be true
-          expect(super_admin.can?(:view, :facility_group, facility_group_3)).to be true
-          expect(super_admin.can?(:view, :facility_group)).to be true
-        end
-
         it "allows manager to view" do
           create(:access, user: manager, resource: facility_group_1)
 
@@ -157,13 +130,6 @@ RSpec.describe Access, type: :model do
       end
 
       context "manage action" do
-        pending "allows super admin to manage anything" do
-          expect(super_admin.can?(:manage, :facility_group, facility_group_1)).to be true
-          expect(super_admin.can?(:manage, :facility_group, facility_group_2)).to be true
-          expect(super_admin.can?(:manage, :facility_group, facility_group_3)).to be true
-          expect(super_admin.can?(:manage, :facility_group)).to be true
-        end
-
         it "allows manager to manage" do
           create(:access, user: manager, resource: facility_group_1)
 
@@ -237,13 +203,6 @@ RSpec.describe Access, type: :model do
       let!(:facility_3) { create(:facility) }
 
       context "view action" do
-        pending "allows super admin to view anything" do
-          expect(super_admin.can?(:view, :facility, facility_1)).to be true
-          expect(super_admin.can?(:view, :facility, facility_2)).to be true
-          expect(super_admin.can?(:view, :facility, facility_3)).to be true
-          expect(super_admin.can?(:view, :facility)).to be true
-        end
-
         it "allows manager to view" do
           create(:access, user: manager, resource: facility_1)
 
@@ -264,13 +223,6 @@ RSpec.describe Access, type: :model do
       end
 
       context "manage action" do
-        pending "allows super admin to manage anything" do
-          expect(super_admin.can?(:manage, :facility, facility_1)).to be true
-          expect(super_admin.can?(:manage, :facility, facility_2)).to be true
-          expect(super_admin.can?(:manage, :facility, facility_3)).to be true
-          expect(super_admin.can?(:manage, :facility)).to be true
-        end
-
         it "allows manager to manage" do
           create(:access, user: manager, resource: facility_1)
 
