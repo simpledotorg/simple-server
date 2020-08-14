@@ -32,7 +32,7 @@ RSpec.describe NoBPMeasureService do
       patient_visited_via_blood_sugar.blood_sugars << build(:blood_sugar, device_created_at: may_15)
 
       # no visit: patient has only a BP
-      patient_without_visit_and_bp = create(:patient, full_name: "no visits and no BP", registration_facility: facility)
+      _patient_without_visit_and_bp = create(:patient, full_name: "no visits and no BP", registration_facility: facility)
 
       # no visit: patient has an appointment and a BP
       patient_with_bp = create(:patient, registration_facility: facility)
