@@ -49,7 +49,7 @@
           %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
                     type="submit" data-period-type="month" value="<%= period.value %>">
-              <%= period.value.to_s(:mon_year) %>
+              <%= period.value.to_s(:month_year) %>
             </button>
           <% end %>
         <% end %>
