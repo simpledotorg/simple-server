@@ -4,7 +4,7 @@
     Visit details of all HTN patients
   </h3>
   <p class="mb-0px c-grey-dark">
-    <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %>
+    <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> patients registered until the end of <%= @adjusted_registration_date %>
   </p>
   <% if @last_registration_value %>
     <div class="d-flex fd-column fd-lg-row">

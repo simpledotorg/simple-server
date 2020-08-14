@@ -27,7 +27,7 @@
                 data-toggle="tooltip"
                 data-placement="top"
                 data-trigger="hover"
-                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %>"
+                title="Patients registered until the end of <%= @adjusted_registration_date %>"
               >
                 <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
               </span>
@@ -87,7 +87,7 @@
                   data-toggle="tooltip"
                   data-placement="top"
                   data-trigger="hover"
-                  title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
+                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
                 >
                   <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
                 </span>
@@ -129,7 +129,7 @@
                 data-toggle="tooltip"
                 data-placement="top"
                 data-trigger="hover"
-                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %>"
+                title="Patients registered until the end of <%= @adjusted_registration_date %>"
               >
                 <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
               </span>
