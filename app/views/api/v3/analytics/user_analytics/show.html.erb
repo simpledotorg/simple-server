@@ -171,15 +171,9 @@
   <!-- footer -->
   <footer>
     <h4 style="padding-top: 60px;">Notes</h4>
-    <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync
-      pending" link on the home screen.</p>
-    <p>A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month,
-      he or she is
-      only counted once.</p>
+    <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync pending" link on the home screen.</p>
     <h4 style="padding-top: 60px;">Thank you</h4>
-    <p>Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart
-      attacks
-      and strokes.</p>
+    <p>Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart attacks and strokes.</p>
     <div style="height: 100px;"></div>
   </footer>
   </div>
@@ -191,12 +185,12 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Registered patients</h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;">Definition</h2>
         
         <div class="card">
-            <h3 style="margin-bottom: 1em;">Definition:</h3>
+            <h3 style="margin-bottom: 1em;">Registered patients</h3>
             <p class="desc" style="margin-bottom: 1em;">
-                Patients who were registered into Simple by staff at this facility.
+                Patients who were registered into Simple by staff at this facility. The patient's "Preferred facility" could be any facility.
             </p>
         </div>
     </div>
@@ -208,10 +202,10 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Follow-up patients</h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;">Definition</h2>
         
         <div class="card">
-            <h3 style="margin-bottom: 1em;">Definition:</h3>
+            <h3 style="margin-bottom: 1em;">Follow-up patients</h3>
             <p class="desc" style="margin-bottom: 1em;">
                 Patients with a BP or blood sugar measure recorded at this facility. The follow-up patients count is not affected by where the patient was registered or what the patient's "Preferred Facility" is.
             </p>
@@ -225,10 +219,10 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension controlled</h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;">Definition</h2>
         
         <div class="card">
-            <h3 style="margin-bottom: 1em;">Definition:</h3>
+            <h3 style="margin-bottom: 1em;">Hypertension controlled</h3>
             <p class="desc" style="margin-bottom: 1em;">
                 <b>Numerator</b><br>
                 Patients with at least one BP measure recorded in the last 3 months at <em>any facility</em>. At the most recent visit the patient had BP&nbsp;&lt;140 and &lt;90.
