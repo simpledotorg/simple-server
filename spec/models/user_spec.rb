@@ -164,7 +164,7 @@ RSpec.describe User, type: :model do
           end
         end
 
-        ["pri", "sr"].each do |term|
+        %w[pri sr].each do |term|
           it "partially matches on first name, last name or full names: #{term.inspect}" do
             expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
           end

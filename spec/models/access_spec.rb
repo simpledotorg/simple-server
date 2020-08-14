@@ -343,29 +343,58 @@ RSpec.describe Access, type: :model do
     let!(:organization_1) { create(:organization) }
     let!(:organization_2) { create(:organization) }
     let!(:organization_3) { create(:organization) }
-    let!(:viewer_access) { create(:access, user: viewer, resource: organization_2) }
-    let!(:manager_access) { create(:access, user: manager, resource: organization_1) }
 
-    context "view action" do
-      it "returns all organizations the manager can view" do
-        expect(manager.accesses.organizations(:view)).to contain_exactly(organization_1)
-        expect(manager.accesses.organizations(:view)).not_to contain_exactly(organization_2)
+    context "for a direct organization-level access" do
+      let!(:viewer_access) { create(:access, user: viewer, resource: organization_2) }
+      let!(:manager_access) { create(:access, user: manager, resource: organization_1) }
+
+      context "view action" do
+        it "returns all organizations the manager can view" do
+          expect(manager.accesses.organizations(:view)).to contain_exactly(organization_1)
+          expect(manager.accesses.organizations(:view)).not_to contain_exactly(organization_2)
+        end
+
+        it "returns all organizations the viewer can view" do
+          expect(viewer.accesses.organizations(:view)).to contain_exactly(organization_2)
+          expect(viewer.accesses.organizations(:view)).not_to contain_exactly(organization_1)
+        end
       end
 
-      it "returns all organizations the viewer can view" do
-        expect(viewer.accesses.organizations(:view)).to contain_exactly(organization_2)
-        expect(viewer.accesses.organizations(:view)).not_to contain_exactly(organization_1)
+      context "manage action" do
+        it "returns all organizations the manager can manage" do
+          expect(manager.accesses.organizations(:manage)).to contain_exactly(organization_1)
+          expect(manager.accesses.organizations(:manage)).not_to contain_exactly(organization_2)
+        end
+
+        it "returns all organizations the viewer can manage" do
+          expect(viewer.accesses.organizations(:manage)).to be_empty
+        end
       end
     end
 
-    context "manage action" do
-      it "returns all organizations the manager can manage" do
-        expect(manager.accesses.organizations(:manage)).to contain_exactly(organization_1)
-        expect(manager.accesses.organizations(:manage)).not_to contain_exactly(organization_2)
+    context "for a lower-level access than organization" do
+      context "facility_group access" do
+        let!(:viewer_access) { create(:access, user: viewer, resource: create(:facility_group)) }
+        let!(:manager_access) { create(:access, user: manager, resource: create(:facility_group)) }
+
+        it "returns no organizations" do
+          expect(viewer.accesses.organizations(:view)).to be_empty
+          expect(manager.accesses.organizations(:view)).to be_empty
+          expect(viewer.accesses.organizations(:manage)).to be_empty
+          expect(manager.accesses.organizations(:manage)).to be_empty
+        end
       end
 
-      it "returns all organizations the viewer can manage" do
-        expect(viewer.accesses.organizations(:manage)).to be_empty
+      context "facility access" do
+        let!(:viewer_access) { create(:access, user: viewer, resource: create(:facility)) }
+        let!(:manager_access) { create(:access, user: manager, resource: create(:facility)) }
+
+        it "returns no organizations" do
+          expect(viewer.accesses.organizations(:view)).to be_empty
+          expect(manager.accesses.organizations(:view)).to be_empty
+          expect(viewer.accesses.organizations(:manage)).to be_empty
+          expect(manager.accesses.organizations(:manage)).to be_empty
+        end
       end
     end
   end
@@ -402,7 +431,7 @@ RSpec.describe Access, type: :model do
       end
     end
 
-    context "for a direct org-level access" do
+    context "for a higher-level organization access" do
       let!(:organization_1) { create(:organization) }
       let!(:organization_2) { create(:organization) }
       let!(:organization_3) { create(:organization) }
@@ -441,6 +470,20 @@ RSpec.describe Access, type: :model do
         end
       end
     end
+
+    context "for a lower-level access than facility_group or organization" do
+      context "facility access" do
+        let!(:viewer_access) { create(:access, user: viewer, resource: create(:facility)) }
+        let!(:manager_access) { create(:access, user: manager, resource: create(:facility)) }
+
+        it "returns no facility_groups" do
+          expect(viewer.accesses.facility_groups(:view)).to be_empty
+          expect(manager.accesses.facility_groups(:view)).to be_empty
+          expect(viewer.accesses.facility_groups(:manage)).to be_empty
+          expect(manager.accesses.facility_groups(:manage)).to be_empty
+        end
+      end
+    end
   end
 
   describe ".facilities" do
@@ -475,7 +518,7 @@ RSpec.describe Access, type: :model do
       end
     end
 
-    context "for a direct facility-group-level access" do
+    context "for a higher-level facility_group access" do
       let!(:facility_group_1) { create(:facility_group) }
       let!(:facility_group_2) { create(:facility_group) }
       let!(:facility_group_3) { create(:facility_group) }
@@ -517,7 +560,7 @@ RSpec.describe Access, type: :model do
       end
     end
 
-    context "for a direct org-level access" do
+    context "for a higher-level organization access" do
       let!(:organization_1) { create(:organization) }
       let!(:organization_2) { create(:organization) }
       let!(:organization_3) { create(:organization) }
