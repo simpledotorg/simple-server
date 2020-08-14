@@ -88,7 +88,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
@@ -105,7 +105,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "can retrieve quarterly data" do
       jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
       refresh_views
 
@@ -119,7 +119,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves facility data" do
       jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
