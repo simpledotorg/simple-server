@@ -23,7 +23,7 @@ class NoBPMeasureService
       facilities: facilities.map(&:id),
       start_date: period.blood_pressure_control_range.begin,
       end_date: period.blood_pressure_control_range.end,
-      registration_date: period.end_date
+      registration_date: period.blood_pressure_control_range.begin
     }
     sql = GitHub::SQL.new(<<-SQL, attributes)
       SELECT COUNT(DISTINCT "patients"."id")
@@ -45,12 +45,7 @@ class NoBPMeasureService
         AND patients.recorded_at <= :registration_date
         AND (appointments.id IS NOT NULL
             OR prescription_drugs.id IS NOT NULL
-            OR blood_sugars.id IS NOT NULL
-            OR (
-                  patients.recorded_at > :start_date
-              AND patients.recorded_at <= :end_date
-            )
-        )
+            OR blood_sugars.id IS NOT NULL)
         AND (NOT EXISTS (
           SELECT
             1

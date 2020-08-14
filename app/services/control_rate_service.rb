@@ -1,6 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 6
-  PERCENTAGE_PRECISION = 0
+  CACHE_VERSION = 7
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -19,6 +18,7 @@ class ControlRateService
       periods
     end
     @quarterly_report = @periods.begin.quarter?
+    @results = Reports::Result.new(@periods)
     logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
   end
 
@@ -26,45 +26,22 @@ class ControlRateService
   attr_reader :facilities
   attr_reader :periods
   attr_reader :region
+  attr_reader :results
 
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
-      data = {
-        controlled_patients: Hash.new(0),
-        controlled_patients_rate: Hash.new(0),
-        uncontrolled_patients: Hash.new(0),
-        uncontrolled_patients_rate: Hash.new(0),
-        registrations: Hash.new(0),
-        cumulative_registrations: Hash.new(0)
-      }
-
-      data[:registrations] = registration_counts
-      data[:cumulative_registrations] = sum_cumulative_registrations
-      data[:registrations].delete_if { |period, value| !periods.cover?(period) }
-      data[:cumulative_registrations].delete_if { |period, value| !periods.cover?(period) }
+      results.registrations = registration_counts
+      results.cumulative_registrations = sum_cumulative_registrations
+      results.count_adjusted_registrations
 
       periods.each do |(period, count)|
-        controlled = controlled_patients(period).count
-        uncontrolled = uncontrolled_patients(period).count
-
-        data[:controlled_patients][period] = controlled
-        data[:uncontrolled_patients][period] = uncontrolled
-
-        # For quarterly reports the registration count is based on the cohort, so its from the previous period.
-        registration_count = if quarterly_report?
-          data[:registrations][period.previous] || 0
-        else
-          data[:cumulative_registrations][period]
-        end
-
-        data[:controlled_patients_rate][period] = percentage(controlled, registration_count)
-        data[:uncontrolled_patients_rate][period] = percentage(uncontrolled, registration_count)
+        results.controlled_patients[period] = controlled_patients(period).count
+        results.uncontrolled_patients[period] = uncontrolled_patients(period).count
       end
-      first_registration_period = registration_counts.keys.first
-      if first_registration_period
-        data.each { |(_key, hsh)| hsh.delete_if { |period, count| period < first_registration_period } }
-      end
-      data
+
+      results.calculate_percentages(:controlled_patients)
+      results.calculate_percentages(:uncontrolled_patients)
+      results
     end
   end
 
@@ -109,6 +86,7 @@ class ControlRateService
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .with_hypertension
       .where(registration_facility_id: facilities)
+      .where("patient_recorded_at < ?", period.blood_pressure_control_range.begin)
       .where("(year = ? AND month = ?) OR (year = ? AND month = ?) OR (year = ? AND month = ?)",
         beg_range.year.to_s, beg_range.month.to_s,
         mid_range.year.to_s, mid_range.month.to_s,
@@ -162,10 +140,5 @@ class ControlRateService
 
   def force_cache?
     RequestStore.store[:force_cache]
-  end
-
-  def percentage(numerator, denominator)
-    return 0 if denominator == 0 || numerator == 0
-    ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
   end
 end

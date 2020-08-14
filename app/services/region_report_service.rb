@@ -1,7 +1,7 @@
 class RegionReportService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
-  CACHE_VERSION = 6
+  CACHE_VERSION = 7
 
   def initialize(region:, period:, current_user:, top_region_benchmarks_enabled: false)
     @current_user = current_user
@@ -12,20 +12,11 @@ class RegionReportService
     start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
     @range = start_period..@period
     @top_region_benchmarks_enabled = top_region_benchmarks_enabled
-    @data = {
-      controlled_patients: {},
-      lost_to_followup: {},
-      lost_to_followup_rate: {},
-      missed_visits: {},
-      missed_visits_rate: {},
-      quarterly_registrations: [],
-      registrations: {},
-      top_region_benchmarks: {}
-    }.with_indifferent_access
+    @result = Reports::Result.new(@range)
   end
 
   attr_reader :current_user
-  attr_reader :data
+  attr_reader :result
   attr_reader :facilities
   attr_reader :organizations
   attr_reader :period
@@ -37,42 +28,22 @@ class RegionReportService
   end
 
   def call
-    data.merge! ControlRateService.new(region, periods: range).call
-    data.merge! compile_cohort_trend_data
-    data[:visited_without_bp_taken] = NoBPMeasureService.new(region, periods: range).call
-    data[:visited_without_bp_taken_rate] = calculate_percentages(data[:visited_without_bp_taken])
-    data[:missed_visits] = count_missed_visits
-    data[:missed_visits_rate] = calculate_missed_visits_percentages
-    data[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
+    result.merge! ControlRateService.new(region, periods: range).call
+    result.merge! compile_cohort_trend_data
+    result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
+    result.calculate_percentages(:visited_without_bp_taken)
+    result.count_missed_visits
+    result.calculate_missed_visits_percentages
+    # TODO refactor top region benchmarks - this isn't used right now and doesn't follow the most recent refactoring
+    result[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
 
-    data
+    result
   end
 
   private
 
-  # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
-  def count_missed_visits
-    data[:visited_without_bp_taken].each_with_object({}) do |(period, visit_count), result|
-      controlled = data[:controlled_patients][period]
-      uncontrolled = data[:uncontrolled_patients][period]
-      registrations = data[:cumulative_registrations][period]
-      result[period] = registrations - visit_count - controlled - uncontrolled
-    end
-  end
-
-  # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
-  # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
-  # due to rounding and losing precision.
-  def calculate_missed_visits_percentages
-    range.each_with_object({}) do |period, result|
-      remaining_percentages = data[:controlled_patients_rate][period] + data[:uncontrolled_patients_rate][period] + data[:visited_without_bp_taken_rate][period]
-      result[period] = 100 - remaining_percentages
-    end
-  end
-
-  # We want to return cohort data for the current quarter for the selected date, and then
-  # the previous three quarters. Each quarter cohort is made up of patients registered
-  # in the previous quarter who has had a follow up visit in the current quarter.
+  # We want to return cohort result for the current quarter for the selected date, and then
+  # the previous three quarters.
   def compile_cohort_trend_data
     Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
       result = {quarterly_registrations: []}
@@ -94,17 +65,6 @@ class RegionReportService
       end
       result
     end
-  end
-
-  def calculate_percentages(result_hash)
-    result_hash.each_with_object(Hash.new(0)) do |(period, count), hsh|
-      hsh[period] = percentage(count, data[:cumulative_registrations][period])
-    end
-  end
-
-  def percentage(numerator, denominator)
-    return 0 if numerator == 0 || denominator == 0
-    ((numerator.to_f / denominator.to_f) * 100).round(0)
   end
 
   def cohort_cache_key
