@@ -1,9 +1,9 @@
 require "rails_helper"
 
 describe Reports::Result, type: :model do
-  let(:july_2018) { Period.month("July 1 2020")}
-  let(:may_2020) { Period.month("May 1 2020")}
-  let(:june_2020) { Period.month("June 1 2020")}
+  let(:july_2018) { Period.month("July 1 2020") }
+  let(:may_2020) { Period.month("May 1 2020") }
+  let(:june_2020) { Period.month("June 1 2020") }
 
   let(:range) { (july_2018..june_2020) }
 
@@ -19,7 +19,7 @@ describe Reports::Result, type: :model do
 
   it "has setters" do
     result = Reports::Result.new(range)
-    hsh = { june_2020 => 30 }
+    hsh = {june_2020 => 30}
     result.uncontrolled_patients = hsh
     expect(result.uncontrolled_patients).to eq(hsh)
   end
