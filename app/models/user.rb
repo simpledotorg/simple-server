@@ -55,7 +55,6 @@ class User < ApplicationRecord
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :accesses, absence: true, if: -> { super_admin? && email_authentication.present? }
-  validates :accesses, presence: true, unless: -> { super_admin? }, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -198,7 +197,7 @@ class User < ApplicationRecord
     accesses.facilities(action)
   end
 
-  def can?(action, model, record)
+  def can?(action, model, record = nil)
     return true if super_admin?
     accesses.can?(action, model, record)
   end

@@ -71,6 +71,19 @@ FactoryBot.define do
     organization
 
     role { :owner }
+    access_level { :viewer }
+
+    trait :super_admin do
+      access_level { :super_admin }
+    end
+
+    trait :viewer do
+      access_level { :viewer }
+    end
+
+    trait :manager do
+      access_level { :manager }
+    end
 
     trait(:owner) do
       role { :owner }
@@ -127,10 +140,10 @@ end
 
 def register_user_request_params(arguments = {})
   {id: SecureRandom.uuid,
-   full_name: Faker::Name.name,
-   phone_number: Faker::PhoneNumber.phone_number,
-   password_digest: BCrypt::Password.create("1234"),
-   registration_facility_id: SecureRandom.uuid,
-   created_at: Time.current.iso8601,
-   updated_at: Time.current.iso8601}.merge(arguments)
+    full_name: Faker::Name.name,
+    phone_number: Faker::PhoneNumber.phone_number,
+    password_digest: BCrypt::Password.create("1234"),
+    registration_facility_id: SecureRandom.uuid,
+    created_at: Time.current.iso8601,
+    updated_at: Time.current.iso8601}.merge(arguments)
 end

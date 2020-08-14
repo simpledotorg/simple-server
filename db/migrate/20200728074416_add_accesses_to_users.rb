@@ -2,7 +2,6 @@ class AddAccessesToUsers < ActiveRecord::Migration[5.2]
   def change
     create_table :accesses, id: :uuid do |t|
       t.references :user, null: false, index: true, type: :uuid, foreign_key: true
-      t.string :role, null: false, index: true
 
       t.references :resource,
         type: :uuid,
