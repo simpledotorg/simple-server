@@ -2,9 +2,12 @@
 <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
   <div>
     <div class="mb-2">
-      <h3>
-        Visit details of all HTN patients
-      </h3>
+        <h3 class="m-8px c-black">
+          Visit details of all HTN patients
+        </h3>
+        <p class="c-grey-dark">
+          <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %>
+        </p>
     </div>
     <% if @last_registration_value %>
       <div class="d-flex fd-column fd-lg-row">
@@ -32,7 +35,7 @@
                   data-toggle="tooltip"
                   data-placement="top"
                   data-trigger="hover"
-                  title="Patients with an appointment scheduled, updated medicines, or blood sugar taken"
+                  title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
                 >
                   <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
                 </span>

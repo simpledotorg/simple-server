@@ -23,6 +23,14 @@
           <p class="m-0px <% if @data.last_value(:controlled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:controlled_patients_rate) %>
               <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                data-trigger="hover"
+                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %>"
+              >
+                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+              </span>
             <% else %>
               No control rate data available
             <% end %>
@@ -79,7 +87,7 @@
                   data-toggle="tooltip"
                   data-placement="top"
                   data-trigger="hover"
-                  title="Patients with an appointment scheduled, updated medicines, or blood sugar taken"
+                  title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
                 >
                   <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
                 </span>
@@ -116,9 +124,15 @@
           </p>
           <p class="m-0px <% if @data.last_value(:uncontrolled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:uncontrolled_patients_rate) %>
-              <span class="fw-bold">
-                <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
-                </span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                data-trigger="hover"
+                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %>"
+              >
+                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+              </span>
             <% else %>
               No control rate data available
             <% end %>
