@@ -14,15 +14,23 @@
         </div>
         <div>
           <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
-            <% if @data[:controlled_patients_rate].values.last %>
-              <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
+            <% if @data.last_value(:controlled_patients_rate) %>
+              <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
             <% else %>
               No data
             <% end %>
           </p>
-          <p class="m-0px <% if @data[:controlled_patients_rate].values.last %>c-black<% else %>c-grey-medium<% end %>">
-            <% if @data[:controlled_patients_rate].values.last %>
-              <span class="fw-bold"><%= number_with_delimiter(@data[:controlled_patients].values.last) %></span> of <%= number_with_delimiter(@last_registration_value) %> patients
+          <p class="m-0px <% if @data.last_value(:controlled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:controlled_patients_rate) %>
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                data-trigger="hover"
+                title="Patients registered until the end of <%= @adjusted_registration_date %>"
+              >
+                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+              </span>
             <% else %>
               No control rate data available
             <% end %>
@@ -35,7 +43,7 @@
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-            <% unless @data[:controlled_patients_rate].values.last %>
+            <% unless @data.last_value(:controlled_patients_rate) %>
               <p class="c-grey-medium">
                 No data available
               </p>
@@ -49,50 +57,48 @@
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
-        <div class="mb-2">
-          <h3 class="m-8px c-black">
-            No BP measure
-          </h3>
-          <p class="c-grey-dark">
-            HTN patients with no BP measure recorded in the last 3 months
-          </p>
-          <div>
-            <div class="d-flex align-baseline mb-8px mb-lg-12px">
-              <div class="w-12px h-12px mr-12px br-4px bg-grey-light"></div>
-              <div class="d-flex flex-1 align-baseline">
-                <p class="w-48px m-0px fw-bold fs-20px lh-1">
-                  <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
-                </p>
-                <p class="flex-1 m-0px fs-14px">
-                  Last BP &gt;3 months ago
-                </p>
-              </div>
+        <h3 class="m-8px c-black">
+          No recent BP
+        </h3>
+        <p class="c-grey-dark">
+          HTN patients with no recent BP measure recorded
+        </p>
+        <div>
+          <div class="d-flex align-baseline mb-8px mb-lg-4px">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
+            <div class="d-flex align-baseline">
+              <p class="w-32px m-0px fs-16px fw-bold">
+                <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                No visit &gt;3 months
+              </p>
             </div>
-            <div class="d-flex align-baseline mb-8px mb-lg-12px">
-              <div class="w-12px h-12px mr-12px br-4px bg-grey-medium"></div>
-              <div class="d-flex flex-1 align-baseline">
-                <p class="w-48px m-0px fw-bold fs-20px lh-1">
-                  <%= percentage_or_na(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
-                </p>
-                <p class="flex-1 m-0px fs-14px">
-                  Visited in the last 3 months but no BP measure
-                  <span
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    data-trigger="hover"
-                    title="Patients with an appointment scheduled, updated medicines, or blood sugar taken"
-                  >
-                    <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-                  </span>
-                </p>
-              </div>
+          </div>
+          <div class="d-flex align-baseline">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
+            <div class="d-flex align-baseline">
+              <p class="w-32px m-0px fs-16px fw-bold">
+                <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Visited in the last 3 months
+                <span
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover"
+                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
+                >
+                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+                </span>
+              </p>
             </div>
           </div>
         </div>
       </div>
       <div>
         <div class="h-200px mr-13px mb-16px ml-13px">
-          <canvas id="noBPMeasureTrend"></canvas>
+          <canvas id="noRecentBPTrend"></canvas>
         </div>
       </div>
     </div>
@@ -109,21 +115,24 @@
           </p>
         </div>
         <div>
-          <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-red<% else %>c-grey-medium<% end %>">
-          <%
-            current_uncontrolled_rate = @data[:uncontrolled_patients_rate]&.values&.last
-           %>
-            <% if current_uncontrolled_rate %>
-              <%= number_to_percentage(current_uncontrolled_rate, precision: 0) %>
+          <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-red<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:uncontrolled_patients_rate) %>
+              <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
             <% else %>
               No data
             <% end %>
           </p>
-          <p class="m-0px <% if current_uncontrolled_rate %>c-black<% else %>c-grey-medium<% end %>">
-            <% if current_uncontrolled_rate %>
-              <span class="fw-bold">
-                <%= number_with_delimiter(@data[:uncontrolled_patients].values.last) %>
-                </span> of <%= number_with_delimiter(@last_registration_value) %> patients
+          <p class="m-0px <% if @data.last_value(:uncontrolled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
+            <% if @data.last_value(:uncontrolled_patients_rate) %>
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
+              <span
+                data-toggle="tooltip"
+                data-placement="top"
+                data-trigger="hover"
+                title="Patients registered until the end of <%= @adjusted_registration_date %>"
+              >
+                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+              </span>
             <% else %>
               No control rate data available
             <% end %>
@@ -158,26 +167,26 @@
           </p>
         </div>
         <div>
-          <p class="mb-0px fs-xlarge fw-bold <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-purple<% end %>">
-            <% if @last_registration_value.zero? %>
+          <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %>">
+            <% if @data.last_value(:cumulative_registrations).zero? %>
               No data
             <% else %>
-              <%= number_with_delimiter(@last_registration_value) %>
+              <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
               <span class="fs-16px">
                 patients
               </span>
             <% end %>
           </p>
-          <p class="m-0px <% if @last_registration_value.zero? %>c-grey-medium<% else %>c-black<% end %>">
-            <% if @last_registration_value.zero? %>
+          <p class="m-0px <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-black<% end %>">
+            <% if @data.last_value(:cumulative_registrations).zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@new_registrations) %> new patients</span> registered in <%= @data[:cumulative_registrations].keys&.last %>
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:registrations)) %> new patients</span> registered in <%= @data[:cumulative_registrations].keys&.last %>
             <% end %>
           </p>
         </div>
       </div>
-      <% if @last_registration_value.zero? %>
+      <% if @data.last_value(:cumulative_registrations).zero? %>
         <div class="d-flex align-center justify-center h-200px bb-1px bl-1px bb-grey-medium bl-grey-medium">
           <p class="fs-14px c-grey-medium">
             No data available
@@ -204,12 +213,6 @@
     <% end %>
   </div>
 <% end %>
-<div class="card o-hidden mt-0 p-0px">
-  <%= image_tag(
-      @region.is_a?(FacilityGroup) ? "screenshot.png" : "facility-screenshot.png",
-      :class => "mw-100pt"
-  )%>
-</div>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>

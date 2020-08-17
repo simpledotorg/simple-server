@@ -1,5 +1,11 @@
 <div class="alert alert-primary">
-  <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
+  <span class="fw-bold">Early access:</span> Thanks for your patience as we improve this page. The following features are coming soon:
+  <ul class="mt-4px mb-0px pl-16px">
+    <li>More detailed cohorts</li>
+    <li>Lost to follow-up rate</li>
+    <li>Facility comparison tables</li>
+    <li>State and block level reports</li>
+  </ul>
 </div>
 <div class="dashboard">
   <nav class="breadcrumb mb-0px">
@@ -39,7 +45,7 @@
         <%= @period.to_s %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_for(@period, url: request.params, method: :get) do |f| %>
+        <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
           <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
           <% (1..13).each do |num|
@@ -49,7 +55,7 @@
           %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
                     type="submit" data-period-type="month" value="<%= period.value %>">
-              <%= period.value.to_s(:mon_year) %>
+              <%= period.value.to_s(:month_year) %>
             </button>
           <% end %>
         <% end %>

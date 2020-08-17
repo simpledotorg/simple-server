@@ -3,60 +3,32 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   include DayHelper
   include PeriodHelper
   include DashboardHelper
-  include ActionView::Helpers::NumberHelper
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
-  HTN_CONTROL_MONTHS_AGO = 12
   TROPHY_MILESTONES = [10, 25, 50, 100, 250, 500, 1_000, 2_000, 3_000, 4_000, 5_000]
   TROPHY_MILESTONE_INCR = 10_000
-  CACHE_VERSION = 2
   EXPIRE_STATISTICS_CACHE_IN = 15.minutes
 
-  def daily_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:daily, :grouped_by_date, *stats)
+  def daily_stats_by_date(stat, day_date)
+    zero_if_unavailable statistics.dig(:daily, :grouped_by_date, stat, day_date)
   end
 
-  def monthly_htn_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :hypertension, *stats)
+  def monthly_htn_stats_by_date(stat, month_date)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :hypertension, stat, month_date)
   end
 
-  def monthly_dm_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :diabetes, *stats)
+  def monthly_dm_stats_by_date(stat, month_date)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :diabetes, stat, month_date)
   end
 
-  def monthly_htn_or_dm_stats_by_date(*stats)
-    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, *stats)
+  def monthly_htn_or_dm_stats_by_date(stat, month_date)
+    zero_if_unavailable statistics.dig(:monthly, :grouped_by_date, :htn_or_dm, stat, month_date)
   end
 
   def monthly_htn_control_rate(month_date)
-    monthly_htn_stats_by_date(:controlled_visits, :controlled_patients_rate, Period.month(month_date)).round
-  end
-
-  def monthly_htn_control_last_period
-    htn_control_monthly_period_list.last.to_s(:month_year)
-  end
-
-  def monthly_htn_control_last_period_patient_counts
-    controlled_patients = monthly_htn_stats_by_date(
-      :controlled_visits,
-      :controlled_patients,
-      Period.month(htn_control_monthly_period_list.last)
-    )
-    registrations = monthly_htn_stats_by_date(
-      :controlled_visits,
-      :cumulative_registrations,
-      Period.month(htn_control_monthly_period_list.last)
-    )
-
-    numerator = number_with_delimiter(controlled_patients)
-    denominator = number_with_delimiter(registrations)
-    unit = "patient".pluralize(registrations)
-    "#{numerator} of #{denominator} #{unit}"
-  end
-
-  def monthly_htn_control_last_control_rate
-    monthly_htn_control_rate(htn_control_monthly_period_list.last)
+    display_percentage(monthly_htn_stats_by_date(:controlled_visits, month_date),
+      monthly_htn_stats_by_date(:follow_ups, month_date))
   end
 
   def monthly_dm_stats_by_date_and_gender(stat, month_date, gender)
@@ -87,22 +59,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
   end
 
-  def cohorts
-    statistics.dig(:cohorts, :quarterly_registrations)
-  end
-
-  def cohort_controlled(cohort)
-    display_percentage(cohort[:controlled], cohort[:registered])
-  end
-
-  def cohort_uncontrolled(cohort)
-    display_percentage(cohort[:uncontrolled], cohort[:registered])
-  end
-
-  def cohort_no_bp(cohort)
-    display_percentage(cohort[:no_bp], cohort[:registered])
-  end
-
   def locked_trophy
     statistics.dig(:trophies, :locked_trophy_value)
   end
@@ -127,10 +83,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     period_list_as_dates(:month, MONTHS_AGO)
   end
 
-  def htn_control_monthly_period_list
-    period_list_as_dates(:month, HTN_CONTROL_MONTHS_AGO + 1).reverse.tap(&:pop)
-  end
-
   def display_percentage(numerator, denominator)
     return "0%" if denominator.nil? || denominator.zero? || numerator.nil?
     percentage = (numerator * 100.0) / denominator
@@ -149,7 +101,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
           daily: daily_stats,
           monthly: monthly_stats,
           all_time: all_time_stats,
-          cohorts: cohort_stats,
           trophies: trophy_stats,
           metadata: {
             is_diabetes_enabled: diabetes_enabled?,
@@ -225,11 +176,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       all_time_dm_stats].inject(:deep_merge)
   end
 
-  def cohort_stats
-    quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
-    CohortService.new(region: current_facility, quarters: quarters).totals
-  end
-
   #
   # After exhausting the initial TROPHY_MILESTONES, subsequent milestones must follow the following pattern:
   #
@@ -302,9 +248,11 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .group(:gender)
         .count
 
-    control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
-    control_rate_start = control_rate_end.advance(months: -(HTN_CONTROL_MONTHS_AGO - 1))
-    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
+    controlled_visits =
+      current_facility
+        .hypertension_follow_ups_by_period(:month, last: MONTHS_AGO)
+        .merge(BloodPressure.under_control)
+        .count
 
     registrations =
       current_facility
@@ -324,7 +272,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       grouped_by_date: {
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
-          controlled_visits: controlled_visits,
+          controlled_visits: controlled_visits.to_hash,
           registrations: sum_by_date(registrations)
         }
       }
@@ -432,7 +380,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def statistics_cache_key
-    "user_analytics/#{current_facility.id}/#{CACHE_VERSION}"
+    "user_analytics/#{current_facility.id}"
   end
 
   def sum_by_date(data)
