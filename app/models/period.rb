@@ -61,6 +61,11 @@ class Period
     end
   end
 
+  def blood_pressure_control_range
+    three_months_ago = end_date.advance(months: -3)
+    (three_months_ago..end_date)
+  end
+
   def succ
     if quarter?
       Period.new(type: type, value: value.succ)

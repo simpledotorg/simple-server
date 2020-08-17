@@ -13,6 +13,26 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 ## Development
 
+### Dependencies
+
+Make sure you have the following dependencies installed:
+
+- Ruby 2.5.1
+- PostgreSQL 10
+- Redis
+- Yarn
+
+To install these on MacOS:
+
+```
+brew cask install postgres
+brew install rbenv ruby-build redis yarn
+```
+
+To set up Ruby 2.5.1, see https://gorails.com/setup/osx/10.15-catalina
+
+Open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
+
 ### Setup
 
 To set up the Simple server for local development, clone the git repository and
@@ -40,6 +60,31 @@ bundle _1.17.3_ install
 rake yarn:install
 rails db:setup
 ```
+
+##### Issues with MacOS Catalina and Puma
+
+When running `bin/setup` on MacOS Catalina, you may encounter issues installing the `puma` gem related to compiler upgrades Apple issued.
+
+If you see errors like this:
+
+```
+compiling puma_http11.c
+puma_http11.c:203:22: error: implicitly declaring library function 'isspace' with type 'int (int)' [-Werror,-Wimplicit-function-declaration]
+  while (vlen > 0 && isspace(value[vlen - 1])) vlen--;
+                     ^
+puma_http11.c:203:22: note: include the header <ctype.h> or explicitly provide a declaration for 'isspace'
+1 error generated.
+make: *** [puma_http11.o] Error 1
+make failed, exit code 2
+```
+
+To fix, install `puma` with this command:
+
+```
+gem install puma:4.3.5 -- --with-cflags="-Wno-error=implicit-function-declaration"
+```
+
+Now re-run `bin/setup` to continue installing everything else.
 
 #### Developing with the Android app
 
@@ -91,6 +136,26 @@ mailcatcher
 
 Now you should be able to see test emails at http://localhost:1080
 
+### Testing Web Views
+
+When testing web views like the progress tab or help screens, you will need to authenticate yourself with specific
+request headers. You can run the following command to get a set of request headers for a user that you can attach to
+your requests.
+
+```
+$ bundle exec rails get_user_credentials
+```
+
+The command will output a set of request headers that you can attach to your requests using tools like
+[Postman](https://www.postman.com/) or [ModHeader](https://bewisse.com/modheader/).
+
+```
+Attach the following request headers to your requests:
+Authorization: Bearer 9b54814d4b422ee37dad46e7ebee673c59eed088c264e479880cbe7fb5ac1ce7
+X-User-ID: 452b96c2-e0cf-49e7-ab73-c328acd3f1e5
+X-Facility-ID: dcda7d9d-48f9-47d2-b1cc-93d90c94386e
+```
+
 ### Review Apps
 
 #### Testing messages
@@ -105,7 +170,7 @@ DEFAULT_COUNTRY = US
 DEFAULT_COUNTRY = UK
 ```
 
-Updating this config will automatically restart the review app and should allow one to receive messages in their appropriate ISD codes. 
+Updating this config will automatically restart the review app and should allow one to receive messages in their appropriate ISD codes.
 
 ### Configuration
 
