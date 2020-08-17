@@ -50,12 +50,22 @@ RSpec.describe Period, type: :model do
     }.to raise_error(ArgumentError, "can only compare Periods of the same type")
   end
 
-  it "can be advanced" do
+  it "can be advanced forward and backwards" do
     expect(jan_1_2019_month_period.advance(months: 1)).to eq(Period.month(Date.parse("February 1 2019")))
     expect(jan_1_2019_month_period.advance(years: 1)).to eq(jan_1_2020_month_period)
     expect(q1_2019_period.advance(years: 1)).to eq(q1_2020_period)
     q2_2019_period = Period.quarter("Q2-2019")
     expect(q1_2019_period.advance(months: 3)).to eq(q2_2019_period)
+  end
+
+  it "can return its blood pressure control range" do
+    range = jan_1_2020_month_period.blood_pressure_control_range
+    expect(range.begin).to eq(Date.parse("October 31st 2019"))
+    expect(range.end).to eq(Date.parse("January 31st 2020"))
+
+    range = Period.month("July 1st 2020").blood_pressure_control_range
+    expect(range.begin).to eq(Date.parse("April 30th 2020"))
+    expect(range.end).to eq(Date.parse("July 31st 2020"))
   end
 
   it "can be used in ranges" do
