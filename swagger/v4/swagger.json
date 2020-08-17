@@ -349,7 +349,7 @@
         }
       }
     },
-    "teleconsultation_medical_officers/sync": {
+    "/teleconsultation_medical_officers/sync": {
       "get": {
         "summary": "Syncs Teleconsultation MOs data from server to device.",
         "tags": [
@@ -405,7 +405,7 @@
         }
       }
     },
-    "teleconsultations/sync": {
+    "/teleconsultations/sync": {
       "post": {
         "summary": "Syncs Teleconsultations from device to server.",
         "tags": [

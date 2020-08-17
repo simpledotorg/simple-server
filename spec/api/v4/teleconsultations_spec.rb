@@ -1,7 +1,7 @@
 require "swagger_helper"
 
 describe "Teleconsultations v4 API", swagger_doc: "v4/swagger.json" do
-  path "teleconsultations/sync" do
+  path "/teleconsultations/sync" do
     post "Syncs Teleconsultations from device to server." do
       tags "Teleconsultations"
       security [access_token: [], user_id: [], facility_id: []]
@@ -20,7 +20,7 @@ describe "Teleconsultations v4 API", swagger_doc: "v4/swagger.json" do
         run_test!
       end
 
-      include_examples "returns 403 for post requests for forbidden users", :blood_sugars
+      include_examples "returns 403 for post requests for forbidden users", :teleconsultations
     end
   end
 end
