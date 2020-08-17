@@ -10,6 +10,7 @@
 # ± bin/deploy help
 #
 require 'pathname'
+require 'shellwords'
 
 class DeployError < StandardError
 end
@@ -161,7 +162,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
       end
 
     # create tag
-    execute_safely("git tag -a #{@tag_to_deploy} -m \"#{changelog}\"", confirm: true)
+    execute_safely("git tag -a #{@tag_to_deploy} -m \"#{changelog.shellescape}\"", confirm: true)
     puts "Created tag #{@tag_to_deploy}."
 
     # push tag
