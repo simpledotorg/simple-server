@@ -18,9 +18,9 @@
 //= require bs-file-input-init.js
 //= require react
 //= require react_ujs
-//= require react-checkbox-tree
 //= require lodash
 //= require components
+//= require jstree
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min
 //= require teleconsultation-fields
@@ -32,4 +32,14 @@ $(function () {
   if($('#analytics-table').length) {
     new Tablesort(document.getElementById('analytics-table'), { descending: true })
   }
+
+  $(function () {
+    $("#plugins1").jstree({
+      "checkbox" : {
+        "keep_selected_style" : false
+      },
+      
+      "plugins" : [ "checkbox" ]
+    });
+  });
 });
