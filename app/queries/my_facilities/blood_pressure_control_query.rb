@@ -8,7 +8,7 @@ class MyFacilities::BloodPressureControlQuery
   include QuarterHelper
   include MonthHelper
 
-  REGISTRATION_BUFFER = 2.months
+  REGISTRATION_BUFFER = 3.months
 
   def initialize(facilities: Facility.all, cohort_period: {})
     # cohort_period is map that contains
