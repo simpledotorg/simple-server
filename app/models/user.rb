@@ -5,15 +5,36 @@ class User < ApplicationRecord
     email_authentication: "EmailAuthentication",
     phone_number_authentication: "PhoneNumberAuthentication"
   }
+  
+  ACCESS_LEVEL_DESCRIPTIONS = [
+    {
+      name: User.access_levels.fetch_values(:viewer).first,
+      description: "Can view stuff"
+    },
+
+    {
+      name: User.access_levels.fetch_values(:manager).first,
+      description: "Can manage stuff"
+    },
+
+    {
+      name: User.access_levels.fetch_values(:power_user).first,
+      description: "Can manage everything"
+    }
+  ]
 
   enum sync_approval_status: {
     requested: "requested",
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
+  enum access_level: {
+    viewer: "viewer",
+    manager: "manager",
+    power_user: "power_user"
+  }, _suffix: :access
 
   belongs_to :organization, optional: true
-
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
@@ -21,24 +42,19 @@ class User < ApplicationRecord
     inverse_of: :registration_user,
     class_name: "Patient",
     foreign_key: :registration_user_id
-
   has_many :phone_number_authentications,
     through: :user_authentications,
     source: :authenticatable,
     source_type: "PhoneNumberAuthentication"
-
   has_many :email_authentications,
     through: :user_authentications,
     source: :authenticatable,
     source_type: "EmailAuthentication"
-
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
-
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
   has_many :accesses, dependent: :destroy
-
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
     class_name: "Patient",
@@ -54,7 +70,7 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
-
+  # validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -68,14 +84,10 @@ class User < ApplicationRecord
     :otp_valid?,
     :facility_group,
     :password_digest, to: :phone_number_authentication, allow_nil: true
-
   delegate :email,
     :password,
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
-
-  delegate :organizations, :facility_groups, :facilities, to: :accesses, allow_nil: true, prefix: :accessible
-  delegate :can?, to: :accesses, allow_nil: true
 
   after_destroy :destroy_email_authentications
 
@@ -183,16 +195,44 @@ class User < ApplicationRecord
     user_permissions.map(&:resource)
   end
 
+  # #########################
+  # User Access (permissions)
+  #
+  def accessible_organizations(action)
+    return Organization.all if power_user?
+    accesses.organizations(action)
+  end
+
+  def accessible_facility_groups(action)
+    return FacilityGroup.all if power_user?
+    accesses.facility_groups(action)
+  end
+
+  def accessible_facilities(action)
+    return Facility.all if power_user?
+    accesses.facilities(action)
+  end
+
+  def can?(action, model, record = nil)
+    return true if power_user?
+    accesses.can?(action, model, record)
+  end
+  #
+  # #########################
+
   def destroy_email_authentications
-    destroyable_email_authentications = email_authentications.load
+    destroyable_email_auths = email_authentications.load
 
     user_authentications.each(&:destroy)
-    destroyable_email_authentications.each(&:destroy)
+    destroyable_email_auths.each(&:destroy)
 
     true
   end
 
   def flipper_id
     "User;#{id}"
+
+  def power_user?
+    power_user_access? && email_authentication.present?
   end
 end
