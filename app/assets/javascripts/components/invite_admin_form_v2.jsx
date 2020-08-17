@@ -8,7 +8,7 @@ window.InviteAdminFormV2 = createReactClass({
   },
 
   accessLevelOptions: function() {
-    this.state.access_levels.map(
+    return this.state.access_levels.map(
       (al, index) => <option key={index} value={al.name}>{al.description}</option>
     );
   },

@@ -1,11 +1,21 @@
 class User < ApplicationRecord
   include PgSearch::Model
 
+  enum sync_approval_status: {
+    requested: "requested",
+    allowed: "allowed",
+    denied: "denied"
+  }, _prefix: true
+  enum access_level: {
+    viewer: "viewer",
+    manager: "manager",
+    power_user: "power_user"
+  }, _suffix: :access
+
   AUTHENTICATION_TYPES = {
     email_authentication: "EmailAuthentication",
     phone_number_authentication: "PhoneNumberAuthentication"
   }
-  
   ACCESS_LEVEL_DESCRIPTIONS = [
     {
       name: User.access_levels.fetch_values(:viewer).first,
@@ -22,17 +32,6 @@ class User < ApplicationRecord
       description: "Can manage everything"
     }
   ]
-
-  enum sync_approval_status: {
-    requested: "requested",
-    allowed: "allowed",
-    denied: "denied"
-  }, _prefix: true
-  enum access_level: {
-    viewer: "viewer",
-    manager: "manager",
-    power_user: "power_user"
-  }, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -217,6 +216,7 @@ class User < ApplicationRecord
     return true if power_user?
     accesses.can?(action, model, record)
   end
+
   #
   # #########################
 
@@ -231,6 +231,7 @@ class User < ApplicationRecord
 
   def flipper_id
     "User;#{id}"
+  end
 
   def power_user?
     power_user_access? && email_authentication.present?

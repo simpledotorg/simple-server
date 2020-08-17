@@ -2,7 +2,7 @@
 
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <%= react_component "InviteAdminFormV2",
-      access_levels: Access::ROLE_DESCRIPTIONS,
+      access_levels: User::ACCESS_LEVEL_DESCRIPTIONS,
       accessible_organizations: Organization.all
   %>
 <% else %>
