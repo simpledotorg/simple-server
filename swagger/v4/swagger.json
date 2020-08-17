@@ -349,6 +349,118 @@
         }
       }
     },
+    "teleconsultation_medical_officers/sync": {
+      "get": {
+        "summary": "Syncs Teleconsultation MOs data from server to device.",
+        "tags": [
+          "Teleconsult MOs"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "teleconsult MOs received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "teleconsultation_medical_officers": {
+                  "$ref": "#/definitions/teleconsultation_medical_officers"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "teleconsultation_medical_officers",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "teleconsultations/sync": {
+      "post": {
+        "summary": "Syncs Teleconsultations from device to server.",
+        "tags": [
+          "Teleconsultations"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "teleconsultations",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "teleconsultations": {
+                  "$ref": "#/definitions/teleconsultations"
+                }
+              },
+              "required": [
+                "teleconsultations"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "teleconsultations created"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
     "/users/find": {
       "post": {
         "summary": "Find a existing user",
@@ -1133,6 +1245,18 @@
             "string",
             "null"
           ]
+        },
+        "teleconsult_phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "capabilities": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "#/definitions/app_user_capabilities"
+          }
         }
       },
       "required": [
@@ -1176,6 +1300,157 @@
         "id",
         "password"
       ]
+    },
+    "app_user_capabilities": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "enum": [
+        "can_teleconsult"
+      ]
+    },
+    "medical_officer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      }
+    },
+    "teleconsultation_medical_officers": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "medical_officers": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "full_name": {
+                "$ref": "#/definitions/non_empty_string"
+              },
+              "phone_number": {
+                "$ref": "#/definitions/non_empty_string"
+              }
+            }
+          }
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      }
+    },
+    "teleconsultation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "medical_officer_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "request": {
+          "type": "object",
+          "properties": {
+            "requester_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "facility_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "requested_at": {
+              "$ref": "#/definitions/timestamp"
+            }
+          }
+        },
+        "record": {
+          "type": "object",
+          "properties": {
+            "recorded_at": {
+              "$ref": "#/definitions/timestamp"
+            },
+            "teleconsultation_type": {
+              "type": "string",
+              "enum": [
+                "audio",
+                "video",
+                "message"
+              ]
+            },
+            "patient_took_medicines": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "patient_consented": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
+            "medical_officer_number": {
+              "$ref": "#/definitions/non_empty_string"
+            },
+            "prescription_drugs": {
+              "type": "array",
+              "items": "string"
+            }
+          }
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      }
+    },
+    "teleconsultations": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/teleconsultation"
+      }
     }
   },
   "securityDefinitions": {

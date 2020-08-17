@@ -6,6 +6,10 @@ class User < ApplicationRecord
     phone_number_authentication: "PhoneNumberAuthentication"
   }
 
+  APP_USER_CAPABILITIES = {
+    can_teleconsult: "can_teleconsult"
+  }.freeze
+
   enum sync_approval_status: {
     requested: "requested",
     allowed: "allowed",

@@ -59,6 +59,14 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
+    def teleconsultation_medical_officers_sync_to_user_response
+      sync_to_user_response(:teleconsultation_medical_officers)
+    end
+
+    def teleconsultation_sync_from_user_request
+      sync_from_user_request(:teleconsultations)
+    end
+
     def patient_activate_request
       {
         type: :object,

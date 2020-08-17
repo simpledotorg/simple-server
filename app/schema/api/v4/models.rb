@@ -86,7 +86,6 @@ class Api::V4::Models
           blood_sugars: {type: ["null", :array], items: patient_blood_sugar},
           appointments: {type: ["null", :array], items: patient_appointment},
           medications: {type: ["null", :array], items: patient_medication}
-
         }
       }
     end
@@ -205,7 +204,9 @@ class Api::V4::Models
          password_digest: {"$ref" => "#/definitions/bcrypt_password"},
          registration_facility_id: {"$ref" => "#/definitions/uuid"},
          sync_approval_status: {type: [:string, "null"]},
-         sync_approval_status_reason: {type: [:string, "null"]}
+         sync_approval_status_reason: {type: [:string, "null"]},
+         teleconsult_phone_number: {"$ref" => "#/definitions/non_empty_string"},
+         capabilities: array_of("app_user_capabilities")
        },
        required: %w[id
          created_at
@@ -214,6 +215,64 @@ class Api::V4::Models
          phone_number
          password_digest
          registration_facility_id]}
+    end
+
+    def medical_officer
+      {
+        type: :object,
+        properties: {
+          id: {"$ref" => "#/definitions/uuid"},
+          full_name: {"$ref" =>  "#/definitions/non_empty_string" },
+          phone_number: {"$ref" =>  "#/definitions/non_empty_string" }
+        }
+      }
+    end
+
+    def teleconsultation_medical_officers
+      {
+        type: :object,
+        properties: {
+          id: {"$ref" => "#/definitions/uuid"},
+          facility_id: {"$ref" => "#/definitions/uuid"},
+          medical_officers: {type: ["null", :array], items: medical_officer},
+          created_at: {"$ref" => "#/definitions/timestamp"},
+          updated_at: {"$ref" => "#/definitions/timestamp"},
+          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
+        }
+      }
+    end
+
+    def teleconsultation
+      {
+        type: :object,
+        properties: {
+          id: {"$ref" => "#/definitions/uuid"},
+          patient_id: {"$ref" => "#/definitions/uuid"},
+          medical_officer_id: {"$ref" => "#/definitions/uuid"},
+          request: {
+            type: :object,
+            properties: {
+              requester_id: {"$ref" => "#/definitions/uuid"},
+              facility_id: {"$ref" => "#/definitions/uuid"},
+              requested_at: {"$ref" => "#/definitions/timestamp"}
+            }
+          },
+          record: {
+            type: :object,
+            properties: {
+              recorded_at: {"$ref" => "#/definitions/timestamp"},
+              teleconsultation_type: {type: :string, enum: Teleconsultation::TYPES.keys},
+              patient_took_medicines: {type: :string, enum: Teleconsultation::TELECONSULTATION_ANSWERS.keys},
+              patient_consented: {type: :string, enum: Teleconsultation::TELECONSULTATION_ANSWERS.keys},
+              medical_officer_number: {"$ref" => "#/definitions/non_empty_string"},
+              prescription_drugs: {type: :array, items: :string},
+            }
+          },
+          created_at: {"$ref" => "#/definitions/timestamp"},
+          updated_at: {"$ref" => "#/definitions/timestamp"},
+          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
+        }
+      }
     end
 
     def find_user
@@ -246,7 +305,12 @@ class Api::V4::Models
        patient: patient,
        user: user,
        find_user: find_user,
-       activate_user: activate_user}
+       activate_user: activate_user,
+       app_user_capabilities: {type: ["null", :array], items: {type: :string}, enum: User::APP_USER_CAPABILITIES.keys},
+       medical_officer: medical_officer,
+       teleconsultation_medical_officers: teleconsultation_medical_officers,
+       teleconsultation: teleconsultation,
+       teleconsultations: array_of("teleconsultation")}
     end
   end
 end
