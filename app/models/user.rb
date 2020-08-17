@@ -191,4 +191,8 @@ class User < ApplicationRecord
 
     true
   end
+
+  def flipper_id
+    "User;#{id}"
+  end
 end

@@ -14,6 +14,23 @@ class Access < ApplicationRecord
     super_admin: "super_admin"
   }
 
+  ROLE_DESCRIPTIONS = [
+    {
+      name: Access.roles.fetch_values(:viewer).first,
+      description: "Can view stuff"
+    },
+
+    {
+      name: Access.roles.fetch_values(:manager).first,
+      description: "Can manage stuff"
+    },
+
+    {
+      name: Access.roles.fetch_values(:super_admin).first,
+      description: "Can manage everything"
+    }
+  ]
+
   validates :role, presence: true
   validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have one access per resource."}
   validates :resource, presence: {unless: :super_admin?, message: "is required if not a super_admin."}
