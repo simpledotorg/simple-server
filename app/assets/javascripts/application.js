@@ -18,6 +18,7 @@
 //= require bs-file-input-init.js
 //= require react
 //= require react_ujs
+//= require react-checkbox-tree
 //= require lodash
 //= require components
 //= require tablesort
