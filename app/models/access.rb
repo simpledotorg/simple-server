@@ -1,29 +1,19 @@
 class Access < ApplicationRecord
   ALLOWED_RESOURCES = %w[Organization FacilityGroup Facility].freeze
-  ACTION_TO_ROLE = {
-    manage_overdue_list: [:manager, :viewer_all, :call_center],
-    view_reports: [:manager, :viewer_all, :viewer_reports_only],
-    view_pii: [:manager, :viewer_all],
-    manage: [:manager]
+  ACTION_TO_USER_ROLE = {
+    manage_overdue_list: User.access_levels.fetch_values(:manager, :viewer_all, :call_center),
+    view_reports: User.access_levels.fetch_values(:manager, :viewer_all, :viewer_reports_only),
+    view_pii: User.access_levels.fetch_values(:manager, :viewer_all),
+    manage: User.access_levels.fetch_values(:manager)
   }
 
   belongs_to :user
-  belongs_to :resource, polymorphic: true, optional: true
+  belongs_to :resource, polymorphic: true
 
-  enum role: {
-    super_admin: "super_admin",
-    manager: "manager",
-    viewer_all: "viewer_all",
-    viewer_reports_only: "viewer_reports_only",
-    call_center: "call_center"
-  }
-
-  validates :role, presence: true
-  validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have one access per resource."}
-  validates :resource, presence: {unless: :super_admin?, message: "is required if not a super_admin."}
-  validates :resource, absence: {if: :super_admin?, message: "must be nil if super_admin"}
-  validates :resource_type, inclusion: {in: ALLOWED_RESOURCES, unless: :super_admin?}
-  validate :user_has_only_one_role, if: -> { user.present? }
+  validates :user, uniqueness: {scope: [:resource_id, :resource_type], message: "can only have 1 access per resource."}
+  validates :resource_type, inclusion: {in: ALLOWED_RESOURCES}
+  validates :resource, presence: true
+  validate :user_is_not_a_power_user, if: -> { user.present? }
 
   class << self
     def organizations(action)
@@ -64,27 +54,25 @@ class Access < ApplicationRecord
     private
 
     def can_access_record?(resources, record)
-      return resources.exists? if super_admin?
       return resources.find_by_id(record).present? if record
-
       resources.exists?
     end
 
     def resources_for(resource_model, action)
-      return resource_model.all if super_admin?
+      resource_ids =
+        where(resource_type: resource_model.to_s)
+          .select { |access| access.user.access_level.in?(ACTION_TO_USER_ROLE[action]) }
+          .map(&:resource_id)
 
-      resource_ids = where(resource_type: resource_model.to_s, role: ACTION_TO_ROLE[action]).pluck(:resource_id)
       resource_model.where(id: resource_ids)
     end
   end
 
   private
 
-  def user_has_only_one_role
-    existing_role = user.accesses.pluck(:role).uniq.first
-
-    if existing_role.present? && existing_role != role
-      errors.add(:user, "can only have one role.")
+  def user_is_not_a_power_user
+    if user.power_user?
+      errors.add(:user, "cannot have accesses if they are a power user.")
     end
   end
 end
