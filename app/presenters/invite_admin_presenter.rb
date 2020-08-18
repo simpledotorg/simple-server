@@ -18,28 +18,35 @@ class InviteAdminPresenter < SimpleDelegator
     }
 
     display_facility_groups = ancestor_facility_groups.map { |ancestor_fg|
+      facilities = display_facilities.to_h.select { |f, _| parent?(f, ancestor_fg) }
+
       [
         resource_details(ancestor_fg),
         {
           selected: false,
           access: access?(accessible_facility_groups, ancestor_fg),
-          facilities: display_facilities.to_h.select { |f, _| parent?(f, ancestor_fg) }
+          access_count: facilities.select { |_f, v| v[:access] }.count,
+          total_count: facilities.count,
+          facilities: facilities
         }
       ]
     }
 
     display_organizations = ancestor_organizations.map do |ancestor_org|
+      facility_groups = display_facility_groups.to_h.select { |fg, _| parent?(fg, ancestor_org) }
       [
         resource_details(ancestor_org),
         {
           selected: false,
           access: access?(accessible_facility_groups, ancestor_org),
-          facility_groups: display_facility_groups.to_h.select { |fg, _| parent?(fg, ancestor_org) }
+          access_count: facility_groups.select { |_fg, v| v[:access] }.count,
+          total_count: facility_groups.count,
+          facility_groups: facility_groups
         }
       ]
     end
 
-    display_organizations.to_h
+    {organizations: display_organizations.to_h}
   end
 
   private

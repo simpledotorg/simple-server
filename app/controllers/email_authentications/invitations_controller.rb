@@ -4,6 +4,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def new
     authorize([:manage, :admin, current_admin])
+    @current_admin = InviteAdminPresenter.new(current_admin)
     super
   end
 

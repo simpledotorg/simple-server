@@ -8,8 +8,44 @@
         <%= form.text_field :email, id: :email, required: true %>
         <%= form.text_field :job_title, id: :job_title, required: true %>
         <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS, id: :access_levels, required: true %>
+
+        <div id="facility-access">
+          <% @current_admin.access_tree[:organizations].each do |organization, children| %>
+            <ul>
+              <li>
+                <input type="checkbox" name="organization" id="<%= organization[:id] %>">
+                <label for="<%= organization[:id] %>"><%= "#{organization[:name]} (#{children[:access_count]} / #{children[:total_count]})" %></label>
+
+                <ul>
+                  <% children[:facility_groups].each do |facility_group, children| %>
+
+                    <li>
+                      <input type="checkbox" name="facility_group" id="<%= facility_group[:id] %>">
+                      <label for="<%= facility_group[:id] %>">
+                        <%= "#{facility_group[:name]} (#{children[:access_count]} / #{children[:total_count]})" %>
+                      </label>
+
+                      <ul>
+                        <% children[:facilities].each do |facility, _| %>
+
+                          <li>
+                            <input type="checkbox" name="facility" id="<%= facility[:id] %>">
+                            <label for="<%= facility[:id] %>"><%= facility[:name] %></label>
+                          </li>
+
+                        <% end %>
+                      </ul>
+
+                    </li>
+                  <% end %>
+                </ul>
+              </li>
+            </ul>
+          <% end %>
+        </div>
+
         <%= form.primary("Send Invite") %>
-    <% end %>
+      <% end %>
     </div>
   </div>
 <% else %>
