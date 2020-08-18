@@ -19,6 +19,7 @@ blocks:
             - sem-service start postgres 10
             - sem-version ruby 2.5.1
             - cache restore
+            - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
             - 'bundle exec rake db:setup'
