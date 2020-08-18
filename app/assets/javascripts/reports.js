@@ -1,15 +1,15 @@
 window.addEventListener("DOMContentLoaded", initializeCharts);
 
-let lightGreenColor = "rgba(242, 248, 245, 1)";
+let lightGreenColor = "rgba(242, 248, 245, 0.8)";
 let darkGreenColor = "rgba(0, 122, 49, 1)";
-let mediumGreenColor = "rgba(92, 255, 157, 1)";
-let lightRedColor = "rgba(255, 235, 238, 1)";
+let mediumGreenColor = "rgba(0, 184, 73, 0.8)";
+let lightRedColor = "rgba(255, 235, 238, 0.8)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
-let lightPurpleColor = "rgba(238, 229, 252, 1)";
+let lightPurpleColor = "rgba(238, 229, 252, 0.8)";
 let darkPurpleColor = "#5300E0";
-let darkGreyColor = "rgba(108, 115, 122, 1)";
-let mediumGreyColor = "rgba(173, 178, 184, 1)";
-let lightGreyColor = "rgba(240, 242, 245, 1)";
+let darkGreyColor = "rgba(108, 115, 122, 0.8)";
+let mediumGreyColor = "rgba(173, 178, 184, 0.8)";
+let lightGreyColor = "rgba(240, 242, 245, 0.8)";
 
 function getReportingData() {
   const $reportingDiv = document.getElementById("reporting");
@@ -37,10 +37,11 @@ function initializeCharts() {
 
   const controlledGraphConfig = createGraphConfig([{
     data: data.controlRate,
-    borderWidth: 1,
-    rgbaLineColor: darkGreenColor,
+    borderWidth: 2,
+    rgbaLineColor: mediumGreenColor,
+    rgbaPointColor: lightGreenColor,
     rgbaBackgroundColor: lightGreenColor,
-    label: "control rate",
+    label: "HTN controlled",
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
     false,
@@ -89,9 +90,10 @@ function initializeCharts() {
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: lightRedColor,
-      borderWidth: 1,
+      borderWidth: 2,
+      rgbaPointColor: lightRedColor,
       rgbaLineColor: darkRedColor,
-      label: "not under control rate",
+      label: "HTN not under control",
     }
   ], "line");
   uncontrolledGraphConfig.options = createGraphOptions(
@@ -184,7 +186,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           backgroundColor: dataset.rgbaBackgroundColor,
           borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
           borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-          pointBackgroundColor: dataset.rgbaLineColor,
+          pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
         };
@@ -260,17 +262,17 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       bodyFontFamily: "Roboto Condensed",
       bodyFontSize: 12,
       caretSize: 6,
-      displayColors: false,
+      displayColors: true,
       position: "nearest",
-      titleAlign: "center",
+      titleAlign: "left",
       titleFontFamily: "Roboto Condensed",
-      titleFontSize: 16,
+      titleFontSize: 14,
       xAlign: "center",
       xPadding: 10,
       yAlign: "bottom",
       yPadding: 10,
       callbacks: {
-        title: function () { },
+        title: function () { return "June 2020" },
         label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
         },
@@ -287,7 +289,7 @@ function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
 
-  return `${percent}% ${label} (${numerator} of ${denominator} patients) in ${date}`;
+  return `${percent}% ${label} (${numerator} of ${denominator} patients)`;
 }
 
 function formatSumTooltipText(tooltipItem) {
