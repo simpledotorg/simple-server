@@ -8,19 +8,6 @@
         <%= form.text_field :email, id: :email, required: true %>
         <%= form.text_field :job_title, id: :job_title, required: true %>
         <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS, id: :access_levels, required: true %>
-
-        <div id="plugins1">
-          <ul>
-            <li class="jstree-open">
-              Parent
-              <ul>
-                <li>Child 1</li>
-                <li>Child 2</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
         <%= form.primary("Send Invite") %>
     <% end %>
     </div>

@@ -15,4 +15,8 @@ class Organization < ApplicationRecord
   def districts
     facilities.select(:district).distinct.pluck(:district)
   end
+
+  def parent_id
+    nil
+  end
 end

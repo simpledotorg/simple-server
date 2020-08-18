@@ -38,7 +38,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     unless user.valid? && email_authentication.valid?
       user.errors.delete(:email_authentications)
       render json: {errors: user.errors.full_messages + email_authentication.errors.full_messages},
-             status: :bad_request
+        status: :bad_request
     end
   end
 
@@ -58,12 +58,14 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def user_params
-    {full_name: params[:full_name],
-     role: params[:role],
-     organization_id: params[:organization_id],
-     device_created_at: Time.current,
-     device_updated_at: Time.current,
-     sync_approval_status: :denied}
+    {
+      full_name: params[:full_name],
+      role: params[:role],
+      organization_id: params[:organization_id],
+      device_created_at: Time.current,
+      device_updated_at: Time.current,
+      sync_approval_status: :denied
+    }
   end
 
   def permission_params
