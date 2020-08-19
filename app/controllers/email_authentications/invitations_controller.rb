@@ -10,7 +10,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      binding.pry
+      nil
     else
       user = User.new(user_params)
       authorize([:manage, :admin, user])

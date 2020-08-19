@@ -14,7 +14,7 @@ class InviteAdminPresenter < SimpleDelegator
         ancestor_facility.id,
         {
           name: ancestor_facility.name,
-          parent_id: ancestor_facility.parent_id,
+          parents: [ancestor_facility.parent_id, ancestor_facility.facility_group.parent_id],
           selected: false,
           access: access?(accessible_facilities, ancestor_facility)
         }
@@ -28,7 +28,7 @@ class InviteAdminPresenter < SimpleDelegator
         ancestor_fg.id,
         {
           name: ancestor_fg.name,
-          parent_id: ancestor_fg.parent_id,
+          parents: [ancestor_fg.parent_id, ancestor_fg.organization.parent_id],
           selected: false,
           access: access?(accessible_facility_groups, ancestor_fg),
           access_count: facilities.select { |_f, v| v[:access] }.count,
@@ -44,7 +44,7 @@ class InviteAdminPresenter < SimpleDelegator
         ancestor_org.id,
         {
           name: ancestor_org.name,
-          parent_id: ancestor_org.parent_id,
+          parents: [ancestor_org.parent_id],
           selected: false,
           access: access?(accessible_facility_groups, ancestor_org),
           access_count: facility_groups.select { |_fg, v| v[:access] }.count,
@@ -60,7 +60,7 @@ class InviteAdminPresenter < SimpleDelegator
   private
 
   def parent?(ancestor, resource)
-    resource[:parent_id] == ancestor.id
+    ancestor.id == resource[:parents].first
   end
 
   def access?(resources, resource)
