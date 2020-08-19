@@ -31,9 +31,7 @@ blocks:
             - 'bundle exec rake db:setup'
             - 'bundle exec rake db:test:prepare'
 promotions:
-  - name: Deploy to Sandbox
-    pipeline_file: pipeline_2.yml
-  - name: Automatic Deploy to Sandbox
-    pipeline_file: pipeline_3.yml
+  - name: Sandbox Deployment
+    pipeline_file: sandbox_deployment.yml
     auto_promote:
       when: branch = 'master' AND result = 'passed'
