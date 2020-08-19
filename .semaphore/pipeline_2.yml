@@ -13,6 +13,7 @@ blocks:
             - bundle install --deployment --path vendor/bundle
             - cache store
             - echo "Pretending to deploy to sandbox. Goodbye."
+            - 'bundle exec cap sandbox deploy:check'
 agent:
   machine:
     type: e1-standard-2

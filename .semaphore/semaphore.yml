@@ -30,7 +30,6 @@ blocks:
             - cache store
             - 'bundle exec rake db:setup'
             - 'bundle exec rake db:test:prepare'
-            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
   - name: Deploy to Sandbox
     pipeline_file: pipeline_2.yml
