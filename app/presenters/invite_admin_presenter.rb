@@ -11,8 +11,10 @@ class InviteAdminPresenter < SimpleDelegator
   def access_tree
     display_facilities = ancestor_facilities.map { |ancestor_facility|
       [
-        resource_details(ancestor_facility),
+        ancestor_facility.id,
         {
+          name: ancestor_facility.name,
+          parent_id: ancestor_facility.parent_id,
           selected: false,
           access: access?(accessible_facilities, ancestor_facility)
         }
@@ -20,11 +22,13 @@ class InviteAdminPresenter < SimpleDelegator
     }
 
     display_facility_groups = ancestor_facility_groups.map { |ancestor_fg|
-      facilities = display_facilities.to_h.select { |f, _| parent?(f, ancestor_fg) }
+      facilities = display_facilities.to_h.select { |_, f_data| parent?(ancestor_fg, f_data) }
 
       [
-        resource_details(ancestor_fg),
+        ancestor_fg.id,
         {
+          name: ancestor_fg.name,
+          parent_id: ancestor_fg.parent_id,
           selected: false,
           access: access?(accessible_facility_groups, ancestor_fg),
           access_count: facilities.select { |_f, v| v[:access] }.count,
@@ -35,10 +39,12 @@ class InviteAdminPresenter < SimpleDelegator
     }
 
     display_organizations = ancestor_organizations.map do |ancestor_org|
-      facility_groups = display_facility_groups.to_h.select { |fg, _| parent?(fg, ancestor_org) }
+      facility_groups = display_facility_groups.to_h.select { |_, fg_data| parent?(ancestor_org, fg_data) }
       [
-        resource_details(ancestor_org),
+        ancestor_org.id,
         {
+          name: ancestor_org.name,
+          parent_id: ancestor_org.parent_id,
           selected: false,
           access: access?(accessible_facility_groups, ancestor_org),
           access_count: facility_groups.select { |_fg, v| v[:access] }.count,
@@ -53,16 +59,12 @@ class InviteAdminPresenter < SimpleDelegator
 
   private
 
-  def parent?(resource, ancestor)
+  def parent?(ancestor, resource)
     resource[:parent_id] == ancestor.id
   end
 
   def access?(resources, resource)
     resources.map(&:id).include?(resource.id)
-  end
-
-  def resource_details(resource)
-    OpenStruct.new(resource.slice(:id, :name, :parent_id))
   end
 
   def ancestor_facilities

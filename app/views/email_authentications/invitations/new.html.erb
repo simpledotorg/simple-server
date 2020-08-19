@@ -9,29 +9,57 @@
         <%= form.text_field :job_title, id: :job_title, required: true %>
         <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS, id: :access_levels, required: true %>
 
+        <%= form.label "Facility Access" %>
         <div id="facility-access">
-          <% @current_admin.access_tree[:organizations].each do |organization, children| %>
-            <ul>
-              <li>
-                <%= form.check_box :organization, id: organization.id, class: 'access-input', label: "#{organization.name} (#{children[:access_count]} / #{children[:total_count]})" %>
-                <ul>
-                  <% children[:facility_groups].each do |facility_group, children| %>
-                    <li>
-                      <%= form.check_box :facility_group, id: facility_group.id, class: 'access-input', label: "#{facility_group.name} (#{children[:access_count]} / #{children[:total_count]})" %>
-                      <ul>
-                        <% children[:facilities].each do |facility, _| %>
-                          <li>
-                            <%= form.check_box :facility, id: facility.id, class: 'access-input', label: facility.name %>
-                          </li>
-                        <% end %>
-                      </ul>
-
-                    </li>
-                  <% end %>
-                </ul>
-              </li>
-            </ul>
+          <!-- dump all statistics in a hidden div so that we can parse it in JS -->
+          <%= content_tag :div,
+              id: "facility-access-statistics",
+              data: { statistics: @current_admin.access_tree },
+              style: "display: none" do %>
           <% end %>
+
+          <div class="card">
+            <% @current_admin.access_tree[:organizations].each do |org_id, org_data| %>
+              <ul>
+                <li>
+                  <%= form.check_box :organization,
+                      {
+                          id: org_id,
+                          class: 'access-input',
+                          label: "#{org_data[:name]} (#{org_data[:access_count]} / #{org_data[:total_count]})",
+                          disabled: !org_data[:access]
+                      } %>
+                  <ul>
+                    <% org_data[:facility_groups].each do |facility_group_id, fg_data| %>
+                      <li>
+                        <%= form.check_box :facility_group,
+                            {
+                                id: facility_group_id,
+                                class: 'access-input',
+                                label: "#{fg_data[:name]} (#{fg_data[:access_count]} / #{fg_data[:total_count]})",
+                                disabled: !fg_data[:access]
+                            } %>
+                        <ul>
+                          <% fg_data[:facilities].each do |facility_id, f_data| %>
+                            <li>
+                              <%= form.check_box :facility,
+                                  {
+                                      id: facility_id,
+                                      class: 'access-input',
+                                      label: f_data[:name],
+                                      disabled: !f_data[:access]
+                                  } %>
+                            </li>
+                          <% end %>
+                        </ul>
+
+                      </li>
+                    <% end %>
+                  </ul>
+                </li>
+              </ul>
+            <% end %>
+          </div>
         </div>
 
         <%= form.primary("Send Invite") %>
