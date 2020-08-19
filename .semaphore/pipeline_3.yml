@@ -1,10 +1,10 @@
 version: v1.0
-name: Sandbox Deployment
+name: Pipeline 3
 blocks:
-  - name: Deploy
+  - name: Sandbox Deploy
     task:
       jobs:
-        - name: Deploy
+        - name: Sandbox Deploy
           commands:
             - checkout
             - sem-version ruby 2.5.1
@@ -14,8 +14,6 @@ blocks:
             - cache store
             - echo "Pretending to deploy to sandbox. Goodbye."
             - bundle exec cap sandbox deploy
-      secrets:
-        - name: semaphore-deploy-key
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa

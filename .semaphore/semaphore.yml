@@ -33,3 +33,7 @@ blocks:
 promotions:
   - name: Deploy to Sandbox
     pipeline_file: pipeline_2.yml
+  - name: Automatic Deploy to Sandbox
+    pipeline_file: pipeline_3.yml
+    auto_promote:
+      when: branch = 'master' AND result = 'passed'
