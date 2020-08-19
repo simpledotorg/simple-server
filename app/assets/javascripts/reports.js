@@ -1,18 +1,17 @@
 window.addEventListener("DOMContentLoaded", initializeCharts);
 
-let lightGreenColor = "rgba(242, 248, 245, 0.8)";
+let lightGreenColor = "rgba(242, 248, 245, 1)";
 let darkGreenColor = "rgba(0, 122, 49, 1)";
-let mediumGreenColor = "rgba(0, 184, 73, 0.8)";
-let lightRedColor = "rgba(255, 235, 238, 0.8)";
+let mediumGreenColor = "rgba(0, 184, 73, 1)";
+let lightRedColor = "rgba(255, 235, 238, 1)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
-let lightPurpleColor = "rgba(238, 229, 252, 0.8)";
-let darkPurpleColor = "#5300E0";
-let darkGreyColor = "rgba(108, 115, 122, 0.8)";
-let mediumGreyColor = "rgba(173, 178, 184, 0.8)";
-let lightGreyColor = "rgba(240, 242, 245, 0.8)";
+let lightPurpleColor = "rgba(238, 229, 252, 1)";
+let darkPurpleColor = "rgba(83, 0, 224, 1)";
+let darkGreyColor = "rgba(108, 115, 122, 1)";
+let mediumGreyColor = "rgba(173, 178, 184, 1)";
+let lightGreyColor = "rgba(240, 242, 245, 1)";
 
 function getReportingData() {
-  const $reportingDiv = document.getElementById("reporting");
   const $newData = document.getElementById("data-json");
   const jsonData = JSON.parse($newData.textContent);
 
@@ -64,14 +63,13 @@ function initializeCharts() {
       rgbaLineColor: darkGreyColor,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited in the last 3 months but no BP measure",
+      label: "visited in the last 3 months",
     },
     {
       data: data.missedVisitsRate,
       borderWidth: 0,
       rgbaLineColor: mediumGreyColor,
       rgbaBackgroundColor: mediumGreyColor,
-      rgbaLineColor: mediumGreyColor,
       label: "last BP >3 months ago",
     },
   ], "bar");
@@ -93,10 +91,10 @@ function initializeCharts() {
   const uncontrolledGraphConfig = createGraphConfig([
     {
       data: data.uncontrolledRate,
-      rgbaBackgroundColor: lightRedColor,
       borderWidth: 2,
-      rgbaPointColor: lightRedColor,
       rgbaLineColor: darkRedColor,
+      rgbaPointColor: lightRedColor,
+      rgbaBackgroundColor: lightRedColor,
       label: "HTN not under control",
     }
   ], "line");
@@ -120,9 +118,9 @@ function initializeCharts() {
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
       data: data.registrations,
-      rgbaBackgroundColor: lightPurpleColor,
       borderWidth: { top: 2 },
       rgbaLineColor: darkPurpleColor,
+      rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
     },
   ], "bar");
@@ -155,7 +153,7 @@ function initializeCharts() {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited in the last 3 months but no BP measure",
+      label: "visited in the last 3 months",
     },
     {
       data: data.missedVisitsRate,
@@ -215,7 +213,6 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
     elements: {
       point: {
         pointStyle: "circle",
-        backgroundColor: "rgba(81, 205, 130, 1)",
         hoverRadius: 5,
       },
     },
@@ -231,7 +228,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           drawBorder: false,
         },
         ticks: {
-          fontColor: "#ADB2B8",
+          fontColor: mediumGreyColor,
           fontSize: 12,
           fontFamily: "Roboto Condensed",
           padding: 8,
@@ -261,105 +258,30 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       }],
     },
     tooltips: {
-      enabled: false,
-      mode: 'index',
+      mode: "index",
       intersect: false,
-      position: 'nearest',
+      position: "average",
       callbacks: {
         label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
+        },
+        labelColor: function(tooltipItem, data) {
+          const pointBackgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].pointBackgroundColor;
+          const borderColor = data.config.data.datasets[tooltipItem.datasetIndex].borderColor;
+          const backgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].backgroundColor;
+
+          let styles = {};
+
+          if (pointBackgroundColor === undefined) {
+            styles.borderColor = backgroundColor;
+            styles.backgroundColor = backgroundColor;
+          } else {
+            styles.borderColor = borderColor;
+            styles.backgroundColor = borderColor;
+          }
+
+          return styles;
         }
-      },
-      custom: function(tooltipModel) {
-        // Tooltip element
-        var tooltipEl = document.getElementById('chartjs-tooltip');
-        // Create element
-        if (!tooltipEl) {
-            tooltipEl = document.createElement('div');
-            tooltipEl.id = 'chartjs-tooltip';
-            document.body.appendChild(tooltipEl);
-        }
-        // Hide if no tooltip
-        if (tooltipModel.opacity === 0) {
-          tooltipEl.style.opacity = 0;
-          return;
-        }
-        // Set caret position
-        tooltipEl.classList.remove('above', 'below', 'no-transform');
-        if (tooltipModel.yAlign) {
-          tooltipEl.classList.add(tooltipModel.yAlign);
-        } else {
-          tooltipEl.classList.add('no-transform');
-        }
-
-        // Set tooltip content 
-        if (tooltipModel.body) {
-          // Set title
-          const tooltipTitle = tooltipModel.title[0];
-          const titleStyle =
-            `
-              margin: 0;
-              margin-bottom: 4px;
-              font-size: 14px;
-              font-weight: 600;
-            `;
-          let innerHtml = `<p style="${titleStyle}">${tooltipTitle}</p>`;
-          // Set labels
-          const labelsContainerStyle =
-            `
-              display: flex;
-              flex-direction: column;
-            `;
-          innerHtml += `<div style="${labelsContainerStyle}">`;
-
-          const labels = tooltipModel.body.map(item => item.lines);
-
-          labels.forEach(function(label, index) {
-            const labelRowStyle =
-              `
-                display: flex;
-                align-items: baseline;
-                margin-bottom: 4px;
-              `;
-            innerHtml += `<div style="${labelRowStyle}">`;
-            const colors = tooltipModel.labelColors[index];
-            const labelSwatchStyle =
-              `
-                background: ${colors.backgroundColor};
-                width: 10px;
-                height: 10px;
-                margin-right: 6px;
-                border-radius: 2px;
-              `;
-            const labelSwatch = `<span style="${labelSwatchStyle}"></span>`;
-            const labelTextStyle = 'margin: 0; font-family: Roboto Condensed; font-size: 14px; color: #ffffff;';
-            const labelText = `<p style="${labelTextStyle}">${label}</p>`;
-            innerHtml += labelSwatch + labelText;
-            innerHtml += "</div>";
-          });
-
-          innerHtml += "</div>";
-
-          tooltipEl.innerHTML = innerHtml;
-        }
-
-        // `this` will be the overall tooltip
-        var position = this._chart.canvas.getBoundingClientRect();
-
-        // Display, position, and set styles for font
-        tooltipEl.style.opacity = 1;
-        tooltipEl.style.width = 'auto';
-        tooltipEl.style.position = 'absolute';
-        tooltipEl.style.backgroundColor = "#000000";
-        tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-        tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
-        tooltipEl.style.fontFamily = "Roboto Condensed";
-        tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
-        tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
-        tooltipEl.style.color = "#ffffff";
-        tooltipEl.style.padding = "10px 12px";
-        tooltipEl.style.borderRadius = "4px";
-        tooltipEl.style.pointerEvents = 'none';
       }
     }
   };
@@ -385,4 +307,96 @@ function formatValueAsPercent(value) {
 
 function formatNumberWithCommas(value) {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function customTooltip(tooltipModel) {
+  // Tooltip element
+  var tooltipEl = document.getElementById('chartjs-tooltip');
+  // Create element
+  if (!tooltipEl) {
+      tooltipEl = document.createElement('div');
+      tooltipEl.id = 'chartjs-tooltip';
+      document.body.appendChild(tooltipEl);
+  }
+  // Hide if no tooltip
+  if (tooltipModel.opacity === 0) {
+    tooltipEl.style.opacity = 0;
+    return;
+  }
+  // Set caret position
+  tooltipEl.classList.remove('above', 'below', 'no-transform');
+  if (tooltipModel.yAlign) {
+    tooltipEl.classList.add(tooltipModel.yAlign);
+  } else {
+    tooltipEl.classList.add('no-transform');
+  }
+
+  // Set tooltip content 
+  if (tooltipModel.body) {
+    // Set title
+    const tooltipTitle = tooltipModel.title[0];
+    const titleStyle =
+      `
+        margin: 0;
+        margin-bottom: 4px;
+        font-size: 14px;
+        font-weight: 600;
+      `;
+    let innerHtml = `<p style="${titleStyle}">${tooltipTitle}</p>`;
+    // Set labels
+    const labelsContainerStyle =
+      `
+        display: flex;
+        flex-direction: column;
+      `;
+    innerHtml += `<div style="${labelsContainerStyle}">`;
+
+    const labels = tooltipModel.body.map(item => item.lines);
+
+    labels.forEach(function(label, index) {
+      const labelRowStyle =
+        `
+          display: flex;
+          align-items: baseline;
+          margin-bottom: 4px;
+        `;
+      innerHtml += `<div style="${labelRowStyle}">`;
+      const colors = tooltipModel.labelColors[index];
+      const labelSwatchStyle =
+        `
+          background: ${colors.backgroundColor};
+          width: 10px;
+          height: 10px;
+          margin-right: 6px;
+          border-radius: 2px;
+        `;
+      const labelSwatch = `<span style="${labelSwatchStyle}"></span>`;
+      const labelTextStyle = 'margin: 0; font-family: Roboto Condensed; font-size: 14px; color: #ffffff;';
+      const labelText = `<p style="${labelTextStyle}">${label}</p>`;
+      innerHtml += labelSwatch + labelText;
+      innerHtml += "</div>";
+    });
+
+    innerHtml += "</div>";
+
+    tooltipEl.innerHTML = innerHtml;
+  }
+
+  // `this` will be the overall tooltip
+  var position = this._chart.canvas.getBoundingClientRect();
+
+  // Display, position, and set styles for font
+  tooltipEl.style.opacity = 1;
+  tooltipEl.style.width = 'auto';
+  tooltipEl.style.position = 'absolute';
+  tooltipEl.style.backgroundColor = "#000000";
+  tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+  tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+  tooltipEl.style.fontFamily = "Roboto Condensed";
+  tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
+  tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+  tooltipEl.style.color = "#ffffff";
+  tooltipEl.style.padding = "10px 12px";
+  tooltipEl.style.borderRadius = "4px";
+  tooltipEl.style.pointerEvents = 'none';
 }
