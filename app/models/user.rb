@@ -1,6 +1,27 @@
 class User < ApplicationRecord
   include PgSearch::Model
 
+  AUTHENTICATION_TYPES = {
+    email_authentication: "EmailAuthentication",
+    phone_number_authentication: "PhoneNumberAuthentication"
+  }
+  ACCESS_LEVEL_DESCRIPTIONS = [
+    {
+      name: :viewer,
+      description: "Can view stuff"
+    },
+
+    {
+      name: :manager,
+      description: "Can manage stuff"
+    },
+
+    {
+      name: :power_user,
+      description: "Can manage everything"
+    }
+  ]
+
   enum sync_approval_status: {
     requested: "requested",
     allowed: "allowed",
@@ -11,27 +32,6 @@ class User < ApplicationRecord
     manager: "manager",
     power_user: "power_user"
   }, _suffix: :access
-
-  AUTHENTICATION_TYPES = {
-    email_authentication: "EmailAuthentication",
-    phone_number_authentication: "PhoneNumberAuthentication"
-  }
-  ACCESS_LEVEL_DESCRIPTIONS = [
-    {
-      name: User.access_levels.fetch_values(:viewer).first,
-      description: "Can view stuff"
-    },
-
-    {
-      name: User.access_levels.fetch_values(:manager).first,
-      description: "Can manage stuff"
-    },
-
-    {
-      name: User.access_levels.fetch_values(:power_user).first,
-      description: "Can manage everything"
-    }
-  ]
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -217,6 +217,29 @@ class User < ApplicationRecord
     accesses.can?(action, model, record)
   end
 
+  def access_tree(action)
+    facilities = accessible_facilities(action).includes(facility_group: :organization)
+
+    facility_tree =
+      facilities
+        .map { |facility| [facility, {can_access: true}] }
+        .to_h
+
+    facility_group_tree =
+      facilities
+        .map(&:facility_group)
+        .map { |fg| [fg, {can_access: can?(action, :facility_group, fg), facilities: facility_tree}] }
+        .to_h
+
+    organization_tree =
+      facilities
+        .map(&:facility_group)
+        .map(&:organization)
+        .map { |org| [org, {can_access: can?(action, :organization, org), facility_groups: facility_group_tree}] }
+        .to_h
+
+    {organizations: organization_tree}
+  end
   #
   # #########################
 

@@ -13,7 +13,6 @@ class Access < ApplicationRecord
   validates :resource, presence: true
   validate :user_is_not_a_power_user, if: -> { user.present? }
 
-
   class << self
     def organizations(action)
       resources_for(Organization, action)
