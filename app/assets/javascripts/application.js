@@ -19,6 +19,7 @@
 //= require react
 //= require react_ujs
 //= require lodash
+//= require fuzzysort
 //= require components
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min

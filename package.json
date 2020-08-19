@@ -2,6 +2,7 @@
   "name": "simple-server",
   "private": true,
   "dependencies": {
+    "fuzzysort": "^1.1.4",
     "jstree": "^3.3.10",
     "tablesort": "^5.2.0"
   }
