@@ -33,10 +33,10 @@ $(function () {
   }
 
   // helper function to create nodeArrays (not collections)
-  const nodeArray = (selector, parent = document) => [].slice.call(parent.querySelectorAll(selector));
+  const nodeArray = (selector, parent = document) => [].slice.call(parent.querySelectorAll(selector))
 
   // checkboxes of interest
-  const allThings = nodeArray('input', document.getElementById('facility-access'));
+  const allThings = nodeArray('input.access-input', document.getElementById('facility-access'));
 
   // global listener
   addEventListener('change', e => {
@@ -46,16 +46,19 @@ $(function () {
     //	our list of allThings
     if (allThings.indexOf(check) === -1) return;
 
-    //	check/unchek children (includes check itself)
-    const children = nodeArray('input', check.parentNode);
+    //	check/uncheck children (includes check itself)
+    const children = nodeArray('input.access-input', check.parentNode.parentNode);
+    console.log(check.parentNode.parentNode);
+    console.log(children);
+
     children.forEach(child => child.checked = check.checked);
 
     // traverse up from target check
     while (check) {
 
-      // find parent and sibling checkboxes (quick'n'dirty)
-      const parent = (check.closest(['ul']).parentNode).querySelector('input');
-      const siblings = nodeArray('input', parent.closest('li').querySelector(['ul']));
+      // find parent and sibling checkboxes (quick 'n' dirty)
+      const parent = (check.closest(['ul']).parentNode).querySelector('input.access-input');
+      const siblings = nodeArray('input.access-input', parent.closest('li').querySelector(['ul']));
 
       // get checked state of siblings
       // are every or some siblings checked (using Boolean as test function)

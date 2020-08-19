@@ -13,26 +13,16 @@
           <% @current_admin.access_tree[:organizations].each do |organization, children| %>
             <ul>
               <li>
-                <input type="checkbox" name="organization" id="<%= organization[:id] %>">
-                <label for="<%= organization[:id] %>"><%= "#{organization[:name]} (#{children[:access_count]} / #{children[:total_count]})" %></label>
-
+                <%= form.check_box :organization, id: organization.id, class: 'access-input', label: "#{organization.name} (#{children[:access_count]} / #{children[:total_count]})" %>
                 <ul>
                   <% children[:facility_groups].each do |facility_group, children| %>
-
                     <li>
-                      <input type="checkbox" name="facility_group" id="<%= facility_group[:id] %>">
-                      <label for="<%= facility_group[:id] %>">
-                        <%= "#{facility_group[:name]} (#{children[:access_count]} / #{children[:total_count]})" %>
-                      </label>
-
+                      <%= form.check_box :facility_group, id: facility_group.id, class: 'access-input', label: "#{facility_group.name} (#{children[:access_count]} / #{children[:total_count]})" %>
                       <ul>
                         <% children[:facilities].each do |facility, _| %>
-
                           <li>
-                            <input type="checkbox" name="facility" id="<%= facility[:id] %>">
-                            <label for="<%= facility[:id] %>"><%= facility[:name] %></label>
+                            <%= form.check_box :facility, id: facility.id, class: 'access-input', label: facility.name %>
                           </li>
-
                         <% end %>
                       </ul>
 

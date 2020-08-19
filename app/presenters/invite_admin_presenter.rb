@@ -1,3 +1,5 @@
+require "ostruct"
+
 class InviteAdminPresenter < SimpleDelegator
   attr_reader :current_admin
 
@@ -60,7 +62,7 @@ class InviteAdminPresenter < SimpleDelegator
   end
 
   def resource_details(resource)
-    resource.slice(:id, :name, :parent_id)
+    OpenStruct.new(resource.slice(:id, :name, :parent_id))
   end
 
   def ancestor_facilities
