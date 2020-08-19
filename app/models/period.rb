@@ -15,7 +15,7 @@ class Period
     when String
       Quarter.parse(value)
     when Date, Time, DateTime
-      Quarter.for_date(value)
+      Quarter.new(date: value)
     when Quarter
       value
     else
@@ -43,6 +43,27 @@ class Period
 
   def to_date
     value.to_date
+  end
+
+  def start_date
+    if quarter?
+      value.start_date
+    else
+      value.beginning_of_month.to_date
+    end
+  end
+
+  def end_date
+    if quarter?
+      value.end_date
+    else
+      value.end_of_month.to_date
+    end
+  end
+
+  def blood_pressure_control_range
+    three_months_ago = end_date.advance(months: -3)
+    (three_months_ago..end_date)
   end
 
   def succ

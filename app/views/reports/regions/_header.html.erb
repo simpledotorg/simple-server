@@ -1,5 +1,12 @@
 <div class="alert alert-primary">
-  <span class="fw-bold">Early access:</span> This page is under active development, thanks for your patience as we work on improving it
+  <span class="fw-bold">Early access:</span> Thanks for your patience as we improve this page. The following features are coming soon:
+  <ul class="mt-4px mb-0px pl-16px">
+    <li>More detailed cohorts</li>
+    <li>Top district and facility benchmarks</li>
+    <li>Lost to follow-up rate</li>
+    <li>Facility comparison tables</li>
+    <li>State and block level reports</li>
+  </ul>
 </div>
 <div class="dashboard">
   <nav class="breadcrumb mb-0px">
@@ -15,15 +22,15 @@
     <%= @region.name %>
   </p>
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
-    <div class="d-flex order-2 order-lg-1">
-      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Overview", request.params.merge(action: "show") %>
+    <div class="d-flex order-2 order-lg-1 jc-between">
+      <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold td-none <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Overview", request.params.merge(action: "show"), :class => "c-grey-dark td-none" %>
       </p>
-      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort") %>
+      <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Details trend", request.params.merge(action: "details"), :class => "c-grey-dark td-none" %>
       </p>
-      <p class="mr-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Details trend", request.params.merge(action: "details") %>
+      <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
+        <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort"), :class => "c-grey-dark td-none" %>
       </p>
     </div>
     <div class="dropdown show order-1 mb-24px order-lg-2 mb-lg-0">
@@ -36,13 +43,13 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <%= @selected_date.to_s %> report
+        <%= @period.to_s %> report
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_for(@period, url: request.params, method: :get) do |f| %>
-          <%= f.text_field :type, { id: "dropdown-period-type" } %>
+        <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+          <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
-          <% (0..12).each do |num|
+          <% (1..13).each do |num|
               selected = false
               date = Date.current.beginning_of_month.advance(months: -num)
               period = Period.new(type: :month, value: date)
@@ -50,16 +57,6 @@
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
                     type="submit" data-period-type="month" value="<%= period.value %>">
               <%= period.value.to_s(:month_year) %>
-            </button>
-          <% end %>
-
-          <div class="dropdown-divider"></div>
-
-          <% Quarter.current.downto(6).each do |quarter| %>
-            <% period = Period.new(type: :quarter, value: quarter) %>
-            <button class="dropdown-item query-filter-month <%= 'active' if false %>" name="period[value]"
-                    type="submit" data-period-type="quarter" value="<%= period.value %>">
-              <%= period.value.to_s %>
             </button>
           <% end %>
         <% end %>

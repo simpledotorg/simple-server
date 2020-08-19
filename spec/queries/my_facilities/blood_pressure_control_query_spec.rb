@@ -321,7 +321,7 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           registration_facility: facility,
           assigned_facility: assigned_facility,
           registration_user: user,
-          recorded_at: 1.month.ago)
+          recorded_at: 85.days.ago)
       end
 
       let!(:patient_with_recent_bp) do

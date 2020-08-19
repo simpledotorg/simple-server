@@ -71,6 +71,8 @@ RSpec.describe PatientsWithHistoryExporter do
       "Registration Facility Type",
       "Registration Facility District",
       "Registration Facility State",
+      "Diagnosed with Hypertension",
+      "Diagnosed with Diabetes",
       "Risk Level",
       "Days Overdue For Next Follow-up",
       "BP 1 Date",
@@ -172,6 +174,8 @@ RSpec.describe PatientsWithHistoryExporter do
       registration_facility.facility_type,
       registration_facility.district,
       registration_facility.state,
+      "no",
+      "yes",
       "High",
       bp_1_follow_up.days_overdue,
       I18n.l(bp_1.recorded_at.to_date),
@@ -251,6 +255,8 @@ RSpec.describe PatientsWithHistoryExporter do
 
   before do
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
+
+    patient.medical_history.update!(hypertension: "no", diabetes: "yes")
   end
 
   describe "#csv" do

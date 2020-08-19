@@ -89,7 +89,7 @@ RSpec.describe TopRegionService, type: :model do
 
     refresh_views
 
-    service = TopRegionService.new([organization], Period.month(june_1.end_of_month), scope: :facility)
+    service = TopRegionService.new([organization], Period.month(june_1), scope: :facility)
     result = service.call
     expect(result[:control_rate][:region]).to eq(darrang_facility_1)
     expect(result[:control_rate][:value]).to eq(75.0)
