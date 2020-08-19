@@ -294,7 +294,7 @@ function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
 
-  return `${percent}% ${label} (${numerator} of ${denominator} patients)`;
+  return ` ${percent}% ${label} (${numerator} of ${denominator} patients)`;
 }
 
 function formatSumTooltipText(tooltipItem) {
