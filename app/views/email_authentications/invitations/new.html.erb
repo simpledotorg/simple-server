@@ -9,6 +9,10 @@
         <%= form.text_field :job_title, id: :job_title, required: true %>
         <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS, id: :access_levels, required: true %>
 
+<!--        notes from claudio 19.aug.2020:-->
+<!--        - allow selecting all even if you have partial access-->
+<!--        - do not show the whole tree, it'll be messy for large FGs-->
+<!--        - the ratio show on the header is static-->
         <%= form.label "Facility Access" %>
         <div id="facility-access">
           <div class="card">
