@@ -1,5 +1,5 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :verify_params, only: [:create]
+  # before_action :verify_params, only: [:create]
   helper_method :current_admin
 
   def new
@@ -9,22 +9,26 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def create
-    user = User.new(user_params)
-    authorize([:manage, :admin, user])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      binding.pry
+    else
+      user = User.new(user_params)
+      authorize([:manage, :admin, user])
 
-    User.transaction do
-      super do |resource|
-        user.email_authentications = [resource]
-        user.save!
+      User.transaction do
+        super do |resource|
+          user.email_authentications = [resource]
+          user.save!
 
-        next if permission_params.blank?
+          next if permission_params.blank?
 
-        permission_params.each do |attributes|
-          user.user_permissions.create!(attributes.permit(
-            :permission_slug,
-            :resource_id,
-            :resource_type
-          ))
+          permission_params.each do |attributes|
+            user.user_permissions.create!(attributes.permit(
+              :permission_slug,
+              :resource_id,
+              :resource_type
+            ))
+          end
         end
       end
     end
