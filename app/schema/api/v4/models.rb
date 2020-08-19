@@ -228,7 +228,7 @@ class Api::V4::Models
       }
     end
 
-    def teleconsultation_medical_officers
+    def teleconsultation_medical_officer
       {
         type: :object,
         properties: {
@@ -308,7 +308,8 @@ class Api::V4::Models
        activate_user: activate_user,
        app_user_capabilities: {type: ["null", :array], items: {type: :string}, enum: User::APP_USER_CAPABILITIES.keys},
        medical_officer: medical_officer,
-       teleconsultation_medical_officers: teleconsultation_medical_officers,
+       teleconsultation_medical_officer: teleconsultation_medical_officer,
+       teleconsultation_medical_officers: array_of("teleconsultation_medical_officer"),
        teleconsultation: teleconsultation,
        teleconsultations: array_of("teleconsultation")}
     end

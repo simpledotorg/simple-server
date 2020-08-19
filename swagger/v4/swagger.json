@@ -1327,7 +1327,7 @@
         }
       }
     },
-    "teleconsultation_medical_officers": {
+    "teleconsultation_medical_officer": {
       "type": "object",
       "properties": {
         "id": {
@@ -1365,6 +1365,15 @@
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         }
+      }
+    },
+    "teleconsultation_medical_officers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/teleconsultation_medical_officer"
       }
     },
     "teleconsultation": {
