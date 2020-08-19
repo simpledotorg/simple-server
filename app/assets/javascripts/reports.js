@@ -261,27 +261,19 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       mode: "index",
       intersect: false,
       position: "average",
+      backgroundColor: "rgba(0,0,0,1)",
+      bodyFontFamily: "Roboto Condensed",
+      bodyFontSize: 12,
+      caretSize: 6,
+      titleFontFamily: "Roboto Condensed",
+      titleFontSize: 14,
+      xPadding: 10,
+      yPadding: 10,
       callbacks: {
         label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
         },
-        labelColor: function(tooltipItem, data) {
-          const pointBackgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].pointBackgroundColor;
-          const borderColor = data.config.data.datasets[tooltipItem.datasetIndex].borderColor;
-          const backgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].backgroundColor;
-
-          let styles = {};
-
-          if (pointBackgroundColor === undefined) {
-            styles.borderColor = backgroundColor;
-            styles.backgroundColor = backgroundColor;
-          } else {
-            styles.borderColor = borderColor;
-            styles.backgroundColor = borderColor;
-          }
-
-          return styles;
-        }
+        labelColor: formatTooltipLabelColor
       }
     }
   };
@@ -309,94 +301,20 @@ function formatNumberWithCommas(value) {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function customTooltip(tooltipModel) {
-  // Tooltip element
-  var tooltipEl = document.getElementById('chartjs-tooltip');
-  // Create element
-  if (!tooltipEl) {
-      tooltipEl = document.createElement('div');
-      tooltipEl.id = 'chartjs-tooltip';
-      document.body.appendChild(tooltipEl);
-  }
-  // Hide if no tooltip
-  if (tooltipModel.opacity === 0) {
-    tooltipEl.style.opacity = 0;
-    return;
-  }
-  // Set caret position
-  tooltipEl.classList.remove('above', 'below', 'no-transform');
-  if (tooltipModel.yAlign) {
-    tooltipEl.classList.add(tooltipModel.yAlign);
+function formatTooltipLabelColor(tooltipItem, data) {
+  const pointBackgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].pointBackgroundColor;
+  const borderColor = data.config.data.datasets[tooltipItem.datasetIndex].borderColor;
+  const backgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].backgroundColor;
+
+  let styles = {};
+
+  if (pointBackgroundColor === undefined) {
+    styles.borderColor = backgroundColor;
+    styles.backgroundColor = backgroundColor;
   } else {
-    tooltipEl.classList.add('no-transform');
+    styles.borderColor = borderColor;
+    styles.backgroundColor = borderColor;
   }
 
-  // Set tooltip content 
-  if (tooltipModel.body) {
-    // Set title
-    const tooltipTitle = tooltipModel.title[0];
-    const titleStyle =
-      `
-        margin: 0;
-        margin-bottom: 4px;
-        font-size: 14px;
-        font-weight: 600;
-      `;
-    let innerHtml = `<p style="${titleStyle}">${tooltipTitle}</p>`;
-    // Set labels
-    const labelsContainerStyle =
-      `
-        display: flex;
-        flex-direction: column;
-      `;
-    innerHtml += `<div style="${labelsContainerStyle}">`;
-
-    const labels = tooltipModel.body.map(item => item.lines);
-
-    labels.forEach(function(label, index) {
-      const labelRowStyle =
-        `
-          display: flex;
-          align-items: baseline;
-          margin-bottom: 4px;
-        `;
-      innerHtml += `<div style="${labelRowStyle}">`;
-      const colors = tooltipModel.labelColors[index];
-      const labelSwatchStyle =
-        `
-          background: ${colors.backgroundColor};
-          width: 10px;
-          height: 10px;
-          margin-right: 6px;
-          border-radius: 2px;
-        `;
-      const labelSwatch = `<span style="${labelSwatchStyle}"></span>`;
-      const labelTextStyle = 'margin: 0; font-family: Roboto Condensed; font-size: 14px; color: #ffffff;';
-      const labelText = `<p style="${labelTextStyle}">${label}</p>`;
-      innerHtml += labelSwatch + labelText;
-      innerHtml += "</div>";
-    });
-
-    innerHtml += "</div>";
-
-    tooltipEl.innerHTML = innerHtml;
-  }
-
-  // `this` will be the overall tooltip
-  var position = this._chart.canvas.getBoundingClientRect();
-
-  // Display, position, and set styles for font
-  tooltipEl.style.opacity = 1;
-  tooltipEl.style.width = 'auto';
-  tooltipEl.style.position = 'absolute';
-  tooltipEl.style.backgroundColor = "#000000";
-  tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-  tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
-  tooltipEl.style.fontFamily = "Roboto Condensed";
-  tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
-  tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
-  tooltipEl.style.color = "#ffffff";
-  tooltipEl.style.padding = "10px 12px";
-  tooltipEl.style.borderRadius = "4px";
-  tooltipEl.style.pointerEvents = 'none';
+  return styles;
 }
