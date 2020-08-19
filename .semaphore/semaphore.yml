@@ -31,3 +31,6 @@ blocks:
             - 'bundle exec rake db:setup'
             - 'bundle exec rake db:test:prepare'
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+promotions:
+  - name: Promotion 1
+    pipeline_file: pipeline_2.yml
