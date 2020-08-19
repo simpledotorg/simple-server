@@ -1,11 +1,11 @@
 function submitForm() {
-  const facilities =
+  const selectedFacilities =
     [].slice
       .call(document.querySelectorAll('input[name="facilities"]'))
       .filter(e => e.type !== "hidden" && !e.disabled && e.checked)
       .map(e => e.id)
 
-  document.getElementById('facility-access-selections').value = JSON.stringify(facilities);
+  document.getElementById('facility-access-selections').value = JSON.stringify(selectedFacilities);
 }
 
 function inviteAdmin() {
