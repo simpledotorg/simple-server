@@ -63,14 +63,14 @@ function initializeCharts() {
       rgbaLineColor: darkGreyColor,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited in the last 3 months",
+      label: "Visited in the last 3 months",
     },
     {
       data: data.missedVisitsRate,
       borderWidth: 0,
       rgbaLineColor: mediumGreyColor,
       rgbaBackgroundColor: mediumGreyColor,
-      label: "last BP >3 months ago",
+      label: "No visit >3 months ago",
     },
   ], "bar");
   noRecentBPConfig.options = createGraphOptions(
@@ -141,25 +141,25 @@ function initializeCharts() {
       data: data.controlRate,
       rgbaBackgroundColor: mediumGreenColor,
       hoverBackgroundColor: mediumGreenColor,
-      label: "control rate",
+      label: "HTN controlled",
     },
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: darkRedColor,
       hoverBackgroundColor: darkRedColor,
-      label: "not under control rate",
+      label: "HTN not under control",
     },
     {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited in the last 3 months",
+      label: "Visited in the last 3 months",
     },
     {
       data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
       hoverBackgroundColor: mediumGreyColor,
-      label: "last BP >3 months ago",
+      label: "No visit >3 months",
     }
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(

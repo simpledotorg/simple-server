@@ -16,7 +16,7 @@
               <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
             </p>
             <p class="flex-1 m-0px fs-14px">
-              Last BP &gt;3 months ago
+              No visit >3 months
             </p>
           </div>
         </div>
@@ -46,7 +46,7 @@
               <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
             </p>
             <p class="flex-1 m-0px fs-14px">
-              Visited with BP &ge;140/90 in last 3 months
+              HTN not under control
             </p>
           </div>
         </div>
@@ -57,7 +57,7 @@
               <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
             </p>
             <p class="flex-1 m-0px fs-14px">
-              Visited with BP &lt;140/90 in last 3 months
+              HTN controlled
             </p>
           </div>
         </div>
