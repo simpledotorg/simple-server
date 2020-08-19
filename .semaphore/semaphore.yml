@@ -13,7 +13,8 @@ blocks:
         - name: RAILS_ENV
           value: test
       jobs:
-        - name: Rspec
+        - name: RSpec
+          parallelism: 4
           commands:
             - checkout
             - sem-service start postgres 10
@@ -22,10 +23,11 @@ blocks:
             - sudo dpkg -i /tmp/libpng12.deb
             - sudo touch /etc/apt/sources.list.d/google-chrome-source.list
             - install-package --update-new google-chrome-stable
+            - gem install semaphore_test_boosters
             - cache restore
             - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
             - 'bundle exec rake db:setup'
             - 'bundle exec rake db:test:prepare'
-            - bundle exec rspec
+            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
