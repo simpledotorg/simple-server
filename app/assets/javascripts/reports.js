@@ -60,12 +60,16 @@ function initializeCharts() {
   const noRecentBPConfig = createGraphConfig([
     {
       data: data.visitButNoBPMeasureRate,
+      borderWidth: 0,
+      rgbaLineColor: darkGreyColor,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
       label: "visited in the last 3 months but no BP measure",
     },
     {
       data: data.missedVisitsRate,
+      borderWidth: 0,
+      rgbaLineColor: mediumGreyColor,
       rgbaBackgroundColor: mediumGreyColor,
       rgbaLineColor: mediumGreyColor,
       label: "last BP >3 months ago",
@@ -257,26 +261,106 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       }],
     },
     tooltips: {
-      backgroundColor: "rgb(0, 0, 0)",
-      bodyAlign: "center",
-      bodyFontFamily: "Roboto Condensed",
-      bodyFontSize: 12,
-      caretSize: 6,
-      displayColors: true,
-      position: "nearest",
-      titleAlign: "left",
-      titleFontFamily: "Roboto Condensed",
-      titleFontSize: 14,
-      xAlign: "center",
-      xPadding: 10,
-      yAlign: "bottom",
-      yPadding: 10,
+      enabled: false,
+      mode: 'index',
+      intersect: false,
+      position: 'nearest',
       callbacks: {
-        title: function () { return "June 2020" },
         label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
-        },
+        }
       },
+      custom: function(tooltipModel) {
+        // Tooltip element
+        var tooltipEl = document.getElementById('chartjs-tooltip');
+        // Create element
+        if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            document.body.appendChild(tooltipEl);
+        }
+        // Hide if no tooltip
+        if (tooltipModel.opacity === 0) {
+          tooltipEl.style.opacity = 0;
+          return;
+        }
+        // Set caret position
+        tooltipEl.classList.remove('above', 'below', 'no-transform');
+        if (tooltipModel.yAlign) {
+          tooltipEl.classList.add(tooltipModel.yAlign);
+        } else {
+          tooltipEl.classList.add('no-transform');
+        }
+
+        // Set tooltip content 
+        if (tooltipModel.body) {
+          // Set title
+          const tooltipTitle = tooltipModel.title[0];
+          const titleStyle =
+            `
+              margin: 0;
+              margin-bottom: 4px;
+              font-size: 14px;
+              font-weight: 600;
+            `;
+          let innerHtml = `<p style="${titleStyle}">${tooltipTitle}</p>`;
+          // Set labels
+          const labelsContainerStyle =
+            `
+              display: flex;
+              flex-direction: column;
+            `;
+          innerHtml += `<div style="${labelsContainerStyle}">`;
+
+          const labels = tooltipModel.body.map(item => item.lines);
+
+          labels.forEach(function(label, index) {
+            const labelRowStyle =
+              `
+                display: flex;
+                align-items: baseline;
+                margin-bottom: 4px;
+              `;
+            innerHtml += `<div style="${labelRowStyle}">`;
+            const colors = tooltipModel.labelColors[index];
+            const labelSwatchStyle =
+              `
+                background: ${colors.backgroundColor};
+                width: 10px;
+                height: 10px;
+                margin-right: 6px;
+                border-radius: 2px;
+              `;
+            const labelSwatch = `<span style="${labelSwatchStyle}"></span>`;
+            const labelTextStyle = 'margin: 0; font-family: Roboto Condensed; font-size: 14px; color: #ffffff;';
+            const labelText = `<p style="${labelTextStyle}">${label}</p>`;
+            innerHtml += labelSwatch + labelText;
+            innerHtml += "</div>";
+          });
+
+          innerHtml += "</div>";
+
+          tooltipEl.innerHTML = innerHtml;
+        }
+
+        // `this` will be the overall tooltip
+        var position = this._chart.canvas.getBoundingClientRect();
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1;
+        tooltipEl.style.width = 'auto';
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.backgroundColor = "#000000";
+        tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+        tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+        tooltipEl.style.fontFamily = "Roboto Condensed";
+        tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+        tooltipEl.style.color = "#ffffff";
+        tooltipEl.style.padding = "10px 12px";
+        tooltipEl.style.borderRadius = "4px";
+        tooltipEl.style.pointerEvents = 'none';
+      }
     }
   };
 };
@@ -285,7 +369,6 @@ function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   const datasetIndex = tooltipItem.datasetIndex;
   const numerator = formatNumberWithCommas(numerators[datasetIndex][tooltipItem.label]);
   const denominator = formatNumberWithCommas(denominators[tooltipItem.label]);
-  const date = tooltipItem.label;
   const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
 
