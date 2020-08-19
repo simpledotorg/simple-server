@@ -5,7 +5,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: Rspec
+  - name: Tests
     task:
       env_vars:
         - name: DATABASE_URL
@@ -13,7 +13,7 @@ blocks:
         - name: RAILS_ENV
           value: test
       jobs:
-        - name: Test
+        - name: Rspec
           commands:
             - checkout
             - sem-service start postgres 10
