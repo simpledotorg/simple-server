@@ -1,12 +1,18 @@
 version: v1.0
-name: Pipeline 2
+name: Sandbox Deployment
 blocks:
-  - name: 'Block #1'
+  - name: Deploy
     task:
       jobs:
-        - name: 'Job #1'
+        - name: Deploy
           commands:
-            - echo "job 1"
+            - checkout
+            - sem-version ruby 2.5.1
+            - cache restore
+            - yarn install
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - echo "Pretending to deploy to sandbox. Goodbye."
 agent:
   machine:
     type: e1-standard-2
