@@ -1,7 +1,131 @@
 @import "partials/webview";
 
+body#progress {
+    font-size: 18px;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.center {
+    text-align: center;
+}
+
+.cohort {
+    
+    h6 {
+        font-size: 18px;
+        text-align: left;
+        margin: 0;
+    }
+    
+    p {
+        text-align: left;
+        padding: 6px 0 0 0;
+    }
+}
+
+.cohort-bars {
+    width: 100%;
+    position: relative;
+    text-align: center;
+    min-height: 46px;
+    margin: 0 -2px;
+    
+    td {
+        padding: 12px 6px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .cohort-controlled {
+        background: $green;
+        color: #fff;
+        border-radius: 0 3px 3px 0;
+    }
+    
+    .cohort-uncontrolled {
+        background: $red;
+        color: #fff;
+        border-radius: none;
+    }
+    
+    .cohort-nobp {
+        background: $grey-light;
+        color: #444;
+        border-radius: 3px 0 0 3px;
+    }
+    
+    .cohort-none {
+        background: $grey-light;
+        color: #444;
+        border-radius: 3px;
+    }
+}
+
+.key {
+    margin: 24px 0 32px 0;
+    font-size: 16px;
+    
+    span {
+        display: inline-block;
+        width: 16px;
+        height: 12px;
+        vertical-align: middle;
+        background: #999;
+        margin: -3px 8px 0 0;
+        border-radius: 3px;
+        
+        &.green {
+            background: $green;
+        }
+        
+        &.red {
+            background: $red;
+        }
+    }
+    
+}
+
 .progress-contents {
     padding: 0 8px 100px 8px;
+}
+
+.progress-body {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #F0F2F5;
+    z-index: 100000000;
+}
+
+a.help-back {
+    display: block;
+    position: fixed;
+    top: 8px;
+    padding: 8px;
+    margin-top: 16px;
+    background: #fff;
+    border-radius: 100px;
+    width: 32px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    z-index: 5000;
+
+    svg {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      top: 2px;
+      left: 2px;
+      opacity: 1;
+    }
 }
 
 .card h3 {
@@ -81,6 +205,11 @@ sup {
   -webkit-appearance: none;
 }
 
+.nav-next {
+    display: block;
+    background: #fff url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkuMDAwMDIgNi43MTA1MUM4LjYxMDAyIDcuMTAwNTEgOC42MTAwMiA3LjczMDUxIDkuMDAwMDIgOC4xMjA1MUwxMi44OCAxMi4wMDA1TDkuMDAwMDIgMTUuODgwNUM4LjYxMDAyIDE2LjI3MDUgOC42MTAwMiAxNi45MDA1IDkuMDAwMDIgMTcuMjkwNUM5LjM5MDAyIDE3LjY4MDUgMTAuMDIgMTcuNjgwNSAxMC40MSAxNy4yOTA1TDE1IDEyLjcwMDVDMTUuMzkgMTIuMzEwNSAxNS4zOSAxMS42ODA1IDE1IDExLjI5MDVMMTAuNDEgNi43MDA1MUMxMC4wMyA2LjMyMDUxIDkuMzkwMDIgNi4zMjA1MSA5LjAwMDAyIDYuNzEwNTFaIiBmaWxsPSIjMDA3NUVCIi8+Cjwvc3ZnPgo=) no-repeat 100% 50%;
+}
+
 h4 {
   text-align: center;
   font-size: 16px;
@@ -92,13 +221,13 @@ h4 {
 
 p {
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   padding: 0 8px;
 }
 
 p.desc {
   text-align: left;
-  font-size: 16px;
+  font-size: 18px;
   padding: 8px 0 8px 0;
 }
 
@@ -111,7 +240,7 @@ p.desc {
 
 .progress-table td {
   padding: 8px 16px 8px 0;
-  border-top: 1px solid #EFECDF;
+  border-top: 1px solid $grey-light;
   text-align: right;
   font-size: 18px;
 }
@@ -169,12 +298,117 @@ span.percent {
   text-align: center;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
-  padding: 6px 0 16px 0;
+  padding: 16px 0;
   clear: both;
 
   span {
     letter-spacing: 1px;
   }
+}
+
+p.control-desc {
+    line-height: 1.5;
+    font-size: 18px;
+    
+    .green {
+        color: $green;
+        font-size: 32px;
+        font-weight: bold;
+    }
+}
+
+.footnotes {
+    li {
+         margin: 0 16px 1.5em 0;
+        line-height: 1.3;
+    }
+}
+
+.card {
+    .tip {
+        opacity: 0;
+        color: $grey-mid;
+        font-weight: normal;
+        margin-right: 16px;
+        transition: 0.3s ease-in-out;
+    }
+    
+    &:active {
+        .tip {
+            opacity: 1;
+            background: rgba(255,255,255,0.8);
+        }
+    }
+}
+
+.bar-chart {
+    width: 100%;
+    margin-bottom: 8px;
+    background-image: linear-gradient(to top, 
+        #fff 35px, $grey-lightest 35px, #fff 36px,
+        #fff 55px, $grey-lightest 55px, #fff 56px,
+        #fff 75px, $grey-lightest 75px, #fff 76px,
+        #fff 95px, $grey-lightest 95px, #fff 96px,
+        #fff 115px, $grey-lightest 115px, #fff 116px,
+        #fff 135px, $grey-lightest 135px, #fff 136px,
+        #fff 155px, $grey-lightest 155px, #fff 156px,
+        #fff 175px, $grey-lightest 175px, #fff 176px,
+        #fff 195px, $grey-lightest 195px, #fff 196px,
+        #fff 215px, $grey-lightest 215px, #fff 216px,
+        #fff 235px, $grey-lightest 235px, #fff 236px,
+        #fff 255px, $grey-lightest 255px, #fff 256px,
+    );
+    
+    .bar {
+        background: $green-light;
+        width: 12px;
+        margin: 0 auto;
+        position: relative;
+        border-radius: 100px;
+        min-height: 20px;
+        
+        span {
+            display: block;
+            background: #fff;
+            border: 2px solid $green;
+            height: 10px;
+            width: 10px;
+            border-radius: 100px;
+            margin-left: -1px;
+        }
+    }
+    
+    .bar-value {
+        position: relative;
+        height: 30px;
+        width: 10px;
+        margin: 0 auto 16px auto;
+        
+        span {
+            font-size: 14px;
+            transform: translate(-96px, -80px) rotate(90deg);
+            width: 200px;
+            display: block;
+            color: $green;
+            text-align: right;
+            z-index: 100000;
+        }
+    }
+    
+    tbody td {
+        height: 160px;
+        vertical-align: bottom;
+        text-align: center;
+        
+        &:last-of-type {
+            .bar-value {
+                font-weight: bold;
+            }
+            .bar {
+                background: #00B849;
+            }
+        }
+    }
 }
 
 .trophies {
@@ -307,15 +541,15 @@ footer p {
 }
 
 .card .count-1 {
-  background: #EEF7FF;
-  color: #43617D;
+  background: #F3EEFB;
+  color: #6640AB;
   flex: 1;
 }
 
 .card .count-2 {
   flex: 1;
-  background: #E4FFEF;
-  color: #00A541;
+  background: #EFF7FF;
+  color: #44576B;
 }
 
 .card .count:last-child {

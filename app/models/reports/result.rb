@@ -4,6 +4,7 @@ module Reports
 
     def initialize(range)
       @range = range
+      raise ArgumentError, "Beginning of range cannot be later than end of range" if range.begin > range.end
       @quarterly_report = @range.begin.quarter?
       @data = {
         adjusted_registrations: Hash.new(0),
@@ -31,7 +32,17 @@ module Reports
     end
 
     def to_hash
-      @data
+      report_data
+    end
+
+    def report_data
+      @report_data ||= @data.each_with_object({}) { |(key, hsh_or_array), report_data|
+        report_data[key] = if !hsh_or_array.is_a?(Hash)
+          hsh_or_array
+        else
+          hsh_or_array.slice(*range.entries)
+        end
+      }.with_indifferent_access
     end
 
     def merge!(other)
