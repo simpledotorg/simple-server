@@ -24,7 +24,7 @@ function inviteAdmin() {
     if (allThings.indexOf(check) === -1) return;
 
     //	check/uncheck children (includes check itself)
-    const children = nodeArray('input.access-input', check.parentNode.parentNode);
+    const children = nodeArray('input.access-input', check.parentNode.parentNode.parentNode);
     children.forEach(child => child.checked = check.checked);
 
     // traverse up from target check

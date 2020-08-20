@@ -1,4 +1,20 @@
+@mixin transition($duration) {
+  -webkit-transition: $duration;
+  -moz-transition: $duration;
+  -ms-transition: $duration;
+  -o-transition: $duration;
+  transition: $duration;
+}
+
 #facility-access {
+
+  .card {
+    &.access-tree {
+      padding: 0px;
+      min-height: 460px;
+    }
+  }
+
   ul {
     list-style-type: none;
     display: block;
@@ -6,14 +22,52 @@
 
     li {
       padding: 0px;
-      border-top: 1px solid #F0F2F5;
+      border-top: 1px solid var(--light);
       position: relative;
+      margin-bottom: -1px;
+      border-bottom: 1px solid var(--light);
     }
+
     div {
       display: flex;
       
-      span {
-        padding-left: 10px;
+      &:hover {
+        background: #FFF8E0;
+        @include transition(.3s);
+      }
+
+      &.organization {
+        div {
+          label {
+            font-weight: 600;
+          }
+        }
+      }
+
+      .spacer {
+        padding-left: 20px;
+      }
+
+      .form-check {
+        margin: 6px;
+
+        label {
+          font-weight: 100;
+        }
+      }
+
+      .access-ratio {
+        margin: 6px;
+        margin-left: auto;
+        font-size: 16px;
+        color: var(--secondary);
+        font-weight: normal;
+        font-style: normal;
+        
+        i {
+          margin: 0px 8px 2px 8px;
+        }
+
       }
     }
   }
