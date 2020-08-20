@@ -1250,12 +1250,15 @@
           "$ref": "#/definitions/non_empty_string"
         },
         "capabilities": {
-          "type": [
-            "null",
-            "array"
-          ],
-          "items": {
-            "$ref": "#/definitions/app_user_capabilities"
+          "type": "object",
+          "properties": {
+            "can_teleconsult": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            }
           }
         }
       },
@@ -1302,16 +1305,16 @@
       ]
     },
     "app_user_capabilities": {
-      "type": [
-        "null",
-        "array"
-      ],
-      "items": {
-        "type": "string"
-      },
-      "enum": [
-        "can_teleconsult"
-      ]
+      "type": "object",
+      "properties": {
+        "can_teleconsult": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      }
     },
     "medical_officer": {
       "type": "object",

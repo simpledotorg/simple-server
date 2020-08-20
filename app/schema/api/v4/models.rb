@@ -206,7 +206,7 @@ class Api::V4::Models
          sync_approval_status: {type: [:string, "null"]},
          sync_approval_status_reason: {type: [:string, "null"]},
          teleconsult_phone_number: {"$ref" => "#/definitions/non_empty_string"},
-         capabilities: array_of("app_user_capabilities")
+         capabilities: app_user_capabilities
        },
        required: %w[id
          created_at
@@ -293,6 +293,15 @@ class Api::V4::Models
        required: %w[id password]}
     end
 
+    def app_user_capability_values
+      {type: :string, enum: User::APP_USER_CAPABILITY_VALUES}
+    end
+
+    def app_user_capabilities
+      {type: :object,
+       properties: Hash[User::APP_USER_CAPABILITIES.product([app_user_capability_values])]}
+    end
+
     def definitions
       {timestamp: timestamp,
        uuid: uuid,
@@ -306,7 +315,7 @@ class Api::V4::Models
        user: user,
        find_user: find_user,
        activate_user: activate_user,
-       app_user_capabilities: {type: ["null", :array], items: {type: :string}, enum: User::APP_USER_CAPABILITIES.keys},
+       app_user_capabilities: app_user_capabilities,
        medical_officer: medical_officer,
        teleconsultation_medical_officer: teleconsultation_medical_officer,
        teleconsultation_medical_officers: array_of("teleconsultation_medical_officer"),
