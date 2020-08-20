@@ -13,9 +13,9 @@
         <div id="facility-access">
           <div class="card access-tree">
             <% @current_admin.access_tree[:organizations].each do |org_id, org_data| %>
-              <ul>
+              <ul class="facility-access-item-wrapper">
                 <li>
-                  <div class="organization">
+                  <div class="facility-access-item organization">
                     <%= form.check_box :organizations,
                         {
                             id: org_id,
@@ -27,10 +27,10 @@
                           <i class="fas fa-sort-down light"></i>
                         </span>
                   </div>
-                  <ul>
+                  <ul class="facility-access-item-wrapper">
                     <% org_data[:facility_groups].each do |facility_group_id, fg_data| %>
                       <li>
-                        <div>
+                        <div class="facility-access-item">
                           <span class="spacer"></span>
                           <%= form.check_box :facility_groups,
                               {
@@ -43,10 +43,10 @@
                                 <i class="fas fa-sort-down light"></i>
                               </span>
                             </div>
-                        <ul>
+                        <ul class="facility-access-item-wrapper">
                           <% fg_data[:facilities].each do |facility_id, f_data| %>
                             <li>
-                              <div>
+                              <div class="facility-access-item">
                               <span class="spacer"></span>
                               <span class="spacer"></span>
                                 <%= form.check_box :facilities,

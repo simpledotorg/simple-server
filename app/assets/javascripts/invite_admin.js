@@ -8,6 +8,33 @@ function submitForm() {
   document.getElementById('facility-access-selections').value = JSON.stringify(selectedFacilities);
 }
 
+function toggleItemCollapsed(wrapper) {
+  const collapsed = wrapper.classList.contains("collapsed")
+  if (collapsed) {
+    wrapper.classList.remove("collapsed")
+  } else {
+    wrapper.classList.add("collapsed")
+  }
+}
+
+function onFacilityAccessItemToggled(event) {
+  const children = Array.from(event.target.parentNode.parentNode.childNodes)
+  const wrapper = children.find(item =>
+    item.className === "facility-access-item-wrapper" ||
+    item.className === "facility-access-item-wrapper collapsed")
+  if (wrapper) {
+    toggleItemCollapsed(event.target)
+    toggleItemCollapsed(wrapper)
+  }
+}
+
+function collapseListener() {
+  const facilityAccessItems = document.getElementsByClassName("access-ratio")
+  for (let item of facilityAccessItems) {
+    item.addEventListener("click", onFacilityAccessItemToggled)
+  }
+}
+
 function inviteAdmin() {
   // helper function to create nodeArrays (not collections)
   const nodeArray = (selector, parent = document) => [].slice.call(parent.querySelectorAll(selector))
