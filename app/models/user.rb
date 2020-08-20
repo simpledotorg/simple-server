@@ -241,7 +241,7 @@ class User < ApplicationRecord
     {organizations: organization_tree}
   end
 
-  def grant_access(selected_facility_ids)
+  def grant_access(user, selected_facility_ids)
     # TODO:
     # authorize the page for manager or power user
     # check if any of the params are `can?`-able, if not return 403
@@ -255,21 +255,26 @@ class User < ApplicationRecord
     resources = []
 
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if current_admin.can?(:manage, :organization, org) && org.facilities == selected_facilities_in_org
+      if can?(:manage, :organization, org) && org.facilities == selected_facilities_in_org
         resources << {resource: org}
-        selected_facilities = selected_facilities - selected_facilities_in_org
+        selected_facilities -= selected_facilities_in_org
       end
     end
 
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if current_admin.can?(:manage, :facility_group, fg) && fg.facilities == selected_facilities_in_fg
+      if can?(:manage, :facility_group, fg) && fg.facilities == selected_facilities_in_fg
         resources << {resource: fg}
-        selected_facilities = selected_facilities - selected_facilities_in_fg
+        selected_facilities -= selected_facilities_in_fg
       end
     end
 
-    resources << selected_facilities.map { |f| {resource: f} }
+    selected_facilities.each do |f|
+      resources << {resource: f} if can?(:manage, :facility, f)
+    end
+
     resources.flatten
+
+    user.accesses.create!(resources)
   end
   #
   # #########################

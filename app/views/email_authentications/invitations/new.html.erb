@@ -3,36 +3,30 @@
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
     <div class="col-md-6">
-      <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true, html: { onsubmit: "submitForm(this)" }) do |form| %>
+      <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true, html: {onsubmit: "submitForm(this)"}) do |form| %>
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, id: :email, required: true %>
-        <%= form.text_field :job_title, id: :job_title, required: true %>
-        <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS, id: :access_levels, required: true %>
+        <%= form.text_field :role, id: :role, required: true, label: 'Job Title' %>
+        <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS.map { |al| al[:name] }, id: :access_levels, required: true %>
 
-<!--        notes from claudio 19.aug.2020:-->
-<!--        - allow selecting all even if you have partial access-->
-<!--        - do not show the whole tree, it'll be messy for large FGs-->
-<!--        - the ratio show on the header is static-->
         <%= form.label "Facility Access" %>
         <div id="facility-access">
           <div class="card">
             <% @current_admin.access_tree[:organizations].each do |org_id, org_data| %>
               <ul>
                 <li>
-                <div>
-                  <%= form.check_box :organizations,
-                      {
-                          id: org_id,
-                          class: 'access-input',
-                          label: "#{org_data[:name]} (#{org_data[:access_count]} / #{org_data[:total_count]})",
-                          disabled: !org_data[:access]
-                      } %>
-                      </div>
+                  <div>
+                    <%= form.check_box :organizations,
+                        {
+                            id: org_id,
+                            class: 'access-input',
+                            label: "#{org_data[:name]} (#{org_data[:access_count]} / #{org_data[:total_count]})",
+                            disabled: !org_data[:access]
+                        } %>
+                  </div>
                   <ul>
                     <% org_data[:facility_groups].each do |facility_group_id, fg_data| %>
                       <li>
-                      <div> 
-                      <span class="spacer"> </span>
                         <%= form.check_box :facility_groups,
                             {
                                 id: facility_group_id,
@@ -40,13 +34,9 @@
                                 label: "#{fg_data[:name]} (#{fg_data[:access_count]} / #{fg_data[:total_count]})",
                                 disabled: !fg_data[:access]
                             } %>
-                            </div>
                         <ul>
                           <% fg_data[:facilities].each do |facility_id, f_data| %>
                             <li>
-                            <div>
-                            <span class="spacer"> </span>
-                            <span class="spacer"> </span>
                               <%= form.check_box :facilities,
                                   {
                                       id: facility_id,
@@ -54,7 +44,6 @@
                                       label: f_data[:name],
                                       disabled: !f_data[:access]
                                   } %>
-                                  </div>
                             </li>
                           <% end %>
                         </ul>

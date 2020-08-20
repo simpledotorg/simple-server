@@ -1,7 +1,21 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  # before_action :verify_params, only: [:create]
+  before_action :verify_params, only: [:create]
   helper_method :current_admin
 
+  # TODO:
+  # Make the facility access tree look like Figma designs [d]
+  # Make the tree collapsible [d]
+  # Refactor JS [d]
+
+  # Only allow valid access_levels in the UI [k]
+  # Make the Invite page only accessible to Managers or PowerUser [k]
+  # Refactor User#grant_access [k]
+  # Refactor User#access_tree [k]
+  # Specs for User#grant_access [k]
+  # Specs for User#access_tree [k]
+
+  # Allow clicking on the parent resource even if you don't have full access to it [k/d]
+  # Migrate the selected_facilities to be an array of hidden fields [k/d]
   def new
     authorize([:manage, :admin, current_admin])
     @current_admin = InviteAdminPresenter.new(current_admin)
@@ -10,7 +24,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      nil
+      user = User.new(user_params)
+      super do |resource|
+        user.email_authentications = [resource]
+        user.save!
+        next if selected_facilities.blank?
+        current_admin.grant_access(user, selected_facilities)
+      end
     else
       user = User.new(user_params)
       authorize([:manage, :admin, user])
@@ -66,6 +86,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     {
       full_name: params[:full_name],
       role: params[:role],
+      access_level: params[:access_levels],
       organization_id: params[:organization_id],
       device_created_at: Time.current,
       device_updated_at: Time.current,
@@ -75,6 +96,10 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def permission_params
     params[:permissions]
+  end
+
+  def selected_facilities
+    JSON.parse(params[:selected_facilities])
   end
 
   def invite_params
