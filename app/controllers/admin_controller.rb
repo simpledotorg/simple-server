@@ -49,8 +49,8 @@ class AdminController < ApplicationController
      manage_users?: admin_users_path}
   end
 
-  def role_root_paths
-    if current_admin.accesses.first.call_center?
+  def access_root_paths
+    if current_admin.call_center_access?
       appointments_path
     else
     organizations_path
