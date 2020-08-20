@@ -1,0 +1,25 @@
+version: v1.0
+name: Pipeline 3
+blocks:
+  - name: Deploy to Bangladesh Demo
+    task:
+      jobs:
+        - name: Deploy to Bangladesh Demo
+          commands:
+            - checkout
+            - sem-version ruby 2.5.1
+            - cache restore
+            - yarn install
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - 'BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap bangladesh:demo deploy'
+      secrets:
+        - name: semaphore-deploy-key
+      prologue:
+        commands:
+          - chmod 600 ~/.ssh/semaphore_id_rsa
+          - ssh-add ~/.ssh/semaphore_id_rsa
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
