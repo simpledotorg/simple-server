@@ -1,5 +1,5 @@
 version: v1.0
-name: Sandbox Deployment
+name: Deploy to Sandbox
 blocks:
   - name: Deploy to Sandbox
     task:
@@ -12,7 +12,6 @@ blocks:
             - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
-            - echo "Pretending to deploy to sandbox. Goodbye."
             - BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap sandbox deploy
       secrets:
         - name: semaphore-deploy-key
@@ -20,6 +19,27 @@ blocks:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
           - ssh-add ~/.ssh/semaphore_id_rsa
+    dependencies: []
+  - name: Deploy to QA
+    dependencies:
+      - Deploy to Sandbox
+    task:
+      secrets:
+        - name: semaphore-deploy-key
+      prologue:
+        commands:
+          - chmod 600 ~/.ssh/semaphore_id_rsa
+          - ssh-add ~/.ssh/semaphore_id_rsa
+      jobs:
+        - name: Deploy to QA
+          commands:
+            - checkout
+            - sem-version ruby 2.5.1
+            - cache restore
+            - yarn install
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap qa deploy
 agent:
   machine:
     type: e1-standard-2
