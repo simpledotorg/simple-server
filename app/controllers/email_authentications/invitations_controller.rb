@@ -24,6 +24,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      raise unless current_admin.can?(:manage, :facility)
+
       user = User.new(user_params)
       super do |resource|
         user.email_authentications = [resource]
@@ -75,7 +77,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def current_admin
-    current_inviter.user
+    InviteAdminPresenter.new(current_inviter.user)
   end
 
   def pundit_user

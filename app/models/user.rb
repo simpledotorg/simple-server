@@ -5,33 +5,32 @@ class User < ApplicationRecord
     email_authentication: "EmailAuthentication",
     phone_number_authentication: "PhoneNumberAuthentication"
   }
-  ACCESS_LEVEL_DESCRIPTIONS = [
-    {
-      name: :viewer,
+  ACCESS_LEVELS = {
+    viewer: {
+      name: "viewer",
+      grant_access: [],
       description: "Can view stuff"
     },
 
-    {
-      name: :manager,
+    manager: {
+      name: "manager",
+      grant_access: [:viewer, :manager],
       description: "Can manage stuff"
     },
 
-    {
-      name: :power_user,
+    power_user: {
+      name: "power_user",
+      grant_access: [:viewer, :manager, :power_user],
       description: "Can manage everything"
     }
-  ]
+  }
 
   enum sync_approval_status: {
     requested: "requested",
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
-  enum access_level: {
-    viewer: "viewer",
-    manager: "manager",
-    power_user: "power_user"
-  }, _suffix: :access
+  enum access_level: ACCESS_LEVELS.map { |level, metadata| [level, metadata[:name]] }.to_h, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -241,16 +240,13 @@ class User < ApplicationRecord
     {organizations: organization_tree}
   end
 
-  def grant_access(user, selected_facility_ids)
-    # TODO:
-    # authorize the page for manager or power user
-    # check if any of the params are `can?`-able, if not return 403
+  def grantable_access_levels
+    ACCESS_LEVELS[access_level.to_sym][:grant_access]
+  end
 
-    # get facility groups of each facility
-    # regroup them
-    # check if you have selected full FG access and you can provide full FG access: give FG access
-    # check if you have selected all FGs in Org and you can provide full Org access: give Org access
-    # if not, provide the individual F access as necessary
+  def grant_access(user, selected_facility_ids)
+    raise unless grantable_access_levels.include?(user.access_level)
+
     selected_facilities = Facility.where(id: selected_facility_ids)
     resources = []
 
@@ -272,10 +268,12 @@ class User < ApplicationRecord
       resources << {resource: f} if can?(:manage, :facility, f)
     end
 
-    resources.flatten
+    resources = resources.flatten
 
+    raise if resources.empty?
     user.accesses.create!(resources)
   end
+
   #
   # #########################
 
