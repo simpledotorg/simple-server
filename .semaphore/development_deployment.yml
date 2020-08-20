@@ -1,5 +1,5 @@
 version: v1.0
-name: Deploy to Sandbox
+name: Development Deployment
 blocks:
   - name: Deploy to Sandbox
     task:
@@ -21,8 +21,7 @@ blocks:
           - ssh-add ~/.ssh/semaphore_id_rsa
     dependencies: []
   - name: Deploy to QA
-    dependencies:
-      - Deploy to Sandbox
+    dependencies: []
     task:
       secrets:
         - name: semaphore-deploy-key
