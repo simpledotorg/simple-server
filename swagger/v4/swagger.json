@@ -1246,7 +1246,7 @@
             "null"
           ]
         },
-        "teleconsult_phone_number": {
+        "teleconsultation_phone_number": {
           "$ref": "#/definitions/non_empty_string"
         },
         "capabilities": {

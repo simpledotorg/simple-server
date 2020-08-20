@@ -205,7 +205,7 @@ class Api::V4::Models
          registration_facility_id: {"$ref" => "#/definitions/uuid"},
          sync_approval_status: {type: [:string, "null"]},
          sync_approval_status_reason: {type: [:string, "null"]},
-         teleconsult_phone_number: {"$ref" => "#/definitions/non_empty_string"},
+         teleconsultation_phone_number: {"$ref" => "#/definitions/non_empty_string"},
          capabilities: app_user_capabilities
        },
        required: %w[id
