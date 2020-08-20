@@ -2,12 +2,19 @@
   ul {
     list-style-type: none;
     display: block;
-    padding-left: 20px;
+    padding-left: 0px;
 
     li {
-      padding: 10px;
+      padding: 0px;
       border-top: 1px solid #F0F2F5;
       position: relative;
+    }
+    div {
+      display: flex;
+      
+      span {
+        padding-left: 10px;
+      }
     }
   }
 }

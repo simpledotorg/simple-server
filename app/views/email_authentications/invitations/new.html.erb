@@ -19,6 +19,7 @@
             <% @current_admin.access_tree[:organizations].each do |org_id, org_data| %>
               <ul>
                 <li>
+                <div>
                   <%= form.check_box :organizations,
                       {
                           id: org_id,
@@ -26,9 +27,12 @@
                           label: "#{org_data[:name]} (#{org_data[:access_count]} / #{org_data[:total_count]})",
                           disabled: !org_data[:access]
                       } %>
+                      </div>
                   <ul>
                     <% org_data[:facility_groups].each do |facility_group_id, fg_data| %>
                       <li>
+                      <div> 
+                      <span class="spacer"> </span>
                         <%= form.check_box :facility_groups,
                             {
                                 id: facility_group_id,
@@ -36,9 +40,13 @@
                                 label: "#{fg_data[:name]} (#{fg_data[:access_count]} / #{fg_data[:total_count]})",
                                 disabled: !fg_data[:access]
                             } %>
+                            </div>
                         <ul>
                           <% fg_data[:facilities].each do |facility_id, f_data| %>
                             <li>
+                            <div>
+                            <span class="spacer"> </span>
+                            <span class="spacer"> </span>
                               <%= form.check_box :facilities,
                                   {
                                       id: facility_id,
@@ -46,6 +54,7 @@
                                       label: f_data[:name],
                                       disabled: !f_data[:access]
                                   } %>
+                                  </div>
                             </li>
                           <% end %>
                         </ul>
