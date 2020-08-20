@@ -293,7 +293,7 @@ function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
 }
 
 function formatSumTooltipText(tooltipItem) {
-  return `${formatNumberWithCommas(tooltipItem.value)} cumulative registrations in ${tooltipItem.label}`;
+  return ` ${formatNumberWithCommas(tooltipItem.value)} cumulative registrations`;
 }
 
 function formatValueAsPercent(value) {
