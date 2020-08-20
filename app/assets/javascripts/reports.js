@@ -269,6 +269,9 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       titleFontSize: 14,
       xPadding: 10,
       yPadding: 10,
+      itemSort: function (a, b) {
+        return b.datasetIndex - a.datasetIndex;         
+      },
       callbacks: {
         label: function (tooltipItem, data) {
           return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
