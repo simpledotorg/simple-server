@@ -14,11 +14,13 @@ class MyFacilitiesController < AdminController
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
-  skip_after_action :verify_authorized
-
 
   def index
-    @facilities = current_admin.accessible_facilities(:view_reports)
+    @facilities = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.accessible_facilities(:view_reports)
+    else
+      policy_scope([:manage, :facility, Facility])
+    end
     @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
@@ -35,7 +37,7 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = filter_facilities
+    @facilities = filter_facilities([:manage, :facility])
 
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
@@ -56,7 +58,7 @@ class MyFacilitiesController < AdminController
   end
 
   def registrations
-    @facilities = filter_facilities
+    @facilities = filter_facilities([:manage, :facility])
 
     registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
                                                                period: @selected_period,
@@ -77,7 +79,7 @@ class MyFacilitiesController < AdminController
   end
 
   def missed_visits
-    @facilities = filter_facilities
+    @facilities = filter_facilities([:manage, :facility])
 
     missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
                                                               period: @selected_period,
@@ -99,6 +101,10 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    current_admin.authorize(:view_reports, :facility)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.authorize(:view_reports, :facility)
+    else
+      authorize(:dashboard, :view_my_facilities?)
+    end
   end
 end

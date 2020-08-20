@@ -1,21 +1,3 @@
-# class OrganizationsController < AdminController
-#   include Pagination
-#   skip_after_action :verify_authorized, :verify_access_authorized
-#
-#   def index
-#     authorize(:dashboard, :show?)
-#     current_admin.can?(:view_reports, :facility_group)
-#
-#     @users_requesting_approval = policy_scope([:manage, :user, User])
-#       .requested_sync_approval
-#       .order(updated_at: :desc)
-#
-#     @users_requesting_approval = paginate(@users_requesting_approval)
-#
-#     @organizations = 
-#   end
-# end
-
 class OrganizationsController < AdminController
   include Pagination
 
@@ -25,7 +7,6 @@ class OrganizationsController < AdminController
     else
       authorize(:dashboard, :show?)
     end
-
 
     @users_requesting_approval = policy_scope([:manage, :user, User])
       .requested_sync_approval

@@ -203,7 +203,6 @@ RSpec.describe Access, type: :model do
       let!(:facility_3) { create(:facility) }
 
       context "view_pii action" do
-
         it "allows manager to view_pii_pii" do
           create(:access, user: manager, resource: facility_1)
 
@@ -583,7 +582,6 @@ RSpec.describe Access, type: :model do
       let!(:facility_manager_access) { create(:access, user: manager, resource: facility_5) }
       let!(:viewer_all_access) { create(:access, user: viewer_all, resource: organization_2) }
       let!(:facility_viewer_all_access) { create(:access, user: viewer_all, resource: facility_6) }
-
 
       context "view_pii action" do
         it "returns all facilities the manager can view" do

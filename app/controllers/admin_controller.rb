@@ -1,8 +1,8 @@
 class AdminController < ApplicationController
   before_action :authenticate_email_authentication!
 
-  after_action :verify_authorized, except: [:root], unless: -> {Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)}
-  after_action :verify_access_authorized, except: [:root], if: -> {Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)}
+  after_action :verify_authorized, except: [:root], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_access_authorized, except: [:root], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -53,7 +53,7 @@ class AdminController < ApplicationController
     if current_admin.call_center_access?
       appointments_path
     else
-    organizations_path
+      organizations_path
     end
   end
 
