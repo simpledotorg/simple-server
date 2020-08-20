@@ -2107,6 +2107,18 @@
         },
         "facility_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "frequencies": {
+          "type": "string",
+          "enum": [
+            "OD",
+            "BD",
+            "QDS",
+            "TDS"
+          ]
+        },
+        "prescribed_for_days": {
+          "type": "integer"
         }
       },
       "required": [

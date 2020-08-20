@@ -1439,8 +1439,13 @@
               "$ref": "#/definitions/non_empty_string"
             },
             "prescription_drugs": {
-              "type": "array",
-              "items": "string"
+              "type": [
+                "null",
+                "array"
+              ],
+              "items": {
+                "$ref": "#/definitions/uuid"
+              }
             }
           }
         },
