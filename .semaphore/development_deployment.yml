@@ -44,5 +44,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 promotions:
-  - name: Deploy to production environments
-    pipeline_file: pipeline_3.yml
+  - name: Bangladesh Demo Deployment
+    pipeline_file: bangladesh_demo_deployment.yml
+  - name: India Demo Deployment
+    pipeline_file: india_demo_deployment.yml
