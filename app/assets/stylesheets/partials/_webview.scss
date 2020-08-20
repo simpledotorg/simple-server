@@ -62,6 +62,25 @@ body {
   font-weight: 500;
 }
 
+.info {
+    padding: 20px; /* Larger tappable area */
+    margin: -20px;
+    display: block;
+    float: right;
+
+    span {
+        display: block;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        font-size: 18px;
+        font-weight: bolder;
+        border-radius: 100px;
+        border: 3px solid #0075EB;
+        text-align: center;
+    }
+}
+
 .card h4 {
   font-weight: 300;
   font-size: 15px;
