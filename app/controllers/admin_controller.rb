@@ -1,7 +1,8 @@
 class AdminController < ApplicationController
   before_action :authenticate_email_authentication!
 
-  after_action :verify_authorized, except: [:root]
+  after_action :verify_authorized, except: [:root], unless: -> {Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)}
+  after_action :verify_access_authorized, except: [:root], if: -> {Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)}
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -25,8 +26,8 @@ class AdminController < ApplicationController
   end
 
   def root
-    if pundit_user.accesses.exists?
-      redirect_to role_root_paths
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      redirect_to access_root_paths
     else
       redirect_to default_root_paths.find { |policy, _path|
         DashboardPolicy.new(pundit_user, :dashboard).send(policy)
@@ -67,5 +68,9 @@ class AdminController < ApplicationController
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(request.referrer || root_path)
+  end
+
+  def verify_access_authorized
+    raise User::AuthorizationNotPerformedError, self.class unless RequestStore.store[:access_authorized]
   end
 end

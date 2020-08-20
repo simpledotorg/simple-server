@@ -205,6 +205,8 @@ class User < ApplicationRecord
   end
 
   def authorize(action, model, record = nil)
+    RequestStore.store[:access_authorized] = true
+
     unless can?(action, model, record)
       raise User::NotAuthorizedError.new({action: action, model: model})
     end
@@ -220,6 +222,10 @@ class User < ApplicationRecord
     destroyable_email_auths.each(&:destroy)
 
     true
+  end
+
+  def flipper_id
+    "User;#{id}"
   end
 
   def power_user?
@@ -242,4 +248,6 @@ class User < ApplicationRecord
       super(message)
     end
   end
+
+  class AuthorizationNotPerformedError < StandardError; end
 end

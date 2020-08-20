@@ -9,7 +9,11 @@ class Admin::FacilitiesController < AdminController
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
-    authorize([:manage, :facility, Facility])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.authorize(:manage, :facility)
+    else
+      authorize([:manage, :facility, Facility])
+    end
 
     if searching?
       facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)

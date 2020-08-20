@@ -3,7 +3,7 @@ class Analytics::DistrictsController < AnalyticsController
   include GraphicsDownload
 
   before_action :set_organization_district
-  skip_after_action :verify_authorized
+  skip_after_action :verify_authorized, :verify_access_authorized
 
   def show
     @show_current_period = true

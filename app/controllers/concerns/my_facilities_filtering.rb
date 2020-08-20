@@ -6,10 +6,15 @@ module MyFacilitiesFiltering
 
   included do
     before_action :populate_facility_sizes, :populate_zones,
-      :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
+                  :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
 
-    def filter_facilities
-      facilities = current_admin.accessible_facilities(:view_reports)
+    def filter_facilities(scope_namespace = [])
+      facilities = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+        current_admin.accessible_facilities(:view_reports)
+      else
+        policy_scope(scope_namespace.concat([Facility]))
+      end
+
       filtered_facilities = facilities_by_size(facilities)
       facilities_by_zone(filtered_facilities)
     end
