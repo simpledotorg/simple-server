@@ -24,7 +24,7 @@
     &.collapsed {
       height: 0px;
       overflow: hidden;
-      background: #FFF8E0;
+      background: #FFFAE3;
       @include transition(.2s);
     }
 
@@ -42,7 +42,7 @@
       display: flex;
       
       &:hover {
-        background: #FFF8E0;
+        background: #FFFAE3;
         @include transition(.1s);
       }
 
