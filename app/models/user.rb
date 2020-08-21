@@ -202,9 +202,6 @@ class User < ApplicationRecord
     user_permissions.map(&:resource)
   end
 
-  # #########################
-  # User Access (permissions)
-  #
   def accessible_organizations(action)
     return Organization.all if power_user?
     accesses.organizations(action)
@@ -237,12 +234,13 @@ class User < ApplicationRecord
       facilities
         .map(&:facility_group)
         .map { |fg|
-          display_facilities = facility_tree.select { |facility, _| facility.facility_group == fg }
+          facilities_in_facility_group =
+            facility_tree.select { |facility, _| facility.facility_group == fg }
 
           [fg,
             {
               can_access: can?(action, :facility_group, fg),
-              facilities: display_facilities,
+              facilities: facilities_in_facility_group,
               total_facilities: fg.facilities.size
             }
           ]
@@ -254,12 +252,13 @@ class User < ApplicationRecord
         .map(&:facility_group)
         .map(&:organization)
         .map { |org|
-          display_facility_groups = facility_group_tree.select { |facility_group, _| facility_group.organization == org }
+          facility_groups_in_org =
+            facility_group_tree.select { |facility_group, _| facility_group.organization == org }
 
           [org,
             {
               can_access: can?(action, :organization, org),
-              facility_groups: display_facility_groups,
+              facility_groups: facility_groups_in_org,
               total_facility_groups: org.facility_groups.size
             }
           ]
@@ -274,8 +273,14 @@ class User < ApplicationRecord
   end
 
   def grant_access(user, selected_facility_ids)
-    raise unless grantable_access_levels.keys.include?(user.access_level.to_sym)
+    raise NotAuthorizedError unless grantable_access_levels.key?(user.access_level.to_sym)
+    resources = prepare_access_resources(selected_facility_ids)
+    # if the user couldn't prepare any resources means that they shouldn't have had access to this operation at all
+    raise NotAuthorizedError if resources.empty?
+    user.accesses.create!(resources)
+  end
 
+  def prepare_access_resources(selected_facility_ids)
     selected_facilities = Facility.where(id: selected_facility_ids)
     resources = []
 
@@ -297,13 +302,27 @@ class User < ApplicationRecord
       resources << {resource: f} if can?(:manage, :facility, f)
     end
 
-    resources = resources.flatten
-
-    raise if resources.empty?
-    user.accesses.create!(resources)
+    resources.flatten
   end
-  #
-  # #########################
+
+  class NotAuthorizedError < StandardError
+    attr_reader :action, :model
+
+    def initialize(options = {})
+      if options.is_a? String
+        message = options
+      else
+        @action = options[:action]
+        @model = options[:model]
+
+        message = options.fetch(:message) { "not allowed to #{action} this #{model}" }
+      end
+
+      super(message)
+    end
+  end
+
+  class AuthorizationNotPerformedError < StandardError; end
 
   def destroy_email_authentications
     destroyable_email_auths = email_authentications.load

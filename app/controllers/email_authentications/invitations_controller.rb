@@ -5,16 +5,16 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   # TODO:
   # Make the facility access tree look like Figma designs [d]
   # Make the tree collapsible [d]
+  # Allow clicking on the parent resource even if you don't have full access to it [k/d]
+  #
+  #
   # Refactor JS [d]
-
   # Only allow valid access_levels in the UI [k]
   # Make the Invite page only accessible to Managers or PowerUser [k]
   # Refactor User#grant_access [k]
   # Refactor User#access_tree [k]
   # Specs for User#grant_access [k]
   # Specs for User#access_tree [k]
-
-  # Allow clicking on the parent resource even if you don't have full access to it [k/d]
   # Migrate the selected_facilities to be an array of hidden fields [k/d]
   def new
     authorize([:manage, :admin, current_admin])
@@ -23,7 +23,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      raise unless current_admin.can?(:manage, :facility)
+      raise User::NotAuthorizedError unless current_admin.can?(:manage, :facility)
 
       User.transaction do
         user = User.new(user_params)
