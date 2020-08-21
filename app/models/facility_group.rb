@@ -31,10 +31,6 @@ class FacilityGroup < ApplicationRecord
     "#{model_name.to_s.underscore}-#{slug}"
   end
 
-  def parent_id
-    organization.id
-  end
-
   def toggle_diabetes_management
     if enable_diabetes_management
       set_diabetes_management(true)

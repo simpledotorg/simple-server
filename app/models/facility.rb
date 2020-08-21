@@ -99,10 +99,6 @@ class Facility < ApplicationRecord
     [self]
   end
 
-  def parent_id
-    facility_group.id
-  end
-
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(registered_hypertension_patients)
     query.patient_counts_by_period(period, prev_periods)
