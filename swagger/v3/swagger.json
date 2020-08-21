@@ -2117,7 +2117,7 @@
             "TDS"
           ]
         },
-        "prescribed_for_days": {
+        "duration_in_days": {
           "type": "integer"
         }
       },

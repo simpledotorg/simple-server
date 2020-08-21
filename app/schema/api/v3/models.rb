@@ -254,7 +254,7 @@ class Api::V3::Models
          patient_id: {"$ref" => "#/definitions/uuid"},
          facility_id: {"$ref" => "#/definitions/uuid"},
          frequency: {type: :string, enum: PrescriptionDrug.frequencies.keys},
-         prescribed_for_days: {type: :integer}
+         duration_in_days: {type: :integer}
        },
        required: %w[id created_at updated_at name is_protocol_drug is_deleted patient_id facility_id]}
     end
