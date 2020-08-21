@@ -7,19 +7,22 @@ class User < ApplicationRecord
   }
   ACCESS_LEVELS = {
     viewer: {
-      name: "viewer",
+      id: :viewer,
+      name: "View: Everything",
       grant_access: [],
       description: "Can view stuff"
     },
 
     manager: {
-      name: "manager",
+      id: :manager,
+      name: "Manager",
       grant_access: [:viewer, :manager],
       description: "Can manage stuff"
     },
 
     power_user: {
-      name: "power_user",
+      id: :power_user,
+      name: "Power User",
       grant_access: [:viewer, :manager, :power_user],
       description: "Can manage everything"
     }
@@ -30,7 +33,7 @@ class User < ApplicationRecord
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
-  enum access_level: ACCESS_LEVELS.map { |level, metadata| [level, metadata[:name]] }.to_h, _suffix: :access
+  enum access_level: ACCESS_LEVELS.map { |_, level| level.values_at(:id, :name) }.to_h, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -261,11 +264,11 @@ class User < ApplicationRecord
   end
 
   def grantable_access_levels
-    ACCESS_LEVELS[access_level.to_sym][:grant_access]
+    ACCESS_LEVELS.slice(*ACCESS_LEVELS[access_level.to_sym][:grant_access])
   end
 
   def grant_access(user, selected_facility_ids)
-    raise unless grantable_access_levels.include?(user.access_level.to_sym)
+    raise unless grantable_access_levels.keys.include?(user.access_level.to_sym)
 
     selected_facilities = Facility.where(id: selected_facility_ids)
     resources = []

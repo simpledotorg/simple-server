@@ -5,8 +5,8 @@
       <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true, html: {onsubmit: "submitForm(this)"}) do |form| %>
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, id: :email, required: true %>
-        <%= form.text_field :role, id: :role, required: true, label: 'Job Title' %>
-        <%= form.select :access_levels, current_admin.grantable_access_levels, id: :access_levels, required: true %>
+        <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title' %>
+        <%= form.select :access_levels, current_admin.grantable_access_levels.map { |_, data| data.values_at(:name, :id) }, id: :access_levels, required: true %>
 
         <%= form.label "Facility Access" %>
         <div id="facility-access">
@@ -21,7 +21,8 @@
                             class: 'access-input',
                             label: "#{org.name}"
                         } %>
-                    <span class="access-ratio"> <%= org_metadata[:facility_groups].keys.size  %> of <%= org_metadata[:total_facility_groups] %> facility groups
+                    <span class="access-ratio"> <%= org_metadata[:facility_groups].keys.size %>
+                      of <%= org_metadata[:total_facility_groups] %> facility groups
                       <i class="fas fa-sort-down light"></i>
                     </span>
                   </div>
@@ -36,7 +37,8 @@
                                   class: 'access-input',
                                   label: "#{facility_group.name}"
                               } %>
-                          <span class="access-ratio collapsed"> <%= fg_metadata[:facilities].keys.size  %> of <%= fg_metadata[:total_facilities] %> facilities
+                          <span class="access-ratio collapsed"> <%= fg_metadata[:facilities].keys.size %>
+                            of <%= fg_metadata[:total_facilities] %> facilities
                             <i class="fas fa-sort-down light"></i>
                           </span>
                         </div>
