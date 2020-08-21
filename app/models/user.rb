@@ -265,7 +265,7 @@ class User < ApplicationRecord
   end
 
   def grant_access(user, selected_facility_ids)
-    raise unless grantable_access_levels.include?(user.access_level)
+    raise unless grantable_access_levels.include?(user.access_level.to_sym)
 
     selected_facilities = Facility.where(id: selected_facility_ids)
     resources = []

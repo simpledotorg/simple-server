@@ -25,12 +25,14 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise unless current_admin.can?(:manage, :facility)
 
-      user = User.new(user_params)
-      super do |resource|
-        user.email_authentications = [resource]
-        user.save!
-        next if selected_facilities.blank?
-        current_admin.grant_access(user, selected_facilities)
+      User.transaction do
+        user = User.new(user_params)
+        super do |resource|
+          user.email_authentications = [resource]
+          user.save!
+          next if selected_facilities.blank?
+          current_admin.grant_access(user, selected_facilities)
+        end
       end
     else
       user = User.new(user_params)
