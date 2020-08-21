@@ -90,8 +90,7 @@ module Accessible
               can_access: can?(action, :facility_group, fg),
               facilities: facilities_in_facility_group,
               total_facilities: fg.facilities.size
-            }
-          ]
+            }]
         }
         .to_h
 
@@ -108,8 +107,7 @@ module Accessible
               can_access: can?(action, :organization, org),
               facility_groups: facility_groups_in_org,
               total_facility_groups: org.facility_groups.size
-            }
-          ]
+            }]
         }
         .to_h
 
