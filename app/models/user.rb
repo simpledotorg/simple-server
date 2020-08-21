@@ -227,14 +227,34 @@ class User < ApplicationRecord
     facility_group_tree =
       facilities
         .map(&:facility_group)
-        .map { |fg| [fg, {can_access: can?(action, :facility_group, fg), facilities: facility_tree}] }
+        .map { |fg|
+          display_facilities = facility_tree.select { |facility, _| facility.facility_group == fg }
+
+          [fg,
+            {
+              can_access: can?(action, :facility_group, fg),
+              facilities: display_facilities,
+              total_facilities: fg.facilities.size
+            }
+          ]
+        }
         .to_h
 
     organization_tree =
       facilities
         .map(&:facility_group)
         .map(&:organization)
-        .map { |org| [org, {can_access: can?(action, :organization, org), facility_groups: facility_group_tree}] }
+        .map { |org|
+          display_facility_groups = facility_group_tree.select { |facility_group, _| facility_group.organization == org }
+
+          [org,
+            {
+              can_access: can?(action, :organization, org),
+              facility_groups: display_facility_groups,
+              total_facility_groups: org.facility_groups.size
+            }
+          ]
+        }
         .to_h
 
     {organizations: organization_tree}

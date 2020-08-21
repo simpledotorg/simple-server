@@ -18,7 +18,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   # Migrate the selected_facilities to be an array of hidden fields [k/d]
   def new
     authorize([:manage, :admin, current_admin])
-    @current_admin = InviteAdminPresenter.new(current_admin)
     super
   end
 
@@ -77,7 +76,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def current_admin
-    InviteAdminPresenter.new(current_inviter.user)
+    current_inviter.user
   end
 
   def pundit_user

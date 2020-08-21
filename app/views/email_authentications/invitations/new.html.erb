@@ -11,49 +11,46 @@
         <%= form.label "Facility Access" %>
         <div id="facility-access">
           <div class="card access-tree">
-            <% current_admin.access_tree[:organizations].each do |org_id, org_data| %>
+            <% current_admin.access_tree(:manage)[:organizations].each do |org, org_metadata| %>
               <ul class="facility-access-item-wrapper">
                 <li>
                   <div class="facility-access-item organization">
                     <%= form.check_box :organizations,
                         {
-                            id: org_id,
+                            id: org.id,
                             class: 'access-input',
-                            label: "#{org_data[:name]}",
-                            disabled: !org_data[:access]
+                            label: "#{org.name}"
                         } %>
-                    <span class="access-ratio"> <%= org_data[:access_count]  %> of <%= org_data[:total_count] %> facility groups
+                    <span class="access-ratio"> <%= org_metadata[:facility_groups].keys.size  %> of <%= org_metadata[:total_facility_groups] %> facility groups
                       <i class="fas fa-sort-down light"></i>
                     </span>
                   </div>
                   <ul class="facility-access-item-wrapper">
-                    <% org_data[:facility_groups].each do |facility_group_id, fg_data| %>
+                    <% org_metadata[:facility_groups].each do |facility_group, fg_metadata| %>
                       <li>
                         <div class="facility-access-item">
                           <span class="spacer"></span>
                           <%= form.check_box :facility_groups,
                               {
-                                  id: facility_group_id,
+                                  id: facility_group.id,
                                   class: 'access-input',
-                                  label: "#{fg_data[:name]}",
-                                  disabled: !fg_data[:access]
+                                  label: "#{facility_group.name}"
                               } %>
-                          <span class="access-ratio"> <%= fg_data[:access_count]  %> of <%= fg_data[:total_count] %> facilities
+                          <span class="access-ratio collapsed"> <%= fg_metadata[:facilities].keys.size  %> of <%= fg_metadata[:total_facilities] %> facilities
                             <i class="fas fa-sort-down light"></i>
                           </span>
                         </div>
-                        <ul class="facility-access-item-wrapper">
-                          <% fg_data[:facilities].each do |facility_id, f_data| %>
+                        <ul class="facility-access-item-wrapper collapsed">
+                          <% fg_metadata[:facilities].each do |facility, _| %>
                             <li>
                               <div class="facility-access-item">
                                 <span class="spacer"></span>
                                 <span class="spacer"></span>
                                 <%= form.check_box :facilities,
                                     {
-                                        id: facility_id,
+                                        id: facility.id,
                                         class: 'access-input',
-                                        label: f_data[:name],
-                                        disabled: !f_data[:access]
+                                        label: facility.name
                                     } %>
                               </div>
                             </li>
