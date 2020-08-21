@@ -95,6 +95,10 @@ class User < ApplicationRecord
 
   alias facility registration_facility
 
+  def teleconsultation_phone_number
+    super.presence || phone_number
+  end
+
   def authorized_facility?(facility_id)
     registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
   end

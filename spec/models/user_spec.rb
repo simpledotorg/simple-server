@@ -22,6 +22,22 @@ RSpec.describe User, type: :model do
     }
   end
 
+  describe "#teleconsultation_phone_number" do
+    it "returns the teleconsultation phone number if its present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      user = create(:user, teleconsultation_phone_number: phone_number)
+
+      expect(User.find(user.id).teleconsultation_phone_number).to eq(phone_number)
+    end
+
+    it "defaults to phone number if its not present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      user = create(:user, teleconsultation_phone_number: nil, phone_number: phone_number)
+
+      expect(User.find(user.id).teleconsultation_phone_number).to eq phone_number
+    end
+  end
+
   describe "Access (permissions)" do
     context ".accessible_organizations" do
       it "returns all organizations for power users" do
