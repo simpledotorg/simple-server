@@ -35,65 +35,69 @@ function collapseListener() {
   }
 }
 
-function inviteAdmin() {
-  // helper function to create nodeArrays (not collections)
-  const nodeArray = (selector, parent = document) => [].slice.call(parent.querySelectorAll(selector))
+// helper function to create nodeArrays (not collections)
+const nodeListToArray = (selector, parent = document) =>
+  [].slice.call(parent.querySelectorAll(selector))
 
-  // checkboxes of interest
-  const allThings = nodeArray('input.access-input', document.getElementById('facility-access'));
+function updateParentCheckedState(element, selector) {
+  // find parent and sibling checkboxes
+  const parent = (element.closest(['ul']).parentNode).querySelector(selector);
+  const siblings = nodeListToArray(selector, parent.closest('li').querySelector(['ul']));
 
-  // global listener
-  addEventListener('change', e => {
-    let check = e.target;
+  // get checked state of siblings
+  // are every or some siblings checked (using Boolean as test function)
+  const checkStatus = siblings.map(check => check.checked);
+  const every = checkStatus.every(Boolean);
+  const some = checkStatus.some(Boolean);
 
-    //	exit if change event did not come from
-    //	our list of allThings
-    if (allThings.indexOf(check) === -1) return;
+  // check parent if all siblings are checked
+  // set indeterminate if not all and not none are checked
+  parent.checked = every;
+  parent.indeterminate = !every && every !== some;
 
-    //	check/uncheck children (includes check itself)
-    const children = nodeArray('input.access-input', check.parentNode.parentNode.parentNode);
-    children.forEach(child => child.checked = check.checked);
-
-    // traverse up from target check
-    while (check) {
-
-      // find parent and sibling checkboxes (quick 'n' dirty)
-      const parent = (check.closest(['ul']).parentNode).querySelector('input.access-input');
-      const siblings = nodeArray('input.access-input', parent.closest('li').querySelector(['ul']));
-
-      // get checked state of siblings
-      // are every or some siblings checked (using Boolean as test function)
-      const checkStatus = siblings.map(check => check.checked);
-      const every = checkStatus.every(Boolean);
-      const some = checkStatus.some(Boolean);
-
-      // check parent if all siblings are checked
-      // set indeterminate if not all and not none are checked
-      parent.checked = every;
-      parent.indeterminate = !every && every !== some;
-
-      // prepare for next loop
-      check = check != parent ? parent : 0;
-    }
-  })
-
-  /*
-  closest polyfill for ie
-
-
-  if (window.Element && !Element.prototype.closest) {
-    Element.prototype.closest =
-    function(s) {
-      var matches = (this.document || this.ownerDocument).querySelectorAll(s),
-          i,
-          el = this;
-      do {
-        i = matches.length;
-        while (--i >= 0 && matches.item(i) !== el) {};
-      } while ((i < 0) && (el = el.parentElement));
-      return el;
-    };
-  }
-  */
+  // recurse until check is the top most parent
+  if (element != parent) updateParentCheckedState(parent, selector)
 }
 
+function updateChildrenCheckedState(parent, selector) {
+  //	check/uncheck children (includes check itself)
+  const children = nodeListToArray(selector, parent.closest("li"));
+  children.forEach(child => {
+    // Reset indeterminate state for children
+    child.indeterminate = false
+    child.checked = parent.checked
+  });
+}
+
+function inviteAdmin() {
+  const SELECTOR = 'input.access-input';
+  const facilityAccessDiv = document.getElementById('facility-access')
+
+  // List of all checkboxes under #facility-access
+  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv);
+
+  addEventListener('change', e => {
+    let targetCheckbox = e.target;
+
+    //	exit if change event did not come from list of checkboxes
+    if (checkboxes.indexOf(targetCheckbox) === -1) return;
+    updateChildrenCheckedState(targetCheckbox, SELECTOR)
+    updateParentCheckedState(targetCheckbox, SELECTOR)
+  })
+
+  // Polyfill for IE
+  if (window.Element && !Element.prototype.closest) {
+    Element.prototype.closest =
+      function (s) {
+        var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+          i,
+          el = this;
+        do {
+          i = matches.length;
+          while (--i >= 0 && matches.item(i) !== el) { };
+        } while ((i < 0) && (el = el.parentElement));
+        return el;
+      };
+  }
+
+}
