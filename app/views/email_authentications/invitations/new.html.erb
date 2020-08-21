@@ -1,5 +1,4 @@
 <h1><%= t "devise.invitations.new.header" %></h1>
-
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
     <div class="col-md-6">
@@ -8,7 +7,6 @@
         <%= form.text_field :email, id: :email, required: true %>
         <%= form.text_field :role, id: :role, required: true, label: 'Job Title' %>
         <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS.map { |al| al[:name] }, id: :access_levels, required: true %>
-
         <%= form.label "Facility Access" %>
         <div id="facility-access">
           <div class="card access-tree">
@@ -23,9 +21,9 @@
                             label: "#{org_data[:name]}",
                             disabled: !org_data[:access]
                         } %>
-                        <span class="access-ratio"> <%= org_data[:access_count]  %> of <%= org_data[:total_count] %> facility groups
-                          <i class="fas fa-sort-down light"></i>
-                        </span>
+                    <span class="access-ratio"> <%= org_data[:access_count]  %> of <%= org_data[:total_count] %> facility groups
+                      <i class="fas fa-sort-down light"></i>
+                    </span>
                   </div>
                   <ul class="facility-access-item-wrapper">
                     <% org_data[:facility_groups].each do |facility_group_id, fg_data| %>
@@ -39,16 +37,16 @@
                                   label: "#{fg_data[:name]}",
                                   disabled: !fg_data[:access]
                               } %>
-                              <span class="access-ratio"> <%= fg_data[:access_count]  %> of <%= fg_data[:total_count] %> facilities
-                                <i class="fas fa-sort-down light"></i>
-                              </span>
-                            </div>
+                          <span class="access-ratio"> <%= fg_data[:access_count]  %> of <%= fg_data[:total_count] %> facilities
+                            <i class="fas fa-sort-down light"></i>
+                          </span>
+                        </div>
                         <ul class="facility-access-item-wrapper">
                           <% fg_data[:facilities].each do |facility_id, f_data| %>
                             <li>
                               <div class="facility-access-item">
-                              <span class="spacer"></span>
-                              <span class="spacer"></span>
+                                <span class="spacer"></span>
+                                <span class="spacer"></span>
                                 <%= form.check_box :facilities,
                                     {
                                         id: facility_id,
@@ -68,7 +66,6 @@
             <% end %>
           </div>
         </div>
-
         <%= form.hidden_field :selected_facilities, id: "facility-access-selections", value: [] %>
         <%= form.primary("Send Invite") %>
       <% end %>
