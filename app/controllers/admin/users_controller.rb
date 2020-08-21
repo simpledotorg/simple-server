@@ -89,6 +89,7 @@ class Admin::UsersController < AdminController
     params.require(:user).permit(
       :full_name,
       :phone_number,
+      :teleconsultation_phone_number,
       :password,
       :password_confirmation,
       :sync_approval_status,

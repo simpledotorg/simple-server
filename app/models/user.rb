@@ -53,6 +53,7 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
+  validates :teleconsultation_phone_number, allow_blank: true, numericality: {only_integer: true}
   #
   #
   # Revive this validation once all users are migrated to the new permissions system:
@@ -125,7 +126,12 @@ class User < ApplicationRecord
   end
 
   def update_with_phone_number_authentication(params)
-    user_params = params.slice(:full_name, :sync_approval_status, :sync_approval_status_reason)
+    user_params = params.slice(
+      :full_name,
+      :teleconsultation_phone_number,
+      :sync_approval_status,
+      :sync_approval_status_reason
+    )
     phone_number_authentication_params = params.slice(
       :phone_number,
       :password,
@@ -134,7 +140,7 @@ class User < ApplicationRecord
     )
 
     transaction do
-      update!(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
+      update(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
     end
   end
 

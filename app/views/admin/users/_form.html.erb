@@ -3,6 +3,10 @@
     <%= bootstrap_form_with(model: [:admin, user], local: true, label_errors: true) do |form| %>
       <%= form.text_field :full_name, id: :user_name %>
       <%= form.text_field :phone_number, id: :user_phone_number, disabled: true %>
+      <%= form.text_field :teleconsultation_phone_number,
+                          id: :user_teleconsultation_phone_number,
+                          help: "If different from phone number",
+                          optional: true %>
 
       <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only", optional: true %>
       <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation", optional: true %>
