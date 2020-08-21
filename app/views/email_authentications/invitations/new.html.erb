@@ -6,11 +6,12 @@
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, id: :email, required: true %>
         <%= form.text_field :role, id: :role, required: true, label: 'Job Title' %>
-        <%= form.select :access_levels, User::ACCESS_LEVEL_DESCRIPTIONS.map { |al| al[:name] }, id: :access_levels, required: true %>
+        <%= form.select :access_levels, current_admin.grantable_access_levels, id: :access_levels, required: true %>
+
         <%= form.label "Facility Access" %>
         <div id="facility-access">
           <div class="card access-tree">
-            <% @current_admin.access_tree[:organizations].each do |org_id, org_data| %>
+            <% current_admin.access_tree[:organizations].each do |org_id, org_data| %>
               <ul class="facility-access-item-wrapper">
                 <li>
                   <div class="facility-access-item organization">
