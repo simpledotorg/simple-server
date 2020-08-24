@@ -9,6 +9,7 @@ class Admin::FacilitiesController < AdminController
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   after_action :verify_access_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
   def index
@@ -31,13 +32,25 @@ class Admin::FacilitiesController < AdminController
       @facility_groups = facility_groups.group_by(&:organization)
       @facilities = facilities.group_by(&:facility_group)
     else
-      @organizations = policy_scope([:manage, :facility, Organization])
-      @facility_groups = @organizations.map { |organization|
-        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
-      }.to_h
-      @facilities = @facility_groups.values.flatten.map { |facility_group|
-        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
-      }.to_h
+
+      if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+        @facilities = current_admin.accessible_facilities(:manage).group_by(:facility_id)
+        @facility_groups = current_admin.accessible_facility_groups(:manage).group_by(:organization_id)
+        @organizations = current_admin
+          .accessible_facility_groups(:manage)
+          .includes(:organization)
+          .flat_map(&:organization)
+          .uniq
+          .sort_by(&:name)
+      else
+        @organizations = policy_scope([:manage, :facility, Organization])
+        @facility_groups = @organizations.map { |organization|
+          [organization, policy_scope([:manage, :facility, organization.facility_groups])]
+        }.to_h
+        @facilities = @facility_groups.values.flatten.map { |facility_group|
+          [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
+        }.to_h
+      end
     end
   end
 
