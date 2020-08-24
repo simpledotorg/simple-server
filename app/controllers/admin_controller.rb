@@ -36,6 +36,10 @@ class AdminController < ApplicationController
 
   helper_method :current_admin
 
+  def verify_access_authorized
+    raise User::AuthorizationNotPerformedError, self.class unless RequestStore.store[:access_authorized]
+  end
+
   private
 
   def default_root_paths
@@ -67,9 +71,5 @@ class AdminController < ApplicationController
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(request.referrer || root_path)
-  end
-
-  def verify_access_authorized
-    raise User::AuthorizationNotPerformedError, self.class unless RequestStore.store[:access_authorized]
   end
 end
