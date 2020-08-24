@@ -71,7 +71,7 @@ FactoryBot.define do
     organization
 
     role { :owner }
-    access_level { :viewer }
+    access_level { :power_user }
 
     trait :call_center do
       access_level { :call_center }
