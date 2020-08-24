@@ -17,29 +17,29 @@ function submitForm() {
   hiddenSelectionsField.remove()
 }
 
-function toggleItemCollapsed(wrapper) {
-  const collapsed = wrapper.classList.contains("collapsed")
+function toggleItemCollapsed(element) {
+  const collapsed = element.classList.contains("collapsed")
   if (collapsed) {
-    wrapper.classList.remove("collapsed")
+    element.classList.remove("collapsed")
   } else {
-    wrapper.classList.add("collapsed")
+    element.classList.add("collapsed")
   }
 }
 
-function onFacilityAccessItemToggled(event) {
-  const children = Array.from(event.target.parentNode.parentNode.childNodes)
+function onFacilityAccessItemToggled({ target }) {
+  const children = Array.from(target.closest("li").childNodes)
   const wrapper = children.find(item =>
     item.className === "facility-access-item-wrapper" ||
     item.className === "facility-access-item-wrapper collapsed")
   if (wrapper) {
-    toggleItemCollapsed(event.target)
+    toggleItemCollapsed(target)
     toggleItemCollapsed(wrapper)
   }
 }
 
 function collapseListener() {
   const facilityAccessItems = document.getElementsByClassName("access-ratio")
-  for (let item of facilityAccessItems) {
+  for (const item of facilityAccessItems) {
     item.addEventListener("click", onFacilityAccessItemToggled)
   }
 }
