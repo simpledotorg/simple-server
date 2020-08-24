@@ -79,25 +79,24 @@ function inviteAdmin() {
   addEventListener('change', e => {
     let targetCheckbox = e.target;
 
-    //	exit if change event did not come from list of checkboxes
+    // exit if change event did not come from list of checkboxes
     if (checkboxes.indexOf(targetCheckbox) === -1) return;
     updateChildrenCheckedState(targetCheckbox, SELECTOR)
     updateParentCheckedState(targetCheckbox, SELECTOR)
   })
+}
 
-  // Polyfill for IE
-  if (window.Element && !Element.prototype.closest) {
-    Element.prototype.closest =
-      function (s) {
-        var matches = (this.document || this.ownerDocument).querySelectorAll(s),
-          i,
-          el = this;
-        do {
-          i = matches.length;
-          while (--i >= 0 && matches.item(i) !== el) { };
-        } while ((i < 0) && (el = el.parentElement));
-        return el;
-      };
-  }
-
+// Polyfill for IE
+if (window.Element && !Element.prototype.closest) {
+  Element.prototype.closest =
+    function (s) {
+      var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+        i,
+        el = this;
+      do {
+        i = matches.length;
+        while (--i >= 0 && matches.item(i) !== el) { };
+      } while ((i < 0) && (el = el.parentElement));
+      return el;
+    };
 }
