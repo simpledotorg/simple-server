@@ -27,6 +27,15 @@ class Period
   def initialize(attributes = {})
     super
     @type = type.intern if type
+    @value = if @value.is_a?(String)
+      if quarter?
+        Quarter.parse(@value)
+      else
+        @value.to_date
+      end
+    else
+      @value
+    end
   end
 
   # Convert this Period to a quarter period - so:

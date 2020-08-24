@@ -3,7 +3,7 @@ class Reports::RegionCacheWarmer
     new.call
   end
 
-  def initialize(period: Date.current.last_month.beginning_of_month)
+  def initialize(period: RegionService.default_period)
     @period = period
   end
 

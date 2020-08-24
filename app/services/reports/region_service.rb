@@ -3,6 +3,11 @@ class Reports::RegionService
   MAX_MONTHS_OF_DATA = 24
   CACHE_VERSION = 8
 
+  # THe default period we report on is the last month so we show the last full completed month of data.
+  def self.default_period
+    Period.month(Date.current.last_month.beginning_of_month)
+  end
+
   def initialize(region:, period:)
     @current_user = current_user
     @region = region
