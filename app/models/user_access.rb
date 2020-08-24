@@ -1,26 +1,7 @@
-module Accessible
-  extend ActiveSupport::Concern
+class UserAccess < Struct.new(:user)
+  class NotAuthorizedError < StandardError; end
 
-  class NotAuthorizedError < StandardError
-    attr_reader :action, :model
-
-    def initialize(options = {})
-      if options.is_a? String
-        message = options
-      else
-        @action = options[:action]
-        @model = options[:model]
-
-        message = options.fetch(:message) { "not allowed to #{action} this #{model}" }
-      end
-
-      super(message)
-    end
-  end
-
-  class AuthorizationNotPerformedError < StandardError; end
-
-  ACCESS_LEVELS = {
+  LEVELS = {
     viewer: {
       id: :viewer,
       name: "View: Everything",
@@ -38,36 +19,42 @@ module Accessible
     power_user: {
       id: :power_user,
       name: "Power User",
-      grant_access: [:viewer, :manager, :power_user],
       description: "Can manage everything"
     }
   }
 
-  included do
-    has_many :accesses, dependent: :destroy
-    enum access_level: ACCESS_LEVELS.map { |level, meta| [level, meta[:id].to_s] }.to_h, _suffix: :access
-    # Revive this validation once all users are migrated to the new permissions system:
-    # validates :access_level, presence: true, if: -> { email_authentication.present? }
-  end
-
   def accessible_organizations(action)
-    return Organization.all if power_user?
-    accesses.organizations(action)
+    return Organization.all if user.power_user?
+    resources_for(Organization, action)
   end
 
   def accessible_facility_groups(action)
-    return FacilityGroup.all if power_user?
-    accesses.facility_groups(action)
+    return FacilityGroup.all if user.power_user?
+    resources_for(FacilityGroup, action)
+      .or(FacilityGroup.where(organization: accessible_organizations(action)))
   end
 
   def accessible_facilities(action)
-    return Facility.all if power_user?
-    accesses.facilities(action)
+    return Facility.all if user.power_user?
+    resources_for(Facility, action)
+      .or(Facility.where(facility_group: accessible_facility_groups(action)))
   end
 
   def can?(action, model, record = nil)
-    return true if power_user?
-    accesses.can?(action, model, record)
+    if record&.is_a? ActiveRecord::Relation
+      raise ArgumentError, "record should not be an ActiveRecord::Relation."
+    end
+
+    case model
+      when :facility
+        can_access_record?(accessible_facilities(action), record)
+      when :organization
+        can_access_record?(accessible_organizations(action), record)
+      when :facility_group
+        can_access_record?(accessible_facility_groups(action), record)
+      else
+        raise ArgumentError, "Access to #{model} is unsupported."
+    end
   end
 
   def access_tree(action)
@@ -114,23 +101,42 @@ module Accessible
     {organizations: organization_tree}
   end
 
-  def grantable_access_levels
-    ACCESS_LEVELS.slice(*ACCESS_LEVELS[access_level.to_sym][:grant_access])
+  def permitted_access_levels
+    return LEVELS.keys if user.power_user?
+    LEVELS.slice(*LEVELS[user.access_level.to_sym][:grant_access])
   end
 
-  def grant_access(user, selected_facility_ids)
-    raise NotAuthorizedError unless grantable_access_levels.key?(user.access_level.to_sym)
+  def grant_access(new_user, selected_facility_ids)
+    raise NotAuthorizedError unless permitted_access_levels.key?(new_user.access_level.to_sym)
     resources = prepare_access_resources(selected_facility_ids)
-    # if the user couldn't prepare any resources means that they shouldn't have had access to this operation at all
+    # if the new_user couldn't prepare any resources means that they shouldn't have had access to this operation at all
     raise NotAuthorizedError if resources.empty?
-    user.accesses.create!(resources)
-  end
-
-  def power_user?
-    power_user_access? && email_authentication.present?
+    new_user.accesses.create!(resources)
   end
 
   private
+
+  def action_to_access_level(action)
+    {
+      view: User.access_levels.fetch_values(:manager, :viewer),
+      manage: User.access_levels.fetch_values(:manager)
+    }.fetch(action)
+  end
+
+  def can_access_record?(resources, record)
+    return true if user.power_user?
+    return resources.find_by_id(record).present? if record
+    resources.exists?
+  end
+
+  def resources_for(resource_model, action)
+    resource_ids =
+      user.accesses.where(resource_type: resource_model.to_s)
+        .select { |access| access.user.access_level.in?(action_to_access_level(action)) }
+        .map(&:resource_id)
+
+    resource_model.where(id: resource_ids)
+  end
 
   def prepare_access_resources(selected_facility_ids)
     selected_facilities = Facility.where(id: selected_facility_ids)

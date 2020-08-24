@@ -1,6 +1,5 @@
 class User < ApplicationRecord
   include PgSearch::Model
-  include Accessible
 
   AUTHENTICATION_TYPES = {
     email_authentication: "EmailAuthentication",
@@ -12,6 +11,7 @@ class User < ApplicationRecord
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
+  enum access_level: UserAccess::LEVELS.map { |level, meta| [level, meta[:id].to_s] }.to_h, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -37,6 +37,7 @@ class User < ApplicationRecord
     inverse_of: :deleted_by_user,
     class_name: "Patient",
     foreign_key: :deleted_by_user_id
+  has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -48,6 +49,8 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
+  # Revive this validation once all users are migrated to the new permissions system:
+  # validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -65,6 +68,13 @@ class User < ApplicationRecord
     :password,
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
+  delegate :accessible_organizations,
+    :accessible_facilities,
+    :accessible_facility_groups,
+    :access_tree,
+    :permitted_access_levels,
+    :can?,
+    :grant_access, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
 
@@ -74,6 +84,10 @@ class User < ApplicationRecord
 
   def email_authentication
     email_authentications.first
+  end
+
+  def user_access
+    UserAccess.new(self)
   end
 
   def registration_facility_id
@@ -179,6 +193,10 @@ class User < ApplicationRecord
     destroyable_email_auths.each(&:destroy)
 
     true
+  end
+
+  def power_user?
+    power_user_access? && email_authentication.present?
   end
 
   def flipper_id
