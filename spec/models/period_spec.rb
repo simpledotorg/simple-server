@@ -20,12 +20,17 @@ RSpec.describe Period, type: :model do
     expect(jan_1_2019.to_period.value).to eq(Date.parse("January 1st 2019").to_period.value)
   end
 
-  it "validations" do
+  it "has validations" do
     period = Period.new(type: "invalid", value: jan_1_2020)
     expect(period).to be_invalid
     expect(period.errors[:type]).to eq(["must be month or quarter"])
     period.type = :month
     expect(period).to be_valid
+  end
+
+  it "has to_s in correct format" do
+    expect(jan_1_2019_month_period.to_s).to eq("Jan-2019")
+    expect(q1_2019_period.to_s).to eq("Q1-2019")
   end
 
   it "period months can be compared" do
