@@ -24,7 +24,7 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
 end
 
 every :day, at: local("02:00 am"), roles: [:cron] do
-  runner "RegionReportCacheWarmer.call"
+  runner "Reports::RegionCacheWarmer.call"
 end
 
 every 3.hours, roles: [:cron] do
