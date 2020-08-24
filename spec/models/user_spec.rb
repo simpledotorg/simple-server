@@ -16,7 +16,11 @@ RSpec.describe User, type: :model do
       is_expected.to(
         define_enum_for(:access_level)
           .with_suffix(:access)
-          .with_values(power_user: "power_user", manager: "manager", viewer: "viewer")
+          .with_values(call_center: "call_center",
+                       viewer_reports_only: "viewer_reports_only",
+                       viewer_all: "viewer_all",
+                       manager: "manager",
+                       power_user: "power_user")
           .backed_by_column_of_type(:string)
       )
     }
@@ -32,7 +36,7 @@ RSpec.describe User, type: :model do
       end
 
       it "calls into Access for non-power users" do
-        admin = create(:admin)
+        admin = create(:admin, :manager)
 
         expect(admin.accesses).to receive(:organizations)
         admin.accessible_organizations(:any_action)
@@ -48,7 +52,7 @@ RSpec.describe User, type: :model do
       end
 
       it "calls into Access for non-power users" do
-        admin = create(:admin)
+        admin = create(:admin, :manager)
 
         expect(admin.accesses).to receive(:facility_groups)
         admin.accessible_facility_groups(:any_action)
@@ -64,7 +68,7 @@ RSpec.describe User, type: :model do
       end
 
       it "calls into Access for non-power users" do
-        admin = create(:admin)
+        admin = create(:admin, :manager)
 
         expect(admin.accesses).to receive(:facilities)
         admin.accessible_facilities(:any_action)
@@ -81,7 +85,7 @@ RSpec.describe User, type: :model do
       end
 
       it "calls into Access for non-power users" do
-        admin = create(:admin)
+        admin = create(:admin, :manager)
 
         expect(admin.accesses).to receive(:can?).exactly(3).times
         admin.can?(:any_action, Organization)

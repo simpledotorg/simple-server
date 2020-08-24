@@ -31,26 +31,23 @@ class Admin::FacilitiesController < AdminController
       @organizations = Organization.where(facility_groups: facility_groups)
       @facility_groups = facility_groups.group_by(&:organization)
       @facilities = facilities.group_by(&:facility_group)
+    elsif Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      @facilities = current_admin.accessible_facilities(:manage).group_by(:facility_id)
+      @facility_groups = current_admin.accessible_facility_groups(:manage).group_by(:organization_id)
+      @organizations = current_admin
+        .accessible_facility_groups(:manage)
+        .includes(:organization)
+        .flat_map(&:organization)
+        .uniq
+        .sort_by(&:name)
     else
-
-      if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-        @facilities = current_admin.accessible_facilities(:manage).group_by(:facility_id)
-        @facility_groups = current_admin.accessible_facility_groups(:manage).group_by(:organization_id)
-        @organizations = current_admin
-          .accessible_facility_groups(:manage)
-          .includes(:organization)
-          .flat_map(&:organization)
-          .uniq
-          .sort_by(&:name)
-      else
-        @organizations = policy_scope([:manage, :facility, Organization])
-        @facility_groups = @organizations.map { |organization|
-          [organization, policy_scope([:manage, :facility, organization.facility_groups])]
-        }.to_h
-        @facilities = @facility_groups.values.flatten.map { |facility_group|
-          [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
-        }.to_h
-      end
+      @organizations = policy_scope([:manage, :facility, Organization])
+      @facility_groups = @organizations.map { |organization|
+        [organization, policy_scope([:manage, :facility, organization.facility_groups])]
+      }.to_h
+      @facilities = @facility_groups.values.flatten.map { |facility_group|
+        [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
+      }.to_h
     end
   end
 
