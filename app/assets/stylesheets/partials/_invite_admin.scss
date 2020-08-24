@@ -25,8 +25,7 @@
     &.collapsed {
       height: 0px;
       overflow: hidden;
-      background: #FFFAE3;
-      @include transition(.2s);
+      @include transition(.1s);
     }
 
     li {
@@ -85,7 +84,7 @@
         i {
           transform: rotate(0deg);
           margin: 0px 8px 2px 8px;
-          @include transition(.3s);
+          @include transition(.2s);
         }
 
       }
