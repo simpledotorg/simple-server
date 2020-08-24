@@ -1,3 +1,5 @@
+@import "partials/webview";
+
 html, body {
   height: auto;
   scroll-behavior: auto;
@@ -96,6 +98,21 @@ html, body {
     transform: rotate(0deg);
     opacity: 1;
   }
+
+    .video-small a {
+        display: block;
+        font-size: 18px;
+        padding: 14px 0 14px 48px;
+        background: #fff url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjIiIGhlaWdodD0iNDQiIHZpZXdCb3g9IjAgMCA2MiA0NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTYxLjMyOSA5LjM5MTUxQzYxLjMyOSA5LjM5MTUxIDYwLjcyMiA1LjEyNTgyIDU4Ljg2NyAzLjI0NzcyQzU2LjUxNCAwLjc4MjIxMSA1My44NjkgMC43NjkyMjMgNTIuNjYyIDAuNjI0MzY5QzQzLjk4OSAwIDMwLjk4NiAwIDMwLjk4NiAwSDMwLjk2MkMzMC45NjIgMCAxNy45NTkgMCA5LjI4NiAwLjYyNDM2OUM4LjA3OSAwLjc3MDIyMiA1LjQzNDk5IDAuNzgyMjExIDMuMDgwOTkgMy4yNDc3MkMxLjIyNDk5IDUuMTI1ODIgMC42MTg5OTQgOS4zOTE1MSAwLjYxODk5NCA5LjM5MTUxQzAuNjE4OTk0IDkuMzkxNTEgMCAxNC4zOTY1IDAgMTkuNDA3NFYyNC4xMDI3QzAgMjkuMTEzNiAwLjYxODk5NCAzNC4xMTg1IDAuNjE4OTk0IDM0LjExODVDMC42MTg5OTQgMzQuMTE4NSAxLjIyNDk5IDM4LjM4NDIgMy4wODA5OSA0MC4yNjIzQzUuNDM5OTkgNDIuNzI3OCA4LjUzMyA0Mi42NDk5IDkuOTEgNDIuOTA5N0MxNC44NjUgNDMuMzgyMiAzMC45NzQgNDMuNTM0IDMwLjk3NCA0My41MzRDMzAuOTc0IDQzLjUzNCA0My45OSA0My41MTYgNTIuNjYzIDQyLjg4NTdDNTMuODc2IDQyLjczOTggNTYuNTE0IDQyLjcyNzggNTguODY4IDQwLjI2MjNDNjAuNzI0IDM4LjM4NDIgNjEuMzMgMzQuMTE4NSA2MS4zMyAzNC4xMTg1QzYxLjMzIDM0LjExODUgNjEuOTQ5IDI5LjEwNzYgNjEuOTQ5IDI0LjEwMjdWMTkuNDA3NEM2MS45NDggMTQuMzk1NSA2MS4zMjkgOS4zOTE1MSA2MS4zMjkgOS4zOTE1MVpNMjQuNTc1IDI5Ljc5MTlWMTIuNDAyNUw0MS4zMTUgMjEuMTI3N0wyNC41NzUgMjkuNzkxOVoiIGZpbGw9IiNFRTI3MjQiLz4KPC9zdmc+Cg==) no-repeat 4px 50%;
+        background-size: 28px;
+
+        span {
+            display: block;
+            font-size: 16px;
+            color: #ADB2B8;
+            padding-top: 4px;
+        }
+    }
 
   nav.help-nav {
     margin-bottom: 16px;
@@ -217,7 +234,6 @@ html, body {
 
   a.whatsapp-button {
     display: block;
-    margin: 1em 0;
     padding: 14px 0;
     text-align: center;
     background: #dfffec;
@@ -237,12 +253,34 @@ html, body {
     }
   }
 
-  .whatsapp-button svg {
-    vertical-align: middle;
-    height: 34px;
-    margin: -3px 4px 0 0;
-    width: auto;
-    display: inline-block;
+  .app-button {
+    display: block;
+    margin: 0.7em 0;
+    background: #333;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 14px 0;
+    text-align: center;
+    box-shadow:
+    0 2px 3px rgba(0,0,0,0.2),
+    0 3px 0 #000;
+  }
+
+  .button {
+
+      svg {
+          vertical-align: middle;
+          height: 34px;
+          margin: -3px 4px 0 0;
+          width: auto;
+          display: inline-block;
+      }
+
+      .svg-container {
+          display: inline-block;
+      }
   }
 
   caption {
@@ -333,119 +371,6 @@ html, body {
   .card.support {
     display: none;
 
-    &.IN {
-      display: block;
-    }
-  }
-}
-
-#old-help {
-  .anchors {
-      margin: -8px 0 16px 0;
-  }
-
-  .anchors a {
-      display: block;
-      padding: 16px 8px;
-      border-top: 1px solid rgba(0,0,0,0.05);
-      text-decoration: none;
-      font-weight: 400;
-      color: #0075EB;
-      font-size: 16px;
-      letter-spacing: 0.2em;
-
-      &.support {
-        display: none;
-        &.IN {
-          display: block;
-        }
-      }
-  }
-
-  h6 {
-      font-size: 18px;
-      color: #FF3355;
-      margin: 1em 0 0 0;
-      font-weight: 500;
-  }
-
-  ul, ul li {
-      margin: 0;
-      padding-left: 0;
-      list-style: none;
-  }
-
-  ul li {
-      padding: 2px 0 0 30px;
-      margin: 16px 0;
-      position: relative;
-  }
-
-  ul li:before {
-      content: "✓";
-      font-size: 14px;
-      text-align: center;
-      color: #6C737A;
-      padding: 0 4px;
-      background: #fff;
-      border: 1px solid #DADDE0;
-      border-radius: 3px;
-      position: absolute;
-      left: 0;
-      top: 2px;
-  }
-
-  ol li {
-      margin-bottom: 0.5em;
-      font-size: 18px;
-  }
-
-  .note {
-      font-size: 14px;
-      margin-top: 0.2em;
-  }
-
-
-  a.whatsapp-button div {
-      display: inline-block;
-      vertical-align: middle;
-  }
-
-  a.whatsapp-button {
-      display: block;
-      margin: 1em 0 0 0;
-      padding: 12px 0;
-      text-align: center;
-      background: #dfffec;
-      color: #007A31;
-      text-decoration: none;
-      border-radius: 3px;
-      font-size: 18px;
-      letter-spacing: 0.10em;
-      box-shadow:
-          0 2px 3px rgba(0,0,0,0.2),
-          0 3px 0 #C4EDD4;
-  }
-
-  .whatsapp-button svg {
-      vertical-align: middle;
-      height: 30px;
-      margin: -1px 4px 0 0;
-      width: auto;
-      display: inline-block;
-  }
-
-  caption {
-      font-size: 13px;
-  }
-
-  span.code {
-      color: #000;
-      font-weight: 500;
-  }
-
-  .card.support {
-    display: none;
     &.IN {
       display: block;
     }

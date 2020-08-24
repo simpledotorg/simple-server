@@ -10,8 +10,14 @@ namespace :db do
       "Make sure there are some users created with those two roles; see db:seed."
     end
 
-    User.where(role: [ENV["SEED_GENERATED_ACTIVE_USER_ROLE"], ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]])
-      .each { |user| SeedUsersDataJob.perform_async(user.id) }
+    User.where(role: [ENV["SEED_GENERATED_ACTIVE_USER_ROLE"], ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]]).each do |user|
+      if Rails.env.development?
+        puts "Synchronous"
+        SeedUsersDataJob.new.perform(user.id)
+      else
+        SeedUsersDataJob.perform_async(user.id)
+      end
+    end
   end
 
   desc 'Purge all user data; Example: rake "db:purge_users_data'

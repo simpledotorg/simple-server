@@ -88,7 +88,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
@@ -99,13 +99,13 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
+      expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
-    it "can retrieve quarterly data" do
+    it "can retrieve quarterly cohort data" do
       jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -2))
       create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
       refresh_views
 
@@ -119,7 +119,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves facility data" do
       jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
@@ -130,7 +130,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(6) # retrieves data back to first registration
+      expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
   end
