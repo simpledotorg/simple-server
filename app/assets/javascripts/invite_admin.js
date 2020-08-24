@@ -77,7 +77,7 @@ function inviteAdmin() {
   const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv);
 
   addEventListener('change', e => {
-    let targetCheckbox = e.target;
+    const targetCheckbox = e.target;
 
     // exit if change event did not come from list of checkboxes
     if (checkboxes.indexOf(targetCheckbox) === -1) return;
