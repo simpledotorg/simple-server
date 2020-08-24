@@ -2,13 +2,29 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if policy([:manage, :facility, Facility]).upload? %>
-      <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.can?(:manage, :facility_group) %>
+        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, :facility, Facility]).upload? %>
+        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+      <% end %>
     <% end %>
-    <% if policy([:manage, FacilityGroup]).new? %>
-      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-        <i class="fas fa-plus mr-1"></i>
-        Add facility group
+
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.can?(:manage, :organization) %>
+        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+          <i class="fas fa-plus mr-1"></i>
+          Add facility group
+        <% end %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, FacilityGroup]).new? %>
+        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+          <i class="fas fa-plus mr-1"></i>
+          Add facility group
+        <% end %>
       <% end %>
     <% end %>
   </div>
@@ -37,10 +53,18 @@
             <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
           </div>
 
-          <% if policy([:manage, facility_group]).edit? %>
-            <div class="col-2 text-right">
-              <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
-            </div>
+          <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+            <% if current_admin.can?(:manage, :facility_group, facility_group) %>
+              <div class="col-2 text-right">
+                <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              </div>
+            <% end %>
+          <% else %>
+            <% if policy([:manage, facility_group]).edit? %>
+              <div class="col-2 text-right">
+                <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              </div>
+            <% end %>
           <% end %>
         </div>
 
@@ -48,10 +72,19 @@
 
         <div class="row card-row">
           <div class="col-md-4">
-            <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
-              <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
-                <i class="fas fa-plus mr-1"></i>
-                Add a facility
+            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+              <% if current_admin.can?(:manage, :facility_group, facility_group) %>
+                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
+                  <i class="fas fa-plus mr-1"></i>
+                  Add a facility
+                <% end %>
+              <% end %>
+            <% else %>
+              <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
+                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
+                  <i class="fas fa-plus mr-1"></i>
+                  Add a facility
+                <% end %>
               <% end %>
             <% end %>
           </div>
@@ -62,10 +95,18 @@
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
-                <% if policy([:manage, :facility, facility]).show? %>
-                  <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+                  <% if current_admin.can?(:manage, :facility, facility) %>
+                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                  <% else %>
+                    <%= facility.name %>
+                  <% end %>
                 <% else %>
-                  <%= facility.name %>
+                  <% if policy([:manage, :facility, facility]).show? %>
+                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                  <% else %>
+                    <%= facility.name %>
+                  <% end %>
                 <% end %>
               </h5>
             </div>
@@ -73,7 +114,6 @@
             <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
             <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
           </div>
-
         <% end %>
       </div>
     <% end %>

@@ -207,9 +207,7 @@ class User < ApplicationRecord
   def authorize(action, model, record = nil)
     RequestStore.store[:access_authorized] = true
 
-    unless can?(action, model, record)
-      raise User::NotAuthorizedError.new({action: action, model: model})
-    end
+    raise User::AuthorizationNotPerformedError, self.class unless can?(action, model, record)
   end
 
   #
@@ -232,22 +230,7 @@ class User < ApplicationRecord
     power_user_access? && email_authentication.present?
   end
 
-  class NotAuthorizedError < StandardError
-    attr_reader :action, :model
-
-    def initialize(options = {})
-      if options.is_a? String
-        message = options
-      else
-        @action = options[:action]
-        @model = options[:model]
-
-        message = options.fetch(:message) { "not allowed to #{action} this #{model}" }
-      end
-
-      super(message)
-    end
-  end
+  class NotAuthorizedError < StandardError; end
 
   class AuthorizationNotPerformedError < StandardError; end
 end

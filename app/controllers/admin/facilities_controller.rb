@@ -8,6 +8,9 @@ class Admin::FacilitiesController < AdminController
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
+  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_access_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       current_admin.authorize(:manage, :facility)
@@ -16,7 +19,12 @@ class Admin::FacilitiesController < AdminController
     end
 
     if searching?
-      facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      facilities = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+        current_admin.accessible_facilities(:manage).search_by_name(search_query)
+      else
+        policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
+      end
+
       facility_groups = FacilityGroup.where(facilities: facilities)
 
       @organizations = Organization.where(facility_groups: facility_groups)
@@ -38,7 +46,11 @@ class Admin::FacilitiesController < AdminController
 
   def new
     @facility = new_facility
-    authorize([:manage, :facility, @facility])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.authorize(:manage, :facility, @facility)
+    else
+      authorize([:manage, :facility, @facility])
+    end
   end
 
   def edit
@@ -46,7 +58,11 @@ class Admin::FacilitiesController < AdminController
 
   def create
     @facility = new_facility(facility_params)
-    authorize([:manage, :facility, @facility])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.authorize(:manage, :facility, @facility)
+    else
+      authorize([:manage, :facility, @facility])
+    end
 
     if @facility.save
       redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully created."
@@ -89,7 +105,11 @@ class Admin::FacilitiesController < AdminController
 
   def set_facility
     @facility = Facility.friendly.find(params[:id])
-    authorize([:manage, :facility, @facility])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.authorize(:manage, :facility, @facility)
+    else
+      authorize([:manage, :facility, @facility])
+    end
   end
 
   def set_facility_group
