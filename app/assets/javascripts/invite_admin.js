@@ -1,11 +1,20 @@
 function submitForm() {
-  const selectedFacilities =
+  const selectedFacilityIds =
     [].slice
       .call(document.querySelectorAll('input[name="facilities"]'))
       .filter(e => e.type !== "hidden" && !e.disabled && e.checked)
       .map(e => e.id)
 
-  document.getElementById('facility-access-selections').value = JSON.stringify(selectedFacilities);
+  const hiddenSelectionsField = document.getElementById('facility-access-selections')
+  hiddenSelectionsField.id = null
+
+  // Clone the hidden selection field for each selectedFacilityIds and replace value with id
+  for (const id of selectedFacilityIds) {
+    const clonedHiddenInput = hiddenSelectionsField.cloneNode(true)
+    clonedHiddenInput.value = id
+    hiddenSelectionsField.parentNode.insertAdjacentElement("beforeend", clonedHiddenInput)
+  }
+  hiddenSelectionsField.remove()
 }
 
 function toggleItemCollapsed(wrapper) {

@@ -102,7 +102,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def selected_facilities
-    JSON.parse(params[:selected_facilities])
+    params[:selected_facilities]
   end
 
   def invite_params
