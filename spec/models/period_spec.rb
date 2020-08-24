@@ -29,7 +29,7 @@ RSpec.describe Period, type: :model do
   end
 
   it "has to_s in correct format" do
-    expect(jan_1_2019_month_period.to_s).to eq("Jan 2019")
+    expect(jan_1_2019_month_period.to_s).to eq("Jan-2019")
     expect(q1_2019_period.to_s).to eq("Q1-2019")
   end
 
