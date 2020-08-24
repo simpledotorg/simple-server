@@ -18,6 +18,9 @@ class NoBPMeasureService
   end
 
   def visited_without_bp_taken_for(period)
+    if facilities.empty?
+      return 0
+    end
     attributes = {
       hypertension: "yes",
       facilities: facilities.map(&:id),
