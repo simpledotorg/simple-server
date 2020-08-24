@@ -10,7 +10,7 @@ namespace :dell_demo do
     #
     # Only print on console
     #
-    logger = Logger.new(STDOUT)
+    logger = Logger.new($stdout)
 
     #
     # Parse args
