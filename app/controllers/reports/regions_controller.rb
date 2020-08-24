@@ -16,7 +16,7 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = Reports::RegionService.new(region: @region,
-                                    period: @period).call
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
@@ -28,7 +28,7 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = Reports::RegionService.new(region: @region,
-                                    period: @period).call
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -40,7 +40,7 @@ class Reports::RegionsController < AdminController
     authorize(:dashboard, :show?)
 
     @data = Reports::RegionService.new(region: @region,
-                                    period: @period).call
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
