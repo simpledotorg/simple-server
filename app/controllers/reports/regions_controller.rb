@@ -15,7 +15,7 @@ class Reports::RegionsController < AdminController
   def show
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
+    @data = Reports::RegionService.new(region: @region,
                                     period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -27,7 +27,7 @@ class Reports::RegionsController < AdminController
   def details
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
+    @data = Reports::RegionService.new(region: @region,
                                     period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
@@ -39,7 +39,7 @@ class Reports::RegionsController < AdminController
   def cohort
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
+    @data = Reports::RegionService.new(region: @region,
                                     period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]

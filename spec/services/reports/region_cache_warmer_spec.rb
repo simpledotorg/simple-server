@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe RegionReportCacheWarmer, type: :model do
+RSpec.describe Reports::RegionCacheWarmer, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) do
     create(:admin, :supervisor, organization: organization).tap do |user|
@@ -57,7 +57,7 @@ RSpec.describe RegionReportCacheWarmer, type: :model do
 
     refresh_views
     Timecop.freeze(june_1) do
-      RegionReportCacheWarmer.call
+      Reports::RegionCacheWarmer.call
     end
   end
 end

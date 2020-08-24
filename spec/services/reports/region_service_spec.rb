@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe RegionReportService, type: :model do
+RSpec.describe Reports::RegionService, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
   let(:user) do
     create(:admin, :supervisor, organization: organization).tap do |user|
@@ -25,7 +25,7 @@ RSpec.describe RegionReportService, type: :model do
 
   it "normalizes the selected_date" do
     period = Period.month(june_1)
-    service = RegionReportService.new(region: facility_group_1, period: period)
+    service = Reports::RegionService.new(region: facility_group_1, period: period)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
       expect(service.period.value).to eq(june_1.to_date)
     end
@@ -42,7 +42,7 @@ RSpec.describe RegionReportService, type: :model do
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
       create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
-      service = RegionReportService.new(region: facility, period: july_2020.to_period)
+      service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       result = service.call
       expect(result[:visited_without_bp_taken][may_1.to_period]).to eq(1)
       expect(result[:visited_without_bp_taken_rate][may_1.to_period]).to eq(50)
@@ -84,7 +84,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.month(july_2020))
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(july_2020))
       result = service.call
 
       expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
@@ -98,7 +98,7 @@ RSpec.describe RegionReportService, type: :model do
 
       _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1))
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
       expect(result.adjusted_registrations_for(Period.month("Jan 2019"))).to eq(0)
       expect(result.adjusted_registrations_for(Period.month("Feb 2019"))).to eq(0)
@@ -134,7 +134,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1))
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
 
       expected_controlled_patients = {
@@ -193,7 +193,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.quarter(july_2020))
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.quarter(july_2020))
       result = service.call
 
       expect(result[:registrations][Period.quarter("Q1-2020")]).to eq(1)
@@ -241,7 +241,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility, period: Period.month(july_2020))
+      service = Reports::RegionService.new(region: facility, period: Period.month(july_2020))
       result = service.call
 
       expect(result[:registrations][jan_2019.to_period]).to eq(5)

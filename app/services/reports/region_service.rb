@@ -1,4 +1,4 @@
-class RegionReportService
+class Reports::RegionService
   include SQLHelpers
   MAX_MONTHS_OF_DATA = 24
   CACHE_VERSION = 8
