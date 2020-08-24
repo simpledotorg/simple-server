@@ -25,7 +25,7 @@ RSpec.describe RegionReportService, type: :model do
 
   it "normalizes the selected_date" do
     period = Period.month(june_1)
-    service = RegionReportService.new(region: facility_group_1, period: period, current_user: user)
+    service = RegionReportService.new(region: facility_group_1, period: period)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
       expect(service.period.value).to eq(june_1.to_date)
     end
@@ -42,7 +42,7 @@ RSpec.describe RegionReportService, type: :model do
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
       create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
-      service = RegionReportService.new(region: facility, period: july_2020.to_period, current_user: user)
+      service = RegionReportService.new(region: facility, period: july_2020.to_period)
       result = service.call
       expect(result[:visited_without_bp_taken][may_1.to_period]).to eq(1)
       expect(result[:visited_without_bp_taken_rate][may_1.to_period]).to eq(50)
@@ -84,7 +84,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.month(july_2020), current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.month(july_2020))
       result = service.call
 
       expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
@@ -98,7 +98,7 @@ RSpec.describe RegionReportService, type: :model do
 
       _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1), current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
       expect(result.adjusted_registrations_for(Period.month("Jan 2019"))).to eq(0)
       expect(result.adjusted_registrations_for(Period.month("Feb 2019"))).to eq(0)
@@ -134,7 +134,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1), current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
 
       expected_controlled_patients = {
@@ -162,35 +162,6 @@ RSpec.describe RegionReportService, type: :model do
         expect(count).to eq(expected_cumulative_registrations[key]),
           "expected cumulative registrations for #{key} to be #{expected_cumulative_registrations[key]}, but was #{count}"
       end
-    end
-
-    it "gets top district benchmarks" do
-      darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
-      darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
-      kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
-      _kadapa_facilities = FactoryBot.create_list(:facility, 2, facility_group: kadapa)
-      koriya = FactoryBot.create(:facility_group, name: "Koriya", organization: organization)
-      koriya_facilities = FactoryBot.create_list(:facility, 2, facility_group: koriya)
-
-      Timecop.freeze("April 1sth 2020") do
-        darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facilities.first, registration_user: user)
-        darrang_patients.each do |patient|
-          create(:blood_pressure, :hypertensive, facility: darrang_facilities.first, patient: patient, recorded_at: Time.current)
-        end
-      end
-      Timecop.freeze("April 15th 2020") do
-        patients_with_controlled_bp = create_list(:patient, 4, recorded_at: 1.month.ago, registration_facility: koriya_facilities.first, registration_user: user)
-        patients_with_controlled_bp.map do |patient|
-          create(:blood_pressure, :under_control, facility: koriya_facilities.first, patient: patient, recorded_at: Time.current)
-        end
-      end
-
-      refresh_views
-
-      service = RegionReportService.new(region: darrang, period: Period.month(june_1), current_user: user, top_region_benchmarks_enabled: true)
-      result = service.call
-      expect(result[:top_region_benchmarks][:control_rate][:value]).to eq(100.0)
-      expect(result[:top_region_benchmarks][:control_rate][:region]).to eq(koriya)
     end
 
     it "can return data for quarters" do
@@ -222,7 +193,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility_group_1, period: Period.quarter(july_2020), current_user: user)
+      service = RegionReportService.new(region: facility_group_1, period: Period.quarter(july_2020))
       result = service.call
 
       expect(result[:registrations][Period.quarter("Q1-2020")]).to eq(1)
@@ -270,7 +241,7 @@ RSpec.describe RegionReportService, type: :model do
 
       refresh_views
 
-      service = RegionReportService.new(region: facility, period: Period.month(july_2020), current_user: user)
+      service = RegionReportService.new(region: facility, period: Period.month(july_2020))
       result = service.call
 
       expect(result[:registrations][jan_2019.to_period]).to eq(5)

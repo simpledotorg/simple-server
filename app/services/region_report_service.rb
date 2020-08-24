@@ -3,29 +3,20 @@ class RegionReportService
   MAX_MONTHS_OF_DATA = 24
   CACHE_VERSION = 8
 
-  def initialize(region:, period:, current_user:, top_region_benchmarks_enabled: false)
+  def initialize(region:, period:)
     @current_user = current_user
-    @organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
     @region = region
     @period = period
-    @facilities = region.facilities.to_a
     start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
     @range = start_period..@period
-    @top_region_benchmarks_enabled = top_region_benchmarks_enabled
     @result = Reports::Result.new(@range)
   end
 
   attr_reader :current_user
   attr_reader :result
-  attr_reader :facilities
-  attr_reader :organizations
   attr_reader :period
   attr_reader :range
   attr_reader :region
-
-  def top_region_benchmarks_enabled?
-    @top_region_benchmarks_enabled
-  end
 
   def call
     result.merge! ControlRateService.new(region, periods: range).call
@@ -34,8 +25,6 @@ class RegionReportService
     result.calculate_percentages(:visited_without_bp_taken)
     result.count_missed_visits
     result.calculate_missed_visits_percentages
-    # TODO refactor top region benchmarks - this isn't used right now and doesn't follow the most recent refactoring
-    result[:top_region_benchmarks].merge!(top_region_benchmarks) if top_region_benchmarks_enabled?
 
     result
   end
@@ -51,7 +40,7 @@ class RegionReportService
   end
 
   def cohort_cache_key
-    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{organizations.map(&:id)}/#{period}/#{CACHE_VERSION}"
+    "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{period}/#{CACHE_VERSION}"
   end
 
   def cohort_cache_version
@@ -60,10 +49,5 @@ class RegionReportService
 
   def force_cache?
     RequestStore.store[:force_cache]
-  end
-
-  def top_region_benchmarks
-    scope = region.class.to_s.underscore.to_sym
-    TopRegionService.new(organizations, period, scope: scope).call
   end
 end
