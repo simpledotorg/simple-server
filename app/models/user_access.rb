@@ -59,6 +59,27 @@ class UserAccess < Struct.new(:user)
     end
   end
 
+  def permitted_access_levels
+    return LEVELS.keys if user.power_user?
+
+    LEVELS[user.access_level.to_sym][:grant_access]
+  end
+
+  def grant_access(new_user, selected_facility_ids)
+    return if selected_facility_ids.blank?
+    raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
+
+    resources = prepare_access_resources(selected_facility_ids)
+    # if the user couldn't prepare resources for new_user means they shouldn't have had access to this operation at all
+    raise NotAuthorizedError if resources.empty?
+
+    # recreate accesses from scratch to handle deletes/edits/updates seamlessly
+    User.transaction do
+      new_user.accesses.delete_all
+      new_user.accesses.create!(resources)
+    end
+  end
+
   def access_tree(action)
     facilities = accessible_facilities(action).includes(facility_group: :organization)
 
@@ -103,24 +124,12 @@ class UserAccess < Struct.new(:user)
     {organizations: organization_tree}
   end
 
-  def permitted_access_levels
-    return LEVELS.keys if user.power_user?
-    LEVELS[user.access_level.to_sym][:grant_access]
-  end
-
-  def grant_access(new_user, selected_facility_ids)
-    raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
-    resources = prepare_access_resources(selected_facility_ids)
-    # if the new_user couldn't prepare any resources means that they shouldn't have had access to this operation at all
-    raise NotAuthorizedError if resources.empty?
-    new_user.accesses.create!(resources)
-  end
-
   private
 
   def can_access_record?(resources, record)
     return true if user.power_user?
     return resources.find_by_id(record).present? if record
+
     resources.exists?
   end
 

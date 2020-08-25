@@ -585,37 +585,34 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
     let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
     let!(:viewer_access) {
-      create(:access, user: viewer, resource: organization_1)
+      create(:access, user: viewer.user, resource: organization_1)
     }
     let!(:manager_access) {
-      create(:access, user: manager, resource: organization_1)
-      create(:access, user: manager, resource: facility_2)
+      create(:access, user: manager.user, resource: organization_1)
+      create(:access, user: manager.user, resource: facility_2)
     }
 
     it "raises an error if the access level of the new user is not grantable by the current" do
-      subject = described_class.new(viewer)
       new_user = create(:admin, :manager)
 
       expect {
-        subject.grant_access(new_user, [facility_1.id, facility_2.id])
+        viewer.grant_access(new_user, [facility_1.id, facility_2.id])
       }.to raise_error(UserAccess::NotAuthorizedError)
     end
 
     it "raises an error if the user could not provide any access" do
-      subject = described_class.new(manager)
       new_user = create(:admin, :viewer)
 
       expect {
-        subject.grant_access(new_user, [facility_3.id])
+        manager.grant_access(new_user, [facility_3.id])
       }.to raise_error(UserAccess::NotAuthorizedError)
     end
 
 
     it "only grants access to the selected facilities" do
-      subject = described_class.new(manager)
       new_user = create(:admin, :viewer)
 
-      subject.grant_access(new_user, [facility_1.id, facility_2.id])
+      manager.grant_access(new_user, [facility_1.id, facility_2.id])
 
       expect(new_user.reload.accessible_facilities(:view)).to contain_exactly(facility_1, facility_2)
     end
@@ -624,9 +621,11 @@ RSpec.describe UserAccess, type: :model do
       it "promotes to FacilityGroup access" do
 
       end
+
       it "promotes to Organization access" do
         #
       end
+
       it "gives access to individual facilities that cannot be promoted" do
         #
       end
@@ -646,11 +645,19 @@ RSpec.describe UserAccess, type: :model do
   end
 
   describe '#permitted_access_levels' do
-    it "allows power user to grant access to any other access level" do
-      #
-    end
-    it "allows a user to only grant access within their defined rights" do
-      #
-    end
+    specify {
+      power_user = create(:admin, :power_user)
+      expect(power_user.permitted_access_levels).to match_array(UserAccess::LEVELS.keys)
+    }
+
+    specify {
+      manager = create(:admin, :manager)
+      expect(manager.permitted_access_levels).to match_array([:manager, :viewer])
+    }
+
+    specify {
+      viewer = create(:admin, :viewer)
+      expect(viewer.permitted_access_levels).to match_array([])
+    }
   end
 end
