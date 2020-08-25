@@ -24,7 +24,7 @@ RSpec.describe TopRegionService, type: :model do
     koriya = FactoryBot.create(:facility_group, name: "Koriya", organization: organization)
     koriya_facilities = FactoryBot.create_list(:facility, 2, facility_group: koriya)
 
-    Timecop.freeze("April 1sth 2020") do
+    Timecop.freeze("April 1st 2020") do
       darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facilities.first, registration_user: user)
       darrang_patients.each do |patient|
         create(:blood_pressure, :hypertensive, facility: darrang_facilities.first, patient: patient, recorded_at: Time.current)
