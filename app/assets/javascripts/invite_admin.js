@@ -35,8 +35,8 @@ function toggleItemCollapsed(element) {
 function onFacilityAccessItemToggled({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const wrapper = children.find(item =>
-    item.className === "facility-access-item-wrapper" ||
-    item.className === "facility-access-item-wrapper collapsed")
+    item.className === "access-item-wrapper" ||
+    item.className === "access-item-wrapper collapsed")
   if (wrapper) {
     toggleItemCollapsed(target)
     toggleItemCollapsed(wrapper)

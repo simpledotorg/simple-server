@@ -6,7 +6,7 @@ class AdminAccessPresenter < SimpleDelegator
     super
   end
 
-  def display_access_tree
+  def access_tree
     current_admin.access_tree(:manage)[:organizations]
   end
 

@@ -10,8 +10,9 @@
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
-          <%= render partial: "email_authentications/invitations/access_tree",
-              access_tree: current_admin.display_access_tree %>
+          <%= render "email_authentications/invitations/access_tree",
+              access_tree: current_admin.access_tree,
+              form: form %>
         </div>
         <%= form.hidden_field :selected_facilities, id: "facility-access-selections", value: [], multiple: true %>
         <%= form.primary("Send Invite") %>
