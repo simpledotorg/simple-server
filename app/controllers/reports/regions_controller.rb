@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_selected_date, except: :index
+  before_action :set_period, except: :index
   before_action :find_region, except: :index
   around_action :set_time_zone
 
@@ -49,8 +49,8 @@ class Reports::RegionsController < AdminController
 
   private
 
-  def set_selected_date
-    period_params = facility_params[:period]
+  def set_period
+    period_params = report_params[:period]
     @period = if period_params.present?
       Period.new(period_params)
     else
@@ -63,28 +63,28 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    slug = facility_params[:id]
+    slug = report_params[:id]
     klass = region_class.classify.constantize
     @region = klass.find_by!(slug: slug)
   end
 
   def region_class
-    @region_class ||= case facility_params[:report_scope]
+    @region_class ||= case report_params[:report_scope]
     when "district"
       "facility_group"
     when "facility"
       "facility"
     else
-      raise ActiveRecord::RecordNotFound, "unknown report scope #{facility_params[:report_scope]}"
+      raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
     end
   end
 
-  def facility_params
-    params.permit(:selected_date, :id, :force_cache, {period: [:type, :value]}, :report_scope)
+  def report_params
+    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
   end
 
   def force_cache?
-    facility_params[:force_cache].present?
+    report_params[:force_cache].present?
   end
 
   def set_time_zone

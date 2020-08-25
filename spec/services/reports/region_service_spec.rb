@@ -23,7 +23,7 @@ RSpec.describe Reports::RegionService, type: :model do
     end
   end
 
-  it "normalizes the selected_date" do
+  it "sets the period" do
     period = Period.month(june_1)
     service = Reports::RegionService.new(region: facility_group_1, period: period)
     Timecop.freeze("June 30 2020 5:00 PM EST") do
