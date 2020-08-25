@@ -64,15 +64,42 @@ class UserAccess < Struct.new(:user)
       raise ArgumentError, "record should not be an ActiveRecord::Relation."
     end
 
-    case model
+    if record&.new_record?
+      case model
       when :facility
-        can_access_record?(accessible_facilities(action), record)
-      when :organization
-        can_access_record?(accessible_organizations(action), record)
+        can_create_record?(:facility, record, accessible_facility_groups(:manage))
       when :facility_group
-        can_access_record?(accessible_facility_groups(action), record)
+        can_create_record?(:facility_group, record, accessible_organizations(:manage))
+      when :organization
+        can_create_record?(:organization, record)
       else
         raise ArgumentError, "Access to #{model} is unsupported."
+      end
+    elsif record.nil?
+      case model
+      when :facility
+        can_access_record?(accessible_facilities(action), record) ||
+          can_access_record?(accessible_facility_groups(action), record) ||
+          can_access_record?(accessible_organizations(action), record)
+      when :facility_group
+        can_access_record?(accessible_facility_groups(action), record) ||
+          can_access_record?(accessible_organizations(action), record)
+      when :organization
+        can_access_record?(accessible_organizations(action), record)
+      else
+        raise ArgumentError, "Access to #{model} is unsupported."
+      end
+    else
+      case model
+      when :facility
+        can_access_record?(accessible_facilities(action), record)
+      when :facility_group
+        can_access_record?(accessible_facility_groups(action), record)
+      when :organization
+        can_access_record?(accessible_organizations(action), record)
+      else
+        raise ArgumentError, "Access to #{model} is unsupported."
+      end
     end
   end
 
@@ -87,6 +114,19 @@ class UserAccess < Struct.new(:user)
     return true if user.power_user?
     return resources.find_by_id(record).present? if record
     resources.exists?
+  end
+
+  def can_create_record?(model, record, resources = nil)
+    case model
+    when :facility
+      resources&.find_by_id(record.facility_group_id).present?
+    when :facility_group
+      resources&.find_by_id(record.organization_id).present?
+    when :organization
+      user.power_user?
+    else
+      raise ArgumentError, "Cannot create #{model}."
+    end
   end
 
   def resources_for(resource_model, action)
