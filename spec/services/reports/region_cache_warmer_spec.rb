@@ -23,6 +23,12 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     end
   end
 
+  it "sets force_cache to true on creation" do
+    expect(RequestStore.store[:force_cache]).to be_nil
+    Reports::RegionCacheWarmer.new
+    expect(RequestStore.store[:force_cache]).to be true
+  end
+
   it "warms the cache for all regions" do
     facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
     facility = facilities.first

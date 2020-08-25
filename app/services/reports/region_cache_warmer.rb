@@ -6,6 +6,7 @@ module Reports
 
     def initialize(period: RegionService.default_period)
       @period = period
+      RequestStore.store[:force_cache] = true
     end
 
     delegate :logger, to: Rails
