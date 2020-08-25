@@ -11,7 +11,7 @@ class User < ApplicationRecord
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
-  enum access_level: UserAccess::LEVELS.map { |level, meta| [level, meta[:id].to_s] }.to_h, _suffix: :access
+  enum access_level: UserAccess::LEVELS.map { |level, info| [level, info[:id].to_s] }.to_h, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
