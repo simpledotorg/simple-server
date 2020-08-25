@@ -42,7 +42,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :details, params: {id: @facility.facility_group.region_slug}
+        get :details, params: {id: @facility.facility_group.slug, report_scope: "district"}
       end
       expect(response).to be_successful
     end
@@ -65,7 +65,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :cohort, params: {id: @facility.facility_group.region_slug}
+        get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district"}
       end
       expect(response).to be_successful
     end
@@ -95,7 +95,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.region_slug}
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
       end
       expect(response).to be_successful
       data = assigns(:data)
@@ -111,7 +111,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.region_slug, period: {type: "quarter", value: "Q1-2020"}}
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q1-2020"}}
         data = assigns(:data)
         expect(data[:controlled_patients][Period.quarter("Q1-2020")]).to eq(1)
       end
@@ -126,7 +126,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.region_slug}
+        get :show, params: {id: @facility.slug, report_scope: "facility"}
       end
       expect(response).to be_successful
       data = assigns(:data)
