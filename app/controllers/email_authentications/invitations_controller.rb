@@ -12,12 +12,12 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
 
       User.transaction do
-        user = User.new(user_params)
+        new_user = User.new(user_params)
         super do |resource|
-          user.email_authentications = [resource]
-          user.save!
-          next if selected_facilities.blank?
-          current_admin.grant_access(user, selected_facilities)
+          new_user.email_authentications = [resource]
+          new_user.save!
+
+          current_admin.grant_access(new_user, selected_facilities)
         end
       end
     else
@@ -56,13 +56,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     end
   end
 
-  def user_param_errors
-    user = User.new(user_params)
-    return user.errors.full_messages if user.invalid?
-
-    []
-  end
-
   def current_admin
     AdminAccessPresenter.new(current_inviter.user)
   end
@@ -79,16 +72,16 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       organization_id: params[:organization_id],
       device_created_at: Time.current,
       device_updated_at: Time.current,
-      sync_approval_status: :denied
+      sync_approval_status: :denied,
     }
-  end
-
-  def permission_params
-    params[:permissions]
   end
 
   def selected_facilities
     params[:selected_facilities]
+  end
+
+  def permission_params
+    params[:permissions]
   end
 
   def invite_params
