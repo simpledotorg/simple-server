@@ -4,7 +4,7 @@ RSpec.describe UserAccess, type: :model do
   let(:viewer) { create(:admin, :viewer) }
   let(:manager) { create(:admin, :manager) }
 
-  describe ".can?" do
+  describe "#can?" do
     context "organizations" do
       let!(:organization_1) { create(:organization) }
       let!(:organization_2) { create(:organization) }
@@ -286,10 +286,16 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  describe ".accessible_organizations" do
+  describe "#accessible_organizations" do
     let!(:organization_1) { create(:organization) }
     let!(:organization_2) { create(:organization) }
     let!(:organization_3) { create(:organization) }
+
+    it "returns all organizations for power users" do
+      admin = create(:admin, :power_user)
+
+      expect(admin.accessible_organizations(:any_action)).to match_array(Organization.all)
+    end
 
     context "for a direct organization-level access" do
       let!(:viewer_access) { create(:access, user: viewer, resource: organization_2) }
@@ -346,7 +352,14 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  describe ".accessible_facility_groups" do
+  describe "#accessible_facility_groups" do
+    it "returns all facility_groups for power users" do
+      admin = create(:admin, :power_user)
+      create_list(:facility_group, 5)
+
+      expect(admin.accessible_facility_groups(:any_action)).to match_array(FacilityGroup.all)
+    end
+
     context "for a direct facility-group-level access" do
       let!(:facility_group_1) { create(:facility_group) }
       let!(:facility_group_2) { create(:facility_group) }
@@ -433,7 +446,14 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  describe ".accessible_facilities" do
+  describe "#accessible_facilities" do
+    it "returns all facilities for power users" do
+      admin = create(:admin, :power_user)
+      create_list(:facility, 5)
+
+      expect(admin.accessible_facilities(:any_action)).to match_array(Facility.all)
+    end
+
     context "for a direct facility-level access" do
       let!(:facility_1) { create(:facility) }
       let!(:facility_2) { create(:facility) }
@@ -553,6 +573,84 @@ RSpec.describe UserAccess, type: :model do
           expect(viewer.accessible_facilities(:manage)).to be_empty
         end
       end
+    end
+  end
+
+  describe "#grant_access" do
+    let!(:organization_1) { create(:organization) }
+    let!(:organization_2) { create(:organization) }
+    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
+    let!(:viewer_access) {
+      create(:access, user: viewer, resource: organization_1)
+    }
+    let!(:manager_access) {
+      create(:access, user: manager, resource: organization_1)
+      create(:access, user: manager, resource: facility_2)
+    }
+
+    it "raises an error if the access level of the new user is not grantable by the current" do
+      subject = described_class.new(viewer)
+      new_user = create(:admin, :manager)
+
+      expect {
+        subject.grant_access(new_user, [facility_1.id, facility_2.id])
+      }.to raise_error(UserAccess::NotAuthorizedError)
+    end
+
+    it "raises an error if the user could not provide any access" do
+      subject = described_class.new(manager)
+      new_user = create(:admin, :viewer)
+
+      expect {
+        subject.grant_access(new_user, [facility_3.id])
+      }.to raise_error(UserAccess::NotAuthorizedError)
+    end
+
+
+    it "only grants access to the selected facilities" do
+      subject = described_class.new(manager)
+      new_user = create(:admin, :viewer)
+
+      subject.grant_access(new_user, [facility_1.id, facility_2.id])
+
+      expect(new_user.reload.accessible_facilities(:view)).to contain_exactly(facility_1, facility_2)
+    end
+
+    context "promote access" do
+      it "promotes to FacilityGroup access" do
+
+      end
+      it "promotes to Organization access" do
+        #
+      end
+      it "gives access to individual facilities that cannot be promoted" do
+        #
+      end
+    end
+  end
+
+  describe "#access_tree" do
+    it "generates a structure with all the access-level information for the user" do
+      #
+    end
+    it "contains information about the parent" do
+      #
+    end
+    it "only contains resources that are direct parents or ancestors" do
+      #
+    end
+  end
+
+  describe '#permitted_access_levels' do
+    it "allows power user to grant access to any other access level" do
+      #
+    end
+    it "allows a user to only grant access within their defined rights" do
+      #
     end
   end
 end

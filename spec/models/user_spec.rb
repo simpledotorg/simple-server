@@ -23,72 +23,13 @@ RSpec.describe User, type: :model do
   end
 
   describe "User Access (permissions)" do
-    context ".accessible_organizations" do
-      it "returns all organizations for power users" do
-        admin = create(:admin, :power_user)
-        create_list(:organization, 5)
-
-        expect(admin.accessible_organizations(:any_action)).to match_array(Organization.all)
-      end
-
-      pending "calls into Access for non-power users" do
-        admin = create(:admin)
-
-        expect(admin.accesses).to receive(:organizations)
-        admin.accessible_organizations(:any_action)
-      end
-    end
-
-    context ".accessible_facility_groups" do
-      it "returns all facility_groups for power users" do
-        admin = create(:admin, :power_user)
-        create_list(:facility_group, 5)
-
-        expect(admin.accessible_facility_groups(:any_action)).to match_array(FacilityGroup.all)
-      end
-
-      pending "calls into Access for non-power users" do
-        admin = create(:admin)
-
-        expect(admin.accesses).to receive(:facility_groups)
-        admin.accessible_facility_groups(:any_action)
-      end
-    end
-
-    context ".accessible_facilities" do
-      it "returns all facilities for power users" do
-        admin = create(:admin, :power_user)
-        create_list(:facility, 5)
-
-        expect(admin.accessible_facilities(:any_action)).to match_array(Facility.all)
-      end
-
-      pending "calls into Access for non-power users" do
-        admin = create(:admin)
-
-        expect(admin.accesses).to receive(:facilities)
-        admin.accessible_facilities(:any_action)
-      end
-    end
-
-    context ".can?" do
-      pending "returns true for power users regardless of the resource" do
-        admin = create(:admin, :power_user)
-
-        expect(admin.can?(:any_action, Organization)).to be true
-        expect(admin.can?(:any_action, FacilityGroup)).to be true
-        expect(admin.can?(:any_action, Facility)).to be true
-      end
-
-      pending "calls into Access for non-power users" do
-        admin = create(:admin)
-
-        expect(admin.accesses).to receive(:can?).exactly(3).times
-        admin.can?(:any_action, Organization)
-        admin.can?(:any_action, FacilityGroup)
-        admin.can?(:any_action, Facility)
-      end
-    end
+    it { should delegate_method(:accessible_organizations).to(:user_access) }
+    it { should delegate_method(:accessible_facility_groups).to(:user_access) }
+    it { should delegate_method(:accessible_facilities).to(:user_access) }
+    it { should delegate_method(:can?).to(:user_access) }
+    it { should delegate_method(:grant_access).to(:user_access) }
+    it { should delegate_method(:access_tree).to(:user_access) }
+    it { should delegate_method(:permitted_access_levels).to(:user_access) }
   end
 
   describe ".build_with_phone_number_authentication" do
