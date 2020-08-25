@@ -28,6 +28,7 @@
 // Spacing
 .m-0px { margin: 0px; }
 .mt-0px { margin-top: 0px; }
+.mt-4px { margin-top: 4px; }
 .mt-8px { margin-top: 8px; }
 .mr-4px { margin-right: 4px; }
 .mr-12px { margin-right: 12px; }
@@ -48,7 +49,9 @@
 .pt-4px { padding-top: 4px; }
 .pt-20px { padding-top: 20px; }
 .pt-24px { padding-top: 24px; }
+.pb-4px { padding-bottom: 4px; }
 .pb-8px { padding-bottom: 8px; }
+.pl-16px { padding-left: 16px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 .px-20px { padding-right: 20px; padding-left: 20px; }
 // Width
@@ -101,6 +104,7 @@
 .br-4px { border-radius: 4px; }
 // Background colors
 .bg-red-medium { background-color: $red; }
+.bg-green-dark { background-color: $green-dark; }
 .bg-green-medium { background-color: $green-mid; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
@@ -108,6 +112,7 @@
 .bg-grey-lightest { background-color: $grey-lightest; }
 .bg-grey-light { background-color: $grey-light; }
 .bg-grey-medium { background-color: $grey-mid; }
+.bg-grey-dark { background-color: $grey-dark; }
 // Shadows
 .bs-small { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
 // Media queries
@@ -143,6 +148,7 @@
   .h-lg-full { width: 100%; }
   // Spacing
   .mt-lg-0px { margin-top: 0px; }
+  .mt-lg-48px { margin-top: 48px; }
   .mr-lg-24px { margin-right: 24px; }
   .mb-lg-0 { margin-bottom: 0; }
   .mb-lg-4px { margin-bottom: 4px; }

@@ -2,24 +2,45 @@ window.addEventListener("DOMContentLoaded", initializeCharts);
 
 let lightGreenColor = "rgba(242, 248, 245, 1)";
 let darkGreenColor = "rgba(0, 122, 49, 1)";
-let mediumGreenColor = "rgba(92, 255, 157, 1)";
+let mediumGreenColor = "rgba(0, 184, 73, 1)";
 let lightRedColor = "rgba(255, 235, 238, 1)";
 let darkRedColor = "rgba(255, 51, 85, 1)";
 let lightPurpleColor = "rgba(238, 229, 252, 1)";
-let darkPurpleColor = "#5300E0";
+let darkPurpleColor = "rgba(83, 0, 224, 1)";
 let darkGreyColor = "rgba(108, 115, 122, 1)";
 let mediumGreyColor = "rgba(173, 178, 184, 1)";
 let lightGreyColor = "rgba(240, 242, 245, 1)";
+
+function getReportingData() {
+  const $newData = document.getElementById("data-json");
+  const jsonData = JSON.parse($newData.textContent);
+
+  let data = {
+    controlRate: jsonData.controlled_patients_rate,
+    controlledPatients: jsonData.controlled_patients,
+    missedVisits: jsonData.missed_visits,
+    missedVisitsRate: jsonData.missed_visits_rate,
+    registrations: jsonData.cumulative_registrations,
+    adjustedRegistrations: jsonData.adjusted_registrations,
+    uncontrolledRate: jsonData.uncontrolled_patients_rate,
+    uncontrolledPatients: jsonData.uncontrolled_patients,
+    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
+    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
+  };
+
+  return data;
+};
 
 function initializeCharts() {
   const data = getReportingData();
 
   const controlledGraphConfig = createGraphConfig([{
     data: data.controlRate,
-    borderWidth: 1,
-    rgbaLineColor: darkGreenColor,
+    borderWidth: 2,
+    rgbaLineColor: mediumGreenColor,
+    rgbaPointColor: lightGreenColor,
     rgbaBackgroundColor: lightGreenColor,
-    label: "control rate",
+    label: "HTN controlled",
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
     false,
@@ -28,47 +49,53 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.controlledPatients],
+    data.adjustedRegistrations,
   );
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
   if (controlledGraphCanvas) {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const noBPMeasureGraphConfig = createGraphConfig([
+  const noRecentBPConfig = createGraphConfig([
     {
       data: data.visitButNoBPMeasureRate,
+      borderWidth: 0,
+      rgbaLineColor: darkGreyColor,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "visited but no BP measure",
+      label: "Visited in the last 3 months",
     },
     {
       data: data.missedVisitsRate,
-      rgbaBackgroundColor: mediumGreyColor,
+      borderWidth: 0,
       rgbaLineColor: mediumGreyColor,
-      label: "Missed visit",
+      rgbaBackgroundColor: mediumGreyColor,
+      label: "No visit >3 months ago",
     },
   ], "bar");
-  noBPMeasureGraphConfig.options = createGraphOptions(
+  noRecentBPConfig.options = createGraphOptions(
     true,
     25,
     100,
     formatValueAsPercent,
     formatRateTooltipText,
     [data.visitButNoBPMeasure, data.missedVisits],
+    data.adjustedRegistrations,
   );
 
-  const noBPMeasureGraphCanvas = document.getElementById("noBPMeasureTrend");
-  if (noBPMeasureGraphCanvas) {
-    new Chart(noBPMeasureGraphCanvas.getContext("2d"), noBPMeasureGraphConfig);
+  const noRecentBPGraphCanvas = document.getElementById("noRecentBPTrend");
+  if (noRecentBPGraphCanvas) {
+    new Chart(noRecentBPGraphCanvas.getContext("2d"), noRecentBPConfig);
   }
 
   const uncontrolledGraphConfig = createGraphConfig([
     {
       data: data.uncontrolledRate,
-      rgbaBackgroundColor: lightRedColor,
-      borderWidth: 1,
+      borderWidth: 2,
       rgbaLineColor: darkRedColor,
-      label: "not under control rate",
+      rgbaPointColor: lightRedColor,
+      rgbaBackgroundColor: lightRedColor,
+      label: "HTN not under control",
     }
   ], "line");
   uncontrolledGraphConfig.options = createGraphOptions(
@@ -78,6 +105,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.uncontrolledPatients],
+    data.adjustedRegistrations,
   );
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
   if (uncontrolledGraphCanvas) {
@@ -90,9 +118,9 @@ function initializeCharts() {
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
       data: data.registrations,
-      rgbaBackgroundColor: lightPurpleColor,
       borderWidth: { top: 2 },
       rgbaLineColor: darkPurpleColor,
+      rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
     },
   ], "bar");
@@ -113,25 +141,25 @@ function initializeCharts() {
       data: data.controlRate,
       rgbaBackgroundColor: mediumGreenColor,
       hoverBackgroundColor: mediumGreenColor,
-      label: "control rate",
+      label: "HTN controlled",
     },
     {
       data: data.uncontrolledRate,
       rgbaBackgroundColor: darkRedColor,
       hoverBackgroundColor: darkRedColor,
-      label: "not under control rate",
+      label: "HTN not under control",
     },
     {
       data: data.visitButNoBPMeasureRate,
       rgbaBackgroundColor: darkGreyColor,
       hoverBackgroundColor: darkGreyColor,
-      label: "Visited but no BP measure",
+      label: "Visited in the last 3 months",
     },
     {
       data: data.missedVisitsRate,
       rgbaBackgroundColor: mediumGreyColor,
       hoverBackgroundColor: mediumGreyColor,
-      label: "Missed visit",
+      label: "No visit >3 months",
     }
   ], "bar");
   visitDetailsGraphConfig.options = createGraphOptions(
@@ -141,37 +169,12 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
+    data.adjustedRegistrations,
   );
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {
     new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
   }
-};
-
-function getReportingData() {
-  const $reportingDiv = document.getElementById("reporting");
-  const $newData = document.getElementById("data-json");
-  const jsonData = JSON.parse($newData.textContent);
-
-  const controlRate = jsonData.controlled_patients_rate;
-  const controlledPatients = jsonData.controlled_patients;
-  const registrations = jsonData.cumulative_registrations;
-  const uncontrolledRate = jsonData.uncontrolled_patients_rate;
-  const uncontrolledPatients = jsonData.uncontrolled_patients;
-
-  let data = {
-    controlRate: controlRate,
-    controlledPatients: controlledPatients,
-    missedVisits: jsonData.missed_visits,
-    missedVisitsRate: jsonData.missed_visits_rate,
-    registrations: registrations,
-    uncontrolledRate: uncontrolledRate,
-    uncontrolledPatients: uncontrolledPatients,
-    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
-    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
-  };
-
-  return data;
 };
 
 function createGraphConfig(datasetsConfig, graphType) {
@@ -185,7 +188,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           backgroundColor: dataset.rgbaBackgroundColor,
           borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
           borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-          pointBackgroundColor: dataset.rgbaLineColor,
+          pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
         };
@@ -194,7 +197,7 @@ function createGraphConfig(datasetsConfig, graphType) {
   };
 };
 
-function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, dataSum) {
+function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
   return {
     animation: false,
     responsive: true,
@@ -203,14 +206,13 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       padding: {
         left: 0,
         right: 0,
-        top: 40,
+        top: 20,
         bottom: 0
       }
     },
     elements: {
       point: {
         pointStyle: "circle",
-        backgroundColor: "rgba(81, 205, 130, 1)",
         hoverRadius: 5,
       },
     },
@@ -226,13 +228,14 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           drawBorder: false,
         },
         ticks: {
-          fontColor: "#ADB2B8",
+          fontColor: mediumGreyColor,
           fontSize: 12,
           fontFamily: "Roboto Condensed",
           padding: 8,
           maxRotation: 0,
           minRotation: 0,
           autoSkip: true,
+          maxTicksLimit: 10
         }
       }],
       yAxes: [{
@@ -255,40 +258,42 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       }],
     },
     tooltips: {
-      backgroundColor: "rgb(0, 0, 0)",
-      bodyAlign: "center",
+      mode: "index",
+      intersect: false,
+      position: "average",
+      backgroundColor: "rgba(0,0,0,1)",
       bodyFontFamily: "Roboto Condensed",
       bodyFontSize: 12,
       caretSize: 6,
-      displayColors: false,
-      position: "nearest",
-      titleAlign: "center",
       titleFontFamily: "Roboto Condensed",
-      titleFontSize: 16,
-      xAlign: "center",
-      xPadding: 12,
-      yAlign: "bottom",
-      yPadding: 12,
-      callbacks: {
-        title: function () { },
-        label: function (tooltipItem, data) {
-          return tooltipCallbackFunction(tooltipItem, data, dataSum);
-        },
+      titleFontSize: 14,
+      xPadding: 10,
+      yPadding: 10,
+      itemSort: function (a, b) {
+        return b.datasetIndex - a.datasetIndex;
       },
+      callbacks: {
+        label: function (tooltipItem, data) {
+          return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
+        },
+        labelColor: formatTooltipLabelColor
+      }
     }
   };
 };
 
-function formatRateTooltipText(tooltipItem, data, sumData) {
+function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   const datasetIndex = tooltipItem.datasetIndex;
-  const total = formatNumberWithCommas(sumData[datasetIndex][tooltipItem.label]);
-  const label = data.datasets[datasetIndex].label.toLowerCase();
+  const numerator = formatNumberWithCommas(numerators[datasetIndex][tooltipItem.label]);
+  const denominator = formatNumberWithCommas(denominators[tooltipItem.label]);
+  const label = data.datasets[datasetIndex].label;
   const percent = Math.round(tooltipItem.value);
-  return `${percent}% ${label} (${total} patients)`;
+
+  return ` ${percent}% ${label} (${numerator} of ${denominator} patients)`;
 }
 
 function formatSumTooltipText(tooltipItem) {
-  return `${formatNumberWithCommas(tooltipItem.value)} patients registered in ${tooltipItem.label}`;
+  return ` ${formatNumberWithCommas(tooltipItem.value)} cumulative registrations`;
 }
 
 function formatValueAsPercent(value) {
@@ -297,4 +302,22 @@ function formatValueAsPercent(value) {
 
 function formatNumberWithCommas(value) {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatTooltipLabelColor(tooltipItem, data) {
+  const pointBackgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].pointBackgroundColor;
+  const borderColor = data.config.data.datasets[tooltipItem.datasetIndex].borderColor;
+  const backgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].backgroundColor;
+
+  let styles = {};
+
+  if (pointBackgroundColor === undefined) {
+    styles.borderColor = backgroundColor;
+    styles.backgroundColor = backgroundColor;
+  } else {
+    styles.borderColor = borderColor;
+    styles.backgroundColor = borderColor;
+  }
+
+  return styles;
 }
