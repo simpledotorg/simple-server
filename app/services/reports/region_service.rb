@@ -37,7 +37,7 @@ module Reports
 
     private
 
-    # We want to return cohort result for the current quarter for the selected date, and then
+    # We want to return cohort result for the current quarter for the selected period, and then
     # the previous three quarters.
     def compile_cohort_trend_data
       Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
