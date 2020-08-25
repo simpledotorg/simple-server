@@ -223,7 +223,7 @@ class Api::V4::Models
         properties: {
           id: {"$ref" => "#/definitions/uuid"},
           full_name: {"$ref" =>  "#/definitions/non_empty_string" },
-          phone_number: {"$ref" =>  "#/definitions/non_empty_string" }
+          teleconsultation_phone_number: {"$ref" =>  "#/definitions/non_empty_string" }
         }
       }
     end
