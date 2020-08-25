@@ -29,6 +29,15 @@ RSpec.describe Facility, type: :model do
 
     it { should belong_to(:facility_group).optional }
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
+
+    describe "#teleconsultation_medical_officers" do
+      let!(:facility) { create(:facility) }
+      let!(:medical_officer) { create(:teleconsultation_medical_officer, teleconsultation_facilities: [facility]) }
+
+      specify do
+        expect(facility.teleconsultation_medical_officers).to contain_exactly medical_officer
+      end
+    end
   end
 
   describe "Delegates" do
