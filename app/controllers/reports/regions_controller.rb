@@ -63,12 +63,20 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    region_class, slug = facility_params[:id].split("-", 2)
-    unless region_class.in?(["facility_group", "facility"])
-      raise ActiveRecord::RecordNotFound
-    end
+    slug = facility_params[:id]
     klass = region_class.classify.constantize
     @region = klass.find_by!(slug: slug)
+  end
+
+  def region_class
+    @region_class ||= case facility_params[:report_scope]
+    when "district"
+      "facility_group"
+    when "facility"
+      "facility"
+    else
+      raise ActiveRecord::RecordNotFound, "unknown report scope #{facility_params[:report_scope]}"
+    end
   end
 
   def facility_params
