@@ -26,6 +26,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Rails.cache.clear
+    RequestStore.clear!
   end
 
   Capybara.default_max_wait_time = 5

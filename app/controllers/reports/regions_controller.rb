@@ -15,9 +15,8 @@ class Reports::RegionsController < AdminController
   def show
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
-                                    period: @period,
-                                    current_user: current_admin).call
+    @data = Reports::RegionService.new(region: @region,
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
@@ -28,9 +27,8 @@ class Reports::RegionsController < AdminController
   def details
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
-                                    period: @period,
-                                    current_user: current_admin).call
+    @data = Reports::RegionService.new(region: @region,
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -41,9 +39,8 @@ class Reports::RegionsController < AdminController
   def cohort
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
-                                    period: @period,
-                                    current_user: current_admin).call
+    @data = Reports::RegionService.new(region: @region,
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -53,14 +50,12 @@ class Reports::RegionsController < AdminController
   private
 
   def set_selected_date
-    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month.beginning_of_month}
-    # TODO this will all go away, no need for building Period from the params
-    @period = if period_params[:type] == "quarter"
-      Period.new(type: period_params[:type], value: Quarter.parse(period_params[:value]))
+    period_params = facility_params[:period]
+    @period = if period_params.present?
+      Period.new(period_params)
     else
-      Period.new(type: period_params[:type], value: period_params[:value].to_date)
+      Reports::RegionService.default_period
     end
-    @selected_date = @period.value
   end
 
   def set_force_cache
