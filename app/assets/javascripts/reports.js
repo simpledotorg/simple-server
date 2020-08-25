@@ -206,7 +206,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       padding: {
         left: 0,
         right: 0,
-        top: 48,
+        top: 20,
         bottom: 0
       }
     },
@@ -235,7 +235,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           maxRotation: 0,
           minRotation: 0,
           autoSkip: true,
-          maxTicksLimit: 10 
+          maxTicksLimit: 10
         }
       }],
       yAxes: [{
@@ -270,7 +270,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       xPadding: 10,
       yPadding: 10,
       itemSort: function (a, b) {
-        return b.datasetIndex - a.datasetIndex;         
+        return b.datasetIndex - a.datasetIndex;
       },
       callbacks: {
         label: function (tooltipItem, data) {
