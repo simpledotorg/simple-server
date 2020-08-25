@@ -5,16 +5,22 @@ function submitForm() {
       .filter(e => e.type !== "hidden" && !e.disabled && e.checked)
       .map(e => e.id)
 
-  const hiddenSelectionsField = document.getElementById('facility-access-selections')
-  hiddenSelectionsField.id = null
+  addHiddenFacilityIds(selectedFacilityIds)
+}
+
+function addHiddenFacilityIds(selectedFacilityIds) {
+  const dummySelectionField = document.getElementById('facility-access-selections')
+  dummySelectionField.id = null
 
   // Clone the hidden selection field for each selectedFacilityIds and replace value with id
-  for (const id of selectedFacilityIds) {
-    const clonedHiddenInput = hiddenSelectionsField.cloneNode(true)
-    clonedHiddenInput.value = id
-    hiddenSelectionsField.parentNode.insertAdjacentElement("beforeend", clonedHiddenInput)
-  }
-  hiddenSelectionsField.remove()
+  selectedFacilityIds.forEach(id => addHiddenFacilityIdField(dummySelectionField, id))
+  dummySelectionField.remove()
+}
+
+function addHiddenFacilityIdField(dummyNode, facilityId) {
+  const clonedHiddenInput = dummyNode.cloneNode(true)
+  clonedHiddenInput.value = facilityId
+  dummyNode.parentNode.insertAdjacentElement("beforeend", clonedHiddenInput)
 }
 
 function toggleItemCollapsed(element) {
