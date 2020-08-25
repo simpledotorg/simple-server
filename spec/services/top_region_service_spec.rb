@@ -16,7 +16,7 @@ RSpec.describe TopRegionService, type: :model do
     end
   end
 
-  it "has a call convienence method" do
+  it "returns top contral rates via the call convienence method" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
     kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
