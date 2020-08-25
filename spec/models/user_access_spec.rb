@@ -584,12 +584,14 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
     let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
     let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
+    let!(:facility_4) { create(:facility) }
     let!(:viewer_access) {
       create(:access, user: viewer.user, resource: organization_1)
     }
     let!(:manager_access) {
-      create(:access, user: manager.user, resource: organization_1)
-      create(:access, user: manager.user, resource: facility_2)
+      [create(:access, user: manager.user, resource: organization_1),
+        create(:access, user: manager.user, resource: facility_group_2),
+        create(:access, user: manager.user, resource: facility_4)]
     }
 
     it "raises an error if the access level of the new user is not grantable by the current" do
@@ -604,10 +606,9 @@ RSpec.describe UserAccess, type: :model do
       new_user = create(:admin, :viewer)
 
       expect {
-        manager.grant_access(new_user, [facility_3.id])
+        manager.grant_access(new_user, [create(:facility).id])
       }.to raise_error(UserAccess::NotAuthorizedError)
     end
-
 
     it "only grants access to the selected facilities" do
       new_user = create(:admin, :viewer)
@@ -617,17 +618,68 @@ RSpec.describe UserAccess, type: :model do
       expect(new_user.reload.accessible_facilities(:view)).to contain_exactly(facility_1, facility_2)
     end
 
+    it "returns nothing if no facilities are selected" do
+      new_user = create(:admin, :viewer)
+
+      expect(manager.grant_access(new_user, [])).to be_nil
+    end
+
     context "promote access" do
       it "promotes to FacilityGroup access" do
+        new_user = create(:admin, :viewer)
 
+        manager.grant_access(new_user, [facility_3.id])
+        expected_access_resources = %w[FacilityGroup]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
       end
 
       it "promotes to Organization access" do
-        #
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
       end
 
       it "gives access to individual facilities that cannot be promoted" do
-        #
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+    end
+
+    context "allows editing accesses" do
+      it "removes access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "adds new access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
       end
     end
   end
@@ -651,7 +703,7 @@ RSpec.describe UserAccess, type: :model do
       create(:access, user: manager.user, resource: facility_3)
     }
 
-    context "structure with all the access-level information for the user" do
+    context "render a nested data structure" do
       it "only allows the direct parent or ancestors to be in the tree" do
         expected_access_tree = {
           organizations: {
