@@ -633,14 +633,104 @@ RSpec.describe UserAccess, type: :model do
   end
 
   describe "#access_tree" do
-    it "generates a structure with all the access-level information for the user" do
-      #
-    end
-    it "contains information about the parent" do
-      #
-    end
-    it "only contains resources that are direct parents or ancestors" do
-      #
+    let!(:organization_1) { create(:organization) }
+    let!(:organization_2) { create(:organization) }
+    let!(:organization_3) { create(:organization) }
+    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+    let!(:facility_group_3) { create(:facility_group, organization: organization_3) }
+    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
+    let!(:facility_4) { create(:facility, facility_group: facility_group_3) }
+    let!(:viewer_access) {
+      create(:access, user: viewer.user, resource: organization_1)
+    }
+    let!(:manager_access) {
+      create(:access, user: manager.user, resource: organization_1)
+      create(:access, user: manager.user, resource: facility_3)
+    }
+
+    context "structure with all the access-level information for the user" do
+      it "only allows the direct parent or ancestors to be in the tree" do
+        expected_access_tree = {
+          organizations: {
+            organization_1 => {
+              can_access: true,
+              total_facility_groups: 1,
+
+              facility_groups: {
+                facility_group_1 => {
+                  can_access: true,
+                  total_facilities: 2,
+
+                  facilities: {
+                    facility_1 => {
+                      can_access: true
+                    },
+
+                    facility_2 => {
+                      can_access: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        expect(viewer.access_tree(:view)).to eq(expected_access_tree)
+        expect(viewer.access_tree(:manage)).to eq(organizations: {})
+      end
+
+      it "marks the direct parents or ancestors as inaccessible if the access is partial" do
+        expected_access_tree = {
+          organizations: {
+            organization_1 => {
+              can_access: true,
+              total_facility_groups: 1,
+
+              facility_groups: {
+                facility_group_1 => {
+                  can_access: true,
+                  total_facilities: 2,
+
+                  facilities: {
+                    facility_1 => {
+                      can_access: true
+                    },
+
+                    facility_2 => {
+                      can_access: true
+                    }
+                  }
+                }
+              }
+            },
+
+            organization_2 => {
+              can_access: false,
+              total_facility_groups: 1,
+
+              facility_groups: {
+                facility_group_2 => {
+                  can_access: false,
+                  total_facilities: 1,
+
+                  facilities: {
+                    facility_3 => {
+                      can_access: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        expect(manager.access_tree(:view)).to eq(expected_access_tree)
+        expect(manager.access_tree(:manage)).to eq(expected_access_tree)
+      end
     end
   end
 
