@@ -1325,7 +1325,7 @@
         "full_name": {
           "$ref": "#/definitions/non_empty_string"
         },
-        "phone_number": {
+        "teleconsultation_phone_number": {
           "$ref": "#/definitions/non_empty_string"
         }
       }
@@ -1353,7 +1353,7 @@
               "full_name": {
                 "$ref": "#/definitions/non_empty_string"
               },
-              "phone_number": {
+              "teleconsultation_phone_number": {
                 "$ref": "#/definitions/non_empty_string"
               }
             }
