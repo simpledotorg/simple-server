@@ -40,6 +40,13 @@ class Period
     self.class.quarter(value)
   end
 
+  # Returns a range of dates that correspond to the 'control range' for this period.
+  # For example, for a month period of July 1st 2020, this will return the range of April 30th..July 31st.
+  def blood_pressure_control_range
+    three_months_ago = end_date.advance(months: -3)
+    (three_months_ago..end_date)
+  end
+
   def quarter?
     type == :quarter
   end
@@ -62,11 +69,6 @@ class Period
     else
       value.end_of_month.to_date
     end
-  end
-
-  def blood_pressure_control_range
-    three_months_ago = end_date.advance(months: -3)
-    (three_months_ago..end_date)
   end
 
   def succ
