@@ -92,6 +92,18 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "#can_teleconsult?" do
+    it "is true if the user can teleconsult at least one facility" do
+      user = create(:teleconsultation_medical_officer)
+      expect(user.can_teleconsult?).to eq true
+    end
+
+    it "is false if the user can't teleconsult anywhere" do
+      user = create(:teleconsultation_medical_officer, teleconsultation_facilities: [])
+      expect(user.can_teleconsult?).to eq false
+    end
+  end
+
   describe ".build_with_phone_number_authentication" do
     context "all required params are present and are valid" do
       let(:registration_facility) { create(:facility) }

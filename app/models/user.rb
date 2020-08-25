@@ -17,6 +17,10 @@ class User < ApplicationRecord
     power_user: "power_user"
   }, _suffix: :access
 
+  def can_teleconsult?
+    teleconsultation_facilities.any?
+  end
+
   belongs_to :organization, optional: true
   has_many :user_authentications
   has_many :blood_pressures
