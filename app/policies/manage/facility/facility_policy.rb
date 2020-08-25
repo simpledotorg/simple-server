@@ -55,6 +55,7 @@ class Manage::Facility::FacilityPolicy < ApplicationPolicy
     attr_reader :user, :scope
 
     def initialize(user, scope)
+      super
       @user = user
       @scope = scope
     end

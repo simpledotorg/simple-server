@@ -4,12 +4,12 @@ class AnonymizedDataDownloadJob < ApplicationJob
 
   def perform(recipient_name, recipient_email, model_params_map, model_type)
     case model_type
-    when "district" then
+    when "district"
       AnonymizedData::DownloadService.new.run_for_district(recipient_name,
         recipient_email,
         model_params_map[:district_name],
         model_params_map[:organization_id])
-    when "facility" then
+    when "facility"
       AnonymizedData::DownloadService.new.run_for_facility(recipient_name,
         recipient_email,
         model_params_map[:facility_id])

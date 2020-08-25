@@ -226,8 +226,13 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def cohort_stats
-    quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
-    CohortService.new(region: current_facility, quarters: quarters).call
+    cohort_cache_version = 1
+    cohort_cache_key = "user_analytics/#{current_facility.id}/cohort_stats/#{cohort_cache_version}"
+
+    Rails.cache.fetch(cohort_cache_key, expires_in: 7.days) do
+      quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
+      CohortService.new(region: current_facility, quarters: quarters).call
+    end
   end
 
   #

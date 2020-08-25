@@ -11,14 +11,7 @@ class User < ApplicationRecord
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
-
-  enum access_level: {
-    call_center: "call_center",
-    viewer_reports_only: "viewer_reports_only",
-    viewer_all: "viewer_all",
-    manager: "manager",
-    power_user: "power_user"
-  }, _suffix: :access
+  enum access_level: UserAccess::LEVELS.map { |level, info| [level, info[:id].to_s] }.to_h, _suffix: :access
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -80,6 +73,14 @@ class User < ApplicationRecord
     :password,
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
+  delegate :accessible_organizations,
+    :accessible_facilities,
+    :accessible_facility_groups,
+    :can?,
+    :authorize,
+    :grant_access,
+    :access_tree,
+    :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
 
@@ -89,6 +90,10 @@ class User < ApplicationRecord
 
   def email_authentication
     email_authentications.first
+  end
+
+  def user_access
+    UserAccess.new(self)
   end
 
   def registration_facility_id
@@ -187,38 +192,6 @@ class User < ApplicationRecord
     user_permissions.map(&:resource)
   end
 
-  # #########################
-  # User Access (permissions)
-  #
-  def accessible_organizations(action)
-    return Organization.all if power_user?
-    accesses.organizations(action)
-  end
-
-  def accessible_facility_groups(action)
-    return FacilityGroup.all if power_user?
-    accesses.facility_groups(action)
-  end
-
-  def accessible_facilities(action)
-    return Facility.all if power_user?
-    accesses.facilities(action)
-  end
-
-  def can?(action, model, record = nil)
-    return true if power_user?
-    accesses.can?(action, model, record)
-  end
-
-  def authorize(action, model, record = nil)
-    RequestStore.store[:access_authorized] = true
-
-    raise User::AuthorizationNotPerformedError, self.class unless can?(action, model, record)
-  end
-
-  #
-  # #########################
-
   def destroy_email_authentications
     destroyable_email_auths = email_authentications.load
 
@@ -235,8 +208,4 @@ class User < ApplicationRecord
   def power_user?
     power_user_access? && email_authentication.present?
   end
-
-  class NotAuthorizedError < StandardError; end
-
-  class AuthorizationNotPerformedError < StandardError; end
 end

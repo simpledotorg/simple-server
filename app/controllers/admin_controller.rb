@@ -5,7 +5,7 @@ class AdminController < ApplicationController
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  rescue_from User::NotAuthorizedError, with: :user_not_authorized
+  rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   rescue_from ActiveRecord::RecordInvalid do
     head :bad_request
@@ -70,6 +70,6 @@ class AdminController < ApplicationController
   end
 
   def verify_access_authorized
-    raise User::AuthorizationNotPerformedError, self.class unless RequestStore.store[:access_authorized]
+    raise UserAccess::AuthorizationNotPerformedError, self.class unless RequestStore.store[:access_authorized]
   end
 end
