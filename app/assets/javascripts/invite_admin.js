@@ -5,7 +5,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 
 function inviteAdmin() {
   checkboxItemListener()
-  collapseListener()
+  resourceRowCollapseListener()
 }
 
 // this is called off of the form in the HTML
@@ -22,22 +22,14 @@ function submitForm() {
 //
 // listeners
 //
-function collapseListener() {
-  const facilityAccessItems = document.getElementsByClassName("access-ratio")
-
-  for (const item of facilityAccessItems) {
-    item.addEventListener("click", onFacilityAccessItemToggled)
-  }
-}
-
 function checkboxItemListener() {
-  const SELECTOR = 'input.access-input'
-  const facilityAccessDiv = document.getElementById('facility-access')
+  const SELECTOR = "input.access-input"
+  const facilityAccessDiv = document.getElementById("facility-access")
 
-  // list of all checkboxes under #facility-access
+  // list of all checkboxes under facilityAccessDiv
   const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
 
-  addEventListener('change', e => {
+  addEventListener("change", e => {
     const targetCheckbox = e.target
 
     // exit if change event did not come from list of checkboxes
@@ -47,11 +39,19 @@ function checkboxItemListener() {
   })
 }
 
+function resourceRowCollapseListener() {
+  const facilityAccessItems = document.getElementsByClassName("access-ratio")
+
+  for (const item of facilityAccessItems) {
+    item.addEventListener("click", onFacilityAccessItemToggled)
+  }
+}
+
 //
 // behaviour
 //
 function addHiddenFacilityIds(selectedFacilityIds) {
-  const dummySelectionField = document.getElementById('facility-access-selections')
+  const dummySelectionField = document.getElementById("facility-access-selections")
   dummySelectionField.id = null
 
   // clone the hidden selection field for each selectedFacilityIds and replace value with id
@@ -80,8 +80,7 @@ function onFacilityAccessItemToggled({target}) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(item =>
-    item.className === "access-item-wrapper" ||
-    item.className === "access-item-wrapper collapsed")
+    item.className === "access-item-wrapper" || item.className === "access-item-wrapper collapsed")
 
   if (wrapper) {
     toggleItemCollapsed(parentItem)
@@ -92,8 +91,8 @@ function onFacilityAccessItemToggled({target}) {
 
 function updateParentCheckedState(element, selector) {
   // find parent and sibling checkboxes
-  const parent = (element.closest(['ul']).parentNode).querySelector(selector)
-  const siblings = nodeListToArray(selector, parent.closest('li').querySelector(['ul']))
+  const parent = (element.closest(["ul"]).parentNode).querySelector(selector)
+  const siblings = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
 
   // get checked state of siblings
   // are every or some siblings checked (using Boolean as test function)

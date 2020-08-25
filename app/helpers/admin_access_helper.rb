@@ -8,6 +8,6 @@ module AdminAccessHelper
   end
 
   def access_checkbox(form, name, resource)
-    form.check_box(name, { id: resource.id, class: 'access-input', label: resource.name.to_s })
+    form.check_box(name, id: resource.id, class: "access-input", label: resource.name.to_s)
   end
 end
