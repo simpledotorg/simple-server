@@ -39,18 +39,19 @@
     .facility-access-item {
       height: 100%;
       display: flex;
-      
-      &:hover {
-        background: #FFFAE3;
-        @include transition(.1s);
-      }
 
       &.organization {
+        background: #FFF8E0;
         div {
           label {
             font-weight: 600;
           }
         }
+      }
+
+      &:hover {
+        background: var(--light);
+        @include transition(.1s);
       }
 
       .spacer {
