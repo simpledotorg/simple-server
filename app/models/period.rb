@@ -32,14 +32,6 @@ class Period
     end
   end
 
-  def parse_string_value(val)
-    if quarter?
-      Quarter.parse(val)
-    else
-      val.to_date
-    end
-  end
-
   # Convert this Period to a quarter period - so:
   #   a Period month of June 2020 will return a quarter Period of Q2-2020
   #   a Period quarter just returns itself
@@ -121,6 +113,16 @@ class Period
       value.to_s
     else
       value.to_s(:mon_year)
+    end
+  end
+
+  private
+
+  def parse_string_value(val)
+    if quarter?
+      Quarter.parse(val)
+    else
+      val.to_date
     end
   end
 end
