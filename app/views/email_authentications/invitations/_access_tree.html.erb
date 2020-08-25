@@ -1,0 +1,67 @@
+<div class="card access-tree">
+  <% access_tree.each do |organization, organization_metadata| %>
+    <ul class="facility-access-item-wrapper">
+      <li>
+        <div class="facility-access-item organization">
+          <%= form.check_box :organizations,
+              {
+                  id: organization.id,
+                  class: 'access-input',
+                  label: "#{organization.name}"
+              }
+          %>
+
+          <span class="access-ratio">
+            <i class="fas fa-angle-down light"></i>
+
+            <%= organization_metadata[:facility_groups].keys.size %>
+            / <%= organization_metadata[:total_facility_groups] %> facility groups
+          </span>
+        </div>
+
+        <ul class="facility-access-item-wrapper">
+          <% organization_metadata[:facility_groups].each do |facility_group, facility_group_metadata| %>
+            <li>
+              <div class="facility-access-item">
+                <span class="spacer"></span>
+                <%= form.check_box :facility_groups,
+                    {
+                        id: facility_group.id,
+                        class: 'access-input',
+                        label: "#{facility_group.name}"
+                    }
+                %>
+
+                <span class="access-ratio collapsed">
+                  <i class="fas fa-angle-down light"></i>
+
+                  <%= facility_group_metadata[:facilities].keys.size %>
+                  / <%= facility_group_metadata[:total_facilities] %> facilities
+                </span>
+              </div>
+
+              <ul class="facility-access-item-wrapper collapsed">
+                <% facility_group_metadata[:facilities].each do |facility, _facility_metadata| %>
+                  <li>
+                    <div class="facility-access-item">
+                      <span class="spacer"></span>
+                      <span class="spacer"></span>
+
+                      <%= form.check_box :facilities,
+                          {
+                              id: facility.id,
+                              class: 'access-input',
+                              label: facility.name
+                          }
+                      %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </li>
+    </ul>
+  <% end %>
+</div>

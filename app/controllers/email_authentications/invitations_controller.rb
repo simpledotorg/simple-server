@@ -64,7 +64,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def current_admin
-    AdminPresenter.new(current_inviter.user)
+    AdminAccessPresenter.new(current_inviter.user)
   end
 
   def pundit_user

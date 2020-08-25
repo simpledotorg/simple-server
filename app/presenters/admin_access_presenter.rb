@@ -1,11 +1,13 @@
-require "ostruct"
-
-class AdminPresenter < SimpleDelegator
+class AdminAccessPresenter < SimpleDelegator
   attr_reader :current_admin
 
   def initialize(current_admin)
     @current_admin = current_admin
     super
+  end
+
+  def display_access_tree
+    current_admin.access_tree(:manage)[:organizations]
   end
 
   def permitted_access_levels_info
