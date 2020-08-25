@@ -21,9 +21,10 @@
                                   class: 'access-input',
                                   label: "#{org.name}"
                               } %>
-                            <span class="access-ratio"> <%= org_metadata[:facility_groups].keys.size %>
-                                / <%= org_metadata[:total_facility_groups] %> facility groups
+                            <span class="access-ratio">
                                 <i class="fas fa-angle-down light"></i>
+                                <%= org_metadata[:facility_groups].keys.size %>
+                                / <%= org_metadata[:total_facility_groups] %> facility groups
                             </span>
                         </div>
                         <ul class="facility-access-item-wrapper">
@@ -37,9 +38,10 @@
                                           class: 'access-input',
                                           label: "#{facility_group.name}"
                                       } %>
-                                    <span class="access-ratio collapsed"> <%= fg_metadata[:facilities].keys.size %>
-                                        / <%= fg_metadata[:total_facilities] %> facilities
+                                    <span class="access-ratio collapsed">
                                         <i class="fas fa-angle-down light"></i>
+                                        <%= fg_metadata[:facilities].keys.size %>
+                                        / <%= fg_metadata[:total_facilities] %> facilities
                                     </span>
                                 </div>
                                 <ul class="facility-access-item-wrapper collapsed">
