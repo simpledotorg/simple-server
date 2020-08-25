@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_11_135315) do
+ActiveRecord::Schema.define(version: 2020_08_24_112700) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -243,6 +243,12 @@ ActiveRecord::Schema.define(version: 2020_08_11_135315) do
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
+  end
+
+  create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "user_id", null: false
+    t.index ["facility_id", "user_id"], name: "index_facilities_teleconsult_mos_on_facility_id_and_user_id"
   end
 
   create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

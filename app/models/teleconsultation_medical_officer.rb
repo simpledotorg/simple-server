@@ -1,0 +1,2 @@
+class TeleconsultationMedicalOfficer < User
+end

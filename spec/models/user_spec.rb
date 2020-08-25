@@ -4,6 +4,7 @@ RSpec.describe User, type: :model do
   describe "Associations" do
     it { should have_many(:user_authentications) }
     it { should have_many(:accesses) }
+    it { should have_and_belong_to_many(:teleconsultation_facilities) }
   end
 
   describe "Validations" do

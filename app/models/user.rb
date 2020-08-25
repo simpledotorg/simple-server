@@ -42,6 +42,9 @@ class User < ApplicationRecord
     inverse_of: :deleted_by_user,
     class_name: "Patient",
     foreign_key: :deleted_by_user_id
+  has_and_belongs_to_many :teleconsultation_facilities,
+    class_name: "Facility",
+    join_table: "facilities_teleconsultation_medical_officers"
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,

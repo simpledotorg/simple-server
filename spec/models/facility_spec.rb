@@ -8,6 +8,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:prescription_drugs) }
     it { should have_many(:patients).through(:encounters) }
     it { should have_many(:appointments) }
+    it { should have_and_belong_to_many(:teleconsultation_medical_officers) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
 
