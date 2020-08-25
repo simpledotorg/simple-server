@@ -1,8 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe UserAccess, type: :model do
-  let(:viewer) { create(:admin, :viewer) }
-  let(:manager) { create(:admin, :manager) }
+  let(:viewer) { UserAccess.new(create(:admin, :viewer)) }
+  let(:manager) { UserAccess.new(create(:admin, :manager)) }
 
   describe "#can?" do
     context "organizations" do
@@ -12,7 +12,7 @@ RSpec.describe UserAccess, type: :model do
 
       context "view action" do
         it "allows manager to view" do
-          create(:access, user: manager, resource: organization_1)
+          create(:access, user: manager.user, resource: organization_1)
 
           expect(manager.can?(:view, :organization, organization_1)).to be true
           expect(manager.can?(:view, :organization, organization_2)).to be false
@@ -21,7 +21,7 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to view" do
-          create(:access, user: viewer, resource: organization_3)
+          create(:access, user: viewer.user, resource: organization_3)
 
           expect(viewer.can?(:view, :organization, organization_1)).to be false
           expect(viewer.can?(:view, :organization, organization_2)).to be false
@@ -32,7 +32,7 @@ RSpec.describe UserAccess, type: :model do
 
       context "manage action" do
         it "allows manager to manage" do
-          create(:access, user: manager, resource: organization_1)
+          create(:access, user: manager.user, resource: organization_1)
 
           expect(manager.can?(:manage, :organization, organization_1)).to be true
           expect(manager.can?(:manage, :organization, organization_2)).to be false
@@ -41,7 +41,7 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to manage" do
-          create(:access, user: viewer, resource: organization_3)
+          create(:access, user: viewer.user, resource: organization_3)
 
           expect(viewer.can?(:manage, :organization, organization_1)).to be false
           expect(viewer.can?(:manage, :organization, organization_2)).to be false
@@ -58,7 +58,7 @@ RSpec.describe UserAccess, type: :model do
 
       context "view action" do
         it "allows manager to view" do
-          create(:access, user: manager, resource: facility_group_1)
+          create(:access, user: manager.user, resource: facility_group_1)
 
           expect(manager.can?(:view, :facility_group, facility_group_1)).to be true
           expect(manager.can?(:view, :facility_group, facility_group_2)).to be false
@@ -67,7 +67,7 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to view" do
-          create(:access, user: viewer, resource: facility_group_3)
+          create(:access, user: viewer.user, resource: facility_group_3)
 
           expect(viewer.can?(:view, :facility_group, facility_group_1)).to be false
           expect(viewer.can?(:view, :facility_group, facility_group_2)).to be false
@@ -78,7 +78,7 @@ RSpec.describe UserAccess, type: :model do
 
       context "manage action" do
         it "allows manager to manage" do
-          create(:access, user: manager, resource: facility_group_1)
+          create(:access, user: manager.user, resource: facility_group_1)
 
           expect(manager.can?(:manage, :facility_group, facility_group_1)).to be true
           expect(manager.can?(:manage, :facility_group, facility_group_2)).to be false
@@ -87,7 +87,7 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to manage" do
-          create(:access, user: viewer, resource: facility_group_3)
+          create(:access, user: viewer.user, resource: facility_group_3)
 
           expect(viewer.can?(:manage, :facility_group, facility_group_1)).to be false
           expect(viewer.can?(:manage, :facility_group, facility_group_2)).to be false
@@ -103,8 +103,8 @@ RSpec.describe UserAccess, type: :model do
         let!(:facility_group_3) { create(:facility_group) }
 
         it "allows manager to view" do
-          create(:access, user: manager, resource: organization_1)
-          create(:access, user: manager, resource: facility_group_2)
+          create(:access, user: manager.user, resource: organization_1)
+          create(:access, user: manager.user, resource: facility_group_2)
 
           expect(manager.can?(:view, :facility_group, facility_group_1)).to be true
           expect(manager.can?(:view, :facility_group, facility_group_2)).to be true
@@ -113,8 +113,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to view" do
-          create(:access, user: viewer, resource: organization_1)
-          create(:access, user: viewer, resource: facility_group_2)
+          create(:access, user: viewer.user, resource: organization_1)
+          create(:access, user: viewer.user, resource: facility_group_2)
 
           expect(viewer.can?(:view, :facility_group, facility_group_1)).to be true
           expect(viewer.can?(:view, :facility_group, facility_group_2)).to be true
@@ -123,8 +123,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "does not allow viewer to manage" do
-          create(:access, user: viewer, resource: organization_1)
-          create(:access, user: viewer, resource: facility_group_2)
+          create(:access, user: viewer.user, resource: organization_1)
+          create(:access, user: viewer.user, resource: facility_group_2)
 
           expect(viewer.can?(:manage, :facility_group, facility_group_1)).to be false
           expect(viewer.can?(:manage, :facility_group, facility_group_2)).to be false
@@ -133,8 +133,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows manager to manage" do
-          create(:access, user: manager, resource: organization_1)
-          create(:access, user: manager, resource: facility_group_2)
+          create(:access, user: manager.user, resource: organization_1)
+          create(:access, user: manager.user, resource: facility_group_2)
 
           expect(manager.can?(:manage, :facility_group, facility_group_1)).to be true
           expect(manager.can?(:manage, :facility_group, facility_group_2)).to be true
@@ -151,7 +151,7 @@ RSpec.describe UserAccess, type: :model do
 
       context "view action" do
         it "allows manager to view" do
-          create(:access, user: manager, resource: facility_1)
+          create(:access, user: manager.user, resource: facility_1)
 
           expect(manager.can?(:view, :facility, facility_1)).to be true
           expect(manager.can?(:view, :facility, facility_2)).to be false
@@ -160,7 +160,7 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to view" do
-          create(:access, user: viewer, resource: facility_3)
+          create(:access, user: viewer.user, resource: facility_3)
 
           expect(viewer.can?(:view, :facility, facility_1)).to be false
           expect(viewer.can?(:view, :facility, facility_2)).to be false
@@ -171,7 +171,7 @@ RSpec.describe UserAccess, type: :model do
 
       context "manage action" do
         it "allows manager to manage" do
-          create(:access, user: manager, resource: facility_1)
+          create(:access, user: manager.user, resource: facility_1)
 
           expect(manager.can?(:manage, :facility, facility_1)).to be true
           expect(manager.can?(:manage, :facility, facility_2)).to be false
@@ -180,7 +180,7 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to manage" do
-          create(:access, user: viewer, resource: facility_3)
+          create(:access, user: viewer.user, resource: facility_3)
 
           expect(viewer.can?(:manage, :facility, facility_1)).to be false
           expect(viewer.can?(:manage, :facility, facility_2)).to be false
@@ -196,8 +196,8 @@ RSpec.describe UserAccess, type: :model do
         let!(:facility_3) { create(:facility) }
 
         it "allows manager to view" do
-          create(:access, user: manager, resource: facility_group_1)
-          create(:access, user: manager, resource: facility_2)
+          create(:access, user: manager.user, resource: facility_group_1)
+          create(:access, user: manager.user, resource: facility_2)
 
           expect(manager.can?(:view, :facility, facility_1)).to be true
           expect(manager.can?(:view, :facility, facility_2)).to be true
@@ -206,8 +206,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to view" do
-          create(:access, user: viewer, resource: facility_group_1)
-          create(:access, user: viewer, resource: facility_2)
+          create(:access, user: viewer.user, resource: facility_group_1)
+          create(:access, user: viewer.user, resource: facility_2)
 
           expect(viewer.can?(:view, :facility, facility_1)).to be true
           expect(viewer.can?(:view, :facility, facility_2)).to be true
@@ -216,8 +216,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "does not allow viewer to manage" do
-          create(:access, user: viewer, resource: facility_group_1)
-          create(:access, user: viewer, resource: facility_2)
+          create(:access, user: viewer.user, resource: facility_group_1)
+          create(:access, user: viewer.user, resource: facility_2)
 
           expect(viewer.can?(:manage, :facility, facility_1)).to be false
           expect(viewer.can?(:manage, :facility, facility_2)).to be false
@@ -226,8 +226,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows manager to manage" do
-          create(:access, user: manager, resource: facility_group_1)
-          create(:access, user: manager, resource: facility_2)
+          create(:access, user: manager.user, resource: facility_group_1)
+          create(:access, user: manager.user, resource: facility_2)
 
           expect(manager.can?(:manage, :facility, facility_1)).to be true
           expect(manager.can?(:manage, :facility, facility_2)).to be true
@@ -244,8 +244,8 @@ RSpec.describe UserAccess, type: :model do
         let!(:facility_3) { create(:facility) }
 
         it "allows manager to view" do
-          create(:access, user: manager, resource: organization_1)
-          create(:access, user: manager, resource: facility_2)
+          create(:access, user: manager.user, resource: organization_1)
+          create(:access, user: manager.user, resource: facility_2)
 
           expect(manager.can?(:view, :facility, facility_1)).to be true
           expect(manager.can?(:view, :facility, facility_2)).to be true
@@ -254,8 +254,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows viewer to view" do
-          create(:access, user: viewer, resource: organization_1)
-          create(:access, user: viewer, resource: facility_2)
+          create(:access, user: viewer.user, resource: organization_1)
+          create(:access, user: viewer.user, resource: facility_2)
 
           expect(viewer.can?(:view, :facility, facility_1)).to be true
           expect(viewer.can?(:view, :facility, facility_2)).to be true
@@ -264,8 +264,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "does not allow viewer to manage" do
-          create(:access, user: viewer, resource: organization_1)
-          create(:access, user: viewer, resource: facility_2)
+          create(:access, user: viewer.user, resource: organization_1)
+          create(:access, user: viewer.user, resource: facility_2)
 
           expect(viewer.can?(:manage, :facility, facility_1)).to be false
           expect(viewer.can?(:manage, :facility, facility_2)).to be false
@@ -274,8 +274,8 @@ RSpec.describe UserAccess, type: :model do
         end
 
         it "allows manager to manage" do
-          create(:access, user: manager, resource: organization_1)
-          create(:access, user: manager, resource: facility_2)
+          create(:access, user: manager.user, resource: organization_1)
+          create(:access, user: manager.user, resource: facility_2)
 
           expect(manager.can?(:manage, :facility, facility_1)).to be true
           expect(manager.can?(:manage, :facility, facility_2)).to be true
@@ -298,8 +298,8 @@ RSpec.describe UserAccess, type: :model do
     end
 
     context "for a direct organization-level access" do
-      let!(:viewer_access) { create(:access, user: viewer, resource: organization_2) }
-      let!(:manager_access) { create(:access, user: manager, resource: organization_1) }
+      let!(:viewer_access) { create(:access, user: viewer.user, resource: organization_2) }
+      let!(:manager_access) { create(:access, user: manager.user, resource: organization_1) }
 
       context "view action" do
         it "returns all organizations the manager can view" do
@@ -327,8 +327,8 @@ RSpec.describe UserAccess, type: :model do
 
     context "for a lower-level access than organization" do
       context "facility_group access" do
-        let!(:viewer_access) { create(:access, user: viewer, resource: create(:facility_group)) }
-        let!(:manager_access) { create(:access, user: manager, resource: create(:facility_group)) }
+        let!(:viewer_access) { create(:access, user: viewer.user, resource: create(:facility_group)) }
+        let!(:manager_access) { create(:access, user: manager.user, resource: create(:facility_group)) }
 
         it "returns no organizations" do
           expect(viewer.accessible_organizations(:view)).to be_empty
@@ -339,8 +339,8 @@ RSpec.describe UserAccess, type: :model do
       end
 
       context "facility access" do
-        let!(:viewer_access) { create(:access, user: viewer, resource: create(:facility)) }
-        let!(:manager_access) { create(:access, user: manager, resource: create(:facility)) }
+        let!(:viewer_access) { create(:access, user: viewer.user, resource: create(:facility)) }
+        let!(:manager_access) { create(:access, user: manager.user, resource: create(:facility)) }
 
         it "returns no organizations" do
           expect(viewer.accessible_organizations(:view)).to be_empty
@@ -364,8 +364,8 @@ RSpec.describe UserAccess, type: :model do
       let!(:facility_group_1) { create(:facility_group) }
       let!(:facility_group_2) { create(:facility_group) }
       let!(:facility_group_3) { create(:facility_group) }
-      let!(:manager_access) { create(:access, user: manager, resource: facility_group_1) }
-      let!(:viewer_access) { create(:access, user: viewer, resource: facility_group_2) }
+      let!(:manager_access) { create(:access, user: manager.user, resource: facility_group_1) }
+      let!(:viewer_access) { create(:access, user: viewer.user, resource: facility_group_2) }
 
       context "view action" do
         it "returns all facility_groups the manager can view" do
@@ -401,11 +401,11 @@ RSpec.describe UserAccess, type: :model do
       let!(:facility_group_3) { create(:facility_group, organization: organization_3) }
       let!(:facility_group_4) { create(:facility_group, organization: organization_3) }
 
-      let!(:org_manager_access) { create(:access, user: manager, resource: organization_1) }
-      let!(:fg_manager_access) { create(:access, user: manager, resource: facility_group_3) }
+      let!(:org_manager_access) { create(:access, user: manager.user, resource: organization_1) }
+      let!(:fg_manager_access) { create(:access, user: manager.user, resource: facility_group_3) }
 
-      let!(:org_viewer_access) { create(:access, user: viewer, resource: organization_2) }
-      let!(:fg_viewer_access) { create(:access, user: viewer, resource: facility_group_4) }
+      let!(:org_viewer_access) { create(:access, user: viewer.user, resource: organization_2) }
+      let!(:fg_viewer_access) { create(:access, user: viewer.user, resource: facility_group_4) }
 
       context "view action" do
         it "returns all facilities the manager can view" do
@@ -433,8 +433,8 @@ RSpec.describe UserAccess, type: :model do
 
     context "for a lower-level access than facility_group or organization" do
       context "facility access" do
-        let!(:viewer_access) { create(:access, user: viewer, resource: create(:facility)) }
-        let!(:manager_access) { create(:access, user: manager, resource: create(:facility)) }
+        let!(:viewer_access) { create(:access, user: viewer.user, resource: create(:facility)) }
+        let!(:manager_access) { create(:access, user: manager.user, resource: create(:facility)) }
 
         it "returns no facility_groups" do
           expect(viewer.accessible_facility_groups(:view)).to be_empty
@@ -458,8 +458,8 @@ RSpec.describe UserAccess, type: :model do
       let!(:facility_1) { create(:facility) }
       let!(:facility_2) { create(:facility) }
       let!(:facility_3) { create(:facility) }
-      let!(:manager_access) { create(:access, user: manager, resource: facility_1) }
-      let!(:viewer_access) { create(:access, user: viewer, resource: facility_2) }
+      let!(:manager_access) { create(:access, user: manager.user, resource: facility_1) }
+      let!(:viewer_access) { create(:access, user: viewer.user, resource: facility_2) }
 
       context "view action" do
         it "returns all facilities the manager can view" do
@@ -497,11 +497,11 @@ RSpec.describe UserAccess, type: :model do
       let!(:facility_5) { create(:facility) }
       let!(:facility_6) { create(:facility) }
 
-      let!(:manager_access) { create(:access, user: manager, resource: facility_group_1) }
-      let!(:facility_manager_access) { create(:access, user: manager, resource: facility_4) }
+      let!(:manager_access) { create(:access, user: manager.user, resource: facility_group_1) }
+      let!(:facility_manager_access) { create(:access, user: manager.user, resource: facility_4) }
 
-      let!(:viewer_access) { create(:access, user: viewer, resource: facility_group_2) }
-      let!(:facility_viewer_access) { create(:access, user: viewer, resource: facility_5) }
+      let!(:viewer_access) { create(:access, user: viewer.user, resource: facility_group_2) }
+      let!(:facility_viewer_access) { create(:access, user: viewer.user, resource: facility_5) }
 
       context "view action" do
         it "returns all facilities the manager can view" do
@@ -544,12 +544,12 @@ RSpec.describe UserAccess, type: :model do
       let!(:facility_5) { create(:facility) }
       let!(:facility_6) { create(:facility) }
 
-      let!(:org_manager_access) { create(:access, user: manager, resource: organization_1) }
-      let!(:fg_manager_access) { create(:access, user: manager, resource: facility_group_3) }
-      let!(:facility_manager_access) { create(:access, user: manager, resource: facility_5) }
+      let!(:org_manager_access) { create(:access, user: manager.user, resource: organization_1) }
+      let!(:fg_manager_access) { create(:access, user: manager.user, resource: facility_group_3) }
+      let!(:facility_manager_access) { create(:access, user: manager.user, resource: facility_5) }
 
-      let!(:viewer_access) { create(:access, user: viewer, resource: organization_2) }
-      let!(:facility_viewer_access) { create(:access, user: viewer, resource: facility_6) }
+      let!(:viewer_access) { create(:access, user: viewer.user, resource: organization_2) }
+      let!(:facility_viewer_access) { create(:access, user: viewer.user, resource: facility_6) }
 
       context "view action" do
         it "returns all facilities the manager can view" do

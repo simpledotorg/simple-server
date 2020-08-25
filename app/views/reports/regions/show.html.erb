@@ -12,7 +12,7 @@
             HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
-        <div>
+        <div class="mb-12px">
           <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:controlled_patients_rate) %>
               <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
@@ -37,7 +37,7 @@
           </p>
         </div>
       </div>
-      <div>
+      <div class="pb-4px">
         <div class="p-relative">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="controlledPatientsTrend"></canvas>
@@ -96,7 +96,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div class="pb-4px">
         <div class="h-200px mr-13px mb-16px ml-13px">
           <canvas id="noRecentBPTrend"></canvas>
         </div>
@@ -114,7 +114,7 @@
             HTN patients with BP &ge;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
-        <div>
+        <div class="mb-12px">
           <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-red<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:uncontrolled_patients_rate) %>
               <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
@@ -139,7 +139,7 @@
           </p>
         </div>
       </div>
-      <div>
+      <div class="pb-4px">
         <div class="p-relative">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
@@ -156,7 +156,7 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="m-8px c-black">
@@ -166,7 +166,7 @@
             Total number of HTN patient registrations
           </p>
         </div>
-        <div>
+        <div class="mb-12px">
           <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %>">
             <% if @data.last_value(:cumulative_registrations).zero? %>
               No data
@@ -193,7 +193,7 @@
           </p>
         </div>
       <% else %>
-        <div class="h-200px mr-13px mb-16px ml-13px">
+        <div class="h-200px mr-13px mb-16px ml-13px pb-4px">
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
       <% end %>
