@@ -26,15 +26,17 @@ class Period
 
   def initialize(attributes = {})
     super
-    @type = type.intern if type
-    @value = if @value.is_a?(String)
-      if quarter?
-        Quarter.parse(@value)
-      else
-        @value.to_date
-      end
+    self.type = type.intern if type
+    if value.is_a?(String)
+      self.value = parse_string_value(value)
+    end
+  end
+
+  def parse_string_value(val)
+    if quarter?
+      Quarter.parse(val)
     else
-      @value
+      val.to_date
     end
   end
 
