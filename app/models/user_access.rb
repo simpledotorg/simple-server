@@ -78,8 +78,7 @@ class UserAccess < Struct.new(:user)
 
   def authorize(action, model, record = nil)
     RequestStore.store[:access_authorized] = true
-
-    raise AuthorizationNotPerformedError, self.class unless can?(action, model, record)
+    raise NotAuthorizedError, self.class unless can?(action, model, record)
   end
 
   private

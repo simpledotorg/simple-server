@@ -32,14 +32,18 @@ class Admin::FacilitiesController < AdminController
       @facility_groups = facility_groups.group_by(&:organization)
       @facilities = facilities.group_by(&:facility_group)
     elsif Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @facilities = current_admin.accessible_facilities(:manage).group_by(:facility_id)
-      @facility_groups = current_admin.accessible_facility_groups(:manage).group_by(:organization_id)
-      @organizations = current_admin
-        .accessible_facility_groups(:manage)
-        .includes(:organization)
-        .flat_map(&:organization)
-        .uniq
-        .sort_by(&:name)
+      accessible_facilities = current_admin.accessible_facilities(:manage)
+      visible_facility_groups = current_admin.accessible_facility_groups(:manage)
+        .union(FacilityGroup.where(id: accessible_facilities.map(&:facility_group_id).uniq))
+      visible_organizations = current_admin.accessible_organizations(:manage)
+        .union(Organization.where(id: visible_facility_groups.map(&:organization_id).uniq))
+      @organizations = visible_organizations
+      @facility_groups = @organizations.map { |organization|
+        [organization, visible_facility_groups.where(organization: organization)]
+      }.to_h
+      @facilities = @facility_groups.values.flatten.map { |facility_group|
+        [facility_group, accessible_facilities.where(facility_group: facility_group)]
+      }.to_h
     else
       @organizations = policy_scope([:manage, :facility, Organization])
       @facility_groups = @organizations.map { |organization|
