@@ -22,7 +22,7 @@
                                   label: "#{org.name}"
                               } %>
                             <span class="access-ratio"> <%= org_metadata[:facility_groups].keys.size %>
-                                of <%= org_metadata[:total_facility_groups] %> facility groups
+                                / <%= org_metadata[:total_facility_groups] %> facility groups
                                 <i class="fas fa-angle-down light"></i>
                             </span>
                         </div>
@@ -38,7 +38,7 @@
                                           label: "#{facility_group.name}"
                                       } %>
                                     <span class="access-ratio collapsed"> <%= fg_metadata[:facilities].keys.size %>
-                                        of <%= fg_metadata[:total_facilities] %> facilities
+                                        / <%= fg_metadata[:total_facilities] %> facilities
                                         <i class="fas fa-angle-down light"></i>
                                     </span>
                                 </div>
