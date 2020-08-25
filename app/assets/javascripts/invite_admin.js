@@ -69,7 +69,7 @@ function updateParentCheckedState(element, selector) {
 }
 
 function updateChildrenCheckedState(parent, selector) {
-  //	check/uncheck children (includes check itself)
+  // check/uncheck children (includes check itself)
   const children = nodeListToArray(selector, parent.closest("li"));
   children.forEach(child => {
     // Reset indeterminate state for children

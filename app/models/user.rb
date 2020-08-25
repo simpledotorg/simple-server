@@ -71,10 +71,10 @@ class User < ApplicationRecord
   delegate :accessible_organizations,
     :accessible_facilities,
     :accessible_facility_groups,
-    :access_tree,
-    :permitted_access_levels,
     :can?,
-    :grant_access, to: :user_access, allow_nil: false
+    :grant_access,
+    :access_tree,
+    :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
 

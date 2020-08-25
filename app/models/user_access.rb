@@ -21,21 +21,23 @@ class UserAccess < Struct.new(:user)
       name: "Power User",
       description: "Can manage everything"
     }
-  }
+  }.freeze
+
+  ACTION_TO_LEVEL = {
+    view: [:manager, :viewer],
+    manage: [:manager]
+  }.freeze
 
   def accessible_organizations(action)
-    return Organization.all if user.power_user?
     resources_for(Organization, action)
   end
 
   def accessible_facility_groups(action)
-    return FacilityGroup.all if user.power_user?
     resources_for(FacilityGroup, action)
       .or(FacilityGroup.where(organization: accessible_organizations(action)))
   end
 
   def accessible_facilities(action)
-    return Facility.all if user.power_user?
     resources_for(Facility, action)
       .or(Facility.where(facility_group: accessible_facility_groups(action)))
   end
@@ -103,11 +105,11 @@ class UserAccess < Struct.new(:user)
 
   def permitted_access_levels
     return LEVELS.keys if user.power_user?
-    LEVELS.slice(*LEVELS[user.access_level.to_sym][:grant_access])
+    LEVELS[user.access_level.to_sym][:grant_access]
   end
 
   def grant_access(new_user, selected_facility_ids)
-    raise NotAuthorizedError unless permitted_access_levels.key?(new_user.access_level.to_sym)
+    raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
     resources = prepare_access_resources(selected_facility_ids)
     # if the new_user couldn't prepare any resources means that they shouldn't have had access to this operation at all
     raise NotAuthorizedError if resources.empty?
@@ -116,13 +118,6 @@ class UserAccess < Struct.new(:user)
 
   private
 
-  def action_to_access_level(action)
-    {
-      view: User.access_levels.fetch_values(:manager, :viewer),
-      manage: User.access_levels.fetch_values(:manager)
-    }.fetch(action)
-  end
-
   def can_access_record?(resources, record)
     return true if user.power_user?
     return resources.find_by_id(record).present? if record
@@ -130,9 +125,13 @@ class UserAccess < Struct.new(:user)
   end
 
   def resources_for(resource_model, action)
+    return resource_model.all if user.power_user?
+    return resource_model.none unless ACTION_TO_LEVEL.fetch(action).include?(user.access_level.to_sym)
+
     resource_ids =
-      user.accesses.where(resource_type: resource_model.to_s)
-        .select { |access| access.user.access_level.in?(action_to_access_level(action)) }
+      user
+        .accesses
+        .where(resource_type: resource_model.to_s)
         .map(&:resource_id)
 
     resource_model.where(id: resource_ids)
