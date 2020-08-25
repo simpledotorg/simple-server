@@ -24,7 +24,7 @@
     &.collapsed {
       height: 0px;
       overflow: hidden;
-      @include transition(.1s);
+      @include transition(0.1s);
     }
 
     li {
@@ -39,8 +39,8 @@
       height: 100%;
       display: flex;
 
-      &.organization {
-        background: #FFF8E0;
+      &:not(.collapsed) {
+        background: #fff8e0;
 
         div {
           label {
@@ -51,7 +51,7 @@
 
       &:hover {
         background: var(--light);
-        @include transition(.1s);
+        @include transition(0.1s);
       }
 
       .spacer {
@@ -78,14 +78,14 @@
         &.collapsed {
           i {
             transform: rotate(-90deg);
-            @include transition(.3s);
+            @include transition(0.3s);
           }
         }
 
         i {
           transform: rotate(0deg);
           margin: 0px 8px 2px 8px;
-          @include transition(.2s);
+          @include transition(0.2s);
         }
       }
     }
