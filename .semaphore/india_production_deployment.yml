@@ -1,5 +1,5 @@
 version: v1.0
-name: Pipeline 3
+name: India Production Deployment
 blocks:
   - name: Deploy to India Production
     task:
