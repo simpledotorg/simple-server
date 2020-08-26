@@ -43,7 +43,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
     expect(page).to have_content("Organization was successfully created.")
     org_page.is_organization_name_present("Test")
 
-    dashboard_navigation.select_main_menu_tab("Dashboard")
+    dashboard_navigation.select_main_menu_tab("Old Reports")
 
     # assertion at dashboard screen
     expect(page).to have_content("Test")

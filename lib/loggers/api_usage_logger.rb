@@ -13,7 +13,7 @@ class Loggers::ApiUsageLogger < ::Logger
     include ActiveSupport::TaggedLogging::Formatter
   end
 
-  def initialize(target = STDOUT)
+  def initialize(target = $stdout)
     super(target)
     self.formatter = Formatter.new
   end
