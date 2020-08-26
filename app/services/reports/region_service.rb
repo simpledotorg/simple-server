@@ -2,7 +2,7 @@ module Reports
   class RegionService
     include SQLHelpers
     MAX_MONTHS_OF_DATA = 24
-    CACHE_VERSION = 8
+    CACHE_VERSION = 9
 
     # THe default period we report on is the last month so we show the last full completed month of data.
     def self.default_period
@@ -41,7 +41,7 @@ module Reports
     # the previous three quarters.
     def compile_cohort_trend_data
       Rails.cache.fetch(cohort_cache_key, version: cohort_cache_version, expires_in: 7.days, force: force_cache?) do
-        CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(3)).call
+        CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(4)).call
       end
     end
 
