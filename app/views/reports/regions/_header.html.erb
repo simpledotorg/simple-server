@@ -13,7 +13,7 @@
     <%= link_to 'All reports', dashboard_districts_path %>
     <% if @region.respond_to?(:facility_group) %>
       <i class="fas fa-chevron-right"></i>
-      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.region_slug) %>
+      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.slug, report_scope: "district") %>
     <% end %>
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>

@@ -15,6 +15,7 @@ module ParameterFiltering
     metadata_version
     process_token
     recorded_at
+    report_scope
     status
     updated_at
   ].freeze

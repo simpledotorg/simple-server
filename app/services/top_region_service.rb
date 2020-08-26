@@ -1,5 +1,11 @@
 # Currently this object returns the "top district (aka facility group)" by control rate from a set of organizations.
 class TopRegionService
+  def self.call(region:, period:, current_user:)
+    scope = region.class.to_s.underscore.to_sym
+    organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
+    new(organizations, period, scope: scope).call
+  end
+
   def initialize(organizations, period, scope: :facility_group)
     unless scope.in?([:facility_group, :facility])
       raise ArgumentError, "scope is #{scope} but must be one of :facility_group or :facility"
