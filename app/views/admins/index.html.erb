@@ -2,9 +2,15 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <div class="dropdown">
-      <%= link_to "Add new admin",
-          new_email_authentication_invitation_path,
-          class: "btn btn-sm btn-primary" %>
+      <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <%= link_to "Add new admin (new flow)",
+            email_authentications_invitation_new_new_path,
+            class: "btn btn-sm btn-primary" %>
+      <% else %>
+        <%= link_to "Add new admin",
+            new_email_authentication_invitation_path,
+            class: "btn btn-sm btn-primary" %>
+      <% end %>
     </div>
   </nav>
 </div>
@@ -35,7 +41,7 @@
           <% end %>
 
           <% if policy([:manage, :admin, admin]).destroy? %>
-            <%= link_to(admin_path(admin), method: :delete, data: { confirm: "Are you sure you want to delete #{admin.email}?" }, class: "btn btn-sm btn-outline-danger") do %>
+            <%= link_to(admin_path(admin), method: :delete, data: {confirm: "Are you sure you want to delete #{admin.email}?"}, class: "btn btn-sm btn-outline-danger") do %>
               <i class="fas fa-trash-alt"></i>
             <% end %>
           <% end %>
