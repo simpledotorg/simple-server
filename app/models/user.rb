@@ -73,6 +73,8 @@ class User < ApplicationRecord
   delegate :accessible_organizations,
     :accessible_facilities,
     :accessible_facility_groups,
+    :accessible_users,
+    :accessible_admins,
     :can?,
     :grant_access,
     :access_tree,

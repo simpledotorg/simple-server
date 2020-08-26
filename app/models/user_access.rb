@@ -42,11 +42,11 @@ class UserAccess < Struct.new(:user)
       .or(Facility.where(facility_group: accessible_facility_groups(action)))
   end
 
-  def accessible_users
+  def accessible_users(action)
     User.nurses
   end
 
-  def accessible_admins
+  def accessible_admins(action)
     User.admins
   end
 
@@ -63,9 +63,9 @@ class UserAccess < Struct.new(:user)
       when :facility_group
         can_access_record?(accessible_facility_groups(action), record)
       when :user
-        can_access_record?(accessible_users, record)
+        can_access_record?(accessible_users(:view), record)
       when :admin
-        can_access_record?(accessible_admins, record)
+        can_access_record?(accessible_admins(:view), record)
       else
         raise ArgumentError, "Access to #{model} is unsupported."
     end

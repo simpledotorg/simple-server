@@ -12,15 +12,27 @@ class AdminsController < AdminController
   skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
   def index
-    authorize([:manage, :admin, User])
-    admins = policy_scope([:manage, :admin, User])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin)
+      admins = current_admin.accessible_admins(:view)
 
-    @admins =
-      if searching?
-        paginate(admins.search_by_name_or_email(search_query))
-      else
-        paginate(admins.order("email_authentications.email"))
-      end
+      @admins =
+        if searching?
+          paginate(admins.search_by_name_or_email(search_query))
+        else
+          paginate(admins.order("email_authentications.email"))
+        end
+    else
+      authorize([:manage, :admin, User])
+      admins = policy_scope([:manage, :admin, User])
+
+      @admins =
+        if searching?
+          paginate(admins.search_by_name_or_email(search_query))
+        else
+          paginate(admins.order("email_authentications.email"))
+        end
+    end
   end
 
   def show
