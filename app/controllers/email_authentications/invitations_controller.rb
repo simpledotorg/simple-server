@@ -1,60 +1,51 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :verify_params, only: [:create]
-  before_action :🆕verify_params, only: [:🆕create]
+  before_action :verify_params, only: [:create], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :🆕verify_params, only: [:create], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   helper_method :current_admin
 
   def new
-    authorize([:manage, :admin, current_admin])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
+    else
+      authorize([:manage, :admin, current_admin])
+    end
+
     super
   end
 
-  #
-  # This is a temporary `new` method that will exist until we migrate fully to the new permissions system
-  #
-  def 🆕new
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
-      Devise::InvitationsController.instance_method(:new).bind(self).call
-    end
-  end
-
   def create
-    user = User.new(user_params)
-    authorize([:manage, :admin, user])
-
-    User.transaction do
-      super do |resource|
-        user.email_authentications = [resource]
-        user.save!
-
-        next if permission_params.blank?
-
-        permission_params.each do |attributes|
-          user.user_permissions.create!(attributes.permit(
-            :permission_slug,
-            :resource_id,
-            :resource_type
-          ))
-        end
-      end
-    end
-  end
-
-  #
-  # This is a temporary `create` method that will exist until we migrate fully to the new permissions system
-  #
-  def 🆕create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
 
       User.transaction do
         new_user = User.new(user_params)
 
-        Devise::InvitationsController.instance_method(:create).bind(self).call do |resource|
+        super do |resource|
           new_user.email_authentications = [resource]
           new_user.save!
 
           current_admin.grant_access(new_user, selected_facilities)
+        end
+      end
+    else
+      verify_params
+      user = User.new(user_params)
+      authorize([:manage, :admin, user])
+
+      User.transaction do
+        super do |resource|
+          user.email_authentications = [resource]
+          user.save!
+
+          next if permission_params.blank?
+
+          permission_params.each do |attributes|
+            user.user_permissions.create!(attributes.permit(
+              :permission_slug,
+              :resource_id,
+              :resource_type
+            ))
+          end
         end
       end
     end
@@ -82,13 +73,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
 
     if selected_facilities.blank?
-      redirect_to email_authentications_invitation_new_new_path,
+      redirect_to new_email_authentication_invitation_path,
         alert: "At least one facility should be selected for access before inviting an Admin." and return
     end
 
     if user.invalid? || email_authentication.invalid?
       user.errors.delete(:email_authentications)
-      redirect_to email_authentications_invitation_new_new_path,
+      redirect_to new_email_authentication_invitation_path,
         alert: user.errors.full_messages + email_authentication.errors.full_messages
     end
   end

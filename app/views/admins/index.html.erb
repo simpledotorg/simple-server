@@ -4,7 +4,7 @@
     <div class="dropdown">
       <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
         <%= link_to "Add new admin (new flow)",
-            email_authentications_invitation_new_new_path,
+            new_email_authentication_invitation_path,
             class: "btn btn-sm btn-primary" %>
       <% else %>
         <%= link_to "Add new admin",
