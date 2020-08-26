@@ -32,6 +32,7 @@ class Admin::UsersController < AdminController
   end
 
   def edit
+    @user.teleconsultation_isd_code ||= Rails.application.config.country["sms_country_code"]
   end
 
   def update
@@ -90,6 +91,7 @@ class Admin::UsersController < AdminController
       :full_name,
       :phone_number,
       :teleconsultation_phone_number,
+      :teleconsultation_isd_code,
       :password,
       :password_confirmation,
       :sync_approval_status,

@@ -25,7 +25,7 @@ RSpec.describe Api::V4::UserTransformer do
                                   "full_name" => user.full_name,
                                   "sync_approval_status" => user.sync_approval_status,
                                   "sync_approval_status_reason" => user.sync_approval_status_reason,
-                                  "teleconsultation_phone_number" => user.teleconsultation_phone_number)
+                                  "teleconsultation_phone_number" => user.teleconsultation_phone_number_with_isd)
     end
 
     it "includes time stamps" do

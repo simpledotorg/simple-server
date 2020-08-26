@@ -53,7 +53,8 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
-  validates :teleconsultation_phone_number, allow_blank: true, numericality: {only_integer: true}
+  validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
+  validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
   #
   #
   # Revive this validation once all users are migrated to the new permissions system:
@@ -95,8 +96,9 @@ class User < ApplicationRecord
 
   alias facility registration_facility
 
-  def teleconsultation_phone_number
-    super.presence || phone_number
+  def teleconsultation_phone_number_with_isd
+    defaulted_teleconsult_number = teleconsultation_phone_number || phone_number
+    Phonelib.parse(teleconsultation_isd_code + defaulted_teleconsult_number).full_e164
   end
 
   def authorized_facility?(facility_id)
@@ -133,6 +135,7 @@ class User < ApplicationRecord
     user_params = params.slice(
       :full_name,
       :teleconsultation_phone_number,
+      :teleconsultation_isd_code,
       :sync_approval_status,
       :sync_approval_status_reason
     )

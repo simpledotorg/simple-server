@@ -11,6 +11,7 @@ FactoryBot.define do
     device_created_at { Time.current }
     device_updated_at { Time.current }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
+    teleconsultation_isd_code { "+91" }
 
     sync_allowed
 
@@ -145,6 +146,7 @@ def register_user_request_params(arguments = {})
     full_name: Faker::Name.name,
     phone_number: Faker::PhoneNumber.phone_number,
     teleconsultation_phone_number: Faker::PhoneNumber.phone_number,
+    teleconsultation_isd_code: "+91",
     password_digest: BCrypt::Password.create("1234"),
     registration_facility_id: SecureRandom.uuid,
     created_at: Time.current.iso8601,
