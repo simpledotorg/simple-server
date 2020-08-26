@@ -3,7 +3,7 @@ class AdminsController < AdminController
   include SearchHelper
 
   before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕set_admin, only: [:edit], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :🆕set_admin, only: [:show, :edit], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   after_action :verify_policy_scoped, only: :index

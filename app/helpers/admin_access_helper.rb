@@ -8,14 +8,19 @@ module AdminAccessHelper
   end
 
   def access_checkbox(form, name, resource, op: :new, checked: false)
-    opts = {
-      id: resource.id,
-      class: "access-input",
-      label: resource.name.to_s,
-      hidden: op.eql?(:view),
-      checked: op.eql?(:edit) && checked
-    }
+    if op.eql?(:view)
+      content_tag(:div, class: "form-check") do
+        label_tag(resource.name.to_s, resource.name.to_s, class: "form-check-label")
+      end
+    else
+      opts = {
+        id: resource.id,
+        class: "access-input",
+        label: resource.name.to_s,
+        checked: op.eql?(:edit) && checked
+      }
 
-    form.check_box(name, opts, resource.id, nil)
+      form.check_box(name, opts, resource.id, nil)
+    end
   end
 end

@@ -1,3 +1,5 @@
+require "ostruct"
+
 class AdminAccessPresenter < SimpleDelegator
   attr_reader :current_admin
 
@@ -23,6 +25,10 @@ class AdminAccessPresenter < SimpleDelegator
     viewable_user
       .access_tree(:view)
       .fetch(:organizations)
+  end
+
+  def display_access_level
+    OpenStruct.new(UserAccess::LEVELS.fetch(current_admin.access_level.to_sym))
   end
 
   def permitted_access_levels_info
