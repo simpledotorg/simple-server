@@ -3,7 +3,7 @@
     <ul class="access-item-wrapper">
       <li>
         <div class="access-item organization">
-          <%= access_checkbox(form, "organizations[]", organization) %>
+          <%= access_checkbox(form, "organizations[]", organization, op: op, checked: organization_metadata[:can_access]) %>
 
           <span class="access-ratio">
             <i class="fas fa-angle-down light"></i>
@@ -20,7 +20,7 @@
             <li>
               <div class="access-item collapsed">
                 <span class="spacer"></span>
-                <%= access_checkbox(form, "facility_groups[]", facility_group) %>
+                <%= access_checkbox(form, "facility_groups[]", facility_group, op: op, checked: facility_group_metadata[:can_access]) %>
 
                 <span class="access-ratio collapsed">
                   <i class="fas fa-angle-down light"></i>
@@ -33,13 +33,13 @@
               </div>
 
               <ul class="access-item-wrapper collapsed">
-                <% facility_group_metadata[:facilities].each do |facility, _facility_metadata| %>
+                <% facility_group_metadata[:facilities].each do |facility, facility_metadata| %>
                   <li>
                     <div class="access-item collapsed">
                       <span class="spacer"></span>
                       <span class="spacer"></span>
 
-                      <%= access_checkbox(form, "facilities[]", facility) %>
+                      <%= access_checkbox(form, "facilities[]", facility, op: op, checked: facility_metadata[:can_access]) %>
                     </div>
                   </li>
                 <% end %>

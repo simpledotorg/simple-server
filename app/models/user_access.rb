@@ -42,6 +42,14 @@ class UserAccess < Struct.new(:user)
       .or(Facility.where(facility_group: accessible_facility_groups(action)))
   end
 
+  def accessible_users
+    User.nurses
+  end
+
+  def accessible_admins
+    User.admins
+  end
+
   def can?(action, model, record = nil)
     if record&.is_a? ActiveRecord::Relation
       raise ArgumentError, "record should not be an ActiveRecord::Relation."
@@ -54,6 +62,10 @@ class UserAccess < Struct.new(:user)
         can_access_record?(accessible_organizations(action), record)
       when :facility_group
         can_access_record?(accessible_facility_groups(action), record)
+      when :user
+        can_access_record?(accessible_users, record)
+      when :admin
+        can_access_record?(accessible_admins, record)
       else
         raise ArgumentError, "Access to #{model} is unsupported."
     end
@@ -80,12 +92,12 @@ class UserAccess < Struct.new(:user)
     end
   end
 
-  def access_tree(action)
+  def access_tree(action, reveal_access: true)
     facilities = accessible_facilities(action).includes(facility_group: :organization)
 
     facility_tree =
       facilities
-        .map { |facility| [facility, {can_access: true}] }
+        .map { |facility| [facility, {can_access: reveal_access && true}] }
         .to_h
 
     facility_group_tree =
@@ -97,7 +109,7 @@ class UserAccess < Struct.new(:user)
 
           [fg,
             {
-              can_access: can?(action, :facility_group, fg),
+              can_access: reveal_access && can?(action, :facility_group, fg),
               facilities: facilities_in_facility_group,
               total_facilities: fg.facilities.size
             }]
@@ -114,7 +126,7 @@ class UserAccess < Struct.new(:user)
 
           [org,
             {
-              can_access: can?(action, :organization, org),
+              can_access: reveal_access && can?(action, :organization, org),
               facility_groups: facility_groups_in_org,
               total_facility_groups: org.facility_groups.size
             }]

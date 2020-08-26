@@ -6,8 +6,23 @@ class AdminAccessPresenter < SimpleDelegator
     super
   end
 
-  def access_tree
-    current_admin.access_tree(:manage)[:organizations]
+  def new_access_tree
+    current_admin
+      .access_tree(:manage)
+      .fetch(:organizations)
+  end
+
+  def editable_access_tree(editable_user)
+    current_admin
+      .access_tree(:manage, reveal_access: false)
+      .deep_merge(editable_user.access_tree(:view, reveal_access: true))
+      .fetch(:organizations)
+  end
+
+  def viewable_access_tree(viewable_user)
+    viewable_user
+      .access_tree(:view)
+      .fetch(:organizations)
   end
 
   def permitted_access_levels_info
