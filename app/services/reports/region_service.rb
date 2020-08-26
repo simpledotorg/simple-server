@@ -1,8 +1,6 @@
 module Reports
   class RegionService
-    include SQLHelpers
     MAX_MONTHS_OF_DATA = 24
-    CACHE_VERSION = 9
 
     # THe default period we report on is the last month so we show the last full completed month of data.
     def self.default_period
@@ -40,18 +38,6 @@ module Reports
     # We want the current quarter and then the previous four
     def last_five_quarters
       period.to_quarter_period.value.downto(4)
-    end
-
-    def cohort_cache_key
-      "#{self.class}/cohort_trend_data/#{region.model_name}/#{region.id}/#{period}/#{CACHE_VERSION}"
-    end
-
-    def cohort_cache_version
-      "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
-    end
-
-    def force_cache?
-      RequestStore.store[:force_cache]
     end
   end
 end
