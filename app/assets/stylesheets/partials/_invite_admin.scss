@@ -86,6 +86,7 @@
           transform: rotate(0deg);
           margin: 0px 8px 2px 8px;
           @include transition(0.2s);
+          pointer-events: none;
         }
       }
     }
