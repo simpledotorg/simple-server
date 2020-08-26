@@ -8,7 +8,7 @@ class CohortService
 
   # Each quarter cohort is made up of patients registered in the previous quarter
   # who has had a follow up visit in the current quarter.
-  def totals
+  def call
     result = {quarterly_registrations: []}
     quarters.each do |results_quarter|
       cohort_quarter = results_quarter.previous_quarter

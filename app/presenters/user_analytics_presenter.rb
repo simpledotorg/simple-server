@@ -45,7 +45,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     )
     registrations = monthly_htn_stats_by_date(
       :controlled_visits,
-      :cumulative_registrations,
+      :adjusted_registrations,
       Period.month(htn_control_monthly_period_list.last)
     )
 
@@ -226,8 +226,13 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def cohort_stats
-    quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
-    CohortService.new(region: current_facility, quarters: quarters).totals
+    cohort_cache_version = 1
+    cohort_cache_key = "user_analytics/#{current_facility.id}/cohort_stats/#{cohort_cache_version}"
+
+    Rails.cache.fetch(cohort_cache_key, expires_in: 7.days) do
+      quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
+      CohortService.new(region: current_facility, quarters: quarters).call
+    end
   end
 
   #
@@ -303,7 +308,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
         .count
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
-    control_rate_start = control_rate_end.advance(months: -(HTN_CONTROL_MONTHS_AGO - 1))
+    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
     controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
 
     registrations =
@@ -324,7 +329,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       grouped_by_date: {
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
-          controlled_visits: controlled_visits,
+          controlled_visits: controlled_visits.to_hash,
           registrations: sum_by_date(registrations)
         }
       }
