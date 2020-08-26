@@ -8,6 +8,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     super
   end
 
+  #
+  # This is a temporary `new` method that will exist until we migrate fully to the new permissions system
+  #
   def 🆕new
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
@@ -37,13 +40,16 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     end
   end
 
+  #
+  # This is a temporary `create` method that will exist until we migrate fully to the new permissions system
+  #
   def 🆕create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
-      🆕verify_params
 
       User.transaction do
         new_user = User.new(user_params)
+        
         Devise::InvitationsController.instance_method(:create).bind(self).call do |resource|
           new_user.email_authentications = [resource]
           new_user.save!
@@ -67,6 +73,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     end
   end
 
+  #
+  # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
+  #
   def 🆕verify_params
     user = User.new(user_params)
     email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
