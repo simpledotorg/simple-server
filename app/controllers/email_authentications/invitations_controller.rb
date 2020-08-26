@@ -28,7 +28,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
         end
       end
     else
-      verify_params
       user = User.new(user_params)
       authorize([:manage, :admin, user])
 
@@ -59,9 +58,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
     unless user.valid? && email_authentication.valid?
       user.errors.delete(:email_authentications)
-      render json:
-        {errors: user.errors.full_messages + email_authentication.errors.full_messages},
-        status: :bad_request
+      render json: {errors: user.errors.full_messages + email_authentication.errors.full_messages}, status: :bad_request
     end
   end
 
@@ -74,13 +71,13 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
     if selected_facilities.blank?
       redirect_to new_email_authentication_invitation_path,
-        alert: "At least one facility should be selected for access before inviting an Admin." and return
+        alert: "At least one facility should be selected for access before inviting an Admin." && return
     end
 
     if user.invalid? || email_authentication.invalid?
       user.errors.delete(:email_authentications)
       redirect_to new_email_authentication_invitation_path,
-        alert: user.errors.full_messages + email_authentication.errors.full_messages
+        alert: (user.errors.full_messages + email_authentication.errors.full_messages).join("\n")
     end
   end
 
@@ -105,7 +102,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def selected_facilities
-    params[:selected_facilities]
+    params[:facilities]
   end
 
   def permission_params

@@ -8,17 +8,6 @@ function inviteAdmin() {
   resourceRowCollapseListener()
 }
 
-// this is called off of the form in the HTML
-function submitForm() {
-  const selectedFacilityIds =
-    [].slice
-      .call(document.querySelectorAll('input[name="facilities"]'))
-      .filter(e => e.checked && e.type !== "hidden" && !e.disabled)
-      .map(e => e.id)
-
-  addHiddenFacilityIds(selectedFacilityIds)
-}
-
 //
 // listeners
 //
@@ -50,21 +39,6 @@ function resourceRowCollapseListener() {
 //
 // behaviour
 //
-function addHiddenFacilityIds(selectedFacilityIds) {
-  const dummySelectionField = document.getElementById("facility-access-selections")
-  dummySelectionField.id = null
-
-  // clone the hidden selection field for each selectedFacilityIds and replace value with id
-  selectedFacilityIds.forEach(id => addHiddenFacilityIdField(dummySelectionField, id))
-  dummySelectionField.remove()
-}
-
-function addHiddenFacilityIdField(dummyNode, facilityId) {
-  const clonedHiddenInput = dummyNode.cloneNode(true)
-  clonedHiddenInput.value = facilityId
-
-  dummyNode.parentNode.insertAdjacentElement("beforeend", clonedHiddenInput)
-}
 
 function toggleItemCollapsed(element) {
   const collapsed = element.classList.contains("collapsed")
