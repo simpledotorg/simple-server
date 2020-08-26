@@ -11,6 +11,15 @@ RSpec.describe NoBPMeasureService do
     end
   end
 
+  it "returns a count of 0 for a facility group with no facilities" do
+    range = (Period.month("October 1 2018")..Period.month("October 1 2020"))
+    results = NoBPMeasureService.new(facility_group_1, periods: range).call
+    expect(results.size).to eq(range.entries.size)
+    results.each do |period, count|
+      expect(count).to eq(0)
+    end
+  end
+
   it "counts visits in past three months for appts, drugs updated, blood sugar taken without blood pressures" do
     jan_1 = Time.parse("January 1st, 2020")
     may_1 = Time.parse("May 1st, 2020")
