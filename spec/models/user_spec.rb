@@ -45,12 +45,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#teleconsultation_phone_number_with_isd" do
-    it "appends the isd code to the teleconsultation phone number correctly" do
-
-    end
-  end
-
   describe "Access (permissions)" do
     context ".accessible_organizations" do
       it "returns all organizations for power users" do
