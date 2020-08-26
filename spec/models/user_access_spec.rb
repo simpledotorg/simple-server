@@ -786,20 +786,20 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  describe '#permitted_access_levels' do
-    specify {
+  describe "#permitted_access_levels" do
+    specify do
       power_user = create(:admin, :power_user)
       expect(power_user.permitted_access_levels).to match_array(UserAccess::LEVELS.keys)
-    }
+    end
 
-    specify {
+    specify do
       manager = create(:admin, :manager)
       expect(manager.permitted_access_levels).to match_array([:manager, :viewer])
-    }
+    end
 
-    specify {
+    specify do
       viewer = create(:admin, :viewer)
       expect(viewer.permitted_access_levels).to match_array([])
-    }
+    end
   end
 end

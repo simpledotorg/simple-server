@@ -49,7 +49,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
       User.transaction do
         new_user = User.new(user_params)
-        
+
         Devise::InvitationsController.instance_method(:create).bind(self).call do |resource|
           new_user.email_authentications = [resource]
           new_user.save!
@@ -68,7 +68,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
     unless user.valid? && email_authentication.valid?
       user.errors.delete(:email_authentications)
-      render json: {errors: user.errors.full_messages + email_authentication.errors.full_messages},
+      render json:
+        {errors: user.errors.full_messages + email_authentication.errors.full_messages},
         status: :bad_request
     end
   end
@@ -108,7 +109,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       organization_id: params[:organization_id],
       device_created_at: Time.current,
       device_updated_at: Time.current,
-      sync_approval_status: :denied,
+      sync_approval_status: :denied
     }
   end
 
