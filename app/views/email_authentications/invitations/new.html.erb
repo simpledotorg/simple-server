@@ -2,11 +2,11 @@
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
     <div class="col-md-6">
-      <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true, html: {onsubmit: "submitForm(this)"}) do |form| %>
+      <%= bootstrap_form_with(url: email_authentications_invitation_new_create_path, local: true, autocomplete: "off", label_errors: true, html: {onsubmit: "submitForm(this)"}) do |form| %>
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, id: :email, required: true, label: "Email *" %>
         <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
-        <%= form.select :access_levels, current_admin.permitted_access_levels_info, id: :access_levels, required: true, label: "Access *" %>
+        <%= form.select :access_level, current_admin.permitted_access_levels_info, id: :access_levels, required: true, label: "Access *" %>
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">

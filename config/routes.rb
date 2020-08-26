@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   devise_scope :email_authentication do
+    get "email_authentications/invitation/new_new" => "email_authentications/invitations#🆕new"
+    post "email_authentications/invitation/new_create" => "email_authentications/invitations#🆕create"
+
     authenticated :email_authentication do
       root to: "admin#root"
     end
