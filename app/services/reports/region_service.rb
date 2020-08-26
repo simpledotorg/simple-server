@@ -26,7 +26,7 @@ module Reports
 
     def call
       result.merge! ControlRateService.new(region, periods: range).call
-      result.merge! compile_cohort_trend_data
+      result.merge! CohortService.new(region: region, quarters: last_five_quarters).call
       result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
       result.calculate_percentages(:visited_without_bp_taken)
       result.count_missed_visits
@@ -37,10 +37,9 @@ module Reports
 
     private
 
-    # We want to return cohort result for the current quarter for the selected period, and then
-    # the previous three quarters.
-    def compile_cohort_trend_data
-      CohortService.new(region: region, quarters: period.to_quarter_period.value.downto(4)).call
+    # We want the current quarter and then the previous four
+    def last_five_quarters
+      period.to_quarter_period.value.downto(4)
     end
 
     def cohort_cache_key
