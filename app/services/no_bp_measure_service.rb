@@ -13,11 +13,12 @@ class NoBPMeasureService
 
   def call
     periods.each_with_object(Hash.new(0)) do |period, result|
-      result[period] = visited_without_bp_taken_for(period)
+      result[period] = visited_without_bp_taken_count(period)
     end
   end
 
-  def visited_without_bp_taken_for(period)
+  def visited_without_bp_taken_count(period)
+    return 0 if facilities.empty?
     attributes = {
       hypertension: "yes",
       facilities: facilities.map(&:id),

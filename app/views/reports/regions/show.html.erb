@@ -206,7 +206,7 @@
       Facilities
     </h2>
     <% @region.facilities.order(:name).each do |facility| %>
-      <%= link_to(reports_region_path(facility.region_slug), class: "link-row") do %>
+      <%= link_to(reports_region_path(facility, report_scope: "facility"), class: "link-row") do %>
         <i class='fas fa-angle-right light'></i>
         <%= facility.name %>
       <% end %>
