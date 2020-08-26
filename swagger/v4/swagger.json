@@ -1133,6 +1133,18 @@
             "string",
             "null"
           ]
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "can_teleconsult": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            }
+          }
         }
       },
       "required": [
@@ -1176,6 +1188,18 @@
         "id",
         "password"
       ]
+    },
+    "app_user_capabilities": {
+      "type": "object",
+      "properties": {
+        "can_teleconsult": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      }
     }
   },
   "securityDefinitions": {
