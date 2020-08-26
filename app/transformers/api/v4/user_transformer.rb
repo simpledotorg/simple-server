@@ -16,7 +16,7 @@ class Api::V4::UserTransformer
     private
 
     def app_capabilities(user)
-      {can_teleconsult: user.can_teleconsult? ? "yes" : "no"}
+      {can_teleconsult: user.can_teleconsult? ? User::CAPABILITY_VALUES[:yes] : User::CAPABILITY_VALUES[:no]}
     end
   end
 end
