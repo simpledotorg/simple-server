@@ -23,6 +23,10 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:update_all_patients_phone_number_details"
 end
 
+every :day, at: local("02:00 am"), roles: [:cron] do
+  runner "Reports::RegionCacheWarmer.call"
+end
+
 every 3.hours, roles: [:cron] do
   rake "refresh_materialized_db_views"
 end

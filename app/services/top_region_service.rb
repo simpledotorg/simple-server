@@ -1,5 +1,11 @@
 # Currently this object returns the "top district (aka facility group)" by control rate from a set of organizations.
 class TopRegionService
+  def self.call(region:, period:, current_user:)
+    scope = region.class.to_s.underscore.to_sym
+    organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
+    new(organizations, period, scope: scope).call
+  end
+
   def initialize(organizations, period, scope: :facility_group)
     unless scope.in?([:facility_group, :facility])
       raise ArgumentError, "scope is #{scope} but must be one of :facility_group or :facility"
@@ -21,6 +27,7 @@ class TopRegionService
     end
     all_region_data = accessible_regions.each_with_object({}) { |region, hsh|
       result = ControlRateService.new(region, periods: period).call
+      next if result.blank? || result[:controlled_patients_rate][period].blank?
       hsh[region] = result
     }
     top_region_for_rate, control_rate_result = all_region_data.max_by { |region, result|

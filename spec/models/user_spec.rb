@@ -3,11 +3,33 @@ require "rails_helper"
 RSpec.describe User, type: :model do
   describe "Associations" do
     it { should have_many(:user_authentications) }
+    it { should have_many(:accesses) }
   end
 
   describe "Validations" do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"
+
+    pending { is_expected.to validate_presence_of(:access_level) }
+
+    it {
+      is_expected.to(
+        define_enum_for(:access_level)
+          .with_suffix(:access)
+          .with_values(power_user: "power_user", manager: "manager", viewer: "viewer")
+          .backed_by_column_of_type(:string)
+      )
+    }
+  end
+
+  describe "User Access (permissions)" do
+    it { should delegate_method(:accessible_organizations).to(:user_access) }
+    it { should delegate_method(:accessible_facility_groups).to(:user_access) }
+    it { should delegate_method(:accessible_facilities).to(:user_access) }
+    it { should delegate_method(:can?).to(:user_access) }
+    it { should delegate_method(:grant_access).to(:user_access) }
+    it { should delegate_method(:access_tree).to(:user_access) }
+    it { should delegate_method(:permitted_access_levels).to(:user_access) }
   end
 
   describe ".build_with_phone_number_authentication" do
@@ -18,14 +40,16 @@ RSpec.describe User, type: :model do
       let(:phone_number) { Faker::PhoneNumber.phone_number }
       let(:password_digest) { BCrypt::Password.create("1234") }
       let(:params) do
-        {id: id,
-         full_name: full_name,
-         phone_number: phone_number,
-         password_digest: password_digest,
-         registration_facility_id: registration_facility.id,
-         organization_id: registration_facility.organization.id,
-         device_created_at: Time.current.iso8601,
-         device_updated_at: Time.current.iso8601}
+        {
+          id: id,
+          full_name: full_name,
+          phone_number: phone_number,
+          password_digest: password_digest,
+          registration_facility_id: registration_facility.id,
+          organization_id: registration_facility.organization.id,
+          device_created_at: Time.current.iso8601,
+          device_updated_at: Time.current.iso8601
+        }
       end
 
       let(:user) { User.build_with_phone_number_authentication(params) }
@@ -69,7 +93,7 @@ RSpec.describe User, type: :model do
         let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
         let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
-        ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
+        %w[Sri sri SRi sRi SRI sRI].each do |term|
           it "returns results for case-insensitive searches: #{term.inspect}" do
             expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
           end
@@ -81,7 +105,7 @@ RSpec.describe User, type: :model do
           end
         end
 
-        ["pri", "sr"].each do |term|
+        %w[pri sr].each do |term|
           it "partially matches on first name, last name or full names: #{term.inspect}" do
             expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
           end
