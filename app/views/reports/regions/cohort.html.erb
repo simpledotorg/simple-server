@@ -11,7 +11,7 @@
       </p>
     </div>
     <% @quarterly_registrations.each_with_index do |cohort, index| %>
-      <div class="split-row mt-0px pt-0px mb-16px">
+      <div class="split-row mt-0px pt-0px mb-16px <%= "split-row-first" if index == 0 %>">
         <div class="row px-lg-0">
           <div class="col-lg-3 nowrap order-lg-1">
             <h6 class="<% unless cohort["registered"] == 0 %>c-black<% else %>c-grey-medium<% end %>">
