@@ -34,7 +34,8 @@ class AdminController < ApplicationController
   private
 
   def default_root_paths
-    {show?: organizations_path,
+    {view_my_facilities?: my_facilities_overview_path,
+     show?: organizations_path,
      overdue_list?: appointments_path,
      manage_organizations?: admin_organizations_path,
      manage_facilities?: admin_facilities_path,

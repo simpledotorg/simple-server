@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 7
+  CACHE_VERSION = 8
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.

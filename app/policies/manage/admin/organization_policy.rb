@@ -3,6 +3,7 @@ class Manage::Admin::OrganizationPolicy < ApplicationPolicy
     attr_reader :user, :scope
 
     def initialize(user, scope)
+      super
       @user = user
       @scope = scope
     end
