@@ -51,6 +51,7 @@ module Reports
     private
 
     def notify(msg)
+      return unless notifier
       notifier.ping "[#{environment}] #{msg}"
     end
 
