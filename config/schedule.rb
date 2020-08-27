@@ -29,7 +29,7 @@ end
 #   runner "Reports::RegionCacheWarmer.call"
 # end
 
-every [:sunday, :wednesday], at: local("05:00am"), roles: [:cron] do
+every [:sunday, :wednesday], at: local("12:30am"), roles: [:cron] do
   rake "refresh_materialized_db_views"
 end
 
