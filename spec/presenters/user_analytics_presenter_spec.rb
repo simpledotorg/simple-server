@@ -112,10 +112,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         it "has data grouped by date" do
-          control_rate_service = double("ControlRateService")
-          allow(ControlRateService).to receive(:new).and_return(control_rate_service)
-          allow(control_rate_service).to receive(:call).and_return({control_rate: :statistics})
-
           data =
             travel_to(request_date) {
               described_class.new(current_facility).statistics
@@ -150,7 +146,9 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               },
 
               controlled_visits: {
-                control_rate: :statistics
+                (request_date - 2.months) => 0,
+                (request_date - 1.months) => 0,
+                request_date => 2
               }
             },
 
@@ -450,10 +448,6 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         end
 
         it "has data grouped by date" do
-          control_rate_service = double("ControlRateService")
-          allow(ControlRateService).to receive(:new).and_return(control_rate_service)
-          allow(control_rate_service).to receive(:call).and_return({control_rate: :statistics})
-
           data =
             travel_to(request_date) {
               described_class.new(current_facility).statistics
@@ -474,7 +468,9 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               },
 
               controlled_visits: {
-                control_rate: :statistics
+                (request_date - 2.months) => 0,
+                (request_date - 1.months) => 0,
+                request_date => 2
               }
             }
           }
