@@ -51,7 +51,7 @@ module Reports
     private
 
     def notify(msg)
-      notifier.ping "#{environment} #{msg}"
+      notifier.ping "[#{environment}] #{msg}"
     end
 
     def environment
@@ -71,6 +71,5 @@ module Reports
         RegionService.new(region: region, period: period).call
       end
     end
-
   end
 end
