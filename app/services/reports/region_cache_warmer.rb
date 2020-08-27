@@ -5,8 +5,8 @@ module Reports
     end
 
     def self.create_slack_notifier
-      return if ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"].blank?
-      Slack::Notifier.new(ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"], channel: "#alerts", username: "simple-server")
+      return if ENV["SLACK_ALERTS_WEBHOOK_URL"].blank?
+      Slack::Notifier.new(ENV["SLACK_ALERTS_WEBHOOK_URL"], channel: "#alerts", username: "simple-server")
     end
 
     def initialize(period: RegionService.default_period)
