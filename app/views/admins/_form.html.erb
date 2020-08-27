@@ -10,8 +10,9 @@
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
           <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.editable_access_tree(admin),
-              op: :edit,
+              current_admin: current_admin,
+              page: :edit,
+              user_being_edited: admin,
               form: form %>
         </div>
         <%= form.primary("Save") %>

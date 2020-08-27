@@ -27,8 +27,9 @@
 
   <div id="facility-access">
     <%= render "email_authentications/invitations/access_tree",
-        access_tree: current_admin.viewable_access_tree(@admin),
-        op: :view,
+        current_admin: @admin,
+        page: :show,
+        user_being_edited: nil,
         form: nil %>
   </div>
 <% else %>

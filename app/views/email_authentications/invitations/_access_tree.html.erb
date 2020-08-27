@@ -1,45 +1,74 @@
 <div class="card access-tree">
-  <% access_tree.each do |organization, organization_metadata| %>
+  <% current_admin
+         .access_tree(page: page, user_being_edited: user_being_edited)
+         .organizations
+         .each do |organization, org_info| %>
+
     <ul class="access-item-wrapper">
       <li>
         <div class="access-item organization">
-          <%= access_checkbox(form, "organizations[]", organization, op: op, checked: organization_metadata[:can_access]) %>
+          <%= access_checkbox(
+                  form,
+                  "organizations",
+                  organization,
+                  page: page,
+                  checked: org_info.can_access
+              ) %>
 
           <span class="access-ratio">
             <i class="fas fa-angle-down light"></i>
 
             <%= access_fraction(
                     "facility groups",
-                    organization_metadata[:facility_groups].keys.size,
-                    organization_metadata[:total_facility_groups]) %>
+                    org_info.accessible_facility_group_count,
+                    org_info.total_facility_group_count
+                ) %>
           </span>
         </div>
 
         <ul class="access-item-wrapper">
-          <% organization_metadata[:facility_groups].each do |facility_group, facility_group_metadata| %>
+          <% current_admin
+                 .access_tree(page: page, user_being_edited: user_being_edited)
+                 .facility_groups(organization)
+                 .each do |facility_group, fg_info| %>
+
             <li>
               <div class="access-item collapsed">
                 <span class="spacer"></span>
-                <%= access_checkbox(form, "facility_groups[]", facility_group, op: op, checked: facility_group_metadata[:can_access]) %>
+                <%= access_checkbox(
+                        form,
+                        "facility_groups",
+                        facility_group,
+                        page: page,
+                        checked: org_info.can_access) %>
 
                 <span class="access-ratio collapsed">
                   <i class="fas fa-angle-down light"></i>
 
                   <%= access_fraction(
                           "facilities",
-                          facility_group_metadata[:facilities].keys.size,
-                          facility_group_metadata[:total_facilities]) %>
+                          fg_info.accessible_facility_count,
+                          fg_info.total_facility_count) %>
                 </span>
               </div>
 
               <ul class="access-item-wrapper collapsed">
-                <% facility_group_metadata[:facilities].each do |facility, facility_metadata| %>
+                <% current_admin
+                       .access_tree(page: page, user_being_edited: user_being_edited)
+                       .facilities(facility_group)
+                       .each do |facility, facility_info| %>
+
                   <li>
                     <div class="access-item collapsed">
                       <span class="spacer"></span>
                       <span class="spacer"></span>
 
-                      <%= access_checkbox(form, "facilities[]", facility, op: op, checked: facility_metadata[:can_access]) %>
+                      <%= access_checkbox(
+                              form,
+                              "facilities",
+                              facility,
+                              page: page,
+                              checked: facility_info.can_access) %>
                     </div>
                   </li>
                 <% end %>

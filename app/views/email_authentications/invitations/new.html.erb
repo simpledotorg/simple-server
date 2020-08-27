@@ -12,8 +12,9 @@
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
           <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.new_access_tree,
-              op: :new,
+              current_admin: current_admin,
+              page: :new,
+              user_being_edited: nil,
               form: form %>
         </div>
         <%= form.primary("Send Invite") %>

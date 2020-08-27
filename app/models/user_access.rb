@@ -48,14 +48,6 @@ class UserAccess < Struct.new(:user)
     User.non_admins.where(registration_facility: accessible_facilities(action))
   end
 
-  def deep_merge(other_hash)
-    self.merge(other_hash) do |key, oldval, newval|
-      oldval = oldval.to_hash if oldval.respond_to?(:to_hash)
-      newval = newval.to_hash if newval.respond_to?(:to_hash)
-      oldval.class.to_s == 'Hash' && newval.class.to_s == 'Hash' ? oldval.deep_merge(newval) : newval
-    end
-  end
-
   def accessible_admins(action)
     return User.admins if user.power_user?
     return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
@@ -110,54 +102,6 @@ class UserAccess < Struct.new(:user)
       new_user.accesses.delete_all
       new_user.accesses.create!(resources)
     end
-  end
-
-  def access_tree(action, reveal_access: true)
-    facilities = accessible_facilities(action).includes(facility_group: :organization)
-
-    facility_tree =
-      facilities
-        .map { |facility| [facility, {can_access: reveal_access && true}] }
-        .to_h
-
-    facility_group_tree =
-      facilities
-        .map(&:facility_group)
-        .map { |fg|
-          facilities_in_facility_group =
-            facility_tree.select { |facility, _| facility.facility_group == fg }
-
-          [fg,
-            {
-              can_access: reveal_access && can?(action, :facility_group, fg),
-              facilities: facilities_in_facility_group,
-              total_facilities: fg.facilities.size
-            }]
-        }
-        .to_h
-
-    organization_tree =
-      facilities
-        .map(&:facility_group)
-        .map(&:organization)
-        .map { |org|
-          facility_groups_in_org =
-            facility_group_tree.select { |facility_group, _| facility_group.organization == org }
-
-          [org,
-            {
-              can_access: reveal_access && can?(action, :organization, org),
-              facility_groups: facility_groups_in_org,
-              total_facility_groups: org.facility_groups.size
-            }]
-        }
-        .to_h
-
-    {organizations: organization_tree}
-  end
-
-  def merge_access_tree
-
   end
 
   private
