@@ -4,8 +4,13 @@ module Reports
       new.call
     end
 
+    def self.create_slack_notifier
+      return if ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"].blank?
+      Slack::Notifier.new(ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"], channel: "#alerts", username: "simple-server")
+    end
+
     def initialize(period: RegionService.default_period)
-      @notifier = Slack::Notifier.new(ENV["SLACK_ALERTS_WEBHOOK_URL"], channel: "#alerts", username: "simple-server")
+      @notifier = self.class.create_slack_notifier
       @start_time = Time.current
       @period = period
       @original_force_cache = RequestStore.store[:force_cache]
@@ -45,12 +50,12 @@ module Reports
 
     private
 
-    def environment
-      ENV["SIMPLE_SERVER_ENV"]
+    def notify(msg)
+      notifier.ping "#{environment} #{msg}"
     end
 
-    def notify(msg)
-      "#{environment} #{msg}"
+    def environment
+      ENV["SIMPLE_SERVER_ENV"]
     end
 
     def cache_facility_groups

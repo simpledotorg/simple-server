@@ -26,7 +26,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   before do
     notifier = object_double(Slack::Notifier.new("fake_url"))
     allow(notifier).to receive(:ping)
-    allow(Slack::Notifier).to receive(:new).and_return(notifier)
+    allow(Reports::RegionCacheWarmer).to receive(:create_slack_notifier).and_return(notifier)
   end
 
   it "skips caching if disabled via Flipper" do
