@@ -1,15 +1,21 @@
 # Currently this object returns the "top district (aka facility group)" by control rate from a set of organizations.
 class TopRegionService
-  def initialize(organizations, date, scope: :facility_group)
+  def self.call(region:, period:, current_user:)
+    scope = region.class.to_s.underscore.to_sym
+    organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
+    new(organizations, period, scope: scope).call
+  end
+
+  def initialize(organizations, period, scope: :facility_group)
     unless scope.in?([:facility_group, :facility])
       raise ArgumentError, "scope is #{scope} but must be one of :facility_group or :facility"
     end
     @organizations = organizations
-    @date = date
+    @period = period
     @scope = scope
   end
 
-  attr_reader :date
+  attr_reader :period
   attr_reader :organizations
   attr_reader :scope
 
@@ -19,15 +25,26 @@ class TopRegionService
     else
       organizations.flat_map { |org| org.facilities }
     end
-    regions_by_rate = accessible_regions.each_with_object({}) { |region, hsh|
-      result = ControlRateService.new(region, date: date).call
-      hsh[region] = result[:controlled_patients_rate][date.to_s(:month_year)]
+    all_region_data = accessible_regions.each_with_object({}) { |region, hsh|
+      result = ControlRateService.new(region, periods: period).call
+      next if result.blank? || result[:controlled_patients_rate][period].blank?
+      hsh[region] = result
     }
-    region, percentage = regions_by_rate.max_by { |region, rate| rate }
+    top_region_for_rate, control_rate_result = all_region_data.max_by { |region, result|
+      result[:controlled_patients_rate][period]
+    }
+    top_region_for_registrations, registrations_result = all_region_data.max_by { |region, result|
+      result[:cumulative_registrations][period]
+    }
     {
-      region: region,
-      district: region,
-      controlled_percentage: percentage
+      control_rate: {
+        region: top_region_for_rate,
+        value: control_rate_result[:controlled_patients_rate][period]
+      },
+      cumulative_registrations: {
+        region: top_region_for_registrations,
+        value: registrations_result[:cumulative_registrations][period]
+      }
     }
   end
 end

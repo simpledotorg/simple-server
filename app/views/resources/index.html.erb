@@ -1,19 +1,230 @@
 <div class="page" id="resources">
-  <div class="row">
-    <div class="col-sm-12 col-lg-7 pl-lg-0">
-      <h1>Resources</h1>
-    </div>
-
-    <div class="col-sm-12 col-lg-5">
-      <p><i class="fas fa-info-circle mr-2" style="color: #777;"></i> Suggest new resources by emailing: <a href="mailto:team@simple.org">team@simple.org</a></p>
-    </div>
 
     <div class="container">
       <div class="row">
+          <div class="col-sm-4 col-lg-2 pl-lg-0">
 
-          <div class="col-sm-12 col-lg-7">
-              <div class="card">
-                <h2>Common user questions</h2>
+            <nav class="secondary-nav">
+                <h4 class="pl-2 mt-3">Resources</h4>
+                <a href="#card-checklist" class="nav-link">Deployment checklist</a>
+                <a href="#card-presentations" class="nav-link">Training presentations</a>
+                <a href="#card-videos" class="nav-link">Training videos</a>
+                <a href="#card-1pager" class="nav-link">1-pager about Simple</a>
+                <a href="#card-print" class="nav-link">Print material</a>
+                <a href="#card-faq" class="nav-link">Common questions</a>
+                <a href="#card-contact" class="nav-link">Contact</a>
+            </nav>
+          </div>
+
+          <div class="col-12 col-sm-8 col-lg-10">
+              <div class="card" id="card-checklist">
+                  <h2>Deployment checklist</h2>
+                    <div class="resource-link resource-doc">
+                        <a href="https://docs.google.com/document/d/1cleJkm09VRGUAafkpzC9U2ao9r4r8ewZjLPwfTTj57Q/edit?usp=sharing" class="resource-url">
+                            Deployment checklist
+                            <span>Print and use this checklist when deploying Simple in a new district or region.</span>
+                            <i class="far fa-file-alt"></i>
+                        </a>
+                    </div>
+              </div>
+
+              <div class="card" id="card-presentations">
+                <h2>Training presentations</h2>
+
+                    <div class="resource-link resource-presentation">
+                        <a href="https://docs.google.com/presentation/d/1y4tEmm6ZaIphf48s8NNr6LjQt7pV8m_2AAubovGGVO8/edit" class="resource-url">
+                            Teach Simple for new users
+                            <span>Use this presentation to teach new users, like doctors and nurses, to use the Simple Android app.</span>
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </a>
+                    </div>
+                    <div class="resource-link resource-presentation">
+                        <a href="https://docs.google.com/presentation/d/1sna087oQH6NbMk28pwmvvLvvAV4xyB0hHBACLP4iU1E/edit#slide=id.g7402fb462f_0_836" class="resource-url">
+                            Training for trainers
+                            <span>Use this presentation to learn how to conduct a training.</span>
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </a>
+                    </div>
+                    <div class="resource-link resource-presentation">
+                        <a href="https://docs.google.com/presentation/d/1G3YEqGID5O9sPsHW_rSemr37i-kDLfDD-pKm0XxBrh0/edit#slide=id.g7da453f218_0_0" class="resource-url">
+                            Manage facilities on the Dashboard
+                            <span>Use this presentation to learn how to add, edit, and delete facilities on the Dashboard.</span>
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </a>
+                    </div>
+
+
+
+              </div>
+              <div class="card" id="card-videos">
+                <h2>Training videos</h2>
+
+                    <div class="row">
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-all.jpg', style: 'width: 100%;' %>
+                            <strong>Training video: All Chapters</strong>
+                            <span>36 min</span>
+                            <a href="https://youtu.be/MC_45DoRw2g"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1-uumJE8w-BaDroppG3P0K-BK4LAGN3f0/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 515 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-trainers.jpg', style: 'width: 100%;' %>
+                            <strong>How to conduct a training</strong>
+                            <span>5 min 42 sec</span>
+                            <a href="https://youtu.be/wfrMbvTXn38"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1grHi-XhWZFUkP5Wfke88FB_vlzO3uHpo/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 87 <small>MB</small></a>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-5">Training chapters</h4>
+
+                    <div class="row">
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-1.jpg', style: 'width: 100%;' %>
+                            <strong>1: Install the app</strong>
+                            <span>4 min</span>
+                            <a href="https://youtu.be/r0mbu1s0l7A"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/15IqT-GnLAkqP_qx-41607bSgaXdqMefs/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 48 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-2.jpg', style: 'width: 100%;' %>
+                            <strong>2: Introduction</strong>
+                            <span>4 min</span>
+                            <a href="https://youtu.be/YPySS9sL-EU"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/18reVHNwMlqbRt6wA8yaCo4Gsxz_3CLA3/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 59 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-3.jpg', style: 'width: 100%;' %>
+                            <strong>3: Register a patient</strong>
+                            <span>8 min</span>
+                            <a href="https://youtu.be/5P5mGQVQFOU"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1QfiQ0gzUeKkEpIamc3VZPYmDcta-emmO/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 86 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-4.jpg', style: 'width: 100%;' %>
+                            <strong>4: Search for a follow-up patient</strong>
+                            <span>4 min</span>
+                            <a href="https://youtu.be/6hR1vQ8hoTU"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1q0ac-Rz8UvNpzgGnAhGlWekmK53YXHQg/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 64 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-5.jpg', style: 'width: 100%;' %>
+                            <strong>5: Find the right patient</strong>
+                            <span>3 min</span>
+                            <a href="https://youtu.be/o3klwHrMEi0"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1UBqI6AZThvnlBsL62_I26jOOaDyBy7ND/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 33 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-6.jpg', style: 'width: 100%;' %>
+                            <strong>6: Call overdue patients</strong>
+                            <span>3 min</span>
+                            <a href="https://youtu.be/PuM29XINOn4"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1Sj9NGf0MC7loDhSScvs9jO26X91_Gu5a/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 35 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-7.jpg', style: 'width: 100%;' %>
+                            <strong>7: Important features</strong>
+                            <span>4 min</span>
+                            <a href="https://youtu.be/elCBnApJLIM"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1p5mjZ8KWRlPdZRf1YypFcaSqhdLZacxe/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 52 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-8.jpg', style: 'width: 100%;' %>
+                            <strong>8: FAQ</strong>
+                            <span>3 min 35 sec</span>
+                            <a href="https://youtu.be/Aj-dKn_kmlw"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1rFjIdquF3zpMiskHWB50q810ABEq0gwk/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 39 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-9.jpg', style: 'width: 100%;' %>
+                            <strong>9: How to get help</strong>
+                            <span>1 min 22 sec</span>
+                            <a href="https://youtu.be/wF4t_pFuugY"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1FTsVx_ng5a-C1s_kS4nFYX5Y-dgHsL0r/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 20 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-chapter-10.jpg', style: 'width: 100%;' %>
+                            <strong>10: Start using Simple</strong>
+                            <span>2 min</span>
+                            <a href="https://youtu.be/kls4QnWz1Nw"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://drive.google.com/file/d/1SKXNRMfOQ5P2VPOWvDSLS-djvbqT5q3t/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download: 30 <small>MB</small></a>
+                        </div>
+                    </div>
+
+                  <h4 class="mt-5">Other videos</h4>
+
+                    <div class="row">
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-telemedicine.jpg', style: 'width: 100%;' %>
+                            <strong>Telemedicine Training</strong>
+                            <span>5 min</span>
+                            <a href="https://youtu.be/LpLeFFKhXd4"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://youtu.be/lMS1GiqbKps"><i class="fab fa-youtube"></i> Hindi Youtube</a>
+                            <a href="https://drive.google.com/file/d/1YRPvaIeqkI8pellzvY8kBz6K2FLgxTdu/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download English: 82 <small>MB</small></a>
+                            <a href="https://drive.google.com/file/d/1fiQ-kLWqcO8_SCcac7gjA9kMjxM4lFHs/view?usp=sharing"><i class="fas fa-arrow-circle-down"></i> Download Hindi: 88 <small>MB</small></a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-how.jpg', style: 'width: 100%;' %>
+                            <strong>Quick Simple Training</strong>
+                            <span>5 min</span>
+                            <a href="https://youtu.be/YjfPCUtZHlI"><i class="fab fa-youtube"></i> English Youtube</a>
+                            <a href="https://youtu.be/zthrk6XfpjQ"><i class="fab fa-youtube"></i> Hindi Youtube</a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-passport.jpg', style: 'width: 100%;' %>
+                            <strong>How to use a BP Passport</strong>
+                            <span>3 min 21 sec</span>
+                            <a href="https://youtu.be/aktZ1yTdDOA"><i class="fab fa-youtube"></i> Hindi (English subtitles)</a>
+                        </div>
+                        <div class="col-sm-3 col-video">
+                            <%= image_tag 'resources/video-doc.jpg', style: 'width: 100%;' %>
+                            <strong>Simple Documentary</strong>
+                            <span>3 min / 5 min 30 sec</span>
+                            <a href="https://youtu.be/C26CoyeExmU"><i class="fab fa-youtube"></i> Short version</a>
+                            <a href="https://youtu.be/G0Pj_2aFGCQ"><i class="fab fa-youtube"></i> Long version</a>
+                        </div>
+                    </div>
+
+
+
+              </div>
+
+              <div class="card" id="card-1pager">
+                <h2>1-pager about Simple</h2>
+                    <div class="resource-link resource-doc">
+                        <a href="https://drive.google.com/a/resolvetosavelives.org/file/d/1M2BpHYZALN8UAOaLZUfwFKCRvmq0fI7s/view?usp=sharing" class="resource-url">
+                            1-pager for IHCI
+                            <span>Regularly updated document explaining Simple and IHCI.</span>
+                            <i class="far fa-file-pdf"></i>
+                        </a>
+                    </div>
+
+                    <div class="resource-link resource-doc">
+                        <a href="https://drive.google.com/open?id=1LzGcSK5nPS0izJT4kV7B3y6syl84ACqo&authuser=dburka%40resolvetosavelives.org&usp=drive_fs" class="resource-url">
+                            1-pager
+                            <span>Regularly updated document explaining Simple.</span>
+                            <i class="far fa-file-pdf"></i>
+                        </a>
+                    </div>
+              </div>
+              <div class="card" id="card-print">
+                <h2>Print material</h2>
+                <div class="row">
+                <div class="col-sm-3 mt-3 mb-4">
+                    <%= image_tag 'resources/user-handbook.jpg', style: 'width: 100%;' %>
+                    <strong class="mt-2 d-block" style="display: block;">App Users Guidebook</strong>
+                    <div class="mt-2"><a href="https://drive.google.com/file/d/1MM2dEpUBgE3EyZS9CrzuxgjHqIQa3eb1/view" class="doc-download"><i class="far fa-file-pdf"></i> Download PDF</a></div>
+                </div>
+                <div class="col-sm-3 mt-3 mb-4">
+                    <%= image_tag 'resources/bp-poster.jpg', style: 'width: 100%' %>
+                    <strong class="mt-2 d-block">Poster: How to take a BP</strong>
+                    <div class="mt-2"><a href="#card-contact">Contact us</a>, this poster is available in many languages.</div>
+                </div>
+                </div>
+              </div>
+
+              <div class="card" id="card-faq">
+                <h2>Common questions</h2>
 
                 <div class="question"><h6 class="question">User can't find a patient</h6>
                     <ol type="a">
@@ -116,64 +327,13 @@
                 Their details (e.g. blood pressure, medicines) can be updated normally.</div>
                 <p>&nbsp;</p>
               </div>
-          </div>
-          <div class="col-sm-12 col-lg-5">
-              <div class="card">
-                <h2>Presentations</h2>
 
-                <a href="https://docs.google.com/presentation/d/1y4tEmm6ZaIphf48s8NNr6LjQt7pV8m_2AAubovGGVO8/edit" style="display: block" class="mt-3">
-                    <%= image_tag 'presentation-users.jpg', style: 'width: 100%; margin-bottom: 0.5em;' %>
-                    Presentation for training users (Google Docs)
-                </a>
-
-                <a href="https://docs.google.com/presentation/d/1sna087oQH6NbMk28pwmvvLvvAV4xyB0hHBACLP4iU1E/edit#slide=id.g7402fb462f_0_836" style="display: block" class="mt-3">
-                    <%= image_tag 'presentation-trainers.jpg', style: 'width: 100%; margin-bottom: 0.5em;' %>
-                    Training trainers (Google Docs)
-                </a>
-
-
-              </div>
-              <div class="card">
-                <h2>Training videos</h2>
-                  <div class="video-container mt-4">
-                      <iframe width="560" height="315" src="https://www.youtube.com/embed/Gm_Fnp6ffaM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                  </div>
-                  <h5 class="mt-2">English: How to use Simple</h5>
-
-                  <div class="video-container mt-4">
-                      <iframe width="560" height="315" src="https://www.youtube.com/embed/zthrk6XfpjQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                  </div>
-                  <h5 class="mt-2">Hindi: How to use Simple</h5>
-
-                  <div class="video-container mt-4">
-                      <iframe width="560" height="315" src="https://www.youtube.com/embed/aktZ1yTdDOA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                  </div>
-                  <h5 class="mt-2">How to use a BP Passport (Hindi with English subtitles)</h5>
-
-                  <div class="video-container mt-4">
-                      <iframe width="560" height="315" src="https://www.youtube.com/embed/C26CoyeExmU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                  </div>
-                  <h5 class="mt-2">The story of the Simple app in India (Punjabi with English subtitles)</h5>
-              </div>
-              <div class="card">
-                <h2>Print-outs</h2>
-
-                <div class="doc">
-                    <%= image_tag 'user-handbook.jpg', style: 'width: 200px;' %>
-                    <h5>App Users Guidebook</h5>
-                    <a href="https://drive.google.com/file/d/1MM2dEpUBgE3EyZS9CrzuxgjHqIQa3eb1/view" class="doc-download">Download PDF</a>
-                </div>
-                <div class="doc">
-                    <%= image_tag 'bp-poster.jpg', style: 'width: 200px' %>
-                    <h5>How to take a blood pressure poster</h5>
-
-                    <a href="" class="doc-download">Download PDF</a>
-                    <a href="" class="doc-download">Google Slides</a>
-                    <a href="" class="doc-download">Powerpoint</a>
-                </div>
+              <div class="card" id="card-contact">
+                  <h2 id="resource-contact">Contact</h2>
+                    <p>Suggest new resources by emailing: <a href="mailto:team@simple.org">team@simple.org</a></p>
               </div>
           </div>
+          
       </div>
     </div>
-  </div>
 </div>

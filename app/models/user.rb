@@ -11,9 +11,9 @@ class User < ApplicationRecord
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
+  enum access_level: UserAccess::LEVELS.map { |level, info| [level, info[:id].to_s] }.to_h, _suffix: :access
 
   belongs_to :organization, optional: true
-
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
@@ -21,23 +21,19 @@ class User < ApplicationRecord
     inverse_of: :registration_user,
     class_name: "Patient",
     foreign_key: :registration_user_id
-
   has_many :phone_number_authentications,
     through: :user_authentications,
     source: :authenticatable,
     source_type: "PhoneNumberAuthentication"
-
   has_many :email_authentications,
     through: :user_authentications,
     source: :authenticatable,
     source_type: "EmailAuthentication"
-
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
-
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-
+  has_many :accesses, dependent: :destroy
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
     class_name: "Patient",
@@ -53,7 +49,13 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
-
+  #
+  #
+  # Revive this validation once all users are migrated to the new permissions system:
+  #
+  # validates :access_level, presence: true, if: -> { email_authentication.present? }
+  #
+  #
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -67,11 +69,17 @@ class User < ApplicationRecord
     :otp_valid?,
     :facility_group,
     :password_digest, to: :phone_number_authentication, allow_nil: true
-
   delegate :email,
     :password,
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
+  delegate :accessible_organizations,
+    :accessible_facilities,
+    :accessible_facility_groups,
+    :can?,
+    :grant_access,
+    :access_tree,
+    :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
 
@@ -83,11 +91,19 @@ class User < ApplicationRecord
     email_authentications.first
   end
 
+  def user_access
+    UserAccess.new(self)
+  end
+
   def registration_facility_id
     registration_facility.id
   end
 
   alias facility registration_facility
+
+  def authorized_facility?(facility_id)
+    registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
+  end
 
   def access_token_valid?
     sync_approval_status_allowed?
@@ -176,11 +192,15 @@ class User < ApplicationRecord
   end
 
   def destroy_email_authentications
-    destroyable_email_authentications = email_authentications.load
+    destroyable_email_auths = email_authentications.load
 
     user_authentications.each(&:destroy)
-    destroyable_email_authentications.each(&:destroy)
+    destroyable_email_auths.each(&:destroy)
 
     true
+  end
+
+  def power_user?
+    power_user_access? && email_authentication.present?
   end
 end

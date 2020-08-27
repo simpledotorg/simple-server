@@ -2,11 +2,12 @@
 // stats
 //
 function statistics() {
-  return JSON.parse(document
-    .getElementById('statistics')
-    .attributes
-    .getNamedItem('data-statistics')
-    .value);
+  if(document.getElementById('statistics')) {
+    let statistics = document.getElementById('statistics');
+    return JSON.parse(statistics.attributes.getNamedItem('data-statistics').value);
+  } else {
+    return null;
+  }
 }
 
 function dailyStatistics() {
@@ -160,6 +161,10 @@ function refreshCarousel(slidePosition) {
 // loads at page refresh
 //
 window.onload = function () {
+  if(statistics() === null) {
+    return;
+  }
+
   window.lastSlidePositionForProgressCards = 1;
   refreshCarousel(window.lastSlidePositionForProgressCards)
 };
@@ -182,4 +187,32 @@ function filterDataByGender(tableName) {
   }
 
   selectedTableElement[0].style.display = 'inline-table';
+}
+
+//
+// Overlays
+//
+function openWindow(id, parentId) {
+  var element = document.getElementById(id);
+  element.style.display = 'block';
+
+  if (parentId) {
+    var parent = document.getElementById(parentId);
+    parent.style.display = 'none';
+    parent.style.height = '0';
+  }
+
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+function closeWindow(id, parentId) {
+  var element = document.getElementById(id);
+  element.style.display = 'none';
+
+  if (parentId) {
+    var parent = document.getElementById(parentId);
+    parent.style.display = 'block';
+    parent.style.height = 'auto';
+  }
 }

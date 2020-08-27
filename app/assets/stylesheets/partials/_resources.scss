@@ -3,21 +3,73 @@ Resources
 *****************/
 
 .page#resources {
-  .video-container {
-      position: relative;
-      padding-bottom: 56.25%;
-      padding-top: 30px; height: 0; overflow: hidden;
+  .resource-link {
+    position: relative;
+    padding-left: 60px;
+    margin: 8px 0;
+
+    span {
+      display: block;
+      color: #666;
+    }
+
+    i {
+      position: absolute;
+      left: 12px;
+      top: 8px;
+      font-size: 24px;
+    }
+
+    &.resource-presentation i {
+      color: Gold;
+    }
+
+    &.resource-doc i {
+      color: ForestGreen;
+      font-size: 28px;
+    }
+
+    &.resource-video i {
+      color: Red;
+      font-size: 28px;
+    }
+
+    a:hover {
+      text-decoration: none;
+    }
   }
 
-  .video-container iframe,
-  .video-container object,
-  .video-container embed {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+  .col-video {
+    margin: 16px 0;
+
+    strong {
+      display: block;
+      margin: 6px 0 0 0;
+    }
+
+    span {
+      display: block;
+      color: #999;
+      font-size: 85%;
+    }
+
+    .fa-youtube {
+      color: orangered;
+    }
+
+    a {
+      display: block;
+      position: relative;
+      padding: 4px 0 4px 28px;
+
+      i {
+        position: absolute;
+        left: 2px;
+        top: 7px;
+      }
+    }
   }
+
   div.question {
       margin-top: 2em;
       font-family: Roboto;
@@ -33,13 +85,5 @@ Resources
   h6.question {
       font-weight: bold;
       font-size: 110%;
-  }
-  .doc {
-      text-align: center;
-      padding-bottom: 2em;
-  }
-  .doc-download {
-      display: block;
-      margin-top: 8px;
   }
 }
