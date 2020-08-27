@@ -43,11 +43,31 @@ class UserAccess < Struct.new(:user)
   end
 
   def accessible_users(action)
-    User.nurses
+    return User.non_admins if user.power_user?
+
+    User.non_admins.where(registration_facility: accessible_facilities(action))
+  end
+
+  def deep_merge(other_hash)
+    self.merge(other_hash) do |key, oldval, newval|
+      oldval = oldval.to_hash if oldval.respond_to?(:to_hash)
+      newval = newval.to_hash if newval.respond_to?(:to_hash)
+      oldval.class.to_s == 'Hash' && newval.class.to_s == 'Hash' ? oldval.deep_merge(newval) : newval
+    end
   end
 
   def accessible_admins(action)
-    User.admins
+    return User.admins if user.power_user?
+    return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
+
+    admins =
+      User
+        .admins
+        .where(organization: user.organization)
+        .includes(:accesses)
+        .select { |admin| admin.accessible_facilities(:view).to_set.intersect?(accessible_facilities(:view).to_set) }
+
+    User.admins.where(id: admins)
   end
 
   def can?(action, model, record = nil)
@@ -63,9 +83,9 @@ class UserAccess < Struct.new(:user)
       when :facility_group
         can_access_record?(accessible_facility_groups(action), record)
       when :user
-        can_access_record?(accessible_users(:view), record)
+        can_access_record?(accessible_users(action), record)
       when :admin
-        can_access_record?(accessible_admins(:view), record)
+        can_access_record?(accessible_admins(action), record)
       else
         raise ArgumentError, "Access to #{model} is unsupported."
     end
@@ -134,6 +154,10 @@ class UserAccess < Struct.new(:user)
         .to_h
 
     {organizations: organization_tree}
+  end
+
+  def merge_access_tree
+
   end
 
   private

@@ -3,7 +3,7 @@ class AdminsController < AdminController
   include SearchHelper
 
   before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕set_admin, only: [:show, :edit], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   after_action :verify_policy_scoped, only: :index
@@ -14,7 +14,7 @@ class AdminsController < AdminController
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin)
-      admins = current_admin.accessible_admins(:view)
+      admins = current_admin.accessible_admins(:manage)
 
       @admins =
         if searching?
@@ -36,11 +36,13 @@ class AdminsController < AdminController
   end
 
   def show
+    @admin = AdminAccessPresenter.new(@admin)
   end
 
   def edit
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin, @admin)
+      @admin = AdminAccessPresenter.new(@admin)
     else
       authorize([:manage, :admin, current_admin])
     end
@@ -115,7 +117,7 @@ class AdminsController < AdminController
 
   def 🆕set_admin
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @admin = AdminAccessPresenter.new(User.find(params[:id]))
+      @admin = User.find(params[:id])
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin, @admin)
     end
   end

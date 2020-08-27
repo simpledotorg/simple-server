@@ -17,7 +17,7 @@ class AdminAccessPresenter < SimpleDelegator
   def editable_access_tree(editable_user)
     current_admin
       .access_tree(:manage, reveal_access: false)
-      .deep_merge(editable_user.access_tree(:view, reveal_access: true))
+      .deep_merge(editable_user.access_tree(:view, reveal_access: true)) { |_k, _v1, v2| v2 }
       .fetch(:organizations)
   end
 
