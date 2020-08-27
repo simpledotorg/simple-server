@@ -27,10 +27,8 @@ class AdminAccessPresenter < SimpleDelegator
 
     def initialize(admin, opts)
       @admin = admin
-      @page = opts[:page]
 
-      if @page.eql?(:edit)
-        raise ArgumentError, "user_being_edited must be supplied for edits" if opts[:user_being_edited].blank?
+      if opts[:user_being_edited].present?
         @user_being_edited = opts[:user_being_edited]
         @editing = true
       end
@@ -42,7 +40,7 @@ class AdminAccessPresenter < SimpleDelegator
         .map do |facility|
 
         info = {
-          can_access: can_access?(:facility, facility)
+          pre_selected: pre_selected?(:facility, facility)
         }
 
         [facility, OpenStruct.new(info)]
@@ -56,8 +54,9 @@ class AdminAccessPresenter < SimpleDelegator
         .map do |facility_group|
 
         info = {
+          accessible_facility_count: 1,
           total_facility_count: facility_group.facilities.size,
-          can_access: can_access?(:facility_group, facility_group)
+          pre_selected: pre_selected?(:facility_group, facility_group)
         }
 
         [facility_group, OpenStruct.new(info)]
@@ -70,8 +69,9 @@ class AdminAccessPresenter < SimpleDelegator
         .map do |organization|
 
         info = {
+          accessible_facility_group_count: facility_groups(organization).keys.size,
           total_facility_group_count: organization.facility_groups.size,
-          can_access: can_access?(:organization, organization)
+          pre_selected: pre_selected?(:organization, organization)
         }
 
         [organization, OpenStruct.new(info)]
@@ -87,11 +87,13 @@ class AdminAccessPresenter < SimpleDelegator
         admin.accessible_facilities(:view).includes(facility_group: :organization)
     end
 
-    def can_access?(model, record)
+    # if we're editing an existing user,
+    # we pre-apply their access to the records that the admin can see
+    def pre_selected?(model, record)
       if editing?
         user_being_edited.can?(:view, model, record)
       else
-        admin.can?(:view, model, record)
+        false
       end
     end
 

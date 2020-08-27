@@ -1,6 +1,6 @@
 <div class="card access-tree">
   <% current_admin
-         .access_tree(page: page, user_being_edited: user_being_edited)
+         .access_tree(user_being_edited: user_being_edited)
          .organizations
          .each do |organization, org_info| %>
 
@@ -9,10 +9,10 @@
         <div class="access-item organization">
           <%= access_checkbox(
                   form,
-                  "organizations",
+                  "organization",
                   organization,
                   page: page,
-                  checked: org_info.can_access
+                  checked: org_info.pre_selected
               ) %>
 
           <span class="access-ratio">
@@ -28,7 +28,7 @@
 
         <ul class="access-item-wrapper">
           <% current_admin
-                 .access_tree(page: page, user_being_edited: user_being_edited)
+                 .access_tree(user_being_edited: user_being_edited)
                  .facility_groups(organization)
                  .each do |facility_group, fg_info| %>
 
@@ -37,16 +37,16 @@
                 <span class="spacer"></span>
                 <%= access_checkbox(
                         form,
-                        "facility_groups",
+                        "facility_group",
                         facility_group,
                         page: page,
-                        checked: org_info.can_access) %>
+                        checked: org_info.pre_selected) %>
 
                 <span class="access-ratio collapsed">
                   <i class="fas fa-angle-down light"></i>
 
                   <%= access_fraction(
-                          "facilities",
+                          "facility",
                           fg_info.accessible_facility_count,
                           fg_info.total_facility_count) %>
                 </span>
@@ -54,7 +54,7 @@
 
               <ul class="access-item-wrapper collapsed">
                 <% current_admin
-                       .access_tree(page: page, user_being_edited: user_being_edited)
+                       .access_tree(user_being_edited: user_being_edited)
                        .facilities(facility_group)
                        .each do |facility, facility_info| %>
 
@@ -68,7 +68,7 @@
                               "facilities",
                               facility,
                               page: page,
-                              checked: facility_info.can_access) %>
+                              checked: facility_info.pre_selected) %>
                     </div>
                   </li>
                 <% end %>
