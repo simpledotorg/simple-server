@@ -10,7 +10,7 @@ module Reports
       @period = period
       @original_force_cache = RequestStore.store[:force_cache]
       RequestStore.store[:force_cache] = true
-      notifier.ping "#{self.class.name} Starting ..."
+      notify "#{self.class.name} Starting ..."
     end
 
     attr_reader :original_force_cache, :period
@@ -21,29 +21,37 @@ module Reports
 
     def call
       if Flipper.enabled?(:disable_region_cache_warmer)
-        notifier.ping "#{self.class.name} is disabled via Flipper! Bailing out early"
+        notify "#{self.class.name} is disabled via Flipper! Bailing out early"
         return
       end
 
-      notifier.ping "Starting FacilityGroup caching"
+      notify "Starting FacilityGroup caching"
       time = Benchmark.realtime {
         cache_facility_groups
       }
-      notifier.ping "Finished FacilityGroups caching in #{time.round} seconds."
+      notify "Finished FacilityGroups caching in #{time.round} seconds."
 
-      notifier.ping "Starting Facility caching."
+      notify "Starting Facility caching."
       time = Benchmark.realtime {
         cache_facilities
       }
       end_time = Time.current
       total_time = end_time - start_time
-      notifier.ping "Finished Facility caching in #{time.round} seconds, total cache time was #{total_time.round} seconds."
-      notifier.ping "#{self.class.name} All done!"
+      notify "Finished Facility caching in #{time.round} seconds, total cache time was #{total_time.round} seconds."
+      notify "#{self.class.name} All done!"
     ensure
       RequestStore.store[:force_cache] = original_force_cache
     end
 
     private
+
+    def environment
+      ENV["SIMPLE_SERVER_ENV"]
+    end
+
+    def notify(msg)
+      "#{environment} #{msg}"
+    end
 
     def cache_facility_groups
       FacilityGroup.all.each do |region|
