@@ -1,9 +1,9 @@
 module AdminAccessHelper
   def access_fraction(name, available, total)
     if available == total
-      "#{total} #{name}"
+      "#{total} #{name.pluralize(total)}"
     else
-      "#{available} / #{total} #{name}"
+      "#{available} / #{total} #{name.pluralize}"
     end
   end
 
