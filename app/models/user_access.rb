@@ -6,20 +6,20 @@ class UserAccess < Struct.new(:user)
       id: :viewer,
       name: "View: Everything",
       grant_access: [],
-      description: "Can view stuff"
+      description: "Can view patient data and all facility data"
     },
 
     manager: {
       id: :manager,
       name: "Manager",
       grant_access: [:viewer, :manager],
-      description: "Can manage stuff"
+      description: "Can manage facilities, admins, users and view everything"
     },
 
     power_user: {
       id: :power_user,
       name: "Power User",
-      description: "Can manage everything"
+      description: "Full-access to the entire system"
     }
   }.freeze
 
