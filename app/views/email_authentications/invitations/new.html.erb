@@ -1,5 +1,6 @@
-<h1><%= t "devise.invitations.new.header" %></h1>
+<%= javascript_include_tag "standalone/react_components" %>
 
+<h1><%= t "devise.invitations.new.header" %></h1>
 <%= react_component "InviteAdminForm",
                     organizations: policy_scope([:manage, :admin, Organization.all]),
                     facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
