@@ -103,7 +103,7 @@ class User < ApplicationRecord
 
   alias facility registration_facility
 
-  def teleconsultation_phone_number_with_isd
+  def full_teleconsultation_phone_number
     defaulted_teleconsult_number = teleconsultation_phone_number || phone_number
     Phonelib.parse(teleconsultation_isd_code + defaulted_teleconsult_number).full_e164
   end
