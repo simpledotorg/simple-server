@@ -14,6 +14,7 @@ class MyFacilitiesController < AdminController
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
+  before_action :set_last_updated_at
 
   def index
     @facilities = policy_scope([:manage, :facility, Facility])
@@ -89,6 +90,22 @@ class MyFacilitiesController < AdminController
   end
 
   private
+
+  def set_last_updated_at
+    last_updated_at =
+      begin
+        Time.parse(Rails.cache.fetch(Constants::MATVIEW_REFRESH_TIME_KEY))
+      rescue TypeError, ArgumentError
+        nil
+      end
+
+    @last_updated_at =
+      if last_updated_at.nil?
+        "unknown"
+      else
+        last_updated_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M%p")
+      end
+  end
 
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
