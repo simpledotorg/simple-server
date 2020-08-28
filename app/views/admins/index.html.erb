@@ -14,47 +14,40 @@
     </div>
   </nav>
 </div>
-
 <%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
-
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <% if @admins.exists? %>
     <% if searching? %>
       <span><%= search_entries_info(@admins) %></span>
     <% end %>
-
+    <div class="admin-list">
     <% @admins.each do |admin| %>
       <% if current_admin.can?(:manage, :admin, admin) %>
-        <%= link_to(admin_path(admin), class: "card btn btn-sm btn-outline-primary") do %>
-          <div class="row">
-            <div class="col col-md-2">
-              <h5>
-                <%= admin.full_name %>
+        <%= link_to(admin_path(admin), class: "admin-list-item") do %>
+            <div class="wrap-auto">
+              <h5 class="title">
+                <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
                 <% if admin.invited_to_sign_up? %>
                   <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
                 <% end %>
               </h5>
-
-              <div class="mt-2"><%= admin.email %></div>
+              <div class="email"><%= admin.email %></div>
             </div>
-
-            <div class="col-md-10 text-right">
-              <span><%= admin.role %></span>
+            <div class="text-right">
+              <span class="access"><%= UserAccess::LEVELS.fetch(admin.access_level.to_sym).fetch(:name) %></span>
             </div>
-          </div>
         <% end %>
       <% end %>
     <% end %>
+    </div>
   <% else %>
     <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
   <% end %>
-
 <% else %>
   <% if @admins.exists? %>
     <% if searching? %>
       <span><%= search_entries_info(@admins) %></span>
     <% end %>
-
     <% @admins.each do |admin| %>
       <div class="card" title="<%= admin.email %>">
         <div class="row">
@@ -68,11 +61,9 @@
             <% if admin.invited_to_sign_up? %>
               <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
             <% end %>
-
             <% if policy([:manage, :admin, admin]).edit? %>
               <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
             <% end %>
-
             <% if policy([:manage, :admin, admin]).destroy? %>
               <%= link_to(admin_path(admin), method: :delete, data: {confirm: "Are you sure you want to delete #{admin.email}?"}, class: "btn btn-sm btn-outline-danger") do %>
                 <i class="fas fa-trash-alt"></i>
@@ -86,6 +77,4 @@
     <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
   <% end %>
 <% end %>
-
 <%= paginate @admins %>
-

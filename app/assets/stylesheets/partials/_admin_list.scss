@@ -1,0 +1,59 @@
+.admin-list {
+  min-height: 460px;
+  background: white;
+  border-radius: 4px;
+
+  a.admin-list-item {
+    text-decoration: none;
+    display: flex;
+    width: 100%;
+    padding: 16px;
+    border-bottom: 1px solid #f0f2f5;
+
+    &:hover {
+      background: var(--light);
+      @include transition(0.4s);
+    }
+
+    .wrap-auto {
+      flex: auto;
+    }
+
+    .title {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      color: black;
+    }
+
+    .email {
+      color: #6c737a;
+      margin-top: 2px;
+      font-size: 14px;
+      font-weight: 200;
+    }
+
+    .role {
+      font-style: normal;
+      font-weight: normal;
+      color: #6c737a;
+    }
+
+    .access {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      color: #6c737a;
+      font-weight: 200;
+    }
+
+    .row {
+      display: flex;
+      .col {
+        flex: 1;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+    }
+  }
+}
