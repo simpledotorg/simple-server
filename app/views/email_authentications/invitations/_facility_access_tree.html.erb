@@ -1,0 +1,17 @@
+<ul class="access-item-wrapper collapsed">
+  <% tree.each do |facility, facility_info| %>
+    <li>
+      <div class="access-item collapsed">
+        <span class="spacer"></span>
+        <span class="spacer"></span>
+
+        <%= access_checkbox(
+                form,
+                "facilities",
+                facility,
+                page: page,
+                checked: facility_info.selected) %>
+      </div>
+    </li>
+  <% end %>
+</ul>

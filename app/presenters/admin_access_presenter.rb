@@ -20,22 +20,31 @@ class AdminAccessPresenter < SimpleDelegator
       .map { |_level, info| info.values_at(:name, :id) }
   end
 
-  def to_tree(depth)
+  def to_tree(user_being_edited: nil)
     if access_across_organizations?
-      organizations
+      {
+        data: organization_tree(user_being_edited: nil),
+        depth_level: :organization
+      }
     elsif access_across_facility_groups?
-      facility_groups
+      {
+        data: facility_group_tree(user_being_edited: nil),
+        depth_level: :facility_group
+      }
     else
-      facilities
+      {
+        data: facility_tree(user_being_edited: nil),
+        depth_level: :facility
+      }
     end
   end
 
   def access_across_organizations?
-    admin.accessible_facilities(:view).group_by(&:organization).keys > 1
+    accessible_facilities.group_by(&:organization).keys.length > 1
   end
 
   def access_across_facility_groups?
-    admin.accessible_facilities(:view).group_by(&:facility_groups).keys > 1
+    accessible_facilities.group_by(&:facility_group).keys.length > 1
   end
 
   memoize def facility_tree(user_being_edited: nil)
@@ -52,12 +61,11 @@ class AdminAccessPresenter < SimpleDelegator
 
   memoize def facility_group_tree(user_being_edited: nil)
     facility_tree(user_being_edited: user_being_edited)
-      .group_by { |_facility, info| info[:facility_group] }
+      .group_by { |_facility, info| info.facility_group }
       .map do |facility_group, facilities|
 
       info = {
         accessible_facility_count: facilities.length,
-        total_facility_count: facility_group.facilities.length,
         facilities: facilities,
         organization: facility_group.organization,
         full_access: accessible_facility_groups.include?(facility_group),
@@ -70,12 +78,11 @@ class AdminAccessPresenter < SimpleDelegator
 
   memoize def organization_tree(user_being_edited: nil)
     facility_group_tree(user_being_edited: user_being_edited)
-      .group_by { |_facility_group, info| info[:organization] }
+      .group_by { |_facility_group, info| info.organization }
       .map do |organization, facility_groups|
 
       info = {
-        accessible_facility_group_count: facility_groups.length,
-        total_facility_group_count: organization.facility_groups.length,
+        accessible_facility_count: facility_groups.sum { |_fg, info| info.accessible_facility_count },
         facility_groups: facility_groups,
         full_access: accessible_organizations.include?(organization),
         selected: selected?(user_being_edited, :organization_tree, organization)

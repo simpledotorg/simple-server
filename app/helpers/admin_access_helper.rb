@@ -1,5 +1,7 @@
 module AdminAccessHelper
   def access_fraction(name, available, total)
+    return "#{available} #{"facility".pluralize(available)}"
+
     if available == total
       "#{total} #{name.pluralize(total)}"
     else

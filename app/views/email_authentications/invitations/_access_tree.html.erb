@@ -1,75 +1,28 @@
-<div class="card access-tree">
-  <% current_admin
-         .organization_tree(user_being_edited: user_being_edited)
-         .each do |organization, org_info| %>
+<% tree.each do |organization, org_info| %>
+  <ul class="access-item-wrapper">
+    <li>
+      <div class="access-item organization">
+        <%= access_checkbox(
+                form,
+                "organization",
+                organization,
+                page: page,
+                checked: org_info.selected
+            ) %>
 
-    <ul class="access-item-wrapper">
-      <li>
-        <div class="access-item organization">
-          <%= access_checkbox(
-                  form,
-                  "organization",
-                  organization,
-                  page: page,
-                  checked: org_info.selected
-              ) %>
-
-          <span class="access-ratio">
+        <span class="access-ratio">
             <i class="fas fa-angle-down light"></i>
 
-            <%= access_fraction(
-                    "facility groups",
-                    org_info.accessible_facility_group_count,
-                    org_info.total_facility_group_count
-                ) %>
+          <%= access_fraction(
+                  "facility groups",
+                  org_info.accessible_facility_count,
+                  org_info.total_facility_group_count
+              ) %>
           </span>
-        </div>
+      </div>
 
-        <ul class="access-item-wrapper">
-          <% org_info.facility_groups.each do |facility_group, fg_info| %>
-
-            <li>
-              <div class="access-item collapsed">
-                <span class="spacer"></span>
-                <%= access_checkbox(
-                        form,
-                        "facility_group",
-                        facility_group,
-                        page: page,
-                        checked: org_info.selected) %>
-
-                <span class="access-ratio collapsed">
-                  <i class="fas fa-angle-down light"></i>
-
-                  <%= access_fraction(
-                          "facility",
-                          fg_info.accessible_facility_count,
-                          fg_info.total_facility_count) %>
-                </span>
-              </div>
-
-              <ul class="access-item-wrapper collapsed">
-                <% fg_info.facilities.each do |facility, facility_info| %>
-
-                  <li>
-                    <div class="access-item collapsed">
-                      <span class="spacer"></span>
-                      <span class="spacer"></span>
-
-                      <%= access_checkbox(
-                              form,
-                              "facilities",
-                              facility,
-                              page: page,
-                              checked: facility_info.selected) %>
-                    </div>
-                  </li>
-                <% end %>
-              </ul>
-            </li>
-          <% end %>
-        </ul>
-      </li>
-    </ul>
-  <% end %>
-</div>
+      <%= render "email_authentications/invitations/facility_group_access_tree",
+          tree: org_info.facility_groups, page: page, form: form %>
+    </li>
+  </ul>
+<% end %>

@@ -1,0 +1,27 @@
+<ul class="access-item-wrapper">
+  <% tree.each do |facility_group, fg_info| %>
+    <li>
+      <div class="access-item collapsed">
+        <span class="spacer"></span>
+        <%= access_checkbox(
+                form,
+                "facility_group",
+                facility_group,
+                page: page,
+                checked: fg_info.selected) %>
+
+        <span class="access-ratio collapsed">
+                  <i class="fas fa-angle-down light"></i>
+
+          <%= access_fraction(
+                  "facility",
+                  fg_info.accessible_facility_count,
+                  fg_info.total_facility_count) %>
+                </span>
+      </div>
+
+      <%= render "email_authentications/invitations/facility_access_tree",
+          tree: fg_info.facilities, page: page, form: form %>
+    </li>
+  <% end %>
+</ul>
