@@ -12,8 +12,10 @@ class NoBPMeasureService
   attr_reader :region
 
   def call
-    periods.each_with_object(Hash.new(0)) do |period, result|
-      result[period] = visited_without_bp_taken_count(period)
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
+      periods.each_with_object(Hash.new(0)) do |period, result|
+        result[period] = visited_without_bp_taken_count(period)
+      end
     end
   end
 
@@ -70,7 +72,7 @@ class NoBPMeasureService
   end
 
   def periods_cache_key
-    "#{periods.begin.value}/#{periods.end.value}"
+    "#{periods.begin.type}_periods/#{periods.begin.value}/#{periods.end.value}"
   end
 
   def force_cache?

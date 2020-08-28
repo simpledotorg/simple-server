@@ -67,4 +67,14 @@ RSpec.describe NoBPMeasureService do
       expect(count).to eq(0)
     end
   end
+
+  it "has a reasonable cache key" do
+    july_2018 = Time.parse("July 1st, 2018 00:00:00+00:00")
+    july_2020 = Time.parse("July 1st, 2020 00:00:00+00:00")
+
+    periods = Period.month(july_2018)..Period.month(july_2020)
+    service = NoBPMeasureService.new(facility_group_1, periods: periods)
+    expected_key = "NoBPMeasureService/FacilityGroup/#{facility_group_1.id}/month_periods/#{july_2018.to_date}/#{july_2020.to_date}"
+    expect(service.send(:cache_key)).to eq(expected_key)
+  end
 end
