@@ -228,7 +228,7 @@ class Api::V4::Models
     end
 
     def app_user_capability_values
-      {type: :string, enum: User::CAPABILITY_VALUES.keys}
+      {type: :string, enum: User::CAPABILITY_VALUES.values}
     end
 
     def app_user_capabilities

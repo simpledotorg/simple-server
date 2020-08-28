@@ -8,8 +8,8 @@ class User < ApplicationRecord
 
   APP_USER_CAPABILITIES = [:can_teleconsult].freeze
   CAPABILITY_VALUES = {
-    yes: "yes",
-    no: "no"
+    true => "yes",
+    false => "no"
   }.freeze
 
   enum sync_approval_status: {
@@ -21,6 +21,10 @@ class User < ApplicationRecord
 
   def can_teleconsult?
     teleconsultation_facilities.any?
+  end
+
+  def app_capabilities
+    {can_teleconsult: CAPABILITY_VALUES[can_teleconsult?]}
   end
 
   belongs_to :organization, optional: true
