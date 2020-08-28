@@ -40,6 +40,8 @@ task refresh_materialized_db_views: :environment do
       benchmark("refresh_materialized_views PatientRegistrationsPerDayPerFacility") do
         PatientRegistrationsPerDayPerFacility.refresh
       end
+
+      Rails.cache.write(Constants::MATVIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz).iso8601)
     end
   end
 end
