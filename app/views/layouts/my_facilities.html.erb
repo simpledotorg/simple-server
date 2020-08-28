@@ -19,8 +19,8 @@
         <%= link_to "Missed Visits", my_facilities_missed_visits_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
       </div>
-
-      <div class="updated-date">Updated: <span><%= @last_updated_at %></span></div>
+      
+      <div class="updated-date pb-4">Date last updated: <span><%= @last_updated_at %></span></div>
     </div>
     <% unless request.path == my_facilities_overview_path %>
       <div class="mt-0 mb-4 active-filters-mobile">
@@ -104,6 +104,7 @@
   <div class="row">
     <div class="col-lg-2 pl-lg-0 desktop">
       <nav class="secondary-nav">
+        <h4 class="pl-2 mt-3">My Facilities</h4>
         <%= link_to 'Overview', my_facilities_overview_path,
             class: "nav-link #{active_action?("index")}" %>
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
@@ -115,7 +116,7 @@
       </nav>
 
       <% unless request.path == my_facilities_overview_path %>
-        <section id="facility-filters" class="secondary-nav-filters">
+        <section id="facility-filters" class="secondary-nav-filters mt-5">
           <h4>Facility Filters</h4>
           <div class="dropdown show">
             <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -148,8 +149,10 @@
           </form>
         </section>
       <% end %>
-
-      <div class="updated-date">Updated: <span><%= @last_updated_at %></span></div>
+      <div class="updated-date mt-5">
+          <h4>Data last updated</h4>
+          <span><%= @last_updated_at %></span>
+      </div>
     </div>
     <div class="col-lg-10 pr-lg-0">
       <%= yield %>
