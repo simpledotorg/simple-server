@@ -54,6 +54,20 @@
         @include transition(0.1s);
       }
 
+      .dropdown {
+        padding: 10px;
+        margin-left: 5px;
+        margin-right: -10px;
+
+        i {
+          font-size: 15px;
+        }
+
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+
       .spacer {
         padding-left: 20px;
       }

@@ -1,53 +1,59 @@
 <div class="card access-tree">
-  <% access_tree.each do |organization, organization_metadata| %>
+    <% access_tree.each do |organization, organization_metadata| %>
     <ul class="access-item-wrapper">
-      <li>
-        <div class="access-item organization">
-          <%= access_checkbox(form, "organizations[]", organization) %>
+        <li>
+            <div class="access-item organization">
+                <div class="dropdown">
+                    <i class="fas fa-angle-down light"></i>
+                </div>
+                <%= access_checkbox(form, "organizations[]", organization) %>
 
-          <span class="access-ratio">
-            <i class="fas fa-angle-down light"></i>
+                <span class="access-ratio">
 
-            <%= access_fraction(
+                    <%= access_fraction(
                     "facility groups",
                     organization_metadata[:facility_groups].keys.size,
                     organization_metadata[:total_facility_groups]) %>
-          </span>
-        </div>
+                </span>
+            </div>
 
-        <ul class="access-item-wrapper">
-          <% organization_metadata[:facility_groups].each do |facility_group, facility_group_metadata| %>
-            <li>
-              <div class="access-item collapsed">
-                <span class="spacer"></span>
-                <%= access_checkbox(form, "facility_groups[]", facility_group) %>
+            <ul class="access-item-wrapper">
+                <% organization_metadata[:facility_groups].each do |facility_group, facility_group_metadata| %>
+                <li>
+                    <div class="access-item collapsed">
+                        <span class="spacer"></span>
+                        <div class="dropdown">
+                            <i class="fas fa-angle-down light"></i>
+                        </div>
+                        <%= access_checkbox(form, "facility_groups[]", facility_group) %>
 
-                <span class="access-ratio collapsed">
-                  <i class="fas fa-angle-down light"></i>
+                        <span class="access-ratio collapsed">
 
-                  <%= access_fraction(
+                            <%= access_fraction(
                           "facilities",
                           facility_group_metadata[:facilities].keys.size,
                           facility_group_metadata[:total_facilities]) %>
-                </span>
-              </div>
-
-              <ul class="access-item-wrapper collapsed">
-                <% facility_group_metadata[:facilities].each do |facility, _facility_metadata| %>
-                  <li>
-                    <div class="access-item collapsed">
-                      <span class="spacer"></span>
-                      <span class="spacer"></span>
-
-                      <%= access_checkbox(form, "facilities[]", facility) %>
+                        </span>
                     </div>
-                  </li>
+
+                    <ul class="access-item-wrapper collapsed">
+                        <% facility_group_metadata[:facilities].each do |facility, _facility_metadata| %>
+                        <li>
+                            <div class="access-item collapsed">
+                                <span class="spacer"></span>
+                                <span class="spacer"></span>
+                                <div class="dropdown hidden">
+                                    <i class="fas fa-angle-down light"></i>
+                                </div>
+                                <%= access_checkbox(form, "facilities[]", facility) %>
+                            </div>
+                        </li>
+                        <% end %>
+                    </ul>
+                </li>
                 <% end %>
-              </ul>
-            </li>
-          <% end %>
-        </ul>
-      </li>
+            </ul>
+        </li>
     </ul>
-  <% end %>
+    <% end %>
 </div>
