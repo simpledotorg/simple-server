@@ -27,10 +27,7 @@
         </div>
 
         <ul class="access-item-wrapper">
-          <% current_admin
-                 .access_tree(user_being_edited: user_being_edited)
-                 .facility_groups(organization)
-                 .each do |facility_group, fg_info| %>
+          <% org_info.facility_groups.each do |facility_group, fg_info| %>
 
             <li>
               <div class="access-item collapsed">
@@ -53,10 +50,7 @@
               </div>
 
               <ul class="access-item-wrapper collapsed">
-                <% current_admin
-                       .access_tree(user_being_edited: user_being_edited)
-                       .facilities(facility_group)
-                       .each do |facility, facility_info| %>
+                <% fg_info.facilities.each do |facility, facility_info| %>
 
                   <li>
                     <div class="access-item collapsed">

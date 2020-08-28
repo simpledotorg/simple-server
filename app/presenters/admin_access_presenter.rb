@@ -19,7 +19,7 @@ class AdminAccessPresenter < SimpleDelegator
   end
 
   def access_tree(opts)
-    AccessTree.new(admin, opts)
+    @access_tree ||= AccessTree.new(admin, opts)
   end
 
   class AccessTree
@@ -36,7 +36,7 @@ class AdminAccessPresenter < SimpleDelegator
 
     def facilities(facility_group)
       accessible_facilities
-        .where(facility_group: facility_group)
+        .select { |f| f.facility_group == facility_group }
         .map do |facility|
 
         info = {
@@ -48,30 +48,27 @@ class AdminAccessPresenter < SimpleDelegator
     end
 
     def facility_groups(organization)
-      accessible_facilities
-        .where(facility_groups: {organization: organization})
-        .flat_map(&:facility_group)
-        .map do |facility_group|
+        accessible_facility_groups
+          .select { |f| f.organization == organization }
+          .map do |facility_group|
+          info = {
+            accessible_facility_count: facilities(facility_group).keys.size,
+            total_facility_count: facility_group.facilities.length,
+            pre_selected: pre_selected?(:facility_group, facility_group),
+            facilities: facilities(facility_group)
+          }
 
-        info = {
-          accessible_facility_count: 1,
-          total_facility_count: facility_group.facilities.size,
-          pre_selected: pre_selected?(:facility_group, facility_group)
-        }
-
-        [facility_group, OpenStruct.new(info)]
-      end.to_h
+          [facility_group, OpenStruct.new(info)]
+        end.to_h
     end
 
     def organizations
-      accessible_facilities
-        .flat_map(&:organization)
-        .map do |organization|
-
+      accessible_organizations.map do |organization|
         info = {
           accessible_facility_group_count: facility_groups(organization).keys.size,
-          total_facility_group_count: organization.facility_groups.size,
-          pre_selected: pre_selected?(:organization, organization)
+          total_facility_group_count: organization.facility_groups.length,
+          pre_selected: pre_selected?(:organization, organization),
+          facility_groups: facility_groups(organization)
         }
 
         [organization, OpenStruct.new(info)]
@@ -82,9 +79,16 @@ class AdminAccessPresenter < SimpleDelegator
 
     attr_reader :user_being_edited
 
+    def accessible_organizations
+      @accessible_organizations ||= accessible_facilities.flat_map(&:organization)
+    end
+
     def accessible_facilities
-      @accessible_facilities ||=
-        admin.accessible_facilities(:view).includes(facility_group: :organization)
+      @accessible_facilities ||= admin.accessible_facilities(:view).includes(facility_group: :organization)
+    end
+
+    def accessible_facility_groups
+      @accessible_facility_groups ||= accessible_facilities.flat_map(&:facility_group)
     end
 
     # if we're editing an existing user,
