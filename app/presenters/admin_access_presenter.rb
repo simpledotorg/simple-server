@@ -1,6 +1,8 @@
 require "ostruct"
 
 class AdminAccessPresenter < SimpleDelegator
+  include Memery
+
   attr_reader :admin
 
   def initialize(admin)
@@ -18,91 +20,78 @@ class AdminAccessPresenter < SimpleDelegator
       .map { |_level, info| info.values_at(:name, :id) }
   end
 
-  def access_tree(opts)
-    @access_tree ||= AccessTree.new(admin, opts)
+  def to_tree(depth)
+    if access_across_organizations?
+      organizations
+    elsif access_across_facility_groups?
+      facility_groups
+    else
+      facilities
+    end
   end
 
-  class AccessTree
-    attr_reader :admin
+  def access_across_organizations?
+    admin.accessible_facilities(:view).group_by(&:organization).keys > 1
+  end
 
-    def initialize(admin, opts)
-      @admin = admin
+  def access_across_facility_groups?
+    admin.accessible_facilities(:view).group_by(&:facility_groups).keys > 1
+  end
 
-      if opts[:user_being_edited].present?
-        @user_being_edited = opts[:user_being_edited]
-        @editing = true
-      end
-    end
+  memoize def facility_tree(user_being_edited: nil)
+    accessible_facilities.map do |facility|
+      info = {
+        full_access: admin.can?(:view, :facility, facility),
+        selected: selected?(user_being_edited, :facility_tree, facility)
+      }
 
-    def facilities(facility_group)
-      accessible_facilities
-        .select { |f| f.facility_group == facility_group }
-        .map do |facility|
+      [facility, OpenStruct.new(info)]
+    end.to_h
+  end
 
-        info = {
-          pre_selected: pre_selected?(:facility, facility)
-        }
+  memoize def facility_group_tree(user_being_edited: nil)
+    accessible_facilities.flat_map(&:facility_group).map do |facility_group|
+      facility_tree = facility_tree(user_being_edited: user_being_edited).select { |facility, _| facility.facility_group == facility_group }
 
-        [facility, OpenStruct.new(info)]
-      end.to_h
-    end
+      info = {
+        accessible_facility_count: facility_tree.keys.size,
+        total_facility_count: facility_group.facilities.length,
+        facilities: facility_tree,
+        full_access: admin.can?(:view, :facility_group, facility_group),
+        selected: selected?(user_being_edited, :facility_group_tree, facility_group)
+      }
 
-    def facility_groups(organization)
-        accessible_facility_groups
-          .select { |f| f.organization == organization }
-          .map do |facility_group|
-          info = {
-            accessible_facility_count: facilities(facility_group).keys.size,
-            total_facility_count: facility_group.facilities.length,
-            pre_selected: pre_selected?(:facility_group, facility_group),
-            facilities: facilities(facility_group)
-          }
+      [facility_group, OpenStruct.new(info)]
+    end.to_h
+  end
 
-          [facility_group, OpenStruct.new(info)]
-        end.to_h
-    end
+  memoize def organization_tree(user_being_edited: nil)
+    accessible_facilities.flat_map(&:organization).map do |organization|
+      facility_group_tree = facility_group_tree(user_being_edited: user_being_edited).select { |fg, _| fg.organization == organization }
 
-    def organizations
-      accessible_organizations.map do |organization|
-        info = {
-          accessible_facility_group_count: facility_groups(organization).keys.size,
-          total_facility_group_count: organization.facility_groups.length,
-          pre_selected: pre_selected?(:organization, organization),
-          facility_groups: facility_groups(organization)
-        }
+      info = {
+        accessible_facility_group_count: facility_group_tree.keys.size,
+        total_facility_group_count: organization.facility_groups.length,
+        facility_groups: facility_group_tree,
+        full_access: admin.can?(:view, :organization, organization),
+        selected: selected?(user_being_edited, :organization_tree, organization)
+      }
 
-        [organization, OpenStruct.new(info)]
-      end.to_h
-    end
+      [organization, OpenStruct.new(info)]
+    end.to_h
+  end
 
-    private
+  private
 
-    attr_reader :user_being_edited
+  attr_reader :user_being_edited
 
-    def accessible_organizations
-      @accessible_organizations ||= accessible_facilities.flat_map(&:organization)
-    end
+  def selected?(user_being_edited, resource_tree, record)
+    user_being_edited &&
+      user_being_edited.public_send(resource_tree).key?(record) &&
+      user_being_edited.public_send(resource_tree).dig(record, :full_access)
+  end
 
-    def accessible_facilities
-      @accessible_facilities ||= admin.accessible_facilities(:view).includes(facility_group: :organization)
-    end
-
-    def accessible_facility_groups
-      @accessible_facility_groups ||= accessible_facilities.flat_map(&:facility_group)
-    end
-
-    # if we're editing an existing user,
-    # we pre-apply their access to the records that the admin can see
-    def pre_selected?(model, record)
-      if editing?
-        user_being_edited.can?(:view, model, record)
-      else
-        false
-      end
-    end
-
-    def editing?
-      @editing
-    end
+  def accessible_facilities
+    @accessible_facilities ||= admin.accessible_facilities(:view).includes(facility_group: :organization)
   end
 end

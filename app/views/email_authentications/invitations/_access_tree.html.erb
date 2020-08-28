@@ -1,7 +1,6 @@
 <div class="card access-tree">
   <% current_admin
-         .access_tree(user_being_edited: user_being_edited)
-         .organizations
+         .organization_tree(user_being_edited: user_being_edited)
          .each do |organization, org_info| %>
 
     <ul class="access-item-wrapper">
@@ -12,7 +11,7 @@
                   "organization",
                   organization,
                   page: page,
-                  checked: org_info.pre_selected
+                  checked: org_info.selected
               ) %>
 
           <span class="access-ratio">
@@ -37,7 +36,7 @@
                         "facility_group",
                         facility_group,
                         page: page,
-                        checked: org_info.pre_selected) %>
+                        checked: org_info.selected) %>
 
                 <span class="access-ratio collapsed">
                   <i class="fas fa-angle-down light"></i>
@@ -62,7 +61,7 @@
                               "facilities",
                               facility,
                               page: page,
-                              checked: facility_info.pre_selected) %>
+                              checked: facility_info.selected) %>
                     </div>
                   </li>
                 <% end %>
