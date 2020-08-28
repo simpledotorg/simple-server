@@ -23,6 +23,18 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     end
   end
 
+  before do
+    notifier = object_double(Slack::Notifier.new("fake_url"))
+    allow(notifier).to receive(:ping)
+    allow(Reports::RegionCacheWarmer).to receive(:create_slack_notifier).and_return(notifier)
+  end
+
+  it "skips caching if disabled via Flipper" do
+    Flipper.enable(:disable_region_cache_warmer)
+    expect(Reports::RegionService).to receive(:new).never
+    Reports::RegionCacheWarmer.new
+  end
+
   it "sets force_cache to true on creation" do
     expect(RequestStore.store[:force_cache]).to be_nil
     Reports::RegionCacheWarmer.new

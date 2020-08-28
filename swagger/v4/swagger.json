@@ -1145,6 +1145,9 @@
               ]
             }
           }
+        },
+        "teleconsultation_phone_number": {
+          "$ref": "#/definitions/non_empty_string"
         }
       },
       "required": [

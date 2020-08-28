@@ -23,6 +23,29 @@ RSpec.describe User, type: :model do
     }
   end
 
+  describe "#full_teleconsultation_phone_number" do
+    it "returns the teleconsultation phone number if its present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = Rails.application.config.country["sms_country_code"]
+      user = create(:user, teleconsultation_phone_number: phone_number, teleconsultation_isd_code: isd_code)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+
+    it "defaults to phone number if its not present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = Rails.application.config.country["sms_country_code"]
+      user = create(:user,
+        teleconsultation_phone_number: nil,
+        teleconsultation_isd_code: isd_code,
+        phone_number: phone_number)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+  end
+
   describe "User Access (permissions)" do
     it { should delegate_method(:accessible_organizations).to(:user_access) }
     it { should delegate_method(:accessible_facility_groups).to(:user_access) }
