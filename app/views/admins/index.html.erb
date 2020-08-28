@@ -20,10 +20,10 @@
     <% if searching? %>
       <span><%= search_entries_info(@admins) %></span>
     <% end %>
-    <div class="admin-list">
-    <% @admins.each do |admin| %>
-      <% if current_admin.can?(:manage, :admin, admin) %>
-        <%= link_to(admin_path(admin), class: "admin-list-item") do %>
+    <div class="admin-list mb-5">
+      <% @admins.each do |admin| %>
+        <% if current_admin.can?(:manage, :admin, admin) %>
+          <%= link_to(admin_path(admin), class: "admin-list-item") do %>
             <div class="wrap-auto">
               <h5 class="title">
                 <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
@@ -36,9 +36,9 @@
             <div class="text-right">
               <span class="access"><%= UserAccess::LEVELS.fetch(admin.access_level.to_sym).fetch(:name) %></span>
             </div>
+          <% end %>
         <% end %>
       <% end %>
-    <% end %>
     </div>
   <% else %>
     <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
@@ -77,4 +77,5 @@
     <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
   <% end %>
 <% end %>
+
 <%= paginate @admins %>

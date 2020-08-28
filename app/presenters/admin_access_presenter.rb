@@ -41,7 +41,8 @@ class AdminAccessPresenter < SimpleDelegator
   memoize def facility_tree(user_being_edited: nil)
     accessible_facilities.map do |facility|
       info = {
-        full_access: admin.can?(:view, :facility, facility),
+        facility_group: facility.facility_group,
+        full_access: true,
         selected: selected?(user_being_edited, :facility_tree, facility)
       }
 
@@ -50,14 +51,16 @@ class AdminAccessPresenter < SimpleDelegator
   end
 
   memoize def facility_group_tree(user_being_edited: nil)
-    accessible_facilities.flat_map(&:facility_group).map do |facility_group|
-      facility_tree = facility_tree(user_being_edited: user_being_edited).select { |facility, _| facility.facility_group == facility_group }
+    facility_tree(user_being_edited: user_being_edited)
+      .group_by { |_facility, info| info[:facility_group] }
+      .map do |facility_group, facilities|
 
       info = {
-        accessible_facility_count: facility_tree.keys.size,
+        accessible_facility_count: facilities.length,
         total_facility_count: facility_group.facilities.length,
-        facilities: facility_tree,
-        full_access: admin.can?(:view, :facility_group, facility_group),
+        facilities: facilities,
+        organization: facility_group.organization,
+        full_access: accessible_facility_groups.include?(facility_group),
         selected: selected?(user_being_edited, :facility_group_tree, facility_group)
       }
 
@@ -66,14 +69,15 @@ class AdminAccessPresenter < SimpleDelegator
   end
 
   memoize def organization_tree(user_being_edited: nil)
-    accessible_facilities.flat_map(&:organization).map do |organization|
-      facility_group_tree = facility_group_tree(user_being_edited: user_being_edited).select { |fg, _| fg.organization == organization }
+    facility_group_tree(user_being_edited: user_being_edited)
+      .group_by { |_facility_group, info| info[:organization] }
+      .map do |organization, facility_groups|
 
       info = {
-        accessible_facility_group_count: facility_group_tree.keys.size,
+        accessible_facility_group_count: facility_groups.length,
         total_facility_group_count: organization.facility_groups.length,
-        facility_groups: facility_group_tree,
-        full_access: admin.can?(:view, :organization, organization),
+        facility_groups: facility_groups,
+        full_access: accessible_organizations.include?(organization),
         selected: selected?(user_being_edited, :organization_tree, organization)
       }
 
@@ -86,12 +90,21 @@ class AdminAccessPresenter < SimpleDelegator
   attr_reader :user_being_edited
 
   def selected?(user_being_edited, resource_tree, record)
+    return true if user_being_edited == admin
+
     user_being_edited &&
-      user_being_edited.public_send(resource_tree).key?(record) &&
       user_being_edited.public_send(resource_tree).dig(record, :full_access)
   end
 
-  def accessible_facilities
-    @accessible_facilities ||= admin.accessible_facilities(:view).includes(facility_group: :organization)
+  memoize def accessible_facility_groups
+    admin.accessible_facility_groups(:view)
+  end
+
+  memoize def accessible_facilities
+    admin.accessible_facilities(:view).includes(facility_group: :organization)
+  end
+
+  memoize def accessible_organizations
+    admin.accessible_organizations(:view)
   end
 end

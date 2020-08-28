@@ -163,6 +163,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
+    flamegraph (0.9.5)
     flipper (0.17.2)
     flipper-active_record (0.17.2)
       activerecord (>= 4.2, < 7)
@@ -253,6 +254,7 @@ GEM
       mimemagic (~> 0.3.2)
     memery (1.3.0)
       ruby2_keywords (~> 0.0.2)
+    memory_profiler (0.9.14)
     method_source (1.0.0)
     mimemagic (0.3.5)
     mini_mime (1.0.2)
@@ -488,6 +490,7 @@ GEM
       net-ssh (>= 2.8.0)
     sshkit-interactive (0.3.0)
       sshkit (~> 1.12)
+    stackprof (0.2.15)
     standard (0.5.1)
       rubocop (~> 0.89.1)
       rubocop-performance (~> 1.7.1)
@@ -566,6 +569,7 @@ DEPENDENCIES
   factory_bot_rails (~> 4.8)
   faker
   fakeredis
+  flamegraph
   flipper
   flipper-active_record
   flipper-ui
@@ -584,6 +588,7 @@ DEPENDENCIES
   listen (>= 3.0.5, < 3.2)
   lodash-rails
   memery
+  memory_profiler
   newrelic_rpm
   parallel_tests
   passenger
@@ -616,6 +621,7 @@ DEPENDENCIES
   simplecov
   spring
   spring-commands-rspec
+  stackprof
   standard
   strong_password (~> 0.0.8)
   timecop (~> 0.9.0)
