@@ -7,7 +7,7 @@
                 :organizations,
                 organization,
                 page: page,
-                checked: page.eql?(:edit) && user_being_edited.organization_tree.dig(organization, :full_access)
+                checked: page.eql?(:edit) && user_being_edited.visible?(:organization, organization)
             ) %>
 
         <span class="access-ratio">

@@ -11,7 +11,7 @@
                 :facility_groups,
                 facility_group,
                 page: page,
-                checked: page.eql?(:edit) && user_being_edited.facility_group_tree.dig(facility_group, :full_access)
+                checked: page.eql?(:edit) && user_being_edited.visible?(:facility_group, facility_group)
             ) %>
 
         <span class="access-ratio collapsed">

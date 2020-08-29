@@ -16,8 +16,8 @@
               <%= form.check_box :select_all_facilities, id: "select_all_facilities" %>
             </div>
 
-            <% access_tree = current_admin.access_tree %>
-            <%= render current_admin.access_tree_to_partial(access_tree),
+            <% access_tree = current_admin.visible_access_tree %>
+            <%= render access_tree[:render_partial],
                 tree: access_tree[:data],
                 user_being_edited: nil,
                 initial_tree_depth: 0,

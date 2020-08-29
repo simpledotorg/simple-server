@@ -27,8 +27,8 @@
 
   <div id="facility-access">
     <div class="card access-tree">
-      <% access_tree = @admin.access_tree %>
-      <%= render @admin.access_tree_to_partial(access_tree),
+      <% access_tree = @admin.visible_access_tree %>
+      <%= render access_tree[:render_partial],
           tree: access_tree[:data],
           user_being_edited: nil,
           initial_tree_depth: 0,

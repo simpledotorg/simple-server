@@ -11,7 +11,7 @@
                 :facilities,
                 facility,
                 page: page,
-                checked: page.eql?(:edit) && user_being_edited.facility_tree.dig(facility, :full_access)
+                checked: page.eql?(:edit) && user_being_edited.visible?(:facility, facility)
             ) %>
       </div>
     </li>
