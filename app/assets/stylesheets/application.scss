@@ -26,6 +26,7 @@ body {
     font-size: 15px;
     font-family: $font-condensed;
     background: $grey-lightest;
+    overflow: scroll;
 }
 
 h1, h1.btn {
