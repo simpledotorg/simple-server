@@ -10,6 +10,10 @@
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
           <div class="card access-tree">
+            <div class="select-all-access-items">
+              <%= form.check_box :select_all_facilities, id: "select_all_facilities" %>
+            </div>
+
             <% access_tree = current_admin.access_tree(user_being_edited: nil) %>
             <%= render current_admin.access_tree_to_partial(access_tree),
                 tree: access_tree[:data],
