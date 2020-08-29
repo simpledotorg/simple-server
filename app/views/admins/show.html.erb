@@ -27,9 +27,10 @@
 
   <div id="facility-access">
     <div class="card access-tree">
-      <% access_tree = @admin.access_tree(user_being_edited: nil) %>
+      <% access_tree = @admin.access_tree %>
       <%= render @admin.access_tree_to_partial(access_tree),
           tree: access_tree[:data],
+          user_being_edited: nil,
           initial_tree_depth: 0,
           page: :show,
           form: nil %>

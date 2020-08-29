@@ -4,25 +4,24 @@
       <div class="access-item organization">
         <%= access_checkbox(
                 form,
-                "organization",
+                :organizations,
                 organization,
                 page: page,
-                checked: org_info.selected
+                checked: page.eql?(:edit) && user_being_edited.organization_tree.dig(organization, :full_access)
             ) %>
 
         <span class="access-ratio">
-            <i class="fas fa-angle-down light"></i>
-
-          <%= access_fraction(
-                  "facility groups",
-                  org_info.accessible_facility_count,
-                  org_info.total_facility_group_count
-              ) %>
+          <i class="fas fa-angle-down light"></i>
+          <%= access_fraction("facility groups", org_info[:accessible_facility_count], 0) %>
           </span>
       </div>
 
       <%= render "email_authentications/invitations/facility_group_access_tree",
-          tree: org_info.facility_groups, page: page, form: form, initial_tree_depth: initial_tree_depth + 1 %>
+          tree: org_info[:facility_groups],
+          page: page,
+          form: form,
+          user_being_edited: user_being_edited,
+          initial_tree_depth: initial_tree_depth + 1 %>
     </li>
   </ul>
 <% end %>

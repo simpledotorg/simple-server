@@ -20,10 +20,10 @@ module AdminAccessHelper
       id: resource.id,
       class: "access-input",
       label: resource.name.to_s,
-      checked: page.eql?(:edit) && checked
+      checked: checked
     }
 
-    form.check_box("#{name}[]", opts, resource.id, nil)
+    form.check_box("#{name.to_s}[]", opts, resource.id, nil)
   end
 
   def access_resource_label(resource)

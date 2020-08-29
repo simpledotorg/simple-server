@@ -3,6 +3,12 @@ require "ostruct"
 class AdminAccessPresenter < SimpleDelegator
   include Memery
 
+  DEPTH_LEVEL_TO_PARTIAL = {
+    organization: "email_authentications/invitations/access_tree",
+    facility_group: "email_authentications/invitations/facility_group_access_tree",
+    facility: "email_authentications/invitations/facility_access_tree"
+  }.freeze
+
   attr_reader :admin
 
   def initialize(admin)
@@ -20,108 +26,91 @@ class AdminAccessPresenter < SimpleDelegator
       .map { |_level, info| info.values_at(:name, :id) }
   end
 
-  def access_tree(user_being_edited: nil)
-    if access_across_organizations?
+  def access_tree_to_partial(access_tree)
+    DEPTH_LEVEL_TO_PARTIAL.fetch(access_tree.fetch(:depth_level))
+  end
+
+  def access_tree
+    if admin.access_across_organizations?(:view)
       {
-        data: organization_tree(user_being_edited: nil),
+        data: organization_tree,
         depth_level: :organization,
       }
-    elsif access_across_facility_groups?
+    elsif admin.access_across_facility_groups?(:view)
       {
-        data: facility_group_tree(user_being_edited: nil),
+        data: facility_group_tree,
         depth_level: :facility_group,
       }
     else
       {
-        data: facility_tree(user_being_edited: nil),
+        data: facility_tree,
         depth_level: :facility,
       }
     end
   end
 
-  DEPTH_LEVEL_TO_PARTIAL = {
-    organization: "email_authentications/invitations/access_tree",
-    facility_group: "email_authentications/invitations/facility_group_access_tree",
-    facility: "email_authentications/invitations/facility_access_tree"
-  }.freeze
-
-  def access_tree_to_partial(access_tree)
-    DEPTH_LEVEL_TO_PARTIAL.fetch(access_tree.fetch(:depth_level))
+  def pre_selected?(model, record)
+    case model
+      when :facility
+        admin.facility_tree.dig(record, :full_access)
+      when :facility_group
+        admin.facility_group_tree.dig(record, :full_access)
+      when :organization
+        admin.organization_tree.dig(record, :full_access)
+      else
+        raise ArgumentError, "Access to #{model} is unsupported."
+    end
   end
 
-  def access_across_organizations?
-    accessible_facilities.group_by(&:organization).keys.length > 1
-  end
-
-  def access_across_facility_groups?
-    accessible_facilities.group_by(&:facility_group).keys.length > 1
-  end
-
-  memoize def facility_tree(user_being_edited: nil)
-    accessible_facilities.map do |facility|
+  memoize def facility_tree
+    visible_facilities.map do |facility|
       info = {
-        facility_group: facility.facility_group,
-        full_access: true,
-        selected: selected?(user_being_edited, :facility_tree, facility)
+        full_access: true
       }
 
-      [facility, OpenStruct.new(info)]
+      [facility, info]
     end.to_h
   end
 
-  memoize def facility_group_tree(user_being_edited: nil)
-    facility_tree(user_being_edited: user_being_edited)
-      .group_by { |_facility, info| info.facility_group }
+  memoize def facility_group_tree
+    facility_tree
+      .group_by { |facility, _| facility.facility_group }
       .map do |facility_group, facilities|
 
       info = {
         accessible_facility_count: facilities.length,
+        full_access: visible_facility_groups.include?(facility_group),
         facilities: facilities,
-        organization: facility_group.organization,
-        full_access: accessible_facility_groups.include?(facility_group),
-        selected: selected?(user_being_edited, :facility_group_tree, facility_group)
       }
 
-      [facility_group, OpenStruct.new(info)]
+      [facility_group, info]
     end.to_h
   end
 
-  memoize def organization_tree(user_being_edited: nil)
-    facility_group_tree(user_being_edited: user_being_edited)
-      .group_by { |_facility_group, info| info.organization }
+  memoize def organization_tree
+    facility_group_tree
+      .group_by { |facility_group, _| facility_group.organization }
       .map do |organization, facility_groups|
 
       info = {
-        accessible_facility_count: facility_groups.sum { |_fg, info| info.accessible_facility_count },
+        accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
+        full_access: visible_organizations.include?(organization),
         facility_groups: facility_groups,
-        full_access: accessible_organizations.include?(organization),
-        selected: selected?(user_being_edited, :organization_tree, organization)
       }
 
-      [organization, OpenStruct.new(info)]
+      [organization, info]
     end.to_h
   end
 
-  private
-
-  attr_reader :user_being_edited
-
-  def selected?(user_being_edited, resource_tree, record)
-    return true if user_being_edited == admin
-
-    user_being_edited &&
-      user_being_edited.public_send(resource_tree).dig(record, :full_access)
-  end
-
-  memoize def accessible_facility_groups
+  memoize def visible_facility_groups
     admin.accessible_facility_groups(:view)
   end
 
-  memoize def accessible_facilities
-    admin.accessible_facilities(:view).includes(facility_group: :organization)
+  memoize def visible_facilities
+    admin.accessible_facilities(:view)
   end
 
-  memoize def accessible_organizations
+  memoize def visible_organizations
     admin.accessible_organizations(:view)
   end
 end
