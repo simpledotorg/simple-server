@@ -47,13 +47,13 @@ class UserAccess < Struct.new(:user)
   end
 
   memoize def accessible_users(action)
-    return User.non_admins if user.power_user?
+    return User.non_admins if bypass?
 
     User.non_admins.where(registration_facility: accessible_facilities(action))
   end
 
   memoize def accessible_admins(action)
-    return User.admins if user.power_user?
+    return User.admins if bypass?
     return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
 
     User.admins.where(organization: user.organization)
@@ -81,13 +81,15 @@ class UserAccess < Struct.new(:user)
   end
 
   def permitted_access_levels
-    return LEVELS.keys if user.power_user?
+    return LEVELS.keys if bypass?
 
     LEVELS[user.access_level.to_sym][:grant_access]
   end
 
   def grant_access(new_user, selected_facility_ids)
     return if selected_facility_ids.blank?
+    return if bypass?
+
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
 
     resources = prepare_grantable_resources(selected_facility_ids)
@@ -112,14 +114,14 @@ class UserAccess < Struct.new(:user)
   private
 
   def can_access_record?(resources, record)
-    return true if user.power_user?
+    return true if bypass?
     return resources.find_by_id(record).present? if record
 
     resources.exists?
   end
 
   def resources_for(resource_model, action)
-    return resource_model.all if user.power_user?
+    return resource_model.all if bypass?
     return resource_model.none unless ACTION_TO_LEVEL.fetch(action).include?(user.access_level.to_sym)
 
     resource_ids =
@@ -131,6 +133,9 @@ class UserAccess < Struct.new(:user)
     resource_model.where(id: resource_ids)
   end
 
+  #
+  # Compare the new user's selected facilities with the currently accessible facilities of the current user
+  # and see if we can promote the new user's access if necessary
   def prepare_grantable_resources(selected_facility_ids)
     selected_facilities = Facility.where(id: selected_facility_ids).includes(facility_group: :organization)
     resources = []
@@ -162,5 +167,9 @@ class UserAccess < Struct.new(:user)
     end
 
     resources.flatten
+  end
+
+  def bypass?
+    user.power_user?
   end
 end

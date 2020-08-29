@@ -20,8 +20,11 @@
     <% if searching? %>
       <span><%= search_entries_info(@admins) %></span>
     <% end %>
+
     <div class="admin-list mb-5">
       <% @admins.each do |admin| %>
+        <% admin = AdminAccessPresenter.new(admin) %>
+
         <%= link_to(admin_path(admin), class: "admin-list-item") do %>
           <div class="wrap-auto">
             <h5 class="title">
@@ -32,8 +35,9 @@
             </h5>
             <div class="email"><%= admin.email %></div>
           </div>
+
           <div class="text-right">
-            <span class="access"><%= UserAccess::LEVELS.fetch(admin.access_level.to_sym).fetch(:name) %></span>
+            <span class="access"><%= admin.display_access_level.name %></span>
           </div>
         <% end %>
       <% end %>

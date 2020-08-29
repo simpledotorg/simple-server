@@ -1,3 +1,8 @@
+#
+# Even with Rails caching most of the access-related queries,
+# the sheer volume of the number of queries can really slow down page rendering
+#
+# This class tries to provide an easy and fast way (mostly constant time) to lookup the visible access tree of a user
 class UserAccessTree < Struct.new(:user)
   include Memery
 
