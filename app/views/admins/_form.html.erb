@@ -17,7 +17,7 @@
             <% access_tree = current_admin.visible_access_tree %>
             <%= render access_tree[:render_partial],
                 tree: access_tree[:data],
-                user_being_edited: @admin,
+                user_being_edited: AdminAccessPresenter.new(@admin),
                 initial_tree_depth: 0,
                 page: :edit,
                 form: form %>

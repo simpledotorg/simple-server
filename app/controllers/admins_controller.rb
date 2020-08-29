@@ -42,7 +42,6 @@ class AdminsController < AdminController
   def edit
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin, @admin)
-      @admin = AdminAccessPresenter.new(@admin)
     else
       authorize([:manage, :admin, current_admin])
     end
