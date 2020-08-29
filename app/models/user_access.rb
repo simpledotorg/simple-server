@@ -36,13 +36,13 @@ class UserAccess < Struct.new(:user)
 
   memoize def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
-      .or(FacilityGroup.where(organization: accessible_organizations(action)))
+      .union(FacilityGroup.where(organization: accessible_organizations(action)))
       .includes(:organization)
   end
 
   memoize def accessible_facilities(action)
     resources_for(Facility, action)
-      .or(Facility.where(facility_group: accessible_facility_groups(action)))
+      .union(Facility.where(facility_group: accessible_facility_groups(action)))
       .includes(facility_group: :organization)
   end
 
@@ -56,14 +56,7 @@ class UserAccess < Struct.new(:user)
     return User.admins if user.power_user?
     return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
 
-    admins =
-      User
-        .admins
-        .where(organization: user.organization)
-        .includes(:accesses)
-        .select { |admin| admin.accessible_facilities(:view).to_set.intersect?(accessible_facilities(:view).to_set) }
-
-    User.admins.where(id: admins)
+    User.admins.where(organization: user.organization)
   end
 
   def can?(action, model, record = nil)
@@ -97,14 +90,14 @@ class UserAccess < Struct.new(:user)
     return if selected_facility_ids.blank?
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
 
-    resources = prepare_access_resources(selected_facility_ids)
+    resources = prepare_grantable_resources(selected_facility_ids)
     # if the user couldn't prepare resources for new_user means they shouldn't have had access to this operation at all
     raise NotAuthorizedError if resources.empty?
 
     # recreate accesses from scratch to handle deletes/edits/updates seamlessly
     User.transaction do
       new_user.accesses.delete_all
-      new_user.accesses.create!(resources)
+      new_user.accesses.import!(resources)
     end
   end
 
@@ -130,26 +123,34 @@ class UserAccess < Struct.new(:user)
     resource_model.where(id: resource_ids)
   end
 
-  def prepare_access_resources(selected_facility_ids)
-    selected_facilities = Facility.where(id: selected_facility_ids)
+  def prepare_grantable_resources(selected_facility_ids)
+    selected_facilities = Facility.where(id: selected_facility_ids).includes(facility_group: :organization)
     resources = []
 
+    accessible_facilities_in_org = accessible_facilities(:manage).group_by(&:organization)
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if can?(:manage, :organization, org) && org.facilities == selected_facilities_in_org
-        resources << {resource: org}
+      if can?(:manage, :organization, org) &&
+        (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
+
+        resources << {resource_type: Organization.name, resource_id: org.id}
         selected_facilities -= selected_facilities_in_org
       end
     end
 
+    accessible_facilities_in_fg = accessible_facilities(:manage).group_by(&:facility_group)
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if can?(:manage, :facility_group, fg) && fg.facilities == selected_facilities_in_fg
-        resources << {resource: fg}
+      if can?(:manage, :facility_group, fg) &&
+        (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
+
+        resources << {resource_type: FacilityGroup.name, resource_id: fg.id}
         selected_facilities -= selected_facilities_in_fg
       end
     end
 
     selected_facilities.each do |f|
-      resources << {resource: f} if can?(:manage, :facility, f)
+      if can?(:manage, :facility, f)
+        resources << {resource_type: Facility.name, resource_id: f.id}
+      end
     end
 
     resources.flatten
