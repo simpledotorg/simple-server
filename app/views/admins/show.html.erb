@@ -26,11 +26,14 @@
   </div>
 
   <div id="facility-access">
-    <%= render "email_authentications/invitations/access_tree",
-        current_admin: @admin,
-        page: :show,
-        user_being_edited: nil,
-        form: nil %>
+    <div class="card access-tree">
+      <% access_tree = @admin.access_tree(user_being_edited: nil) %>
+      <%= render @admin.access_tree_to_partial(access_tree),
+          tree: access_tree[:data],
+          initial_tree_depth: 0,
+          page: :show,
+          form: nil %>
+    </div>
   </div>
 <% else %>
   <div class="card">

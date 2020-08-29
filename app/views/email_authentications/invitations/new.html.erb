@@ -12,19 +12,10 @@
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
           <div class="card access-tree">
-            <%
-              access_tree = current_admin.to_tree(user_being_edited: nil)
-
-              depth_to_partial = {
-                  organization: "email_authentications/invitations/access_tree",
-                  facility_group: "email_authentications/invitations/facility_group_access_tree",
-                  facility: "email_authentications/invitations/facility_access_tree"
-              }[access_tree[:depth_level]]
-
-            %>
-
-            <%= render depth_to_partial,
+            <% access_tree = current_admin.access_tree(user_being_edited: nil) %>
+            <%= render current_admin.access_tree_to_partial(access_tree),
                 tree: access_tree[:data],
+                initial_tree_depth: 0,
                 page: :new,
                 form: form %>
           </div>

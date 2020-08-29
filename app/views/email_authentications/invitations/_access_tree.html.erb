@@ -22,7 +22,7 @@
       </div>
 
       <%= render "email_authentications/invitations/facility_group_access_tree",
-          tree: org_info.facility_groups, page: page, form: form %>
+          tree: org_info.facility_groups, page: page, form: form, initial_tree_depth: initial_tree_depth + 1 %>
     </li>
   </ul>
 <% end %>

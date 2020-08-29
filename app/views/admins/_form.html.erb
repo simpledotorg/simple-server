@@ -9,11 +9,14 @@
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
-          <%= render "email_authentications/invitations/access_tree",
-              current_admin: current_admin,
-              page: :edit,
-              user_being_edited: admin,
-              form: form %>
+          <div class="card access-tree">
+            <% access_tree = current_admin.access_tree(user_being_edited: nil) %>
+            <%= render current_admin.access_tree_to_partial(access_tree),
+                tree: access_tree[:data],
+                initial_tree_depth: 0,
+                page: :edit,
+                form: form %>
+          </div>
         </div>
         <%= form.primary("Save") %>
       <% end %>

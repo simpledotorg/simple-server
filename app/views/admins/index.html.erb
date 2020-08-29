@@ -22,21 +22,19 @@
     <% end %>
     <div class="admin-list mb-5">
       <% @admins.each do |admin| %>
-        <% if current_admin.can?(:manage, :admin, admin) %>
-          <%= link_to(admin_path(admin), class: "admin-list-item") do %>
-            <div class="wrap-auto">
-              <h5 class="title">
-                <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
-                <% if admin.invited_to_sign_up? %>
-                  <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
-                <% end %>
-              </h5>
-              <div class="email"><%= admin.email %></div>
-            </div>
-            <div class="text-right">
-              <span class="access"><%= UserAccess::LEVELS.fetch(admin.access_level.to_sym).fetch(:name) %></span>
-            </div>
-          <% end %>
+        <%= link_to(admin_path(admin), class: "admin-list-item") do %>
+          <div class="wrap-auto">
+            <h5 class="title">
+              <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
+              <% if admin.invited_to_sign_up? %>
+                <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
+              <% end %>
+            </h5>
+            <div class="email"><%= admin.email %></div>
+          </div>
+          <div class="text-right">
+            <span class="access"><%= UserAccess::LEVELS.fetch(admin.access_level.to_sym).fetch(:name) %></span>
+          </div>
         <% end %>
       <% end %>
     </div>

@@ -2,8 +2,9 @@
   <% tree.each do |facility, facility_info| %>
     <li>
       <div class="access-item collapsed">
-        <span class="spacer"></span>
-        <span class="spacer"></span>
+        <% initial_tree_depth.times do %>
+          <span class="spacer"></span>
+        <% end %>
 
         <%= access_checkbox(
                 form,

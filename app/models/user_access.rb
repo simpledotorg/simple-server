@@ -1,4 +1,6 @@
 class UserAccess < Struct.new(:user)
+  include Memery
+
   class NotAuthorizedError < StandardError; end
 
   LEVELS = {
@@ -28,27 +30,29 @@ class UserAccess < Struct.new(:user)
     manage: [:manager]
   }.freeze
 
-  def accessible_organizations(action)
+  memoize def accessible_organizations(action)
     resources_for(Organization, action)
   end
 
-  def accessible_facility_groups(action)
+  memoize def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .or(FacilityGroup.where(organization: accessible_organizations(action)))
+      .includes(:organization)
   end
 
-  def accessible_facilities(action)
+  memoize def accessible_facilities(action)
     resources_for(Facility, action)
       .or(Facility.where(facility_group: accessible_facility_groups(action)))
+      .includes(facility_group: :organization)
   end
 
-  def accessible_users(action)
+  memoize def accessible_users(action)
     return User.non_admins if user.power_user?
 
     User.non_admins.where(registration_facility: accessible_facilities(action))
   end
 
-  def accessible_admins(action)
+  memoize def accessible_admins(action)
     return User.admins if user.power_user?
     return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
 

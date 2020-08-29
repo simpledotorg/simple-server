@@ -20,23 +20,33 @@ class AdminAccessPresenter < SimpleDelegator
       .map { |_level, info| info.values_at(:name, :id) }
   end
 
-  def to_tree(user_being_edited: nil)
+  def access_tree(user_being_edited: nil)
     if access_across_organizations?
       {
         data: organization_tree(user_being_edited: nil),
-        depth_level: :organization
+        depth_level: :organization,
       }
     elsif access_across_facility_groups?
       {
         data: facility_group_tree(user_being_edited: nil),
-        depth_level: :facility_group
+        depth_level: :facility_group,
       }
     else
       {
         data: facility_tree(user_being_edited: nil),
-        depth_level: :facility
+        depth_level: :facility,
       }
     end
+  end
+
+  DEPTH_LEVEL_TO_PARTIAL = {
+    organization: "email_authentications/invitations/access_tree",
+    facility_group: "email_authentications/invitations/facility_group_access_tree",
+    facility: "email_authentications/invitations/facility_access_tree"
+  }.freeze
+
+  def access_tree_to_partial(access_tree)
+    DEPTH_LEVEL_TO_PARTIAL.fetch(access_tree.fetch(:depth_level))
   end
 
   def access_across_organizations?
