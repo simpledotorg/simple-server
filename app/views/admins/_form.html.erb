@@ -5,7 +5,7 @@
         <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *" %>
         <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
-        <%= form.select :access_level, current_admin.permitted_access_levels_info, value: @admin.access_level, id: :access_levels, required: true, label: "Access *" %>
+        <%= access_level_select(form, current_admin.permitted_access_levels_info.values, value: @admin.access_level) %>
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
@@ -18,7 +18,7 @@
             <%= render access_tree[:render_partial],
                 tree: access_tree[:data],
                 user_being_edited: AdminAccessPresenter.new(@admin),
-                initial_tree_depth: 0,
+                tree_depth: 0,
                 page: :edit,
                 form: form %>
           </div>

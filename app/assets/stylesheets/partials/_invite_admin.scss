@@ -6,6 +6,23 @@
   transition: $duration;
 }
 
+#access_level.select {
+  margin-bottom: 10px;
+}
+
+.bootstrap-select {
+  margin-bottom: 25px !important;
+
+  span.title {
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  span.description {
+    font-size: 14px;
+  }
+}
+
 #facility-access {
   .card {
     &.access-tree {

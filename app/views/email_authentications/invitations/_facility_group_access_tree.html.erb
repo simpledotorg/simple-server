@@ -2,7 +2,7 @@
   <% tree.each do |facility_group, fg_info| %>
     <li>
       <div class="access-item collapsed">
-        <% initial_tree_depth.times do %>
+        <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
 
@@ -25,7 +25,7 @@
           page: page,
           form: form,
           user_being_edited: user_being_edited,
-          initial_tree_depth: initial_tree_depth + 1 %>
+          tree_depth: tree_depth + 1 %>
     </li>
   <% end %>
 </ul>

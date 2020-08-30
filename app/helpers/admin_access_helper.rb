@@ -31,4 +31,26 @@ module AdminAccessHelper
       label_tag(resource.name.to_s, resource.name.to_s, class: "form-check-label")
     end
   end
+
+  def access_level_select(form, access_levels, value: nil)
+    form.select(:access_level, {}, {label: "Access *"}, {id: :access_level, required: true}) do
+      access_levels.each do |level|
+        concat content_tag(:option, level[:id], value: level[:id], data: {content: access_level_option_data(level)})
+      end
+    end
+  end
+
+  def access_level_option_data(level)
+    option = <<-HTML.strip_heredoc
+        <span class="title">
+          #{level[:name]}
+        </span>
+
+        <br/>
+
+        <span class="description"> #{level[:description]}</span>
+    HTML
+
+    sanitize(option)
+  end
 end

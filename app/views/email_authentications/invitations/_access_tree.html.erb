@@ -1,7 +1,7 @@
 <% tree.each do |organization, org_info| %>
   <ul class="access-item-wrapper">
     <li>
-      <div class="access-item organization">
+      <div class="access-item organization collapsed">
         <%= access_checkbox(
                 form,
                 :organizations,
@@ -21,7 +21,7 @@
           page: page,
           form: form,
           user_being_edited: user_being_edited,
-          initial_tree_depth: initial_tree_depth + 1 %>
+          tree_depth: tree_depth + 1 %>
     </li>
   </ul>
 <% end %>

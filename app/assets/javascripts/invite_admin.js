@@ -5,6 +5,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
+  selectAccessLevels()
   checkboxItemListener()
   resourceRowCollapseListener()
   selectAllListener()
@@ -135,3 +136,10 @@ function updateChildrenCheckedState(parent, selector) {
 // helper function to create nodeArrays (not collections)
 const nodeListToArray = (selector, parent = document) =>
   [].slice.call(parent.querySelectorAll(selector))
+
+// initialize the access_level select dropdown
+function selectAccessLevels() {
+  $("#access_level").selectpicker({
+    noneSelectedText: "Select an access level..."
+  });
+}
