@@ -2,24 +2,10 @@
 // loads at page refresh
 //
 window.addEventListener("DOMContentLoaded", inviteAdmin);
-window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
   checkboxItemListener()
   resourceRowCollapseListener()
-}
-
-function editAdmin() {
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
-
-  // list of all checkboxes under facilityAccessDiv
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
-  const checkedCheckboxes = checkboxes.filter(check => check.checked)
-
-  for (let checkbox of checkedCheckboxes) {
-    updateParentCheckedState(checkbox, SELECTOR)
-  }
 }
 
 //
