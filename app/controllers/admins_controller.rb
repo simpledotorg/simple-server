@@ -103,7 +103,7 @@ class AdminsController < AdminController
 
   def 🆕set_admin
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @admin = AdminAccessPresenter.new(User.find(params[:id]))
+      @admin = User.find(params[:id])
       raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin, @admin)
     end
   end

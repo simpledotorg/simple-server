@@ -39,6 +39,32 @@
       height: 100%;
       display: flex;
 
+      .dropdown {
+        padding: 10px;
+        margin-left: 5px;
+        margin-right: -20px;
+
+        i {
+          transform: rotate(0deg);
+          margin: 0px 8px 2px 8px;
+          @include transition(0.2s);
+          pointer-events: none;
+        }
+
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+
+      &.collapsed {
+        .dropdown {
+          i {
+            transform: rotate(-90deg);
+            @include transition(0.3s);
+          }
+        }
+      }
+
       &:not(.collapsed) {
         background: #fff8e0;
 
@@ -74,20 +100,6 @@
         font-weight: normal;
         font-style: normal;
         cursor: pointer;
-
-        &.collapsed {
-          i {
-            transform: rotate(-90deg);
-            @include transition(0.3s);
-          }
-        }
-
-        i {
-          transform: rotate(0deg);
-          margin: 0px 8px 2px 8px;
-          @include transition(0.2s);
-          pointer-events: none;
-        }
       }
     }
   }
