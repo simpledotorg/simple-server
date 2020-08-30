@@ -1,0 +1,34 @@
+<ul class="access-item-wrapper">
+  <% tree.each do |facility_group, fg_info| %>
+    <li>
+      <div class="access-item collapsed">
+        <% tree_depth.times do %>
+          <span class="spacer"></span>
+        <% end %>
+
+        <div class="dropdown">
+          <i class="fas fa-angle-down light"></i>
+        </div>
+
+        <%= access_checkbox(
+                form,
+                :facility_groups,
+                facility_group,
+                page: page,
+                checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
+            ) %>
+
+        <span class="access-ratio collapsed">
+          <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
+        </span>
+      </div>
+
+      <%= render "email_authentications/invitations/facility_access_tree",
+          tree: fg_info[:facilities],
+          page: page,
+          form: form,
+          user_being_edited: user_being_edited,
+          tree_depth: tree_depth + 1 %>
+    </li>
+  <% end %>
+</ul>

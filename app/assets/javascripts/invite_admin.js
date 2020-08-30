@@ -5,6 +5,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
+  selectAllListener()
   checkboxItemListener()
   resourceRowCollapseListener()
 }
@@ -25,6 +26,25 @@ function editAdmin() {
 //
 // listeners
 //
+function selectAllListener() {
+  const selectAllDiv = document.getElementById("select_all_facilities")
+  const SELECTOR = "input.access-input"
+  const facilityAccessDiv = document.getElementById("facility-access")
+  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+
+  selectAllDiv.addEventListener("change", _ => {
+    if (selectAllDiv.checked) {
+      for (let checkbox of checkboxes) {
+        checkbox.checked = true
+      }
+    } else {
+      for (let checkbox of checkboxes) {
+        checkbox.checked = false
+      }
+    }
+  })
+}
+
 function checkboxItemListener() {
   const SELECTOR = "input.access-input"
   const facilityAccessDiv = document.getElementById("facility-access")
@@ -64,7 +84,7 @@ function toggleItemCollapsed(element) {
   }
 }
 
-function onFacilityAccessItemToggled({target}) {
+function onFacilityAccessItemToggled({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(item =>
@@ -91,10 +111,10 @@ function updateParentCheckedState(element, selector) {
   // check parent if all siblings are checked
   // set indeterminate if not all and not none are checked
   parent.checked = every
-  parent.indeterminate = !every && every !== some
+  parent.indeterminate = some && !every
 
   // recurse until check is the top most parent
-  if (element != parent) updateParentCheckedState(parent, selector)
+  if (element !== parent) updateParentCheckedState(parent, selector)
 }
 
 function updateChildrenCheckedState(parent, selector) {
