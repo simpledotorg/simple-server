@@ -6,12 +6,16 @@
           <span class="spacer"></span>
         <% end %>
 
+        <div class="dropdown">
+          <i class="fas fa-angle-down light"></i>
+        </div>
+
         <%= access_checkbox(
                 form,
                 :facilities,
                 facility,
                 page: page,
-                checked: page.eql?(:edit) && user_being_edited.visible?(:facility, facility)
+                checked_fn: -> { user_being_edited.visible?(:facility, facility) }
             ) %>
       </div>
     </li>

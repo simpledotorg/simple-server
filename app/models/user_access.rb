@@ -46,12 +46,6 @@ class UserAccess < Struct.new(:user)
       .includes(facility_group: :organization)
   end
 
-  memoize def accessible_users(action)
-    return User.non_admins if bypass?
-
-    User.non_admins.where(registration_facility: accessible_facilities(action))
-  end
-
   memoize def accessible_admins(action)
     return User.admins if bypass?
     return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
@@ -71,13 +65,19 @@ class UserAccess < Struct.new(:user)
         can_access_record?(accessible_organizations(action), record)
       when :facility_group
         can_access_record?(accessible_facility_groups(action), record)
-      when :user
-        can_access_record?(accessible_users(action), record)
       when :admin
         can_access_record?(accessible_admins(action), record)
       else
         raise ArgumentError, "Access to #{model} is unsupported."
     end
+  end
+
+  def access_across_organizations?(action)
+    accessible_facilities(action).group_by(&:organization).keys.length > 1
+  end
+
+  def access_across_facility_groups?(action)
+    accessible_facilities(action).group_by(&:facility_group).keys.length > 1
   end
 
   def permitted_access_levels
@@ -101,14 +101,6 @@ class UserAccess < Struct.new(:user)
       new_user.accesses.delete_all
       new_user.accesses.import!(resources)
     end
-  end
-
-  def access_across_organizations?(action)
-    accessible_facilities(action).group_by(&:organization).keys.length > 1
-  end
-
-  def access_across_facility_groups?(action)
-    accessible_facilities(action).group_by(&:facility_group).keys.length > 1
   end
 
   private

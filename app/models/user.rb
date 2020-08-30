@@ -79,6 +79,8 @@ class User < ApplicationRecord
     :access_across_facility_groups?,
     :can?,
     :grant_access,
+    :access_across_organizations?,
+    :access_across_facility_groups?,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications

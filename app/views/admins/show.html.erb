@@ -6,20 +6,21 @@
 </div>
 
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-  <div class="row mb-3">
-    <div class="col-md-8">
+  <div class="row mt-2">
+    <div class="col-md-5">
       <h2><%= @admin.full_name %></h2>
-      <span><%= @admin.role %> • <a href="mailto:first.last@example.com"><%= @admin.email %></a></span>
+      <span class="user-role">
+            <%= @admin.role %>
+        </span>
+      • <a class="user-email" href="mailto:first.last@example.com"><%= @admin.email %></a>
     </div>
-    <div class="col-md-4" style="text-align:right;">
-      <% if policy([:manage, :admin, @admin]).edit? %>
-        <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
-      <% end %>
+    <div class="col-md-7" style="text-align:right;">
+      <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-body">
+    <div class="">
       <h3 class="card-title"><%= @admin.display_access_level.name %></h3>
       <h6 class="card-subtitle mb-2 text-muted"><%= @admin.display_access_level.description %></h6>
     </div>

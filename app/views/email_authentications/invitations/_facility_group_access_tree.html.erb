@@ -6,16 +6,19 @@
           <span class="spacer"></span>
         <% end %>
 
+        <div class="dropdown">
+          <i class="fas fa-angle-down light"></i>
+        </div>
+
         <%= access_checkbox(
                 form,
                 :facility_groups,
                 facility_group,
                 page: page,
-                checked: page.eql?(:edit) && user_being_edited.visible?(:facility_group, facility_group)
+                checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
             ) %>
 
         <span class="access-ratio collapsed">
-          <i class="fas fa-angle-down light"></i>
           <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
         </span>
       </div>

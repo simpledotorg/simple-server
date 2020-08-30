@@ -15,8 +15,9 @@ class AdminAccessPresenter < SimpleDelegator
   end
 
   def permitted_access_levels_info
-
-    UserAccess::LEVELS.slice(*admin.permitted_access_levels)
+    UserAccess::LEVELS
+      .slice(*admin.permitted_access_levels)
+      .map { |_level, info| info.values_at(:name, :id) }
   end
 
   memoize def access_tree
