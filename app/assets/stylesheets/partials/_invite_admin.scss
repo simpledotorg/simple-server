@@ -14,6 +14,20 @@
     }
   }
 
+  .select-all-access-items {
+    height: 100%;
+    display: flex;
+    padding: 5px 0 5px 0;
+
+    .form-check {
+      margin: 10px;
+
+      label {
+        font-weight: 100;
+      }
+    }
+  }
+
   ul {
     list-style-type: none;
     display: block;

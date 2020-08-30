@@ -1,5 +1,6 @@
 class UserAccess < Struct.new(:user)
   include Memery
+
   class NotAuthorizedError < StandardError; end
 
   LEVELS = {
@@ -69,6 +70,14 @@ class UserAccess < Struct.new(:user)
       else
         raise ArgumentError, "Access to #{model} is unsupported."
     end
+  end
+
+  def access_across_organizations?(action)
+    accessible_facilities(action).group_by(&:organization).keys.length > 1
+  end
+
+  def access_across_facility_groups?(action)
+    accessible_facilities(action).group_by(&:facility_group).keys.length > 1
   end
 
   def permitted_access_levels

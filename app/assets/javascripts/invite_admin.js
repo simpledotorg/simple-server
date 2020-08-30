@@ -5,6 +5,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
+  selectAllListener()
   checkboxItemListener()
   resourceRowCollapseListener()
 }
@@ -25,6 +26,25 @@ function editAdmin() {
 //
 // listeners
 //
+function selectAllListener() {
+  const selectAllDiv = document.getElementById("select_all_facilities")
+  const SELECTOR = "input.access-input"
+  const facilityAccessDiv = document.getElementById("facility-access")
+  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+
+  selectAllDiv.addEventListener("change", _ => {
+    if (selectAllDiv.checked) {
+      for (let checkbox of checkboxes) {
+        checkbox.checked = true
+      }
+    } else {
+      for (let checkbox of checkboxes) {
+        checkbox.checked = false
+      }
+    }
+  })
+}
+
 function checkboxItemListener() {
   const SELECTOR = "input.access-input"
   const facilityAccessDiv = document.getElementById("facility-access")

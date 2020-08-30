@@ -1,0 +1,23 @@
+<ul class="access-item-wrapper collapsed">
+  <% tree.each do |facility, _facility_info| %>
+    <li>
+      <div class="access-item collapsed">
+        <% tree_depth.times do %>
+          <span class="spacer"></span>
+        <% end %>
+
+        <div class="dropdown">
+          <i class="fas fa-angle-down light"></i>
+        </div>
+
+        <%= access_checkbox(
+                form,
+                :facilities,
+                facility,
+                page: page,
+                checked_fn: -> { user_being_edited.visible?(:facility, facility) }
+            ) %>
+      </div>
+    </li>
+  <% end %>
+</ul>

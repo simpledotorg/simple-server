@@ -9,11 +9,19 @@
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
-          <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.access_tree.organizations,
-              user_being_edited: AdminAccessPresenter.new(@admin),
-              page: :edit,
-              form: form %>
+          <div class="card access-tree">
+            <div class="select-all-access-items">
+              <%= form.check_box :select_all_facilities, id: "select_all_facilities" %>
+            </div>
+
+            <% access_tree = current_admin.visible_access_tree %>
+            <%= render access_tree[:render_partial],
+                tree: access_tree[:data],
+                user_being_edited: AdminAccessPresenter.new(@admin),
+                tree_depth: 0,
+                page: :edit,
+                form: form %>
+          </div>
         </div>
         <%= form.primary("Save") %>
       <% end %>
