@@ -34,12 +34,14 @@ class UserAccess < Struct.new(:user)
 
   def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
-      .or(FacilityGroup.where(organization: accessible_organizations(action)))
+      .union(FacilityGroup.where(organization: accessible_organizations(action)))
+      .includes(:organization)
   end
 
   def accessible_facilities(action)
     resources_for(Facility, action)
-      .or(Facility.where(facility_group: accessible_facility_groups(action)))
+      .union(Facility.where(facility_group: accessible_facility_groups(action)))
+      .includes(facility_group: :organization)
   end
 
   def can?(action, model, record = nil)
@@ -78,50 +80,6 @@ class UserAccess < Struct.new(:user)
       new_user.accesses.delete_all
       new_user.accesses.create!(resources)
     end
-  end
-
-  def access_tree(action)
-    facilities = accessible_facilities(action).includes(facility_group: :organization)
-
-    facility_tree =
-      facilities
-        .map { |facility| [facility, {can_access: true}] }
-        .to_h
-
-    facility_group_tree =
-      facilities
-        .map(&:facility_group)
-        .map { |fg|
-          facilities_in_facility_group =
-            facility_tree.select { |facility, _| facility.facility_group == fg }
-
-          [fg,
-            {
-              can_access: can?(action, :facility_group, fg),
-              facilities: facilities_in_facility_group,
-              total_facilities: fg.facilities.size
-            }]
-        }
-        .to_h
-
-    organization_tree =
-      facilities
-        .map(&:facility_group)
-        .map(&:organization)
-        .map { |org|
-          facility_groups_in_org =
-            facility_group_tree.select { |facility_group, _| facility_group.organization == org }
-
-          [org,
-            {
-              can_access: can?(action, :organization, org),
-              facility_groups: facility_groups_in_org,
-              total_facility_groups: org.facility_groups.size
-            }]
-        }
-        .to_h
-
-    {organizations: organization_tree}
   end
 
   private

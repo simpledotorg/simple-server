@@ -1,18 +1,20 @@
 class AdminAccessPresenter < SimpleDelegator
-  attr_reader :current_admin
+  include Memery
 
-  def initialize(current_admin)
-    @current_admin = current_admin
+  attr_reader :admin
+
+  def initialize(admin)
+    @admin = admin
     super
   end
 
-  def access_tree
-    current_admin.access_tree(:manage)[:organizations]
+  memoize def access_tree
+    UserAccessTree.new(admin).organizations
   end
 
   def permitted_access_levels_info
     UserAccess::LEVELS
-      .slice(*current_admin.permitted_access_levels)
+      .slice(*admin.permitted_access_levels)
       .map { |_level, info| info.values_at(:name, :id) }
   end
 end
