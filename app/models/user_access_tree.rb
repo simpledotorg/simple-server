@@ -6,7 +6,7 @@
 class UserAccessTree < Struct.new(:user)
   include Memery
 
-  memoize def facilities
+  def facilities
     visible_facilities.map do |facility|
       info = {
         visible: true
@@ -16,7 +16,7 @@ class UserAccessTree < Struct.new(:user)
     end.to_h
   end
 
-  memoize def facility_groups
+  def facility_groups
     facilities
       .group_by { |facility, _| facility.facility_group }
       .map do |facility_group, facilities|
@@ -31,7 +31,7 @@ class UserAccessTree < Struct.new(:user)
     end.to_h
   end
 
-  memoize def organizations
+  def organizations
     facility_groups
       .group_by { |facility_group, _| facility_group.organization }
       .map do |organization, facility_groups|

@@ -82,6 +82,10 @@ class UserAccess < Struct.new(:user)
     end
   end
 
+  def access_tree
+    UserAccessTree.new(user)
+  end
+
   private
 
   def can_access_record?(resources, record)
