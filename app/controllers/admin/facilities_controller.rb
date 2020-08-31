@@ -14,7 +14,7 @@ class Admin::FacilitiesController < AdminController
 
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:manage, :facility)
+      current_admin.authorize(:manage, :facility, :access_any)
     else
       authorize([:manage, :facility, Facility])
     end
@@ -61,7 +61,7 @@ class Admin::FacilitiesController < AdminController
   def new
     @facility = new_facility
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:manage, :facility, @facility)
+      current_admin.authorize(:manage, :facility, :access_record, @facility)
     else
       authorize([:manage, :facility, @facility])
     end
@@ -73,7 +73,7 @@ class Admin::FacilitiesController < AdminController
   def create
     @facility = new_facility(facility_params)
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:manage, :facility, @facility)
+      current_admin.authorize(:manage, :facility, :access_record, @facility)
     else
       authorize([:manage, :facility, @facility])
     end
@@ -120,7 +120,7 @@ class Admin::FacilitiesController < AdminController
   def set_facility
     @facility = Facility.friendly.find(params[:id])
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:manage, :facility, @facility)
+      current_admin.authorize(:manage, :facility, :access_record, @facility)
     else
       authorize([:manage, :facility, @facility])
     end

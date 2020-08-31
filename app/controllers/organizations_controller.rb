@@ -6,7 +6,7 @@ class OrganizationsController < AdminController
 
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:view_reports, :facility)
+      current_admin.authorize(:view_reports, :facility, :access_any)
     else
       authorize(:dashboard, :show?)
     end

@@ -3,7 +3,7 @@
 
   <div class="page-nav">
     <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-      <% if current_admin.can?(:manage, :facility_group) %>
+      <% if current_admin.can?(:manage, :facility_group, :access_any) %>
         <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
       <% end %>
     <% else %>
@@ -13,7 +13,7 @@
     <% end %>
 
     <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-      <% if current_admin.can?(:manage, :organization) %>
+      <% if current_admin.can?(:manage, :organization, :access_any) %>
         <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
           <i class="fas fa-plus mr-1"></i>
           Add facility group
@@ -54,7 +54,7 @@
           </div>
 
           <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-            <% if current_admin.can?(:manage, :facility_group, facility_group) %>
+            <% if current_admin.can?(:manage, :facility_group, :access_record, facility_group) %>
               <div class="col-2 text-right">
                 <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
               </div>
@@ -73,7 +73,7 @@
         <div class="row card-row">
           <div class="col-md-4">
             <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-              <% if current_admin.can?(:manage, :facility_group, facility_group) %>
+              <% if current_admin.can?(:manage, :facility_group, :access_record, facility_group) %>
                 <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
                   <i class="fas fa-plus mr-1"></i>
                   Add a facility
@@ -96,7 +96,7 @@
             <div class="col-md-4">
               <h5>
                 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-                  <% if current_admin.can?(:manage, :facility, facility) %>
+                  <% if current_admin.can?(:manage, :facility, :access_record, facility) %>
                     <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
                   <% else %>
                     <%= facility.name %>

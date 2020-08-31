@@ -56,7 +56,7 @@
         <% if email_authentication_signed_in? %>
           <ul class="navbar-nav mr-auto">
             <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-              <% if current_admin.can?(:view_reports, :facility) %>
+              <% if current_admin.can?(:view_reports, :facility, :access_any) %>
                 <li class="nav-item">
                   <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
@@ -87,7 +87,7 @@
                     <% if policy([:dashboard]).manage_organizations? %>
                       <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                     <% end %>
-                    <% if current_admin.can?(:manage, :facility) %>
+                    <% if current_admin.can?(:manage, :facility, :access_any) %>
                       <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
                     <% end %>
                     <% if policy([:dashboard]).manage_protocols? %>
