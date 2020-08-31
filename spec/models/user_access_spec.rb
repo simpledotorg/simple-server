@@ -586,7 +586,7 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
     let!(:facility_4) { create(:facility) }
     let!(:viewer_access) {
-      create(:access, user: viewer.user, resource: organization_1)
+      create(:access, user: viewer_all.user, resource: organization_1)
     }
     let!(:manager_access) {
       [create(:access, user: manager.user, resource: organization_1),
@@ -598,12 +598,12 @@ RSpec.describe UserAccess, type: :model do
       new_user = create(:admin, :manager)
 
       expect {
-        viewer.grant_access(new_user, [facility_1.id, facility_2.id])
+        viewer_all.grant_access(new_user, [facility_1.id, facility_2.id])
       }.to raise_error(UserAccess::NotAuthorizedError)
     end
 
     it "raises an error if the user could not provide any access" do
-      new_user = create(:admin, :viewer)
+      new_user = create(:admin, :viewer_all)
 
       expect {
         manager.grant_access(new_user, [create(:facility).id])
@@ -611,22 +611,22 @@ RSpec.describe UserAccess, type: :model do
     end
 
     it "only grants access to the selected facilities" do
-      new_user = create(:admin, :viewer)
+      new_user = create(:admin, :viewer_all)
 
       manager.grant_access(new_user, [facility_1.id, facility_2.id])
 
-      expect(new_user.reload.accessible_facilities(:view)).to contain_exactly(facility_1, facility_2)
+      expect(new_user.reload.accessible_facilities(:view_pii).to contain_exactly(facility_1, facility_2))
     end
 
     it "returns nothing if no facilities are selected" do
-      new_user = create(:admin, :viewer)
+      new_user = create(:admin, :viewer_all)
 
       expect(manager.grant_access(new_user, [])).to be_nil
     end
 
     context "promote access" do
       it "promotes to FacilityGroup access" do
-        new_user = create(:admin, :viewer)
+        new_user = create(:admin, :viewer_all)
 
         manager.grant_access(new_user, [facility_3.id])
         expected_access_resources = %w[FacilityGroup]
@@ -696,7 +696,7 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
     let!(:facility_4) { create(:facility, facility_group: facility_group_3) }
     let!(:viewer_access) {
-      create(:access, user: viewer.user, resource: organization_1)
+      create(:access, user: viewer_all.user, resource: organization_1)
     }
     let!(:manager_access) {
       create(:access, user: manager.user, resource: organization_1)
@@ -731,8 +731,8 @@ RSpec.describe UserAccess, type: :model do
           }
         }
 
-        expect(viewer.access_tree(:view)).to eq(expected_access_tree)
-        expect(viewer.access_tree(:manage)).to eq(organizations: {})
+        expect(viewer_all.access_tree(:view_pii)).to eq(expected_access_tree)
+        expect(viewer_all.access_tree(:manage)).to eq(organizations: {})
       end
 
       it "marks the direct parents or ancestors as inaccessible if the access is partial" do
@@ -780,7 +780,7 @@ RSpec.describe UserAccess, type: :model do
           }
         }
 
-        expect(manager.access_tree(:view)).to eq(expected_access_tree)
+        expect(manager.access_tree(:view_pii)).to eq(expected_access_tree)
         expect(manager.access_tree(:manage)).to eq(expected_access_tree)
       end
     end
@@ -794,12 +794,12 @@ RSpec.describe UserAccess, type: :model do
 
     specify do
       manager = create(:admin, :manager)
-      expect(manager.permitted_access_levels).to match_array([:manager, :viewer])
+      expect(manager.permitted_access_levels).to match_array([:manager, :viewer_all])
     end
 
     specify do
-      viewer = create(:admin, :viewer)
-      expect(viewer.permitted_access_levels).to match_array([])
+      viewer_all = create(:admin, :viewer_all)
+      expect(viewer_all.permitted_access_levels).to match_array([])
     end
   end
 end

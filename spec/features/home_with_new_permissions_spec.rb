@@ -14,10 +14,15 @@ RSpec.feature "Home page with new permissions", type: :feature do
   let!(:path_clinic) { create(:facility, facility_group: path_group, name: "Dr. Amir Singh") }
 
   before do
-    with_flag_enabled(:new_permissions_system_aug_2020, admin) {
-      sign_in(admin.email_authentication)
-      visit root_path
-    }
+    enable_flag(:new_permissions_system_aug_2020, admin)
+    sign_in(admin.email_authentication)
+    # Root path has moved to MyFacilities#Overview
+    # visit root_path
+    visit organizations_path
+  end
+
+  after do
+    disable_flag(:new_permissions_system_aug_2020, admin)
   end
 
   context "owner has permission to view cohort reports" do
