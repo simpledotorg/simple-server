@@ -51,4 +51,8 @@ module AdminAccessHelper
 
     sanitize(option)
   end
+
+  def collapse?(tree_depth)
+    "collapsed" if tree_depth > 0
+  end
 end
