@@ -1,6 +1,5 @@
 <%= render "header" %>
-
-<div class="d-lg-flex flex-lg-wrap">
+<div class="d-lg-flex flex-lg-wrap mb-48px">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
@@ -53,7 +52,6 @@
       </div>
     </div>
   </div>
-
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
@@ -201,16 +199,206 @@
   </div>
 </div>
 <% if @region.is_a?(FacilityGroup) %>
-  <div class="card">
-    <h2>
-      Facilities
-    </h2>
-    <% @region.facilities.order(:name).each do |facility| %>
-      <%= link_to(reports_region_path(facility, report_scope: "facility"), class: "link-row") do %>
-        <i class='fas fa-angle-right light'></i>
-        <%= facility.name %>
-      <% end %>
-    <% end %>
+  <h3 class="mb-8px fs-28px c-black">
+    Facilities in <%= @region.name %>
+  </h3>
+  <p class="mb-24px fs-16px c-grey-dark">
+    <span class="fw-bold">Total:</span> <%= @region.facilities.length %> facilities
+  </p>
+  <div class="d-lg-flex flex-lg-wrap">
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            HTN controlled
+          </h3>
+        </div>
+        <div class="table-responsive">
+          <table id="htn-controlled-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  BP &lt;140/90
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Number of patients
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pl-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            No BP measure
+          </h3>
+        </div>
+        <div class="table-responsive">
+          <table id="no-bp-measure-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  No visit >3 months
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Visited but no BP
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= @data_for_facility[facility.name]["missed_visits_rate"].values.last %>%
+                  </td>
+                  <td class="ta-left">
+                    <%= @data_for_facility[facility.name]["visited_without_bp_taken_rate"].values.last %>%
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            HTN not under control
+          </h3>
+        </div>
+        <div class="table-responsive">
+          <table id="htn-not-under-control-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  BP &ge;140/90
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Number of patients
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_to_percentage(@data_for_facility[facility.name]["uncontrolled_patients_rate"].values.last, precision: 0) %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["uncontrolled_patients"].values.last) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pl-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            Cumulative registrations
+          </h3>
+        </div>
+        <div class="table-responsive">
+          <table id="cumulative-registrations-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  Registrations in <%= @selected_date.to_s %>
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Cumulative
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>
 <div id="data-json" style="display: none;">
