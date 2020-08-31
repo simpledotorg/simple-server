@@ -75,7 +75,6 @@ class ControlRateService
   end
 
   def bp_monthly_query(period)
-    date = period.to_date
     control_range = period.blood_pressure_control_range
     # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
     # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
