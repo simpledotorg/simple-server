@@ -76,9 +76,7 @@ class ControlRateService
 
   def bp_monthly_query(period)
     date = period.to_date
-    end_range = date.end_of_month
-    mid_range = date.advance(months: -1).end_of_month
-    beg_range = date.advance(months: -2).end_of_month
+    control_range = period.blood_pressure_control_range
     # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
     # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
     LatestBloodPressuresPerPatientPerMonth
@@ -86,11 +84,8 @@ class ControlRateService
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .with_hypertension
       .where(registration_facility_id: facilities)
-      .where("patient_recorded_at < ?", period.blood_pressure_control_range.begin)
-      .where("(year = ? AND month = ?) OR (year = ? AND month = ?) OR (year = ? AND month = ?)",
-        beg_range.year.to_s, beg_range.month.to_s,
-        mid_range.year.to_s, mid_range.month.to_s,
-        end_range.year.to_s, end_range.month.to_s)
+      .where("patient_recorded_at < ?", control_range.begin)
+      .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
       .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
   end
 
