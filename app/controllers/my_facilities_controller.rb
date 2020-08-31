@@ -35,7 +35,6 @@ class MyFacilitiesController < AdminController
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
 
-
     overview_query = MyFacilities::OverviewQuery.new(facilities: @facilities)
     @inactive_facilities = overview_query.inactive_facilities
 

@@ -615,7 +615,7 @@ RSpec.describe UserAccess, type: :model do
 
       manager.grant_access(new_user, [facility_1.id, facility_2.id])
 
-      expect(new_user.reload.accessible_facilities(:view_pii).to contain_exactly(facility_1, facility_2))
+      expect(new_user.reload.accessible_facilities(:view_pii).to(contain_exactly(facility_1, facility_2)))
     end
 
     it "returns nothing if no facilities are selected" do
