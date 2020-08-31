@@ -1,7 +1,7 @@
-<ul class="access-item-wrapper facility-group">
+<ul class="access-item-wrapper facility-group <%= "collapsed" unless tree_depth == 0 %>">
   <% tree.each do |facility_group, fg_info| %>
     <li>
-      <div class="access-item facility-group">
+      <div class="access-item facility-group <%= "collapsed" if root == :organization or tree_depth == 0 %>">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
@@ -18,13 +18,14 @@
                 checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
             ) %>
 
-        <span class="access-ratio">
+        <span class="access-ratio collapsed">
           <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
         </span>
       </div>
 
       <%= render "email_authentications/invitations/facility_access_tree",
           tree: fg_info[:facilities],
+          root: root,
           page: page,
           form: form,
           user_being_edited: user_being_edited,

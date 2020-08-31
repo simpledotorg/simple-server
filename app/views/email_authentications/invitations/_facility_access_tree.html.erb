@@ -1,7 +1,7 @@
-<ul class="access-item-wrapper">
+<ul class="access-item-wrapper facility <%= "collapsed" unless tree_depth == 0 %>">
   <% tree.each do |facility, _facility_info| %>
     <li>
-      <div class="access-item">
+      <div class="access-item facility <%= "collapsed" if root == :organization or root == :facility_group %>">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
