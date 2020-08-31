@@ -205,7 +205,8 @@ class Api::V4::Models
          password_digest: {"$ref" => "#/definitions/bcrypt_password"},
          registration_facility_id: {"$ref" => "#/definitions/uuid"},
          sync_approval_status: {type: [:string, "null"]},
-         sync_approval_status_reason: {type: [:string, "null"]}
+         sync_approval_status_reason: {type: [:string, "null"]},
+         teleconsultation_phone_number: {"$ref" => "#/definitions/non_empty_string"}
        },
        required: %w[id
          created_at
