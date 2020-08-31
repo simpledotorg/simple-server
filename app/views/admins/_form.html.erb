@@ -5,7 +5,7 @@
         <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *" %>
         <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
-        <%= access_level_select(form, current_admin.permitted_access_levels_info.values, value: @admin.access_level) %>
+        <%= access_level_select(form, current_admin.permitted_access_levels_info.values, value: @admin.access_level, page: :edit) %>
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
