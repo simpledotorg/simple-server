@@ -33,11 +33,11 @@ class User < ApplicationRecord
   has_many :medical_histories
   has_many :prescription_drugs
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-  has_many :accesses, dependent: :destroy
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
     class_name: "Patient",
     foreign_key: :deleted_by_user_id
+  has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -49,13 +49,10 @@ class User < ApplicationRecord
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
-  #
-  #
+  validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
+  validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
   # Revive this validation once all users are migrated to the new permissions system:
-  #
   # validates :access_level, presence: true, if: -> { email_authentication.present? }
-  #
-  #
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -101,6 +98,12 @@ class User < ApplicationRecord
 
   alias facility registration_facility
 
+  def full_teleconsultation_phone_number
+    defaulted_teleconsult_number = teleconsultation_phone_number || phone_number
+    teleconsultation_isd_code ||= Rails.application.config.country["sms_country_code"]
+    Phonelib.parse(teleconsultation_isd_code + defaulted_teleconsult_number).full_e164
+  end
+
   def authorized_facility?(facility_id)
     registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
   end
@@ -132,7 +135,13 @@ class User < ApplicationRecord
   end
 
   def update_with_phone_number_authentication(params)
-    user_params = params.slice(:full_name, :sync_approval_status, :sync_approval_status_reason)
+    user_params = params.slice(
+      :full_name,
+      :teleconsultation_phone_number,
+      :teleconsultation_isd_code,
+      :sync_approval_status,
+      :sync_approval_status_reason
+    )
     phone_number_authentication_params = params.slice(
       :phone_number,
       :password,
@@ -141,7 +150,7 @@ class User < ApplicationRecord
     )
 
     transaction do
-      update!(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
+      update(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
     end
   end
 
@@ -202,5 +211,9 @@ class User < ApplicationRecord
 
   def power_user?
     power_user_access? && email_authentication.present?
+  end
+
+  def flipper_id
+    "User;#{id}"
   end
 end
