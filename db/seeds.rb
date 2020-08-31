@@ -19,15 +19,15 @@ require "faker"
 # 100 fg
 # 100 f
 
-NUM_OF_FACILITY_GROUPS = 40
-NUM_OF_FACILITIES = 85
+NUM_OF_FACILITY_GROUPS = 100
+NUM_OF_FACILITIES = 1
 MAX_NUM_OF_USERS_PER_FACILITY = 1
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
 ADMIN_USER_NAME = "Admin User"
 ADMIN_USER_EMAIL = "admin@simple.org"
 
 org = {
-  name: "IHCI"
+  name: "NHF"
 }
 
 facility_size_map = {
@@ -119,17 +119,17 @@ facilities =
 #
 # create users
 #
-facilities.each do |facility|
-  if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
-    role = rand > 0.1 ? ENV["SEED_GENERATED_ACTIVE_USER_ROLE"] : ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]
-    FactoryBot.create_list(:user,
-      NUM_OF_USERS_PER_FACILITY_FN.call,
-      :with_phone_number_authentication,
-      registration_facility: facility,
-      organization: organization,
-      role: role)
-  end
-end
+# facilities.each do |facility|
+#   if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
+#     role = rand > 0.1 ? ENV["SEED_GENERATED_ACTIVE_USER_ROLE"] : ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]
+#     FactoryBot.create_list(:user,
+#       NUM_OF_USERS_PER_FACILITY_FN.call,
+#       :with_phone_number_authentication,
+#       registration_facility: facility,
+#       organization: organization,
+#       role: role)
+#   end
+# end
 
 #
 # create admin user
