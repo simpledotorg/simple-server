@@ -130,7 +130,7 @@ class UserAccess < Struct.new(:user)
 
           [fg,
             {
-              can_access: can?(action, :facility_group, fg),
+              can_access: can?(action, :facility_group, :access_record, fg),
               facilities: facilities_in_facility_group,
               total_facilities: fg.facilities.size
             }]
@@ -147,7 +147,7 @@ class UserAccess < Struct.new(:user)
 
           [org,
             {
-              can_access: can?(action, :organization, org),
+              can_access: can?(action, :organization, :access_record, org),
               facility_groups: facility_groups_in_org,
               total_facility_groups: org.facility_groups.size
             }]
@@ -237,21 +237,21 @@ class UserAccess < Struct.new(:user)
     resources = []
 
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if can?(:manage, :organization, org) && org.facilities == selected_facilities_in_org
+      if can?(:manage, :organization, :access_record, org) && org.facilities == selected_facilities_in_org
         resources << {resource: org}
         selected_facilities -= selected_facilities_in_org
       end
     end
 
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if can?(:manage, :facility_group, fg) && fg.facilities == selected_facilities_in_fg
+      if can?(:manage, :facility_group, :access_record, fg) && fg.facilities == selected_facilities_in_fg
         resources << {resource: fg}
         selected_facilities -= selected_facilities_in_fg
       end
     end
 
     selected_facilities.each do |f|
-      resources << {resource: f} if can?(:manage, :facility, f)
+      resources << {resource: f} if can?(:manage, :facility, :access_record, f)
     end
 
     resources.flatten

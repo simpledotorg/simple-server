@@ -615,7 +615,7 @@ RSpec.describe UserAccess, type: :model do
 
       manager.grant_access(new_user, [facility_1.id, facility_2.id])
 
-      expect(new_user.reload.accessible_facilities(:view_pii).to(contain_exactly(facility_1, facility_2)))
+      expect(new_user.reload.accessible_facilities(:view_pii)).to contain_exactly(facility_1, facility_2)
     end
 
     it "returns nothing if no facilities are selected" do
@@ -794,12 +794,22 @@ RSpec.describe UserAccess, type: :model do
 
     specify do
       manager = create(:admin, :manager)
-      expect(manager.permitted_access_levels).to match_array([:manager, :viewer_all])
+      expect(manager.permitted_access_levels).to match_array([:call_center, :manager, :viewer_all, :viewer_reports_only])
     end
 
     specify do
       viewer_all = create(:admin, :viewer_all)
       expect(viewer_all.permitted_access_levels).to match_array([])
+    end
+
+    specify do
+      manager = create(:admin, :viewer_reports_only)
+      expect(manager.permitted_access_levels).to match_array([])
+    end
+
+    specify do
+      manager = create(:admin, :call_center)
+      expect(manager.permitted_access_levels).to match_array([])
     end
   end
 end
