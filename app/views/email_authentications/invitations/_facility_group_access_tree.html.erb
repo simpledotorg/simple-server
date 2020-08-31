@@ -1,7 +1,7 @@
-<ul class="access-item-wrapper <%= collapse?(tree_depth) %> facility-group">
+<ul class="access-item-wrapper">
   <% tree.each do |facility_group, fg_info| %>
     <li>
-      <div class="access-item <%= collapse?(tree_depth) %> facility-group">
+      <div class="access-item collapsed">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>

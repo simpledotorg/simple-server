@@ -95,7 +95,7 @@
         }
       }
 
-      &:not(.collapsed):not(.facility):not(.facility-group) {
+      &:not(.collapsed) {
         background: #fff8e0;
 
         div {
