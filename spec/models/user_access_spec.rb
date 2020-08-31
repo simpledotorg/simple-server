@@ -14,19 +14,19 @@ RSpec.describe UserAccess, type: :model do
         it "allows manager to view_pii" do
           create(:access, user: manager.user, resource: organization_1)
 
-          expect(manager.can?(:view_pii, :organization, organization_1)).to be true
-          expect(manager.can?(:view_pii, :organization, organization_2)).to be false
-          expect(manager.can?(:view_pii, :organization, organization_3)).to be false
-          expect(manager.can?(:view_pii, :organization)).to be true
+          expect(manager.can?(:view_pii, :organization, :access_record, organization_1)).to be true
+          expect(manager.can?(:view_pii, :organization, :access_record, organization_2)).to be false
+          expect(manager.can?(:view_pii, :organization, :access_record, organization_3)).to be false
+          expect(manager.can?(:view_pii, :organization, :access_any)).to be true
         end
 
         it "allows viewer_all to view" do
           create(:access, user: viewer_all.user, resource: organization_3)
 
-          expect(viewer_all.can?(:view_pii, :organization, organization_1)).to be false
-          expect(viewer_all.can?(:view_pii, :organization, organization_2)).to be false
-          expect(viewer_all.can?(:view_pii, :organization, organization_3)).to be true
-          expect(viewer_all.can?(:view_pii, :organization)).to be true
+          expect(viewer_all.can?(:view_pii, :organization, :access_record, organization_1)).to be false
+          expect(viewer_all.can?(:view_pii, :organization, :access_record, organization_2)).to be false
+          expect(viewer_all.can?(:view_pii, :organization, :access_record, organization_3)).to be true
+          expect(viewer_all.can?(:view_pii, :organization, :access_any)).to be true
         end
       end
 
@@ -34,19 +34,19 @@ RSpec.describe UserAccess, type: :model do
         it "allows manager to manage" do
           create(:access, user: manager.user, resource: organization_1)
 
-          expect(manager.can?(:manage, :organization, organization_1)).to be true
-          expect(manager.can?(:manage, :organization, organization_2)).to be false
-          expect(manager.can?(:manage, :organization, organization_3)).to be false
-          expect(manager.can?(:manage, :organization)).to be true
+          expect(manager.can?(:manage, :organization, :access_record, organization_1)).to be true
+          expect(manager.can?(:manage, :organization, :access_record, organization_2)).to be false
+          expect(manager.can?(:manage, :organization, :access_record, organization_3)).to be false
+          expect(manager.can?(:manage, :organization, :access_any)).to be true
         end
 
         it "allows viewer_all to manage" do
           create(:access, user: viewer_all.user, resource: organization_3)
 
-          expect(viewer_all.can?(:manage, :organization, organization_1)).to be false
-          expect(viewer_all.can?(:manage, :organization, organization_2)).to be false
-          expect(viewer_all.can?(:manage, :organization, organization_3)).to be false
-          expect(viewer_all.can?(:manage, :organization)).to be false
+          expect(viewer_all.can?(:manage, :organization, :access_record, organization_1)).to be false
+          expect(viewer_all.can?(:manage, :organization, :access_record, organization_2)).to be false
+          expect(viewer_all.can?(:manage, :organization, :access_record, organization_3)).to be false
+          expect(viewer_all.can?(:manage, :organization, :access_any)).to be false
         end
       end
     end
@@ -60,19 +60,19 @@ RSpec.describe UserAccess, type: :model do
         it "allows manager to view" do
           create(:access, user: manager.user, resource: facility_group_1)
 
-          expect(manager.can?(:view_pii, :facility_group, facility_group_1)).to be true
-          expect(manager.can?(:view_pii, :facility_group, facility_group_2)).to be false
-          expect(manager.can?(:view_pii, :facility_group, facility_group_3)).to be false
-          expect(manager.can?(:view_pii, :facility_group)).to be true
+          expect(manager.can?(:view_pii, :facility_group, :access_record, facility_group_1)).to be true
+          expect(manager.can?(:view_pii, :facility_group, :access_record, facility_group_2)).to be false
+          expect(manager.can?(:view_pii, :facility_group, :access_record, facility_group_3)).to be false
+          expect(manager.can?(:view_pii, :facility_group, :access_any)).to be true
         end
 
         it "allows viewer_all to view" do
           create(:access, user: viewer_all.user, resource: facility_group_3)
 
-          expect(viewer_all.can?(:view_pii, :facility_group, facility_group_1)).to be false
-          expect(viewer_all.can?(:view_pii, :facility_group, facility_group_2)).to be false
-          expect(viewer_all.can?(:view_pii, :facility_group, facility_group_3)).to be true
-          expect(viewer_all.can?(:view_pii, :facility_group)).to be true
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_record, facility_group_1)).to be false
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_record, facility_group_2)).to be false
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_record, facility_group_3)).to be true
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_any)).to be true
         end
       end
 
@@ -80,19 +80,19 @@ RSpec.describe UserAccess, type: :model do
         it "allows manager to manage" do
           create(:access, user: manager.user, resource: facility_group_1)
 
-          expect(manager.can?(:manage, :facility_group, facility_group_1)).to be true
-          expect(manager.can?(:manage, :facility_group, facility_group_2)).to be false
-          expect(manager.can?(:manage, :facility_group, facility_group_3)).to be false
-          expect(manager.can?(:manage, :facility_group)).to be true
+          expect(manager.can?(:manage, :facility_group, :access_record, facility_group_1)).to be true
+          expect(manager.can?(:manage, :facility_group, :access_record, facility_group_2)).to be false
+          expect(manager.can?(:manage, :facility_group, :access_record, facility_group_3)).to be false
+          expect(manager.can?(:manage, :facility_group, :access_any)).to be true
         end
 
         it "allows viewer_all to manage" do
           create(:access, user: viewer_all.user, resource: facility_group_3)
 
-          expect(viewer_all.can?(:manage, :facility_group, facility_group_1)).to be false
-          expect(viewer_all.can?(:manage, :facility_group, facility_group_2)).to be false
-          expect(viewer_all.can?(:manage, :facility_group, facility_group_3)).to be false
-          expect(viewer_all.can?(:manage, :facility_group)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_record, facility_group_1)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_record, facility_group_2)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_record, facility_group_3)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_any)).to be false
         end
       end
 
@@ -106,40 +106,40 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: manager.user, resource: organization_1)
           create(:access, user: manager.user, resource: facility_group_2)
 
-          expect(manager.can?(:view_pii, :facility_group, facility_group_1)).to be true
-          expect(manager.can?(:view_pii, :facility_group, facility_group_2)).to be true
-          expect(manager.can?(:view_pii, :facility_group, facility_group_3)).to be false
-          expect(manager.can?(:view_pii, :facility_group)).to be true
+          expect(manager.can?(:view_pii, :facility_group, :access_record, facility_group_1)).to be true
+          expect(manager.can?(:view_pii, :facility_group, :access_record, facility_group_2)).to be true
+          expect(manager.can?(:view_pii, :facility_group, :access_record, facility_group_3)).to be false
+          expect(manager.can?(:view_pii, :facility_group, :access_any)).to be true
         end
 
         it "allows viewer_all to view" do
           create(:access, user: viewer_all.user, resource: organization_1)
           create(:access, user: viewer_all.user, resource: facility_group_2)
 
-          expect(viewer_all.can?(:view_pii, :facility_group, facility_group_1)).to be true
-          expect(viewer_all.can?(:view_pii, :facility_group, facility_group_2)).to be true
-          expect(viewer_all.can?(:view_pii, :facility_group, facility_group_3)).to be false
-          expect(viewer_all.can?(:view_pii, :facility_group)).to be true
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_record, facility_group_1)).to be true
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_record, facility_group_2)).to be true
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_record, facility_group_3)).to be false
+          expect(viewer_all.can?(:view_pii, :facility_group, :access_any)).to be true
         end
 
         it "does not allow viewer_all to manage" do
           create(:access, user: viewer_all.user, resource: organization_1)
           create(:access, user: viewer_all.user, resource: facility_group_2)
 
-          expect(viewer_all.can?(:manage, :facility_group, facility_group_1)).to be false
-          expect(viewer_all.can?(:manage, :facility_group, facility_group_2)).to be false
-          expect(viewer_all.can?(:manage, :facility_group, facility_group_3)).to be false
-          expect(viewer_all.can?(:manage, :facility_group)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_record, facility_group_1)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_record, facility_group_2)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_record, facility_group_3)).to be false
+          expect(viewer_all.can?(:manage, :facility_group, :access_any)).to be false
         end
 
         it "allows manager to manage" do
           create(:access, user: manager.user, resource: organization_1)
           create(:access, user: manager.user, resource: facility_group_2)
 
-          expect(manager.can?(:manage, :facility_group, facility_group_1)).to be true
-          expect(manager.can?(:manage, :facility_group, facility_group_2)).to be true
-          expect(manager.can?(:manage, :facility_group, facility_group_3)).to be false
-          expect(manager.can?(:manage, :facility_group)).to be true
+          expect(manager.can?(:manage, :facility_group, :access_record, facility_group_1)).to be true
+          expect(manager.can?(:manage, :facility_group, :access_record, facility_group_2)).to be true
+          expect(manager.can?(:manage, :facility_group, :access_record, facility_group_3)).to be false
+          expect(manager.can?(:manage, :facility_group, :access_any)).to be true
         end
       end
     end
@@ -153,19 +153,19 @@ RSpec.describe UserAccess, type: :model do
         it "allows manager to view" do
           create(:access, user: manager.user, resource: facility_1)
 
-          expect(manager.can?(:view_pii, :facility, facility_1)).to be true
-          expect(manager.can?(:view_pii, :facility, facility_2)).to be false
-          expect(manager.can?(:view_pii, :facility, facility_3)).to be false
-          expect(manager.can?(:view_pii, :facility)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_1)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_2)).to be false
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_3)).to be false
+          expect(manager.can?(:view_pii, :facility, :access_any)).to be true
         end
 
         it "allows viewer_all to view" do
           create(:access, user: viewer_all.user, resource: facility_3)
 
-          expect(viewer_all.can?(:view_pii, :facility, facility_1)).to be false
-          expect(viewer_all.can?(:view_pii, :facility, facility_2)).to be false
-          expect(viewer_all.can?(:view_pii, :facility, facility_3)).to be true
-          expect(viewer_all.can?(:view_pii, :facility)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_1)).to be false
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_2)).to be false
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_3)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_any)).to be true
         end
       end
 
@@ -173,19 +173,19 @@ RSpec.describe UserAccess, type: :model do
         it "allows manager to manage" do
           create(:access, user: manager.user, resource: facility_1)
 
-          expect(manager.can?(:manage, :facility, facility_1)).to be true
-          expect(manager.can?(:manage, :facility, facility_2)).to be false
-          expect(manager.can?(:manage, :facility, facility_3)).to be false
-          expect(manager.can?(:manage, :facility)).to be true
+          expect(manager.can?(:manage, :facility, :access_record, facility_1)).to be true
+          expect(manager.can?(:manage, :facility, :access_record, facility_2)).to be false
+          expect(manager.can?(:manage, :facility, :access_record, facility_3)).to be false
+          expect(manager.can?(:manage, :facility, :access_any)).to be true
         end
 
         it "allows viewer_all to manage" do
           create(:access, user: viewer_all.user, resource: facility_3)
 
-          expect(viewer_all.can?(:manage, :facility, facility_1)).to be false
-          expect(viewer_all.can?(:manage, :facility, facility_2)).to be false
-          expect(viewer_all.can?(:manage, :facility, facility_3)).to be false
-          expect(viewer_all.can?(:manage, :facility)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_1)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_2)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_3)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_any)).to be false
         end
       end
 
@@ -199,40 +199,40 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: manager.user, resource: facility_group_1)
           create(:access, user: manager.user, resource: facility_2)
 
-          expect(manager.can?(:view_pii, :facility, facility_1)).to be true
-          expect(manager.can?(:view_pii, :facility, facility_2)).to be true
-          expect(manager.can?(:view_pii, :facility, facility_3)).to be false
-          expect(manager.can?(:view_pii, :facility)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_1)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_2)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_3)).to be false
+          expect(manager.can?(:view_pii, :facility, :access_any)).to be true
         end
 
         it "allows viewer_all to view" do
           create(:access, user: viewer_all.user, resource: facility_group_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:view_pii, :facility, facility_1)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, facility_2)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, facility_3)).to be false
-          expect(viewer_all.can?(:view_pii, :facility)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_1)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_2)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:view_pii, :facility, :access_any)).to be true
         end
 
         it "does not allow viewer_all to manage" do
           create(:access, user: viewer_all.user, resource: facility_group_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:manage, :facility, facility_1)).to be false
-          expect(viewer_all.can?(:manage, :facility, facility_2)).to be false
-          expect(viewer_all.can?(:manage, :facility, facility_3)).to be false
-          expect(viewer_all.can?(:manage, :facility)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_1)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_2)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_any)).to be false
         end
 
         it "allows manager to manage" do
           create(:access, user: manager.user, resource: facility_group_1)
           create(:access, user: manager.user, resource: facility_2)
 
-          expect(manager.can?(:manage, :facility, facility_1)).to be true
-          expect(manager.can?(:manage, :facility, facility_2)).to be true
-          expect(manager.can?(:manage, :facility, facility_3)).to be false
-          expect(manager.can?(:manage, :facility)).to be true
+          expect(manager.can?(:manage, :facility, :access_record, facility_1)).to be true
+          expect(manager.can?(:manage, :facility, :access_record,  facility_2)).to be true
+          expect(manager.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(manager.can?(:manage, :facility, :access_any)).to be true
         end
       end
 
@@ -247,40 +247,40 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: manager.user, resource: organization_1)
           create(:access, user: manager.user, resource: facility_2)
 
-          expect(manager.can?(:view_pii, :facility, facility_1)).to be true
-          expect(manager.can?(:view_pii, :facility, facility_2)).to be true
-          expect(manager.can?(:view_pii, :facility, facility_3)).to be false
-          expect(manager.can?(:view_pii, :facility)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record,  facility_1)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record,  facility_2)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record,  facility_3)).to be false
+          expect(manager.can?(:view_pii, :facility, :access_any)).to be true
         end
 
         it "allows viewer_all to view" do
           create(:access, user: viewer_all.user, resource: organization_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:view_pii, :facility, facility_1)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, facility_2)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, facility_3)).to be false
-          expect(viewer_all.can?(:view_pii, :facility)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_1)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_2)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:view_pii, :facility, :access_any)).to be true
         end
 
         it "does not allow viewer_all to manage" do
           create(:access, user: viewer_all.user, resource: organization_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:manage, :facility, facility_1)).to be false
-          expect(viewer_all.can?(:manage, :facility, facility_2)).to be false
-          expect(viewer_all.can?(:manage, :facility, facility_3)).to be false
-          expect(viewer_all.can?(:manage, :facility)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_1)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_2)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_any)).to be false
         end
 
         it "allows manager to manage" do
           create(:access, user: manager.user, resource: organization_1)
           create(:access, user: manager.user, resource: facility_2)
 
-          expect(manager.can?(:manage, :facility, facility_1)).to be true
-          expect(manager.can?(:manage, :facility, facility_2)).to be true
-          expect(manager.can?(:manage, :facility, facility_3)).to be false
-          expect(manager.can?(:manage, :facility)).to be true
+          expect(manager.can?(:manage, :facility, :access_record,  facility_1)).to be true
+          expect(manager.can?(:manage, :facility, :access_record,  facility_2)).to be true
+          expect(manager.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(manager.can?(:manage, :facility, :access_any)).to be true
         end
       end
     end
