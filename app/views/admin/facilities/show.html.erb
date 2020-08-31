@@ -8,9 +8,15 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    <% if current_admin.can?(:manage, :facility, :access_record, @facility) %>
+      <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
+    <% end %>
+    else
     <% if policy([:manage, :facility, @facility]).edit? %>
       <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
     <% end %>
+    end
   </nav>
 </div>
 

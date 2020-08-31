@@ -17,16 +17,16 @@ RSpec.feature "Facility page functionality with new permissions", type: :feature
   context "facility group listing" do
     context "admin has permission to manage facility groups" do
       let(:admin) { create(:admin, :power_user) }
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facility_groups)]
-      end
 
       before(:each) do
-        with_flag_enabled(:new_permissions_system_aug_2020, admin) {
-          visit root_path
-          sign_in(admin.email_authentication)
-          visit admin_facilities_path
-        }
+        enable_flag(:new_permissions_system_aug_2020, admin)
+        visit root_path
+        sign_in(admin.email_authentication)
+        visit admin_facilities_path
+      end
+
+      after(:each) do
+        disable_flag(:new_permissions_system_aug_2020, admin)
       end
 
       it "Verify facility landing page" do
@@ -82,16 +82,16 @@ RSpec.feature "Facility page functionality with new permissions", type: :feature
   context "facility listing" do
     context "admin has permission to manage facilities for a facility group" do
       let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: ihmi_group_bathinda)]) }
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: ihmi_group_bathinda)]
-      end
 
       before(:each) do
-        with_flag_enabled(:new_permissions_system_aug_2020, admin) {
-          visit root_path
-          sign_in(admin.email_authentication)
-          visit admin_facilities_path
-        }
+        enable_flag(:new_permissions_system_aug_2020, admin)
+        visit root_path
+        sign_in(admin.email_authentication)
+        visit admin_facilities_path
+      end
+
+      after(:each) do
+        disable_flag(:new_permissions_system_aug_2020, admin)
       end
 
       it "Verify facility landing page" do
@@ -107,16 +107,16 @@ RSpec.feature "Facility page functionality with new permissions", type: :feature
 
     context "admin does not have permission to manage facilities a facility group" do
       let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: create(:facility_group))]) }
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: create(:facility_group))]
-      end
 
       before(:each) do
-        with_flag_enabled(:new_permissions_system_aug_2020, admin) {
-          visit root_path
-          sign_in(admin.email_authentication)
-          visit admin_facilities_path
-        }
+        enable_flag(:new_permissions_system_aug_2020, admin)
+        visit root_path
+        sign_in(admin.email_authentication)
+        visit admin_facilities_path
+      end
+
+      after(:each) do
+        disable_flag(:new_permissions_system_aug_2020, admin)
       end
 
       it "does not display a new facility link" do

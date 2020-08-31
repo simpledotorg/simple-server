@@ -78,13 +78,13 @@
                 <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
               </li>
 
-              <% if policy(:dashboard).manage? %>
+              <% if current_admin.can?(:manage, :facility, :access_any) %>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Manage
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <% if policy([:dashboard]).manage_organizations? %>
+                    <% if current_admin.can?(:manage, :organization, :access_any) %>
                       <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
                     <% end %>
                     <% if current_admin.can?(:manage, :facility, :access_any) %>
@@ -99,10 +99,10 @@
                     <% if policy([:dashboard]).manage_users? %>
                       <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                     <% end %>
-                    <% if policy([:dashboard]).view_sidekiq_ui? %>
+                    <% if current_admin.power_user? %>
                       <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
                     <% end %>
-                    <% if policy([:dashboard]).view_flipper_ui? %>
+                    <% if current_admin.power_user? %>
                       <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
                     <% end %>
                   </div>

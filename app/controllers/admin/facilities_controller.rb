@@ -73,7 +73,7 @@ class Admin::FacilitiesController < AdminController
   def create
     @facility = new_facility(facility_params)
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:manage, :facility, :access_record, @facility)
+      current_admin.authorize(:manage, :facility, :create, @facility)
     else
       authorize([:manage, :facility, @facility])
     end
@@ -99,7 +99,12 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    authorize([:manage, :facility, Facility])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.authorize(:manage, :facility, :access_any)
+    else
+      authorize([:manage, :facility, Facility])
+    end
+
     return render :upload, status: :bad_request if @errors.present?
 
     if @facilities.present?

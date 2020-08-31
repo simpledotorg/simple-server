@@ -189,7 +189,7 @@ Rails.application.routes.draw do
         post "upload"
       end
     end
-    resources :facility_groups do
+    resources :facility_groups, except: [:index] do
       resources :facilities
     end
 

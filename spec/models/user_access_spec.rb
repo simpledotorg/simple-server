@@ -211,7 +211,7 @@ RSpec.describe UserAccess, type: :model do
 
           expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_1)).to be true
           expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_2)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_3)).to be false
           expect(viewer_all.can?(:view_pii, :facility, :access_any)).to be true
         end
 
@@ -219,9 +219,9 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: viewer_all.user, resource: facility_group_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_1)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_1)).to be false
           expect(viewer_all.can?(:manage, :facility, :access_record, facility_2)).to be false
-          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_3)).to be false
           expect(viewer_all.can?(:manage, :facility, :access_any)).to be false
         end
 
@@ -230,8 +230,8 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: manager.user, resource: facility_2)
 
           expect(manager.can?(:manage, :facility, :access_record, facility_1)).to be true
-          expect(manager.can?(:manage, :facility, :access_record,  facility_2)).to be true
-          expect(manager.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(manager.can?(:manage, :facility, :access_record, facility_2)).to be true
+          expect(manager.can?(:manage, :facility, :access_record, facility_3)).to be false
           expect(manager.can?(:manage, :facility, :access_any)).to be true
         end
       end
@@ -247,9 +247,9 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: manager.user, resource: organization_1)
           create(:access, user: manager.user, resource: facility_2)
 
-          expect(manager.can?(:view_pii, :facility, :access_record,  facility_1)).to be true
-          expect(manager.can?(:view_pii, :facility, :access_record,  facility_2)).to be true
-          expect(manager.can?(:view_pii, :facility, :access_record,  facility_3)).to be false
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_1)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_2)).to be true
+          expect(manager.can?(:view_pii, :facility, :access_record, facility_3)).to be false
           expect(manager.can?(:view_pii, :facility, :access_any)).to be true
         end
 
@@ -257,9 +257,9 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: viewer_all.user, resource: organization_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_1)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_2)).to be true
-          expect(viewer_all.can?(:view_pii, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_1)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_2)).to be true
+          expect(viewer_all.can?(:view_pii, :facility, :access_record, facility_3)).to be false
           expect(viewer_all.can?(:view_pii, :facility, :access_any)).to be true
         end
 
@@ -267,9 +267,9 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: viewer_all.user, resource: organization_1)
           create(:access, user: viewer_all.user, resource: facility_2)
 
-          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_1)).to be false
-          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_2)).to be false
-          expect(viewer_all.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_1)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_2)).to be false
+          expect(viewer_all.can?(:manage, :facility, :access_record, facility_3)).to be false
           expect(viewer_all.can?(:manage, :facility, :access_any)).to be false
         end
 
@@ -277,9 +277,9 @@ RSpec.describe UserAccess, type: :model do
           create(:access, user: manager.user, resource: organization_1)
           create(:access, user: manager.user, resource: facility_2)
 
-          expect(manager.can?(:manage, :facility, :access_record,  facility_1)).to be true
-          expect(manager.can?(:manage, :facility, :access_record,  facility_2)).to be true
-          expect(manager.can?(:manage, :facility, :access_record,  facility_3)).to be false
+          expect(manager.can?(:manage, :facility, :access_record, facility_1)).to be true
+          expect(manager.can?(:manage, :facility, :access_record, facility_2)).to be true
+          expect(manager.can?(:manage, :facility, :access_record, facility_3)).to be false
           expect(manager.can?(:manage, :facility, :access_any)).to be true
         end
       end

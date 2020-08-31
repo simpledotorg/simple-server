@@ -4,8 +4,14 @@
     <%= @facility_group.name %>
   </h1>
   <nav class="page-nav">
-    <% if policy([:manage, @facility_group]).edit? %>
-      <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.can?(:manage, :facility_group, :access_record, @facility_group) %>
+        <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, @facility_group]).edit? %>
+        <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+      <% end %>
     <% end %>
   </nav>
 </div>
@@ -41,11 +47,18 @@
           <td><%= facility.country %></td>
           <td><%= facility.pin %></td>
           <td><%= facility.facility_type %></td>
-          <% if policy([:manage, :facility, facility]).edit? %>
-            <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
-          <% end %>
-          <% if policy([:manage, :facility, facility]).destroy? %>
-            <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+          <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+            <% if current_admin.can?(:manage, :facility, :access_record, facility) %>
+              <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
+              <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+            <% end %>
+          <% else %>
+            <% if policy([:manage, :facility, facility]).edit? %>
+              <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
+            <% end %>
+            <% if policy([:manage, :facility, facility]).destroy? %>
+              <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+            <% end %>
           <% end %>
         </tr>
       <% end %>
