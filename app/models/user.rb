@@ -210,10 +210,6 @@ class User < ApplicationRecord
     true
   end
 
-  def flipper_id
-    "User;#{id}"
-  end
-
   def power_user?
     power_user_access? && email_authentication.present?
   end

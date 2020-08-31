@@ -61,7 +61,7 @@ class Admin::FacilitiesController < AdminController
   def new
     @facility = new_facility
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:manage, :facility, :access_record, @facility)
+      current_admin.authorize(:manage, :facility, :create, @facility)
     else
       authorize([:manage, :facility, @facility])
     end

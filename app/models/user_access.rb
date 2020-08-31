@@ -151,9 +151,7 @@ class UserAccess < Struct.new(:user)
 
   def can_access_record?(resources, record)
     return true if user.power_user?
-    return resources.find_by_id(record).present? if record
-
-    resources.exists?
+    resources.find_by_id(record).present?
   end
 
   def can_act_on_facility?(action, operation, record)

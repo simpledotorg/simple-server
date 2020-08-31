@@ -53,7 +53,7 @@ class AdminController < ApplicationController
     if current_admin.call_center_access?
       appointments_path
     else
-      organizations_path
+      my_facilities_overview_path
     end
   end
 
