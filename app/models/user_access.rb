@@ -61,6 +61,14 @@ class UserAccess < Struct.new(:user)
       .or(Facility.where(facility_group: accessible_facility_groups(action)))
   end
 
+  def accessible_users
+    facilities = accessible_facilities(:manage)
+
+    User.joins(:phone_number_authentications)
+      .where.not(phone_number_authentications: {id: nil})
+      .where(phone_number_authentications: {registration_facility_id: facilities})
+  end
+
   def can?(action, model, operation, record = nil)
     raise ArgumentError, "record should not be an ActiveRecord::Relation." if record&.is_a? ActiveRecord::Relation
     raise ArgumentError, "#{operation} is not a supported operation." unless operation.in? VALID_OPERATIONS
@@ -72,6 +80,8 @@ class UserAccess < Struct.new(:user)
       can_act_on_facility_group?(action, operation, record)
     when :organization
       can_act_on_organization?(action, operation, record)
+    when :user
+      can_act_on_user?(action, operation, record)
     else
       raise ArgumentError, "Access to #{model} is unsupported."
     end
@@ -189,6 +199,19 @@ class UserAccess < Struct.new(:user)
       can_access_record?(accessible_organizations(action), record)
     when :access_any
       accessible_organizations(action).exists?
+    when :create
+      user.power_user?
+    else
+      raise ArgumentError, "#{operation} is unsupported."
+    end
+  end
+
+  def can_act_on_user?(_action, operation, record)
+    case operation
+    when :access_record
+      can_access_record?(accessible_users, record)
+    when :access_any
+      accessible_users.exists?
     when :create
       user.power_user?
     else
