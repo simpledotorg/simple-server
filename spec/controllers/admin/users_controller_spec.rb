@@ -96,7 +96,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         user = create(:user)
         put :update, params: {id: user.to_param, user: invalid_attributes, facility_id: facility.id}
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(200)
       end
     end
   end
