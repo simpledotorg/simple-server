@@ -1,10 +1,10 @@
 version: v1.0
-name: Bangladesh Demo Deployment
+name: Bangladesh Production Deployment
 blocks:
-  - name: Deploy to Bangladesh Demo
+  - name: Deploy to Bangladesh Production
     task:
       jobs:
-        - name: Deploy to Bangladesh Demo
+        - name: Deploy to Bangladesh Production
           commands:
             - checkout
             - sem-version ruby 2.5.1
@@ -12,7 +12,7 @@ blocks:
             - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
-            - 'BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap bangladesh:demo deploy'
+            - 'bundle exec cap bangladesh:production deploy'
       secrets:
         - name: semaphore-deploy-key
       prologue:
@@ -23,6 +23,3 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
-promotions:
-  - name: Bangladesh Production Deployment
-    pipeline_file: bangladesh_production_deployment.yml

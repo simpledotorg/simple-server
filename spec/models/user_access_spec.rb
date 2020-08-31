@@ -575,4 +575,231 @@ RSpec.describe UserAccess, type: :model do
       end
     end
   end
+
+  describe "#grant_access" do
+    let!(:organization_1) { create(:organization) }
+    let!(:organization_2) { create(:organization) }
+    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
+    let!(:facility_4) { create(:facility) }
+    let!(:viewer_access) {
+      create(:access, user: viewer.user, resource: organization_1)
+    }
+    let!(:manager_access) {
+      [create(:access, user: manager.user, resource: organization_1),
+        create(:access, user: manager.user, resource: facility_group_2),
+        create(:access, user: manager.user, resource: facility_4)]
+    }
+
+    it "raises an error if the access level of the new user is not grantable by the current" do
+      new_user = create(:admin, :manager)
+
+      expect {
+        viewer.grant_access(new_user, [facility_1.id, facility_2.id])
+      }.to raise_error(UserAccess::NotAuthorizedError)
+    end
+
+    it "raises an error if the user could not provide any access" do
+      new_user = create(:admin, :viewer)
+
+      expect {
+        manager.grant_access(new_user, [create(:facility).id])
+      }.to raise_error(UserAccess::NotAuthorizedError)
+    end
+
+    it "only grants access to the selected facilities" do
+      new_user = create(:admin, :viewer)
+
+      manager.grant_access(new_user, [facility_1.id, facility_2.id])
+
+      expect(new_user.reload.accessible_facilities(:view)).to contain_exactly(facility_1, facility_2)
+    end
+
+    it "returns nothing if no facilities are selected" do
+      new_user = create(:admin, :viewer)
+
+      expect(manager.grant_access(new_user, [])).to be_nil
+    end
+
+    context "promote access" do
+      it "promotes to FacilityGroup access" do
+        new_user = create(:admin, :viewer)
+
+        manager.grant_access(new_user, [facility_3.id])
+        expected_access_resources = %w[FacilityGroup]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "promotes to Organization access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "gives access to individual facilities that cannot be promoted" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+    end
+
+    context "allows editing accesses" do
+      it "removes access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "adds new access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+    end
+  end
+
+  describe "#access_tree" do
+    let!(:organization_1) { create(:organization) }
+    let!(:organization_2) { create(:organization) }
+    let!(:organization_3) { create(:organization) }
+    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+    let!(:facility_group_3) { create(:facility_group, organization: organization_3) }
+    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
+    let!(:facility_4) { create(:facility, facility_group: facility_group_3) }
+    let!(:viewer_access) {
+      create(:access, user: viewer.user, resource: organization_1)
+    }
+    let!(:manager_access) {
+      create(:access, user: manager.user, resource: organization_1)
+      create(:access, user: manager.user, resource: facility_3)
+    }
+
+    context "render a nested data structure" do
+      it "only allows the direct parent or ancestors to be in the tree" do
+        expected_access_tree = {
+          organizations: {
+            organization_1 => {
+              can_access: true,
+              total_facility_groups: 1,
+
+              facility_groups: {
+                facility_group_1 => {
+                  can_access: true,
+                  total_facilities: 2,
+
+                  facilities: {
+                    facility_1 => {
+                      can_access: true
+                    },
+
+                    facility_2 => {
+                      can_access: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        expect(viewer.access_tree(:view)).to eq(expected_access_tree)
+        expect(viewer.access_tree(:manage)).to eq(organizations: {})
+      end
+
+      it "marks the direct parents or ancestors as inaccessible if the access is partial" do
+        expected_access_tree = {
+          organizations: {
+            organization_1 => {
+              can_access: true,
+              total_facility_groups: 1,
+
+              facility_groups: {
+                facility_group_1 => {
+                  can_access: true,
+                  total_facilities: 2,
+
+                  facilities: {
+                    facility_1 => {
+                      can_access: true
+                    },
+
+                    facility_2 => {
+                      can_access: true
+                    }
+                  }
+                }
+              }
+            },
+
+            organization_2 => {
+              can_access: false,
+              total_facility_groups: 1,
+
+              facility_groups: {
+                facility_group_2 => {
+                  can_access: false,
+                  total_facilities: 1,
+
+                  facilities: {
+                    facility_3 => {
+                      can_access: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        expect(manager.access_tree(:view)).to eq(expected_access_tree)
+        expect(manager.access_tree(:manage)).to eq(expected_access_tree)
+      end
+    end
+  end
+
+  describe "#permitted_access_levels" do
+    specify do
+      power_user = create(:admin, :power_user)
+      expect(power_user.permitted_access_levels).to match_array(UserAccess::LEVELS.keys)
+    end
+
+    specify do
+      manager = create(:admin, :manager)
+      expect(manager.permitted_access_levels).to match_array([:manager, :viewer])
+    end
+
+    specify do
+      viewer = create(:admin, :viewer)
+      expect(viewer.permitted_access_levels).to match_array([])
+    end
+  end
 end
