@@ -31,6 +31,7 @@
       <% access_tree = @admin.visible_access_tree %>
       <%= render access_tree[:render_partial],
           tree: access_tree[:data],
+          root: access_tree[:root],
           user_being_edited: nil,
           tree_depth: 0,
           page: :show,
