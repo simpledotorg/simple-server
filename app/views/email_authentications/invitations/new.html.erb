@@ -1,13 +1,35 @@
 <%= javascript_include_tag "standalone/react_components" %>
 
-<h1><%= t "devise.invitations.new.header" %></h1>
-<%= react_component "InviteAdminForm",
-                    organizations: policy_scope([:manage, :admin, Organization.all]),
-                    facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
-                    facilities: policy_scope([:manage, :admin, Facility.all]).pluck(:id, :name),
-                    permissions: policy([:manage, :admin, User]).allowed_permissions,
-                    access_levels: policy([:manage, :admin, User]).allowed_access_levels,
-                    submit_route: '/email_authentications/invitation',
-                    allow_email_edit: true,
-                    submit_text: 'Invite Admin',
-                    submit_method: 'POST' %>
+<h1><%= t("devise.invitations.new.header") %></h1>
+
+<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+  <div class="row">
+    <div class="col-md-6">
+      <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true) do |form| %>
+        <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
+        <%= form.text_field :email, id: :email, required: true, label: "Email *" %>
+        <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
+        <%= form.select :access_level, current_admin.permitted_access_levels_info, id: :access_levels, required: true, label: "Access *" %>
+
+        <%= form.label "Facility Access *" %>
+        <div id="facility-access">
+          <%= render "email_authentications/invitations/access_tree",
+              access_tree: current_admin.access_tree,
+              form: form %>
+        </div>
+        <%= form.primary("Send Invite") %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <%= react_component "InviteAdminForm",
+      organizations: policy_scope([:manage, :admin, Organization.all]),
+      facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
+      facilities: policy_scope([:manage, :admin, Facility.all]).pluck(:id, :name),
+      permissions: policy([:manage, :admin, User]).allowed_permissions,
+      access_levels: policy([:manage, :admin, User]).allowed_access_levels,
+      submit_route: '/email_authentications/invitation',
+      allow_email_edit: true,
+      submit_text: 'Invite Admin',
+      submit_method: 'POST' %>
+<% end %>

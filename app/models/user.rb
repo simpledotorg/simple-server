@@ -47,7 +47,6 @@ class User < ApplicationRecord
   has_many :medical_histories
   has_many :prescription_drugs
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-  has_many :accesses, dependent: :destroy
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
     class_name: "Patient",
@@ -55,6 +54,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :teleconsultation_facilities,
     class_name: "Facility",
     join_table: "facilities_teleconsultation_medical_officers"
+  has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -68,13 +68,8 @@ class User < ApplicationRecord
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
   validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
-  #
-  #
   # Revive this validation once all users are migrated to the new permissions system:
-  #
   # validates :access_level, presence: true, if: -> { email_authentication.present? }
-  #
-  #
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -233,5 +228,9 @@ class User < ApplicationRecord
 
   def power_user?
     power_user_access? && email_authentication.present?
+  end
+
+  def flipper_id
+    "User;#{id}"
   end
 end
