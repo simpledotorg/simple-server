@@ -24,9 +24,17 @@ class MyFacilitiesController < AdminController
     else
       policy_scope([:manage, :facility, Facility])
     end
-    @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
+
+    users = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.accessible_users
+    else
+      policy_scope([:manage, :user, User])
+    end
+
+    @users_requesting_approval = paginate(users
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
+
 
     overview_query = MyFacilities::OverviewQuery.new(facilities: @facilities)
     @inactive_facilities = overview_query.inactive_facilities
