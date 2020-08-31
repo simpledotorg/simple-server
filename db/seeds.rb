@@ -10,9 +10,18 @@ require_relative "../lib/tasks/scripts/create_admin_user"
 require "factory_bot_rails"
 require "faker"
 
-NUM_OF_FACILITY_GROUPS = 1
-NUM_OF_FACILITIES = 4
-MAX_NUM_OF_USERS_PER_FACILITY = 2
+
+# o1
+# 43 fg
+# 3600 facilities
+
+# o1
+# 100 fg
+# 100 f
+
+NUM_OF_FACILITY_GROUPS = 40
+NUM_OF_FACILITIES = 85
+MAX_NUM_OF_USERS_PER_FACILITY = 1
 NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
 ADMIN_USER_NAME = "Admin User"
 ADMIN_USER_EMAIL = "admin@simple.org"
