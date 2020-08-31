@@ -1,7 +1,7 @@
-<ul class="access-item-wrapper">
+<ul class="access-item-wrapper facility-group">
   <% tree.each do |facility_group, fg_info| %>
     <li>
-      <div class="access-item collapsed">
+      <div class="access-item facility-group">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
@@ -18,7 +18,7 @@
                 checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
             ) %>
 
-        <span class="access-ratio collapsed">
+        <span class="access-ratio">
           <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
         </span>
       </div>

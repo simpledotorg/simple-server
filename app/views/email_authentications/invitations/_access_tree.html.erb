@@ -13,7 +13,7 @@
                 checked_fn: -> { user_being_edited.visible?(:organization, organization) }
             ) %>
 
-        <span class="access-ratio">
+        <span class="access-ratio collapsed">
           <%= access_fraction("facility groups", org_info[:accessible_facility_count], 0) %>
           </span>
       </div>
