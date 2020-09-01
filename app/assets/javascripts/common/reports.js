@@ -1,15 +1,42 @@
-window.addEventListener("DOMContentLoaded", initializeCharts);
+window.addEventListener("DOMContentLoaded", function() {
+  initializeTables();
+  initializeCharts();
+});
 
-let lightGreenColor = "rgba(242, 248, 245, 1)";
-let darkGreenColor = "rgba(0, 122, 49, 1)";
-let mediumGreenColor = "rgba(0, 184, 73, 1)";
-let lightRedColor = "rgba(255, 235, 238, 1)";
-let darkRedColor = "rgba(255, 51, 85, 1)";
-let lightPurpleColor = "rgba(238, 229, 252, 1)";
-let darkPurpleColor = "rgba(83, 0, 224, 1)";
-let darkGreyColor = "rgba(108, 115, 122, 1)";
-let mediumGreyColor = "rgba(173, 178, 184, 1)";
-let lightGreyColor = "rgba(240, 242, 245, 1)";
+const lightGreenColor = "rgba(242, 248, 245, 1)";
+const darkGreenColor = "rgba(0, 122, 49, 1)";
+const mediumGreenColor = "rgba(92, 255, 157, 1)";
+const lightRedColor = "rgba(255, 235, 238, 1)";
+const darkRedColor = "rgba(255, 51, 85, 1)";
+const lightPurpleColor = "rgba(238, 229, 252, 1)";
+const darkGreyColor = "rgba(108, 115, 122, 1)";
+const mediumGreyColor = "rgba(173, 178, 184, 1)";
+const lightGreyColor = "rgba(240, 242, 245, 1)";
+
+function initializeTables() {
+  const tableSortConfig = { descending: true };
+
+  const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
+  const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
+  const noBPMeasureTable = document.getElementById("no-bp-measure-table");
+  const htnControlledTable = document.getElementById("htn-controlled-table");
+
+  if (htnControlledTable) {
+    new Tablesort(htnControlledTable, tableSortConfig);
+  }
+
+  if (noBPMeasureTable) {
+    new Tablesort(noBPMeasureTable, tableSortConfig);
+  }
+
+  if (htnNotUnderControlTable) {
+    new Tablesort(htnNotUnderControlTable, tableSortConfig);
+  }
+
+  if (cumulativeRegistrationsTable) {
+    new Tablesort(cumulativeRegistrationsTable, tableSortConfig);
+  }
+};
 
 function getReportingData() {
   const $newData = document.getElementById("data-json");
