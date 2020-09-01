@@ -1134,6 +1134,18 @@
             "null"
           ]
         },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "can_teleconsult": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            }
+          }
+        },
         "teleconsultation_phone_number": {
           "$ref": "#/definitions/non_empty_string"
         }
@@ -1179,6 +1191,18 @@
         "id",
         "password"
       ]
+    },
+    "app_user_capabilities": {
+      "type": "object",
+      "properties": {
+        "can_teleconsult": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      }
     }
   },
   "securityDefinitions": {
