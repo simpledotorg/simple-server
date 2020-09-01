@@ -63,7 +63,7 @@ class Admin::FacilityGroupsController < AdminController
     @organizations =
       if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
         # include the facility group's organization along with the ones you can access
-        (current_admin.accessible_organizations(:manage).to_a << @facility_group&.organization).uniq.compact
+        current_admin.accessible_organizations(:manage).presence || [@facility_group.organization]
       else
         policy_scope([:manage, :facility, Organization])
       end
