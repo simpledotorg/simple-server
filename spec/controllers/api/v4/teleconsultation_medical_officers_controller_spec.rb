@@ -8,7 +8,6 @@ end
 
 RSpec.describe Api::V4::TeleconsultationMedicalOfficersController, type: :controller do
   describe "#sync_to_user" do
-
     let(:facility_group) { create(:facility_group) }
 
     let!(:request_facility) { create(:facility, facility_group: facility_group) }
@@ -41,6 +40,5 @@ RSpec.describe Api::V4::TeleconsultationMedicalOfficersController, type: :contro
       expect(medical_officers[facility_2.id].map { |m| m["id"] }).to match_array facility_2_teleconsultation_mos.map(&:id)
       expect(medical_officers[facility_without_any_mos.id]).to be_empty
     end
-
   end
 end
