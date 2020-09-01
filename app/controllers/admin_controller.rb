@@ -83,12 +83,12 @@ class AdminController < ApplicationController
       end
 
       capture
-    rescue
+    rescue ActiveRecord::RecordNotFound
       raise UserAccess::NotAuthorizedError, self.class
     end
   end
 
-  def verify_access_authorized
+  def verify_authorization_attempted
     raise UserAccess::AuthorizationNotPerformedError, self.class unless RequestStore.store[:authorization_attempted]
   end
 end
