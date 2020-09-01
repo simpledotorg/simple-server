@@ -166,10 +166,11 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       end
 
       it "never ends up querying the database when cached" do
+        expect_any_instance_of(FacilityAnalyticsQuery).to receive(:find_results).and_call_original
         get :show, params: {id: facility.id}
 
         expect_any_instance_of(Facility).to_not receive(:cohort_analytics)
-        expect_any_instance_of(Facility).to_not receive(:dashboard_analytics)
+        expect_any_instance_of(FacilityAnalyticsQuery).to_not receive(:find_results)
 
         # this get should always have cached values
         get :show, params: {id: facility.id}

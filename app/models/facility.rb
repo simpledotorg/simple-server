@@ -109,19 +109,8 @@ class Facility < ApplicationRecord
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = FacilityAnalyticsQuery.new(self,
-      period,
-      prev_periods,
-      include_current_period: include_current_period)
-
-    results = [
-      query.registered_patients_by_period,
-      query.total_registered_patients,
-      query.follow_up_patients_by_period
-    ].compact
-
-    return {} if results.blank?
-    results.inject(&:deep_merge)
+    query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
+    query.results
   end
 
   CSV_IMPORT_COLUMNS =

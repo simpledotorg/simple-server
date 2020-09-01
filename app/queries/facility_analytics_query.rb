@@ -9,6 +9,24 @@ class FacilityAnalyticsQuery
     @include_current_period = include_current_period
   end
 
+  def results
+    cache_key = "analytics/facilities/#{@facility.id}/dashboard/#{@period}"
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
+      find_results
+    end
+  end
+
+  def find_results
+    results = [
+      registered_patients_by_period,
+      total_registered_patients,
+      follow_up_patients_by_period
+    ].compact
+
+    return {} if results.blank?
+    results.inject(&:deep_merge)
+  end
+
   def total_registered_patients
     @total_registered_patients ||=
       @facility
