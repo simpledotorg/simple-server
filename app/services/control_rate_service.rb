@@ -84,7 +84,7 @@ class ControlRateService
       .with_hypertension
       .where(registration_facility_id: facilities)
       .where("patient_recorded_at < ?", control_range.begin)
-      .where("bp_recorded_at >= ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
+      .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
       .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
   end
 
