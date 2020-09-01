@@ -19,7 +19,6 @@ class PrescriptionDrug < ApplicationRecord
   validates :device_updated_at, presence: true
   validates :is_protocol_drug, inclusion: {in: [true, false]}
   validates :is_deleted, inclusion: {in: [true, false]}
-  validates :duration_in_days, numericality: {only_integer: true}
 
   def self.prescribed_as_of(date)
     where("device_created_at <= ?", date.end_of_day)
