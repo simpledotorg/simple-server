@@ -155,6 +155,7 @@ Rails.application.routes.draw do
       get :lookup
     end
   end
+
   resources :organizations, only: [:index], path: "dashboard"
 
   get "/dashboard/districts/", to: redirect("/reports/districts/")

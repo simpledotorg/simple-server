@@ -18,8 +18,8 @@ class AdminController < ApplicationController
   def switch_locale(&action)
     locale =
       Rails.application.config.country[:dashboard_locale].presence ||
-      http_accept_language.compatible_language_from(I18n.available_locales) ||
-      I18n.default_locale
+        http_accept_language.compatible_language_from(I18n.available_locales) ||
+        I18n.default_locale
 
     I18n.with_locale(locale, &action)
   end
@@ -39,14 +39,16 @@ class AdminController < ApplicationController
   private
 
   def default_root_paths
-    {view_my_facilities?: my_facilities_overview_path,
-     show?: organizations_path,
-     overdue_list?: appointments_path,
-     manage_organizations?: admin_organizations_path,
-     manage_facilities?: admin_facilities_path,
-     manage_protocols?: admin_protocols_path,
-     manage_admins?: admins_path,
-     manage_users?: admin_users_path}
+    {
+      view_my_facilities?: my_facilities_overview_path,
+      show?: organizations_path,
+      overdue_list?: appointments_path,
+      manage_organizations?: admin_organizations_path,
+      manage_facilities?: admin_facilities_path,
+      manage_protocols?: admin_protocols_path,
+      manage_admins?: admins_path,
+      manage_users?: admin_users_path
+    }
   end
 
   def access_root_paths
@@ -70,7 +72,23 @@ class AdminController < ApplicationController
     redirect_to(request.referrer || root_path)
   end
 
+  def authorize1(&blk)
+    RequestStore.store[:authorization_attempted] = true
+
+    begin
+      capture = yield(blk)
+
+      unless capture
+        raise UserAccess::NotAuthorizedError, self.class
+      end
+
+      capture
+    rescue
+      raise UserAccess::NotAuthorizedError, self.class
+    end
+  end
+
   def verify_access_authorized
-    raise UserAccess::AuthorizationNotPerformedError, self.class unless RequestStore.store[:access_authorized]
+    raise UserAccess::AuthorizationNotPerformedError, self.class unless RequestStore.store[:authorization_attempted]
   end
 end

@@ -6,26 +6,29 @@ class OrganizationsController < AdminController
 
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.authorize(:view_reports, :facility, :access_any)
+      @accessible_facilities = current_admin.accessible_facilities(:view_reports)
+      authorize1 { @accessible_facilities.any? }
     else
       authorize(:dashboard, :show?)
     end
 
+
     @users_requesting_approval = policy_scope([:manage, :user, User])
-      .requested_sync_approval
-      .order(updated_at: :desc)
+                                   .requested_sync_approval
+                                   .order(updated_at: :desc)
 
     @users_requesting_approval = paginate(@users_requesting_approval)
 
-    @organizations = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin
-        .accessible_facility_groups(:view_reports)
-        .includes(:organization)
-        .flat_map(&:organization)
-        .uniq
-        .sort_by(&:name)
-    else
-      policy_scope([:cohort_report, Organization]).order(:name)
-    end
+
+    @organizations =
+      if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+        @accessible_facilities
+          .includes(facility_group: :organization)
+          .flat_map(&:organization)
+          .uniq
+          .sort_by(&:name)
+      else
+        policy_scope([:cohort_report, Organization]).order(:name)
+      end
   end
 end

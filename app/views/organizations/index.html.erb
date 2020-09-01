@@ -8,7 +8,9 @@
           <div class="card" title="<%= organization.name %>">
             <h2><%= organization.name %></h2>
             <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-              <% current_admin.accessible_facility_groups(:view_reports).where(organization: organization)
+              <% @accessible_facilities
+                     .includes(facility_group: :organization)
+                     .where(facility_groups: {organization: organization})
                      .flat_map(&:facilities)
                      .group_by(&:district)
                      .keys

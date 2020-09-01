@@ -173,7 +173,7 @@ class UserAccess < Struct.new(:user)
         accessible_facility_groups(action).exists? ||
         accessible_organizations(action).exists?
     when :create
-      accessible_facility_groups(:manage)&.find_by_id(record.facility_group_id).present?
+      accessible_facility_groups(:manage)&.find_by_id(record.facility_group).present?
     else
       raise ArgumentError, "#{operation} is unsupported."
     end
@@ -184,10 +184,9 @@ class UserAccess < Struct.new(:user)
     when :access_record
       can_access_record?(accessible_facility_groups(action), record)
     when :access_any
-      accessible_facility_groups(action).exists? ||
-        accessible_organizations(action).exists?
+      accessible_facility_groups(action).exists? || accessible_organizations(action).exists?
     when :create
-      accessible_organizations(:manage)&.find_by_id(record.organization_id).present?
+      accessible_organizations(:manage)&.find_by_id(record.organization).present?
     else
       raise ArgumentError, "#{operation} is unsupported."
     end
