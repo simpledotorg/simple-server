@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require "shellwords"
+
+# Changelog
+
+last_release = `git describe --tags --abbrev=0 --match "release-*"`.strip
+
+changelog = `git log #{last_release}..HEAD --oneline --decorate=no`
+            .strip
+            .split("\n")
+            .map { |line| line.match(/\s(.*)/)&.captures&.last }
+            .reject { |line| line =~ /^Merge/ } # remove merge commits
+            .compact
+            .map { |line| "• #{line}" }
+            .join("\n")
+
+puts "CHANGELOG"
+puts "---------"
+puts changelog
+
+# New release tag
+
+today = Time.now.strftime('%Y-%m-%d')
+
+if last_release.start_with?("release-#{today}")
+  puts "The last release was #{last_release}. What should this one be?"
+  print "release-#{today}-"
+  release_suffix = gets.chomp
+  release_tag = "release-#{today}-#{release_suffix}"
+else
+  release_tag = "release-#{today}-1"
+end
+
+# Push release tag
+puts "Creating release #{release_tag}. Continue? (y/N):"
+exit unless gets.chomp.downcase == "y"
+
+`git tag -a #{release_tag} -m "#{changelog.shellescape}"`
+`git tag #{release_tag}`
+`git push origin refs/tags/#{release_tag}`
