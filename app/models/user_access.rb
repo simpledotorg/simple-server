@@ -105,7 +105,7 @@ class UserAccess < Struct.new(:user)
 
           [fg,
             {
-              can_access: accessible_facility_groups(action).find_by_id(fg).exists?,
+              can_access: accessible_facility_groups(action).find_by_id(fg).present?,
               facilities: facilities_in_facility_group,
               total_facilities: fg.facilities.size
             }]
@@ -122,7 +122,7 @@ class UserAccess < Struct.new(:user)
 
           [org,
             {
-              can_access: accessible_organizations(action).find_by_id(org).exists?,
+              can_access: accessible_organizations(action).find_by_id(org).present?,
               facility_groups: facility_groups_in_org,
               total_facility_groups: org.facility_groups.size
             }]
@@ -152,21 +152,21 @@ class UserAccess < Struct.new(:user)
     resources = []
 
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if accessible_organizations(:manage).find_by_id(org).exists? && org.facilities == selected_facilities_in_org
+      if accessible_organizations(:manage).find_by_id(org).present? && org.facilities == selected_facilities_in_org
         resources << {resource: org}
         selected_facilities -= selected_facilities_in_org
       end
     end
 
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if accessible_facility_groups(:manage).find_by_id(fg).exists? && fg.facilities == selected_facilities_in_fg
+      if accessible_facility_groups(:manage).find_by_id(fg).present? && fg.facilities == selected_facilities_in_fg
         resources << {resource: fg}
         selected_facilities -= selected_facilities_in_fg
       end
     end
 
     selected_facilities.each do |f|
-      resources << {resource: f} if accessible_facilities(:manage).find_by_id(f).exists?
+      resources << {resource: f} if accessible_facilities(:manage).find_by_id(f).present?
     end
 
     resources.flatten
