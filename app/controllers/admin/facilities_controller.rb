@@ -79,7 +79,6 @@ class Admin::FacilitiesController < AdminController
     @facility = new_facility
 
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      binding.pry
       authorize1 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
     else
       authorize([:manage, :facility, @facility])
