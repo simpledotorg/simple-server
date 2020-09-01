@@ -32,8 +32,8 @@ RSpec.describe Api::V4::TeleconsultationMedicalOfficersController, type: :contro
       get :sync_to_user
 
       response_body = JSON(response.body)
-      medical_officers = response_body["teleconsultation_medical_officers"].map { |r|
-        [r["facility_id"], r["medical_officers"]]
+      medical_officers = response_body["teleconsultation_medical_officers"].map { |facility|
+        [facility["facility_id"], facility["medical_officers"]]
       }.to_h
 
       expect(medical_officers[request_facility.id].first["id"]).to eq request_facility_teleconsultation_mo.id
