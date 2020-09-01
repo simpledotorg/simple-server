@@ -109,8 +109,7 @@ class Facility < ApplicationRecord
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.results
+    FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   CSV_IMPORT_COLUMNS =

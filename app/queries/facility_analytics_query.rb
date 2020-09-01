@@ -9,14 +9,14 @@ class FacilityAnalyticsQuery
     @include_current_period = include_current_period
   end
 
-  def results
+  def call
     cache_key = "analytics/facilities/#{@facility.id}/dashboard/#{@period}"
     Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
-      find_results
+      results
     end
   end
 
-  def find_results
+  def results
     results = [
       registered_patients_by_period,
       total_registered_patients,
