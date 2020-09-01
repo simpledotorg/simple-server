@@ -6,45 +6,65 @@
   transition: $duration;
 }
 
-#access_level.select {
+.access-levels {
   margin-bottom: 10px;
-}
+  height: calc(1.5em + 0.75rem + 2px);
 
-.bootstrap-select {
-  margin-bottom: 25px !important;
-
-  span.title {
-    font-size: 16px;
-    letter-spacing: 0.5px;
+  button {
+    height: calc(1.5em + 0.75rem);
   }
 
-  span.description {
-    font-size: 14px;
-  }
-}
-
-.filter-option {
-  .description {
-    display: none;
-  }
-}
-
-.access-level-item-data {
-  display: flex;
-  flex-direction: column;
-
-  .title {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
-    color: #000000;
+  &.form-control,
+  .bootstrap-select {
+    border: 1px solid #ced4da;
   }
 
-  .description {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    color: #6c737a;
+  .bootstrap-select {
+    margin-bottom: 15px;
+
+    span.title {
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    span.description {
+      font-size: 14px;
+    }
+  }
+
+  .filter-option {
+    .description {
+      display: none;
+    }
+  }
+
+  .dropdown-item {
+    &.active,
+    &:active {
+      background: var(--light);
+    }
+    &:not(.show) {
+      display: none;
+    }
+  }
+
+  .access-level-item-data {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      color: #000000;
+    }
+
+    .description {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      color: #6c737a;
+    }
   }
 }
 
