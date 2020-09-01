@@ -5,10 +5,10 @@ class PrescriptionDrug < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id medicine_name dosage]
 
   enum frequency: {
-      OD: "OD",
-      BD: "BD",
-      QDS: "QDS",
-      TDS: "TDS"
+    OD: "OD",
+    BD: "BD",
+    QDS: "QDS",
+    TDS: "TDS"
   }, _prefix: true
 
   belongs_to :facility, optional: true
@@ -19,6 +19,7 @@ class PrescriptionDrug < ApplicationRecord
   validates :device_updated_at, presence: true
   validates :is_protocol_drug, inclusion: {in: [true, false]}
   validates :is_deleted, inclusion: {in: [true, false]}
+  validates :duration_in_days, numericality: {only_integer: true}
 
   def self.prescribed_as_of(date)
     where("device_created_at <= ?", date.end_of_day)
