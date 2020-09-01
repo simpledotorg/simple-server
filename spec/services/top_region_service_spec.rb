@@ -16,6 +16,34 @@ RSpec.describe TopRegionService, type: :model do
     end
   end
 
+  it "returns top contral rates via the call convienence method" do
+    darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
+    darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
+    kadapa = FactoryBot.create(:facility_group, name: "Kadapa", organization: organization)
+    _kadapa_facilities = FactoryBot.create_list(:facility, 2, facility_group: kadapa)
+    koriya = FactoryBot.create(:facility_group, name: "Koriya", organization: organization)
+    koriya_facilities = FactoryBot.create_list(:facility, 2, facility_group: koriya)
+
+    Timecop.freeze("April 1st 2020") do
+      darrang_patients = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: darrang_facilities.first, registration_user: user)
+      darrang_patients.each do |patient|
+        create(:blood_pressure, :hypertensive, facility: darrang_facilities.first, patient: patient, recorded_at: Time.current)
+      end
+    end
+    Timecop.freeze("April 15th 2020") do
+      patients_with_controlled_bp = create_list(:patient, 4, recorded_at: 1.month.ago, registration_facility: koriya_facilities.first, registration_user: user)
+      patients_with_controlled_bp.map do |patient|
+        create(:blood_pressure, :under_control, facility: koriya_facilities.first, patient: patient, recorded_at: Time.current)
+      end
+    end
+
+    refresh_views
+
+    result = TopRegionService.call(region: darrang, period: Period.month(june_1), current_user: user)
+    expect(result[:control_rate][:value]).to eq(100.0)
+    expect(result[:control_rate][:region]).to eq(koriya)
+  end
+
   it "gets top district benchmarks" do
     darrang = FactoryBot.create(:facility_group, name: "Darrang", organization: organization)
     darrang_facilities = FactoryBot.create_list(:facility, 2, facility_group: darrang)
@@ -89,7 +117,7 @@ RSpec.describe TopRegionService, type: :model do
 
     refresh_views
 
-    service = TopRegionService.new([organization], Period.month(june_1.end_of_month), scope: :facility)
+    service = TopRegionService.new([organization], Period.month(june_1), scope: :facility)
     result = service.call
     expect(result[:control_rate][:region]).to eq(darrang_facility_1)
     expect(result[:control_rate][:value]).to eq(75.0)

@@ -1,0 +1,106 @@
+@mixin transition($duration) {
+  -webkit-transition: $duration;
+  -moz-transition: $duration;
+  -ms-transition: $duration;
+  -o-transition: $duration;
+  transition: $duration;
+}
+
+#facility-access {
+  .card {
+    &.access-tree {
+      padding: 0px;
+      min-height: 460px;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    display: block;
+    height: 100%;
+    padding-left: 0px;
+    margin: 0px;
+
+    &.collapsed {
+      height: 0px;
+      overflow: hidden;
+      @include transition(0.1s);
+    }
+
+    li {
+      height: 100%;
+      padding: 0px;
+      border-top: 1px solid var(--light);
+      position: relative;
+      margin-bottom: -1px;
+    }
+
+    .access-item {
+      height: 100%;
+      display: flex;
+
+      .dropdown {
+        padding: 10px;
+        margin-left: 5px;
+        margin-right: -20px;
+
+        i {
+          transform: rotate(0deg);
+          margin: 0px 8px 2px 8px;
+          @include transition(0.2s);
+          pointer-events: none;
+        }
+
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+
+      &.collapsed {
+        .dropdown {
+          i {
+            transform: rotate(-90deg);
+            @include transition(0.3s);
+          }
+        }
+      }
+
+      &:not(.collapsed) {
+        background: #fff8e0;
+
+        div {
+          label {
+            font-weight: 600;
+          }
+        }
+      }
+
+      &:hover {
+        background: var(--light);
+        @include transition(0.1s);
+      }
+
+      .spacer {
+        padding-left: 20px;
+      }
+
+      .form-check {
+        margin: 10px;
+
+        label {
+          font-weight: 100;
+        }
+      }
+
+      .access-ratio {
+        padding: 12px;
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--secondary);
+        font-weight: normal;
+        font-style: normal;
+        cursor: pointer;
+      }
+    }
+  }
+}

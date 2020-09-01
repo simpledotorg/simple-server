@@ -17,6 +17,10 @@ class Facility < ApplicationRecord
 
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
+  has_and_belongs_to_many :teleconsultation_medical_officers,
+    class_name: "TeleconsultationMedicalOfficer",
+    association_foreign_key: :user_id,
+    join_table: "facilities_teleconsultation_medical_officers"
 
   has_many :encounters
   has_many :blood_pressures, through: :encounters, source: :blood_pressures
@@ -151,10 +155,6 @@ class Facility < ApplicationRecord
                                    import: true)
     end
     facilities
-  end
-
-  def region_slug
-    "#{model_name.to_s.underscore}-#{slug}"
   end
 
   def organization_exists
