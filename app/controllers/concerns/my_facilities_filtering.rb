@@ -42,7 +42,11 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_size(facilities)
-      facilities.where(facility_size: @selected_sizes)
+      if (@facility_sizes - @selected_sizes).empty?
+        facilities
+      else
+        facilities.where(facility_size: @selected_sizes)
+      end
     end
 
     def facilities_by_zone(facilities)

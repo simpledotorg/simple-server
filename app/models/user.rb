@@ -6,12 +6,26 @@ class User < ApplicationRecord
     phone_number_authentication: "PhoneNumberAuthentication"
   }
 
+  APP_USER_CAPABILITIES = [:can_teleconsult].freeze
+  CAPABILITY_VALUES = {
+    true => "yes",
+    false => "no"
+  }.freeze
+
   enum sync_approval_status: {
     requested: "requested",
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
   enum access_level: UserAccess::LEVELS.map { |level, info| [level, info[:id].to_s] }.to_h, _suffix: :access
+
+  def can_teleconsult?
+    teleconsultation_facilities.any?
+  end
+
+  def app_capabilities
+    {can_teleconsult: CAPABILITY_VALUES[can_teleconsult?]}
+  end
 
   belongs_to :organization, optional: true
   has_many :user_authentications
@@ -37,6 +51,9 @@ class User < ApplicationRecord
     inverse_of: :deleted_by_user,
     class_name: "Patient",
     foreign_key: :deleted_by_user_id
+  has_and_belongs_to_many :teleconsultation_facilities,
+    class_name: "Facility",
+    join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
@@ -99,7 +116,7 @@ class User < ApplicationRecord
   alias facility registration_facility
 
   def full_teleconsultation_phone_number
-    defaulted_teleconsult_number = teleconsultation_phone_number || phone_number
+    defaulted_teleconsult_number = teleconsultation_phone_number.presence || phone_number
     teleconsultation_isd_code ||= Rails.application.config.country["sms_country_code"]
     Phonelib.parse(teleconsultation_isd_code + defaulted_teleconsult_number).full_e164
   end
