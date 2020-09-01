@@ -86,7 +86,6 @@ class Api::V4::Models
           blood_sugars: {type: ["null", :array], items: patient_blood_sugar},
           appointments: {type: ["null", :array], items: patient_appointment},
           medications: {type: ["null", :array], items: patient_medication}
-
         }
       }
     end
@@ -218,6 +217,32 @@ class Api::V4::Models
          registration_facility_id]}
     end
 
+
+    def medical_officer
+      {
+          type: :object,
+          properties: {
+              id: {"$ref" => "#/definitions/uuid"},
+              full_name: {"$ref" =>  "#/definitions/non_empty_string" },
+              teleconsultation_phone_number: {"$ref" =>  "#/definitions/non_empty_string" }
+          }
+      }
+    end
+
+    def teleconsultation_medical_officer
+      {
+          type: :object,
+          properties: {
+              id: {"$ref" => "#/definitions/uuid"},
+              facility_id: {"$ref" => "#/definitions/uuid"},
+              medical_officers: {type: ["null", :array], items: medical_officer},
+              created_at: {"$ref" => "#/definitions/timestamp"},
+              updated_at: {"$ref" => "#/definitions/timestamp"},
+              deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
+          }
+      }
+    end
+
     def find_user
       {type: :object,
        properties: {
@@ -258,7 +283,10 @@ class Api::V4::Models
        user: user,
        find_user: find_user,
        activate_user: activate_user,
-       app_user_capabilities: app_user_capabilities}
+       app_user_capabilities: app_user_capabilities,
+       medical_officer: medical_officer,
+       teleconsultation_medical_officer: teleconsultation_medical_officer,
+       teleconsultation_medical_officers: array_of("teleconsultation_medical_officer")}
     end
   end
 end

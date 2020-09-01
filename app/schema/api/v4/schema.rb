@@ -59,6 +59,15 @@ class Api::V4::Schema
       sync_to_user_response(:blood_sugars)
     end
 
+    def teleconsultation_medical_officers_sync_to_user_response
+      {
+        type: :object,
+        properties: {
+          teleconsultation_medical_officers: {"$ref" => "#/definitions/teleconsultation_medical_officers"}
+        }
+      }
+    end
+
     def patient_activate_request
       {
         type: :object,
