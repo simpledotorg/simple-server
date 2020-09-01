@@ -217,29 +217,28 @@ class Api::V4::Models
          registration_facility_id]}
     end
 
-
     def medical_officer
       {
-          type: :object,
-          properties: {
-              id: {"$ref" => "#/definitions/uuid"},
-              full_name: {"$ref" =>  "#/definitions/non_empty_string" },
-              teleconsultation_phone_number: {"$ref" =>  "#/definitions/non_empty_string" }
-          }
+        type: :object,
+        properties: {
+          id: {"$ref" => "#/definitions/uuid"},
+          full_name: {"$ref" => "#/definitions/non_empty_string"},
+          teleconsultation_phone_number: {"$ref" => "#/definitions/non_empty_string"}
+        }
       }
     end
 
     def teleconsultation_medical_officer
       {
-          type: :object,
-          properties: {
-              id: {"$ref" => "#/definitions/uuid"},
-              facility_id: {"$ref" => "#/definitions/uuid"},
-              medical_officers: {type: ["null", :array], items: medical_officer},
-              created_at: {"$ref" => "#/definitions/timestamp"},
-              updated_at: {"$ref" => "#/definitions/timestamp"},
-              deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
-          }
+        type: :object,
+        properties: {
+          id: {"$ref" => "#/definitions/uuid"},
+          facility_id: {"$ref" => "#/definitions/uuid"},
+          medical_officers: {type: ["null", :array], items: medical_officer},
+          created_at: {"$ref" => "#/definitions/timestamp"},
+          updated_at: {"$ref" => "#/definitions/timestamp"},
+          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
+        }
       }
     end
 
