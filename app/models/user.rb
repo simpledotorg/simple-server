@@ -116,7 +116,7 @@ class User < ApplicationRecord
   alias facility registration_facility
 
   def full_teleconsultation_phone_number
-    defaulted_teleconsult_number = teleconsultation_phone_number || phone_number
+    defaulted_teleconsult_number = teleconsultation_phone_number.presence || phone_number
     teleconsultation_isd_code ||= Rails.application.config.country["sms_country_code"]
     Phonelib.parse(teleconsultation_isd_code + defaulted_teleconsult_number).full_e164
   end
