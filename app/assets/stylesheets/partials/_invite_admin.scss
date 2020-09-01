@@ -35,12 +35,6 @@
     padding-left: 0px;
     margin: 0px;
 
-    &.collapsed {
-      height: 0px;
-      overflow: hidden;
-      @include transition(0.1s);
-    }
-
     li {
       height: 100%;
       padding: 0px;
@@ -53,20 +47,11 @@
       height: 100%;
       display: flex;
 
-      .dropdown {
-        padding: 10px;
-        margin-left: 5px;
-        margin-right: -20px;
-
-        i {
-          transform: rotate(0deg);
-          margin: 0px 8px 2px 8px;
-          @include transition(0.2s);
-          pointer-events: none;
-        }
-
-        &.hidden {
-          visibility: hidden;
+      &.organization {
+        div {
+          label {
+            font-weight: 600;
+          }
         }
       }
 
@@ -77,16 +62,16 @@
             @include transition(0.3s);
           }
         }
+
+        & + .access-item-wrapper {
+          height: 0px;
+          overflow: hidden;
+          @include transition(0.1s);
+        }
       }
 
       &:not(.collapsed) {
         background: #fff8e0;
-
-        div {
-          label {
-            font-weight: 600;
-          }
-        }
       }
 
       &:hover {
@@ -103,6 +88,23 @@
 
         label {
           font-weight: 100;
+        }
+      }
+
+      .dropdown {
+        padding: 10px;
+        margin-left: 5px;
+        margin-right: -20px;
+
+        i {
+          transform: rotate(0deg);
+          margin: 0px 8px 2px 8px;
+          @include transition(0.2s);
+          pointer-events: none;
+        }
+
+        &.hidden {
+          visibility: hidden;
         }
       }
 
