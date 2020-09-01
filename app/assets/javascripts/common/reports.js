@@ -1,8 +1,3 @@
-window.addEventListener("DOMContentLoaded", function() {
-  initializeTables();
-  initializeCharts();
-});
-
 const lightGreenColor = "rgba(242, 248, 245, 1)";
 const darkGreenColor = "rgba(0, 122, 49, 1)";
 const mediumGreenColor = "rgba(0, 184, 73, 1)";
@@ -13,6 +8,17 @@ const darkPurpleColor = "rgba(83, 0, 224, 1)";
 const darkGreyColor = "rgba(108, 115, 122, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
 const lightGreyColor = "rgba(240, 242, 245, 1)";
+
+window.addEventListener("DOMContentLoaded", function() {
+  if(getChartDataNode()) {
+    initializeCharts();
+    initializeTables();
+  }
+});
+
+function getChartDataNode() {
+  return document.getElementById("data-json")
+}
 
 function initializeTables() {
   const tableSortConfig = { descending: true };
@@ -40,8 +46,7 @@ function initializeTables() {
 };
 
 function getReportingData() {
-  const $newData = document.getElementById("data-json");
-  const jsonData = JSON.parse($newData.textContent);
+  const jsonData = JSON.parse(getChartDataNode().textContent);
 
   return {
     controlRate: jsonData.controlled_patients_rate,
