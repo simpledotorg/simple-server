@@ -14,6 +14,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def new
     @facility_group = FacilityGroup.new
+
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       authorize1 { current_admin.accessible_organizations(:manage).any? }
     else
@@ -26,6 +27,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
+
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       authorize1 { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
     else
@@ -61,7 +63,7 @@ class Admin::FacilityGroupsController < AdminController
     @organizations =
       if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
         # include the facility group's organization along with the ones you can access
-        (current_admin.accessible_organizations(:manage).to_a << @facility_group.organization).uniq
+        (current_admin.accessible_organizations(:manage).to_a << @facility_group&.organization).uniq.compact
       else
         policy_scope([:manage, :facility, Organization])
       end
@@ -72,12 +74,12 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_facility_group
-    @facility_group =
-      if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-        authorize1 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
-      else
-        authorize([:manage, FacilityGroup.friendly.find(params[:id])])
-      end
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      @facility_group = authorize1 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
+    else
+      @facility_group = FacilityGroup.friendly.find(params[:id])
+      authorize([:manage, @facility_group])
+    end
   end
 
   def facility_group_params

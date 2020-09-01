@@ -151,7 +151,8 @@ class Admin::FacilitiesController < AdminController
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       @facility = authorize1 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
     else
-      authorize([:manage, :facility, Facility.friendly.find(params[:id])])
+      @facility = Facility.friendly.find(params[:id])
+      authorize([:manage, :facility, @facility])
     end
   end
 
