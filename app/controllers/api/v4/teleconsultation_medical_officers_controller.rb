@@ -1,7 +1,9 @@
 class Api::V4::TeleconsultationMedicalOfficersController < APIController
   def sync_to_user
-    medical_officers = current_facility_group.facilities.map { |facility| facility_medical_officers(facility) }
-    render json: {teleconsultation_medical_officers: medical_officers}
+    medical_officers = current_facility_group.facilities.map { |facility|
+      facility_medical_officers(facility)
+    }
+    render json: to_response(medical_officers)
   end
 
   private
@@ -19,5 +21,9 @@ class Api::V4::TeleconsultationMedicalOfficersController < APIController
     medical_officers.map do |medical_officer|
       Api::V4::TeleconsultationMedicalOfficerTransformer.to_response(medical_officer)
     end
+  end
+
+  def to_response(payload)
+    {teleconsultation_medical_officers: payload}
   end
 end
