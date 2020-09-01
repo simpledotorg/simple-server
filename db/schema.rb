@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_24_112700) do
+ActiveRecord::Schema.define(version: 2020_09_01_143158) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -436,6 +436,8 @@ ActiveRecord::Schema.define(version: 2020_08_24_112700) do
     t.boolean "is_deleted", null: false
     t.datetime "deleted_at"
     t.uuid "user_id"
+    t.string "frequency"
+    t.integer "duration_in_days"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
