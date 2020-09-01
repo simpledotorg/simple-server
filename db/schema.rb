@@ -245,6 +245,12 @@ ActiveRecord::Schema.define(version: 2020_08_31_222026) do
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
   end
 
+  create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "user_id", null: false
+    t.index ["facility_id", "user_id"], name: "index_facilities_teleconsult_mos_on_facility_id_and_user_id"
+  end
+
   create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.text "description"
