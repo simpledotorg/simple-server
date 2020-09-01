@@ -42,11 +42,12 @@ module AdminAccessHelper
 
   def access_level_option_data(level)
     option = <<-HTML.strip_heredoc
-        <span class="title">
-          #{level[:name]}
-        </span>
-        <br/>
-        <span class="description"> #{level[:description]}</span>
+        <div class="access-level-item-data">
+          <span class="title">
+             #{level[:name]}
+          </span>
+          <span class="description"> #{level[:description]}</span>
+        </div>
     HTML
 
     sanitize(option)

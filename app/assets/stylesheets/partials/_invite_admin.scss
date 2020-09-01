@@ -23,6 +23,31 @@
   }
 }
 
+.filter-option {
+  .description {
+    display: none;
+  }
+}
+
+.access-level-item-data {
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .description {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: #6c737a;
+  }
+}
+
 #facility-access {
   .card {
     &.access-tree {
