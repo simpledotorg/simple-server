@@ -45,8 +45,6 @@ class UserAccess < Struct.new(:user)
     manage: [:manager]
   }.freeze
 
-  VALID_OPERATIONS = [:access_record, :access_any, :create]
-
   def accessible_organizations(action)
     resources_for(Organization, action)
   end
@@ -67,29 +65,6 @@ class UserAccess < Struct.new(:user)
     User.joins(:phone_number_authentications)
       .where.not(phone_number_authentications: {id: nil})
       .where(phone_number_authentications: {registration_facility_id: facilities})
-  end
-
-  def can?(action, model, operation, record = nil)
-    raise ArgumentError, "record should not be an ActiveRecord::Relation." if record&.is_a? ActiveRecord::Relation
-    raise ArgumentError, "#{operation} is not a supported operation." unless operation.in? VALID_OPERATIONS
-
-    case model
-    when :facility
-      can_act_on_facility?(action, operation, record)
-    when :facility_group
-      can_act_on_facility_group?(action, operation, record)
-    when :organization
-      can_act_on_organization?(action, operation, record)
-    when :user
-      can_act_on_user?(action, operation, record)
-    else
-      raise ArgumentError, "Access to #{model} is unsupported."
-    end
-  end
-
-  def authorize(action, model, operation, record = nil)
-    RequestStore.store[:access_authorized] = true
-    raise NotAuthorizedError, self.class unless can?(action, model, operation, record)
   end
 
   def permitted_access_levels
@@ -130,7 +105,7 @@ class UserAccess < Struct.new(:user)
 
           [fg,
             {
-              can_access: can?(action, :facility_group, :access_record, fg),
+              can_access: accessible_facility_groups(action).find_by_id(fg).exists?,
               facilities: facilities_in_facility_group,
               total_facilities: fg.facilities.size
             }]
@@ -147,7 +122,7 @@ class UserAccess < Struct.new(:user)
 
           [org,
             {
-              can_access: can?(action, :organization, :access_record, org),
+              can_access: accessible_organizations(action).find_by_id(org).exists?,
               facility_groups: facility_groups_in_org,
               total_facility_groups: org.facility_groups.size
             }]
@@ -158,65 +133,6 @@ class UserAccess < Struct.new(:user)
   end
 
   private
-
-  def can_access_record?(resources, record)
-    return true if user.power_user?
-    resources.find_by_id(record).present?
-  end
-
-  def can_act_on_facility?(action, operation, record)
-    case operation
-    when :access_record
-      can_access_record?(accessible_facilities(action), record)
-    when :access_any
-      accessible_facilities(action).exists? ||
-        accessible_facility_groups(action).exists? ||
-        accessible_organizations(action).exists?
-    when :create
-      accessible_facility_groups(:manage)&.find_by_id(record.facility_group).present?
-    else
-      raise ArgumentError, "#{operation} is unsupported."
-    end
-  end
-
-  def can_act_on_facility_group?(action, operation, record)
-    case operation
-    when :access_record
-      can_access_record?(accessible_facility_groups(action), record)
-    when :access_any
-      accessible_facility_groups(action).exists? || accessible_organizations(action).exists?
-    when :create
-      accessible_organizations(:manage)&.find_by_id(record.organization).present?
-    else
-      raise ArgumentError, "#{operation} is unsupported."
-    end
-  end
-
-  def can_act_on_organization?(action, operation, record)
-    case operation
-    when :access_record
-      can_access_record?(accessible_organizations(action), record)
-    when :access_any
-      accessible_organizations(action).exists?
-    when :create
-      user.power_user?
-    else
-      raise ArgumentError, "#{operation} is unsupported."
-    end
-  end
-
-  def can_act_on_user?(_action, operation, record)
-    case operation
-    when :access_record
-      can_access_record?(accessible_users, record)
-    when :access_any
-      accessible_users.exists?
-    when :create
-      user.power_user?
-    else
-      raise ArgumentError, "#{operation} is unsupported."
-    end
-  end
 
   def resources_for(resource_model, action)
     return resource_model.all if user.power_user?
@@ -236,21 +152,21 @@ class UserAccess < Struct.new(:user)
     resources = []
 
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if can?(:manage, :organization, :access_record, org) && org.facilities == selected_facilities_in_org
+      if accessible_organizations(:manage).find_by_id(org).exists? && org.facilities == selected_facilities_in_org
         resources << {resource: org}
         selected_facilities -= selected_facilities_in_org
       end
     end
 
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if can?(:manage, :facility_group, :access_record, fg) && fg.facilities == selected_facilities_in_fg
+      if accessible_facility_groups(:manage).find_by_id(fg).exists? && fg.facilities == selected_facilities_in_fg
         resources << {resource: fg}
         selected_facilities -= selected_facilities_in_fg
       end
     end
 
     selected_facilities.each do |f|
-      resources << {resource: f} if can?(:manage, :facility, :access_record, f)
+      resources << {resource: f} if accessible_facilities(:manage).find_by_id(f).exists?
     end
 
     resources.flatten

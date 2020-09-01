@@ -53,7 +53,6 @@ RSpec.describe User, type: :model do
     it { should delegate_method(:accessible_organizations).to(:user_access) }
     it { should delegate_method(:accessible_facility_groups).to(:user_access) }
     it { should delegate_method(:accessible_facilities).to(:user_access) }
-    it { should delegate_method(:can?).to(:user_access) }
     it { should delegate_method(:grant_access).to(:user_access) }
     it { should delegate_method(:access_tree).to(:user_access) }
     it { should delegate_method(:permitted_access_levels).to(:user_access) }

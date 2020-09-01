@@ -74,8 +74,6 @@ class User < ApplicationRecord
     :accessible_facilities,
     :accessible_facility_groups,
     :accessible_users,
-    :can?,
-    :authorize,
     :grant_access,
     :access_tree,
     :permitted_access_levels, to: :user_access, allow_nil: false
