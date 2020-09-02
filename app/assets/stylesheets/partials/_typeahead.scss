@@ -15,30 +15,19 @@ Input field with dropdown
     width: 100%;
     max-height: 150px;
     overflow-y: auto;
-    display: none;
+    display: flex;
+    align-items: center;
 
     &-row {
       padding: 10px;
-      height: 68px;
+      height: 65px;
       border-bottom: 1px solid $grey-light;
       cursor: pointer;
+      width: 100%;
     }
 
     &-row:hover {
       background: $grey-lightest;
-    }
-  }
-
-  &-no-results {
-    width: 100%;
-    text-align: center;
-    height: 150px;
-    display: flex;
-    align-items: center;
-    border-radius: 5px;
-
-    &-message {
-      width: 100%;
     }
   }
 
@@ -51,5 +40,5 @@ Input field with dropdown
   }
 }
 
-.typeahead .typeahead-input:focus + div { display: block; }
-.typeahead .typeahead-dropdown:hover { display: block; }
+.typeahead .typeahead-input:focus + div { display: flex; }
+.typeahead .typeahead-dropdown:hover { display: flex; }
