@@ -3,7 +3,6 @@ require "rails_helper"
 RSpec.describe CohortAnalyticsQuery do
   let!(:facility1) { create(:facility) }
   let!(:facility2) { create(:facility) }
-  let(:analytics) { CohortAnalyticsQuery.new(Patient.where(registration_facility: [facility1, facility2])) }
 
   let(:jan) { DateTime.new(2019, 1, 1) }
   let(:feb) { DateTime.new(2019, 2, 1) }
@@ -14,13 +13,11 @@ RSpec.describe CohortAnalyticsQuery do
   let(:july) { DateTime.new(2019, 7, 1) }
 
   describe "#patient_counts_by_period" do
-    before do
-      allow(analytics).to receive(:patient_counts).and_return({})
-    end
-
     context "monthly" do
       it "correctly calculates the dates of monthly cohort reports" do
-        analytics.patient_counts_by_period(:month, 3, from_time: june)
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :month, prev_periods: 3, from_time: june)
+        allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
+        analytics.patient_counts_by_period
 
         expect(analytics).to have_received(:patient_counts).with(feb, feb.end_of_month, march, april.end_of_month)
         expect(analytics).to have_received(:patient_counts).with(march, march.end_of_month, april, may.end_of_month)
@@ -33,9 +30,12 @@ RSpec.describe CohortAnalyticsQuery do
           [march, april] => {},
           [feb, march] => {}
         }
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :month, prev_periods: 3, from_time: june)
+        allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
+        analytics.patient_counts_by_period
 
         travel_to(june) do
-          expect(analytics.patient_counts_by_period(:month, 3, from_time: june)).to eq(expected_result)
+          expect(analytics.patient_counts_by_period).to eq(expected_result)
         end
       end
     end
@@ -45,7 +45,9 @@ RSpec.describe CohortAnalyticsQuery do
       let(:dec_prev) { DateTime.new(2018, 12, 1) }
 
       it "correctly calculates the dates of quarterly cohort reports" do
-        analytics.patient_counts_by_period(:quarter, 2, from_time: july)
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 2, from_time: july)
+        allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
+        analytics.patient_counts_by_period
 
         expect(analytics).to have_received(:patient_counts).with(april, april.end_of_quarter, july, july.end_of_quarter)
         expect(analytics).to have_received(:patient_counts).with(jan, jan.end_of_quarter, april, april.end_of_quarter)
@@ -57,8 +59,10 @@ RSpec.describe CohortAnalyticsQuery do
           [jan, april] => {}
         }
 
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 2, from_time: july)
+        allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
         travel_to(june) do
-          expect(analytics.patient_counts_by_period(:quarter, 2, from_time: july)).to eq(expected_result)
+          expect(analytics.patient_counts_by_period).to eq(expected_result)
         end
       end
     end
@@ -81,7 +85,6 @@ RSpec.describe CohortAnalyticsQuery do
     let(:cohort_end) { cohort_start.end_of_quarter }
     let(:report_start) { DateTime.new(2019, 4, 1).beginning_of_quarter }
     let(:report_end) { report_start.end_of_quarter }
-    let(:counts) { analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys }
 
     it "calculates return and control patient counts in Q2 for patients registered in Q1" do
       travel_to(april) do
@@ -122,6 +125,8 @@ RSpec.describe CohortAnalyticsQuery do
         }
       }.deep_symbolize_keys
 
+      analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+      counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
       expect(counts).to eq(expected_result)
     end
 
@@ -137,6 +142,9 @@ RSpec.describe CohortAnalyticsQuery do
           facility1.id => 1
         }.deep_symbolize_keys
 
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+        counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
+
         expect(counts[:followed_up].deep_symbolize_keys).to eq(expected_follow_ups)
       end
 
@@ -148,6 +156,8 @@ RSpec.describe CohortAnalyticsQuery do
           jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
         end
 
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+        counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
         expect(counts[:controlled][:total]).to eq(0)
         expect(counts[:uncontrolled][:total]).to eq(1)
       end
@@ -160,6 +170,8 @@ RSpec.describe CohortAnalyticsQuery do
           jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
         end
 
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+        counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
         expect(counts[:controlled][:total]).to eq(1)
         expect(counts[:uncontrolled][:total]).to eq(0)
       end

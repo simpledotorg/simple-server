@@ -104,8 +104,8 @@ class Facility < ApplicationRecord
   end
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
-    query.patient_counts_by_period(period, prev_periods)
+    query = CohortAnalyticsQuery.new([self], period: period, prev_periods: prev_periods)
+    query.patient_counts_by_period
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)

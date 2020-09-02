@@ -1,12 +1,25 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
-  def initialize(patients, period = :month)
-    @patients = patients
+  attr_reader :from_time
+  attr_reader :period
+  attr_reader :prev_periods
+
+  def initialize(facilities, period: :month, prev_periods: nil, from_time: Time.current)
+    @facilities = facilities
+    @patients = Patient.joins(:registration_facility).where(facilities: {id: facilities}).with_hypertension
+    @from_time = from_time
+    @period = period
+
     @include_current_period = true
+    @prev_periods = if prev_periods.nil?
+      @period == :quarter ? 5 : 6
+    else
+      prev_periods
+    end
   end
 
-  def patient_counts_by_period(period, prev_periods, from_time: Time.current)
+  def patient_counts_by_period
     results = {}
 
     # index is a quick hack to allow toggling the current period in the results.
