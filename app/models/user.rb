@@ -92,7 +92,6 @@ class User < ApplicationRecord
     :accessible_facility_groups,
     :accessible_users,
     :grant_access,
-    :access_tree,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications

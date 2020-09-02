@@ -1,10 +1,15 @@
 module AdminAccessHelper
   def access_fraction(name, available, total)
-    if available == total
-      "#{total} #{name}"
-    else
-      "#{available} / #{total} #{name}"
-    end
+    "#{available} #{"facility".pluralize(available)}"
+
+    # currently unused, we may revive this later based on discussions with Claudio
+    # - kit
+    #
+    # if available == total
+    #   "#{total} #{name.pluralize(total)}"
+    # else
+    #   "#{available} / #{total} #{name.pluralize}"
+    # end
   end
 
   def access_checkbox(form, name, resource)

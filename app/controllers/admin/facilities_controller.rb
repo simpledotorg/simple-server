@@ -33,26 +33,22 @@ class Admin::FacilitiesController < AdminController
         @facilities = facilities.group_by(&:facility_group)
       else
         accessible_facilities = current_admin.accessible_facilities(:manage)
+        @facilities = accessible_facilities.group_by(&:facility_group)
 
         visible_facility_groups =
-          current_admin
-            .accessible_facility_groups(:manage)
-            .union(FacilityGroup.where(id: accessible_facilities.map(&:facility_group_id).uniq))
+          accessible_facilities
+            .map(&:facility_group)
+            .concat(current_admin.accessible_facility_groups(:manage).to_a)
+            .uniq
+            .compact
+        @facility_groups = visible_facility_groups.group_by(&:organization)
 
-        visible_organizations =
-          current_admin
-            .accessible_organizations(:manage)
-            .union(Organization.where(id: visible_facility_groups.map(&:organization_id).uniq))
-
-        @organizations = visible_organizations
-
-        @facility_groups = @organizations.map { |organization|
-          [organization, visible_facility_groups.where(organization: organization)]
-        }.to_h
-
-        @facilities = @facility_groups.values.flatten.map { |facility_group|
-          [facility_group, accessible_facilities.where(facility_group: facility_group)]
-        }.to_h
+        @organizations =
+          visible_facility_groups
+            .map(&:organization)
+            .concat(current_admin.accessible_organizations(:manage).to_a)
+            .uniq
+            .compact
       end
     else
       if searching?
