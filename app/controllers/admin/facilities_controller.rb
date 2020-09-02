@@ -40,6 +40,7 @@ class Admin::FacilitiesController < AdminController
             .map(&:facility_group)
             .concat(current_admin.accessible_facility_groups(:manage).to_a)
             .uniq
+            .compact
         @facility_groups = visible_facility_groups.group_by(&:organization)
 
         @organizations =
@@ -47,6 +48,7 @@ class Admin::FacilitiesController < AdminController
             .map(&:organization)
             .concat(current_admin.accessible_organizations(:manage).to_a)
             .uniq
+            .compact
       end
     else
       if searching?

@@ -48,7 +48,7 @@
       <h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
     <% end %>
 
-    <% @facility_groups.dig(organization).sort_by(&:name).each do |facility_group| %>
+    <% @facility_groups.dig(organization)&.sort_by(&:name)&.each do |facility_group| %>
       <div class="card">
         <div class="row">
           <div class="col-10">
