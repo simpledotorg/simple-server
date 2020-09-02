@@ -79,16 +79,16 @@ class AdminController < ApplicationController
       capture = yield(blk)
 
       unless capture
-        raise UserAccess::NotAuthorizedError, self.class
+        raise UserAccess::NotAuthorizedError
       end
 
       capture
     rescue ActiveRecord::RecordNotFound
-      raise UserAccess::NotAuthorizedError, self.class
+      raise UserAccess::NotAuthorizedError
     end
   end
 
   def verify_authorization_attempted
-    raise UserAccess::AuthorizationNotPerformedError, self.class unless RequestStore.store[:authorization_attempted]
+    raise UserAccess::AuthorizationNotPerformedError unless RequestStore.store[:authorization_attempted]
   end
 end
