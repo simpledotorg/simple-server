@@ -2,6 +2,16 @@
 
 require "shellwords"
 
+MAIN_BRANCH = "master"
+
+current_branch = `git rev-parse --abbrev-ref HEAD`
+unless current_branch == MAIN_BRANCH
+  puts "It looks you aren't on the #{MAIN_BRANCH} branch - you are currently on '#{current_branch}'"
+  puts "Typically releases are done from #{MAIN_BRANCH}"
+  puts "Are you _sure_ you want to release from this branch? (y/N)"
+  abort unless gets.chomp.downcase == "y"
+end
+
 # ------------------
 # Changelog
 # ------------------
