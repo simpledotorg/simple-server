@@ -1,22 +1,43 @@
 class Admin::UsersController < AdminController
-  include DistrictFiltering
   include Pagination
   include SearchHelper
 
   before_action :set_user, except: [:index]
   around_action :set_time_zone, only: [:show]
+  before_action :set_district, only: [:index]
 
-  skip_after_action :verify_authorized, only: [:enable_access, :disable_access], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, only: [:enable_access, :disable_access], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, only: [:enable_access, :disable_access], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
   def index
-    authorize([:manage, :user, User])
-    users = policy_scope([:manage, :user, User])
-      .joins(phone_number_authentications: :facility)
-      .where("phone_number_authentications.registration_facility_id IN (?)",
-        selected_district_facilities([:manage, :user]).map(&:id))
-      .order("users.full_name", "facilities.name", "users.device_created_at")
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_users.any? }
+
+      facilities = if @district == "All"
+        current_admin.accessible_facilities(:manage)
+      else
+        current_admin.accessible_facilities(:manage).where(district: @district)
+      end
+
+      users = current_admin.accessible_users
+        .joins(phone_number_authentications: :facility)
+        .where(phone_number_authentications: {registration_facility_id: facilities})
+        .order("users.full_name", "facilities.name", "users.device_created_at")
+    else
+      authorize([:manage, :user, User])
+
+      facilities = if @district == "All"
+        policy_scope([:manage, :user, Facility.all])
+      else
+        policy_scope([:manage, :user, Facility.where(district: @district)])
+      end
+
+      users = policy_scope([:manage, :user, User])
+        .joins(phone_number_authentications: :facility)
+        .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
+        .order("users.full_name", "facilities.name", "users.device_created_at")
+    end
 
     @users =
       if searching?
@@ -105,5 +126,9 @@ class Admin::UsersController < AdminController
       :sync_approval_status,
       :registration_facility_id
     )
+  end
+
+  def set_district
+    @district = params[:district].present? ? params[:district] : "All"
   end
 end

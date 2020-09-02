@@ -14,7 +14,7 @@
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
           <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.access_tree,
+              access_tree: current_admin.access_tree.organizations,
               form: form %>
         </div>
         <%= form.primary("Send Invite") %>
