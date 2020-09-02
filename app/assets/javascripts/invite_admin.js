@@ -19,7 +19,7 @@ function editAdmin() {
   const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
   const checkedCheckboxes = checkboxes.filter(check => check.checked)
 
-  for (let checkbox of checkedCheckboxes) {
+  for (const checkbox of checkedCheckboxes) {
     updateParentCheckedState(checkbox, SELECTOR)
   }
 }
@@ -29,23 +29,15 @@ function editAdmin() {
 //
 function selectAllListener() {
   const selectAllDiv = document.getElementById("select_all_facilities")
-  if (!selectAllDiv) {
-    return
-  }
+  if (!selectAllDiv) return
 
   const SELECTOR = "input.access-input"
   const facilityAccessDiv = document.getElementById("facility-access")
   const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
 
-  selectAllDiv.addEventListener("change", _ => {
-    if (selectAllDiv.checked) {
-      for (let checkbox of checkboxes) {
-        checkbox.checked = true
-      }
-    } else {
-      for (let checkbox of checkboxes) {
-        checkbox.checked = false
-      }
+  selectAllDiv.addEventListener("change", () => {
+    for (const checkbox of checkboxes) {
+      checkbox.checked = selectAllDiv.checked
     }
   })
 }
@@ -89,17 +81,17 @@ function toggleItemCollapsed(element) {
   }
 }
 
-function onFacilityAccessItemToggled({target}) {
+function onFacilityAccessItemToggled({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(function (item) {
-      return item.className === "access-item-wrapper" ||
-        item.className === "access-item-wrapper collapsed" ||
-        item.className === "access-item-wrapper facility" ||
-        item.className === "access-item-wrapper facility collapsed" ||
-        item.className === "access-item-wrapper facility-group collapsed" ||
-        item.className === "access-item-wrapper facility-group"
-    }
+    return item.className === "access-item-wrapper" ||
+      item.className === "access-item-wrapper collapsed" ||
+      item.className === "access-item-wrapper facility" ||
+      item.className === "access-item-wrapper facility collapsed" ||
+      item.className === "access-item-wrapper facility-group collapsed" ||
+      item.className === "access-item-wrapper facility-group"
+  }
   )
 
   if (wrapper) {
