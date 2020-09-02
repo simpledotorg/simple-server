@@ -115,24 +115,8 @@
       height: 100%;
       display: flex;
 
-      .dropdown {
-        padding: 10px 10px 0 5px;
-        margin-right: -20px;
-
-        i {
-          transform: rotate(0deg);
-          margin: 0px 8px 2px 8px;
-          @include transition(0.2s);
-          pointer-events: none;
-        }
-
-        &.hidden {
-          visibility: hidden;
-        }
-      }
-
       &.collapsed {
-        .dropdown {
+        span {
           i {
             transform: rotate(-90deg);
             @include transition(0.3s);
@@ -175,6 +159,14 @@
         font-weight: normal;
         font-style: normal;
         cursor: pointer;
+        margin-right: -6px;
+
+        i {
+          transform: rotate(0deg);
+          margin: 0px 8px 2px 8px;
+          @include transition(0.2s);
+          pointer-events: none;
+        }
       }
     }
   }

@@ -1,16 +1,12 @@
 <ul class="access-item-wrapper facility-group <%= "collapsed" unless tree_depth == 0 %>">
-  <% tree.each do |facility_group, fg_info| %>
+    <% tree.each do |facility_group, fg_info| %>
     <li>
-      <div class="access-item facility-group <%= "collapsed" if root == :organization or tree_depth == 0 %>">
-        <% tree_depth.times do %>
-          <span class="spacer"></span>
-        <% end %>
+        <div class="access-item facility-group <%= "collapsed" if root == :organization or tree_depth == 0 %>">
+            <% tree_depth.times do %>
+            <span class="spacer"></span>
+            <% end %>
 
-        <div class="dropdown">
-          <i class="fas fa-angle-down light"></i>
-        </div>
-
-        <%= access_checkbox(
+            <%= access_checkbox(
                 form,
                 :facility_groups,
                 facility_group,
@@ -18,12 +14,14 @@
                 checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
             ) %>
 
-        <span class="access-ratio collapsed">
-          <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
-        </span>
-      </div>
+            <span class="access-ratio collapsed">
+                <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
 
-      <%= render "email_authentications/invitations/facility_access_tree",
+                <i class="fas fa-angle-down light"></i>
+            </span>
+        </div>
+
+        <%= render "email_authentications/invitations/facility_access_tree",
           tree: fg_info[:facilities],
           root: root,
           page: page,
@@ -31,5 +29,5 @@
           user_being_edited: user_being_edited,
           tree_depth: tree_depth + 1 %>
     </li>
-  <% end %>
+    <% end %>
 </ul>
