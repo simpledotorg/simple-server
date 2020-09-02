@@ -68,37 +68,37 @@
             <i class="fas fa-plus mr-1"></i>
             Add a Medical Officer
           <% end %>
+
+          <!-- MO Search -->
+          <div class="typeahead">
+            <%= search_field_tag :search_query,
+                                 nil,
+                                 id: :search_query,
+                                 class: "typeahead-input form-control mb-1",
+                                 hide_label: true,
+                                 placeholder: "Find medical officers by name or phone number",
+                                 value: search_query,
+                                 onkeyup: "debounce(searchUser(this))",
+                                 autocomplete: "off" %>
+            <div class="typeahead-dropdown"></div>
+
+            <div class="typeahead-spinner">
+              <div class="spinner-border text-primary"></div>
+            </div>
+          </div>
+
+          <div class="no-medical-officers mt-1 mb-3">
+            <h5>No medical officers</h5>
+          </div>
+          <!-- End MO Search -->
+
         </div>
-
       </div>
-
-
-      <!-- MO Search -->
-      <div class="typeahead">
-        <%= search_field_tag :search_query,
-                             nil,
-                             id: :search_query,
-                             class: "typeahead-input form-control mb-1",
-                             hide_label: true,
-                             placeholder: "Find medical officers by name or phone number",
-                             value: search_query,
-                             onkeyup: "debounce(searchUser(this))",
-                             autocomplete: "off" %>
-        <div class="typeahead-dropdown"></div>
-
-        <div class="typeahead-spinner"><div class="spinner-border text-primary"></div></div>
-      </div>
-
-      <div class="no-medical-officers mt-1 mb-3">
-        <h5>No medical officers</h5>
-      </div>
-      <!-- End MO Search -->
 
       <%= form.primary %>
     <% end %>
   </div>
 </div>
-
 
 <script>
   function searchUser(e) {
