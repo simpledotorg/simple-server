@@ -338,7 +338,6 @@ RSpec.describe UserAccess, type: :model do
 
     it "returns nothing if no facilities are selected" do
       new_user = create(:admin, :viewer_all)
-      
       expect(manager.grant_access(new_user, [])).to be_nil
     end
 
