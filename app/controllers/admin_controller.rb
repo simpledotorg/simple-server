@@ -5,6 +5,7 @@ class AdminController < ApplicationController
   after_action :verify_policy_scoped, only: :index
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   rescue_from ActiveRecord::RecordInvalid do
     head :bad_request
@@ -24,9 +25,13 @@ class AdminController < ApplicationController
   end
 
   def root
-    redirect_to default_root_paths.find { |policy, _path|
-                  DashboardPolicy.new(pundit_user, :dashboard).send(policy)
-                }.second
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      redirect_to access_root_paths
+    else
+      redirect_to default_root_paths.find { |policy, _path|
+        DashboardPolicy.new(pundit_user, :dashboard).send(policy)
+      }.second
+    end
   end
 
   helper_method :current_admin
@@ -34,14 +39,24 @@ class AdminController < ApplicationController
   private
 
   def default_root_paths
-    {view_my_facilities?: my_facilities_overview_path,
-     show?: organizations_path,
-     overdue_list?: appointments_path,
-     manage_organizations?: admin_organizations_path,
-     manage_facilities?: admin_facilities_path,
-     manage_protocols?: admin_protocols_path,
-     manage_admins?: admins_path,
-     manage_users?: admin_users_path}
+    {
+      view_my_facilities?: my_facilities_overview_path,
+      show?: organizations_path,
+      overdue_list?: appointments_path,
+      manage_organizations?: admin_organizations_path,
+      manage_facilities?: admin_facilities_path,
+      manage_protocols?: admin_protocols_path,
+      manage_admins?: admins_path,
+      manage_users?: admin_users_path
+    }
+  end
+
+  def access_root_paths
+    if current_admin.call_center_access?
+      appointments_path
+    else
+      my_facilities_overview_path
+    end
   end
 
   def current_admin
@@ -55,5 +70,25 @@ class AdminController < ApplicationController
   def user_not_authorized
     flash[:alert] = "You are not authorized to perform this action."
     redirect_to(request.referrer || root_path)
+  end
+
+  def authorize1(&blk)
+    RequestStore.store[:authorization_attempted] = true
+
+    begin
+      capture = yield(blk)
+
+      unless capture
+        raise UserAccess::NotAuthorizedError
+      end
+
+      capture
+    rescue ActiveRecord::RecordNotFound
+      raise UserAccess::NotAuthorizedError
+    end
+  end
+
+  def verify_authorization_attempted
+    raise UserAccess::AuthorizationNotPerformedError unless RequestStore.store[:authorization_attempted]
   end
 end

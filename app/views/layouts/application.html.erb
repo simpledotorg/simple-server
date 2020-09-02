@@ -1,61 +1,134 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <% if ENV["GOOGLE_ANALYTICS_ID"].present? %>
-      <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+<head>
+  <% if ENV["GOOGLE_ANALYTICS_ID"].present? %>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
 
-        gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
-      </script>
-    <% end %>
+      function gtag() {
+        dataLayer.push(arguments);
+      }
 
-    <title><%= get_title_for_environment %></title>
-    <%= csrf_meta_tags %>
+      gtag('js', new Date());
 
-    <meta charset="utf-8">
+      gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
+    </script>
+  <% end %>
 
-    <%= stylesheet_link_tag "application", media: "all" %>
-    <%= stylesheet_link_tag "print", media: "print" %>
+  <title><%= get_title_for_environment %></title>
+  <%= csrf_meta_tags %>
 
-    <%= javascript_include_tag "application" %>
+  <meta charset="utf-8">
 
-    <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
-    <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
-    <link rel="icon" sizes="512x512" href="<%= android_logo_for_environment(size: '512') %>">
-    <link rel="icon" type="image/png" href="<%= favicon_for_environment %>">
+  <%= stylesheet_link_tag "application", media: "all" %>
+  <%= stylesheet_link_tag "print", media: "print" %>
 
-    <!-- Roboto font -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
+  <%= javascript_include_tag "application" %>
 
-    <!-- FontAwesome icons -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
+  <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
+  <link rel="icon" sizes="512x512" href="<%= android_logo_for_environment(size: '512') %>">
+  <link rel="icon" type="image/png" href="<%= favicon_for_environment %>">
 
-    <!-- Mobile-friendly -->
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-  </head>
+  <!-- Roboto font -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
 
-  <body>
-    <% if email_authentication_signed_in? %>
-    <nav class="<%= style_class_for_environment %>">
-      <div class="container">
-        <%= link_to root_path, class: "navbar-brand" do %>
-          <%= logo_for_environment %>
-        <% end %>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars-menu" aria-controls="navbars-menu" aria-expanded="false" aria-label="Toggle navigation">
-         <i class="fas fa-bars mr-1"></i> Menu
-        </button>
+  <!-- FontAwesome icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
-        <div class="collapse navbar-collapse" id="navbars-menu">
-          <% if email_authentication_signed_in? %>
-            <ul class="navbar-nav mr-auto">
+  <!-- Mobile-friendly -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+</head>
 
+<body>
+<% if email_authentication_signed_in? %>
+  <nav class="<%= style_class_for_environment %>">
+    <div class="container">
+      <%= link_to root_path, class: "navbar-brand" do %>
+        <%= logo_for_environment %>
+      <% end %>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbars-menu" aria-controls="navbars-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars mr-1"></i> Menu
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbars-menu">
+        <% if email_authentication_signed_in? %>
+          <ul class="navbar-nav mr-auto">
+            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+              <% if current_admin.accessible_facilities(:view_reports).any? %>
+                <li class="nav-item">
+                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                </li>
+              <% end %>
+
+              <% if current_admin.accessible_facilities(:view_reports).any? %>
+                <li class="nav-item">
+                  <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
+                    Reports
+                    <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
+                      New
+                    </span>
+                  <% end %>
+                </li>
+              <% end %>
+
+              <% if current_admin.accessible_facilities(:view_reports).any? %>
+                <li class="nav-item">
+                  <%= link_to "Old Reports", organizations_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
+                </li>
+              <% end %>
+
+              <% if current_admin.accessible_facilities(:manage_overdue_list).any? %>
+                <li class="nav-item">
+                  <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+                </li>
+              <% end %>
+
+              <li class="nav-item">
+                <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
+              </li>
+
+              <% if current_admin.accessible_facilities(:manage).any? %>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Manage
+                  </a>
+
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if current_admin.accessible_organizations(:manage).any? %>
+                      <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
+                    <% end %>
+
+                    <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
+
+                    <% if current_admin.power_user? %>
+                      <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
+                    <% end %>
+
+                    <% if current_admin.power_user? %>
+                      <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
+                    <% end %>
+
+                    <% if current_admin.accessible_users.any? %>
+                      <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
+                    <% end %>
+
+                    <% if current_admin.power_user? %>
+                      <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
+                    <% end %>
+
+                    <% if current_admin.power_user? %>
+                      <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
+                    <% end %>
+                  </div>
+                </li>
+              <% end %>
+            <% else %>
               <% if policy(:dashboard).view_my_facilities? %>
                 <li class="nav-item">
                   <%= link_to "Home", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
@@ -90,75 +163,80 @@
               </li>
 
               <% if policy(:dashboard).manage? %>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Settings
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <% if policy([:dashboard]).manage_organizations? %>
-                    <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
-                  <% end %>
-                  <% if policy([:dashboard]).manage_facilities? %>
-                    <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
-                  <% end %>
-                  <% if policy([:dashboard]).manage_protocols? %>
-                    <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
-                  <% end %>
-                  <% if policy([:dashboard]).manage_admins? %>
-                    <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
-                  <% end %>
-                  <% if policy([:dashboard]).manage_users? %>
-                    <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
-                  <% end %>
-                  <% if policy([:dashboard]).view_sidekiq_ui? %>
-                    <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
-                  <% end %>
-                  <% if policy([:dashboard]).view_flipper_ui? %>
-                    <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
-                  <% end %>
-                </div>
-              </li>
+
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Settings
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <% if policy([:dashboard]).manage_organizations? %>
+                      <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
+                    <% end %>
+                    <% if policy([:dashboard]).manage_facilities? %>
+                      <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
+                    <% end %>
+                    <% if policy([:dashboard]).manage_protocols? %>
+                      <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
+                    <% end %>
+                    <% if policy([:dashboard]).manage_admins? %>
+                      <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
+                    <% end %>
+                    <% if policy([:dashboard]).manage_users? %>
+                      <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
+                    <% end %>
+                    <% if policy([:dashboard]).view_sidekiq_ui? %>
+                      <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
+                    <% end %>
+                    <% if policy([:dashboard]).view_flipper_ui? %>
+                      <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
+                    <% end %>
+                  </div>
+                </li>
+
               <% end %>
-            </ul>
+            <% end %>
+          </ul>
 
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <%= current_admin.email %>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <%= link_to('Logout', destroy_email_authentication_session_path, method: :delete, class: "dropdown-item logout") %>
-                  <div class="dropdown-divider"></div>
-                  <a href="https://www.simple.org/privacy/" class="dropdown-item">Privacy Policy</a>
-                  <a href="https://opensource.org/licenses/MIT" class="dropdown-item">License</a>
-                </div>
-              </li>
-            </ul>
-          <% else %>
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                <%= link_to('Login', new_admin_session_path, class: "nav-link") %>
-              </li>
-            </ul>
-          <% end %>
-        </div>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <%= current_admin.email %>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%= link_to('Logout', destroy_email_authentication_session_path, method: :delete, class: "dropdown-item logout") %>
+                <div class="dropdown-divider"></div>
+                <a href="https://www.simple.org/privacy/" class="dropdown-item">Privacy Policy</a>
+                <a href="https://opensource.org/licenses/MIT" class="dropdown-item">License</a>
+              </div>
+            </li>
+          </ul>
+        <% else %>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <%= link_to('Login', new_admin_session_path, class: "nav-link") %>
+            </li>
+          </ul>
+        <% end %>
       </div>
-    </nav>
-    <% end %>
+    </div>
+  </nav>
+<% end %>
 
-    <main role="main" class="container pb-5">
-      <% flash.each do |type, message| %>
-        <% next unless message.is_a? String %>
+<main role="main" class="container pb-5">
+  <% flash.each do |type, message| %>
+    <% next unless message.is_a? String %>
 
-        <div class="<% if !email_authentication_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
-          <%= message %>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
-          </button>
-        </div>
-      <% end %>
+    <div class="
+      <% if !email_authentication_signed_in? %>col-md-6 mx-auto
+      <% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+      <%= message %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
+      </button>
+    </div>
+  <% end %>
 
-      <%= content_for?(:content) ? yield(:content) : yield %>
-    </main>
-  </body>
+  <%= content_for?(:content) ? yield(:content) : yield %>
+</main>
+</body>
 </html>

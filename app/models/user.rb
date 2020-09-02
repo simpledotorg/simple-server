@@ -90,7 +90,7 @@ class User < ApplicationRecord
   delegate :accessible_organizations,
     :accessible_facilities,
     :accessible_facility_groups,
-    :can?,
+    :accessible_users,
     :grant_access,
     :access_tree,
     :permitted_access_levels, to: :user_access, allow_nil: false
