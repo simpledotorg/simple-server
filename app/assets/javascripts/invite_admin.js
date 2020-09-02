@@ -88,13 +88,13 @@ function onFacilityAccessItemToggled({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(function (item) {
-    return item.className === "access-item-wrapper" ||
-      item.className === "access-item-wrapper collapsed" ||
-      item.className === "access-item-wrapper facility" ||
-      item.className === "access-item-wrapper facility collapsed" ||
-      item.className === "access-item-wrapper facility-group collapsed" ||
-      item.className === "access-item-wrapper facility-group"
-  }
+      return item.className === "access-item-wrapper" ||
+        item.className === "access-item-wrapper collapsed" ||
+        item.className === "access-item-wrapper facility" ||
+        item.className === "access-item-wrapper facility collapsed" ||
+        item.className === "access-item-wrapper facility-group collapsed" ||
+        item.className === "access-item-wrapper facility-group"
+    }
   )
 
   if (wrapper) {

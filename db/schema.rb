@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_11_135315) do
+ActiveRecord::Schema.define(version: 2020_09_02_074027) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -245,6 +245,12 @@ ActiveRecord::Schema.define(version: 2020_08_11_135315) do
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
   end
 
+  create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "user_id", null: false
+    t.index ["facility_id", "user_id"], name: "index_facilities_teleconsult_mos_on_facility_id_and_user_id"
+  end
+
   create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -464,6 +470,7 @@ ActiveRecord::Schema.define(version: 2020_08_11_135315) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_twilio_sms_delivery_details_on_deleted_at"
+    t.index ["session_id"], name: "index_twilio_sms_delivery_details_on_session_id"
   end
 
   create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -500,10 +507,13 @@ ActiveRecord::Schema.define(version: 2020_08_11_135315) do
     t.string "role"
     t.uuid "organization_id"
     t.string "access_level"
+    t.string "teleconsultation_phone_number"
+    t.string "teleconsultation_isd_code"
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["access_level"], name: "index_users_on_access_level"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["organization_id"], name: "index_users_on_organization_id"
+    t.index ["teleconsultation_phone_number"], name: "index_users_on_teleconsultation_phone_number"
   end
 
   add_foreign_key "accesses", "users"
@@ -950,6 +960,10 @@ ActiveRecord::Schema.define(version: 2020_08_11_135315) do
     ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
   SQL
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
+  add_index "latest_blood_pressures_per_patient_per_months", ["bp_recorded_at"], name: "index_bp_months_bp_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["medical_history_hypertension"], name: "index_bp_months_medical_history_hypertension"
+  add_index "latest_blood_pressures_per_patient_per_months", ["patient_recorded_at"], name: "index_bp_months_patient_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["registration_facility_id"], name: "index_bp_months_registration_facility_id"
 
   create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,

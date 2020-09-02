@@ -155,6 +155,7 @@ Rails.application.routes.draw do
       get :lookup
     end
   end
+
   resources :organizations, only: [:index], path: "dashboard"
 
   get "/dashboard/districts/", to: redirect("/reports/districts/")
@@ -189,7 +190,7 @@ Rails.application.routes.draw do
         post "upload"
       end
     end
-    resources :facility_groups do
+    resources :facility_groups, except: [:index] do
       resources :facilities
     end
 

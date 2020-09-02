@@ -15,21 +15,16 @@
 //= require popper
 //= require bootstrap-sprockets
 //= require bootstrap-select
-//= require bs-custom-file-input.js
-//= require bs-file-input-init.js
-//= require react
-//= require react_ujs
 //= require lodash
-//= require components
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min
-//= require teleconsultation-fields
-//= require_tree .
+//= require bs-custom-file-input
+//= require_tree ./common
 
 $(function () {
+  // initialize tooltips via bootstrap (uses popper underneath)
   $('[data-toggle="tooltip"]').tooltip()
 
-  if($('#analytics-table').length) {
-    new Tablesort(document.getElementById('analytics-table'), { descending: true })
-  }
+  // initialize bootstrap file input
+  bsCustomFileInput.init();
 });
