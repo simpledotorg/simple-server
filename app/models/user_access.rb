@@ -136,7 +136,7 @@ class UserAccess < Struct.new(:user)
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
       if accessible_facility_groups(:manage).find_by_id(fg).present? &&
           (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
-        
+
         resources << {resource_type: FacilityGroup.name, resource_id: fg.id}
         selected_facilities -= selected_facilities_in_fg
       end

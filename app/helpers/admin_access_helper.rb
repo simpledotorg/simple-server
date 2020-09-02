@@ -20,6 +20,6 @@ module AdminAccessHelper
       checked: page.eql?(:edit) && checked_fn.call
     }
 
-    form.check_box("#{name.to_s}[]", opts, resource.id, nil)
+    form.check_box("#{name}[]", opts, resource.id, nil)
   end
 end

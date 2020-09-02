@@ -20,11 +20,10 @@ class UserAccessTree < Struct.new(:user)
     facilities
       .group_by { |facility, _| facility.facility_group }
       .map { |facility_group, facilities|
-
         info = {
           accessible_facility_count: facilities.length,
           visible: visible_facility_groups.include?(facility_group),
-          facilities: facilities,
+          facilities: facilities
         }
 
         [facility_group, info]
@@ -35,11 +34,10 @@ class UserAccessTree < Struct.new(:user)
     facility_groups
       .group_by { |facility_group, _| facility_group.organization }
       .map { |organization, facility_groups|
-
         info = {
           accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
           visible: visible_organizations.include?(organization),
-          facility_groups: facility_groups,
+          facility_groups: facility_groups
         }
 
         [organization, info]
