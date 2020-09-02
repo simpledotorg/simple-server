@@ -20,6 +20,12 @@ class CohortAnalyticsQuery
   end
 
   def patient_counts_by_period
+    Rails.cache.fetch(cache_key) do
+      patient_counts_by_period_uncached
+    end
+  end
+
+  def patient_counts_by_period_uncached
     results = {}
 
     # index is a quick hack to allow toggling the current period in the results.
@@ -69,6 +75,12 @@ class CohortAnalyticsQuery
       controlled: {total: controlled_patients.size, **controlled_counts},
       uncontrolled: {total: uncontrolled_patients.size, **uncontrolled_counts}
     }.with_indifferent_access
+  end
+
+  private
+
+  def cache_key
+    [self.class.name, @facilities.map(&:id).sort, period, prev_periods, from_time, @include_current_period].join("/")
   end
 
   def registered(cohort_start, cohort_end)
