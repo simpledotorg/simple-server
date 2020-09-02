@@ -19,31 +19,31 @@ class UserAccessTree < Struct.new(:user)
   memoize def facility_groups
     facilities
       .group_by { |facility, _| facility.facility_group }
-      .map do |facility_group, facilities|
+      .map { |facility_group, facilities|
 
-      info = {
-        accessible_facility_count: facilities.length,
-        visible: visible_facility_groups.include?(facility_group),
-        facilities: facilities,
-      }
+        info = {
+          accessible_facility_count: facilities.length,
+          visible: visible_facility_groups.include?(facility_group),
+          facilities: facilities,
+        }
 
-      [facility_group, info]
-    end.to_h
+        [facility_group, info]
+      }.to_h
   end
 
   memoize def organizations
     facility_groups
       .group_by { |facility_group, _| facility_group.organization }
-      .map do |organization, facility_groups|
+      .map { |organization, facility_groups|
 
-      info = {
-        accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
-        visible: visible_organizations.include?(organization),
-        facility_groups: facility_groups,
-      }
+        info = {
+          accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
+          visible: visible_organizations.include?(organization),
+          facility_groups: facility_groups,
+        }
 
-      [organization, info]
-    end.to_h
+        [organization, info]
+      }.to_h
   end
 
   def visible?(model, record)
@@ -57,20 +57,19 @@ class UserAccessTree < Struct.new(:user)
       else
         raise ArgumentError, "#{model} is unsupported."
     end
-    }.to_h
   end
 
   private
 
   memoize def visible_facility_groups
-    user.accessible_facility_groups(:view)
+    user.accessible_facility_groups(:view_reports)
   end
 
   memoize def visible_facilities
-    user.accessible_facilities(:view)
+    user.accessible_facilities(:view_reports)
   end
 
   memoize def visible_organizations
-    user.accessible_organizations(:view)
+    user.accessible_organizations(:view_reports)
   end
 end

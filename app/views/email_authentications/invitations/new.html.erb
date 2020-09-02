@@ -13,6 +13,8 @@
         <div id="facility-access">
           <%= render "email_authentications/invitations/access_tree",
               access_tree: current_admin.access_tree.organizations,
+              user_being_edited: nil,
+              page: :new,
               form: form %>
         </div>
         <%= form.primary("Send Invite") %>

@@ -93,6 +93,7 @@ class User < ApplicationRecord
     :accessible_facilities,
     :accessible_facility_groups,
     :accessible_users,
+    :accessible_admins,
     :grant_access,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
