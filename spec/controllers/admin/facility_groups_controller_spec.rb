@@ -24,14 +24,6 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     sign_in(admin.email_authentication)
   end
 
-  describe "GET #index" do
-    it "returns a success response" do
-      FacilityGroup.create! valid_attributes
-      get :index, params: {organization_id: organization.id}
-      expect(response).to be_successful
-    end
-  end
-
   describe "GET #show" do
     it "returns a success response" do
       facility_group = FacilityGroup.create! valid_attributes

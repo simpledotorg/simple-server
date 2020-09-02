@@ -17,7 +17,11 @@ RSpec.describe User, type: :model do
       is_expected.to(
         define_enum_for(:access_level)
           .with_suffix(:access)
-          .with_values(power_user: "power_user", manager: "manager", viewer: "viewer")
+          .with_values(call_center: "call_center",
+                       viewer_reports_only: "viewer_reports_only",
+                       viewer_all: "viewer_all",
+                       manager: "manager",
+                       power_user: "power_user")
           .backed_by_column_of_type(:string)
       )
     }
@@ -50,9 +54,7 @@ RSpec.describe User, type: :model do
     it { should delegate_method(:accessible_organizations).to(:user_access) }
     it { should delegate_method(:accessible_facility_groups).to(:user_access) }
     it { should delegate_method(:accessible_facilities).to(:user_access) }
-    it { should delegate_method(:can?).to(:user_access) }
     it { should delegate_method(:grant_access).to(:user_access) }
-    it { should delegate_method(:access_tree).to(:user_access) }
     it { should delegate_method(:permitted_access_levels).to(:user_access) }
   end
 

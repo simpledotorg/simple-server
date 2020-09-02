@@ -73,18 +73,26 @@ FactoryBot.define do
     organization
 
     role { :owner }
-    access_level { :viewer }
+    access_level { :power_user }
 
-    trait :power_user do
-      access_level { :power_user }
+    trait :call_center do
+      access_level { :call_center }
     end
 
-    trait :viewer do
-      access_level { :viewer }
+    trait :viewer_reports_only do
+      access_level { :viewer_reports_only }
+    end
+
+    trait :viewer_all do
+      access_level { :viewer_all }
     end
 
     trait :manager do
       access_level { :manager }
+    end
+
+    trait :power_user do
+      access_level { :power_user }
     end
 
     trait(:owner) do

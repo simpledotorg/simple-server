@@ -10,6 +10,8 @@ class MyFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
+  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
@@ -17,8 +19,19 @@ class MyFacilitiesController < AdminController
   before_action :set_last_updated_at
 
   def index
-    @facilities = policy_scope([:manage, :facility, Facility])
-    @users_requesting_approval = paginate(policy_scope([:manage, :user, User])
+    @facilities = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.accessible_facilities(:view_reports)
+    else
+      policy_scope([:manage, :facility, Facility])
+    end
+
+    users = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      current_admin.accessible_users
+    else
+      policy_scope([:manage, :user, User])
+    end
+
+    @users_requesting_approval = paginate(users
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
 
@@ -114,6 +127,10 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    authorize(:dashboard, :view_my_facilities?)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :view_my_facilities?)
+    end
   end
 end
