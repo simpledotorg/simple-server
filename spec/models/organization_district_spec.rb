@@ -14,9 +14,9 @@ RSpec.describe OrganizationDistrict, type: :model do
         _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: non_htn_patients_facility, recorded_at: 4.months.ago)
         _htn_patients = create_list(:patient, 2, registration_facility: facility, recorded_at: 4.months.ago)
         controlled_htn_patients = create_list(:patient, 2, registration_facility: facility, recorded_at: 4.months.ago)
-        controlled_htn_patients.each { |patient|
+        controlled_htn_patients.each do |patient|
           create(:blood_pressure, :under_control, patient: patient, facility: facility, recorded_at: 3.months.ago)
-        }
+        end
 
         result = org_district.cohort_analytics(:month, 3)
         march_key = [Date.parse("February 1st 2020"), Date.parse("March 1st 2020")]
