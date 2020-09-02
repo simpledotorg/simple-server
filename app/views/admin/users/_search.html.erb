@@ -1,18 +1,20 @@
 <% if @users.empty? %>
   <span class="text-center">
     <i class="fa fa-search text-grey mt-3"></i>
-    <p class="mb-2">No medical officer matches "<%= search_query %>"
-    </p>
+    <p class="mb-2">No medical officer matches "<%= search_query %>"</p>
     <p class="text-grey">
       Approve medical officers in the
       <a href="/my_facilities" target="_blank">Users to review list</a>
-      <br>
-      to add them for teleconsultation
+      <br>to add them for teleconsultation
     </p>
   </span>
 <% else %>
   <% @users.each do |user| %>
-    <div class="typeahead-dropdown-row">
+    <div class="typeahead-dropdown-row"
+         data-user-id="<%= user.id %>"
+         data-user-full-name="<%= user.full_name %>"
+         data-user-registration-facility-id="<%= user.id %>"
+         data-user-teleconsult-phone-number="<%= user.full_teleconsultation_phone_number %>">
       <p class="mb-0"><%= user.full_name %></p>
       <p class="text-grey">Registered at <%= user.registration_facility.name %></p>
     </div>
