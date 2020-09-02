@@ -1,19 +1,37 @@
 <%= bootstrap_form_with(url: form_url, method: :get, class: "mt-4", layout: :horizontal, local: true) do |form| %>
   <div class="form-row mb-5">
     <div id="district-selector" class="col col-md-2 mb-2">
-      <%= form.select :district,
-          policy_scope(scope_namespace)
-              .sort_by(&:district)
-              .map { |facility| [facility.district, facility.district] }
-              .uniq,
-          {
-              hide_label: true,
-              include_blank: "All districts",
-              selected: district,
-              wrapper: false,
-              tabindex: 3
-          },
-          onchange: "this.form.submit()" %>
+      <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <%= form.select :district,
+                        scope_namespace
+                            .sort_by(&:district)
+                            .map { |facility| [facility.district, facility.district] }
+                            .uniq
+                            .compact,
+                        {
+                            hide_label: true,
+                            include_blank: "All districts",
+                            selected: district,
+                            wrapper: false,
+                            tabindex: 3
+                        },
+                        onchange: "this.form.submit()" %>
+      <% else %>
+        <%= form.select :district,
+                        policy_scope(scope_namespace)
+                            .sort_by(&:district)
+                            .map { |facility| [facility.district, facility.district] }
+                            .uniq,
+                        {
+                            hide_label: true,
+                            include_blank: "All districts",
+                            selected: district,
+                            wrapper: false,
+                            tabindex: 3
+                        },
+                        onchange: "this.form.submit()" %>
+      <% end %>
+
     </div>
 
     <%= render "shared/search_bar", form: form, placeholder: "Search by name or phone number..." %>

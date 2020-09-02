@@ -4,10 +4,19 @@ RSpec.feature "Organization management", type: :feature do
   let!(:owner) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
+  let!(:facility) { create(:facility) }
 
   login = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
   organization_page = AdminPage::Organizations::Index.new
+
+  before do
+    enable_flag(:new_permissions_system_aug_2020, owner)
+  end
+
+  after do
+    disable_flag(:new_permissions_system_aug_2020, owner)
+  end
 
   describe "test organization screen" do
     it "Verify organisation is displayed in ManageOrganisation" do

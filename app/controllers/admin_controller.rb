@@ -25,13 +25,7 @@ class AdminController < ApplicationController
   end
 
   def root
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      redirect_to access_root_paths
-    else
-      redirect_to default_root_paths.find { |policy, _path|
-        DashboardPolicy.new(pundit_user, :dashboard).send(policy)
-      }.second
-    end
+    redirect_to access_root_paths
   end
 
   helper_method :current_admin

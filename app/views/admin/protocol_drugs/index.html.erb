@@ -18,12 +18,8 @@
         <td><%= protocol_drug.dosage %></td>
         <td><%= protocol_drug.rxnorm_code %></td>
         <td><%= protocol_drug.protocol %></td>
-        <% if policy([:manage, protocol_drug]).edit? %>
-          <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
-        <% end %>
-        <% if policy([:manage, protocol_drug]).destroy? %>
-          <td><%= link_to 'Delete', [:admin, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" } %></td>
-        <% end %>
+        <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
+        <td><%= link_to 'Delete', [:admin, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -31,6 +27,6 @@
 
 <br>
 
-<% if policy([:manage, ProtocolDrug]).new? %>
+<% if current_admin.power_user? %>
   <%= link_to 'New protocol drug', new_admin_protocol_drug_path %>
 <% end %>

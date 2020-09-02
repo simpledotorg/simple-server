@@ -11,16 +11,21 @@ RSpec.feature "Admin User page functionality", type: :feature do
   let!(:group_Bangalore) { create(:facility_group, organization: path, name: "Bangalore") }
   let!(:facility_nilenso) { create(:facility, facility_group: group_Bangalore, name: "Nilenso", district: "Nilenso") }
   let!(:facility_obvious) { create(:facility, facility_group: group_Bangalore, name: "Obvious", district: "Obvious") }
-
+  let!(:a_user) { create(:user, :with_phone_number_authentication, registration_facility: facility_obvious) }
   user_page = AdminPage::Users::Index.new
   login_page = AdminPage::Sessions::New.new
   navigation = Navigations::DashboardPageNavigation.new
 
   context "Admin User landing page" do
     before(:each) do
-      visit root_path
+      enable_flag(:new_permissions_system_aug_2020, owner)
+      visit organizations_path
       login_page.do_login(owner.email, owner.password)
       navigation.select_manage_option("Users")
+    end
+
+    after(:each) do
+      disable_flag(:new_permissions_system_aug_2020, owner)
     end
 
     it "Verify User landing page" do
@@ -60,7 +65,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
       navigation.select_manage_option("Users")
 
       user_page.select_district("All districts")
-      expect(user_page.get_all_user_count).to eq(9)
+      expect(user_page.get_all_user_count).to eq(10)
 
       user_page.select_district(facility_hoshiarpur.district)
       user_page.is_facility_name_present(facility_hoshiarpur.name)

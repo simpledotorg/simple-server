@@ -11,9 +11,14 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
   new_drug = AdminPage::ProtocolDrugs::New.new
 
   before(:each) do
+    enable_flag(:new_permissions_system_aug_2020, owner)
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_protocols_path
+  end
+
+  after(:each) do
+    disable_flag(:new_permissions_system_aug_2020, owner)
   end
 
   context "protocol show page" do

@@ -5,15 +5,15 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || [];
 
-      function gtag() {
-        dataLayer.push(arguments);
-      }
+        function gtag() {
+            dataLayer.push(arguments);
+        }
 
-      gtag('js', new Date());
+        gtag('js', new Date());
 
-      gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
+        gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
     </script>
   <% end %>
 
@@ -59,141 +59,73 @@
       <div class="collapse navbar-collapse" id="navbars-menu">
         <% if email_authentication_signed_in? %>
           <ul class="navbar-nav mr-auto">
-            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-              <% if current_admin.accessible_facilities(:view_reports).any? %>
-                <li class="nav-item">
-                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
-                </li>
-              <% end %>
+            <% if current_admin.accessible_facilities(:view_reports).any? %>
+              <li class="nav-item">
+                <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+              </li>
+            <% end %>
 
-              <% if current_admin.accessible_facilities(:view_reports).any? %>
-                <li class="nav-item">
-                  <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
-                    Reports
-                    <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
+            <% if current_admin.accessible_facilities(:view_reports).any? %>
+              <li class="nav-item">
+                <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
+                  Reports
+                  <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
                       New
                     </span>
-                  <% end %>
-                </li>
-              <% end %>
-
-              <% if current_admin.accessible_facilities(:view_reports).any? %>
-                <li class="nav-item">
-                  <%= link_to "Old Reports", organizations_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
-                </li>
-              <% end %>
-
-              <% if current_admin.accessible_facilities(:manage_overdue_list).any? %>
-                <li class="nav-item">
-                  <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
-                </li>
-              <% end %>
-
-              <li class="nav-item">
-                <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
+                <% end %>
               </li>
+            <% end %>
 
-              <% if current_admin.accessible_facilities(:manage).any? %>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Manage
-                  </a>
-
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <% if current_admin.accessible_organizations(:manage).any? %>
-                      <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
-                    <% end %>
-
-                    <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
-
-                    <% if current_admin.power_user? %>
-                      <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
-                    <% end %>
-
-                    <% if current_admin.power_user? %>
-                      <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
-                    <% end %>
-
-                    <% if current_admin.accessible_users.any? %>
-                      <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
-                    <% end %>
-
-                    <% if current_admin.power_user? %>
-                      <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
-                    <% end %>
-
-                    <% if current_admin.power_user? %>
-                      <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
-                    <% end %>
-                  </div>
-                </li>
-              <% end %>
-            <% else %>
-              <% if policy(:dashboard).view_my_facilities? %>
-                <li class="nav-item">
-                  <%= link_to "Home", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
-                </li>
-              <% end %>
-
-              <% if policy(:dashboard).show? %>
-                <li class="nav-item">
-                  <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
-                    Reports
-                    <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
-                      New
-                    </span>
-                  <% end %>
-                </li>
-              <% end %>
-
-              <% if policy(:dashboard).show? %>
-                <li class="nav-item">
-                  <%= link_to "Old Reports", organizations_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
-                </li>
-              <% end %>
-
-              <% if policy(:dashboard).overdue_list? %>
-                <li class="nav-item">
-                  <%= link_to "Overdue", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
-                </li>
-              <% end %>
-
+            <% if current_admin.accessible_facilities(:view_reports).any? %>
               <li class="nav-item">
-                <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
+                <%= link_to "Old Reports", organizations_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
               </li>
+            <% end %>
 
-              <% if policy(:dashboard).manage? %>
+            <% if current_admin.accessible_facilities(:manage_overdue_list).any? %>
+              <li class="nav-item">
+                <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+              </li>
+            <% end %>
 
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Settings
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <% if policy([:dashboard]).manage_organizations? %>
-                      <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
-                    <% end %>
-                    <% if policy([:dashboard]).manage_facilities? %>
-                      <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
-                    <% end %>
-                    <% if policy([:dashboard]).manage_protocols? %>
-                      <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
-                    <% end %>
-                    <% if policy([:dashboard]).manage_admins? %>
-                      <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
-                    <% end %>
-                    <% if policy([:dashboard]).manage_users? %>
-                      <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
-                    <% end %>
-                    <% if policy([:dashboard]).view_sidekiq_ui? %>
-                      <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
-                    <% end %>
-                    <% if policy([:dashboard]).view_flipper_ui? %>
-                      <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
-                    <% end %>
-                  </div>
-                </li>
+            <li class="nav-item">
+              <%= link_to "Resources", resources_path, class: "nav-link #{active_controller?("resources")}" %>
+            </li>
 
-              <% end %>
+            <% if current_admin.accessible_facilities(:manage).any? %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Settings
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <% if current_admin.accessible_organizations(:manage).any? %>
+                    <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
+                  <% end %>
+
+                  <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
+
+                  <% if current_admin.power_user? %>
+                    <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
+                  <% end %>
+
+                  <% if current_admin.power_user? %>
+                    <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
+                  <% end %>
+
+                  <% if current_admin.accessible_facilities(:manage).any? %>
+                    <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
+                  <% end %>
+
+                  <% if current_admin.power_user? %>
+                    <%= link_to "Sidekiq", "/sidekiq", class: "dropdown-item #{active_controller?("users")}" %>
+                  <% end %>
+
+                  <% if current_admin.power_user? %>
+                    <%= link_to "Flipper", "/flipper", class: "dropdown-item #{active_controller?("users")}" %>
+                  <% end %>
+                </div>
+              </li>
             <% end %>
           </ul>
 
