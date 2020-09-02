@@ -21,7 +21,9 @@ RSpec.describe OrganizationDistrict, type: :model do
         result = org_district.cohort_analytics(:month, 3)
         march_key = [Date.parse("February 1st 2020"), Date.parse("March 1st 2020")]
         march_data = result[march_key]
+        # ensure we don't have non HTN patients
         expect(march_data["registered"].key?(non_htn_patients_facility.id)).to be false
+        # verify the other results
         expect(march_data["registered"]).to eq({facility.id => 4, "total" => 4})
         expect(march_data["followed_up"]).to eq({facility.id => 2, "total" => 2})
         expect(march_data["controlled"]).to eq({facility.id => 2, "total" => 2})
