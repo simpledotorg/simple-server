@@ -3,8 +3,12 @@ class Admin::UsersController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_user, except: [:index, :new, :create]
+  before_action :set_user, except: [:index]
   around_action :set_time_zone, only: [:show]
+
+  skip_after_action :verify_authorized, only: [:enable_access, :disable_access], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_policy_scoped, only: [:enable_access, :disable_access], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_authorization_attempted, only: [:enable_access, :disable_access], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
   def index
     authorize([:manage, :user, User])
@@ -77,8 +81,12 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    @user = User.find(params[:id] || params[:user_id])
-    authorize([:manage, :user, @user])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      @user = authorize1 { current_admin.accessible_users.find(params[:id] || params[:user_id]) }
+    else
+      @user = User.find(params[:id] || params[:user_id])
+      authorize([:manage, :user, @user])
+    end
   end
 
   def set_time_zone
