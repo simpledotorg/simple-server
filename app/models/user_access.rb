@@ -1,4 +1,6 @@
 class UserAccess < Struct.new(:user)
+  include Memery
+
   class NotAuthorizedError < StandardError; end
 
   class AuthorizationNotPerformedError < StandardError; end
@@ -39,6 +41,7 @@ class UserAccess < Struct.new(:user)
     }
   }.freeze
 
+  ANY_ACTION = :any
   ACTION_TO_LEVEL = {
     manage_overdue_list: [:manager, :viewer_all, :call_center],
     view_reports: [:manager, :viewer_all, :viewer_reports_only],
@@ -46,28 +49,33 @@ class UserAccess < Struct.new(:user)
     manage: [:manager]
   }.freeze
 
-  def accessible_organizations(action)
+  memoize def accessible_organizations(action)
     resources_for(Organization, action)
   end
 
-  def accessible_facility_groups(action)
+  memoize def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
       .includes(:organization)
   end
 
-  def accessible_facilities(action)
+  memoize def accessible_facilities(action)
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))
       .includes(facility_group: :organization)
   end
 
-  def accessible_users
-    facilities = accessible_facilities(:manage)
+  memoize def accessible_admins(action)
+    return User.admins if bypass?
+    return User.none if action_to_level(action).include?(:manage)
 
-    User.joins(:phone_number_authentications)
-      .where.not(phone_number_authentications: {id: nil})
-      .where(phone_number_authentications: {registration_facility_id: facilities})
+    User.admins.where(organization: user.organization)
+  end
+
+  memoize def accessible_users
+    User
+      .non_admins
+      .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})
   end
 
   def permitted_access_levels
@@ -95,7 +103,7 @@ class UserAccess < Struct.new(:user)
 
   def resources_for(resource_model, action)
     return resource_model.all if bypass?
-    return resource_model.none unless ACTION_TO_LEVEL.fetch(action).include?(user.access_level.to_sym)
+    return resource_model.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     resource_ids =
       user
@@ -144,5 +152,10 @@ class UserAccess < Struct.new(:user)
 
   def bypass?
     user.power_user?
+  end
+
+  def action_to_level(action)
+    ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
+    ACTION_TO_LEVEL[action]
   end
 end

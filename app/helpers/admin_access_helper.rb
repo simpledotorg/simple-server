@@ -12,7 +12,14 @@ module AdminAccessHelper
     # end
   end
 
-  def access_checkbox(form, name, resource)
-    form.check_box(name, {id: resource.id, class: "access-input", label: resource.name.to_s}, resource.id, nil)
+  def access_checkbox(form, name, resource, page: :edit, checked_fn: -> { false })
+    opts = {
+      id: resource.id,
+      class: "access-input",
+      label: resource.name.to_s,
+      checked: page.eql?(:edit) && checked_fn.call
+    }
+
+    form.check_box("#{name}[]", opts, resource.id, nil)
   end
 end
