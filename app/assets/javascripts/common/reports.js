@@ -1,21 +1,54 @@
-window.addEventListener("DOMContentLoaded", initializeCharts);
+const lightGreenColor = "rgba(242, 248, 245, 1)";
+const darkGreenColor = "rgba(0, 122, 49, 1)";
+const mediumGreenColor = "rgba(0, 184, 73, 1)";
+const lightRedColor = "rgba(255, 235, 238, 1)";
+const darkRedColor = "rgba(255, 51, 85, 1)";
+const lightPurpleColor = "rgba(238, 229, 252, 1)";
+const darkPurpleColor = "rgba(83, 0, 224, 1)";
+const darkGreyColor = "rgba(108, 115, 122, 1)";
+const mediumGreyColor = "rgba(173, 178, 184, 1)";
+const lightGreyColor = "rgba(240, 242, 245, 1)";
 
-let lightGreenColor = "rgba(242, 248, 245, 1)";
-let darkGreenColor = "rgba(0, 122, 49, 1)";
-let mediumGreenColor = "rgba(0, 184, 73, 1)";
-let lightRedColor = "rgba(255, 235, 238, 1)";
-let darkRedColor = "rgba(255, 51, 85, 1)";
-let lightPurpleColor = "rgba(238, 229, 252, 1)";
-let darkPurpleColor = "rgba(83, 0, 224, 1)";
-let darkGreyColor = "rgba(108, 115, 122, 1)";
-let mediumGreyColor = "rgba(173, 178, 184, 1)";
-let lightGreyColor = "rgba(240, 242, 245, 1)";
+window.addEventListener("DOMContentLoaded", function() {
+  if(getChartDataNode()) {
+    initializeCharts();
+    initializeTables();
+  }
+});
+
+function getChartDataNode() {
+  return document.getElementById("data-json")
+}
+
+function initializeTables() {
+  const tableSortConfig = { descending: true };
+
+  const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
+  const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
+  const noBPMeasureTable = document.getElementById("no-bp-measure-table");
+  const htnControlledTable = document.getElementById("htn-controlled-table");
+
+  if (htnControlledTable) {
+    new Tablesort(htnControlledTable, tableSortConfig);
+  }
+
+  if (noBPMeasureTable) {
+    new Tablesort(noBPMeasureTable, tableSortConfig);
+  }
+
+  if (htnNotUnderControlTable) {
+    new Tablesort(htnNotUnderControlTable, tableSortConfig);
+  }
+
+  if (cumulativeRegistrationsTable) {
+    new Tablesort(cumulativeRegistrationsTable, tableSortConfig);
+  }
+};
 
 function getReportingData() {
-  const $newData = document.getElementById("data-json");
-  const jsonData = JSON.parse($newData.textContent);
+  const jsonData = JSON.parse(getChartDataNode().textContent);
 
-  let data = {
+  return {
     controlRate: jsonData.controlled_patients_rate,
     controlledPatients: jsonData.controlled_patients,
     missedVisits: jsonData.missed_visits,
@@ -27,8 +60,6 @@ function getReportingData() {
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
     visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
   };
-
-  return data;
 };
 
 function initializeCharts() {
@@ -51,6 +82,7 @@ function initializeCharts() {
     [data.controlledPatients],
     data.adjustedRegistrations,
   );
+
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
   if (controlledGraphCanvas) {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
@@ -98,6 +130,7 @@ function initializeCharts() {
       label: "HTN not under control",
     }
   ], "line");
+
   uncontrolledGraphConfig.options = createGraphOptions(
     false,
     25,
@@ -107,6 +140,7 @@ function initializeCharts() {
     [data.uncontrolledPatients],
     data.adjustedRegistrations,
   );
+
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
   if (uncontrolledGraphCanvas) {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
@@ -124,6 +158,7 @@ function initializeCharts() {
       hoverBackgroundColor: lightPurpleColor,
     },
   ], "bar");
+
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     false,
     stepSize,
@@ -131,6 +166,7 @@ function initializeCharts() {
     formatNumberWithCommas,
     formatSumTooltipText,
   );
+
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
   if (cumulativeRegistrationsGraphCanvas) {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
@@ -162,6 +198,7 @@ function initializeCharts() {
       label: "No visit >3 months",
     }
   ], "bar");
+
   visitDetailsGraphConfig.options = createGraphOptions(
     true,
     25,
@@ -171,11 +208,12 @@ function initializeCharts() {
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
     data.adjustedRegistrations,
   );
+
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
   if (visitDetailsGraphCanvas) {
     new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
   }
-};
+}
 
 function createGraphConfig(datasetsConfig, graphType) {
   return {
@@ -194,8 +232,8 @@ function createGraphConfig(datasetsConfig, graphType) {
         };
       }),
     },
-  };
-};
+  }
+}
 
 function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
   return {
@@ -280,7 +318,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       }
     }
   };
-};
+}
 
 function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   const datasetIndex = tooltipItem.datasetIndex;

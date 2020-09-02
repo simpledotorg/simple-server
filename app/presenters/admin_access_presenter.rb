@@ -1,4 +1,6 @@
 class AdminAccessPresenter < SimpleDelegator
+  include Memery
+
   attr_reader :admin
 
   def initialize(admin)
@@ -10,5 +12,9 @@ class AdminAccessPresenter < SimpleDelegator
     UserAccess::LEVELS
       .slice(*admin.permitted_access_levels)
       .map { |_level, info| info.values_at(:name, :id) }
+  end
+
+  memoize def access_tree
+    UserAccessTree.new(admin)
   end
 end

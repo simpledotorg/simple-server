@@ -7,43 +7,41 @@ class UserAccessTree < Struct.new(:user)
   include Memery
 
   def facilities
-    visible_facilities.map do |facility|
+    visible_facilities.map { |facility|
       info = {
         visible: true
       }
 
       [facility, info]
-    end.to_h
+    }.to_h
   end
 
   def facility_groups
     facilities
       .group_by { |facility, _| facility.facility_group }
-      .map do |facility_group, facilities|
-
+      .map { |facility_group, facilities|
       info = {
         accessible_facility_count: facilities.length,
         visible: visible_facility_groups.include?(facility_group),
-        facilities: facilities,
+        facilities: facilities
       }
 
       [facility_group, info]
-    end.to_h
+    }.to_h
   end
 
   def organizations
     facility_groups
       .group_by { |facility_group, _| facility_group.organization }
-      .map do |organization, facility_groups|
-
+      .map { |organization, facility_groups|
       info = {
         accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
         visible: visible_organizations.include?(organization),
-        facility_groups: facility_groups,
+        facility_groups: facility_groups
       }
 
       [organization, info]
-    end.to_h
+    }.to_h
   end
 
   private
