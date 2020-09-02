@@ -14,6 +14,7 @@
                   checked_fn: -> { user_being_edited.access_tree.visible?(:organization, organization) }
               ) %>
 
+
           <span class="access-ratio">
             <%= access_fraction("facility groups", organization_metadata[:accessible_facility_count], 0) %>
           </span>
@@ -42,7 +43,7 @@
               </div>
 
               <ul class="access-item-wrapper collapsed">
-                <% facility_group_metadata[:facilities].each do |facility, facility_metadata| %>
+                <% facility_group_metadata[:facilities].each do |facility, _facility_metadata| %>
                   <li>
                     <div class="access-item collapsed">
                       <span class="spacer"></span>

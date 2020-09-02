@@ -7,13 +7,13 @@ class UserAccessTree < Struct.new(:user)
   include Memery
 
   memoize def facilities
-    visible_facilities.map do |facility|
+    visible_facilities.map { |facility|
       info = {
         visible: true
       }
 
       [facility, info]
-    end.to_h
+    }.to_h
   end
 
   memoize def facility_groups
@@ -57,6 +57,7 @@ class UserAccessTree < Struct.new(:user)
       else
         raise ArgumentError, "#{model} is unsupported."
     end
+    }.to_h
   end
 
   private

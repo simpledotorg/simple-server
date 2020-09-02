@@ -1,8 +1,15 @@
 <div class="page-header">
   <h1 class="page-title">Edit facility</h1>
   <nav class="page-nav">
-    <% if policy([:manage, :facility, @facility]).destroy? %>
-      <%= link_to 'Delete facility', [:admin, @facility_group, @facility], method: :delete, data: { confirm: "Are you sure you want to delete #{@facility.name}?" }, class: "btn btn-outline-danger ml-4" %>
+
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) %>
+        <%= link_to 'Delete facility', [:admin, @facility_group, @facility], method: :delete, data: {confirm: "Are you sure you want to delete #{@facility.name}?"}, class: "btn btn-outline-danger ml-4" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, :facility, @facility]).destroy? %>
+        <%= link_to 'Delete facility', [:admin, @facility_group, @facility], method: :delete, data: {confirm: "Are you sure you want to delete #{@facility.name}?"}, class: "btn btn-outline-danger ml-4" %>
+      <% end %>
     <% end %>
   </nav>
 </div>

@@ -4,6 +4,7 @@
 window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
+
 function inviteAdmin() {
   checkboxItemListener()
   resourceRowCollapseListener()

@@ -2,18 +2,34 @@ class UserAccess < Struct.new(:user)
   include Memery
   class NotAuthorizedError < StandardError; end
 
+  class AuthorizationNotPerformedError < StandardError; end
+
   LEVELS = {
-    viewer: {
-      id: :viewer,
+    call_center: {
+      id: :call_center,
+      name: "Manage: Overdue List",
+      grant_access: [],
+      description: "Can view and update overdue lists"
+    },
+
+    viewer_reports_only: {
+      id: :viewer_reports_only,
+      name: "View: Aggregate Reports",
+      grant_access: [],
+      description: "Can view reports"
+    },
+
+    viewer_all: {
+      id: :viewer_all,
       name: "View: Everything",
       grant_access: [],
-      description: "Can view stuff"
+      description: "Can view everything"
     },
 
     manager: {
       id: :manager,
       name: "Manager",
-      grant_access: [:viewer, :manager],
+      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
       description: "Can manage stuff"
     },
 
@@ -25,7 +41,9 @@ class UserAccess < Struct.new(:user)
   }.freeze
 
   ACTION_TO_LEVEL = {
-    view: [:manager, :viewer],
+    manage_overdue_list: [:manager, :viewer_all, :call_center],
+    view_reports: [:manager, :viewer_all, :viewer_reports_only],
+    view_pii: [:manager, :viewer_all],
     manage: [:manager]
   }.freeze
 
@@ -52,23 +70,12 @@ class UserAccess < Struct.new(:user)
     User.admins.where(organization: user.organization)
   end
 
-  def can?(action, model, record = nil)
-    if record&.is_a? ActiveRecord::Relation
-      raise ArgumentError, "record should not be an ActiveRecord::Relation."
-    end
+  memoize def accessible_users
+    facilities = accessible_facilities(:manage)
 
-    case model
-      when :facility
-        can_access_record?(accessible_facilities(action), record)
-      when :organization
-        can_access_record?(accessible_organizations(action), record)
-      when :facility_group
-        can_access_record?(accessible_facility_groups(action), record)
-      when :admin
-        can_access_record?(accessible_admins(action), record)
-      else
-        raise ArgumentError, "Access to #{model} is unsupported."
-    end
+    User.joins(:phone_number_authentications)
+      .where.not(phone_number_authentications: {id: nil})
+      .where(phone_number_authentications: {registration_facility_id: facilities})
   end
 
   def permitted_access_levels
@@ -79,8 +86,6 @@ class UserAccess < Struct.new(:user)
 
   def grant_access(new_user, selected_facility_ids)
     return if selected_facility_ids.blank?
-    return if bypass?
-
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
 
     resources = prepare_grantable_resources(selected_facility_ids)
@@ -90,18 +95,11 @@ class UserAccess < Struct.new(:user)
     # recreate accesses from scratch to handle deletes/edits/updates seamlessly
     User.transaction do
       new_user.accesses.delete_all
-      new_user.accesses.import!(resources)
+      new_user.accesses.create!(resources)
     end
   end
 
   private
-
-  def can_access_record?(resources, record)
-    return true if bypass?
-    return resources.find_by_id(record).present? if record
-
-    resources.exists?
-  end
 
   def resources_for(resource_model, action)
     return resource_model.all if bypass?
@@ -125,8 +123,8 @@ class UserAccess < Struct.new(:user)
 
     accessible_facilities_in_org = accessible_facilities(:manage).group_by(&:organization)
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if can?(:manage, :organization, org) &&
-        (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
+      if accessible_organizations(:manage).find_by_id(org).present? &&
+          (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
 
         resources << {resource_type: Organization.name, resource_id: org.id}
         selected_facilities -= selected_facilities_in_org
@@ -135,16 +133,16 @@ class UserAccess < Struct.new(:user)
 
     accessible_facilities_in_fg = accessible_facilities(:manage).group_by(&:facility_group)
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if can?(:manage, :facility_group, fg) &&
-        (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
-
+      if accessible_facility_groups(:manage).find_by_id(fg).present? &&
+          (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
+        
         resources << {resource_type: FacilityGroup.name, resource_id: fg.id}
         selected_facilities -= selected_facilities_in_fg
       end
     end
 
     selected_facilities.each do |f|
-      if can?(:manage, :facility, f)
+      if accessible_facilities(:manage).find_by_id(f).present?
         resources << {resource_type: Facility.name, resource_id: f.id}
       end
     end
