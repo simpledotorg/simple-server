@@ -71,7 +71,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def permitted_access_levels
-    return LEVELS.keys if user.power_user?
+    return LEVELS.keys if bypass?
 
     LEVELS[user.access_level.to_sym][:grant_access]
   end
