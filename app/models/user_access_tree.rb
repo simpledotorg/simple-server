@@ -62,14 +62,14 @@ class UserAccessTree < Struct.new(:user)
   private
 
   memoize def visible_facility_groups
-    user.accessible_facility_groups(:view_reports)
+    user.accessible_facility_groups(:any_access)
   end
 
   memoize def visible_facilities
-    user.accessible_facilities(:view_reports)
+    user.accessible_facilities(:any_access)
   end
 
   memoize def visible_organizations
-    user.accessible_organizations(:view_reports)
+    user.accessible_organizations(:any_access)
   end
 end

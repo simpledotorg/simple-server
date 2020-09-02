@@ -40,6 +40,7 @@ class UserAccess < Struct.new(:user)
     }
   }.freeze
 
+  ANY_ACTION = :any
   ACTION_TO_LEVEL = {
     manage_overdue_list: [:manager, :viewer_all, :call_center],
     view_reports: [:manager, :viewer_all, :viewer_reports_only],
@@ -65,7 +66,7 @@ class UserAccess < Struct.new(:user)
 
   memoize def accessible_admins(action)
     return User.admins if bypass?
-    return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
+    return User.none if action_to_level(action).include?(:manage)
 
     User.admins.where(organization: user.organization)
   end
@@ -103,7 +104,7 @@ class UserAccess < Struct.new(:user)
 
   def resources_for(resource_model, action)
     return resource_model.all if bypass?
-    return resource_model.none unless ACTION_TO_LEVEL.fetch(action).include?(user.access_level.to_sym)
+    return resource_model.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     resource_ids =
       user
@@ -152,5 +153,10 @@ class UserAccess < Struct.new(:user)
 
   def bypass?
     user.power_user?
+  end
+
+  def action_to_level(action)
+    ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
+    ACTION_TO_LEVEL.values[action]
   end
 end
