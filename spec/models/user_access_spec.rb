@@ -305,7 +305,6 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_4) { create(:facility) }
     let!(:viewer_access) {
       create(:access, user: viewer_all.user, resource: organization_1)
-
     }
     let!(:manager_access) {
       [create(:access, user: manager.user, resource: organization_1),
@@ -318,7 +317,6 @@ RSpec.describe UserAccess, type: :model do
 
       expect {
         viewer_all.grant_access(new_user, [facility_1.id, facility_2.id])
-
       }.to raise_error(UserAccess::NotAuthorizedError)
     end
 
@@ -331,17 +329,16 @@ RSpec.describe UserAccess, type: :model do
     end
 
     it "only grants access to the selected facilities" do
-      new_user = create(:admin, :viewer)
+      new_user = create(:admin, :viewer_all)
 
       manager.grant_access(new_user, [facility_1.id, facility_2.id])
 
-      expect(new_user.reload.accessible_facilities(:view)).to contain_exactly(facility_1, facility_2)
+      expect(new_user.reload.accessible_facilities(:view_pii)).to contain_exactly(facility_1, facility_2)
     end
 
     it "returns nothing if no facilities are selected" do
       new_user = create(:admin, :viewer_all)
-
-
+      
       expect(manager.grant_access(new_user, [])).to be_nil
     end
 
@@ -519,8 +516,18 @@ RSpec.describe UserAccess, type: :model do
     end
 
     specify do
-      viewer = create(:admin, :viewer)
-      expect(viewer.permitted_access_levels).to match_array([])
+      viewer_all = create(:admin, :viewer_all)
+      expect(viewer_all.permitted_access_levels).to match_array([])
+    end
+
+    specify do
+      manager = create(:admin, :viewer_reports_only)
+      expect(manager.permitted_access_levels).to match_array([])
+    end
+
+    specify do
+      manager = create(:admin, :call_center)
+      expect(manager.permitted_access_levels).to match_array([])
     end
 
     specify do

@@ -106,15 +106,15 @@
 
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
 
-                    <% if policy([:dashboard]).manage_protocols? %>
+                    <% if current_admin.power_user? %>
                       <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                     <% end %>
 
-                    <% if policy([:dashboard]).manage_admins? %>
+                    <% if current_admin.power_user? %>
                       <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                     <% end %>
 
-                    <% if policy([:dashboard]).manage_users? %>
+                    <% if current_admin.accessible_users.any? %>
                       <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                     <% end %>
 
