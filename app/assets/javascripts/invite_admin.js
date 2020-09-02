@@ -14,6 +14,7 @@ function inviteAdmin() {
 function editAdmin() {
   const SELECTOR = "input.access-input"
   const facilityAccessDiv = document.getElementById("facility-access")
+  const selectAllDiv = document.getElementById("select_all_facilities")
 
   // list of all checkboxes under facilityAccessDiv
   const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
@@ -22,6 +23,8 @@ function editAdmin() {
   for (const checkbox of checkedCheckboxes) {
     updateParentCheckedState(checkbox, SELECTOR)
   }
+
+  selectAllDiv.checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
 //
