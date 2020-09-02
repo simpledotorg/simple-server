@@ -8,15 +8,15 @@
       <br>to add them for teleconsultation
     </p>
   </span>
-<% else %>
-  <% @users.each do |user| %>
-    <div class="typeahead-dropdown-row"
-         data-user-id="<%= user.id %>"
-         data-user-full-name="<%= user.full_name %>"
-         data-user-registration-facility-id="<%= user.id %>"
-         data-user-teleconsult-phone-number="<%= user.full_teleconsultation_phone_number %>">
-      <p class="mb-0"><%= user.full_name %></p>
-      <p class="text-grey">Registered at <%= user.registration_facility.name %></p>
-    </div>
-  <% end %>
+<% end %>
+
+<% @users.each do |user| %>
+  <div class="typeahead-dropdown-row"
+       data-user-id="<%= user.id %>"
+       data-user-full-name="<%= user.full_name %>"
+       data-user-registration-facility-id="<%= user.id %>"
+       data-user-teleconsult-phone-number="<%= user.full_teleconsultation_phone_number %>">
+    <p class="mb-0"><%= user.full_name %></p>
+    <p class="text-grey">Registered at <%= user.registration_facility.name %></p>
+  </div>
 <% end %>
