@@ -12,13 +12,12 @@ class OrganizationsController < AdminController
       authorize(:dashboard, :show?)
     end
 
-
-    @users_requesting_approval = policy_scope([:manage, :user, User])
-                                   .requested_sync_approval
-                                   .order(updated_at: :desc)
+    @users_requesting_approval =
+      policy_scope([:manage, :user, User])
+        .requested_sync_approval
+        .order(updated_at: :desc)
 
     @users_requesting_approval = paginate(@users_requesting_approval)
-
 
     @organizations =
       if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)

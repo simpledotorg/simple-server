@@ -34,13 +34,15 @@ class Admin::FacilitiesController < AdminController
       else
         accessible_facilities = current_admin.accessible_facilities(:manage)
 
-        visible_facility_groups = current_admin
-                                    .accessible_facility_groups(:manage)
-                                    .union(FacilityGroup.where(id: accessible_facilities.map(&:facility_group_id).uniq))
+        visible_facility_groups =
+          current_admin
+            .accessible_facility_groups(:manage)
+            .union(FacilityGroup.where(id: accessible_facilities.map(&:facility_group_id).uniq))
 
-        visible_organizations = current_admin
-                                  .accessible_organizations(:manage)
-                                  .union(Organization.where(id: visible_facility_groups.map(&:organization_id).uniq))
+        visible_organizations =
+          current_admin
+            .accessible_organizations(:manage)
+            .union(Organization.where(id: visible_facility_groups.map(&:organization_id).uniq))
 
         @organizations = visible_organizations
 
@@ -136,10 +138,11 @@ class Admin::FacilitiesController < AdminController
   private
 
   def new_facility(attributes = nil)
-    @facility_group = current_admin
-                       .accessible_facility_groups(:manage)
-                       .friendly
-                       .find(params[:facility_group_id])
+    @facility_group =
+      current_admin
+        .accessible_facility_groups(:manage)
+        .friendly
+        .find(params[:facility_group_id])
 
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.country ||= Rails.application.config.country[:name]

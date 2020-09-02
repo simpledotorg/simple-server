@@ -11,7 +11,7 @@ RSpec.describe AdminController, type: :controller do
         false
       end
 
-      render :plain => "Not, authorized"
+      render plain: "Not, authorized"
     end
 
     def record_not_found
@@ -19,7 +19,7 @@ RSpec.describe AdminController, type: :controller do
         Facility.find(SecureRandom.uuid)
       end
 
-      render :plain => "Not, authorized"
+      render plain: "Not, authorized"
     end
 
     def authorized
@@ -27,11 +27,11 @@ RSpec.describe AdminController, type: :controller do
         true
       end
 
-      render :plain => "Hello, authorized"
+      render plain: "Hello, authorized"
     end
 
     def authorization_not_attempted
-      render :plain => "Not, authorization_not_attempted"
+      render plain: "Not, authorization_not_attempted"
     end
   end
 
