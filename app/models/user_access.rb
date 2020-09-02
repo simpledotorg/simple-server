@@ -78,6 +78,18 @@ class UserAccess < Struct.new(:user)
       .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})
   end
 
+  memoize def accessible_protocols(_action)
+    return Protocol.all if bypass?
+
+    Protocol.none
+  end
+
+  memoize def accessible_protocol_drugs(_action)
+    return ProtocolDrug.all if bypass?
+
+    ProtocolDrug.none
+  end
+
   def permitted_access_levels
     return LEVELS.keys if bypass?
 
