@@ -4,7 +4,7 @@ require "shellwords"
 
 MAIN_BRANCH = "master"
 
-current_branch = `git rev-parse --abbrev-ref HEAD`
+current_branch = `git rev-parse --abbrev-ref HEAD`.chomp
 unless current_branch == MAIN_BRANCH
   puts "It looks you aren't on the #{MAIN_BRANCH} branch - you are currently on '#{current_branch}'"
   puts "Typically releases are done from #{MAIN_BRANCH}"
