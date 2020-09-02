@@ -5,6 +5,7 @@ require "fakeredis/rspec"
 require "sidekiq/testing"
 require "capybara"
 require "webdrivers"
+require "flipper_helper"
 
 WebMock.allow_net_connect!
 
@@ -49,4 +50,6 @@ RSpec.configure do |config|
 
   # Capybara.default_driver = :chrome
   # Capybara.javascript_driver = :chrome
+
+  config.include FlipperHelpers
 end

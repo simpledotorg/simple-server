@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Api::V4::UserTransformer do
   describe "to_response" do
-    let!(:user) { create(:user) }
+    let!(:user) { create(:user, teleconsultation_facilities: [create(:facility)]) }
     let(:user_attributes) do
       user
         .attributes
@@ -24,7 +24,8 @@ RSpec.describe Api::V4::UserTransformer do
       expect(response).to include("id" => user.id,
                                   "full_name" => user.full_name,
                                   "sync_approval_status" => user.sync_approval_status,
-                                  "sync_approval_status_reason" => user.sync_approval_status_reason)
+                                  "sync_approval_status_reason" => user.sync_approval_status_reason,
+                                  "teleconsultation_phone_number" => user.full_teleconsultation_phone_number)
     end
 
     it "includes time stamps" do
@@ -36,7 +37,8 @@ RSpec.describe Api::V4::UserTransformer do
     it "includes associated params" do
       expect(response).to include("registration_facility_id" => user.registration_facility.id,
                                   "phone_number" => user.phone_number,
-                                  "password_digest" => user.phone_number_authentication.password_digest)
+                                  "password_digest" => user.phone_number_authentication.password_digest,
+                                  "capabilities" => {can_teleconsult: "yes"})
     end
 
     it "excludes sensitive params" do

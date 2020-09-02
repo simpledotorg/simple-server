@@ -28,9 +28,7 @@ class AdminsController < AdminController
   end
 
   def edit
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin, @admin)
-    else
+    unless Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       authorize([:manage, :admin, current_admin])
     end
   end
@@ -103,10 +101,7 @@ class AdminsController < AdminController
   end
 
   def 🆕set_admin
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @admin = User.find(params[:id])
-      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :admin, @admin)
-    end
+    @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
   end
 
   def current_admin
@@ -118,7 +113,7 @@ class AdminsController < AdminController
   end
 
   def selected_facilities
-    params[:facilities]
+    params[:facilities].flatten
   end
 
   def user_params

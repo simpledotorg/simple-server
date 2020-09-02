@@ -205,7 +205,9 @@ class Api::V4::Models
          password_digest: {"$ref" => "#/definitions/bcrypt_password"},
          registration_facility_id: {"$ref" => "#/definitions/uuid"},
          sync_approval_status: {type: [:string, "null"]},
-         sync_approval_status_reason: {type: [:string, "null"]}
+         sync_approval_status_reason: {type: [:string, "null"]},
+         capabilities: app_user_capabilities,
+         teleconsultation_phone_number: {"$ref" => "#/definitions/non_empty_string"}
        },
        required: %w[id
          created_at
@@ -223,6 +225,15 @@ class Api::V4::Models
          sync_approval_status: {type: [:string, "null"]}
        },
        required: %w[id]}
+    end
+
+    def app_user_capability_values
+      {type: :string, enum: User::CAPABILITY_VALUES.values}
+    end
+
+    def app_user_capabilities
+      {type: :object,
+       properties: Hash[User::APP_USER_CAPABILITIES.product([app_user_capability_values])]}
     end
 
     def activate_user
@@ -246,7 +257,8 @@ class Api::V4::Models
        patient: patient,
        user: user,
        find_user: find_user,
-       activate_user: activate_user}
+       activate_user: activate_user,
+       app_user_capabilities: app_user_capabilities}
     end
   end
 end

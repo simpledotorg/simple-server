@@ -16,10 +16,7 @@
 @import "partials/reports";
 @import "partials/invite_admin";
 @import "partials/show_admin";
-
-#help * {
-  scroll-behavior: smooth;
-}
+@import "partials/invite_admin";
 
 body {
     padding-top: 5rem;

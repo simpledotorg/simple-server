@@ -1,4 +1,4 @@
-<h1><%= t "devise.invitations.new.header" %></h1>
+<h1><%= t("devise.invitations.new.header") %></h1>
 
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
@@ -19,7 +19,7 @@
             <% access_tree = current_admin.visible_access_tree %>
             <%= render access_tree[:render_partial],
                 tree: access_tree[:data],
-                user_being_edited: AdminAccessPresenter.new(@admin),
+                user_being_edited: nil,
                 tree_depth: 0,
                 page: :new,
                 form: form %>
@@ -31,6 +31,7 @@
     </div>
   </div>
 <% else %>
+  <%= javascript_include_tag "standalone/react_components" %>
   <%= react_component "InviteAdminForm",
       organizations: policy_scope([:manage, :admin, Organization.all]),
       facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
