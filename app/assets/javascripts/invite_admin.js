@@ -135,4 +135,4 @@ const nodeListToArray = (selector, parent = document) =>
 
 // returns a function that checks if element contains class
 const containsClass = (className) => ({ classList }) =>
-  classList ? classList.contains(className) : false
+  classList && classList.contains(className)
