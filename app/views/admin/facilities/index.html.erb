@@ -43,7 +43,7 @@
     </button>
   </div>
 
-  <% @organizations.order(:name).each do |organization| %>
+  <% @organizations.sort_by(&:name).each do |organization| %>
     <% if @organizations.size > 1 %>
       <h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
     <% end %>
@@ -92,17 +92,12 @@
           </div>
         </div>
 
-        <% @facilities.dig(facility_group).sort_by(&:name).each do |facility| %>
-
+        <% @facilities.dig(facility_group)&.sort_by(&:name)&.each do |facility| %>
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
                 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-                  <% if current_admin.accessible_facilities(:manage).find_by_id(facility) %>
-                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
-                  <% else %>
-                    <%= facility.name %>
-                  <% end %>
+                  <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
                 <% else %>
                   <% if policy([:manage, :facility, facility]).show? %>
                     <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>

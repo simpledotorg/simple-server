@@ -402,7 +402,7 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  describe "#access_tree" do
+  pending "#access_tree" do
     let!(:organization_1) { create(:organization) }
     let!(:organization_2) { create(:organization) }
     let!(:organization_3) { create(:organization) }
