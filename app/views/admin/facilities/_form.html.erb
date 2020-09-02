@@ -69,7 +69,6 @@
             Add a Medical Officer
           <% end %>
 
-          <!-- MO Search -->
           <div class="typeahead">
             <%= search_field_tag :search_query,
                                  nil,
@@ -90,8 +89,6 @@
           <div class="no-medical-officers mt-1 mb-3">
             <h5>No medical officers</h5>
           </div>
-          <!-- End MO Search -->
-
         </div>
       </div>
 
@@ -103,7 +100,6 @@
 <script>
   function searchUser(e) {
     let searchQuery = e.value;
-
     if (searchQuery.length > 2) {
       showSpinner();
       $.ajax({
