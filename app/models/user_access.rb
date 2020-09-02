@@ -1,5 +1,6 @@
 class UserAccess < Struct.new(:user)
   class NotAuthorizedError < StandardError; end
+
   class AuthorizationNotPerformedError < StandardError; end
 
   LEVELS = {
@@ -115,7 +116,7 @@ class UserAccess < Struct.new(:user)
     accessible_facilities_in_org = accessible_facilities(:manage).group_by(&:organization)
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
       if accessible_organizations(:manage).find_by_id(org).present? &&
-        (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
+          (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
 
         resources << {resource_type: Organization.name, resource_id: org.id}
         selected_facilities -= selected_facilities_in_org
@@ -125,7 +126,7 @@ class UserAccess < Struct.new(:user)
     accessible_facilities_in_fg = accessible_facilities(:manage).group_by(&:facility_group)
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
       if accessible_facility_groups(:manage).find_by_id(fg).present? &&
-        (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
+          (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
 
         resources << {resource_type: FacilityGroup.name, resource_id: fg.id}
         selected_facilities -= selected_facilities_in_fg
