@@ -87,20 +87,10 @@ function toggleItemCollapsed(element) {
 function onFacilityAccessItemToggled({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
-  const wrapper = children.find(function (item) {
-      return item.className === "access-item-wrapper" ||
-        item.className === "access-item-wrapper collapsed" ||
-        item.className === "access-item-wrapper facility" ||
-        item.className === "access-item-wrapper facility collapsed" ||
-        item.className === "access-item-wrapper facility-group collapsed" ||
-        item.className === "access-item-wrapper facility-group"
-    }
-  )
+  const wrapper = children.find(containsClass("access-item-wrapper"))
 
   if (wrapper) {
     toggleItemCollapsed(parentItem)
-    toggleItemCollapsed(target)
-    toggleItemCollapsed(wrapper)
   }
 }
 
@@ -142,6 +132,10 @@ function updateChildrenCheckedState(parent, selector) {
 // helper function to create nodeArrays (not collections)
 const nodeListToArray = (selector, parent = document) =>
   [].slice.call(parent.querySelectorAll(selector))
+
+// returns a function that checks if element contains class
+const containsClass = (className) => ({ classList }) =>
+  classList ? classList.contains(className) : fals
 
 // initialize the access_level select dropdown
 function selectAccessLevels() {

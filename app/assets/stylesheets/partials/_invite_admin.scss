@@ -71,7 +71,7 @@
 #facility-access {
   .card {
     &.access-tree {
-      padding: 0px;
+      padding: 0;
       min-height: 460px;
     }
   }
@@ -94,18 +94,18 @@
     list-style-type: none;
     display: block;
     height: 100%;
-    padding-left: 0px;
-    margin: 0px;
+    padding-left: 0;
+    margin: 0;
 
     &.collapsed {
-      height: 0px;
+      height: 0;
       overflow: hidden;
       @include transition(0.1s);
     }
 
     li {
       height: 100%;
-      padding: 0px;
+      padding: 0;
       border-top: 1px solid var(--light);
       position: relative;
       margin-bottom: -1px;
@@ -115,13 +115,33 @@
       height: 100%;
       display: flex;
 
+      &.organization {
+        div {
+          label {
+            font-weight: 600;
+          }
+        }
+      }
+
       &.collapsed {
-        span {
+        .dropdown {
           i {
             transform: rotate(-90deg);
             @include transition(0.3s);
           }
         }
+
+        & + .access-item-wrapper {
+          height: 0;
+          overflow: hidden;
+          @include transition(0.1s);
+        }
+      }
+
+      & + .access-item-wrapper {
+        height: 0;
+        overflow: hidden;
+        @include transition(0.1s);
       }
 
       &:not(.collapsed):not(.facility) {
@@ -151,6 +171,23 @@
         }
       }
 
+      .dropdown {
+        padding: 10px;
+        margin-left: 5px;
+        margin-right: -20px;
+
+        i {
+          transform: rotate(0deg);
+          margin: 0 8px 2px 8px;
+          @include transition(0.2s);
+          pointer-events: none;
+        }
+
+        &.hidden {
+          visibility: hidden;
+        }
+      }
+
       .access-ratio {
         padding: 12px;
         margin-left: auto;
@@ -163,7 +200,7 @@
 
         i {
           transform: rotate(0deg);
-          margin: 0px 8px 2px 8px;
+          margin: 0 8px 2px 8px;
           @include transition(0.2s);
           pointer-events: none;
         }
