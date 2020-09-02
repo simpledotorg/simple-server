@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V4::TeleconsultationMedicalOfficerTransformer do
-  describe "#to_response" do
+  describe ".to_response" do
     let!(:medical_officer) { create(:teleconsultation_medical_officer) }
 
     it "includes user attributes" do
