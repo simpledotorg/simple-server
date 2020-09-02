@@ -338,7 +338,6 @@ RSpec.describe UserAccess, type: :model do
 
     it "returns nothing if no facilities are selected" do
       new_user = create(:admin, :viewer_all)
-
       expect(manager.grant_access(new_user, [])).to be_nil
     end
 
@@ -402,7 +401,7 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  describe "#access_tree" do
+  pending "#access_tree" do
     let!(:organization_1) { create(:organization) }
     let!(:organization_2) { create(:organization) }
     let!(:organization_3) { create(:organization) }
@@ -513,6 +512,21 @@ RSpec.describe UserAccess, type: :model do
     specify do
       manager = create(:admin, :manager)
       expect(manager.permitted_access_levels).to match_array([:call_center, :manager, :viewer_all, :viewer_reports_only])
+    end
+
+    specify do
+      viewer_all = create(:admin, :viewer_all)
+      expect(viewer_all.permitted_access_levels).to match_array([])
+    end
+
+    specify do
+      manager = create(:admin, :viewer_reports_only)
+      expect(manager.permitted_access_levels).to match_array([])
+    end
+
+    specify do
+      manager = create(:admin, :call_center)
+      expect(manager.permitted_access_levels).to match_array([])
     end
 
     specify do
