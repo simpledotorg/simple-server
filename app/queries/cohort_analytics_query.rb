@@ -80,7 +80,7 @@ class CohortAnalyticsQuery
   private
 
   def cache_key
-    [self.class.name, @facilities.map(&:id).sort, period, prev_periods, from_time, @include_current_period].join("/")
+    [self.class.name, @facilities.map(&:id).sort, period, prev_periods, from_time.to_s(:mon_year)].join("/")
   end
 
   def registered(cohort_start, cohort_end)
