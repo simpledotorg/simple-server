@@ -2,13 +2,29 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if policy([:manage, :facility, Facility]).upload? %>
-      <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.accessible_facility_groups(:manage).any? %>
+        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, :facility, Facility]).upload? %>
+        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+      <% end %>
     <% end %>
-    <% if policy([:manage, FacilityGroup]).new? %>
-      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-        <i class="fas fa-plus mr-1"></i>
-        Add facility group
+
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.accessible_organizations(:manage).any? %>
+        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+          <i class="fas fa-plus mr-1"></i>
+          Add facility group
+        <% end %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, FacilityGroup]).new? %>
+        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+          <i class="fas fa-plus mr-1"></i>
+          Add facility group
+        <% end %>
       <% end %>
     <% end %>
   </div>
@@ -20,14 +36,16 @@
   <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
 <% else %>
   <div class="alert alert-info alert-dismissible fade show" role="alert">
-    <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
+    <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a
+    <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true"><i class="fas fa-times"></i></span>
     </button>
   </div>
 
   <% @organizations.order(:name).each do |organization| %>
-    <% if @organizations.size > 1 %><h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
+    <% if @organizations.size > 1 %>
+      <h2 class="mt-5 mb-3"><span class="heading-label">Organization</span><%= organization.name %></h2>
     <% end %>
 
     <% @facility_groups.dig(organization).sort_by(&:name).each do |facility_group| %>
@@ -37,10 +55,18 @@
             <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
           </div>
 
-          <% if policy([:manage, facility_group]).edit? %>
-            <div class="col-2 text-right">
-              <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
-            </div>
+          <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+            <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
+              <div class="col-2 text-right">
+                <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              </div>
+            <% end %>
+          <% else %>
+            <% if policy([:manage, facility_group]).edit? %>
+              <div class="col-2 text-right">
+                <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              </div>
+            <% end %>
           <% end %>
         </div>
 
@@ -48,10 +74,19 @@
 
         <div class="row card-row">
           <div class="col-md-4">
-            <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
-              <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
-                <i class="fas fa-plus mr-1"></i>
-                Add a facility
+            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+              <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
+                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
+                  <i class="fas fa-plus mr-1"></i>
+                  Add a facility
+                <% end %>
+              <% end %>
+            <% else %>
+              <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
+                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
+                  <i class="fas fa-plus mr-1"></i>
+                  Add a facility
+                <% end %>
               <% end %>
             <% end %>
           </div>
@@ -62,18 +97,27 @@
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
-                <% if policy([:manage, :facility, facility]).show? %>
-                  <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+                  <% if current_admin.accessible_facilities(:manage).find_by_id(facility) %>
+                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                  <% else %>
+                    <%= facility.name %>
+                  <% end %>
                 <% else %>
-                  <%= facility.name %>
+                  <% if policy([:manage, :facility, facility]).show? %>
+                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
+                  <% else %>
+                    <%= facility.name %>
+                  <% end %>
                 <% end %>
               </h5>
             </div>
             <div class="col-md-1"><span class="text-muted"><%= facility.facility_type %></span></div>
-            <div class="col-md-2"><span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
-            <div class="col-md-2"><span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
+            <div class="col-md-2">
+              <span class="text-muted"><%= facility.facility_size&.capitalize || "No size set" %></span></div>
+            <div class="col-md-2">
+              <span class="text-muted">OPD: <%= facility.monthly_estimated_opd_load || "N/A" %></span></div>
           </div>
-
         <% end %>
       </div>
     <% end %>

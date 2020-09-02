@@ -5,7 +5,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def new
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
+      raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
     else
       authorize([:manage, :admin, current_admin])
     end
@@ -15,7 +15,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      raise UserAccess::NotAuthorizedError unless current_admin.can?(:manage, :facility)
+      raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
 
       User.transaction do
         new_user = User.new(user_params)

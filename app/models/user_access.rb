@@ -1,18 +1,33 @@
 class UserAccess < Struct.new(:user)
   class NotAuthorizedError < StandardError; end
+  class AuthorizationNotPerformedError < StandardError; end
 
   LEVELS = {
-    viewer: {
-      id: :viewer,
+    call_center: {
+      id: :call_center,
+      name: "Manage: Overdue List",
+      grant_access: [],
+      description: "Can view and update overdue lists"
+    },
+
+    viewer_reports_only: {
+      id: :viewer_reports_only,
+      name: "View: Aggregate Reports",
+      grant_access: [],
+      description: "Can view reports"
+    },
+
+    viewer_all: {
+      id: :viewer_all,
       name: "View: Everything",
       grant_access: [],
-      description: "Can view stuff"
+      description: "Can view everything"
     },
 
     manager: {
       id: :manager,
       name: "Manager",
-      grant_access: [:viewer, :manager],
+      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
       description: "Can manage stuff"
     },
 
@@ -24,7 +39,9 @@ class UserAccess < Struct.new(:user)
   }.freeze
 
   ACTION_TO_LEVEL = {
-    view: [:manager, :viewer],
+    manage_overdue_list: [:manager, :viewer_all, :call_center],
+    view_reports: [:manager, :viewer_all, :viewer_reports_only],
+    view_pii: [:manager, :viewer_all],
     manage: [:manager]
   }.freeze
 
@@ -44,21 +61,12 @@ class UserAccess < Struct.new(:user)
       .includes(facility_group: :organization)
   end
 
-  def can?(action, model, record = nil)
-    if record&.is_a? ActiveRecord::Relation
-      raise ArgumentError, "record should not be an ActiveRecord::Relation."
-    end
+  def accessible_users
+    facilities = accessible_facilities(:manage)
 
-    case model
-      when :facility
-        can_access_record?(accessible_facilities(action), record)
-      when :organization
-        can_access_record?(accessible_organizations(action), record)
-      when :facility_group
-        can_access_record?(accessible_facility_groups(action), record)
-      else
-        raise ArgumentError, "Access to #{model} is unsupported."
-    end
+    User.joins(:phone_number_authentications)
+      .where.not(phone_number_authentications: {id: nil})
+      .where(phone_number_authentications: {registration_facility_id: facilities})
   end
 
   def permitted_access_levels
@@ -82,18 +90,7 @@ class UserAccess < Struct.new(:user)
     end
   end
 
-  def access_tree
-    UserAccessTree.new(user)
-  end
-
   private
-
-  def can_access_record?(resources, record)
-    return true if user.power_user?
-    return resources.find_by_id(record).present? if record
-
-    resources.exists?
-  end
 
   def resources_for(resource_model, action)
     return resource_model.all if user.power_user?
@@ -113,21 +110,21 @@ class UserAccess < Struct.new(:user)
     resources = []
 
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if can?(:manage, :organization, org) && org.facilities == selected_facilities_in_org
+      if accessible_organizations(:manage).find_by_id(org).present? && org.facilities == selected_facilities_in_org
         resources << {resource: org}
         selected_facilities -= selected_facilities_in_org
       end
     end
 
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if can?(:manage, :facility_group, fg) && fg.facilities == selected_facilities_in_fg
+      if accessible_facility_groups(:manage).find_by_id(fg).present? && fg.facilities == selected_facilities_in_fg
         resources << {resource: fg}
         selected_facilities -= selected_facilities_in_fg
       end
     end
 
     selected_facilities.each do |f|
-      resources << {resource: f} if can?(:manage, :facility, f)
+      resources << {resource: f} if accessible_facilities(:manage).find_by_id(f).present?
     end
 
     resources.flatten

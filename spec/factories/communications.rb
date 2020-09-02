@@ -8,6 +8,7 @@ FactoryBot.define do
     device_updated_at { Time.current }
 
     trait(:missed_visit_sms_reminder) { communication_type { :missed_visit_sms_reminder } }
+    trait(:missed_visit_whatsapp_reminder) { communication_type { :missed_visit_whatsapp_reminder } }
   end
 end
 

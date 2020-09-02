@@ -1,4 +1,6 @@
-<h1><%= t "devise.invitations.new.header" %></h1>
+<%= javascript_include_tag "standalone/react_components" %>
+
+<h1><%= t("devise.invitations.new.header") %></h1>
 
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
@@ -15,7 +17,6 @@
               access_tree: current_admin.access_tree.organizations,
               form: form %>
         </div>
-
         <%= form.primary("Send Invite") %>
       <% end %>
     </div>
