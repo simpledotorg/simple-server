@@ -6,7 +6,6 @@ class Admin::ProtocolDrugsController < AdminController
   skip_after_action :verify_policy_scoped
   after_action :verify_authorization_attempted
 
-
   def index
     authorize1 { current_admin.power_user? }
     @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)

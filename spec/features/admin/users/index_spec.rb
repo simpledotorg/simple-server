@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "Admin User page functionality", type: :feature do
-  let(:owner) { create(:admin, :owner) }
+  let(:owner) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
   let!(:group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }

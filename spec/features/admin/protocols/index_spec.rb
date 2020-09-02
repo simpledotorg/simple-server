@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "test protocol screen functionality", type: :feature do
-  let(:owner) { create(:admin) }
-  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_protocols) }
+  let(:owner) { create(:admin, :power_user) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
 
   protocol_new = AdminPage::Protocols::New.new
