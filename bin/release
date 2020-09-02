@@ -8,13 +8,13 @@ require "shellwords"
 last_release = `git describe --tags --abbrev=0 --match "release-*"`.strip
 
 changelog = `git log #{last_release}..HEAD --oneline --decorate=no`
-            .strip
-            .split("\n")
-            .map { |line| line.match(/\s(.*)/)&.captures&.last }
-            .reject { |line| line =~ /^Merge/ } # remove merge commits
-            .compact
-            .map { |line| "• #{line}" }
-            .join("\n")
+  .strip
+  .split("\n")
+  .map { |line| line.match(/\s(.*)/)&.captures&.last }
+  .reject { |line| line =~ /^Merge/ } # remove merge commits
+  .compact
+  .map { |line| "• #{line}" }
+  .join("\n")
 
 puts "CHANGELOG"
 puts "---------"
@@ -23,7 +23,7 @@ puts changelog
 # ------------------
 # New release tag
 # ------------------
-today = Time.now.strftime('%Y-%m-%d')
+today = Time.now.strftime("%Y-%m-%d")
 
 if last_release.start_with?("release-#{today}")
   puts "The last release was #{last_release}. What should this one be?"
