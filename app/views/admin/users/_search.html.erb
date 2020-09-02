@@ -1,0 +1,19 @@
+<% if @users.empty? %>
+  <div class="typeahead-no-results">
+    <div class="typeahead-no-results-message">
+      <i class="fa fa-search text-grey mt-3"></i>
+      <p class="mb-2">No medical officer matches “MO Gold”</p>
+      <p class="text-grey">
+        Approve medical officers in the
+        <a href="/my_facilities">Users to review list</a><br>
+        to add them for teleconsultation</p>
+    </div>
+  </div>
+<% else %>
+  <% @users.each do |user| %>
+    <div class="typeahead-dropdown-row">
+      <p class="mb-0"><%= user.full_name %></p>
+      <p class="text-grey">Registered at <%= user.registration_facility.name %></p>
+    </div>
+  <% end %>
+<% end %>

@@ -71,7 +71,69 @@
         </div>
 
       </div>
+
+      <span class="search-teleconsult-mo">
+        <div class="typeahead">
+          <%= search_field_tag :search_query,
+                               nil,
+                               id: :search_query,
+                               class: "typeahead-input form-control mb-1",
+                               hide_label: true,
+                               placeholder: "Find medical officers by name or phone number",
+                               value: search_query,
+                               onkeyup: "debouncedSearchUser(this)",
+                               autocomplete: "off" %>
+          <div class="typeahead-dropdown"></div>
+        </div>
+
+        <div class="typeahead-spinner">
+          <div class="spinner-border text-primary"></div>
+        </div>
+
+        <div class="no-medical-officers mt-1 mb-3">
+          <h5>No medical officers</h5>
+        </div>
+      </span>
+
       <%= form.primary %>
     <% end %>
   </div>
 </div>
+
+
+<script>
+  let debouncedSearchUser = debounce(searchUser);
+
+  function searchUser(e) {
+    let searchQuery = e.value;
+
+    if (searchQuery.length > 2) {
+      showSpinner();
+      $.ajax({
+        url: "/admin/users.js",
+        data: {"search_query": searchQuery}
+      });
+    }
+  }
+
+  function debounce(func, wait = 500) {
+    let timeout;
+
+    return function (...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  function showSpinner() {
+    let spinner = $(".typeahead-spinner").clone();
+    spinner.css({display: "block"});
+
+    $(".typeahead .typeahead-dropdown").html(spinner);
+  }
+</script>

@@ -18,12 +18,15 @@ class Admin::UsersController < AdminController
         selected_district_facilities([:manage, :user]).map(&:id))
       .order("users.full_name", "facilities.name", "users.device_created_at")
 
-    @users =
-      if searching?
-        paginate(users.search_by_name_or_phone(search_query))
-      else
-        paginate(users)
+    users = users.search_by_name_or_phone(search_query) if searching?
+
+    respond_to do |format|
+      format.html { @users = paginate(users) }
+      format.js do
+        @users = users
+        render partial: "search"
       end
+    end
   end
 
   def show

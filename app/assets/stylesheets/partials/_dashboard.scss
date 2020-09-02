@@ -458,3 +458,13 @@ h3 .heading-label {
     letter-spacing: 2px;
     margin-bottom: 0.5em;
 }
+
+.no-medical-officers {
+  width: 100%;
+  text-align: center;
+  padding: 50px;
+  min-height: 150px;
+  border: 2px dashed $grey-light;
+  border-radius: 5px;
+  color: $grey-dark;
+}

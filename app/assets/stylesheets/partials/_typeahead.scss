@@ -1,0 +1,54 @@
+
+/*****************
+Input field with dropdown
+*****************/
+
+.typeahead {
+  position: relative;
+
+  &-dropdown {
+    @extend .card;
+    @extend .shadow;
+    position: absolute !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+
+    &-row {
+      padding: 10px;
+      height: 68px;
+      border-bottom: 1px solid $grey-light;
+      cursor: pointer;
+    }
+
+    &-row:hover {
+      background: $grey-lightest;
+    }
+  }
+
+  &-no-results {
+    width: 100%;
+    text-align: center;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+
+    &-message {
+      width: 100%;
+    }
+  }
+
+  &-spinner {
+    display: none;
+    padding: 50px;
+    text-align: center;
+    border-radius: 5px;
+    height: 150px;
+  }
+}
+
+.typeahead .typeahead-input:focus + div { display: block; }
