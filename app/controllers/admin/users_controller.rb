@@ -24,7 +24,7 @@ class Admin::UsersController < AdminController
       format.html { @users = paginate(users) }
       format.js do
         @users = users
-        render partial: "search"
+        render partial: "search", locals: {search_query: search_query}
       end
     end
   end
