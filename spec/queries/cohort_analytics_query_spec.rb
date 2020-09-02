@@ -81,99 +81,107 @@ RSpec.describe CohortAnalyticsQuery do
       end
     end
 
-    let(:cohort_start) { DateTime.new(2019, 1, 1).beginning_of_quarter }
-    let(:cohort_end) { cohort_start.end_of_quarter }
-    let(:report_start) { DateTime.new(2019, 4, 1).beginning_of_quarter }
-    let(:report_end) { report_start.end_of_quarter }
+    context "quarterly" do
+      let(:cohort_start) { DateTime.new(2019, 1, 1).beginning_of_quarter }
+      let(:cohort_end) { cohort_start.end_of_quarter }
+      let(:report_start) { DateTime.new(2019, 4, 1).beginning_of_quarter }
+      let(:report_end) { report_start.end_of_quarter }
 
-    it "calculates return and control patient counts in Q2 for patients registered in Q1" do
-      travel_to(april) do
-        # Facility 1: 2 patients under control, 3 not controlled
-        jan_registered_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-        jan_registered_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
-
-        # Facility 2: 3 patients under control, 1 not controlled
-        jan_registered_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-        jan_registered_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
-      end
-
-      expected_result = {
-        registered: {
-          :total => 15,
-          facility1.id => 10,
-          facility2.id => 5
-        },
-        followed_up: {
-          :total => 9,
-          facility1.id => 5,
-          facility2.id => 4
-        },
-        defaulted: {
-          :total => 6,
-          facility1.id => 5,
-          facility2.id => 1
-        },
-        controlled: {
-          :total => 5,
-          facility1.id => 2,
-          facility2.id => 3
-        },
-        uncontrolled: {
-          :total => 4,
-          facility1.id => 3,
-          facility2.id => 1
-        }
-      }.deep_symbolize_keys
-
-      analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
-      counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
-      expect(counts).to eq(expected_result)
-    end
-
-    context "when a patient makes multiple follow-up visits" do
-      it "only counts the patient once in the registration facility" do
+      it "calculates return and control patient counts in Q2 for patients registered in Q1" do
         travel_to(april) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+          # Facility 1: 2 patients under control, 3 not controlled
+          jan_registered_patients_1[0..1].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_registered_patients_1[2..4].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+
+          # Facility 2: 3 patients under control, 1 not controlled
+          jan_registered_patients_2[0..2].each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          jan_registered_patients_2[3..3].each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
         end
 
-        expected_follow_ups = {
-          :total => 1,
-          facility1.id => 1
+        expected_result = {
+          registered: {
+            :total => 15,
+            facility1.id => 10,
+            facility2.id => 5
+          },
+          followed_up: {
+            :total => 9,
+            facility1.id => 5,
+            facility2.id => 4
+          },
+          defaulted: {
+            :total => 6,
+            facility1.id => 5,
+            facility2.id => 1
+          },
+          controlled: {
+            :total => 5,
+            facility1.id => 2,
+            facility2.id => 3
+          },
+          uncontrolled: {
+            :total => 4,
+            facility1.id => 3,
+            facility2.id => 1
+          }
         }.deep_symbolize_keys
 
         analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
         counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
-
-        expect(counts[:followed_up].deep_symbolize_keys).to eq(expected_follow_ups)
+        expect(counts).to eq(expected_result)
       end
 
-      it "marks patient uncontrolled if most recent bp is hypertensive" do
-        travel_to(april) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
-        end
-        travel_to(may) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+      context "when a patient makes multiple follow-up visits" do
+        it "only counts the patient once in the registration facility" do
+          travel_to(april) do
+            jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+            jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+          end
+
+          expected_follow_ups = {
+            :total => 1,
+            facility1.id => 1
+          }.deep_symbolize_keys
+
+          analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+          counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
+          expect(counts[:followed_up].deep_symbolize_keys).to eq(expected_follow_ups)
         end
 
-        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
-        counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
-        expect(counts[:controlled][:total]).to eq(0)
-        expect(counts[:uncontrolled][:total]).to eq(1)
+        it "marks patient uncontrolled if most recent bp is hypertensive" do
+          travel_to(april) do
+            jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility1) }
+          end
+          travel_to(may) do
+            jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility2) }
+          end
+
+          analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+          counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
+          expect(counts[:controlled][:total]).to eq(0)
+          expect(counts[:uncontrolled][:total]).to eq(1)
+        end
+
+        it "marks patient controlled if most recent bp is under control" do
+          travel_to(april) do
+            jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
+          end
+          travel_to(may) do
+            jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
+          end
+
+          analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+          counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
+          expect(counts[:controlled][:total]).to eq(1)
+          expect(counts[:uncontrolled][:total]).to eq(0)
+        end
       end
 
-      it "marks patient controlled if most recent bp is under control" do
-        travel_to(april) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility1) }
-        end
-        travel_to(may) do
-          jan_registered_patients_1[0].tap { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility2) }
-        end
-
-        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :quarter, prev_periods: 3, from_time: report_end)
+      it "does not count discarded patients" do
+        jan_registered_patients_1[0..2].each(&:discard_data)
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :month, prev_periods: 3, from_time: report_end)
         counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
-        expect(counts[:controlled][:total]).to eq(1)
-        expect(counts[:uncontrolled][:total]).to eq(0)
+        expect(counts[:registered][:total]).to eq(12)
       end
     end
 
@@ -222,15 +230,9 @@ RSpec.describe CohortAnalyticsQuery do
           }
         }.deep_symbolize_keys
 
+        analytics = CohortAnalyticsQuery.new([facility1, facility2], period: :month, prev_periods: 3, from_time: report_end)
+        counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
         expect(counts).to eq(expected_result)
-      end
-    end
-
-    context "with discarded patients" do
-      before { jan_registered_patients_1[0..2].each(&:discard_data) }
-
-      it "does not count discarded patients" do
-        expect(counts[:registered][:total]).to eq(12)
       end
     end
   end
