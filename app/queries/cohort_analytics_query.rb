@@ -20,7 +20,7 @@ class CohortAnalyticsQuery
   end
 
   def patient_counts_by_period
-    Rails.cache.fetch(cache_key) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
       patient_counts_by_period_uncached
     end
   end
