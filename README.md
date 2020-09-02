@@ -276,8 +276,19 @@ Simple Server is deployed to several environments using a mixture of tools.
 * Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
   for more information.
 * Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
+* SemaphoreCI: Continuous deployment
 
-Detailed deployment instructions for Simple Server can be found [here](doc/deployment.md).
+To make a deployment, run the release script.
+
+```
+bin/release
+```
+
+This will create a git release tag and automatically trigger a deployment to all non-production environments through
+Semaphore.
+
+Once complete, trigger a manual deployment to production environments through the
+[Semaphore CI dashboard](https://resolvetosavelives.semaphoreci.com/projects/simple-server).
 
 > Make sure you add your SSH keys as single sign-on so that `cap` doesn't get confused when there's more than 1 instance
 > to deal with. You can do this simply by running `ssh-add -K ~/.ssh/id_rsa`.
