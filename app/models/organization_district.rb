@@ -14,12 +14,6 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
   end
 
   def cohort_analytics(period, prev_periods)
-    patients =
-      Patient
-        .joins(:registration_facility)
-        .where(facilities: {id: facilities})
-        .with_hypertension
-
     query = CohortAnalyticsQuery.new(facilities, period: period, prev_periods: prev_periods)
     query.patient_counts_by_period
   end
