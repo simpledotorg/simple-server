@@ -5,7 +5,7 @@ class CohortAnalyticsQuery
   attr_reader :period
   attr_reader :prev_periods
 
-  def initialize(facilities, period: :month, prev_periods: nil, from_time: Time.current)
+  def initialize(facilities, period: :month, prev_periods: nil, from_time: Time.current.beginning_of_month)
     @facilities = facilities
     @patients = Patient.joins(:registration_facility).where(facilities: {id: facilities}).with_hypertension
     @from_time = from_time
