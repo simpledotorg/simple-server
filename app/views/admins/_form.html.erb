@@ -1,36 +1,39 @@
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-  <div class="row">
+<div class="row">
     <div class="col-md-6">
-      <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
+        <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
         <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
         <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *", placeholder: "Email" %>
         <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
         <%= access_level_select(form, current_admin.permitted_access_levels_info.values, value: @admin.access_level, page: :edit) %>
 
         <%= form.label "Facility access *" %>
+        <div id="facility-access-power-user" class="hidden">
+            Admin has access to all facilities in the system
+        </div>
         <div id="facility-access">
-          <div class="card access-tree">
-            <div class="select-all-access-items">
-              <%= form.check_box :select_all_facilities, id: "select_all_facilities" %>
-            </div>
+            <div class="card access-tree">
+                <div class="select-all-access-items">
+                    <%= form.check_box :select_all_facilities, id: "select_all_facilities" %>
+                </div>
 
-            <% access_tree = current_admin.visible_access_tree %>
-            <%= render access_tree[:render_partial],
+                <% access_tree = current_admin.visible_access_tree %>
+                <%= render access_tree[:render_partial],
                 tree: access_tree[:data],
                 root: access_tree[:root],
                 user_being_edited: AdminAccessPresenter.new(@admin),
                 tree_depth: 0,
                 page: :edit,
                 form: form %>
-          </div>
+            </div>
         </div>
         <%= form.primary("Save") %>
-      <% end %>
+        <% end %>
     </div>
-  </div>
+</div>
 <% else %>
-  <% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
-  <%= react_component "InviteAdminForm",
+<% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
+<%= react_component "InviteAdminForm",
       admin: admin,
       email: admin.email,
       selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] }.uniq,

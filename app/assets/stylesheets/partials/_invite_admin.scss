@@ -69,6 +69,17 @@
   }
 }
 
+#facility-access-power-user {
+  background: #e0f0ff;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  font-weight: normal;
+
+  &.hidden {
+    display: none;
+  }
+}
+
 #facility-access {
   .card {
     &.access-tree {
@@ -150,7 +161,7 @@
           @include transition(0.1s);
         }
       }
-      
+
       .spacer {
         padding-left: 20px;
       }
