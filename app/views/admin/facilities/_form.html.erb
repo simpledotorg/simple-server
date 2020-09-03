@@ -34,41 +34,12 @@
         <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management %>
         <h3 class="mt-5">Teleconsultation enabled?</h3>
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "toggleTeleconsultationFields(this)" %>
-        <div id="teleconsultation_fields" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
-          <div class="alert alert-primary mt-3" role="alert">
-            <strong>How does the teleconsultation pilot work?</strong>
-            <br>Healthcare workers at this facility can make a teleconsult request to a medical officer at a higher level facility by searching for a patient in Simple and tapping a new "WhatsApp Doctor" button. Enter the MO's WhatsApp number below.
-            <br>You can enter multiple MOs for this facility by clicking on the "Add a Medical Officer" button.
+        <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
+          <h3>Medical officers available for teleconsultation</h3>
+          <div class="alert alert-primary mt-1" role="alert">
+            Medical officers will receive teleconsult requests via WhatsApp at the number listed in their profile.
+            Edit the user’s profile to update the number.
           </div>
-          <% if @facility.errors["teleconsultation_phone_numbers_attributes"].present? %>
-            <div id="teleconsultation-errors" class="col col-md-12 pl-0">
-              <%= form.label @facility.errors["teleconsultation_phone_numbers_attributes"].first, class: "text-danger" %>
-            </div>
-          <% end %>
-         <div id="mo_rows">
-           <div id="header_row" class="row mt-2">
-           <div class="col col-md-4">
-             <%= label_tag 'Country code' %>
-           </div>
-           <div class="col col-md-7">
-             <%= label_tag 'Medical officer\'s WhatsApp number' %>
-           </div>
-           <div class="col col-md-1">
-             <%= label_tag "delete" %>
-           </div>
-         </div>
-           <% if @facility[:teleconsultation_phone_numbers].empty? %>
-             <% @facility.build_teleconsultation_phone_number %>
-           <% end %>
-           <%= form.fields_for :teleconsultation_phone_numbers do |phone_number_form| %>
-             <%= render 'phone_number_fields', f: phone_number_form %>
-           <% end %>
-         </div>
-          <%= button_tag type: "button", class: "btn btn-sm btn-outline-success", onclick: "addPhoneNumberFields()" do %>
-            <i class="fas fa-plus mr-1"></i>
-            Add a Medical Officer
-          <% end %>
-
           <div class="typeahead">
             <%= search_field_tag :search_query,
                                  nil,
@@ -85,8 +56,7 @@
               <div class="spinner-border text-primary"></div>
             </div>
           </div>
-
-          <div class="no-medical-officers mt-1 mb-3">
+          <div class="no-medical-officers mt-3 mb-3">
             <h5>No medical officers</h5>
           </div>
         </div>
@@ -96,37 +66,3 @@
     <% end %>
   </div>
 </div>
-
-<script>
-  function searchUser(e) {
-    let searchQuery = e.value;
-    if (searchQuery.length > 2) {
-      showSpinner();
-      $.ajax({
-        url: "/admin/users.js",
-        data: {"search_query": searchQuery}
-      });
-    }
-  }
-
-  function debounce(func, wait = 500) {
-    let timeout;
-
-    return function (...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  }
-
-  function showSpinner() {
-    let spinner = $(".typeahead-spinner").first().clone();
-    spinner.css({display: "block"});
-
-    $(".typeahead .typeahead-dropdown").html(spinner);
-  }
-</script>
