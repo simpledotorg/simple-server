@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_24_112700) do
+ActiveRecord::Schema.define(version: 2020_09_02_174738) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -438,6 +438,7 @@ ActiveRecord::Schema.define(version: 2020_08_24_112700) do
     t.uuid "user_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
+    t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
 
@@ -470,6 +471,7 @@ ActiveRecord::Schema.define(version: 2020_08_24_112700) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_twilio_sms_delivery_details_on_deleted_at"
+    t.index ["session_id"], name: "index_twilio_sms_delivery_details_on_session_id"
   end
 
   create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -959,6 +961,10 @@ ActiveRecord::Schema.define(version: 2020_08_24_112700) do
     ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
   SQL
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
+  add_index "latest_blood_pressures_per_patient_per_months", ["bp_recorded_at"], name: "index_bp_months_bp_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["medical_history_hypertension"], name: "index_bp_months_medical_history_hypertension"
+  add_index "latest_blood_pressures_per_patient_per_months", ["patient_recorded_at"], name: "index_bp_months_patient_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["registration_facility_id"], name: "index_bp_months_registration_facility_id"
 
   create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,

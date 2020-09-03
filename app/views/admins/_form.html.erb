@@ -1,3 +1,25 @@
+<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+  <div class="row">
+    <div class="col-md-6">
+      <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
+        <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
+        <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *" %>
+        <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
+        <%= form.select :access_level, current_admin.permitted_access_levels_info, value: @admin.access_level, id: :access_levels, required: true, label: "Access *" %>
+
+        <%= form.label "Facility Access *" %>
+        <div id="facility-access">
+          <%= render "email_authentications/invitations/access_tree",
+              access_tree: current_admin.access_tree.organizations,
+              user_being_edited: AdminAccessPresenter.new(@admin),
+              page: :edit,
+              form: form %>
+        </div>
+        <%= form.primary("Save") %>
+      <% end %>
+    </div>
+  </div>
+<% else %>
 <%= javascript_include_tag "standalone/react_components" %>
 
 <% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
@@ -15,3 +37,4 @@
                     allow_email_edit: false,
                     submit_text: 'Update Admin',
                     submit_method: 'PATCH' %>
+<% end %>

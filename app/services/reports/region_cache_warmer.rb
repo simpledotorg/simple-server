@@ -52,7 +52,11 @@ module Reports
 
     def notify(msg)
       return unless notifier
-      notifier.ping "[#{environment}] #{msg}"
+      notifier.ping "[#{country_code}_#{environment}] #{msg}"
+    end
+
+    def country_code
+      Rails.application.config.country[:abbreviation]
     end
 
     def environment
