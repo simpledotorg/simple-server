@@ -163,7 +163,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def action_to_level(action)
-    ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
+    return ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
     ACTION_TO_LEVEL[action]
   end
 end
