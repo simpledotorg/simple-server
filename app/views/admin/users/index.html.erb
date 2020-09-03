@@ -4,12 +4,22 @@
 
 <% currently_selected_district = params[:district].presence || 'All districts' %>
 
-<%= render 'shared/paginate_and_filter_by_district',
-    form_url: admin_users_path,
-    current_admin: current_admin,
-    district: @district,
-    per_page: @per_page,
-    scope_namespace: [:manage, :user, Facility] %>
+<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+  <%= render 'shared/paginate_and_filter_by_district',
+             form_url: admin_users_path,
+             current_admin: current_admin,
+             district: @district,
+             per_page: @per_page,
+             scope_namespace: current_admin.accessible_facilities(:manage) %>
+
+<% else %>
+  <%= render 'shared/paginate_and_filter_by_district',
+             form_url: admin_users_path,
+             current_admin: current_admin,
+             district: @district,
+             per_page: @per_page,
+             scope_namespace: [:manage, :user, Facility] %>
+<% end %>
 
 <% if @users.exists? %>
   <% if searching? %>
