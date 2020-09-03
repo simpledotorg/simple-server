@@ -1,16 +1,6 @@
 module AdminAccessHelper
-  def access_fraction(name, available, total)
+  def access_facility_count(available)
     "#{available} #{"facility".pluralize(available)}"
-
-    #
-    # currently unused:
-    #
-    # if available == total
-    #   "#{total} #{name.pluralize(total)}"
-    # else
-    #   "#{available} / #{total} #{name.pluralize}"
-    # end
-    #
   end
 
   def access_checkbox(form, name, resource, page: :new, checked_fn: -> { false })

@@ -5,6 +5,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
+  console.log("invite")
   selectAccessLevels()
   selectAllListener()
   checkboxItemListener()

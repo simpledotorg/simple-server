@@ -1,8 +1,8 @@
 <% tree.each do |organization, org_info| %>
-<ul class="access-item-wrapper">
+  <ul class="access-item-wrapper">
     <li>
-        <div class="access-item organization collapsed">
-            <%= access_checkbox(
+      <div class="access-item organization collapsed">
+        <%= access_checkbox(
                 form,
                 :organizations,
                 organization,
@@ -10,13 +10,13 @@
                 checked_fn: -> { user_being_edited.visible?(:organization, organization) }
             ) %>
 
-            <span class="access-ratio organization">
-                <%= access_fraction("facility groups", org_info[:accessible_facility_count], 0) %>
-                <i class="fas fa-angle-down light"></i>
-            </span>
-        </div>
+        <span class="access-ratio organization">
+          <%= access_facility_count(org_info[:accessible_facility_count]) %>
+          <i class="fas fa-angle-down light"></i>
+        </span>
+      </div>
 
-        <%= render "email_authentications/invitations/facility_group_access_tree",
+      <%= render "email_authentications/invitations/facility_group_access_tree",
           tree: org_info[:facility_groups],
           page: page,
           form: form,
@@ -24,5 +24,5 @@
           user_being_edited: user_being_edited,
           tree_depth: tree_depth + 1 %>
     </li>
-</ul>
+  </ul>
 <% end %>
