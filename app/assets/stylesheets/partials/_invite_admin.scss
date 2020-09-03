@@ -125,6 +125,12 @@
         }
       }
 
+      div {
+        label {
+          user-select: none;
+        }
+      }
+
       &.organization {
         div {
           label {
@@ -163,6 +169,7 @@
         font-style: normal;
         cursor: pointer;
         margin-right: -6px;
+        user-select: none;
 
         i {
           transform: rotate(0deg);
