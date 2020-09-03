@@ -124,7 +124,7 @@
   }
 
   function showSpinner() {
-    let spinner = $(".typeahead-spinner").clone();
+    let spinner = $(".typeahead-spinner").first().clone();
     spinner.css({display: "block"});
 
     $(".typeahead .typeahead-dropdown").html(spinner);
