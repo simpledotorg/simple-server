@@ -95,10 +95,10 @@ group :development do
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
   # For memory profiling
-  gem 'memory_profiler'
+  gem "memory_profiler"
   # For call-stack profiling flamegraphs
-  gem 'flamegraph'
-  gem 'stackprof'
+  gem "flamegraph"
+  gem "stackprof"
 end
 
 group :test do
