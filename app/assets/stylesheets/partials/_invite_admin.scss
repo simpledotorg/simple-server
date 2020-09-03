@@ -144,11 +144,13 @@
         background: #fff8e0;
       }
 
-      &:hover {
-        background: var(--light);
-        @include transition(0.1s);
+      &:not(.facility) {
+        &:hover {
+          background: var(--light);
+          @include transition(0.1s);
+        }
       }
-
+      
       .spacer {
         padding-left: 20px;
       }
