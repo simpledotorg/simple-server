@@ -39,6 +39,7 @@
   }
 
   .dropdown-item {
+    padding: 0.375rem 0.75rem;
     &.active,
     &:active {
       background: var(--light);

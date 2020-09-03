@@ -21,7 +21,7 @@ class UserAccess < Struct.new(:user)
     power_user: {
       id: :power_user,
       name: "Power User",
-      description: "Full-access to the entire system"
+      description: "Power user: Can manage the entire Simple deployment"
     }
   }.freeze
 
