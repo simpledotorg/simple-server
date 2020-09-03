@@ -124,10 +124,9 @@
             @include transition(0.3s);
           }
         }
+
         & + .access-item-wrapper {
-          height: 0px;
-          overflow: hidden;
-          @include transition(0.1s);
+          display: none;
         }
       }
 
