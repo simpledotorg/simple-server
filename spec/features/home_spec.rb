@@ -14,16 +14,21 @@ RSpec.feature "Home page", type: :feature do
   let!(:path_clinic) { create(:facility, facility_group: path_group, name: "Dr. Amir Singh") }
 
   before do
+    enable_flag(:new_permissions_system_aug_2020, admin)
     sign_in(admin.email_authentication)
-    visit root_path
+    # Root path has moved to MyFacilities#Overview
+    # visit root_path
+    visit organizations_path
+  end
+
+  after do
+    disable_flag(:new_permissions_system_aug_2020, admin)
   end
 
   context "owner has permission to view cohort reports" do
     context "for all organizations" do
       let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :view_cohort_reports, resource: nil)
-        ])
+        create(:admin, :power_user)
       end
 
       it "shows all organizations" do
@@ -42,9 +47,7 @@ RSpec.feature "Home page", type: :feature do
 
     context "for a specific organization" do
       let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :view_cohort_reports, resource: ihmi)
-        ])
+        create(:admin, :manager, accesses: [build(:access, resource: ihmi)])
       end
 
       it "shows the authorized organization" do
@@ -66,9 +69,7 @@ RSpec.feature "Home page", type: :feature do
 
     context "for a specific facility group" do
       let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :view_cohort_reports, resource: ihmi_group_bathinda)
-        ])
+        create(:admin, :manager, accesses: [build(:access, resource: ihmi_group_bathinda)])
       end
 
       it "shows the organization of the facility group" do

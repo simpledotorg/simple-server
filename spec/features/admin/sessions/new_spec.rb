@@ -1,10 +1,20 @@
 require "rails_helper"
 
 RSpec.feature "Owner Login as Admin", type: :feature do
-  let(:owner) { create(:admin, :owner) }
-  let(:counsellor) { create(:admin, :counsellor) }
+  let(:owner) { create(:admin, :power_user) }
+  let(:counsellor) { create(:admin, :call_center) }
+  let!(:facility) { create(:facility) }
   login_page = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
+  before(:each) do
+    enable_flag(:new_permissions_system_aug_2020, owner)
+    enable_flag(:new_permissions_system_aug_2020, counsellor)
+  end
+
+  after(:each) do
+    disable_flag(:new_permissions_system_aug_2020, owner)
+    disable_flag(:new_permissions_system_aug_2020, counsellor)
+  end
 
   context "owners login and logout" do
     before(:each) do
