@@ -1,7 +1,7 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const facilityAccessDiv = () => document.getElementById("facility-access")
-const selectAllDiv = () => document.getElementById("select_all_facilities")
-
+const selectAllFacilitiesDiv = () => document.getElementById("select_all_facilities")
+const facilityAccessItems = () => document.getElementsByClassName("access-ratio")
 //
 // loads at page refresh
 //
@@ -24,26 +24,25 @@ function editAdmin() {
     updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
   }
 
-  selectAllDiv().checked = checkboxes.every(checkbox => checkbox.checked)
+  selectAllFacilitiesDiv().checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
 //
 // listeners
 //
 function selectAllListener() {
-  if (!selectAllDiv()) return
+  if (!selectAllFacilitiesDiv()) return
 
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
 
-  selectAllDiv().addEventListener("change", () => {
+  selectAllFacilitiesDiv().addEventListener("change", () => {
     for (const checkbox of checkboxes) {
-      checkbox.checked = selectAllDiv().checked
+      checkbox.checked = selectAllFacilitiesDiv().checked
     }
   })
 }
 
 function checkboxItemListener() {
-
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
 
@@ -58,9 +57,7 @@ function checkboxItemListener() {
 }
 
 function resourceRowCollapseListener() {
-  const facilityAccessItems = document.getElementsByClassName("access-ratio")
-
-  for (const item of facilityAccessItems) {
+  for (const item of facilityAccessItems()) {
     item.addEventListener("click", onFacilityAccessItemToggled)
   }
 }
