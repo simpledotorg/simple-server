@@ -6,6 +6,16 @@
   transition: $duration;
 }
 
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+
+  input {
+    height: 32px;
+    padding: 4px 12px 4px 12px;
+  }
+}
+
 .access-levels {
   margin-bottom: 10px;
   height: calc(1.5em + 0.75rem + 2px);

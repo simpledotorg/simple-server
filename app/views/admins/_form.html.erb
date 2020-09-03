@@ -1,6 +1,10 @@
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
 <div class="row">
     <div class="col-md-6">
+        <div class="admin-header">
+            <h1>Edit admin</h1>
+            <input type="submit" value="Save" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
+        </div>
         <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
         <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
         <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *", placeholder: "Email" %>
@@ -27,7 +31,7 @@
                 form: form %>
             </div>
         </div>
-        <%= form.primary("Save") %>
+        <%= form.submit "Send Invite", class: "btn btn-primary", id: "form-submit", hidden: :hidden %>
         <% end %>
     </div>
 </div>

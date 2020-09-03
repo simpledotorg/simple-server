@@ -1,8 +1,10 @@
-<h1><%= t "devise.invitations.new.header" %></h1>
-
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
 <div class="row">
     <div class="col-md-6">
+        <div class="admin-header">
+            <h1><%= t "devise.invitations.new.header" %></h1>
+            <input type="submit" value="Send Invite" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
+        </div>
         <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true) do |form| %>
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
         <%= form.text_field :email, id: :email, required: true, label: "Email *", placeholder: "Email" %>
@@ -30,11 +32,12 @@
             </div>
         </div>
 
-        <%= form.primary("Send Invite") %>
+        <%= form.submit "Send Invite", class: "btn btn-primary", id: "form-submit", hidden: :hidden %>
         <% end %>
     </div>
 </div>
 <% else %>
+<h1><%= t "devise.invitations.new.header" %></h1>
 <%= react_component "InviteAdminForm",
       organizations: policy_scope([:manage, :admin, Organization.all]),
       facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
