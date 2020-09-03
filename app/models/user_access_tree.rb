@@ -6,7 +6,7 @@
 class UserAccessTree < Struct.new(:user)
   include Memery
 
-  def facilities
+  memoize def facilities
     visible_facilities.map { |facility|
       info = {
         visible: true
@@ -16,45 +16,58 @@ class UserAccessTree < Struct.new(:user)
     }.to_h
   end
 
-  def facility_groups
+  memoize def facility_groups
     facilities
       .group_by { |facility, _| facility.facility_group }
       .map { |facility_group, facilities|
-      info = {
-        accessible_facility_count: facilities.length,
-        visible: visible_facility_groups.include?(facility_group),
-        facilities: facilities
-      }
+        info = {
+          accessible_facility_count: facilities.length,
+          visible: visible_facility_groups.include?(facility_group),
+          facilities: facilities
+        }
 
-      [facility_group, info]
-    }.to_h
+        [facility_group, info]
+      }.to_h
   end
 
-  def organizations
+  memoize def organizations
     facility_groups
       .group_by { |facility_group, _| facility_group.organization }
       .map { |organization, facility_groups|
-      info = {
-        accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
-        visible: visible_organizations.include?(organization),
-        facility_groups: facility_groups
-      }
+        info = {
+          accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
+          visible: visible_organizations.include?(organization),
+          facility_groups: facility_groups
+        }
 
-      [organization, info]
-    }.to_h
+        [organization, info]
+      }.to_h
+  end
+
+  def visible?(model, record)
+    case model
+      when :facility
+        facilities.dig(record, :visible)
+      when :facility_group
+        facility_groups.dig(record, :visible)
+      when :organization
+        organizations.dig(record, :visible)
+      else
+        raise ArgumentError, "#{model} is unsupported."
+    end
   end
 
   private
 
   memoize def visible_facility_groups
-    user.accessible_facility_groups(:view)
+    user.accessible_facility_groups(:any_access)
   end
 
   memoize def visible_facilities
-    user.accessible_facilities(:view)
+    user.accessible_facilities(:any_access)
   end
 
   memoize def visible_organizations
-    user.accessible_organizations(:view)
+    user.accessible_organizations(:any_access)
   end
 end
