@@ -4,7 +4,7 @@
 
   <% @users_requesting_approval.each do |user| %>
     <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-      <% if current_admin.accessible_users.find_by_id(user) %>
+      <% if current_admin.accessible_users(:manage).find_by_id(user) %>
         <div class="user-row">
           <h5><%= link_to user.full_name, [:admin, user] %></h5>
           <div class="text-grey mt-1 mb-2">
