@@ -1,3 +1,7 @@
+const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
+const facilityAccessDiv = () => document.getElementById("facility-access")
+const selectAllDiv = () => document.getElementById("select_all_facilities")
+
 //
 // loads at page refresh
 //
@@ -12,53 +16,44 @@ function inviteAdmin() {
 }
 
 function editAdmin() {
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
-  const selectAllDiv = document.getElementById("select_all_facilities")
-
-  // list of all checkboxes under facilityAccessDiv
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+  // list of all checkboxes under facilityAccessDiv()
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
   const checkedCheckboxes = checkboxes.filter(check => check.checked)
 
   for (const checkbox of checkedCheckboxes) {
-    updateParentCheckedState(checkbox, SELECTOR)
+    updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
   }
 
-  selectAllDiv.checked = checkboxes.every(checkbox => checkbox.checked)
+  selectAllDiv().checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
 //
 // listeners
 //
 function selectAllListener() {
-  const selectAllDiv = document.getElementById("select_all_facilities")
-  if (!selectAllDiv) return
+  if (!selectAllDiv()) return
 
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
 
-  selectAllDiv.addEventListener("change", () => {
+  selectAllDiv().addEventListener("change", () => {
     for (const checkbox of checkboxes) {
-      checkbox.checked = selectAllDiv.checked
+      checkbox.checked = selectAllDiv().checked
     }
   })
 }
 
 function checkboxItemListener() {
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
 
-  // list of all checkboxes under facilityAccessDiv
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+  // list of all checkboxes under facilityAccessDiv()
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
 
   addEventListener("change", e => {
     const targetCheckbox = e.target
 
     // exit if change event did not come from list of checkboxes
     if (checkboxes.indexOf(targetCheckbox) === -1) return
-    updateChildrenCheckedState(targetCheckbox, SELECTOR)
-    updateParentCheckedState(targetCheckbox, SELECTOR)
+    updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
+    updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
   })
 }
 
