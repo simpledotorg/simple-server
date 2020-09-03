@@ -15,7 +15,9 @@
       <div class="text-grey mt-2">
         <i class="fab fa-whatsapp" aria-hidden="true"></i>
         <span class="medical-officer-phone-number"><%= user.phone_number && user.full_teleconsultation_phone_number %></span> •
-        <a href="_" target="_blank">Edit</a>
+        <!-- TODO fix link -->
+        <a href="/admin/users/<%= user.id %>/edit" target="_blank">Edit</a>
+
       </div>
     </div>
     <div class="col-md-6 text-right">

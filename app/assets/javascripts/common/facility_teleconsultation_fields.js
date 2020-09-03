@@ -78,6 +78,7 @@ function medicalOfficerCard(user) {
   $card.find(".medical-officer-phone-number").html(user["userTeleconsultPhoneNumber"]);
   $card.find("[data-user-id]").attr("data-user-id", userID);
   $card.attr("data-user-id", userID);
+  $card.find("a").attr("href", `/admin/users/${userID}/edit`) //TODO: fix
 
   return $card;
 }
