@@ -23,7 +23,7 @@
     margin-bottom: 15px;
 
     span.title {
-      font-size: 16px;
+      font-size: 15px;
       letter-spacing: 0.5px;
     }
 
@@ -55,7 +55,7 @@
     .title {
       font-style: normal;
       font-weight: normal;
-      font-size: 16px;
+      font-size: 15px;
       color: #000000;
     }
 
@@ -118,20 +118,23 @@
       &.collapsed {
         span {
           i {
-            transform: rotate(-90deg);
+            transform: rotate(180deg);
             @include transition(0.3s);
+            padding-bottom: 2px;
+          }
+        }
+      }
+
+      &.organization {
+        div {
+          label {
+            font-weight: 600;
           }
         }
       }
 
       &:not(.collapsed):not(.facility) {
         background: #fff8e0;
-
-        div {
-          label {
-            font-weight: 600;
-          }
-        }
       }
 
       &:hover {
@@ -154,7 +157,7 @@
       .access-ratio {
         padding: 12px;
         margin-left: auto;
-        font-size: 12px;
+        font-size: 15px;
         color: var(--secondary);
         font-weight: normal;
         font-style: normal;
