@@ -22,7 +22,7 @@ RSpec.feature "Overdue appointments", type: :feature do
   describe "index" do
     before { sign_in(supervisor.email_authentication) }
 
-    it "shows Overdue tab" do
+    xit "shows Overdue tab" do
       visit root_path
 
       expect(page).to have_content("Overdue patients")
