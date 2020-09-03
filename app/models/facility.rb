@@ -18,7 +18,8 @@ class Facility < ApplicationRecord
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
   has_and_belongs_to_many :teleconsultation_medical_officers,
-    class_name: "TeleconsultationMedicalOfficer",
+    -> { distinct },
+    class_name: "User",
     association_foreign_key: :user_id,
     join_table: "facilities_teleconsultation_medical_officers"
 

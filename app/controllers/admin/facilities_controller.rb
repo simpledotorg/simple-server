@@ -181,6 +181,7 @@ class Admin::FacilitiesController < AdminController
       :enable_teleconsultation,
       :teleconsultation_phone_number,
       :teleconsultation_isd_code,
+      teleconsultation_medical_officer_ids: [],
       teleconsultation_phone_numbers_attributes: [:isd_code, :phone_number, :_destroy]
     )
   end

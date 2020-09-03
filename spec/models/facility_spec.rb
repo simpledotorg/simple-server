@@ -32,7 +32,7 @@ RSpec.describe Facility, type: :model do
 
     describe "#teleconsultation_medical_officers" do
       let!(:facility) { create(:facility) }
-      let!(:medical_officer) { create(:teleconsultation_medical_officer, teleconsultation_facilities: [facility]) }
+      let!(:medical_officer) { create(:user, teleconsultation_facilities: [facility]) }
 
       specify do
         expect(facility.teleconsultation_medical_officers).to contain_exactly medical_officer
