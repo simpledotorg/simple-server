@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-6">
-    <%= bootstrap_form_with(model: [:admin, facility_group, facility], local: true, autocomplete: "off", label_errors: true) do |form| %>
+    <%= bootstrap_form_with(model: [:admin, facility_group, facility], local: true, autocomplete: "off", label_errors: true, id: "facility-edit-form") do |form| %>
       <% if @facility.errors.any? %>
         <div id="errors">
           <%= form.label "Update failed, please fix the indicated errors", class: "text-danger" %>
@@ -33,8 +33,8 @@
         <h3 class="mt-5">Diabetes enabled?</h3>
         <%= form.check_box :enable_diabetes_management, id: :facility_enable_diabetes_management %>
         <h3 class="mt-5">Teleconsultation enabled?</h3>
-        <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "toggleTeleconsultationFields(this)" %>
-        <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %> >
+        <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "toggleTeleconsultationFields()" %>
+        <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %>>
           <h3>Medical officers available for teleconsultation</h3>
           <div class="alert alert-primary mt-1" role="alert">
             Medical officers will receive teleconsult requests via WhatsApp at the number listed in their profile.
@@ -51,13 +51,22 @@
                                  onkeyup: "debounce(searchUser(this))",
                                  autocomplete: "off" %>
             <div class="typeahead-dropdown"></div>
-
             <div class="typeahead-spinner">
               <div class="spinner-border text-primary"></div>
             </div>
           </div>
-          <div class="no-medical-officers mt-3 mb-3">
+          <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
             <h5>No medical officers</h5>
+            <input class="medical-officer-input"
+                   type="hidden"
+                   name="facility[teleconsultation_medical_officer_ids][]"
+                   value=""
+                   form="facility-edit-form">
+          </div>
+          <div class="medical-officers mt-3 mb-3">
+            <% @facility.teleconsultation_medical_officers.each do |user| %>
+              <%= render partial: "admin/facilities/teleconsultation_medical_officer", locals: {user: user} %>
+            <% end %>
           </div>
         </div>
       </div>
@@ -66,3 +75,7 @@
     <% end %>
   </div>
 </div>
+
+<template id="teleconsultation-medical-officer">
+  <%= render partial: "admin/facilities/teleconsultation_medical_officer", locals: {user: User.new} %>
+</template>

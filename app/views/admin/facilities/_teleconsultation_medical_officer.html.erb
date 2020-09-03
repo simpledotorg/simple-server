@@ -1,0 +1,25 @@
+<div class="medical-officer-card card p-3" data-user-id="<%= user.id %>">
+  <input class="medical-officer-input"
+         type="hidden"
+         name="facility[teleconsultation_medical_officer_ids][]"
+         value="<%= user.id %>"
+         form="facility-edit-form">
+  <div class="row">
+    <div class="col col-md-6">
+      <p class="m-0">
+        <span class="medical-officer-name"><%= user.full_name %></span>
+      <div class="text-grey">
+        Registered at
+        <span class="medical-officer-registration-facility"><%= user.registration_facility&.name %></span>
+      </div>
+      <div class="text-grey mt-2">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+        <span class="medical-officer-phone-number"><%= user.phone_number && user.full_teleconsultation_phone_number %></span> •
+        <a href="_" target="_blank">Edit</a>
+      </div>
+    </div>
+    <div class="col-md-6 text-right">
+      <button class="remove-medical-officer btn btn-sm btn-outline-danger" data-user-id="<%= user.id %>">Remove</button>
+    </div>
+  </div>
+</div>
