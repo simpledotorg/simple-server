@@ -81,6 +81,10 @@
 }
 
 #facility-access {
+  &.hidden {
+    display: none;
+  }
+
   .card {
     &.access-tree {
       padding: 0px;

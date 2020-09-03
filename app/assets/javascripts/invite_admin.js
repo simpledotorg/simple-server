@@ -2,6 +2,7 @@ const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const facilityAccessDiv = () => document.getElementById("facility-access")
 const selectAllFacilitiesDiv = () => document.getElementById("select_all_facilities")
 const facilityAccessItems = () => document.getElementsByClassName("access-ratio")
+const facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
 //
 // loads at page refresh
 //
@@ -9,6 +10,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
+  accessLevelListener()
   selectAccessLevels()
   selectAllListener()
   checkboxItemListener()
@@ -42,6 +44,10 @@ function selectAllListener() {
   })
 }
 
+function accessLevelListener() {
+  $("#access_level").change(onAccessLevelChanged)
+}
+
 function checkboxItemListener() {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
@@ -65,6 +71,20 @@ function resourceRowCollapseListener() {
 //
 // behaviour
 //
+
+function toggleAccessTreeVisiblity(isPoweruser) {
+  if (isPoweruser) {
+    facilityAccessDiv().classList.add("hidden")
+    facilityAccessPowerUser().classList.remove("hidden")
+  } else {
+    facilityAccessDiv().classList.remove("hidden")
+    facilityAccessPowerUser().classList.add("hidden")
+  }
+}
+
+function onAccessLevelChanged({ target }) {
+  toggleAccessTreeVisiblity(target.value === "power_user")
+}
 
 function toggleItemCollapsed(element) {
   const collapsed = element.classList.contains("collapsed")
