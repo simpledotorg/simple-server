@@ -17,6 +17,7 @@ Input field with dropdown
     overflow-y: auto;
     display: none;
     align-items: center;
+    z-index: 1000;
 
     &-row {
       padding: 10px;
