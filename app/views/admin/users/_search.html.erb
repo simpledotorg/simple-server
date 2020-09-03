@@ -14,7 +14,7 @@
   <div class="typeahead-dropdown-row"
        data-user-id="<%= user.id %>"
        data-user-full-name="<%= user.full_name %>"
-       data-user-registration-facility-id="<%= user.id %>"
+       data-user-registration-facility="<%= user.registration_facility&.name %>"
        data-user-teleconsult-phone-number="<%= user.full_teleconsultation_phone_number %>">
     <p class="mb-0"><%= user.full_name %></p>
     <p class="text-grey">Registered at <%= user.registration_facility.name %></p>
