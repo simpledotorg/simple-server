@@ -349,7 +349,7 @@
         }
       }
     },
-    "/teleconsultation_medical_officers/sync": {
+    "/facility_medical_officers/sync": {
       "get": {
         "summary": "Syncs Teleconsultation MOs data from server to device.",
         "tags": [
@@ -382,12 +382,12 @@
         ],
         "responses": {
           "200": {
-            "description": "teleconsult MOs received",
+            "description": "facility teleconsult MOs received",
             "schema": {
               "type": "object",
               "properties": {
-                "teleconsultation_medical_officers": {
-                  "$ref": "#/definitions/teleconsultation_medical_officers"
+                "facility_medical_officers": {
+                  "$ref": "#/definitions/facility_medical_officers"
                 }
               }
             }
@@ -1267,7 +1267,7 @@
         }
       }
     },
-    "teleconsultation_medical_officer": {
+    "facility_medical_officer": {
       "type": "object",
       "properties": {
         "id": {
@@ -1307,7 +1307,7 @@
         }
       }
     },
-    "teleconsultation_medical_officers": {
+    "facility_medical_officers": {
       "type": [
         "null",
         "array"

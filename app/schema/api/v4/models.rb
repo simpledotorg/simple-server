@@ -228,7 +228,7 @@ class Api::V4::Models
       }
     end
 
-    def teleconsultation_medical_officer
+    def facility_medical_officer
       {
         type: :object,
         properties: {
@@ -284,8 +284,8 @@ class Api::V4::Models
        activate_user: activate_user,
        app_user_capabilities: app_user_capabilities,
        medical_officer: medical_officer,
-       teleconsultation_medical_officer: teleconsultation_medical_officer,
-       teleconsultation_medical_officers: array_of("teleconsultation_medical_officer")}
+       facility_medical_officer: facility_medical_officer,
+       facility_medical_officers: array_of("teleconsultation_medical_officer")}
     end
   end
 end

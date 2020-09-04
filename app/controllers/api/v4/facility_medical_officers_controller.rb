@@ -1,4 +1,4 @@
-class Api::V4::TeleconsultationMedicalOfficersController < APIController
+class Api::V4::FacilityMedicalOfficersController < APIController
   def sync_to_user
     medical_officers = current_facility_group.facilities.map { |facility|
       facility_medical_officers(facility)
@@ -24,6 +24,6 @@ class Api::V4::TeleconsultationMedicalOfficersController < APIController
   end
 
   def to_response(payload)
-    {teleconsultation_medical_officers: payload}
+    {facility_medical_officers: payload}
   end
 end

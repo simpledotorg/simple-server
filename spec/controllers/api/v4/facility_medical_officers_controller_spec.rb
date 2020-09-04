@@ -6,7 +6,7 @@ def set_authentication_headers
   request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
 end
 
-RSpec.describe Api::V4::TeleconsultationMedicalOfficersController, type: :controller do
+RSpec.describe Api::V4::FacilityMedicalOfficersController, type: :controller do
   describe "#sync_to_user" do
     let(:facility_group) { create(:facility_group) }
 
