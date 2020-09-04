@@ -1,7 +1,8 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const facilityAccessDiv = () => document.getElementById("facility-access")
 const selectAllFacilitiesDiv = () => document.getElementById("select_all_facilities")
-const facilityAccessItems = () => document.getElementsByClassName("access-ratio")
+const facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
+const facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
 const facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
 //
 // loads at page refresh
@@ -63,7 +64,12 @@ function checkboxItemListener() {
 }
 
 function resourceRowCollapseListener() {
-  for (const item of facilityAccessItems()) {
+  const collapsibleItems = [
+    facilityAccessItemsPadding(),
+    facilityAccessItemsAccessRatio()
+  ].map(htmlCollection => Array.from(htmlCollection)).flat()
+  
+  for (const item of collapsibleItems) {
     item.addEventListener("click", onFacilityAccessItemToggled)
   }
 }

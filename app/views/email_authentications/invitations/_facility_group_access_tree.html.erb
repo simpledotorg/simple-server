@@ -14,6 +14,8 @@
                 checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
             ) %>
 
+            <div class="access-item__padding"></div>
+
             <span class="access-ratio collapsed">
                 <%= access_fraction("facility", fg_info[:accessible_facility_count], 0) %>
 

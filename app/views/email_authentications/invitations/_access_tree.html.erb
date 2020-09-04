@@ -10,6 +10,8 @@
                 checked_fn: -> { user_being_edited.visible?(:organization, organization) }
             ) %>
 
+            <div class="access-item__padding"></div>
+
             <span class="access-ratio organization">
                 <%= access_fraction("facility groups", org_info[:accessible_facility_count], 0) %>
                 <i class="fas fa-caret-up light"></i>
