@@ -10,3 +10,15 @@
   font-weight: normal;
   font-style: normal;
 }
+
+.show-admin-info {
+  &.card {
+    padding: 16px;
+  }
+}
+
+.access-tree__section-header {
+  padding: 16px;
+  font-size: 16px;
+  font-weight: bold;
+}
