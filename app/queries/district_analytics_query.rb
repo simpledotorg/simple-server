@@ -13,6 +13,23 @@ class DistrictAnalyticsQuery
     @include_current_period = include_current_period
   end
 
+  def results
+    Rails.cache.fetch(cache_key) do
+      results = [
+        registered_patients_by_period,
+        total_registered_patients,
+        follow_up_patients_by_period
+      ].compact
+
+      return {} if results.blank?
+      results.inject(&:deep_merge)
+    end
+  end
+
+  def cache_key
+    [self.class.name, facilities.map(&:id).sort, @period, @prev_periods, @from_time.to_s(:mon_year)].join("/")
+  end
+
   def total_registered_patients
     @total_registered_patients ||=
       Patient

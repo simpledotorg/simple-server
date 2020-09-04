@@ -19,19 +19,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = DistrictAnalyticsQuery.new(district_name,
-      facilities,
-      period,
-      prev_periods,
-      include_current_period: include_current_period)
-
-    results = [
-      query.registered_patients_by_period,
-      query.total_registered_patients,
-      query.follow_up_patients_by_period
-    ].compact
-
-    return {} if results.blank?
-    results.inject(&:deep_merge)
+    query = DistrictAnalyticsQuery.new(district_name, facilities, period, prev_periods, include_current_period: include_current_period)
+    query.results
   end
 end
