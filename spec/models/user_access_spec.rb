@@ -567,229 +567,279 @@ RSpec.describe UserAccess, type: :model do
     let!(:admins) { [manager, viewer_all, viewer_reports_only, call_center] }
     let!(:actions) { described_class::ACTION_TO_LEVEL.keys }
 
-    context "#accessible_organizations" do
-      it "returns the organizations an admin has access to" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: organization_3)
+    context "non power users" do
+      context "#accessible_organizations" do
+        it "returns the organizations an admin has access to" do
+          # Grant Accesses
+          admins.each do |admin|
+            admin.user.accesses.create(resource: organization_3)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_organizations(action)).to contain_exactly(organization_3)
+              else
+                expect(admin.accessible_organizations(action)).to match_array([])
+              end
+            end
+          end
+        end
+      end
+
+      context "#accessible_facility_groups" do
+        context "organization access" do
+          it "returns the facility groups an admin has access to" do
+            # Grant Accesses
+            admins.each do |admin|
+              admin.user.accesses.create(resource: organization_3)
+            end
+
+            admins.each do |admin|
+              actions.each do |action|
+                if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                  expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_3_1, facility_group_3_2)
+                else
+                  expect(admin.accessible_facility_groups(action)).to match_array([])
+                end
+              end
+            end
+          end
         end
 
-        admins.each do |admin|
-          actions.each do |action|
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_organizations(action)).to contain_exactly(organization_3)
-            else
-              expect(admin.accessible_organizations(action)).to match_array([])
+        context "facility group access"
+        it "returns the facility groups an admin has access to" do
+          # Grant Accesses
+          admins.each do |admin|
+            admin.user.accesses.create(resource: facility_group_1)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_1)
+              else
+                expect(admin.accessible_facility_groups(action)).to match_array([])
+              end
+            end
+          end
+        end
+      end
+
+      context "#accessible_facilities" do
+        context "organization access" do
+          it "returns the facilities an admin has access to" do
+            # Grant Accesses
+            admins.each do |admin|
+              admin.user.accesses.create(resource: organization_3)
+            end
+
+            admins.each do |admin|
+              actions.each do |action|
+                if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                  expect(admin.accessible_facilities(action)).to contain_exactly(facility_3, facility_4)
+                else
+                  expect(admin.accessible_facilities(action)).to match_array([])
+                end
+              end
+            end
+          end
+        end
+
+        context "facility group access"
+        it "returns the facilities an admin has access to" do
+          # Grant Accesses
+          admins.each do |admin|
+            admin.user.accesses.create(resource: facility_group_1)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_facilities(action)).to contain_exactly(facility_1)
+              else
+                expect(admin.accessible_facilities(action)).to match_array([])
+              end
+            end
+          end
+        end
+
+        context "facility access"
+        it "returns the facilities an admin has access to" do
+          # Grant Accesses
+          admins.each do |admin|
+            admin.user.accesses.create(resource: facility_5)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_facilities(action)).to contain_exactly(facility_5)
+              else
+                expect(admin.accessible_facilities(action)).to match_array([])
+              end
+            end
+          end
+        end
+      end
+
+      context "#accessible_users" do
+        context "organization access" do
+          it "returns the users an admin can manage" do
+            # Grant Accesses
+            admins.each do |admin|
+              admin.user.accesses.create(resource: organization_3)
+            end
+
+            admins.each do |admin|
+              actions.each do |action|
+                if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                  expect(admin.accessible_users(action)).to contain_exactly(user_3, user_4)
+                else
+                  expect(admin.accessible_users(action)).to match_array([])
+                end
+              end
+            end
+          end
+        end
+
+        context "facility group access"
+        it "returns the users an admin can manage" do
+          # Grant Accesses
+          admins.each do |admin|
+            admin.user.accesses.create(resource: facility_group_1)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_users(action)).to contain_exactly(user_1)
+              else
+                expect(admin.accessible_users(action)).to match_array([])
+              end
+            end
+          end
+        end
+
+        context "facility access"
+        it "returns the users an admin can manage" do
+          # Grant Accesses
+          admins.each do |admin|
+            admin.user.accesses.create(resource: facility_5)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_users(action)).to contain_exactly(user_5)
+              else
+                expect(admin.accessible_users(action)).to match_array([])
+              end
+            end
+          end
+        end
+      end
+
+      context "#accessible_admins" do
+        context "organization access" do
+          it "returns the admins an admin can manage" do
+            # Grant Accesses, and set Organization
+            admins.each do |admin|
+              admin.user.update!(organization: organization_3)
+              admin.user.accesses.create(resource: organization_3)
+            end
+
+            admins.each do |admin|
+              actions.each do |action|
+                if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                  expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
+                else
+                  expect(admin.accessible_admins(action)).to match_array([])
+                end
+              end
+            end
+          end
+        end
+
+        context "facility group access"
+        it "returns the admins an admin can manage" do
+          # Grant Accesses, and set Organization
+          admins.each do |admin|
+            admin.user.update!(organization: organization_1)
+            admin.user.accesses.create(resource: facility_group_1)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
+              else
+                expect(admin.accessible_admins(action)).to match_array([])
+              end
+            end
+          end
+        end
+
+        context "facility access"
+        it "returns the admins an admin can manage" do
+          # Grant Accesses, and set Organization
+          admins.each do |admin|
+            admin.user.update!(organization: organization_3)
+            admin.user.accesses.create(resource: facility_4)
+          end
+
+          admins.each do |admin|
+            actions.each do |action|
+              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+                expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
+              else
+                expect(admin.accessible_admins(action)).to match_array([])
+              end
             end
           end
         end
       end
     end
 
-    context "#accessible_facility_groups" do
-      context "organization access"
-      it "returns the facility groups an admin has access to" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: organization_3)
-        end
+    context "power users" do
+      let!(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
-        admins.each do |admin|
+      context "#accessible_organizations" do
+        it "returns the organizations an admin has access to" do
           actions.each do |action|
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_3_1, facility_group_3_2)
-            else
-              expect(admin.accessible_facility_groups(action)).to match_array([])
-            end
+            expect(power_user.accessible_organizations(action)).to match_array(Organization.all)
           end
         end
       end
 
-      context "facility group access"
-      it "returns the facility groups an admin has access to" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: facility_group_1)
-        end
-
-        admins.each do |admin|
+      context "#accessible_facility_groups" do
+        it "returns the facilities an admin has access to" do
           actions.each do |action|
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_1)
-            else
-              expect(admin.accessible_facility_groups(action)).to match_array([])
-            end
-          end
-        end
-      end
-    end
-
-    context "#accessible_facilities" do
-      context "organization access"
-      it "returns the facilities an admin has access to" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: organization_3)
-        end
-
-        admins.each do |admin|
-          actions.each do |action|
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_facilities(action)).to contain_exactly(facility_3, facility_4)
-            else
-              expect(admin.accessible_facilities(action)).to match_array([])
-            end
+            expect(power_user.accessible_facility_groups(action)).to match_array(FacilityGroup.all)
           end
         end
       end
 
-      context "facility group access"
-      it "returns the facilities an admin has access to" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: facility_group_1)
-        end
-
-        admins.each do |admin|
+      context "#accessible_facilities" do
+        it "returns the facilities an admin has access to" do
           actions.each do |action|
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_facilities(action)).to contain_exactly(facility_1)
-            else
-              expect(admin.accessible_facilities(action)).to match_array([])
-            end
+            expect(power_user.accessible_facilities(action)).to match_array(Facility.all)
           end
         end
       end
 
-      context "facility access"
-      it "returns the facilities an admin has access to" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: facility_5)
-        end
-
-        admins.each do |admin|
+      context "#accessible_users" do
+        it "returns the users an admin can manage" do
           actions.each do |action|
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_facilities(action)).to contain_exactly(facility_5)
-            else
-              expect(admin.accessible_facilities(action)).to match_array([])
-            end
-          end
-        end
-      end
-    end
-
-    context "#accessible_users" do
-      context "organization access"
-      it "returns the users an admin can manage" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: organization_3)
-        end
-
-        admins.each do |admin|
-          actions.each do |action|
-            if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_users(action)).to contain_exactly(user_3, user_4)
-            else
-              expect(admin.accessible_users(action)).to match_array([])
-            end
+            expect(power_user.accessible_users(action)).to match_array(User.non_admins.all)
           end
         end
       end
 
-      context "facility group access"
-      it "returns the users an admin can manage" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: facility_group_1)
-        end
-
-        admins.each do |admin|
+      context "#accessible_admins" do
+        it "returns the admins an admin can manage" do
           actions.each do |action|
-            if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_users(action)).to contain_exactly(user_1)
-            else
-              expect(admin.accessible_users(action)).to match_array([])
-            end
-          end
-        end
-      end
-
-      context "facility access"
-      it "returns the users an admin can manage" do
-        # Grant Accesses
-        admins.each do |admin|
-          admin.user.accesses.create(resource: facility_5)
-        end
-
-        admins.each do |admin|
-          actions.each do |action|
-            if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_users(action)).to contain_exactly(user_5)
-            else
-              expect(admin.accessible_users(action)).to match_array([])
-            end
-          end
-        end
-      end
-    end
-
-    context "#accessible_admins" do
-      context "organization access"
-      it "returns the admins an admin can manage" do
-        # Grant Accesses, and set Organization
-        admins.each do |admin|
-          admin.user.update!(organization: organization_3)
-          admin.user.accesses.create(resource: organization_3)
-        end
-
-        admins.each do |admin|
-          actions.each do |action|
-            if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
-            else
-              expect(admin.accessible_admins(action)).to match_array([])
-            end
-          end
-        end
-      end
-
-      context "facility group access"
-      it "returns the admins an admin can manage" do
-        # Grant Accesses, and set Organization
-        admins.each do |admin|
-          admin.user.update!(organization: organization_1)
-          admin.user.accesses.create(resource: facility_group_1)
-        end
-
-        admins.each do |admin|
-          actions.each do |action|
-            if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
-            else
-              expect(admin.accessible_admins(action)).to match_array([])
-            end
-          end
-        end
-      end
-
-      context "facility access"
-      it "returns the admins an admin can manage" do
-        # Grant Accesses, and set Organization
-        admins.each do |admin|
-          admin.user.update!(organization: organization_3)
-          admin.user.accesses.create(resource: facility_4)
-        end
-
-        admins.each do |admin|
-          actions.each do |action|
-            if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-              expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
-            else
-              expect(admin.accessible_admins(action)).to match_array([])
-            end
+            expect(power_user.accessible_admins(action)).to match_array(User.admins.all)
           end
         end
       end
