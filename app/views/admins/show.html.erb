@@ -11,8 +11,9 @@
       <h2><%= @admin.full_name %></h2>
       <span class="user-role">
             <%= @admin.role %>
+            • 
         </span>
-      • <a class="user-email" href="mailto:<%= @admin.email %>"><%= @admin.email %></a>
+      <a class="user-email" href="mailto:<%= @admin.email %>"><%= @admin.email %></a>
     </div>
     <div class="col-md-7" style="text-align:right;">
       <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
