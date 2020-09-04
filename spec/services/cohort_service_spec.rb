@@ -4,6 +4,7 @@ RSpec.describe CohortService, type: :model do
   let(:jan_5) { Time.parse("Jan 5th, 2020 00:00:00+00:00") }
   let(:apr_5) { Time.parse("Apr 5th, 2020 00:00:00+00:00") }
   let(:jul_5) { Time.parse("Jul 5th, 2020 00:00:00+00:00") }
+  let(:user) { create(:user) }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -23,12 +24,12 @@ RSpec.describe CohortService, type: :model do
     # - 2 no BP in Q2
 
     q1_patients = [
-      create(:patient, registration_facility: facility, recorded_at: jan_5),
-      create(:patient, registration_facility: facility, recorded_at: jan_5 + 10.days),
-      create(:patient, registration_facility: facility, recorded_at: jan_5 + 20.days),
-      create(:patient, registration_facility: facility, recorded_at: jan_5 + 30.days),
-      create(:patient, registration_facility: facility, recorded_at: jan_5 + 45.days),
-      create(:patient, registration_facility: facility, recorded_at: jan_5 + 60.days)
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 10.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 20.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 30.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 45.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: jan_5 + 60.days)
     ]
 
     _q1_bps = [
@@ -45,14 +46,14 @@ RSpec.describe CohortService, type: :model do
     # - 1 no BP in Q3
 
     q2_patients = [
-      create(:patient, registration_facility: facility, recorded_at: apr_5),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 10.days),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 20.days),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 30.days),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 40.days),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 50.days),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 60.days),
-      create(:patient, registration_facility: facility, recorded_at: apr_5 + 70.days)
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 10.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 20.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 30.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 40.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 50.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 60.days),
+      create(:patient, registration_facility: facility, registration_user: user, recorded_at: apr_5 + 70.days)
     ]
 
     _q2_bps = [
@@ -68,9 +69,9 @@ RSpec.describe CohortService, type: :model do
     # Other facility data that shouldn't interfere
 
     other_patients = [
-      create(:patient, recorded_at: jan_5),
-      create(:patient, recorded_at: apr_5),
-      create(:patient, recorded_at: jul_5)
+      create(:patient, recorded_at: jan_5, registration_user: user),
+      create(:patient, recorded_at: apr_5, registration_user: user),
+      create(:patient, recorded_at: jul_5, registration_user: user)
     ]
 
     _other_bps = [
@@ -91,17 +92,17 @@ RSpec.describe CohortService, type: :model do
         {
           "controlled" => 3,
           "no_bp" => 2,
-          "patients_registered" => "Q1 2020",
+          "patients_registered" => "Q1-2020",
           "registered" => 6,
-          "results_in" => "Q2 2020",
+          "results_in" => "Q2-2020",
           "uncontrolled" => 1
         },
         {
           "controlled" => 4,
           "no_bp" => 1,
-          "patients_registered" => "Q2 2020",
+          "patients_registered" => "Q2-2020",
           "registered" => 8,
-          "results_in" => "Q3 2020",
+          "results_in" => "Q3-2020",
           "uncontrolled" => 3
         }
       ]

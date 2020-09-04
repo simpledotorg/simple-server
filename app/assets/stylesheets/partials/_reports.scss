@@ -40,6 +40,7 @@
 .mb-12px { margin-bottom: 12px; }
 .mb-16px { margin-bottom: 16px; }
 .mb-24px { margin-bottom: 24px; }
+.mb-48px { margin-bottom: 48px; }
 .ml-4px { margin-left: 4px; }
 .ml-8px { margin-left: 8px; }
 .ml-13px { margin-left: 13px; }
@@ -71,10 +72,12 @@
 .fs-16px { font-size: 16px; }
 .fs-20px { font-size: 20px; }
 .fs-xlarge { font-size: 24px; }
+.fs-28px { font-size: 28px; }
 .fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
 .lh-1 { line-height: 1; }
 .ls-145 { letter-spacing: 1.45; }
+.ta-left { text-align: left; }
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
 .c-grey-light { color: $grey-light; }

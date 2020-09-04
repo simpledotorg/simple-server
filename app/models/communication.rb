@@ -27,6 +27,9 @@ class Communication < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id appointment_id patient_id user_id created_at communication_type
     communication_result]
 
+  DEFAULT_MESSAGING_START_HOUR = 14
+  DEFAULT_MESSAGING_END_HOUR = 16
+
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -45,6 +48,26 @@ class Communication < ApplicationRecord
                             appointment: appointment,
                             device_created_at: DateTime.current,
                             device_updated_at: DateTime.current)
+    end
+  end
+
+  def self.messaging_start_hour
+    @messaging_start_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START", DEFAULT_MESSAGING_START_HOUR).to_i
+  end
+
+  def self.messaging_end_hour
+    @messaging_end_hour ||= ENV.fetch("APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_FINISH", DEFAULT_MESSAGING_END_HOUR).to_i
+  end
+
+  def self.next_messaging_time
+    now = DateTime.now.in_time_zone(Rails.application.config.country[:time_zone])
+
+    if now.hour < messaging_start_hour
+      now.change(hour: messaging_start_hour)
+    elsif now.hour >= messaging_end_hour
+      now.change(hour: messaging_start_hour).advance(days: 1)
+    else
+      now
     end
   end
 

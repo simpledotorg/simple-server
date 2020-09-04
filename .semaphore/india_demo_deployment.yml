@@ -1,5 +1,5 @@
 version: v1.0
-name: Pipeline 3
+name: India Demo Deployment
 blocks:
   - name: Deploy to India Demo
     task:
@@ -23,3 +23,6 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+promotions:
+  - name: India Production Deployment
+    pipeline_file: india_production_deployment.yml

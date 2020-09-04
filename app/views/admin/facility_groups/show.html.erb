@@ -4,8 +4,14 @@
     <%= @facility_group.name %>
   </h1>
   <nav class="page-nav">
-    <% if policy([:manage, @facility_group]).edit? %>
-      <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.accessible_facility_groups(:manage).find_by_id(@facility_group) %>
+        <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, @facility_group]).edit? %>
+        <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+      <% end %>
     <% end %>
   </nav>
 </div>
@@ -17,38 +23,45 @@
 <div class="table-responsive">
   <table class="table">
     <thead class="thead-light">
-      <tr>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Village/colony</th>
-        <th>District</th>
-        <th>State</th>
-        <th>Country</th>
-        <th>Pin</th>
-        <th>Facility&nbsp;type</th>
-        <th colspan="2"></th>
-      </tr>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Village/colony</th>
+      <th>District</th>
+      <th>State</th>
+      <th>Country</th>
+      <th>Pin</th>
+      <th>Facility&nbsp;type</th>
+      <th colspan="2"></th>
+    </tr>
     </thead>
 
     <tbody>
-      <% @facility_group.facilities.order(:name).each do |facility| %>
-        <tr>
-          <td class="nowrap"><%= link_to facility.name, [:admin, @facility_group, facility] %></td>
-          <td><%= facility.street_address %></td>
-          <td><%= facility.village_or_colony %></td>
-          <td><%= facility.district %></td>
-          <td><%= facility.state %></td>
-          <td><%= facility.country %></td>
-          <td><%= facility.pin %></td>
-          <td><%= facility.facility_type %></td>
+    <% @facility_group.facilities.order(:name).each do |facility| %>
+      <tr>
+        <td class="nowrap"><%= link_to facility.name, [:admin, @facility_group, facility] %></td>
+        <td><%= facility.street_address %></td>
+        <td><%= facility.village_or_colony %></td>
+        <td><%= facility.district %></td>
+        <td><%= facility.state %></td>
+        <td><%= facility.country %></td>
+        <td><%= facility.pin %></td>
+        <td><%= facility.facility_type %></td>
+        <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+          <% if current_admin.accessible_facilities(:manage).find_by_id(facility) %>
+            <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
+            <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: {confirm: "Are you sure you want to delete #{facility.name}?"} %></td>
+          <% end %>
+        <% else %>
           <% if policy([:manage, :facility, facility]).edit? %>
             <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
           <% end %>
           <% if policy([:manage, :facility, facility]).destroy? %>
-            <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: { confirm: "Are you sure you want to delete #{facility.name}?" } %></td>
+            <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: {confirm: "Are you sure you want to delete #{facility.name}?"} %></td>
           <% end %>
-        </tr>
-      <% end %>
+        <% end %>
+      </tr>
+    <% end %>
     </tbody>
   </table>
 </div>

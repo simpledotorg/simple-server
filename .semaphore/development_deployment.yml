@@ -46,5 +46,9 @@ agent:
 promotions:
   - name: Bangladesh Demo Deployment
     pipeline_file: bangladesh_demo_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'
   - name: India Demo Deployment
     pipeline_file: india_demo_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'

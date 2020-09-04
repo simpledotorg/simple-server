@@ -1,16 +1,6 @@
 module AdminAccessHelper
-  def access_fraction(name, available, total)
+  def access_facility_count(available)
     "#{available} #{"facility".pluralize(available)}"
-
-    #
-    # currently unused:
-    #
-    # if available == total
-    #   "#{total} #{name.pluralize(total)}"
-    # else
-    #   "#{available} / #{total} #{name.pluralize}"
-    # end
-    #
   end
 
   def access_checkbox(form, name, resource, page: :new, checked_fn: -> { false })
@@ -23,7 +13,7 @@ module AdminAccessHelper
       checked: page.eql?(:edit) && checked_fn.call
     }
 
-    form.check_box("#{name.to_s}[]", opts, resource.id, nil)
+    form.check_box("#{name}[]", opts, resource.id, nil)
   end
 
   def access_resource_label(resource)
@@ -33,11 +23,30 @@ module AdminAccessHelper
   end
 
   def access_level_select(form, access_levels, value: nil, page: :new)
-    form.select(:access_level, {}, {label: "Access *"}, {class: "access-levels", id: :access_level, disabled: page.eql?(:edit), required: page.eql?(:new)}) do
+    form.select(:access_level,
+      {},
+      {label: "Access *"},
+      {
+        class: "access-levels",
+        id: :access_level,
+        disabled: page.eql?(:edit),
+        required: page.eql?(:new)
+      }) do
       access_levels.each do |level|
-        concat content_tag(:option, level[:id], value: level[:id], class: "show", data: {content: access_level_option_data(level)})
+        access_level_option(level)
       end
     end
+  end
+
+  def access_level_option(level)
+    tag =
+      content_tag(:option,
+        level[:id],
+        value: level[:id],
+        class: "show",
+        data: {content: access_level_option_data(level)})
+
+    concat(tag)
   end
 
   def access_level_option_data(level)

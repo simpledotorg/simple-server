@@ -245,7 +245,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def generate_release_tag_value(date, release_number = 1)
-    "#{date}-#{release_number}"
+    "release-#{date}-#{release_number}"
   end
 
   def current_date

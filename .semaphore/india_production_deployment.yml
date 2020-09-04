@@ -1,0 +1,25 @@
+version: v1.0
+name: India Production Deployment
+blocks:
+  - name: Deploy to India Production
+    task:
+      jobs:
+        - name: Deploy to India Production
+          commands:
+            - checkout
+            - sem-version ruby 2.5.1
+            - cache restore
+            - yarn install
+            - bundle install --deployment --path vendor/bundle
+            - cache store
+            - 'bundle exec cap india:production deploy'
+      secrets:
+        - name: semaphore-deploy-key
+      prologue:
+        commands:
+          - chmod 600 ~/.ssh/semaphore_id_rsa
+          - ssh-add ~/.ssh/semaphore_id_rsa
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804

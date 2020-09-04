@@ -4,6 +4,7 @@ RSpec.describe User, type: :model do
   describe "Associations" do
     it { should have_many(:user_authentications) }
     it { should have_many(:accesses) }
+    it { should have_and_belong_to_many(:teleconsultation_facilities) }
   end
 
   describe "Validations" do
@@ -16,20 +17,57 @@ RSpec.describe User, type: :model do
       is_expected.to(
         define_enum_for(:access_level)
           .with_suffix(:access)
-          .with_values(power_user: "power_user", manager: "manager", viewer: "viewer")
+          .with_values(call_center: "call_center",
+                       viewer_reports_only: "viewer_reports_only",
+                       viewer_all: "viewer_all",
+                       manager: "manager",
+                       power_user: "power_user")
           .backed_by_column_of_type(:string)
       )
     }
+  end
+
+  describe "#full_teleconsultation_phone_number" do
+    it "returns the teleconsultation phone number if its present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = Rails.application.config.country["sms_country_code"]
+      user = create(:user, teleconsultation_phone_number: phone_number, teleconsultation_isd_code: isd_code)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+
+    it "defaults to phone number if its not present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = Rails.application.config.country["sms_country_code"]
+      user = create(:user,
+        teleconsultation_phone_number: nil,
+        teleconsultation_isd_code: isd_code,
+        phone_number: phone_number)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
   end
 
   describe "User Access (permissions)" do
     it { should delegate_method(:accessible_organizations).to(:user_access) }
     it { should delegate_method(:accessible_facility_groups).to(:user_access) }
     it { should delegate_method(:accessible_facilities).to(:user_access) }
-    it { should delegate_method(:can?).to(:user_access) }
     it { should delegate_method(:grant_access).to(:user_access) }
-    it { should delegate_method(:access_tree).to(:user_access) }
     it { should delegate_method(:permitted_access_levels).to(:user_access) }
+  end
+
+  describe "#can_teleconsult?" do
+    it "is true if the user can teleconsult at least one facility" do
+      user = create(:teleconsultation_medical_officer)
+      expect(user.can_teleconsult?).to eq true
+    end
+
+    it "is false if the user can't teleconsult anywhere" do
+      user = create(:teleconsultation_medical_officer, teleconsultation_facilities: [])
+      expect(user.can_teleconsult?).to eq false
+    end
   end
 
   describe ".build_with_phone_number_authentication" do

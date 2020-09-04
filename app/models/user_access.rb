@@ -1,21 +1,35 @@
 class UserAccess < Struct.new(:user)
-  include Memery
-
   class NotAuthorizedError < StandardError; end
 
+  class AuthorizationNotPerformedError < StandardError; end
+
   LEVELS = {
-    viewer: {
-      id: :viewer,
+    manager: {
+      id: :manager,
+      name: "Manager",
+      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
+      description: "Can manage regions, facilities, admins, users, and view everything"
+    },
+
+    viewer_reports_only: {
+      id: :viewer_reports_only,
+      name: "View: Reports only",
+      grant_access: [],
+      description: "Can only view reports"
+    },
+
+    viewer_all: {
+      id: :viewer_all,
       name: "View: Everything",
       grant_access: [],
       description: "Can view patient data and all facility data"
     },
 
-    manager: {
-      id: :manager,
-      name: "Manager",
-      grant_access: [:viewer, :manager],
-      description: "Can manage facilities, admins, users and view everything"
+    call_center: {
+      id: :call_center,
+      name: "Call center staff",
+      grant_access: [],
+      description: "Can only manage overdue patients list"
     },
 
     power_user: {
@@ -25,51 +39,46 @@ class UserAccess < Struct.new(:user)
     }
   }.freeze
 
+  ANY_ACTION = :any
   ACTION_TO_LEVEL = {
-    view: [:manager, :viewer],
+    manage_overdue_list: [:manager, :viewer_all, :call_center],
+    view_reports: [:manager, :viewer_all, :viewer_reports_only],
+    view_pii: [:manager, :viewer_all],
     manage: [:manager]
   }.freeze
 
-  memoize def accessible_organizations(action)
+  def accessible_organizations(action)
     resources_for(Organization, action)
+      .includes(facility_groups: :facilities)
   end
 
-  memoize def accessible_facility_groups(action)
+  def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
       .includes(:organization)
+      .includes(:facilities)
   end
 
-  memoize def accessible_facilities(action)
+  def accessible_facilities(action)
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))
       .includes(facility_group: :organization)
   end
 
-  memoize def accessible_admins(action)
+  def accessible_admins(action)
     return User.admins if bypass?
-    return User.none if ACTION_TO_LEVEL.fetch(action).include?(:manage)
+    return User.none if action_to_level(action).include?(:manage)
 
     User.admins.where(organization: user.organization)
   end
 
-  def can?(action, model, record = nil)
-    if record&.is_a? ActiveRecord::Relation
-      raise ArgumentError, "record should not be an ActiveRecord::Relation."
-    end
+  def accessible_users(action)
+    return User.non_admins if bypass?
+    return User.none if action_to_level(action).include?(:manage)
 
-    case model
-      when :facility
-        can_access_record?(accessible_facilities(action), record)
-      when :organization
-        can_access_record?(accessible_organizations(action), record)
-      when :facility_group
-        can_access_record?(accessible_facility_groups(action), record)
-      when :admin
-        can_access_record?(accessible_admins(action), record)
-      else
-        raise ArgumentError, "Access to #{model} is unsupported."
-    end
+    User
+      .non_admins
+      .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})
   end
 
   def access_across_organizations?(action)
@@ -88,8 +97,6 @@ class UserAccess < Struct.new(:user)
 
   def grant_access(new_user, selected_facility_ids)
     return if selected_facility_ids.blank?
-    return if new_user.power_user?
-
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
 
     resources = prepare_grantable_resources(selected_facility_ids)
@@ -99,22 +106,15 @@ class UserAccess < Struct.new(:user)
     # recreate accesses from scratch to handle deletes/edits/updates seamlessly
     User.transaction do
       new_user.accesses.delete_all
-      new_user.accesses.import!(resources)
+      new_user.accesses.create!(resources)
     end
   end
 
   private
 
-  def can_access_record?(resources, record)
-    return true if bypass?
-    return resources.find_by_id(record).present? if record
-
-    resources.exists?
-  end
-
   def resources_for(resource_model, action)
     return resource_model.all if bypass?
-    return resource_model.none unless ACTION_TO_LEVEL.fetch(action).include?(user.access_level.to_sym)
+    return resource_model.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     resource_ids =
       user
@@ -134,8 +134,8 @@ class UserAccess < Struct.new(:user)
 
     accessible_facilities_in_org = accessible_facilities(:manage).group_by(&:organization)
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
-      if can?(:manage, :organization, org) &&
-        (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
+      if accessible_organizations(:manage).find_by_id(org).present? &&
+          (accessible_facilities_in_org[org].to_set == selected_facilities_in_org.to_set)
 
         resources << {resource_type: Organization.name, resource_id: org.id}
         selected_facilities -= selected_facilities_in_org
@@ -144,8 +144,8 @@ class UserAccess < Struct.new(:user)
 
     accessible_facilities_in_fg = accessible_facilities(:manage).group_by(&:facility_group)
     selected_facilities.group_by(&:facility_group).each do |fg, selected_facilities_in_fg|
-      if can?(:manage, :facility_group, fg) &&
-        (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
+      if accessible_facility_groups(:manage).find_by_id(fg).present? &&
+          (accessible_facilities_in_fg[fg].to_set == selected_facilities_in_fg.to_set)
 
         resources << {resource_type: FacilityGroup.name, resource_id: fg.id}
         selected_facilities -= selected_facilities_in_fg
@@ -153,7 +153,7 @@ class UserAccess < Struct.new(:user)
     end
 
     selected_facilities.each do |f|
-      if can?(:manage, :facility, f)
+      if accessible_facilities(:manage).find_by_id(f).present?
         resources << {resource_type: Facility.name, resource_id: f.id}
       end
     end
@@ -163,5 +163,10 @@ class UserAccess < Struct.new(:user)
 
   def bypass?
     user.power_user?
+  end
+
+  def action_to_level(action)
+    return ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
+    ACTION_TO_LEVEL[action]
   end
 end

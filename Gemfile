@@ -58,6 +58,7 @@ gem "scenic"
 gem "sentry-raven"
 gem "sidekiq"
 gem "sidekiq-throttled"
+gem "slack-notifier"
 gem "strong_password", "~> 0.0.8"
 gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
@@ -94,11 +95,10 @@ group :development do
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
   # For memory profiling
-  gem 'memory_profiler'
-
+  gem "memory_profiler"
   # For call-stack profiling flamegraphs
-  gem 'flamegraph'
-  gem 'stackprof'
+  gem "flamegraph"
+  gem "stackprof"
 end
 
 group :test do

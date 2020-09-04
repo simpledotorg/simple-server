@@ -35,4 +35,4 @@ promotions:
   - name: Deploy to dev environments
     pipeline_file: development_deployment.yml
     auto_promote:
-      when: branch = 'master' AND result = 'passed'
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')

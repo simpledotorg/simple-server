@@ -11,7 +11,7 @@ FactoryBot.define do
     protocol
 
     sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}_#{n}"
+      "#{name.to_s.parameterize.underscore}_#{n}"
     end
   end
 end

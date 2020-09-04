@@ -193,11 +193,11 @@ function filterDataByGender(tableName) {
 // Overlays
 //
 function openWindow(id, parentId) {
-  var element = document.getElementById(id);
+  let element = document.getElementById(id);
   element.style.display = 'block';
 
   if (parentId) {
-    var parent = document.getElementById(parentId);
+    let parent = document.getElementById(parentId);
     parent.style.display = 'none';
     parent.style.height = '0';
   }
@@ -207,11 +207,11 @@ function openWindow(id, parentId) {
 }
 
 function closeWindow(id, parentId) {
-  var element = document.getElementById(id);
+  let element = document.getElementById(id);
   element.style.display = 'none';
 
   if (parentId) {
-    var parent = document.getElementById(parentId);
+    let parent = document.getElementById(parentId);
     parent.style.display = 'block';
     parent.style.height = 'auto';
   }

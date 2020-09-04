@@ -123,12 +123,6 @@
     padding-left: 0px;
     margin: 0px;
 
-    &.collapsed {
-      height: 0px;
-      overflow: hidden;
-      @include transition(0.1s);
-    }
-
     li {
       height: 100%;
       padding: 0px;
@@ -141,6 +135,14 @@
       height: 100%;
       display: flex;
 
+      &.organization {
+        div {
+          label {
+            font-weight: 600;
+          }
+        }
+      }
+
       &.collapsed {
         span {
           i {
@@ -148,6 +150,10 @@
             @include transition(0.3s);
             padding-bottom: 2px;
           }
+        }
+
+        & + .access-item-wrapper {
+          display: none;
         }
       }
 

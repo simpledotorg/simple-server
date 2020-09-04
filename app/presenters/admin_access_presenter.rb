@@ -25,13 +25,13 @@ class AdminAccessPresenter < SimpleDelegator
   delegate :visible?, to: :access_tree
 
   def visible_access_tree
-    if admin.access_across_organizations?(:view)
+    if admin.access_across_organizations?(:any)
       {
         data: access_tree.organizations,
         render_partial: "email_authentications/invitations/access_tree",
         root: :organization
       }
-    elsif admin.access_across_facility_groups?(:view)
+    elsif admin.access_across_facility_groups?(:any)
       {
         data: access_tree.facility_groups,
         render_partial: "email_authentications/invitations/facility_group_access_tree",
