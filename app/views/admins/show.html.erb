@@ -29,6 +29,9 @@
 
   <div id="facility-access">
     <div class="card access-tree">
+    <div class="access-tree__section-header">
+      Facility access
+    </div>
       <% access_tree = @admin.visible_access_tree %>
       <%= render access_tree[:render_partial],
           tree: access_tree[:data],
