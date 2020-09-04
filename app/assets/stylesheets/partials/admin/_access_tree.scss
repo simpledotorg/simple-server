@@ -220,4 +220,12 @@
       }
     }
   }
+
+  .access-tree {
+    &.show {
+      .form-check-label {
+        font-weight: normal;
+      }
+    }
+  }
 }
