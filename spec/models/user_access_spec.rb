@@ -528,20 +528,57 @@ RSpec.describe UserAccess, type: :model do
       manager = create(:admin, :call_center)
       expect(manager.permitted_access_levels).to match_array([])
     end
+  end
 
-    specify do
-      viewer_all = create(:admin, :viewer_all)
-      expect(viewer_all.permitted_access_levels).to match_array([])
-    end
+  context "accessible_*" do
+    let!(:organization_1) { create(:organization) }
+    let!(:organization_2) { create(:organization) }
+    let!(:organization_3) { create(:organization) }
 
-    specify do
-      manager = create(:admin, :viewer_reports_only)
-      expect(manager.permitted_access_levels).to match_array([])
-    end
+    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+    let!(:facility_group_3_1) { create(:facility_group, organization: organization_3) }
+    let!(:facility_group_3_2) { create(:facility_group, organization: organization_3) }
 
-    specify do
-      manager = create(:admin, :call_center)
-      expect(manager.permitted_access_levels).to match_array([])
+    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_2) { create(:facility, facility_group: facility_group_2) }
+    let!(:facility_3) { create(:facility, facility_group: facility_group_3_1) }
+    let!(:facility_4) { create(:facility, facility_group: facility_group_3_2) }
+    let!(:facility_5) { create(:facility) }
+    let!(:facility_6) { create(:facility) }
+
+    let!(:power_user) { UserAccess.new(create(:admin, :power_user)) }
+    let!(:manager) { UserAccess.new(create(:admin, :manager)) }
+    let!(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
+    let!(:viewer_reports_only) { UserAccess.new(create(:admin, :viewer_reports_only)) }
+    let!(:call_center) { UserAccess.new(create(:admin, :call_center)) }
+
+    let!(:admins) { [power_user, manager, viewer_all, viewer_reports_only, call_center] }
+    let!(:actions) { described_class::ACTION_TO_LEVEL.keys }
+
+    context "#accessible_organizations" do
+      it "" do
+        # Grant Accesses
+        admins.each do |admin|
+          next if admin.user.power_user?
+          admin.user.accesses.create(resource: organization_3)
+        end
+
+        admins.each do |admin|
+          actions.each do |action|
+            puts "#{admin.user.access_level}:#{action}"
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym) || admin.user.power_user?
+              if admin.user.power_user?
+                expect(admin.accessible_organizations(action)).to match_array(Organization.all)
+              else
+                expect(admin.accessible_organizations(action)).to contain_exactly(organization_3)
+              end
+            else
+              expect(admin.accessible_organizations(action)).to match_array([])
+            end
+          end
+        end
+      end
     end
   end
 end
