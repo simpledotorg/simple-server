@@ -285,7 +285,7 @@ class Api::V4::Models
        app_user_capabilities: app_user_capabilities,
        medical_officer: medical_officer,
        facility_medical_officer: facility_medical_officer,
-       facility_medical_officers: array_of("teleconsultation_medical_officer")}
+       facility_medical_officers: array_of("facility_medical_officer")}
     end
   end
 end

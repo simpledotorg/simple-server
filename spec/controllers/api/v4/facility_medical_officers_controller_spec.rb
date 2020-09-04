@@ -32,7 +32,7 @@ RSpec.describe Api::V4::FacilityMedicalOfficersController, type: :controller do
       get :sync_to_user
 
       response_body = JSON(response.body)
-      medical_officers = response_body["teleconsultation_medical_officers"].map { |facility|
+      medical_officers = response_body["facility_medical_officers"].map { |facility|
         [facility["facility_id"], facility["medical_officers"]]
       }.to_h
 
