@@ -10,7 +10,6 @@ class FacilityAnalyticsQuery
   end
 
   def call
-    cache_key = "analytics/facilities/#{@facility.id}/dashboard/#{@period}"
     Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
       results
     end
@@ -95,6 +94,10 @@ class FacilityAnalyticsQuery
   end
 
   private
+
+  def cache_key
+    [self.class.name, @facility.id, @period, @prev_periods, @from_time.to_s(:mon_year)].join("/")
+  end
 
   def group_by_user_and_date(query_results, key)
     valid_dates = dates_for_periods(@period,

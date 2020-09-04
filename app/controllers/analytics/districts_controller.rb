@@ -91,8 +91,8 @@ class Analytics::DistrictsController < AnalyticsController
 
   def set_dashboard_analytics(period, prev_periods)
     @dashboard_analytics = @organization_district.dashboard_analytics(period: period,
-                                                   prev_periods: prev_periods,
-                                                   include_current_period: @show_current_period)
+                                                                      prev_periods: prev_periods,
+                                                                      include_current_period: @show_current_period)
   end
 
   def set_facility_keys

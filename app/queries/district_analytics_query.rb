@@ -14,7 +14,7 @@ class DistrictAnalyticsQuery
   end
 
   def results
-    Rails.cache.fetch(cache_key) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
       results = [
         registered_patients_by_period,
         total_registered_patients,
@@ -24,10 +24,6 @@ class DistrictAnalyticsQuery
       return {} if results.blank?
       results.inject(&:deep_merge)
     end
-  end
-
-  def cache_key
-    [self.class.name, facilities.map(&:id).sort, @period, @prev_periods, @from_time.to_s(:mon_year)].join("/")
   end
 
   def total_registered_patients
@@ -71,6 +67,10 @@ class DistrictAnalyticsQuery
   end
 
   private
+
+  def cache_key
+    [self.class.name, facilities.map(&:id).sort, @period, @prev_periods, @from_time.to_s(:mon_year)].join("/")
+  end
 
   def group_by_facility_and_date(query_results, key)
     valid_dates = dates_for_periods(@period,
