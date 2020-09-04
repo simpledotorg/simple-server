@@ -14,8 +14,8 @@ class AdminAccessPresenter < SimpleDelegator
     OpenStruct.new(UserAccess::LEVELS.fetch(admin.access_level.to_sym))
   end
 
-  def permitted_access_levels_info
-    UserAccess::LEVELS.slice(*admin.permitted_access_levels)
+  def permitted_access_levels
+    UserAccess::LEVELS.slice(*admin.permitted_access_levels).values
   end
 
   memoize def access_tree
@@ -28,7 +28,7 @@ class AdminAccessPresenter < SimpleDelegator
     if admin.access_across_organizations?(:any)
       {
         data: access_tree.organizations,
-        render_partial: "email_authentications/invitations/access_tree",
+        render_partial: "email_authentications/invitations/organization_access_tree",
         root: :organization
       }
     elsif admin.access_across_facility_groups?(:any)

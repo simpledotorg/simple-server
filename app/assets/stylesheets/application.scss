@@ -15,9 +15,10 @@
 @import "partials/snapshots";
 @import "partials/search";
 @import "partials/reports";
-@import "partials/invite_admin";
-@import "partials/admin_list";
-@import "partials/show_admin";
+@import "partials/admin/access_tree";
+@import "partials/admin/form";
+@import "partials/admin/index";
+@import "partials/admin/show";
 
 body {
     padding-top: 5rem;
