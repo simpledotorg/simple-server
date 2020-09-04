@@ -104,7 +104,7 @@ class Facility < ApplicationRecord
   end
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new([self], period: period, prev_periods: prev_periods)
+    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.patient_counts_by_period
   end
 
