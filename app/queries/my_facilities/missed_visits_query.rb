@@ -1,7 +1,7 @@
 class MyFacilities::MissedVisitsQuery
   # Wrap query method calls with the appropriate timezone in which the reports will be consumed
   # This is probably the Rails.application.config.country[:time_zone]
-  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_registrations }`
+  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_patients }`
 
   include QuarterHelper
   include MonthHelper
@@ -47,10 +47,10 @@ class MyFacilities::MissedVisitsQuery
   def missed_visit_totals
     @missed_visit_totals ||=
       bp_query_by_cohort.map { |(year, period), bp_query|
-        cohort_registrations = bp_query.cohort_patients.count
+        cohort_patients = bp_query.cohort_patients.count
         cohort_missed_visits_count = bp_query.cohort_missed_visits_count
         [[year, period],
-          {patients: cohort_registrations.to_i,
+          {patients: cohort_patients.to_i,
            missed: cohort_missed_visits_count.to_i}]
       }.to_h
   end
