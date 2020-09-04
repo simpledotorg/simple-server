@@ -23,8 +23,7 @@ module AdminAccessHelper
   end
 
   def access_level_select(form, access_levels, value: nil, page: :new)
-    form.select(
-      :access_level,
+    form.select(:access_level,
       {},
       {label: "Access *"},
       {
@@ -34,9 +33,20 @@ module AdminAccessHelper
         required: page.eql?(:new)
       }) do
       access_levels.each do |level|
-        concat content_tag(:option, level[:id], value: level[:id], class: "show", data: {content: access_level_option_data(level)})
+        access_level_option(level)
       end
     end
+  end
+
+  def access_level_option(level)
+    tag =
+      content_tag(:option,
+        level[:id],
+        value: level[:id],
+        class: "show",
+        data: {content: access_level_option_data(level)})
+
+    concat(tag)
   end
 
   def access_level_option_data(level)

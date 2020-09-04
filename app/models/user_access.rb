@@ -4,11 +4,11 @@ class UserAccess < Struct.new(:user)
   class AuthorizationNotPerformedError < StandardError; end
 
   LEVELS = {
-    call_center: {
-      id: :call_center,
-      name: "Call center staff",
-      grant_access: [],
-      description: "Can only manage overdue patients list"
+    manager: {
+      id: :manager,
+      name: "Manager",
+      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
+      description: "Can manage regions, facilities, admins, users, and view everything"
     },
 
     viewer_reports_only: {
@@ -25,11 +25,11 @@ class UserAccess < Struct.new(:user)
       description: "Can view patient data and all facility data"
     },
 
-    manager: {
-      id: :manager,
-      name: "Manager",
-      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
-      description: "Can manage regions, facilities, admins, users, and view everything"
+    call_center: {
+      id: :call_center,
+      name: "Call center staff",
+      grant_access: [],
+      description: "Can only manage overdue patients list"
     },
 
     power_user: {
@@ -65,14 +65,14 @@ class UserAccess < Struct.new(:user)
       .includes(facility_group: :organization)
   end
 
-  memoize def accessible_admins(action)
+  def accessible_admins(action)
     return User.admins if bypass?
     return User.none if action_to_level(action).include?(:manage)
 
     User.admins.where(organization: user.organization)
   end
 
-  memoize def accessible_users(action)
+  def accessible_users
     return User.non_admins if bypass?
     return User.none if action_to_level(action).include?(:manage)
 
