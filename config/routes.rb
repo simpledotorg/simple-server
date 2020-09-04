@@ -211,12 +211,24 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_sidekiq_ui) } do
+  authenticate :email_authentication, ->(a) {
+    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+      a.user.power_user?
+    else
+      a.user.has_permission?(:view_sidekiq_ui)
+    end
+  } do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
   end
 
-  authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_flipper_ui) } do
+  authenticate :email_authentication, ->(a) {
+    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+      a.user.power_user?
+    else
+      a.user.has_permission?(:view_flipper_ui)
+    end
+  } do
     mount Flipper::UI.app(Flipper) => "/flipper"
   end
 end

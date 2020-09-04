@@ -3,6 +3,7 @@
 
 // Third-party imports
 @import "bootstrap";
+@import 'bootstrap-select';
 @import "tablesort/tablesort";
 
 // Local imports
@@ -14,13 +15,17 @@
 @import "partials/snapshots";
 @import "partials/search";
 @import "partials/reports";
-@import "partials/invite_admin";
+@import "partials/admin/access_tree";
+@import "partials/admin/form";
+@import "partials/admin/index";
+@import "partials/admin/show";
 
 body {
     padding-top: 5rem;
     font-size: 15px;
     font-family: $font-condensed;
     background: $grey-lightest;
+    overflow: scroll;
 }
 
 h1, h1.btn {
@@ -202,7 +207,6 @@ nav.secondary-nav a.active {
 }
 
 section {
-    margin-top: 1em;
     margin-bottom: 1em;
 }
 

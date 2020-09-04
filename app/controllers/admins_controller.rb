@@ -7,22 +7,36 @@ class AdminsController < AdminController
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   after_action :verify_policy_scoped, only: :index
+
   skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
   def index
-    authorize([:manage, :admin, User])
-    admins = policy_scope([:manage, :admin, User])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      admins = current_admin.accessible_admins(:manage)
+      authorize1 { admins.any? }
 
-    @admins =
-      if searching?
-        paginate(admins.search_by_name_or_email(search_query))
-      else
-        paginate(admins.order("email_authentications.email"))
-      end
+      @admins =
+        if searching?
+          paginate(admins.search_by_name_or_email(search_query))
+        else
+          paginate(admins.order("email_authentications.email"))
+        end
+    else
+      authorize([:manage, :admin, User])
+      admins = policy_scope([:manage, :admin, User])
+
+      @admins =
+        if searching?
+          paginate(admins.search_by_name_or_email(search_query))
+        else
+          paginate(admins.order("email_authentications.email"))
+        end
+    end
   end
 
   def show
+    @admin = AdminAccessPresenter.new(@admin)
   end
 
   def edit
@@ -70,7 +84,7 @@ class AdminsController < AdminController
 
     if @admin.invalid?
       render json: {errors: @admin.errors.full_messages},
-             status: :bad_request
+        status: :bad_request
     end
   end
 
@@ -111,7 +125,7 @@ class AdminsController < AdminController
   end
 
   def selected_facilities
-    params[:facilities].flatten
+    params[:facilities]
   end
 
   def user_params
