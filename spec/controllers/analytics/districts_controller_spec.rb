@@ -138,10 +138,12 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
       end
 
       it "never ends up querying the database when cached" do
+        expect_any_instance_of(CohortAnalyticsQuery).to receive(:patient_counts_by_period_uncached).and_call_original
+        expect_any_instance_of(DistrictAnalyticsQuery).to receive(:results).and_call_original
         get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}
 
-        expect_any_instance_of(OrganizationDistrict).to_not receive(:cohort_analytics)
-        expect_any_instance_of(OrganizationDistrict).to_not receive(:dashboard_analytics)
+        expect_any_instance_of(CohortAnalyticsQuery).to_not receive(:patient_counts_by_period_uncached)
+        expect_any_instance_of(DistrictAnalyticsQuery).to_not receive(:results)
 
         # this get should always have cached values
         get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}

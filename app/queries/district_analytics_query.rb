@@ -13,17 +13,21 @@ class DistrictAnalyticsQuery
     @include_current_period = include_current_period
   end
 
-  def results
+  def call
     Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
-      results = [
-        registered_patients_by_period,
-        total_registered_patients,
-        follow_up_patients_by_period
-      ].compact
-
-      return {} if results.blank?
-      results.inject(&:deep_merge)
+      results
     end
+  end
+
+  def results
+    results = [
+      registered_patients_by_period,
+      total_registered_patients,
+      follow_up_patients_by_period
+    ].compact
+
+    return {} if results.blank?
+    results.inject(&:deep_merge)
   end
 
   def total_registered_patients

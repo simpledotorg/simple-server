@@ -20,6 +20,6 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
     query = DistrictAnalyticsQuery.new(district_name, facilities, period, prev_periods, include_current_period: include_current_period)
-    query.results
+    query.call
   end
 end

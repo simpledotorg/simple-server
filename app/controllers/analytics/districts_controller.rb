@@ -112,11 +112,6 @@ class Analytics::DistrictsController < AnalyticsController
     @facility_keys = [district, *facilities]
   end
 
-  def analytics_cache_key
-    sanitized_district_name = @organization_district.district_name.downcase.split(" ").join("-")
-    "analytics/organization/#{@organization_district.organization.id}/district/#{sanitized_district_name}"
-  end
-
   def download_filename
     period = @period == :quarter ? "quarterly" : "monthly"
     district = @organization_district.district_name
