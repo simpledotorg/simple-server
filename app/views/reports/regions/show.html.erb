@@ -5,10 +5,10 @@
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="m-8px c-black">
-            HTN controlled
+            BP controlled
           </h3>
           <p class="c-grey-dark">
-            HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
+            Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
         <div class="mb-12px">
@@ -55,61 +55,12 @@
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
-        <h3 class="m-8px c-black">
-          No recent BP
-        </h3>
-        <p class="c-grey-dark">
-          HTN patients with no recent BP measure recorded
-        </p>
-        <div>
-          <div class="d-flex align-baseline mb-8px mb-lg-4px">
-            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
-            <div class="d-flex align-baseline">
-              <p class="w-32px m-0px fs-16px fw-bold">
-                <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                No visit &gt;3 months
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-baseline">
-            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
-            <div class="d-flex align-baseline">
-              <p class="w-32px m-0px fs-16px fw-bold">
-                <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                Visited in the last 3 months
-                <span
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  data-trigger="hover"
-                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
-                >
-                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="pb-4px">
-        <div class="h-200px mr-13px mb-16px ml-13px">
-          <canvas id="noRecentBPTrend"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="m-8px c-black">
-            HTN not under control
+            BP not controlled
           </h3>
           <p class="c-grey-dark">
-            HTN patients with BP &ge;140/90 at their most recent visit in the last 3 months
+            Hypertensive patients with BP &ge;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
         <div class="mb-12px">
@@ -153,6 +104,55 @@
       </div>
     </div>
   </div>
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="pt-20px px-20px">
+        <h3 class="m-8px c-black">
+          No BP measure
+        </h3>
+        <p class="c-grey-dark">
+          Hypertensive patients with no recent BP measure recorded
+        </p>
+        <div>
+          <div class="d-flex align-baseline mb-8px mb-lg-4px">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
+            <div class="d-flex align-baseline">
+              <p class="w-32px m-0px fs-16px fw-bold">
+                <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                No visit &gt;3 months
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-baseline">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
+            <div class="d-flex align-baseline">
+              <p class="w-32px m-0px fs-16px fw-bold">
+                <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Visited in the last 3 months but no BP
+                <span
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover"
+                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
+                >
+                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-4px">
+        <div class="h-200px mr-13px mb-16px ml-13px">
+          <canvas id="noRecentBPTrend"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
@@ -161,7 +161,7 @@
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            Total number of HTN patient registrations
+            Total number of hypertensive patient registrations
           </p>
         </div>
         <div class="mb-12px">
@@ -209,9 +209,12 @@
     <div class="d-lg-flex w-lg-50 pr-lg-2">
       <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
         <div class="mb-2">
-          <h3 class="c-black">
-            HTN controlled
+          <h3 class="mb-8px c-black">
+            BP controlled
           </h3>
+          <p class="c-grey-dark">
+            Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months
+          </p>
         </div>
         <div class="table-responsive">
           <table id="htn-controlled-table" class="table-compact">
@@ -226,7 +229,7 @@
                   Name
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                  BP &lt;140/90
+                  BP controlled
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
                   Number of patients
@@ -257,58 +260,12 @@
     <div class="d-lg-flex w-lg-50 pl-lg-2">
       <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
         <div class="mb-2">
-          <h3 class="c-black">
-            No BP measure
+          <h3 class="mb-8px c-black">
+            BP not controlled
           </h3>
-        </div>
-        <div class="table-responsive">
-          <table id="no-bp-measure-table" class="table-compact">
-            <colgroup>
-              <col>
-              <col class="table-divider">
-              <col class="table-divider">
-              <col class="table-divider">
-            </colgroup>
-            <thead>
-              <tr class="sorts" data-sort-method="thead">
-                <th class="row-label sort-label sort-label-small ta-left">
-                  Name
-                </th>
-                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                  No visit >3 months
-                </th>
-                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                  Visited but no BP
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @region.facilities.order(:name).each do |facility| %>
-                <tr>
-                  <td class="ta-left">
-                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
-                      <%= facility.name %>
-                    <% end %>
-                  </td>
-                  <td class="ta-left">
-                    <%= @data_for_facility[facility.name]["missed_visits_rate"].values.last %>%
-                  </td>
-                  <td class="ta-left">
-                    <%= @data_for_facility[facility.name]["visited_without_bp_taken_rate"].values.last %>%
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="d-lg-flex w-lg-50 pr-lg-2">
-      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-        <div class="mb-2">
-          <h3 class="c-black">
-            HTN not under control
-          </h3>
+          <p class="c-grey-dark">
+            Hypertensive patients with no recent BP measure recorded
+          </p>
         </div>
         <div class="table-responsive">
           <table id="htn-not-under-control-table" class="table-compact">
@@ -323,7 +280,7 @@
                   Name
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                  BP &ge;140/90
+                  BP not controlled
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
                   Number of patients
@@ -351,12 +308,67 @@
         </div>
       </div>
     </div>
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            No BP measure
+          </h3>
+          <p class="mb-8px c-grey-dark">
+            Hypertensive patients with no recent BP measure recorded
+          </p>
+        </div>
+        <div class="table-responsive">
+          <table id="no-bp-measure-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  No visit >3 months
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Visited in the last 3 months but no BP
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= @data_for_facility[facility.name]["missed_visits_rate"].values.last %>%
+                  </td>
+                  <td class="ta-left">
+                    <%= @data_for_facility[facility.name]["visited_without_bp_taken_rate"].values.last %>%
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <div class="d-lg-flex w-lg-50 pl-lg-2">
       <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
         <div class="mb-2">
           <h3 class="c-black">
             Cumulative registrations
           </h3>
+          <p class="c-grey-dark">
+            Total number of hypertensive patient registrations
+          </p>
         </div>
         <div class="table-responsive">
           <table id="cumulative-registrations-table" class="table-compact">
@@ -371,10 +383,10 @@
                   Name
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                  Registrations in <%= @selected_date.to_s %>
+                  Monthly registrations in <%= @period.to_s %>
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                  Cumulative
+                  Total registrations 
                 </th>
               </tr>
             </thead>

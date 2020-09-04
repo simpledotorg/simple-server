@@ -51,12 +51,12 @@ puts "Creating release #{release_tag}. Continue? (y/N):"
 exit unless gets.chomp.downcase == "y"
 
 `git tag -a #{release_tag} -m "#{changelog.shellescape}"`
-`git tag #{release_tag}`
 `git push origin refs/tags/#{release_tag}`
 
 # ------------------
 # Conclusion
 # ------------------
-puts "Created release #{release_tag}."
+puts
+puts "Successfully created release #{release_tag}."
 puts "Visit https://resolvetosavelives.semaphoreci.com/projects/simple-server to deploy the release to production."
-puts "Publish the changelog in the right channels."
+puts "Publish the changelog to the #releases channel."
