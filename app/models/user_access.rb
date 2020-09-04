@@ -1,6 +1,4 @@
 class UserAccess < Struct.new(:user)
-  include Memery
-
   class NotAuthorizedError < StandardError; end
 
   class AuthorizationNotPerformedError < StandardError; end
@@ -8,36 +6,36 @@ class UserAccess < Struct.new(:user)
   LEVELS = {
     call_center: {
       id: :call_center,
-      name: "Manage: Overdue List",
+      name: "Call center staff",
       grant_access: [],
-      description: "Can view and update overdue lists"
+      description: "Can only manage overdue patients list"
     },
 
     viewer_reports_only: {
       id: :viewer_reports_only,
-      name: "View: Aggregate Reports",
+      name: "View: Reports only",
       grant_access: [],
-      description: "Can view reports"
+      description: "Can only view reports"
     },
 
     viewer_all: {
       id: :viewer_all,
       name: "View: Everything",
       grant_access: [],
-      description: "Can view everything"
+      description: "Can view patient data and all facility data"
     },
 
     manager: {
       id: :manager,
       name: "Manager",
       grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
-      description: "Can manage stuff"
+      description: "Can manage regions, facilities, admins, users, and view everything"
     },
 
     power_user: {
       id: :power_user,
       name: "Power User",
-      description: "Can manage everything"
+      description: "Can manage the entire system"
     }
   }.freeze
 
@@ -49,17 +47,19 @@ class UserAccess < Struct.new(:user)
     manage: [:manager]
   }.freeze
 
-  memoize def accessible_organizations(action)
+  def accessible_organizations(action)
     resources_for(Organization, action)
+      .includes(facility_groups: :facilities)
   end
 
-  memoize def accessible_facility_groups(action)
+  def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
       .includes(:organization)
+      .includes(:facilities)
   end
 
-  memoize def accessible_facilities(action)
+  def accessible_facilities(action)
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))
       .includes(facility_group: :organization)
