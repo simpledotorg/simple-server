@@ -16,7 +16,6 @@ RSpec.describe ControlRateService, type: :model do
 
   def refresh_views
     ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerDay.refresh
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
