@@ -27,7 +27,7 @@ module AdminAccessHelper
   end
 
   def access_resource_label(resource)
-    content_tag(:div, class: "form-check") do
+    content_tag(:div, class: "form-check__show") do
       label_tag(resource.name.to_s, resource.name.to_s, class: "form-check-label")
     end
   end

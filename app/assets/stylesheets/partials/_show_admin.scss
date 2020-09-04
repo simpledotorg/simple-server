@@ -10,3 +10,9 @@
   font-weight: normal;
   font-style: normal;
 }
+
+.show-admin-info {
+  &.card {
+    padding: 16px;
+  }
+}
