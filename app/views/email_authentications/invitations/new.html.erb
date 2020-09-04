@@ -1,4 +1,4 @@
-<h1><%= t("devise.invitations.new.header") %></h1>
+<h1><%= t "devise.invitations.new.header" %></h1>
 
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
@@ -7,16 +7,26 @@
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
         <%= form.text_field :email, id: :email, required: true, label: "Email *" %>
         <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
-        <%= form.select :access_level, current_admin.permitted_access_levels_info, id: :access_levels, required: true, label: "Access *" %>
+        <%= access_level_select(form, current_admin.permitted_access_levels) %>
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access">
-          <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.access_tree.organizations,
-              user_being_edited: nil,
-              page: :new,
-              form: form %>
+          <div class="card access-tree">
+            <div class="select-all-access-items">
+              <%= form.check_box :select_all_facilities, id: "select_all_facilities" %>
+            </div>
+
+            <% access_tree = current_admin.visible_access_tree %>
+            <%= render access_tree[:render_partial],
+                tree: access_tree[:data],
+                user_being_edited: nil,
+                tree_depth: 0,
+                root: access_tree[:root],
+                page: :new,
+                form: form %>
+          </div>
         </div>
+
         <%= form.primary("Send Invite") %>
       <% end %>
     </div>

@@ -1,43 +1,41 @@
 class UserAccess < Struct.new(:user)
-  include Memery
-
   class NotAuthorizedError < StandardError; end
 
   class AuthorizationNotPerformedError < StandardError; end
 
   LEVELS = {
-    call_center: {
-      id: :call_center,
-      name: "Manage: Overdue List",
-      grant_access: [],
-      description: "Can view and update overdue lists"
+    manager: {
+      id: :manager,
+      name: "Manager",
+      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
+      description: "Can manage regions, facilities, admins, users, and view everything"
     },
 
     viewer_reports_only: {
       id: :viewer_reports_only,
-      name: "View: Aggregate Reports",
+      name: "View: Reports only",
       grant_access: [],
-      description: "Can view reports"
+      description: "Can only view reports"
     },
 
     viewer_all: {
       id: :viewer_all,
       name: "View: Everything",
       grant_access: [],
-      description: "Can view everything"
+      description: "Can view patient data and all facility data"
     },
 
-    manager: {
-      id: :manager,
-      name: "Manager",
-      grant_access: [:call_center, :viewer_reports_only, :viewer_all, :manager],
-      description: "Can manage stuff"
+    call_center: {
+      id: :call_center,
+      name: "Call center staff",
+      grant_access: [],
+      description: "Can only manage overdue patients list"
     },
 
     power_user: {
       id: :power_user,
       name: "Power User",
-      description: "Can manage everything"
+      description: "Can manage the entire system"
     }
   }.freeze
 
@@ -49,36 +47,46 @@ class UserAccess < Struct.new(:user)
     manage: [:manager]
   }.freeze
 
-  memoize def accessible_organizations(action)
+  def accessible_organizations(action)
     resources_for(Organization, action)
+      .includes(facility_groups: :facilities)
   end
 
-  memoize def accessible_facility_groups(action)
+  def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
       .includes(:organization)
+      .includes(:facilities)
   end
 
-  memoize def accessible_facilities(action)
+  def accessible_facilities(action)
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))
       .includes(facility_group: :organization)
   end
 
-  memoize def accessible_admins(action)
+  def accessible_admins(action)
     return User.admins if bypass?
     return User.none if action_to_level(action).include?(:manage)
 
     User.admins.where(organization: user.organization)
   end
 
-  memoize def accessible_users(action)
+  def accessible_users(action)
     return User.non_admins if bypass?
     return User.none if action_to_level(action).include?(:manage)
 
     User
       .non_admins
       .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})
+  end
+
+  def access_across_organizations?(action)
+    accessible_facilities(action).group_by(&:organization).keys.length > 1
+  end
+
+  def access_across_facility_groups?(action)
+    accessible_facilities(action).group_by(&:facility_group).keys.length > 1
   end
 
   def permitted_access_levels
@@ -158,7 +166,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def action_to_level(action)
-    ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
+    return ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
     ACTION_TO_LEVEL[action]
   end
 end

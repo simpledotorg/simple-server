@@ -14,18 +14,26 @@
     }
   }
 
+  .select-all-access-items {
+    height: 100%;
+    display: flex;
+    padding: 5px 0 5px 0;
+
+    .form-check {
+      margin: 10px;
+
+      label {
+        font-weight: 100;
+      }
+    }
+  }
+
   ul {
     list-style-type: none;
     display: block;
     height: 100%;
     padding-left: 0px;
     margin: 0px;
-
-    &.collapsed {
-      height: 0px;
-      overflow: hidden;
-      @include transition(0.1s);
-    }
 
     li {
       height: 100%;
@@ -39,33 +47,28 @@
       height: 100%;
       display: flex;
 
-      .dropdown {
-        padding: 10px;
-        margin-left: 5px;
-        margin-right: -20px;
-
-        i {
-          transform: rotate(0deg);
-          margin: 0px 8px 2px 8px;
-          @include transition(0.2s);
-          pointer-events: none;
-        }
-
-        &.hidden {
-          visibility: hidden;
+      &.organization {
+        div {
+          label {
+            font-weight: 600;
+          }
         }
       }
 
       &.collapsed {
-        .dropdown {
+        span {
           i {
             transform: rotate(-90deg);
             @include transition(0.3s);
           }
         }
+
+        & + .access-item-wrapper {
+          display: none;
+        }
       }
 
-      &:not(.collapsed) {
+      &:not(.collapsed):not(.facility) {
         background: #fff8e0;
 
         div {
@@ -100,6 +103,14 @@
         font-weight: normal;
         font-style: normal;
         cursor: pointer;
+        margin-right: -6px;
+
+        i {
+          transform: rotate(0deg);
+          margin: 0px 8px 2px 8px;
+          @include transition(0.2s);
+          pointer-events: none;
+        }
       }
     }
   }

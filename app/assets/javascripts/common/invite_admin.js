@@ -4,8 +4,9 @@
 window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
-
 function inviteAdmin() {
+  selectAccessLevels()
+  selectAllListener()
   checkboxItemListener()
   resourceRowCollapseListener()
 }
@@ -13,19 +14,37 @@ function inviteAdmin() {
 function editAdmin() {
   const SELECTOR = "input.access-input"
   const facilityAccessDiv = document.getElementById("facility-access")
+  const selectAllDiv = document.getElementById("select_all_facilities")
 
   // list of all checkboxes under facilityAccessDiv
   const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
   const checkedCheckboxes = checkboxes.filter(check => check.checked)
 
-  for (let checkbox of checkedCheckboxes) {
+  for (const checkbox of checkedCheckboxes) {
     updateParentCheckedState(checkbox, SELECTOR)
   }
+
+  selectAllDiv.checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
 //
 // listeners
 //
+function selectAllListener() {
+  const selectAllDiv = document.getElementById("select_all_facilities")
+  if (!selectAllDiv) return
+
+  const SELECTOR = "input.access-input"
+  const facilityAccessDiv = document.getElementById("facility-access")
+  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+
+  selectAllDiv.addEventListener("change", () => {
+    for (const checkbox of checkboxes) {
+      checkbox.checked = selectAllDiv.checked
+    }
+  })
+}
+
 function checkboxItemListener() {
   const SELECTOR = "input.access-input"
   const facilityAccessDiv = document.getElementById("facility-access")
@@ -65,16 +84,13 @@ function toggleItemCollapsed(element) {
   }
 }
 
-function onFacilityAccessItemToggled({ target }) {
+function onFacilityAccessItemToggled({target}) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
-  const wrapper = children.find(item =>
-    item.className === "access-item-wrapper" || item.className === "access-item-wrapper collapsed")
+  const wrapper = children.find(containsClass("access-item-wrapper"))
 
   if (wrapper) {
     toggleItemCollapsed(parentItem)
-    toggleItemCollapsed(target)
-    toggleItemCollapsed(wrapper)
   }
 }
 
@@ -116,3 +132,14 @@ function updateChildrenCheckedState(parent, selector) {
 // helper function to create nodeArrays (not collections)
 const nodeListToArray = (selector, parent = document) =>
   [].slice.call(parent.querySelectorAll(selector))
+
+// returns a function that checks if element contains class
+const containsClass = (className) => ({classList}) =>
+  classList && classList.contains(className)
+
+// initialize the access_level select dropdown
+function selectAccessLevels() {
+  $("#access_level").selectpicker({
+    noneSelectedText: "Select an access level..."
+  });
+}
