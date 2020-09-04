@@ -20,7 +20,7 @@ RSpec.describe CohortAnalyticsQuery do
       it "correctly calculates the dates of monthly cohort reports" do
         analytics = CohortAnalyticsQuery.new(organization_district, period: :month, prev_periods: 3, from_time: june)
         allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
-        analytics.patient_counts_by_period
+        analytics.call
 
         expect(analytics).to have_received(:patient_counts).with(feb, feb.end_of_month, march, april.end_of_month)
         expect(analytics).to have_received(:patient_counts).with(march, march.end_of_month, april, may.end_of_month)
@@ -35,10 +35,10 @@ RSpec.describe CohortAnalyticsQuery do
         }
         analytics = CohortAnalyticsQuery.new(organization_district, period: :month, prev_periods: 3, from_time: june)
         allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
-        analytics.patient_counts_by_period
+        analytics.call
 
         travel_to(june) do
-          expect(analytics.patient_counts_by_period).to eq(expected_result)
+          expect(analytics.call).to eq(expected_result)
         end
       end
     end
@@ -50,7 +50,7 @@ RSpec.describe CohortAnalyticsQuery do
       it "correctly calculates the dates of quarterly cohort reports" do
         analytics = CohortAnalyticsQuery.new(organization_district, period: :quarter, prev_periods: 2, from_time: july)
         allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
-        analytics.patient_counts_by_period
+        analytics.call
 
         expect(analytics).to have_received(:patient_counts).with(april, april.end_of_quarter, july, july.end_of_quarter)
         expect(analytics).to have_received(:patient_counts).with(jan, jan.end_of_quarter, april, april.end_of_quarter)
@@ -65,7 +65,7 @@ RSpec.describe CohortAnalyticsQuery do
         analytics = CohortAnalyticsQuery.new(organization_district, period: :quarter, prev_periods: 2, from_time: july)
         allow(analytics).to receive(:patient_counts).and_return({}).at_least(:once)
         travel_to(june) do
-          expect(analytics.patient_counts_by_period).to eq(expected_result)
+          expect(analytics.call).to eq(expected_result)
         end
       end
     end

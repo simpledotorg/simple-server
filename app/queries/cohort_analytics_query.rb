@@ -19,13 +19,13 @@ class CohortAnalyticsQuery
     end
   end
 
-  def patient_counts_by_period
+  def call
     Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
-      patient_counts_by_period_uncached
+      results
     end
   end
 
-  def patient_counts_by_period_uncached
+  def results
     results = {}
 
     # index is a quick hack to allow toggling the current period in the results.

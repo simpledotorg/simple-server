@@ -105,11 +105,12 @@ class Facility < ApplicationRecord
 
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.patient_counts_by_period
+    query.call
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
+    query.call
   end
 
   CSV_IMPORT_COLUMNS =

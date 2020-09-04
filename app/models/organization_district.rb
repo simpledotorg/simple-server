@@ -15,7 +15,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
 
   def cohort_analytics(period, prev_periods)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.patient_counts_by_period
+    query.call
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
