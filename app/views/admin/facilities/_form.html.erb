@@ -47,7 +47,6 @@
                                  class: "typeahead-input form-control mb-1",
                                  hide_label: true,
                                  placeholder: "Find medical officers by name or phone number",
-                                 value: search_query,
                                  onkeyup: "debounce(searchUser(this))",
                                  autocomplete: "off" %>
             <div class="typeahead-dropdown"></div>
@@ -55,6 +54,7 @@
               <div class="spinner-border text-primary"></div>
             </div>
           </div>
+
           <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
             <h5>No medical officers</h5>
             <input class="medical-officer-input"
