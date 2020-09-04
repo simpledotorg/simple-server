@@ -1,6 +1,6 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const facilityAccessDiv = () => document.getElementById("facility-access")
-const selectAllFacilitiesDiv = () => document.getElementById("select_all_facilities")
+const selectAllFacilitiesDiv = () => document.getElementById("select-all-facilities")
 const facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
 const facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
 const facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
