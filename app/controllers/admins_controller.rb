@@ -113,7 +113,9 @@ class AdminsController < AdminController
   end
 
   def 🆕set_admin
-    @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
+    end
   end
 
   def current_admin

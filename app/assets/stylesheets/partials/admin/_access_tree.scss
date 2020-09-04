@@ -6,7 +6,87 @@
   transition: $duration;
 }
 
+.access-levels {
+  margin-bottom: 10px;
+  height: calc(1.5em + 0.75rem + 2px);
+
+  button {
+    height: calc(1.5em + 0.75rem);
+  }
+
+  &.form-control,
+  .bootstrap-select {
+    border: 1px solid #ced4da;
+  }
+
+  .bootstrap-select {
+    margin-bottom: 15px;
+
+    span.title {
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    span.description {
+      font-size: 14px;
+    }
+  }
+
+  .filter-option {
+    .description {
+      display: none;
+    }
+  }
+
+  .dropdown-item {
+    padding: 0.375rem 0.75rem;
+
+    &.active,
+    &:active {
+      background: var(--light);
+    }
+
+    &:not(.show) {
+      display: none;
+    }
+  }
+
+  .access-level-item-data {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 15px;
+      color: #000000;
+    }
+
+    .description {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      color: #6c737a;
+    }
+  }
+}
+
+#facility-access-power-user {
+  background: #d0e3f9;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  font-weight: normal;
+
+  &.hidden {
+    display: none;
+  }
+}
+
 #facility-access {
+  &.hidden {
+    display: none;
+  }
+
   .card {
     &.access-tree {
       padding: 0px;
@@ -58,8 +138,9 @@
       &.collapsed {
         span {
           i {
-            transform: rotate(-90deg);
+            transform: rotate(180deg);
             @include transition(0.3s);
+            padding-bottom: 2px;
           }
         }
 
@@ -68,9 +149,17 @@
         }
       }
 
+      div {
+        label {
+          user-select: none;
+        }
+      }
+
       &:not(.collapsed):not(.facility) {
         background: #fff8e0;
+      }
 
+      &.organization {
         div {
           label {
             font-weight: 600;
@@ -78,9 +167,20 @@
         }
       }
 
-      &:hover {
-        background: var(--light);
-        @include transition(0.1s);
+      &:not(.collapsed):not(.facility) {
+        background: #fff8e0;
+      }
+
+      &:not(.facility) {
+        &:hover {
+          background: var(--light);
+          @include transition(0.1s);
+        }
+
+        .access-item__padding {
+          flex: auto;
+          cursor: pointer;
+        }
       }
 
       .spacer {
@@ -95,15 +195,21 @@
         }
       }
 
+      .form-check__show {
+        margin: 12px 16px 12px 16px;
+        padding: 0px;
+      }
+
       .access-ratio {
         padding: 12px;
         margin-left: auto;
-        font-size: 12px;
+        font-size: 15px;
         color: var(--secondary);
         font-weight: normal;
         font-style: normal;
         cursor: pointer;
         margin-right: -6px;
+        user-select: none;
 
         i {
           transform: rotate(0deg);
@@ -111,6 +217,14 @@
           @include transition(0.2s);
           pointer-events: none;
         }
+      }
+    }
+  }
+
+  .access-tree {
+    &.show {
+      .form-check-label {
+        font-weight: normal;
       }
     }
   }

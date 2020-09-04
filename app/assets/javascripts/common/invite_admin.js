@@ -1,3 +1,9 @@
+const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
+const facilityAccessDiv = () => document.getElementById("facility-access")
+const selectAllFacilitiesDiv = () => document.getElementById("select-all-facilities")
+const facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
+const facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
+const facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
 //
 // loads at page refresh
 //
@@ -5,6 +11,7 @@ window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
+  accessLevelListener()
   selectAccessLevels()
   selectAllListener()
   checkboxItemListener()
@@ -12,60 +19,57 @@ function inviteAdmin() {
 }
 
 function editAdmin() {
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
-  const selectAllDiv = document.getElementById("select_all_facilities")
-
-  // list of all checkboxes under facilityAccessDiv
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+  // list of all checkboxes under facilityAccessDiv()
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
   const checkedCheckboxes = checkboxes.filter(check => check.checked)
 
   for (const checkbox of checkedCheckboxes) {
-    updateParentCheckedState(checkbox, SELECTOR)
+    updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
   }
 
-  selectAllDiv.checked = checkboxes.every(checkbox => checkbox.checked)
+  selectAllFacilitiesDiv().checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
 //
 // listeners
 //
 function selectAllListener() {
-  const selectAllDiv = document.getElementById("select_all_facilities")
-  if (!selectAllDiv) return
+  if (!selectAllFacilitiesDiv()) return
 
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
 
-  selectAllDiv.addEventListener("change", () => {
+  selectAllFacilitiesDiv().addEventListener("change", () => {
     for (const checkbox of checkboxes) {
-      checkbox.checked = selectAllDiv.checked
+      checkbox.checked = selectAllFacilitiesDiv().checked
     }
   })
 }
 
-function checkboxItemListener() {
-  const SELECTOR = "input.access-input"
-  const facilityAccessDiv = document.getElementById("facility-access")
+function accessLevelListener() {
+  $("#access_level").change(onAccessLevelChanged)
+}
 
-  // list of all checkboxes under facilityAccessDiv
-  const checkboxes = nodeListToArray(SELECTOR, facilityAccessDiv)
+function checkboxItemListener() {
+  // list of all checkboxes under facilityAccessDiv()
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
 
   addEventListener("change", e => {
     const targetCheckbox = e.target
 
     // exit if change event did not come from list of checkboxes
     if (checkboxes.indexOf(targetCheckbox) === -1) return
-    updateChildrenCheckedState(targetCheckbox, SELECTOR)
-    updateParentCheckedState(targetCheckbox, SELECTOR)
+    updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
+    updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
   })
 }
 
 function resourceRowCollapseListener() {
-  const facilityAccessItems = document.getElementsByClassName("access-ratio")
-
-  for (const item of facilityAccessItems) {
+  const collapsibleItems = [
+    facilityAccessItemsPadding(),
+    facilityAccessItemsAccessRatio()
+  ].map(htmlCollection => Array.from(htmlCollection)).flat()
+  
+  for (const item of collapsibleItems) {
     item.addEventListener("click", onFacilityAccessItemToggled)
   }
 }
@@ -73,6 +77,20 @@ function resourceRowCollapseListener() {
 //
 // behaviour
 //
+
+function toggleAccessTreeVisiblity(isPoweruser) {
+  if (isPoweruser) {
+    facilityAccessDiv().classList.add("hidden")
+    facilityAccessPowerUser().classList.remove("hidden")
+  } else {
+    facilityAccessDiv().classList.remove("hidden")
+    facilityAccessPowerUser().classList.add("hidden")
+  }
+}
+
+function onAccessLevelChanged({ target }) {
+  toggleAccessTreeVisiblity(target.value === "power_user")
+}
 
 function toggleItemCollapsed(element) {
   const collapsed = element.classList.contains("collapsed")
