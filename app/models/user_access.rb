@@ -72,7 +72,10 @@ class UserAccess < Struct.new(:user)
     User.admins.where(organization: user.organization)
   end
 
-  memoize def accessible_users
+  memoize def accessible_users(action)
+    return User.non_admins if bypass?
+    return User.none if action_to_level(action).include?(:manage)
+
     User
       .non_admins
       .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})

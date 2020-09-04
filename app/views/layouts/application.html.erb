@@ -114,7 +114,7 @@
                       <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                     <% end %>
 
-                    <% if current_admin.accessible_users.any? %>
+                    <% if current_admin.accessible_users(:manage).any? %>
                       <%= link_to "Users", admin_users_path, class: "dropdown-item #{active_controller?("users")}" %>
                     <% end %>
 
