@@ -58,7 +58,7 @@ class ControlRateService
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    result = region.registered_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {format: formatter}).count
+    result = region.assigned_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {format: formatter}).count
     # The group_by_period query will only return values for months where we had registrations, but we want to
     # have a value for every month in the periods we are reporting on. So we set the default to 0 for results.
     result.default = 0
@@ -82,7 +82,7 @@ class ControlRateService
       .with_discarded
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .with_hypertension
-      .where(registration_facility_id: facilities)
+      .where(assigned_facility_id: facilities)
       .where("patient_recorded_at < ?", control_range.begin)
       .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
       .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
@@ -102,7 +102,7 @@ class ControlRateService
     cohort_quarter = quarter.previous_quarter
     Rails.logger.info " ===> quarter #{period} number #{quarter.number}"
     LatestBloodPressuresPerPatientPerQuarter
-      .where(registration_facility_id: facilities)
+      .where(assigned_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
       .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
       .with_hypertension

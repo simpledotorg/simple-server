@@ -10,6 +10,7 @@ class FacilityGroup < ApplicationRecord
 
   has_many :patients, through: :facilities, source: :registered_patients
   alias registered_patients patients
+  has_many :assigned_patients, through: :facilities, source: :assigned_patients
   has_many :blood_pressures, through: :facilities
   has_many :blood_sugars, through: :facilities
   has_many :encounters, through: :facilities

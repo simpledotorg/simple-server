@@ -26,24 +26,24 @@ RSpec.describe ControlRateService, type: :model do
   it "counts registrations and cumulative registrations" do
     facility = FactoryBot.create(:facility, facility_group: facility_group_1)
     Timecop.freeze("January 1st 2018") do
-      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
     end
     Timecop.freeze("May 30th 2018") do
-      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
     end
     Timecop.freeze(june_1_2018) do
-      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
     end
     Timecop.freeze("April 15th 2020") do
-      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
     end
     Timecop.freeze("May 1 2020") do
-      create_list(:patient, 3, recorded_at: Time.current, registration_facility: facility, registration_user: user)
-      create_list(:patient, 1, recorded_at: Time.current, registration_facility: create(:facility), registration_user: user)
+      create_list(:patient, 3, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
+      create_list(:patient, 1, recorded_at: Time.current, assigned_facility: create(:facility), registration_user: user)
     end
 
     Timecop.freeze(june_30_2020) do
-      create_list(:patient, 4, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+      create_list(:patient, 4, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
     end
 
     refresh_views
@@ -67,7 +67,7 @@ RSpec.describe ControlRateService, type: :model do
   it "does not include months without registration data" do
     facility = FactoryBot.create(:facility, facility_group: facility_group_1)
     Timecop.freeze("April 15th 2020") do
-      patients_with_controlled_bp = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: facility, registration_user: user)
+      patients_with_controlled_bp = create_list(:patient, 2, recorded_at: 1.month.ago, assigned_facility: facility, registration_user: user)
       patients_with_controlled_bp.map do |patient|
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
@@ -92,10 +92,10 @@ RSpec.describe ControlRateService, type: :model do
     facility = facilities.first
     facility_2 = create(:facility)
 
-    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-    uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-    controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, registration_facility: facility_2, registration_user: user)
+    controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
+    uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
+    controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
+    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
 
     Timecop.freeze(jan_2020) do
       controlled_in_jan_and_june.map do |patient|
@@ -116,7 +116,7 @@ RSpec.describe ControlRateService, type: :model do
       create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
 
       # register 5 more patients in feb 2020
-      uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, registration_facility: facility, registration_user: user)
+      uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility, registration_user: user)
       uncontrolled_in_june.map do |patient|
         create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago, user: user)
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
@@ -150,7 +150,7 @@ RSpec.describe ControlRateService, type: :model do
   it "excludes patients registeed in the last 3 months" do
     facility = FactoryBot.create(:facility, facility_group: facility_group_1)
 
-    controlled_jan2020_registration = create(:patient, full_name: "controlled jan2020 registration", recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+    controlled_jan2020_registration = create(:patient, full_name: "controlled jan2020 registration", recorded_at: jan_2020, assigned_facility: facility, registration_user: user)
 
     Timecop.freeze(jan_2020) do
       create(:blood_pressure, :under_control, facility: facility, patient: controlled_jan2020_registration, recorded_at: 2.days.ago)
@@ -174,22 +174,22 @@ RSpec.describe ControlRateService, type: :model do
     facility = facilities.first
     facility_2 = create(:facility)
 
-    controlled_in_q1 = create_list(:patient, 3, recorded_at: jan_2020, registration_facility: facility, registration_user: user)
+    controlled_in_q1 = create_list(:patient, 3, recorded_at: jan_2020, assigned_facility: facility, registration_user: user)
     controlled_in_q1.each do |patient|
       create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
-    controlled_in_q3 = create_list(:patient, 3, recorded_at: june_1_2020, registration_facility: facility, registration_user: user)
+    controlled_in_q3 = create_list(:patient, 3, recorded_at: june_1_2020, assigned_facility: facility, registration_user: user)
     controlled_in_q3.each do |patient|
       create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
-    controlled_in_q3_other_facility = create_list(:patient, 3, recorded_at: june_1_2020, registration_facility: facility_2, registration_user: user)
+    controlled_in_q3_other_facility = create_list(:patient, 3, recorded_at: june_1_2020, assigned_facility: facility_2, registration_user: user)
     controlled_in_q3_other_facility.each do |patient|
       create(:blood_pressure, :under_control, facility: facility_2, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
-    uncontrolled_in_q3 = create_list(:patient, 7, recorded_at: june_1_2020, registration_facility: facility, registration_user: user)
+    uncontrolled_in_q3 = create_list(:patient, 7, recorded_at: june_1_2020, assigned_facility: facility, registration_user: user)
     uncontrolled_in_q3.each do |patient|
       create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
@@ -217,11 +217,11 @@ RSpec.describe ControlRateService, type: :model do
     facility = facilities.first
 
     controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019,
-                                          registration_facility: facility, registration_user: user)
+                                          assigned_facility: facility, registration_user: user)
     uncontrolled = create_list(:patient, 4, full_name: "uncontrolled", recorded_at: jan_2019,
-                                            registration_facility: facility, registration_user: user)
+                                            assigned_facility: facility, registration_user: user)
     patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019,
-                                                   registration_facility: facilities.last, registration_user: user)
+                                                   assigned_facility: facilities.last, registration_user: user)
 
     Timecop.freeze(jan_2020) do
       controlled.map do |patient|
