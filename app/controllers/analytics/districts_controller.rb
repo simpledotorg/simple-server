@@ -86,10 +86,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics =
-      set_analytics_cache(analytics_cache_key_cohort(period)) {
-        @organization_district.cohort_analytics(period, prev_periods)
-      }
+    @cohort_analytics = @organization_district.cohort_analytics(period, prev_periods)
   end
 
   def set_dashboard_analytics(period, prev_periods)
