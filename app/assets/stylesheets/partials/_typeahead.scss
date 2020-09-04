@@ -1,8 +1,3 @@
-
-/*****************
-Input field with dropdown
-*****************/
-
 .typeahead {
   position: relative;
 
@@ -20,7 +15,7 @@ Input field with dropdown
     z-index: 1000;
 
     &-row {
-      padding: 10px;
+      padding: 12px;
       height: 65px;
       border-bottom: 1px solid $grey-light;
       cursor: pointer;

@@ -1,4 +1,10 @@
 function populateDropdown(body) {
+  // TODO fix:
+  // let users = $(body).map((_,el) => $(el).attr("data-user-id")).get();
+  // let existingUsers = $(".medical-officer-card").map((_,el) => $(el).attr("data-user-id")).get();
+  //
+  // users.filter(x => !existingUsers.includes(x));
+
   $(".typeahead .typeahead-dropdown").html(body);
 }
 
@@ -62,6 +68,11 @@ function showNoMedicalOfficers() {
   $(".no-medical-officers").show()
 }
 
+function emptyTypeahead(){
+  $(".typeahead-dropdown").empty();
+  $(".typeahead-input").val("");
+}
+
 function isAdded(user) {
   let addedMedicalOfficerIDs = $(".medical-officer-input").map((_,el) => el.value).get();
   return addedMedicalOfficerIDs.includes(user["userId"])
@@ -84,12 +95,13 @@ function medicalOfficerCard(user) {
 }
 
 $(document).ready(function() {
-  $("body").on("click", ".typeahead-dropdown-row", function () {
+  $("body").on("click", ".mo-search .typeahead-dropdown-row", function () {
     let user = $(this).data();
+    emptyTypeahead();
     addMedicalOfficer(user);
   });
 
-  $("body").on("click", ".remove-medical-officer", function () {
+  $("body").on("click", ".mo-search .remove-medical-officer", function () {
     let userID = $(this).attr('data-user-id');
     removeMedicalOfficer(userID);
   });

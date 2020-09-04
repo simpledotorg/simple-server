@@ -36,11 +36,11 @@
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "toggleTeleconsultationFields()" %>
         <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %>>
           <h3>Medical officers available for teleconsultation</h3>
-          <div class="alert alert-primary mt-1" role="alert">
+          <div class="alert alert-primary mt-1 p-12px" role="alert">
             Medical officers will receive teleconsult requests via WhatsApp at the number listed in their profile.
             Edit the user’s profile to update the number.
           </div>
-          <div class="typeahead">
+          <div class="mo-search typeahead">
             <%= search_field_tag :search_query,
                                  nil,
                                  id: :search_query,
