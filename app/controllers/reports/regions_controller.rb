@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_selected_date, except: :index
+  before_action :set_period, except: :index
   before_action :find_region, except: :index
   around_action :set_time_zone
 
@@ -15,22 +15,27 @@ class Reports::RegionsController < AdminController
   def show
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
-                                    period: @period,
-                                    current_user: current_admin).call
+    @data = Reports::RegionService.new(region: @region,
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
+
+    if @region.is_a?(FacilityGroup)
+      @data_for_facility = @region.facilities.each_with_object({}) { |facility, hsh|
+        hsh[facility.name] = Reports::RegionService.new(region: facility,
+                                                        period: @period).call
+      }
+    end
   end
 
   def details
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
-                                    period: @period,
-                                    current_user: current_admin).call
+    @data = Reports::RegionService.new(region: @region,
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -41,9 +46,8 @@ class Reports::RegionsController < AdminController
   def cohort
     authorize(:dashboard, :show?)
 
-    @data = RegionReportService.new(region: @region,
-                                    period: @period,
-                                    current_user: current_admin).call
+    @data = Reports::RegionService.new(region: @region,
+                                       period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
     @quarterly_registrations = @data[:quarterly_registrations]
@@ -52,15 +56,13 @@ class Reports::RegionsController < AdminController
 
   private
 
-  def set_selected_date
-    period_params = facility_params[:period].presence || {type: :month, value: Date.current.last_month.beginning_of_month}
-    # TODO this will all go away, no need for building Period from the params
-    @period = if period_params[:type] == "quarter"
-      Period.new(type: period_params[:type], value: Quarter.parse(period_params[:value]))
+  def set_period
+    period_params = report_params[:period]
+    @period = if period_params.present?
+      Period.new(period_params)
     else
-      Period.new(type: period_params[:type], value: period_params[:value].to_date)
+      Reports::RegionService.default_period
     end
-    @selected_date = @period.value
   end
 
   def set_force_cache
@@ -68,20 +70,28 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    region_class, slug = facility_params[:id].split("-", 2)
-    unless region_class.in?(["facility_group", "facility"])
-      raise ActiveRecord::RecordNotFound
-    end
+    slug = report_params[:id]
     klass = region_class.classify.constantize
     @region = klass.find_by!(slug: slug)
   end
 
-  def facility_params
-    params.permit(:selected_date, :id, :force_cache, {period: [:type, :value]}, :report_scope)
+  def region_class
+    @region_class ||= case report_params[:report_scope]
+    when "district"
+      "facility_group"
+    when "facility"
+      "facility"
+    else
+      raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
+    end
+  end
+
+  def report_params
+    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
   end
 
   def force_cache?
-    facility_params[:force_cache].present?
+    report_params[:force_cache].present?
   end
 
   def set_time_zone

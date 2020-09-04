@@ -1,26 +1,36 @@
 class NoBPMeasureService
-  CACHE_VERSION = 5
+  CACHE_VERSION = 1
+  CACHE_TTL = 7.days
 
   def initialize(region, periods:)
     @region = region
     @periods = periods
     @facilities = region.facilities.to_a
+    @facility_ids = @facilities.map(&:id)
   end
 
   attr_reader :facilities
+  attr_reader :facility_ids
   attr_reader :periods
   attr_reader :region
 
   def call
     periods.each_with_object(Hash.new(0)) do |period, result|
-      result[period] = visited_without_bp_taken_for(period)
+      result[period] = visited_without_bp_taken_count(period)
     end
   end
 
-  def visited_without_bp_taken_for(period)
+  def visited_without_bp_taken_count(period)
+    return 0 if facilities.empty?
+    Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
+      execute_sql(period)
+    end
+  end
+
+  def execute_sql(period)
     attributes = {
       hypertension: "yes",
-      facilities: facilities.map(&:id),
+      facilities: facility_ids,
       start_date: period.blood_pressure_control_range.begin,
       end_date: period.blood_pressure_control_range.end,
       registration_date: period.blood_pressure_control_range.begin
@@ -55,21 +65,17 @@ class NoBPMeasureService
             patients.id = bps.patient_id
             AND bps.recorded_at > :start_date
             AND bps.recorded_at <= :end_date)
-        ) -- #{self.class.name} period #{period} facilities #{facilities.map(&:id)}
+        ) -- #{self.class.name} region #{region.name} period #{period} facilities #{facility_ids}
     SQL
     sql.value
   end
 
-  def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
+  def cache_key(period)
+    "#{self.class}/#{region.model_name}/#{region.id}/#{period}"
   end
 
   def cache_version
     "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
-  end
-
-  def periods_cache_key
-    "#{periods.begin.value}/#{periods.end.value}"
   end
 
   def force_cache?

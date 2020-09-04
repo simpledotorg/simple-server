@@ -58,6 +58,7 @@ gem "scenic"
 gem "sentry-raven"
 gem "sidekiq"
 gem "sidekiq-throttled"
+gem "slack-notifier"
 gem "strong_password", "~> 0.0.8"
 gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
@@ -66,6 +67,7 @@ gem "uuidtools", require: false
 gem "view_component"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
+gem "memery"
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]

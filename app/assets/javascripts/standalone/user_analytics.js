@@ -188,3 +188,31 @@ function filterDataByGender(tableName) {
 
   selectedTableElement[0].style.display = 'inline-table';
 }
+
+//
+// Overlays
+//
+function openWindow(id, parentId) {
+  let element = document.getElementById(id);
+  element.style.display = 'block';
+
+  if (parentId) {
+    let parent = document.getElementById(parentId);
+    parent.style.display = 'none';
+    parent.style.height = '0';
+  }
+
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+function closeWindow(id, parentId) {
+  let element = document.getElementById(id);
+  element.style.display = 'none';
+
+  if (parentId) {
+    let parent = document.getElementById(parentId);
+    parent.style.display = 'block';
+    parent.style.height = 'auto';
+  }
+}

@@ -1,18 +1,17 @@
 <%= render "header" %>
-
-<div class="d-lg-flex flex-lg-wrap">
+<div class="d-lg-flex flex-lg-wrap mb-48px">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="m-8px c-black">
-            HTN controlled
+            BP controlled
           </h3>
           <p class="c-grey-dark">
-            HTN patients with BP &lt;140/90 at their most recent visit in the last 3 months
+            Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
-        <div>
+        <div class="mb-12px">
           <p class="mb-0px fs-xlarge fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:controlled_patients_rate) %>
               <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
@@ -37,7 +36,7 @@
           </p>
         </div>
       </div>
-      <div>
+      <div class="pb-4px">
         <div class="p-relative">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="controlledPatientsTrend"></canvas>
@@ -53,68 +52,18 @@
       </div>
     </div>
   </div>
-
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-      <div class="pt-20px px-20px">
-        <h3 class="m-8px c-black">
-          No recent BP
-        </h3>
-        <p class="c-grey-dark">
-          HTN patients with no recent BP measure recorded
-        </p>
-        <div>
-          <div class="d-flex align-baseline mb-8px mb-lg-4px">
-            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
-            <div class="d-flex align-baseline">
-              <p class="w-32px m-0px fs-16px fw-bold">
-                <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                No visit &gt;3 months
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-baseline">
-            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
-            <div class="d-flex align-baseline">
-              <p class="w-32px m-0px fs-16px fw-bold">
-                <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
-              </p>
-              <p class="flex-1 m-0px fs-14px">
-                Visited in the last 3 months
-                <span
-                  data-toggle="tooltip"
-                  data-placement="top"
-                  data-trigger="hover"
-                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
-                >
-                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="h-200px mr-13px mb-16px ml-13px">
-          <canvas id="noRecentBPTrend"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="m-8px c-black">
-            HTN not under control
+            BP not controlled
           </h3>
           <p class="c-grey-dark">
-            HTN patients with BP &ge;140/90 at their most recent visit in the last 3 months
+            Hypertensive patients with BP &ge;140/90 at their most recent visit in the last 3 months
           </p>
         </div>
-        <div>
+        <div class="mb-12px">
           <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-red<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:uncontrolled_patients_rate) %>
               <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
@@ -139,7 +88,7 @@
           </p>
         </div>
       </div>
-      <div>
+      <div class="pb-4px">
         <div class="p-relative">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
@@ -155,18 +104,67 @@
       </div>
     </div>
   </div>
-  <div class="d-lg-flex w-lg-50 pl-lg-2">
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="pt-20px px-20px">
+        <h3 class="m-8px c-black">
+          No BP measure
+        </h3>
+        <p class="c-grey-dark">
+          Hypertensive patients with no recent BP measure recorded
+        </p>
+        <div>
+          <div class="d-flex align-baseline mb-8px mb-lg-4px">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
+            <div class="d-flex align-baseline">
+              <p class="w-32px m-0px fs-16px fw-bold">
+                <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                No visit &gt;3 months
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-baseline">
+            <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
+            <div class="d-flex align-baseline">
+              <p class="w-32px m-0px fs-16px fw-bold">
+                <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
+              </p>
+              <p class="flex-1 m-0px fs-14px">
+                Visited in the last 3 months but no BP
+                <span
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover"
+                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
+                >
+                  <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pb-4px">
+        <div class="h-200px mr-13px mb-16px ml-13px">
+          <canvas id="noRecentBPTrend"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
+    <div class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="m-8px c-black">
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            Total number of HTN patient registrations
+            Total number of hypertensive patient registrations
           </p>
         </div>
-        <div>
+        <div class="mb-12px">
           <p class="mb-0px fs-xlarge fw-bold <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %>">
             <% if @data.last_value(:cumulative_registrations).zero? %>
               No data
@@ -193,7 +191,7 @@
           </p>
         </div>
       <% else %>
-        <div class="h-200px mr-13px mb-16px ml-13px">
+        <div class="h-200px mr-13px mb-16px ml-13px pb-4px">
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
       <% end %>
@@ -201,16 +199,218 @@
   </div>
 </div>
 <% if @region.is_a?(FacilityGroup) %>
-  <div class="card">
-    <h2>
-      Facilities
-    </h2>
-    <% @region.facilities.order(:name).each do |facility| %>
-      <%= link_to(reports_region_path(facility.region_slug), class: "link-row") do %>
-        <i class='fas fa-angle-right light'></i>
-        <%= facility.name %>
-      <% end %>
-    <% end %>
+  <h3 class="mb-8px fs-28px c-black">
+    Facilities in <%= @region.name %>
+  </h3>
+  <p class="mb-24px fs-16px c-grey-dark">
+    <span class="fw-bold">Total:</span> <%= @region.facilities.length %> facilities
+  </p>
+  <div class="d-lg-flex flex-lg-wrap">
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="mb-8px c-black">
+            BP controlled
+          </h3>
+          <p class="c-grey-dark">
+            Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months
+          </p>
+        </div>
+        <div class="table-responsive">
+          <table id="htn-controlled-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  BP controlled
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Number of patients
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pl-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="mb-8px c-black">
+            BP not controlled
+          </h3>
+          <p class="c-grey-dark">
+            Hypertensive patients with no recent BP measure recorded
+          </p>
+        </div>
+        <div class="table-responsive">
+          <table id="htn-not-under-control-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  BP not controlled
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Number of patients
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_to_percentage(@data_for_facility[facility.name]["uncontrolled_patients_rate"].values.last, precision: 0) %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["uncontrolled_patients"].values.last) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pr-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            No BP measure
+          </h3>
+          <p class="mb-8px c-grey-dark">
+            Hypertensive patients with no recent BP measure recorded
+          </p>
+        </div>
+        <div class="table-responsive">
+          <table id="no-bp-measure-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  No visit >3 months
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Visited in the last 3 months but no BP
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= @data_for_facility[facility.name]["missed_visits_rate"].values.last %>%
+                  </td>
+                  <td class="ta-left">
+                    <%= @data_for_facility[facility.name]["visited_without_bp_taken_rate"].values.last %>%
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="d-lg-flex w-lg-50 pl-lg-2">
+      <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+        <div class="mb-2">
+          <h3 class="c-black">
+            Cumulative registrations
+          </h3>
+          <p class="c-grey-dark">
+            Total number of hypertensive patient registrations
+          </p>
+        </div>
+        <div class="table-responsive">
+          <table id="cumulative-registrations-table" class="table-compact">
+            <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+            </colgroup>
+            <thead>
+              <tr class="sorts" data-sort-method="thead">
+                <th class="row-label sort-label sort-label-small ta-left">
+                  Name
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+                  Monthly registrations in <%= @period.to_s %>
+                </th>
+                <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                  Total registrations 
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @region.facilities.order(:name).each do |facility| %>
+                <tr>
+                  <td class="ta-left">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+                  </td>
+                  <td class="ta-left">
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>
 <div id="data-json" style="display: none;">

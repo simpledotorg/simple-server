@@ -14,10 +14,7 @@
 @import "partials/snapshots";
 @import "partials/search";
 @import "partials/reports";
-
-html {
-  scroll-behavior: smooth;
-}
+@import "partials/invite_admin";
 
 body {
     padding-top: 5rem;
@@ -205,7 +202,6 @@ nav.secondary-nav a.active {
 }
 
 section {
-    margin-top: 1em;
     margin-bottom: 1em;
 }
 

@@ -6,14 +6,28 @@ class User < ApplicationRecord
     phone_number_authentication: "PhoneNumberAuthentication"
   }
 
+  APP_USER_CAPABILITIES = [:can_teleconsult].freeze
+  CAPABILITY_VALUES = {
+    true => "yes",
+    false => "no"
+  }.freeze
+
   enum sync_approval_status: {
     requested: "requested",
     allowed: "allowed",
     denied: "denied"
   }, _prefix: true
+  enum access_level: UserAccess::LEVELS.map { |level, info| [level, info[:id].to_s] }.to_h, _suffix: :access
+
+  def can_teleconsult?
+    teleconsultation_facilities.any?
+  end
+
+  def app_capabilities
+    {can_teleconsult: CAPABILITY_VALUES[can_teleconsult?]}
+  end
 
   belongs_to :organization, optional: true
-
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
@@ -21,27 +35,26 @@ class User < ApplicationRecord
     inverse_of: :registration_user,
     class_name: "Patient",
     foreign_key: :registration_user_id
-
   has_many :phone_number_authentications,
     through: :user_authentications,
     source: :authenticatable,
     source_type: "PhoneNumberAuthentication"
-
   has_many :email_authentications,
     through: :user_authentications,
     source: :authenticatable,
     source_type: "EmailAuthentication"
-
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
-
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
-
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
     class_name: "Patient",
     foreign_key: :deleted_by_user_id
+  has_and_belongs_to_many :teleconsultation_facilities,
+    class_name: "Facility",
+    join_table: "facilities_teleconsultation_medical_officers"
+  has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   scope :search_by_email,
@@ -50,10 +63,15 @@ class User < ApplicationRecord
     ->(term) { joins(:phone_number_authentications).merge(PhoneNumberAuthentication.search_by_phone(term)) }
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
+  scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
+  scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
-
+  validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
+  validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
+  # Revive this validation once all users are migrated to the new permissions system:
+  # validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -67,11 +85,17 @@ class User < ApplicationRecord
     :otp_valid?,
     :facility_group,
     :password_digest, to: :phone_number_authentication, allow_nil: true
-
   delegate :email,
     :password,
     :authenticatable_salt,
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
+  delegate :accessible_organizations,
+    :accessible_facilities,
+    :accessible_facility_groups,
+    :accessible_users,
+    :accessible_admins,
+    :grant_access,
+    :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
 
@@ -83,11 +107,21 @@ class User < ApplicationRecord
     email_authentications.first
   end
 
+  def user_access
+    UserAccess.new(self)
+  end
+
   def registration_facility_id
     registration_facility.id
   end
 
   alias facility registration_facility
+
+  def full_teleconsultation_phone_number
+    defaulted_teleconsult_number = teleconsultation_phone_number.presence || phone_number
+    teleconsultation_isd_code ||= Rails.application.config.country["sms_country_code"]
+    Phonelib.parse(teleconsultation_isd_code + defaulted_teleconsult_number).full_e164
+  end
 
   def authorized_facility?(facility_id)
     registration_facility && registration_facility.facility_group.facilities.where(id: facility_id).present?
@@ -120,7 +154,13 @@ class User < ApplicationRecord
   end
 
   def update_with_phone_number_authentication(params)
-    user_params = params.slice(:full_name, :sync_approval_status, :sync_approval_status_reason)
+    user_params = params.slice(
+      :full_name,
+      :teleconsultation_phone_number,
+      :teleconsultation_isd_code,
+      :sync_approval_status,
+      :sync_approval_status_reason
+    )
     phone_number_authentication_params = params.slice(
       :phone_number,
       :password,
@@ -129,7 +169,7 @@ class User < ApplicationRecord
     )
 
     transaction do
-      update!(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
+      update(user_params) && phone_number_authentication.update!(phone_number_authentication_params)
     end
   end
 
@@ -180,11 +220,19 @@ class User < ApplicationRecord
   end
 
   def destroy_email_authentications
-    destroyable_email_authentications = email_authentications.load
+    destroyable_email_auths = email_authentications.load
 
     user_authentications.each(&:destroy)
-    destroyable_email_authentications.each(&:destroy)
+    destroyable_email_auths.each(&:destroy)
 
     true
+  end
+
+  def power_user?
+    power_user_access? && email_authentication.present?
+  end
+
+  def flipper_id
+    "User;#{id}"
   end
 end

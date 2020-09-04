@@ -1,33 +1,45 @@
+<%= render "shared/old_reports_banner" %>
+
 <div class="container">
   <div class="row">
-
-      <div class="col-sm-5 col-lg-7">
-        <% @organizations.each do |organization| %>
-            <section id="facility-groups">
-              <div class="card" title="<%=organization.name%>">
-                <h2><%= organization.name %></h2>
-
-
-                    <% policy_scope([:cohort_report, organization.facility_groups])
-                           .flat_map(&:facilities)
-                           .group_by(&:district)
-                           .keys
-                           .sort
-                           .each do |district| %>
-
-                          <%= link_to(analytics_organization_district_path(organization.id, district), class: "link-row") do %>
-                            <i class='fas fa-angle-right light'></i>
-                            <%= district %>
-                          <% end %>
-
-                    <% end %>
-
-              </div>
-            </section>
+    <div class="col-sm-5 col-lg-7">
+      <% @organizations.each do |organization| %>
+        <section id="facility-groups">
+          <div class="card" title="<%= organization.name %>">
+            <h2><%= organization.name %></h2>
+            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+              <% @accessible_facilities
+                     .includes(facility_group: :organization)
+                     .where(facility_groups: {organization: organization})
+                     .flat_map(&:facilities)
+                     .group_by(&:district)
+                     .keys
+                     .sort
+                     .each do |district| %>
+                <%= link_to(analytics_organization_district_path(organization.id, district), class: "link-row") do %>
+                  <i class='fas fa-angle-right light'></i>
+                  <%= district %>
+                <% end %>
+              <% end %>
+            <% else %>
+              <% policy_scope([:cohort_report, organization.facility_groups])
+                     .flat_map(&:facilities)
+                     .group_by(&:district)
+                     .keys
+                     .sort
+                     .each do |district| %>
+                <%= link_to(analytics_organization_district_path(organization.id, district), class: "link-row") do %>
+                  <i class='fas fa-angle-right light'></i>
+                  <%= district %>
+                <% end %>
+              <% end %>
             <% end %>
-         </div>
-         <div class="col-sm-7 col-lg-5 mt-3">
-            <%= render "shared/user_approvals" %>
-         </div>
+          </div>
+        </section>
+      <% end %>
+    </div>
+    <div class="col-sm-7 col-lg-5">
+      <%= render "shared/user_approvals" %>
+    </div>
   </div>
 </div>

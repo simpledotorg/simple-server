@@ -4,12 +4,22 @@
 
 <% currently_selected_district = params[:district].presence || 'All districts' %>
 
-<%= render 'shared/paginate_and_filter_by_district',
-    form_url: admin_users_path,
-    current_admin: current_admin,
-    district: @district,
-    per_page: @per_page,
-    scope_namespace: [:manage, :user, Facility] %>
+<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+  <%= render 'shared/paginate_and_filter_by_district',
+             form_url: admin_users_path,
+             current_admin: current_admin,
+             district: @district,
+             per_page: @per_page,
+             scope_namespace: current_admin.accessible_facilities(:manage) %>
+
+<% else %>
+  <%= render 'shared/paginate_and_filter_by_district',
+             form_url: admin_users_path,
+             current_admin: current_admin,
+             district: @district,
+             per_page: @per_page,
+             scope_namespace: [:manage, :user, Facility] %>
+<% end %>
 
 <% if @users.exists? %>
   <% if searching? %>
@@ -37,10 +47,14 @@
                 Registration facility:
                 <% facility = user.registration_facility %>
 
-                <% if policy([:manage, :facility, facility]).show? %>
-                  <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
+                <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+                    <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
                 <% else %>
-                  <%= user.registration_facility.name %>
+                  <% if policy([:manage, :facility, facility]).show? %>
+                    <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
+                  <% else %>
+                    <%= user.registration_facility.name %>
+                  <% end %>
                 <% end %>
               <% end %>
             </div>
@@ -50,24 +64,32 @@
             </div>
           </div>
           <div class="col-md-5 text-right">
-            <% unless user.sync_approval_status == 'denied' %>
-              <% if policy([:manage, :user, user]).disable_access? %>
-                <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
-              <% end %>
-            <% end %>
             <% unless user.sync_approval_status == 'allowed' %>
-              <% if policy([:manage, :user, user]).enable_access? %>
+              <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
                 <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: 'btn btn-sm btn-outline-success' %>
-              <% end %>
-            <% end %>
-            <% if policy([:manage, :user, user]).destroy? %>
-              <%= link_to([:admin, user], method: :delete, data: {confirm: "Are you sure you want to delete #{user.full_name}?"}, class: "btn btn-sm btn-outline-danger ml-2") do %>
-                <i class="fas fa-trash-alt"></i>
+              <% else %>
+                <% if policy([:manage, :user, user]).enable_access? %>
+                  <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: 'btn btn-sm btn-outline-success' %>
+                <% end %>
               <% end %>
             <% end %>
 
-            <% if policy([:manage, :user, user]).edit? %>
-              <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
+            <% unless user.sync_approval_status == 'denied' %>
+              <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+                  <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
+              <% else %>
+                <% if policy([:manage, :user, user]).disable_access? %>
+                  <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
+                <% end %>
+              <% end %>
+            <% end %>
+
+            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+                <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
+            <% else %>
+              <% if policy([:manage, :user, user]).edit? %>
+                <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
+              <% end %>
             <% end %>
 
             <%= render partial: "deny_access_modal", locals: {user: user} %>

@@ -40,6 +40,7 @@
 .mb-12px { margin-bottom: 12px; }
 .mb-16px { margin-bottom: 16px; }
 .mb-24px { margin-bottom: 24px; }
+.mb-48px { margin-bottom: 48px; }
 .ml-4px { margin-left: 4px; }
 .ml-8px { margin-left: 8px; }
 .ml-13px { margin-left: 13px; }
@@ -49,6 +50,7 @@
 .pt-4px { padding-top: 4px; }
 .pt-20px { padding-top: 20px; }
 .pt-24px { padding-top: 24px; }
+.pb-4px { padding-bottom: 4px; }
 .pb-8px { padding-bottom: 8px; }
 .pl-16px { padding-left: 16px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
@@ -70,10 +72,12 @@
 .fs-16px { font-size: 16px; }
 .fs-20px { font-size: 20px; }
 .fs-xlarge { font-size: 24px; }
+.fs-28px { font-size: 28px; }
 .fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
 .lh-1 { line-height: 1; }
 .ls-145 { letter-spacing: 1.45; }
+.ta-left { text-align: left; }
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
 .c-grey-light { color: $grey-light; }
@@ -103,6 +107,7 @@
 .br-4px { border-radius: 4px; }
 // Background colors
 .bg-red-medium { background-color: $red; }
+.bg-green-dark { background-color: $green-dark; }
 .bg-green-medium { background-color: $green-mid; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }

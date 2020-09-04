@@ -80,9 +80,9 @@ class MyFacilities::MissedVisitsQuery
 
   def period_list(period, last_n)
     case period
-    when :quarter then
+    when :quarter
       last_n_quarters(n: last_n, inclusive: false)
-    when :month then
+    when :month
       last_n_months(n: last_n, inclusive: false)
         .map { |month| [month.year, month.month] }
     end

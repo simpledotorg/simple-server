@@ -5,6 +5,7 @@ require "fakeredis/rspec"
 require "sidekiq/testing"
 require "capybara"
 require "webdrivers"
+require "flipper_helper"
 
 WebMock.allow_net_connect!
 
@@ -26,6 +27,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     Rails.cache.clear
+    RequestStore.clear!
   end
 
   Capybara.default_max_wait_time = 5
@@ -48,4 +50,6 @@ RSpec.configure do |config|
 
   # Capybara.default_driver = :chrome
   # Capybara.javascript_driver = :chrome
+
+  config.include FlipperHelpers
 end

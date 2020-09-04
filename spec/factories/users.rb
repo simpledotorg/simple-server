@@ -10,6 +10,8 @@ FactoryBot.define do
     organization
     device_created_at { Time.current }
     device_updated_at { Time.current }
+    teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
+    teleconsultation_isd_code { "+91" }
 
     sync_allowed
 
@@ -71,6 +73,27 @@ FactoryBot.define do
     organization
 
     role { :owner }
+    access_level { :power_user }
+
+    trait :call_center do
+      access_level { :call_center }
+    end
+
+    trait :viewer_reports_only do
+      access_level { :viewer_reports_only }
+    end
+
+    trait :viewer_all do
+      access_level { :viewer_all }
+    end
+
+    trait :manager do
+      access_level { :manager }
+    end
+
+    trait :power_user do
+      access_level { :power_user }
+    end
 
     trait(:owner) do
       role { :owner }
@@ -126,11 +149,15 @@ FactoryBot.define do
 end
 
 def register_user_request_params(arguments = {})
-  {id: SecureRandom.uuid,
-   full_name: Faker::Name.name,
-   phone_number: Faker::PhoneNumber.phone_number,
-   password_digest: BCrypt::Password.create("1234"),
-   registration_facility_id: SecureRandom.uuid,
-   created_at: Time.current.iso8601,
-   updated_at: Time.current.iso8601}.merge(arguments)
+  {
+    id: SecureRandom.uuid,
+    full_name: Faker::Name.name,
+    phone_number: Faker::PhoneNumber.phone_number,
+    teleconsultation_phone_number: Faker::PhoneNumber.phone_number,
+    teleconsultation_isd_code: "+91",
+    password_digest: BCrypt::Password.create("1234"),
+    registration_facility_id: SecureRandom.uuid,
+    created_at: Time.current.iso8601,
+    updated_at: Time.current.iso8601
+  }.merge(arguments)
 end

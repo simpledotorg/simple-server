@@ -13,7 +13,7 @@
     <%= link_to 'All reports', dashboard_districts_path %>
     <% if @region.respond_to?(:facility_group) %>
       <i class="fas fa-chevron-right"></i>
-      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.region_slug) %>
+      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.slug, report_scope: "district") %>
     <% end %>
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>
@@ -49,14 +49,14 @@
         <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
           <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
-          <% (1..13).each do |num|
+          <% (1..6).each do |num|
               selected = false
               date = Date.current.beginning_of_month.advance(months: -num)
               period = Period.new(type: :month, value: date)
           %>
             <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
                     type="submit" data-period-type="month" value="<%= period.value %>">
-              <%= period.value.to_s(:month_year) %>
+              <%= period.value.to_s(:mon_year) %>
             </button>
           <% end %>
         <% end %>

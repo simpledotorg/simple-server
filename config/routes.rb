@@ -155,20 +155,18 @@ Rails.application.routes.draw do
       get :lookup
     end
   end
+
   resources :organizations, only: [:index], path: "dashboard"
 
   get "/dashboard/districts/", to: redirect("/reports/districts/")
   get "/dashboard/districts/:slug", to: redirect("/reports/districts/%{slug}")
   get "/reports/districts/", to: redirect("/reports/regions/")
-  get "/reports/districts/:slug", to: redirect("/reports/regions/facility_group-%{slug}")
 
   namespace :reports do
-    resources :regions do
-      member do
-        get "cohort"
-        get "details"
-      end
-    end
+    resources :regions, only: [:index]
+    get "regions/:report_scope/:id", to: "regions#show", as: :region
+    get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
+    get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
   end
 
   namespace :my_facilities do
@@ -192,7 +190,7 @@ Rails.application.routes.draw do
         post "upload"
       end
     end
-    resources :facility_groups do
+    resources :facility_groups, except: [:index] do
       resources :facilities
     end
 
@@ -213,12 +211,24 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_sidekiq_ui) } do
+  authenticate :email_authentication, ->(a) {
+    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+      a.user.power_user?
+    else
+      a.user.has_permission?(:view_sidekiq_ui)
+    end
+  } do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
   end
 
-  authenticate :email_authentication, ->(a) { a.user.has_permission?(:view_flipper_ui) } do
+  authenticate :email_authentication, ->(a) {
+    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+      a.user.power_user?
+    else
+      a.user.has_permission?(:view_flipper_ui)
+    end
+  } do
     mount Flipper::UI.app(Flipper) => "/flipper"
   end
 end
