@@ -547,34 +547,123 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_5) { create(:facility) }
     let!(:facility_6) { create(:facility) }
 
-    let!(:power_user) { UserAccess.new(create(:admin, :power_user)) }
     let!(:manager) { UserAccess.new(create(:admin, :manager)) }
     let!(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
     let!(:viewer_reports_only) { UserAccess.new(create(:admin, :viewer_reports_only)) }
     let!(:call_center) { UserAccess.new(create(:admin, :call_center)) }
 
-    let!(:admins) { [power_user, manager, viewer_all, viewer_reports_only, call_center] }
+    let!(:admins) { [manager, viewer_all, viewer_reports_only, call_center] }
     let!(:actions) { described_class::ACTION_TO_LEVEL.keys }
 
     context "#accessible_organizations" do
       it "" do
         # Grant Accesses
         admins.each do |admin|
-          next if admin.user.power_user?
           admin.user.accesses.create(resource: organization_3)
         end
 
         admins.each do |admin|
           actions.each do |action|
-            puts "#{admin.user.access_level}:#{action}"
-            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym) || admin.user.power_user?
-              if admin.user.power_user?
-                expect(admin.accessible_organizations(action)).to match_array(Organization.all)
-              else
-                expect(admin.accessible_organizations(action)).to contain_exactly(organization_3)
-              end
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+              expect(admin.accessible_organizations(action)).to contain_exactly(organization_3)
             else
               expect(admin.accessible_organizations(action)).to match_array([])
+            end
+          end
+        end
+      end
+    end
+
+    context "#accessible_facility_groups" do
+      context "organization access"
+      it "" do
+        # Grant Accesses
+        admins.each do |admin|
+          admin.user.accesses.create(resource: organization_3)
+        end
+
+        admins.each do |admin|
+          actions.each do |action|
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+              expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_3_1, facility_group_3_2)
+            else
+              expect(admin.accessible_facility_groups(action)).to match_array([])
+            end
+          end
+        end
+      end
+
+      context "facility group access"
+      it "" do
+        # Grant Accesses
+        admins.each do |admin|
+          admin.user.accesses.create(resource: facility_group_1)
+        end
+
+        admins.each do |admin|
+          actions.each do |action|
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+              expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_1)
+            else
+              expect(admin.accessible_facility_groups(action)).to match_array([])
+            end
+          end
+        end
+      end
+    end
+
+    context "#accessible_facilities" do
+      context "organization access"
+      it "" do
+        # Grant Accesses
+        admins.each do |admin|
+          admin.user.accesses.create(resource: organization_3)
+        end
+
+        admins.each do |admin|
+          actions.each do |action|
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+              expect(admin.accessible_facilities(action)).to contain_exactly(facility_3, facility_4)
+            else
+              expect(admin.accessible_facilities(action)).to match_array([])
+            end
+          end
+        end
+      end
+
+      context "facility group access"
+      it "" do
+        # Grant Accesses
+        admins.each do |admin|
+          admin.user.accesses.create(resource: facility_group_1)
+        end
+
+        admins.each do |admin|
+          actions.each do |action|
+            puts "#{admin.user.access_level}:#{action}"
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+              expect(admin.accessible_facilities(action)).to contain_exactly(facility_1)
+            else
+              expect(admin.accessible_facilities(action)).to match_array([])
+            end
+          end
+        end
+      end
+
+      context "facility access"
+      it "" do
+        # Grant Accesses
+        admins.each do |admin|
+          admin.user.accesses.create(resource: facility_5)
+        end
+
+        admins.each do |admin|
+          actions.each do |action|
+            puts "#{admin.user.access_level}:#{action}"
+            if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
+              expect(admin.accessible_facilities(action)).to contain_exactly(facility_5)
+            else
+              expect(admin.accessible_facilities(action)).to match_array([])
             end
           end
         end
