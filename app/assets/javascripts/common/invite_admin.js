@@ -4,6 +4,7 @@ const selectAllFacilitiesDiv = () => document.getElementById("select-all-facilit
 const facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
 const facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
 const facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
+
 //
 // loads at page refresh
 //
@@ -21,10 +22,13 @@ function inviteAdmin() {
 function editAdmin() {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
-  const checkedCheckboxes = checkboxes.filter(check => check.checked)
 
-  for (const checkbox of checkedCheckboxes) {
-    updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
+  for (const checkbox of checkboxes) {
+    if (!checkbox.checked) continue
+
+    setTimeout(function () {
+      updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
+    }, 0.1);
   }
 
   selectAllFacilitiesDiv().checked = checkboxes.every(checkbox => checkbox.checked)
@@ -68,7 +72,7 @@ function resourceRowCollapseListener() {
     facilityAccessItemsPadding(),
     facilityAccessItemsAccessRatio()
   ].map(htmlCollection => Array.from(htmlCollection)).flat()
-  
+
   for (const item of collapsibleItems) {
     item.addEventListener("click", onFacilityAccessItemToggled)
   }
@@ -88,7 +92,7 @@ function toggleAccessTreeVisiblity(isPoweruser) {
   }
 }
 
-function onAccessLevelChanged({ target }) {
+function onAccessLevelChanged({target}) {
   toggleAccessTreeVisiblity(target.value === "power_user")
 }
 
