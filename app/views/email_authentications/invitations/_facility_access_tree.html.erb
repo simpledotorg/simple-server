@@ -1,5 +1,5 @@
 <ul class="access-item-wrapper facility <%= "collapsed" unless tree_depth.zero? %>">
-  <% tree.each do |facility, _facility_info| %>
+  <% tree.each do |facility| %>
     <li>
       <div class="access-item facility <%= "collapsed" if root == :organization or root == :facility_group %>">
         <% tree_depth.times do %>
@@ -11,7 +11,7 @@
                 :facilities,
                 facility,
                 page: page,
-                checked_fn: -> { user_being_edited.visible?(:facility, facility) }
+                checked_fn: -> { true }
             ) %>
         <div class="access-item__padding"></div>
       </div>

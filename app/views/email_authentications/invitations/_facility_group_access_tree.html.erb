@@ -1,5 +1,5 @@
 <ul class="access-item-wrapper facility-group <%= "collapsed" unless tree_depth.zero? %>">
-  <% tree.each do |facility_group, fg_info| %>
+  <% tree.each do |facility_group, facilities| %>
     <li>
       <div class="access-item facility-group <%= "collapsed" if root == :organization or tree_depth.zero? %>">
         <% tree_depth.times do %>
@@ -11,19 +11,19 @@
                 :facility_groups,
                 facility_group,
                 page: page,
-                checked_fn: -> { user_being_edited.visible?(:facility_group, facility_group) }
+                checked_fn: -> { user_being_edited.visible_facility_groups.include?(facility_group) }
             ) %>
 
         <div class="access-item__padding"></div>
 
         <span class="access-ratio">
-          <%= access_facility_count(fg_info[:accessible_facility_count]) %>
+          <%= access_facility_count(facilities.length) %>
           <i class="fas fa-caret-up light"></i>
         </span>
       </div>
 
       <%= render "email_authentications/invitations/facility_access_tree",
-          tree: fg_info[:facilities],
+          tree: facilities,
           root: root,
           page: page,
           form: form,

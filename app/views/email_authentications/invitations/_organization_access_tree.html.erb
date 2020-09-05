@@ -1,4 +1,4 @@
-<% tree.each do |organization, org_info| %>
+<% tree.each do |organization, facility_groups| %>
   <ul class="access-item-wrapper">
     <li>
       <div class="access-item organization collapsed">
@@ -7,19 +7,19 @@
                 :organizations,
                 organization,
                 page: page,
-                checked_fn: -> { user_being_edited.visible?(:organization, organization) }
+                checked_fn: -> { user_being_edited.visible_organizations.include?(organization) }
             ) %>
 
         <div class="access-item__padding"></div>
 
         <span class="access-ratio organization">
-          <%= access_facility_count(org_info[:accessible_facility_count]) %>
+          <%= access_facility_count(facility_groups.sum { |_, facilities| facilities.length }) %>
           <i class="fas fa-caret-up light"></i>
         </span>
       </div>
 
       <%= render "email_authentications/invitations/facility_group_access_tree",
-          tree: org_info[:facility_groups],
+          tree: facility_groups,
           page: page,
           form: form,
           root: root,
