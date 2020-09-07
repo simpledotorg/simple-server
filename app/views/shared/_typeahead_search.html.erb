@@ -46,14 +46,16 @@
 
   function search(e) {
     let searchQuery = e.value;
-    showSpinner();
-    $.ajax({
-      url: "<%= url %>",
-      data: {"search_query": searchQuery},
-      success: (res) => {
-        populateSearchResults(searchQuery, res)
-      }
-    });
+    if (searchQuery.length) {
+      showSpinner();
+      $.ajax({
+        url: "<%= url %>",
+        data: {"search_query": searchQuery},
+        success: (res) => {
+          populateSearchResults(searchQuery, res)
+        }
+      })
+    }
   }
 
   function debounce(func, wait = 500) {
