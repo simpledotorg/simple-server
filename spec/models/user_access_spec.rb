@@ -274,9 +274,6 @@ RSpec.describe UserAccess, type: :model do
     let!(:viewer_reports_only) { create(:admin, :viewer_reports_only) }
     let!(:call_center) { create(:admin, :call_center) }
 
-    let!(:admins) { [manager, viewer_all, viewer_reports_only, call_center] }
-    let!(:actions) { described_class::ACTION_TO_LEVEL.keys }
-
     context "non power users" do
       context "#accessible_organizations" do
         let!(:permission_matrix) {
