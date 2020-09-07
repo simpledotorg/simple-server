@@ -3,7 +3,7 @@ class AdminsController < AdminController
   include SearchHelper
 
   before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :🆕set_admin, only: [:show, :edit, :update, :access_tree], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   after_action :verify_policy_scoped, only: :index
@@ -35,8 +35,20 @@ class AdminsController < AdminController
     end
   end
 
+  def access_tree
+    user_being_edited = params[:page].eql?("edit") ? @admin : nil
+    access_tree = current_admin.visible_access_tree
+
+    render partial: access_tree[:render_partial], locals: {
+      tree: access_tree[:data],
+      root: access_tree[:root],
+      user_being_edited: user_being_edited,
+      tree_depth: 0,
+      page: params[:page],
+    }
+  end
+
   def show
-    @admin = AdminAccessPresenter.new(@admin)
   end
 
   def edit
@@ -115,6 +127,7 @@ class AdminsController < AdminController
   def 🆕set_admin
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
+      @admin = AdminAccessPresenter.new(@admin)
     end
   end
 

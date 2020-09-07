@@ -8,15 +8,20 @@ const facilityAccessPowerUser = () => document.getElementById("facility-access-p
 //
 // loads at page refresh
 //
+document.addEventListener('render_async_load', function (event) {
+  console.log('Finished loading the access tree asynchronously.', event.container);
+
+  selectAllListener()
+  checkboxItemListener()
+  resourceRowCollapseListener()
+});
+
 window.addEventListener("DOMContentLoaded", inviteAdmin);
 window.addEventListener("DOMContentLoaded", editAdmin);
 
 function inviteAdmin() {
   accessLevelListener()
   selectAccessLevels()
-  selectAllListener()
-  checkboxItemListener()
-  resourceRowCollapseListener()
 }
 
 function editAdmin() {
@@ -26,9 +31,9 @@ function editAdmin() {
   for (const checkbox of checkboxes) {
     if (!checkbox.checked) continue
 
-    setTimeout(function () {
+    requestAnimationFrame(function () {
       updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
-    }, 0.1);
+    })
   }
 
   selectAllFacilitiesDiv().checked = checkboxes.every(checkbox => checkbox.checked)

@@ -3,7 +3,6 @@
     <li>
       <div class="access-item organization collapsed">
         <%= access_checkbox(
-                form,
                 :organizations,
                 organization,
                 page: page,
@@ -13,7 +12,7 @@
         <div class="access-item__padding"></div>
 
         <span class="access-ratio organization">
-          <%= access_facility_count(facility_groups.sum { |_, facilities| facilities.length }) %>
+          <%= access_facility_count(facility_groups.values.flatten.length) %>
           <i class="fas fa-caret-up light"></i>
         </span>
       </div>
@@ -21,7 +20,6 @@
       <%= render "email_authentications/invitations/facility_group_access_tree",
           tree: facility_groups,
           page: page,
-          form: form,
           root: root,
           user_being_edited: user_being_edited,
           tree_depth: tree_depth + 1 %>

@@ -372,6 +372,7 @@ GEM
     redis-store (1.8.2)
       redis (>= 4, < 5)
     regexp_parser (1.7.0)
+    render_async (2.1.7)
     request_store (1.5.0)
       rack (>= 1.4)
     request_store-sidekiq (0.1.0)
@@ -609,6 +610,7 @@ DEPENDENCIES
   react-rails
   redis
   redis-rails
+  render_async
   request_store
   request_store-sidekiq
   roo (~> 2.8.0)

@@ -61,7 +61,7 @@ class AdminAccessPresenter < SimpleDelegator
   memoize def organization_tree
     facility_group_tree
       .group_by { |facility_group, _| facility_group.organization }
-      .map { |o, fg| [o, fg.to_h] }
+      .map { |org, fg| [org, fg.to_h] }
       .to_h
   end
 end

@@ -69,6 +69,7 @@ gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "memery"
 gem "bootstrap-select-rails"
+gem "render_async"
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]

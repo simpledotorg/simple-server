@@ -3,17 +3,20 @@ module AdminAccessHelper
     "#{available} #{"facility".pluralize(available)}"
   end
 
-  def access_checkbox(form, name, resource, page: :new, checked_fn: -> { false })
-    return access_resource_label(resource) if page.eql?(:show)
+  def access_checkbox(name, resource, page: "new", checked_fn: -> { false })
+    return access_resource_label(resource) if page.eql?("show")
 
     opts = {
       id: resource.id,
-      class: "access-input",
-      label: resource.name.to_s,
-      checked: page.eql?(:edit) && checked_fn.call
+      class: "access-input form-check-input",
     }
 
-    form.check_box("#{name}[]", opts, resource.id, nil)
+    content_tag(:div, class: "form-check") do
+      checkbox = check_box_tag("#{name}[]", resource.id, page.eql?("edit") && checked_fn.call, opts)
+      label = label_tag(resource.id, resource.name.to_s, class: "form-check-label")
+
+      concat([checkbox, label].join.html_safe)
+    end
   end
 
   def access_resource_label(resource)
@@ -22,15 +25,15 @@ module AdminAccessHelper
     end
   end
 
-  def access_level_select(form, access_levels, value: nil, page: :new)
+  def access_level_select(form, access_levels, value: nil, page: "new")
     form.select(:access_level,
       {},
       {label: "Access *"},
       {
         class: "access-levels",
         id: :access_level,
-        disabled: page.eql?(:edit),
-        required: page.eql?(:new)
+        disabled: page.eql?("edit"),
+        required: page.eql?("new")
       }) do
       access_levels.each do |level|
         access_level_option(level)

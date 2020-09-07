@@ -21,14 +21,12 @@
               <%= form.check_box :select_all_facilities, id: "select-all-facilities" %>
             </div>
 
-            <% access_tree = current_admin.visible_access_tree %>
-            <%= render access_tree[:render_partial],
-                tree: access_tree[:data],
-                user_being_edited: nil,
-                tree_depth: 0,
-                root: access_tree[:root],
-                page: :new,
-                form: form %>
+            <%= render_async(access_tree_admin_path(current_admin, page: "new"),
+                error_message: '<p>Sorry, users loading went wrong :(</p>') do %>
+              <div class="spinner spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            <% end %>
           </div>
         </div>
 

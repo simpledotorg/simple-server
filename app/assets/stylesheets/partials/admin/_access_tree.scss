@@ -83,6 +83,10 @@
 }
 
 #facility-access {
+  .spinner {
+    margin: 10em 0 0 15em;
+  }
+
   &.hidden {
     display: none;
   }

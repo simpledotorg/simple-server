@@ -129,7 +129,9 @@ Rails.application.routes.draw do
     path: "email_authentications",
     controllers: {invitations: "email_authentications/invitations"}
 
-  resources :admins
+  resources :admins do
+    get :access_tree, to: "admins#access_tree", on: :member
+  end
 
   namespace :analytics do
     resources :facilities, only: [:show] do

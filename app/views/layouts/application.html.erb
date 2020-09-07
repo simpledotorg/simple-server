@@ -237,6 +237,7 @@
   <% end %>
 
   <%= content_for?(:content) ? yield(:content) : yield %>
+  <%= content_for :render_async %>
 </main>
 </body>
 </html>
