@@ -102,7 +102,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def selected_facilities
-    params[:facilities]
+    params[:facilities].flatten
   end
 
   def permission_params

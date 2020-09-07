@@ -1,18 +1,11 @@
 module AdminAccessHelper
-  def access_fraction(name, available, total)
+  def access_facility_count(available)
     "#{available} #{"facility".pluralize(available)}"
-
-    # currently unused, we may revive this later based on discussions with Claudio
-    # - kit
-    #
-    # if available == total
-    #   "#{total} #{name.pluralize(total)}"
-    # else
-    #   "#{available} / #{total} #{name.pluralize}"
-    # end
   end
 
-  def access_checkbox(form, name, resource, page: :edit, checked_fn: -> { false })
+  def access_checkbox(form, name, resource, page: :new, checked_fn: -> { false })
+    return access_resource_label(resource) if page.eql?(:show)
+
     opts = {
       id: resource.id,
       class: "access-input",
@@ -21,5 +14,51 @@ module AdminAccessHelper
     }
 
     form.check_box("#{name}[]", opts, resource.id, nil)
+  end
+
+  def access_resource_label(resource)
+    content_tag(:div, class: "form-check__show") do
+      label_tag(resource.name.to_s, resource.name.to_s, class: "form-check-label")
+    end
+  end
+
+  def access_level_select(form, access_levels, value: nil, page: :new)
+    form.select(:access_level,
+      {},
+      {label: "Access *"},
+      {
+        class: "access-levels",
+        id: :access_level,
+        disabled: page.eql?(:edit),
+        required: page.eql?(:new)
+      }) do
+      access_levels.each do |level|
+        access_level_option(level)
+      end
+    end
+  end
+
+  def access_level_option(level)
+    tag =
+      content_tag(:option,
+        level[:id],
+        value: level[:id],
+        class: "show",
+        data: {content: access_level_option_data(level)})
+
+    concat(tag)
+  end
+
+  def access_level_option_data(level)
+    option = <<-HTML.strip_heredoc
+        <div class="access-level-item-data">
+          <span class="title">
+             #{level[:name]}
+          </span>
+          <span class="description"> #{level[:description]}</span>
+        </div>
+    HTML
+
+    sanitize(option)
   end
 end

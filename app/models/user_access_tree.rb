@@ -7,41 +7,48 @@ class UserAccessTree < Struct.new(:user)
   include Memery
 
   memoize def facilities
-    visible_facilities.map { |facility|
-      info = {
-        visible: true
-      }
+    visible_facilities
+      .map { |facility|
+        info = {
+          visible: true
+        }
 
-      [facility, info]
-    }.to_h
+        [facility, info]
+      }
+      .sort_by { |f, _| f[:name] }
+      .to_h
   end
 
   memoize def facility_groups
     facilities
       .group_by { |facility, _| facility.facility_group }
-      .map { |facility_group, facilities|
+      .map { |facility_group, facilities_in_fg|
         info = {
-          accessible_facility_count: facilities.length,
+          accessible_facility_count: facilities_in_fg.length,
           visible: visible_facility_groups.include?(facility_group),
-          facilities: facilities
+          facilities: facilities_in_fg
         }
 
         [facility_group, info]
-      }.to_h
+      }
+      .sort_by { |fg, _| fg[:name] }
+      .to_h
   end
 
   memoize def organizations
     facility_groups
       .group_by { |facility_group, _| facility_group.organization }
-      .map { |organization, facility_groups|
+      .map { |organization, facility_groups_in_org|
         info = {
-          accessible_facility_count: facility_groups.sum { |_, info| info[:accessible_facility_count] },
+          accessible_facility_count: facility_groups_in_org.sum { |_, info| info[:accessible_facility_count] },
           visible: visible_organizations.include?(organization),
-          facility_groups: facility_groups
+          facility_groups: facility_groups_in_org
         }
 
         [organization, info]
-      }.to_h
+      }
+      .sort_by { |o, _| o[:name] }
+      .to_h
   end
 
   def visible?(model, record)
@@ -60,14 +67,14 @@ class UserAccessTree < Struct.new(:user)
   private
 
   memoize def visible_facility_groups
-    user.accessible_facility_groups(:any_access)
+    user.accessible_facility_groups(:any)
   end
 
   memoize def visible_facilities
-    user.accessible_facilities(:any_access)
+    user.accessible_facilities(:any)
   end
 
   memoize def visible_organizations
-    user.accessible_organizations(:any_access)
+    user.accessible_organizations(:any)
   end
 end
