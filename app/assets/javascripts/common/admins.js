@@ -1,9 +1,11 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
-const facilityAccessDiv = () => document.getElementById("facility-access")
-const selectAllFacilitiesDiv = () => document.getElementById("select-all-facilities")
-const facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
-const facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
-const facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
+const $facilityAccessDiv = () => document.getElementById("facility-access")
+const $selectAllFacilitiesContainer = () => document.getElementById("select-all-facilities")
+const $selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
+const $facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
+const $facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
+const $facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
+const $page = () => document.getElementById("facility-access").attributes.getNamedItem('data-page').value
 
 //
 // loads at page refresh
@@ -25,8 +27,10 @@ function inviteAdmin() {
 }
 
 function editAdmin() {
+  if ($page() !== "edit") return
+
   // list of all checkboxes under facilityAccessDiv()
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
 
   for (const checkbox of checkboxes) {
     if (!checkbox.checked) continue
@@ -36,20 +40,21 @@ function editAdmin() {
     })
   }
 
-  selectAllFacilitiesDiv().checked = checkboxes.every(checkbox => checkbox.checked)
+  $selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
 //
 // listeners
 //
 function selectAllListener() {
-  if (!selectAllFacilitiesDiv()) return
+  if (!$selectAllFacilitiesInput()) return
+  $selectAllFacilitiesContainer().hidden = false;
 
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
 
-  selectAllFacilitiesDiv().addEventListener("change", () => {
+  $selectAllFacilitiesInput().addEventListener("change", () => {
     for (const checkbox of checkboxes) {
-      checkbox.checked = selectAllFacilitiesDiv().checked
+      checkbox.checked = $selectAllFacilitiesInput().checked
     }
   })
 }
@@ -60,7 +65,7 @@ function accessLevelListener() {
 
 function checkboxItemListener() {
   // list of all checkboxes under facilityAccessDiv()
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, facilityAccessDiv())
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
 
   addEventListener("change", e => {
     const targetCheckbox = e.target
@@ -74,8 +79,8 @@ function checkboxItemListener() {
 
 function resourceRowCollapseListener() {
   const collapsibleItems = [
-    facilityAccessItemsPadding(),
-    facilityAccessItemsAccessRatio()
+    $facilityAccessItemsPadding(),
+    $facilityAccessItemsAccessRatio()
   ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
   for (const item of collapsibleItems) {
@@ -89,11 +94,11 @@ function resourceRowCollapseListener() {
 
 function toggleAccessTreeVisiblity(isPoweruser) {
   if (isPoweruser) {
-    facilityAccessDiv().classList.add("hidden")
-    facilityAccessPowerUser().classList.remove("hidden")
+    $facilityAccessDiv().classList.add("hidden")
+    $facilityAccessPowerUser().classList.remove("hidden")
   } else {
-    facilityAccessDiv().classList.remove("hidden")
-    facilityAccessPowerUser().classList.add("hidden")
+    $facilityAccessDiv().classList.remove("hidden")
+    $facilityAccessPowerUser().classList.add("hidden")
   }
 }
 

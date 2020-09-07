@@ -16,10 +16,10 @@
         <div id="facility-access-power-user" class="hidden">
           Admin has access to all facilities in the system
         </div>
-        <div id="facility-access">
+        <div id="facility-access" data-page="edit">
           <div class="card access-tree">
-            <div class="select-all-access-items">
-              <%= form.check_box :select_all_facilities, id: "select-all-facilities" %>
+            <div id="select-all-facilities" hidden="hidden">
+              <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
             </div>
 
             <%= render_async(access_tree_admin_path(current_admin, page: "edit"),
