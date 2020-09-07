@@ -57,11 +57,7 @@
 
           <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
             <h5>No medical officers</h5>
-            <input class="medical-officer-input"
-                   type="hidden"
-                   name="facility[teleconsultation_medical_officer_ids][]"
-                   value=""
-                   form="facility-edit-form">
+            <input type="hidden" name="facility[teleconsultation_medical_officer_ids][]" value="">
           </div>
           <div class="medical-officers mt-3 mb-3">
             <% @facility.teleconsultation_medical_officers.each do |user| %>
@@ -76,6 +72,29 @@
   </div>
 </div>
 
-<template id="teleconsultation-medical-officer">
+<template id="user-search-no-results-found">
+  <span class="text-center">
+    <i class="fa fa-search text-grey mt-3"></i>
+    <p class="mb-2">No medical officer matches <span class="search-query"></span></p>
+    <p class="text-grey">
+      Approve medical officers in the
+      <a href="/my_facilities" target="_blank">Users to review list</a>
+      <br>to add them for teleconsultation
+    </p>
+  </span>
+</template>
+
+<template id="user-search-result-row">
+  <div class="typeahead-dropdown-row"
+       data-user-id=""
+       data-user-full-name=""
+       data-user-registration-facility=""
+       data-user-teleconsult-phone-number="">
+    <p class="mb-0"><span class="user-full-name"></span></p>
+    <p class="text-grey">Registered at <span class="user-registration-facility"></span></p>
+  </div>
+</template>
+
+<template id="medical-officer-card">
   <%= render partial: "admin/facilities/teleconsultation_medical_officer", locals: {user: User.new} %>
 </template>

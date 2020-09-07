@@ -22,10 +22,7 @@ class Admin::UsersController < AdminController
 
     respond_to do |format|
       format.html { @users = paginate(users) }
-      format.js do
-        @users = users
-        render partial: "search", locals: {search_query: search_query}
-      end
+      format.json { @users = users }
     end
   end
 
