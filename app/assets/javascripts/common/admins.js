@@ -1,3 +1,6 @@
+//
+// elements
+//
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const $facilityAccessDiv = () => document.getElementById("facility-access")
 const $selectAllFacilitiesContainer = () => document.getElementById("select-all-facilities")
@@ -5,26 +8,25 @@ const $selectAllFacilitiesInput = () => document.getElementById("select-all-faci
 const $facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
 const $facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
 const $facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
+const $accessLevel = () => document.getElementById("access_level")
 const $page = () => document.getElementById("facility-access").attributes.getNamedItem('data-page').value
 
 //
-// loads at page refresh
+// load things upfront
 //
-document.addEventListener('render_async_load', function (event) {
-  console.log('Finished loading the access tree asynchronously.', event.container);
+window.addEventListener("DOMContentLoaded", onPageLoad);
 
-  selectAllListener()
+function onPageLoad() {
+  accessLevelListener()
+  accessLevelSelector()
+}
+
+document.addEventListener('render_async_load', function (_event) {
+  selectAllButtonListener()
   checkboxItemListener()
   resourceRowCollapseListener()
+  editAdmin()
 });
-
-window.addEventListener("DOMContentLoaded", inviteAdmin);
-window.addEventListener("DOMContentLoaded", editAdmin);
-
-function inviteAdmin() {
-  accessLevelListener()
-  selectAccessLevels()
-}
 
 function editAdmin() {
   if ($page() !== "edit") return
@@ -44,25 +46,36 @@ function editAdmin() {
 }
 
 //
-// listeners
+// selecting the access level
 //
-function selectAllListener() {
-  if (!$selectAllFacilitiesInput()) return
-  $selectAllFacilitiesContainer().hidden = false;
-
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
-
-  $selectAllFacilitiesInput().addEventListener("change", () => {
-    for (const checkbox of checkboxes) {
-      checkbox.checked = $selectAllFacilitiesInput().checked
-    }
-  })
+function accessLevelSelector() {
+  // initialize the access_level select dropdown
+  $("#access_level").selectpicker({
+    noneSelectedText: "Select an access level..."
+  });
 }
 
 function accessLevelListener() {
-  $("#access_level").change(onAccessLevelChanged)
+  $accessLevel().addEventListener("change", onAccessLevelChanged)
 }
 
+function toggleAccessTreeVisibility(isPowerUser) {
+  if (isPowerUser) {
+    $facilityAccessDiv().classList.add("hidden")
+    $facilityAccessPowerUser().classList.remove("hidden")
+  } else {
+    $facilityAccessDiv().classList.remove("hidden")
+    $facilityAccessPowerUser().classList.add("hidden")
+  }
+}
+
+function onAccessLevelChanged({target}) {
+  toggleAccessTreeVisibility(target.value === "power_user")
+}
+
+//
+// manipulating the access tree
+//
 function checkboxItemListener() {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
@@ -86,24 +99,6 @@ function resourceRowCollapseListener() {
   for (const item of collapsibleItems) {
     item.addEventListener("click", onFacilityAccessItemToggled)
   }
-}
-
-//
-// behaviour
-//
-
-function toggleAccessTreeVisiblity(isPoweruser) {
-  if (isPoweruser) {
-    $facilityAccessDiv().classList.add("hidden")
-    $facilityAccessPowerUser().classList.remove("hidden")
-  } else {
-    $facilityAccessDiv().classList.remove("hidden")
-    $facilityAccessPowerUser().classList.add("hidden")
-  }
-}
-
-function onAccessLevelChanged({target}) {
-  toggleAccessTreeVisiblity(target.value === "power_user")
 }
 
 function toggleItemCollapsed(element) {
@@ -158,20 +153,29 @@ function updateChildrenCheckedState(parent, selector) {
 }
 
 //
+// select all button for facility access
+//
+function selectAllButtonListener() {
+  if (!$selectAllFacilitiesInput()) return
+  $selectAllFacilitiesContainer().hidden = false;
+
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
+
+  $selectAllFacilitiesInput().addEventListener("change", () => {
+    for (const checkbox of checkboxes) {
+      checkbox.checked = $selectAllFacilitiesInput().checked
+    }
+  })
+}
+
+//
 // helpers
 //
-
-// helper function to create nodeArrays (not collections)
 const nodeListToArray = (selector, parent = document) =>
+  // create nodeArrays (not collections)
   [].slice.call(parent.querySelectorAll(selector))
 
-// returns a function that checks if element contains class
+// return a function that checks if element contains class
 const containsClass = (className) => ({classList}) =>
   classList && classList.contains(className)
 
-// initialize the access_level select dropdown
-function selectAccessLevels() {
-  $("#access_level").selectpicker({
-    noneSelectedText: "Select an access level..."
-  });
-}
