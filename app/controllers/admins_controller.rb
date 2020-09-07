@@ -36,7 +36,7 @@ class AdminsController < AdminController
   end
 
   def access_tree
-    user_being_edited = params[:page].eql?("edit") ? @admin : nil
+    user_being_edited = access_tree_for_page.eql?(:edit) ? @admin : nil
     access_tree = current_admin.visible_access_tree
 
     render partial: access_tree[:render_partial], locals: {
@@ -44,7 +44,7 @@ class AdminsController < AdminController
       root: access_tree[:root],
       user_being_edited: user_being_edited,
       tree_depth: 0,
-      page: params[:page],
+      page: access_tree_for_page,
     }
   end
 
@@ -151,5 +151,9 @@ class AdminsController < AdminController
       organization_id: params[:organization_id],
       device_updated_at: Time.current
     }.compact
+  end
+
+  def access_tree_for_page
+    params[:page].to_sym
   end
 end
