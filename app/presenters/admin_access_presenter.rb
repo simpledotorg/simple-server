@@ -40,6 +40,17 @@ class AdminAccessPresenter < SimpleDelegator
     end
   end
 
+  memoize def organization_tree
+    facility_group_tree
+      .group_by { |facility_group, _| facility_group.organization }
+      .map { |org, fg| [org, fg.to_h] }
+      .to_h
+  end
+
+  memoize def facility_group_tree
+    visible_facilities.group_by(&:facility_group)
+  end
+
   memoize def visible_organizations
     admin.accessible_organizations(:any)
   end
@@ -50,18 +61,5 @@ class AdminAccessPresenter < SimpleDelegator
 
   memoize def visible_facilities
     admin.accessible_facilities(:any)
-  end
-
-  private
-
-  memoize def facility_group_tree
-    visible_facilities.group_by(&:facility_group)
-  end
-
-  memoize def organization_tree
-    facility_group_tree
-      .group_by { |facility_group, _| facility_group.organization }
-      .map { |org, fg| [org, fg.to_h] }
-      .to_h
   end
 end
