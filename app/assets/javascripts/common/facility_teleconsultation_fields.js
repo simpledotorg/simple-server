@@ -4,7 +4,7 @@ function toggleTeleconsultationFields() {
 }
 
 // Populate search results into typeahead search
-function userJSONToHTML(user) {
+function userJSONToRow(user) {
   let html = $("template#user-search-result-row").html();
   let $html = $(html);
 
