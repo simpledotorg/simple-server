@@ -125,7 +125,6 @@ RSpec.describe AdminAccessPresenter, type: :model do
         }
 
         expect(presenter.visible_access_tree.slice(:root, :render_partial)).to eq(expected)
-
       end
     end
   end

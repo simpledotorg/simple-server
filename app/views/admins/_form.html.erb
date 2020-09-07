@@ -10,7 +10,7 @@
         <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
         <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *", placeholder: "Email" %>
         <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
-        <%= access_level_select(form, current_admin.permitted_access_levels, value: @admin.access_level, page: :edit) %>
+        <%= access_level_select(form, current_admin.permitted_access_levels, page: :edit) %>
 
         <%= form.label "Facility access *" %>
         <div id="facility-access-power-user" class="hidden">
@@ -22,7 +22,7 @@
               <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
             </div>
 
-            <%= render_async(access_tree_admin_path(current_admin, page: "edit"),
+            <%= render_async(access_tree_admin_path(current_admin, page: :edit),
                 error_message: '<p>Sorry, users loading went wrong :(</p>') do %>
               <div class="spinner spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>

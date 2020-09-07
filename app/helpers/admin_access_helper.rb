@@ -3,37 +3,41 @@ module AdminAccessHelper
     "#{available} #{"facility".pluralize(available)}"
   end
 
-  def access_checkbox(name, resource, page: "new", checked_fn: -> { false })
-    return access_resource_label(resource) if page.eql?("show")
+  def access_checkbox(name, resource, page: :new, checked_fn: -> { false })
+    case page
+      when :show
+        content_tag(:div, class: "form-check__show") { access_resource_label(resource) }
+      when :new, :edit
+        content_tag(:div, class: "form-check") do
+          opts = {
+            id: resource.id,
+            class: "access-input form-check-input",
+          }
 
-    opts = {
-      id: resource.id,
-      class: "access-input form-check-input",
-    }
+          checked = page.eql?(:edit) && checked_fn.call
+          checkbox = check_box_tag("#{name}[]", resource.id, checked, opts)
+          label = access_resource_label(resource)
 
-    content_tag(:div, class: "form-check") do
-      checkbox = check_box_tag("#{name}[]", resource.id, page.eql?("edit") && checked_fn.call, opts)
-      label = label_tag(resource.id, resource.name.to_s, class: "form-check-label")
-
-      concat([checkbox, label].join.html_safe)
+          concat([checkbox, label].join.html_safe)
+        end
+      else
+        raise ArgumentError, "Unsupported page type: #{page}"
     end
   end
 
   def access_resource_label(resource)
-    content_tag(:div, class: "form-check__show") do
-      label_tag(resource.name.to_s, resource.name.to_s, class: "form-check-label")
-    end
+    label_tag(resource.id, resource.name.to_s, class: "form-check-label")
   end
 
-  def access_level_select(form, access_levels, value: nil, page: "new")
+  def access_level_select(form, access_levels, page: :new)
     form.select(:access_level,
       {},
       {label: "Access *"},
       {
         class: "access-levels",
         id: :access_level,
-        disabled: page.eql?("edit"),
-        required: page.eql?("new")
+        disabled: page.eql?(:edit),
+        required: page.eql?(:new)
       }) do
       access_levels.each do |level|
         access_level_option(level)
@@ -46,7 +50,7 @@ module AdminAccessHelper
       content_tag(:option,
         level[:id],
         value: level[:id],
-        class: "show",
+        class: :show,
         data: {content: access_level_option_data(level)})
 
     concat(tag)

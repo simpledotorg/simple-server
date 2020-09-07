@@ -21,7 +21,7 @@
               <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
             </div>
 
-            <%= render_async(access_tree_admin_path(current_admin, page: "new"),
+            <%= render_async(access_tree_admin_path(current_admin, page: :new),
                 error_message: '<p>Sorry, users loading went wrong :(</p>') do %>
               <div class="spinner spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
