@@ -39,11 +39,19 @@ class Admin::UsersController < AdminController
         .order("users.full_name", "facilities.name", "users.device_created_at")
     end
 
-    users = users.search_by_name_or_phone(search_query) if searching?
-
     respond_to do |format|
-      format.html { @users = paginate(users) }
-      format.json { @users = users }
+      format.html do
+        @users =
+          if searching?
+            paginate(users.search_by_name_or_phone(search_query))
+          else
+            paginate(users)
+          end
+      end
+
+      format.json do
+        @users = users.search_by_name_or_teleconsultation_phone_number(search_query)
+      end
     end
   end
 
