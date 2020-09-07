@@ -63,6 +63,8 @@ class User < ApplicationRecord
     ->(term) { joins(:phone_number_authentications).merge(PhoneNumberAuthentication.search_by_phone(term)) }
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
+  scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
+  scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
@@ -91,8 +93,10 @@ class User < ApplicationRecord
     :accessible_facilities,
     :accessible_facility_groups,
     :accessible_users,
+    :accessible_admins,
+    :access_across_organizations?,
+    :access_across_facility_groups?,
     :grant_access,
-    :access_tree,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications

@@ -1,10 +1,10 @@
-# Production Deployment
+# [DEPRECATED] Production Deployment
 
 1. Ensure changelog is up to date
     - Do a commit log diff against the previous version, ensure all the important changes are in the upcoming release
     - Keep a blank upcoming release
     - Verify changelog with other teams
- 
+
 2. Tag release
     - Create a tag off master with the same name as in the changelog. Typically with the format: yyyy-mm-dd-n.
     - Add a short description in the tag for the release
@@ -23,16 +23,16 @@ Perform the following steps on staging.
     - Make a backup of the production DB before doing the data migration
     - What to do if there is a data migration?
       - Sometimes, data migrations can be run after the deploy, and sometimes they need to be run before.
-      - The `cap deploy` script does a code deploy, runs schema migrations, and starts the service. 
+      - The `cap deploy` script does a code deploy, runs schema migrations, and starts the service.
       - If data migrations need to be run before, ensure `cap deploy` does not start the service before that.  
 
 5. Setup configs, and feature flags
     - Find out what config has changed since the last release
     - `git diff -w <previous-tag>..<current-tag> .env.development`
     - Verify ansible vault has all the required keys and values
-    - Run ansible deploy from [deployment repository](https://github.com/simpledotorg/deployment) to ensure config is updated 
+    - Run ansible deploy from [deployment repository](https://github.com/simpledotorg/deployment) to ensure config is updated
     - `ansible-playbook -v  --vault-id ~/Projects/resolve/secrets/password_file deploy.yml -i hosts.<env>`
- 
+
 6. Prepare for potential downtime
     - Figure out the right time of the day during which downtime is acceptable
     - Inform stakeholders of this downtime, and ensure this is alright.
@@ -48,7 +48,7 @@ Perform the following steps on staging.
     - Go over QA flows to smoke test vital flows
     - Go over the newly added features/flows to ensure things are smooth
     - How to test: https://docs.google.com/document/d/1QC5_bWYeKAlFFbzTsLozUiq8Vuk1-3s4s3Ixzz3LcLw/edit#
- 
+
 10. Monitor the service
     - Monitor vitals, rails logs, nginx logs, and dashboards
 
