@@ -29,8 +29,7 @@ function noUsersFound(searchQuery) {
 }
 
 function filterExistingUsers(users) {
-  // existingUsers();
-  return users;
+  return users.filter(user => !existingUsers().includes(user["id"]));
 }
 
 // Adding/removing MO from search results
