@@ -18,8 +18,8 @@ RSpec.describe UserAccess, type: :model do
     }
     let!(:manager_access) {
       [create(:access, user: manager.user, resource: organization_1),
-       create(:access, user: manager.user, resource: facility_group_2),
-       create(:access, user: manager.user, resource: facility_4)]
+        create(:access, user: manager.user, resource: facility_group_2),
+        create(:access, user: manager.user, resource: facility_4)]
     }
 
     it "raises an error if the access level of the new user is not grantable by the current" do
