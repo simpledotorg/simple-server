@@ -32,6 +32,8 @@ function debounce(func, wait = 500) {
   };
 }
 
+let debouncedSearchUser = debounce(searchUser);
+
 function showSpinner() {
   let spinner = $(".typeahead-spinner").first().clone();
   spinner.css({display: "block"});
