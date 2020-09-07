@@ -21,6 +21,9 @@ function onPageLoad() {
   accessLevelSelector()
 }
 
+//
+// wait for the render_async hook before loading the access tree related JS
+//
 document.addEventListener('render_async_load', function (_event) {
   selectAllButtonListener()
   checkboxItemListener()
@@ -34,9 +37,12 @@ function editAdmin() {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
 
+  // go through all the checkboxes that are pre-checked and update their parents accordingly
   for (const checkbox of checkboxes) {
     if (!checkbox.checked) continue
 
+    // a large tree can take a lot of time to load on the DOM,
+    // so we queue up our updates by requesting frames so as to not cause overwhelming repaints
     requestAnimationFrame(function () {
       updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
     })
@@ -85,6 +91,7 @@ function checkboxItemListener() {
 
     // exit if change event did not come from list of checkboxes
     if (checkboxes.indexOf(targetCheckbox) === -1) return
+
     updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
     updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
   })
