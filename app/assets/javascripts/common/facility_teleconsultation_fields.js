@@ -36,8 +36,8 @@ function filterExistingUsers(users) {
 // Adding/removing MO from search results
 function medicalOfficerCard(user) {
   let card = $("template#medical-officer-card").html();
-  let $card = $(card)
-  let userID = user["userId"]
+  let $card = $(card);
+  let userID = user["userId"];
 
   $card.find(".medical-officer-id").val(userID);
   $card.find(".medical-officer-name").html(user["userFullName"]);
@@ -45,7 +45,7 @@ function medicalOfficerCard(user) {
   $card.find(".medical-officer-phone-number").html(user["userTeleconsultationPhoneNumber"]);
   $card.find("[data-user-id]").attr("data-user-id", userID);
   $card.attr("data-user-id", userID);
-  $card.find("a").attr("href", `/admin/users/${userID}/edit`) //TODO: fix
+  $card.find("a").attr("href", `/admin/users/${userID}/edit`); //TODO: rewrite
 
   return $card;
 }
@@ -63,6 +63,14 @@ function medicalOfficersCount() {
   return $(".medical-officer-card").length
 }
 
+function hideNoMedicalOfficers() {
+  $(".no-medical-officers").hide()
+}
+
+function showNoMedicalOfficers() {
+  $(".no-medical-officers").show()
+}
+
 function addMedicalOfficer(user) {
   if (isAdded(user)) return false;
 
@@ -74,14 +82,6 @@ function removeMedicalOfficer(userID) {
   $(`[data-user-id="${userID}"]`).remove();
 
   if (!medicalOfficersCount()) showNoMedicalOfficers();
-}
-
-function hideNoMedicalOfficers() {
-  $(".no-medical-officers").hide()
-}
-
-function showNoMedicalOfficers() {
-  $(".no-medical-officers").show()
 }
 
 $(document).ready(function () {
