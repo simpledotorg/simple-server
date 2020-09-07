@@ -66,15 +66,17 @@ class UserAccess < Struct.new(:user)
   end
 
   memoize def accessible_admins(action)
+    return User.none unless action == :manage
     return User.admins if bypass?
-    return User.none unless action == :manage && action_to_level(:manage).include?(user.access_level.to_sym)
+    return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
 
     User.admins.where(organization: user.organization)
   end
 
   memoize def accessible_users(action)
+    return User.none unless action == :manage
     return User.non_admins if bypass?
-    return User.none unless action == :manage && action_to_level(:manage).include?(user.access_level.to_sym)
+    return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
 
     User
       .non_admins

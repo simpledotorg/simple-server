@@ -18,8 +18,8 @@ RSpec.describe UserAccess, type: :model do
     }
     let!(:manager_access) {
       [create(:access, user: manager.user, resource: organization_1),
-        create(:access, user: manager.user, resource: facility_group_2),
-        create(:access, user: manager.user, resource: facility_4)]
+       create(:access, user: manager.user, resource: facility_group_2),
+       create(:access, user: manager.user, resource: facility_4)]
     }
 
     it "raises an error if the access level of the new user is not grantable by the current" do
@@ -269,242 +269,417 @@ RSpec.describe UserAccess, type: :model do
     let!(:admin_4) { create(:admin, :call_center, organization: organization_3) }
     let!(:admin_5) { create(:admin, :call_center) }
 
-    let!(:manager) { UserAccess.new(create(:admin, :manager)) }
-    let!(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
-    let!(:viewer_reports_only) { UserAccess.new(create(:admin, :viewer_reports_only)) }
-    let!(:call_center) { UserAccess.new(create(:admin, :call_center)) }
+    let!(:manager) { create(:admin, :manager) }
+    let!(:viewer_all) { create(:admin, :viewer_all) }
+    let!(:viewer_reports_only) { create(:admin, :viewer_reports_only) }
+    let!(:call_center) { create(:admin, :call_center) }
 
     let!(:admins) { [manager, viewer_all, viewer_reports_only, call_center] }
     let!(:actions) { described_class::ACTION_TO_LEVEL.keys }
 
     context "non power users" do
       context "#accessible_organizations" do
-        it "returns the organizations an admin has access to" do
-          # Grant Accesses
-          admins.each do |admin|
-            admin.user.accesses.create(resource: organization_3)
-          end
+        let!(:permission_matrix) {
+          [
+            [manager, :manage, organization_3, [organization_3]],
+            [manager, :view_pii, organization_3, [organization_3]],
+            [manager, :view_reports, organization_3, [organization_3]],
+            [manager, :manage_overdue_list, organization_3, [organization_3]],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_organizations(action)).to contain_exactly(organization_3)
-              else
-                expect(admin.accessible_organizations(action)).to match_array([])
-              end
-            end
+            [viewer_all, :manage, organization_3, []],
+            [viewer_all, :view_pii, organization_3, [organization_3]],
+            [viewer_all, :view_reports, organization_3, [organization_3]],
+            [viewer_all, :manage_overdue_list, organization_3, [organization_3]],
+
+            [viewer_reports_only, :manage, organization_3, []],
+            [viewer_reports_only, :view_pii, organization_3, []],
+            [viewer_reports_only, :view_reports, organization_3, [organization_3]],
+            [viewer_reports_only, :manage_overdue_list, organization_3, []],
+
+            [call_center, :manage, organization_3, []],
+            [call_center, :view_pii, organization_3, []],
+            [call_center, :view_reports, organization_3, []],
+            [call_center, :manage_overdue_list, organization_3, [organization_3]]
+          ]
+        }
+
+        it "returns the organizations an admin can perform actions on" do
+          permission_matrix.each do |admin, action, access_resource, resources|
+            admin.accesses.create(resource: access_resource)
+            expect(admin.accessible_organizations(action)).to match_array(resources)
           end
         end
       end
 
       context "#accessible_facility_groups" do
-        context "organization access" do
-          it "returns the facility groups an admin has access to" do
-            # Grant Accesses
-            admins.each do |admin|
-              admin.user.accesses.create(resource: organization_3)
-            end
+        context "Organization access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, organization_3, [facility_group_3_1, facility_group_3_2]],
+              [manager, :view_pii, organization_3, [facility_group_3_1, facility_group_3_2]],
+              [manager, :view_reports, organization_3, [facility_group_3_1, facility_group_3_2]],
+              [manager, :manage_overdue_list, organization_3, [facility_group_3_1, facility_group_3_2]],
 
-            admins.each do |admin|
-              actions.each do |action|
-                if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                  expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_3_1, facility_group_3_2)
-                else
-                  expect(admin.accessible_facility_groups(action)).to match_array([])
-                end
-              end
+              [viewer_all, :manage, organization_3, []],
+              [viewer_all, :view_pii, organization_3, [facility_group_3_1, facility_group_3_2]],
+              [viewer_all, :view_reports, organization_3, [facility_group_3_1, facility_group_3_2]],
+              [viewer_all, :manage_overdue_list, organization_3, [facility_group_3_1, facility_group_3_2]],
+
+              [viewer_reports_only, :manage, organization_3, []],
+              [viewer_reports_only, :view_pii, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, [facility_group_3_1, facility_group_3_2]],
+              [viewer_reports_only, :manage_overdue_list, organization_3, []],
+
+              [call_center, :manage, organization_3, []],
+              [call_center, :view_pii, organization_3, []],
+              [call_center, :view_reports, organization_3, []],
+              [call_center, :manage_overdue_list, organization_3, [facility_group_3_1, facility_group_3_2]]
+            ]
+          }
+
+          it "returns the facility groups an admin can perform actions on with organization access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_facility_groups(action)).to match_array(resources)
             end
           end
         end
 
-        context "facility group access"
-        it "returns the facility groups an admin has access to" do
-          # Grant Accesses
-          admins.each do |admin|
-            admin.user.accesses.create(resource: facility_group_1)
-          end
+        context "Facility Group access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_group_1, [facility_group_1]],
+              [manager, :view_pii, facility_group_1, [facility_group_1]],
+              [manager, :view_reports, facility_group_1, [facility_group_1]],
+              [manager, :manage_overdue_list, facility_group_1, [facility_group_1]],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_facility_groups(action)).to contain_exactly(facility_group_1)
-              else
-                expect(admin.accessible_facility_groups(action)).to match_array([])
-              end
+              [viewer_all, :manage, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, [facility_group_1]],
+              [viewer_all, :view_reports, facility_group_1, [facility_group_1]],
+              [viewer_all, :manage_overdue_list, facility_group_1, [facility_group_1]],
+
+              [viewer_reports_only, :manage, facility_group_1, []],
+              [viewer_reports_only, :view_pii, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, [facility_group_1]],
+              [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
+
+              [call_center, :manage, facility_group_1, []],
+              [call_center, :view_pii, facility_group_1, []],
+              [call_center, :view_reports, facility_group_1, []],
+              [call_center, :manage_overdue_list, facility_group_1, [facility_group_1]]
+            ]
+          }
+
+          it "returns the facility groups an admin can perform actions on with facility group access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_facility_groups(action)).to match_array(resources)
             end
           end
         end
       end
 
       context "#accessible_facilities" do
-        context "organization access" do
-          it "returns the facilities an admin has access to" do
-            # Grant Accesses
-            admins.each do |admin|
-              admin.user.accesses.create(resource: organization_3)
-            end
+        context "Organization access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, organization_3, [facility_3, facility_4]],
+              [manager, :view_pii, organization_3, [facility_3, facility_4]],
+              [manager, :view_reports, organization_3, [facility_3, facility_4]],
+              [manager, :manage_overdue_list, organization_3, [facility_3, facility_4]],
 
-            admins.each do |admin|
-              actions.each do |action|
-                if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                  expect(admin.accessible_facilities(action)).to contain_exactly(facility_3, facility_4)
-                else
-                  expect(admin.accessible_facilities(action)).to match_array([])
-                end
-              end
-            end
-          end
-        end
+              [viewer_all, :manage, organization_3, []],
+              [viewer_all, :view_pii, organization_3, [facility_3, facility_4]],
+              [viewer_all, :view_reports, organization_3, [facility_3, facility_4]],
+              [viewer_all, :manage_overdue_list, organization_3, [facility_3, facility_4]],
 
-        context "facility group access"
-        it "returns the facilities an admin has access to" do
-          # Grant Accesses
-          admins.each do |admin|
-            admin.user.accesses.create(resource: facility_group_1)
-          end
+              [viewer_reports_only, :manage, organization_3, []],
+              [viewer_reports_only, :view_pii, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, [facility_3, facility_4]],
+              [viewer_reports_only, :manage_overdue_list, organization_3, []],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_facilities(action)).to contain_exactly(facility_1)
-              else
-                expect(admin.accessible_facilities(action)).to match_array([])
-              end
+              [call_center, :manage, organization_3, []],
+              [call_center, :view_pii, organization_3, []],
+              [call_center, :view_reports, organization_3, []],
+              [call_center, :manage_overdue_list, organization_3, [facility_3, facility_4]]
+            ]
+          }
+
+          it "returns the facilities an admin can perform actions on with organization access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_facilities(action)).to match_array(resources)
             end
           end
         end
 
-        context "facility access"
-        it "returns the facilities an admin has access to" do
-          # Grant Accesses
-          admins.each do |admin|
-            admin.user.accesses.create(resource: facility_5)
-          end
+        context "Facility Group access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_group_1, [facility_1]],
+              [manager, :view_pii, facility_group_1, [facility_1]],
+              [manager, :view_reports, facility_group_1, [facility_1]],
+              [manager, :manage_overdue_list, facility_group_1, [facility_1]],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_facilities(action)).to contain_exactly(facility_5)
-              else
-                expect(admin.accessible_facilities(action)).to match_array([])
-              end
+              [viewer_all, :manage, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, [facility_1]],
+              [viewer_all, :view_reports, facility_group_1, [facility_1]],
+              [viewer_all, :manage_overdue_list, facility_group_1, [facility_1]],
+
+              [viewer_reports_only, :manage, facility_group_1, []],
+              [viewer_reports_only, :view_pii, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, [facility_1]],
+              [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
+
+              [call_center, :manage, facility_group_1, []],
+              [call_center, :view_pii, facility_group_1, []],
+              [call_center, :view_reports, facility_group_1, []],
+              [call_center, :manage_overdue_list, facility_group_1, [facility_1]]
+            ]
+          }
+
+          it "returns the facilities an admin can perform actions on with facility group access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_facilities(action)).to match_array(resources)
+            end
+          end
+        end
+
+        context "Facility access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_5, [facility_5]],
+              [manager, :view_pii, facility_5, [facility_5]],
+              [manager, :view_reports, facility_5, [facility_5]],
+              [manager, :manage_overdue_list, facility_5, [facility_5]],
+
+              [viewer_all, :manage, facility_5, []],
+              [viewer_all, :view_pii, facility_5, [facility_5]],
+              [viewer_all, :view_reports, facility_5, [facility_5]],
+              [viewer_all, :manage_overdue_list, facility_5, [facility_5]],
+
+              [viewer_reports_only, :manage, facility_5, []],
+              [viewer_reports_only, :view_pii, facility_5, []],
+              [viewer_reports_only, :view_reports, facility_5, [facility_5]],
+              [viewer_reports_only, :manage_overdue_list, facility_5, []],
+
+              [call_center, :manage, facility_5, []],
+              [call_center, :view_pii, facility_5, []],
+              [call_center, :view_reports, facility_5, []],
+              [call_center, :manage_overdue_list, facility_5, [facility_5]]
+            ]
+          }
+
+          it "returns the facilities an admin can perform actions on with facility access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_facilities(action)).to match_array(resources)
             end
           end
         end
       end
 
       context "#accessible_users" do
-        context "organization access" do
-          it "returns the users an admin can manage" do
-            # Grant Accesses
-            admins.each do |admin|
-              admin.user.accesses.create(resource: organization_3)
-            end
+        context "Organization access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, organization_3, [user_3, user_4]],
+              [manager, :view_pii, organization_3, []],
+              [manager, :view_reports, organization_3, []],
+              [manager, :manage_overdue_list, organization_3, []],
 
-            admins.each do |admin|
-              actions.each do |action|
-                if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                  expect(admin.accessible_users(action)).to contain_exactly(user_3, user_4)
-                else
-                  expect(admin.accessible_users(action)).to match_array([])
-                end
-              end
-            end
-          end
-        end
+              [viewer_all, :manage, organization_3, []],
+              [viewer_all, :view_pii, organization_3, []],
+              [viewer_all, :view_reports, organization_3, []],
+              [viewer_all, :manage_overdue_list, organization_3, []],
 
-        context "facility group access"
-        it "returns the users an admin can manage" do
-          # Grant Accesses
-          admins.each do |admin|
-            admin.user.accesses.create(resource: facility_group_1)
-          end
+              [viewer_reports_only, :manage, organization_3, []],
+              [viewer_reports_only, :view_pii, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, []],
+              [viewer_reports_only, :manage_overdue_list, organization_3, []],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_users(action)).to contain_exactly(user_1)
-              else
-                expect(admin.accessible_users(action)).to match_array([])
-              end
+              [call_center, :manage, organization_3, []],
+              [call_center, :view_pii, organization_3, []],
+              [call_center, :view_reports, organization_3, []],
+              [call_center, :manage_overdue_list, organization_3, []]
+            ]
+          }
+
+          it "returns the users an admin can perform actions on with organization access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_users(action)).to match_array(resources)
             end
           end
         end
 
-        context "facility access"
-        it "returns the users an admin can manage" do
-          # Grant Accesses
-          admins.each do |admin|
-            admin.user.accesses.create(resource: facility_5)
-          end
+        context "Facility Group access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_group_1, [user_1]],
+              [manager, :view_pii, facility_group_1, []],
+              [manager, :view_reports, facility_group_1, []],
+              [manager, :manage_overdue_list, facility_group_1, []],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_users(action)).to contain_exactly(user_5)
-              else
-                expect(admin.accessible_users(action)).to match_array([])
-              end
+              [viewer_all, :manage, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, []],
+              [viewer_all, :view_reports, facility_group_1, []],
+              [viewer_all, :manage_overdue_list, facility_group_1, []],
+
+              [viewer_reports_only, :manage, facility_group_1, []],
+              [viewer_reports_only, :view_pii, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, []],
+              [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
+
+              [call_center, :manage, facility_group_1, []],
+              [call_center, :view_pii, facility_group_1, []],
+              [call_center, :view_reports, facility_group_1, []],
+              [call_center, :manage_overdue_list, facility_group_1, []]
+            ]
+          }
+
+          it "returns the users an admin can perform actions on with facility group access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_users(action)).to match_array(resources)
+            end
+          end
+        end
+
+        context "Facility access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_5, [user_5]],
+              [manager, :view_pii, facility_5, []],
+              [manager, :view_reports, facility_5, []],
+              [manager, :manage_overdue_list, facility_5, []],
+
+              [viewer_all, :manage, facility_5, []],
+              [viewer_all, :view_pii, facility_5, []],
+              [viewer_all, :view_reports, facility_5, []],
+              [viewer_all, :manage_overdue_list, facility_5, []],
+
+              [viewer_reports_only, :manage, facility_5, []],
+              [viewer_reports_only, :view_pii, facility_5, []],
+              [viewer_reports_only, :view_reports, facility_5, []],
+              [viewer_reports_only, :manage_overdue_list, facility_5, []],
+
+              [call_center, :manage, facility_5, []],
+              [call_center, :view_pii, facility_5, []],
+              [call_center, :view_reports, facility_5, []],
+              [call_center, :manage_overdue_list, facility_5, []]
+            ]
+          }
+
+          it "returns the users an admin can perform actions on with facility access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_users(action)).to match_array(resources)
             end
           end
         end
       end
 
       context "#accessible_admins" do
-        context "organization access" do
-          it "returns the admins an admin can manage" do
-            # Grant Accesses, and set Organization
-            admins.each do |admin|
-              admin.user.update!(organization: organization_3)
-              admin.user.accesses.create(resource: organization_3)
-            end
+        context "Organization access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, organization_3, User.admins.where(organization: organization_3)],
+              [manager, :view_pii, organization_3, []],
+              [manager, :view_reports, organization_3, []],
+              [manager, :manage_overdue_list, organization_3, []],
 
-            admins.each do |admin|
-              actions.each do |action|
-                if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                  expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
-                else
-                  expect(admin.accessible_admins(action)).to match_array([])
-                end
-              end
-            end
-          end
-        end
+              [viewer_all, :manage, organization_3, []],
+              [viewer_all, :view_pii, organization_3, []],
+              [viewer_all, :view_reports, organization_3, []],
+              [viewer_all, :manage_overdue_list, organization_3, []],
 
-        context "facility group access"
-        it "returns the admins an admin can manage" do
-          # Grant Accesses, and set Organization
-          admins.each do |admin|
-            admin.user.update!(organization: organization_1)
-            admin.user.accesses.create(resource: facility_group_1)
-          end
+              [viewer_reports_only, :manage, organization_3, []],
+              [viewer_reports_only, :view_pii, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, []],
+              [viewer_reports_only, :manage_overdue_list, organization_3, []],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
-              else
-                expect(admin.accessible_admins(action)).to match_array([])
-              end
+              [call_center, :manage, organization_3, []],
+              [call_center, :view_pii, organization_3, []],
+              [call_center, :view_reports, organization_3, []],
+              [call_center, :manage_overdue_list, organization_3, []]
+            ]
+          }
+
+          it "returns the admins an admin can perform actions on with organization access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.update(organization: organization_3)
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_admins(action)).to match_array(resources)
             end
           end
         end
 
-        context "facility access"
-        it "returns the admins an admin can manage" do
-          # Grant Accesses, and set Organization
-          admins.each do |admin|
-            admin.user.update!(organization: organization_3)
-            admin.user.accesses.create(resource: facility_4)
-          end
+        context "Facility Group access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_group_1, User.admins.where(organization: organization_1)],
+              [manager, :view_pii, facility_group_1, []],
+              [manager, :view_reports, facility_group_1, []],
+              [manager, :manage_overdue_list, facility_group_1, []],
 
-          admins.each do |admin|
-            actions.each do |action|
-              if action == :manage && described_class::ACTION_TO_LEVEL[action].include?(admin.user.access_level.to_sym)
-                expect(admin.accessible_admins(action)).to match_array(User.admins.where(organization: admin.user.organization))
-              else
-                expect(admin.accessible_admins(action)).to match_array([])
-              end
+              [viewer_all, :manage, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, []],
+              [viewer_all, :view_reports, facility_group_1, []],
+              [viewer_all, :manage_overdue_list, facility_group_1, []],
+
+              [viewer_reports_only, :manage, facility_group_1, []],
+              [viewer_reports_only, :view_pii, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, []],
+              [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
+
+              [call_center, :manage, facility_group_1, []],
+              [call_center, :view_pii, facility_group_1, []],
+              [call_center, :view_reports, facility_group_1, []],
+              [call_center, :manage_overdue_list, facility_group_1, []]
+            ]
+          }
+
+          it "returns the admins an admin can perform actions on with facility group access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.update(organization: organization_1)
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_admins(action)).to match_array(resources)
+            end
+          end
+        end
+
+        context "Facility access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_4, User.admins.where(organization: organization_3)],
+              [manager, :view_pii, facility_4, []],
+              [manager, :view_reports, facility_4, []],
+              [manager, :manage_overdue_list, facility_4, []],
+
+              [viewer_all, :manage, facility_4, []],
+              [viewer_all, :view_pii, facility_4, []],
+              [viewer_all, :view_reports, facility_4, []],
+              [viewer_all, :manage_overdue_list, facility_4, []],
+
+              [viewer_reports_only, :manage, facility_4, []],
+              [viewer_reports_only, :view_pii, facility_4, []],
+              [viewer_reports_only, :view_reports, facility_4, []],
+              [viewer_reports_only, :manage_overdue_list, facility_4, []],
+
+              [call_center, :manage, facility_4, []],
+              [call_center, :view_pii, facility_4, []],
+              [call_center, :view_reports, facility_4, []],
+              [call_center, :manage_overdue_list, facility_4, []]
+            ]
+          }
+
+          it "returns the admins an admin can perform actions on with facility access" do
+            permission_matrix.each do |admin, action, access_resource, resources|
+              admin.update(organization: organization_3)
+              admin.accesses.create(resource: access_resource)
+              expect(admin.accessible_admins(action)).to match_array(resources)
             end
           end
         end
@@ -512,44 +687,89 @@ RSpec.describe UserAccess, type: :model do
     end
 
     context "power users" do
-      let!(:power_user) { UserAccess.new(create(:admin, :power_user)) }
+      let!(:power_user) { create(:admin, :power_user) }
 
       context "#accessible_organizations" do
-        it "returns the organizations an admin has access to" do
-          actions.each do |action|
-            expect(power_user.accessible_organizations(action)).to match_array(Organization.all)
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, Organization.all],
+            [power_user, :view_pii, Organization.all],
+            [power_user, :view_reports, Organization.all],
+            [power_user, :manage_overdue_list, Organization.all]
+          ]
+        }
+
+        it "returns the organizations a power user has access to" do
+          permission_matrix.each do |admin, action, resources|
+            expect(admin.accessible_organizations(action)).to match_array(resources)
           end
         end
       end
 
       context "#accessible_facility_groups" do
-        it "returns the facilities an admin has access to" do
-          actions.each do |action|
-            expect(power_user.accessible_facility_groups(action)).to match_array(FacilityGroup.all)
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, FacilityGroup.all],
+            [power_user, :view_pii, FacilityGroup.all],
+            [power_user, :view_reports, FacilityGroup.all],
+            [power_user, :manage_overdue_list, FacilityGroup.all]
+          ]
+        }
+
+        it "returns the facility groups a power user has access to" do
+          permission_matrix.each do |admin, action, resources|
+            expect(admin.accessible_facility_groups(action)).to match_array(resources)
           end
         end
       end
 
       context "#accessible_facilities" do
-        it "returns the facilities an admin has access to" do
-          actions.each do |action|
-            expect(power_user.accessible_facilities(action)).to match_array(Facility.all)
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, Facility.all],
+            [power_user, :view_pii, Facility.all],
+            [power_user, :view_reports, Facility.all],
+            [power_user, :manage_overdue_list, Facility.all]
+          ]
+        }
+
+        it "returns the facilities a power user has access to" do
+          permission_matrix.each do |admin, action, resources|
+            expect(admin.accessible_facilities(action)).to match_array(resources)
           end
         end
       end
 
       context "#accessible_users" do
-        it "returns the users an admin can manage" do
-          actions.each do |action|
-            expect(power_user.accessible_users(action)).to match_array(User.non_admins.all)
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, User.non_admins.all],
+            [power_user, :view_pii, []],
+            [power_user, :view_reports, []],
+            [power_user, :manage_overdue_list, []]
+          ]
+        }
+
+        it "returns the users a power user has access to" do
+          permission_matrix.each do |admin, action, resources|
+            expect(admin.accessible_users(action)).to match_array(resources)
           end
         end
       end
 
       context "#accessible_admins" do
-        it "returns the admins an admin can manage" do
-          actions.each do |action|
-            expect(power_user.accessible_admins(action)).to match_array(User.admins.all)
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, User.admins.all],
+            [power_user, :view_pii, []],
+            [power_user, :view_reports, []],
+            [power_user, :manage_overdue_list, []]
+          ]
+        }
+
+        it "returns the admins a power user has access to" do
+          permission_matrix.each do |admin, action, resources|
+            expect(admin.accessible_admins(action)).to match_array(resources)
           end
         end
       end
