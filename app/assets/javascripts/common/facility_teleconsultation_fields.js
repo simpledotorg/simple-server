@@ -3,30 +3,24 @@ function toggleTeleconsultationFields() {
   $("#teleconsultation-fields").toggle();
 }
 
-// AJAX search for users and populate search results
-function searchResultsToHTML(searchQuery, users) {
-  return users.length ? usersJSONToHTML(users) : noResultsHTML(searchQuery);
-}
+// Populate search results into typeahead search
+function userJSONToHTML(user) {
+  let html = $("template#user-search-result-row").html();
+  let $html = $(html);
 
-function usersJSONToHTML(users) {
-  return users.map(function (user) {
-    let html = $("template#user-search-result-row").html();
-    let $html = $(html);
-
-    $html.attr({
-      "data-user-id": user["id"],
-      "data-user-full-name": user["full_name"],
-      "data-user-registration-facility": user["registration_facility"],
-      "data-user-teleconsultation-phone-number": user["teleconsultation_phone_number"]
-    })
-    $html.find(".user-full-name").text(user["full_name"])
-    $html.find(".user-registration-facility").text(user["registration_facility"])
-
-    return $html;
+  $html.attr({
+    "data-user-id": user["id"],
+    "data-user-full-name": user["full_name"],
+    "data-user-registration-facility": user["registration_facility"],
+    "data-user-teleconsultation-phone-number": user["teleconsultation_phone_number"]
   })
+  $html.find(".user-full-name").text(user["full_name"])
+  $html.find(".user-registration-facility").text(user["registration_facility"])
+
+  return $html;
 }
 
-function noResultsHTML(searchQuery) {
+function noUsersFound(searchQuery) {
   let html = $("template#user-search-no-results-found").html();
   let $html = $(html);
   $html.find(".search-query").html(searchQuery);
@@ -38,50 +32,6 @@ function filterExistingUsers(users) {
   // existingUsers();
   return users;
 }
-
-function populateDropdown(body) {
-  $(".typeahead .typeahead-dropdown").html(body);
-}
-
-function populateSearchResults(searchQuery, users) {
-  let filteredUsers = filterExistingUsers(users);
-  let results = searchResultsToHTML(searchQuery, filteredUsers);
-  populateDropdown(results);
-}
-
-function showSpinner() {
-  let spinner = $(".typeahead-spinner").first().clone();
-  spinner.css({display: "block"});
-
-  populateDropdown(spinner);
-}
-
-function searchUser(e) {
-  let searchQuery = e.value;
-  showSpinner();
-  $.ajax({
-    url: "/admin/users.json",
-    data: {"search_query": searchQuery},
-    success: (res) => {
-      populateSearchResults(searchQuery, res)
-    }
-  });
-}
-
-function debounce(func, wait = 500) {
-  let timeout;
-  return function (...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-let debouncedSearchUser = debounce(searchUser);
 
 // Adding/removing MO from search results
 function medicalOfficerCard(user) {
@@ -134,11 +84,6 @@ function showNoMedicalOfficers() {
   $(".no-medical-officers").show()
 }
 
-function emptyTypeahead() {
-  $(".typeahead-dropdown").empty();
-  $(".typeahead-input").val("");
-}
-
 $(document).ready(function () {
   $("body").on("click", ".mo-search .typeahead-dropdown-row", function () {
     let user = $(this).data();
@@ -150,5 +95,4 @@ $(document).ready(function () {
     let userID = $(this).attr('data-user-id');
     removeMedicalOfficer(userID);
   });
-
 })
