@@ -9,7 +9,7 @@ const $facilityAccessItemsAccessRatio = () => document.getElementsByClassName("a
 const $facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
 const $facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
 const $accessLevel = () => document.getElementById("access_level")
-const $page = () => document.getElementById("facility-access").attributes.getNamedItem('data-page').value
+const $page = () => $facilityAccessDiv() && $facilityAccessDiv().attributes.getNamedItem('data-page').value
 
 //
 // load things upfront
@@ -32,7 +32,7 @@ document.addEventListener('render_async_load', function (_event) {
 });
 
 function editAdmin() {
-  if ($page() !== "edit") return
+  if (!isCurrentPage("edit")) return
 
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
@@ -55,6 +55,8 @@ function editAdmin() {
 // selecting the access level
 //
 function accessLevelSelector() {
+  if (isCurrentPage("show")) return
+
   // initialize the access_level select dropdown
   $("#access_level").selectpicker({
     noneSelectedText: "Select an access level..."
@@ -62,6 +64,8 @@ function accessLevelSelector() {
 }
 
 function accessLevelListener() {
+  if (isCurrentPage("show")) return
+
   $accessLevel().addEventListener("change", onAccessLevelChanged)
 }
 
@@ -163,8 +167,9 @@ function updateChildrenCheckedState(parent, selector) {
 // select all button for facility access
 //
 function selectAllButtonListener() {
+  if (isCurrentPage("show")) return
   if (!$selectAllFacilitiesInput()) return
-  $selectAllFacilitiesContainer().hidden = false;
+  $selectAllFacilitiesContainer().hidden = false
 
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
 
@@ -186,3 +191,5 @@ const nodeListToArray = (selector, parent = document) =>
 const containsClass = (className) => ({classList}) =>
   classList && classList.contains(className)
 
+const isCurrentPage = (page) =>
+  !$page() || ($page() === page)
