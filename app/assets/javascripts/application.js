@@ -14,6 +14,7 @@
 //= require jquery3
 //= require popper
 //= require bootstrap-sprockets
+//= require bootstrap-select
 //= require lodash
 //= require tablesort
 //= require tablesort/dist/sorts/tablesort.number.min

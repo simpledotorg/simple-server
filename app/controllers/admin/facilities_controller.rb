@@ -3,8 +3,12 @@ class Admin::FacilitiesController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_facility, only: [:show, :edit, :update, :destroy]
-  before_action :set_facility_group, only: [:show, :edit, :update]
+  before_action :set_facility, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+
+  before_action :set_facility_new_permissions, only: [:show, :edit, :update, :destroy], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :set_facility_group_new_permissions, only: [:show, :new, :create, :edit, :update, :destroy], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
@@ -33,26 +37,22 @@ class Admin::FacilitiesController < AdminController
         @facilities = facilities.group_by(&:facility_group)
       else
         accessible_facilities = current_admin.accessible_facilities(:manage)
+        @facilities = accessible_facilities.group_by(&:facility_group)
 
         visible_facility_groups =
-          current_admin
-            .accessible_facility_groups(:manage)
-            .union(FacilityGroup.where(id: accessible_facilities.map(&:facility_group_id).uniq))
+          accessible_facilities
+            .map(&:facility_group)
+            .concat(current_admin.accessible_facility_groups(:manage).to_a)
+            .uniq
+            .compact
+        @facility_groups = visible_facility_groups.group_by(&:organization)
 
-        visible_organizations =
-          current_admin
-            .accessible_organizations(:manage)
-            .union(Organization.where(id: visible_facility_groups.map(&:organization_id).uniq))
-
-        @organizations = visible_organizations
-
-        @facility_groups = @organizations.map { |organization|
-          [organization, visible_facility_groups.where(organization: organization)]
-        }.to_h
-
-        @facilities = @facility_groups.values.flatten.map { |facility_group|
-          [facility_group, accessible_facilities.where(facility_group: facility_group)]
-        }.to_h
+        @organizations =
+          visible_facility_groups
+            .map(&:organization)
+            .concat(current_admin.accessible_organizations(:manage).to_a)
+            .uniq
+            .compact
       end
     else
       if searching?
@@ -138,28 +138,26 @@ class Admin::FacilitiesController < AdminController
   private
 
   def new_facility(attributes = nil)
-    @facility_group =
-      current_admin
-        .accessible_facility_groups(:manage)
-        .friendly
-        .find(params[:facility_group_id])
-
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.country ||= Rails.application.config.country[:name]
     end
   end
 
+  def set_facility_new_permissions
+    @facility = authorize1 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
+  end
+
+  def set_facility_group_new_permissions
+    @facility_group = current_admin.accessible_facility_groups(:manage).friendly.find(params[:facility_group_id])
+  end
+
   def set_facility
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @facility = authorize1 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
-    else
-      @facility = Facility.friendly.find(params[:id])
-      authorize([:manage, :facility, @facility])
-    end
+    @facility = Facility.friendly.find(params[:id])
+    authorize([:manage, :facility, @facility])
   end
 
   def set_facility_group
-    @facility_group = @facility.facility_group
+    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
   end
 
   def facility_params

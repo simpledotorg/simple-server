@@ -26,7 +26,7 @@ class MyFacilitiesController < AdminController
     end
 
     users = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.accessible_users
+      current_admin.accessible_users(:manage)
     else
       policy_scope([:manage, :user, User])
     end

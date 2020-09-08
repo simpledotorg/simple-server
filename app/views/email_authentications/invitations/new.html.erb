@@ -1,27 +1,44 @@
-<%= javascript_include_tag "standalone/react_components" %>
-
-<h1><%= t("devise.invitations.new.header") %></h1>
-
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
     <div class="col-md-6">
+      <div class="admin-header">
+        <h1><%= t "devise.invitations.new.header" %></h1>
+        <input type="submit" value="Send Invite" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
+      </div>
       <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true) do |form| %>
-        <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
-        <%= form.text_field :email, id: :email, required: true, label: "Email *" %>
-        <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
-        <%= form.select :access_level, current_admin.permitted_access_levels_info, id: :access_levels, required: true, label: "Access *" %>
+        <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
+        <%= form.text_field :email, id: :email, required: true, label: "Email *", placeholder: "Email" %>
+        <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
+        <%= access_level_select(form, current_admin.permitted_access_levels) %>
 
         <%= form.label "Facility Access *" %>
-        <div id="facility-access">
-          <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.access_tree,
-              form: form %>
+        <div id="facility-access-power-user" class="hidden">
+          Admin has access to all facilities in the system
         </div>
-        <%= form.primary("Send Invite") %>
+        <div id="facility-access">
+          <div class="card access-tree">
+            <div class="select-all-access-items">
+              <%= form.check_box :select_all_facilities, id: "select-all-facilities" %>
+            </div>
+
+            <% access_tree = current_admin.visible_access_tree %>
+            <%= render access_tree[:render_partial],
+                tree: access_tree[:data],
+                user_being_edited: nil,
+                tree_depth: 0,
+                root: access_tree[:root],
+                page: :new,
+                form: form %>
+          </div>
+        </div>
+
+        <%= form.submit "Send Invite", class: "btn btn-primary", id: "form-submit", hidden: :hidden %>
       <% end %>
     </div>
   </div>
 <% else %>
+  <h1><%= t "devise.invitations.new.header" %></h1>
+  <%= javascript_include_tag "standalone/react_components" %>
   <%= react_component "InviteAdminForm",
       organizations: policy_scope([:manage, :admin, Organization.all]),
       facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]).order(:name),
