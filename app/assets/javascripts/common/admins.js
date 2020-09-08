@@ -2,6 +2,7 @@
 // elements
 //
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
+const ACCESS_LEVEL_POWER_USER = "power_user"
 const $facilityAccessDiv = () => document.getElementById("facility-access")
 const $selectAllFacilitiesContainer = () => document.getElementById("select-all-facilities")
 const $selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
@@ -57,10 +58,17 @@ function editAdmin() {
 function accessLevelSelector() {
   if (isCurrentPage("show")) return
 
+  const accessLevel = $("#access_level")
+  // hide access tree if power user pre selected
+  if (isCurrentPage("edit")) {
+    toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
+  }
+
   // initialize the access_level select dropdown
-  $("#access_level").selectpicker({
+  accessLevel.selectpicker({
     noneSelectedText: "Select an access level..."
   });
+
 }
 
 function accessLevelListener() {
@@ -79,8 +87,8 @@ function toggleAccessTreeVisibility(isPowerUser) {
   }
 }
 
-function onAccessLevelChanged({target}) {
-  toggleAccessTreeVisibility(target.value === "power_user")
+function onAccessLevelChanged({ target }) {
+  toggleAccessTreeVisibility(target.value === ACCESS_LEVEL_POWER_USER)
 }
 
 //
@@ -122,7 +130,7 @@ function toggleItemCollapsed(element) {
   }
 }
 
-function onFacilityAccessItemToggled({target}) {
+function onFacilityAccessItemToggled({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(containsClass("access-item-wrapper"))
@@ -188,8 +196,8 @@ const nodeListToArray = (selector, parent = document) =>
   [].slice.call(parent.querySelectorAll(selector))
 
 // return a function that checks if element contains class
-const containsClass = (className) => ({classList}) =>
+const containsClass = (className) => ({ classList }) =>
   classList && classList.contains(className)
 
 const isCurrentPage = (page) =>
-  !$page() || ($page() === page)
+  !$page() || $page() === page
