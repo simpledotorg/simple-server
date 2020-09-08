@@ -69,7 +69,21 @@ class UserAccess < Struct.new(:user)
     return User.admins if bypass?
     return User.none if action_to_level(action).include?(:manage)
 
-    User.admins.where(organization: user.organization)
+    manageable_facilities = user.accessible_facilities(:manage)
+
+    resource_ids =
+      [
+        manageable_facilities.pluck("facilities.id"),
+        manageable_facilities.map(&:facility_group_id),
+        manageable_facilities.map { |facility| facility.organization.id }
+      ].flatten.uniq
+
+    User
+      .from(User
+              .admins
+              .select("DISTINCT ON (users.id) users.*")
+              .joins(:accesses)
+              .where(accesses: {resource_id: resource_ids}), "users")
   end
 
   def accessible_users(action)

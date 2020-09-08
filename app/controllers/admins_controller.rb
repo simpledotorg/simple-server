@@ -20,7 +20,7 @@ class AdminsController < AdminController
         if searching?
           paginate(admins.search_by_name_or_email(search_query))
         else
-          paginate(admins.order("email_authentications.email"))
+          paginate(admins)
         end
     else
       authorize([:manage, :admin, User])
