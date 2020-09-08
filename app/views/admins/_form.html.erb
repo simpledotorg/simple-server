@@ -1,40 +1,58 @@
 <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <div class="row">
     <div class="col-md-6">
-      <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
-        <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full Name *" %>
-        <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *" %>
-        <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job Title *' %>
-        <%= form.select :access_level, current_admin.permitted_access_levels_info, value: @admin.access_level, id: :access_levels, required: true, label: "Access *" %>
+      <div class="admin-header">
+        <h1>Edit admin</h1>
+        <input type="submit" value="Save" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
+      </div>
 
-        <%= form.label "Facility Access *" %>
-        <div id="facility-access">
-          <%= render "email_authentications/invitations/access_tree",
-              access_tree: current_admin.access_tree.organizations,
-              user_being_edited: AdminAccessPresenter.new(@admin),
-              page: :edit,
-              form: form %>
+      <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
+        <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
+        <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *", placeholder: "Email" %>
+        <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
+        <%= access_level_select(form, current_admin.permitted_access_levels, value: @admin.access_level, page: :edit) %>
+
+        <%= form.label "Facility access *" %>
+        <div id="facility-access-power-user" class="hidden">
+          Admin has access to all facilities in the system
         </div>
-        <%= form.primary("Save") %>
+        <div id="facility-access">
+          <div class="card access-tree">
+            <div class="select-all-access-items">
+              <%= form.check_box :select_all_facilities, id: "select-all-facilities" %>
+            </div>
+
+            <% access_tree = current_admin.visible_access_tree %>
+            <%= render access_tree[:render_partial],
+                tree: access_tree[:data],
+                root: access_tree[:root],
+                user_being_edited: AdminAccessPresenter.new(@admin),
+                tree_depth: 0,
+                page: :edit,
+                form: form %>
+          </div>
+        </div>
+
+        <%= form.submit "Send Invite", class: "btn btn-primary", id: "form-submit" %>
       <% end %>
     </div>
   </div>
 <% else %>
-<%= javascript_include_tag "standalone/react_components" %>
-
-<% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
-<%= react_component "InviteAdminForm",
-                    admin: admin,
-                    email: admin.email,
-                    selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] }.uniq,
-                    selected_facility_groups: admin.user_permissions.where(resource_type: 'FacilityGroup').map { |permission| { resource_id: permission.resource.id, resource_type: permission.resource_type, resource_name: permission.resource.name } if permission.resource.present? }.compact.uniq,
-                    organizations: policy_scope([:manage, :admin, Organization.all]),
-                    facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]),
-                    facilities: policy_scope([:manage, :admin, Facility.all]),
-                    permissions: policy([:manage, :admin, User]).allowed_permissions,
-                    access_levels: policy([:manage, :admin, User]).allowed_access_levels,
-                    submit_route: admin_path(admin),
-                    allow_email_edit: false,
-                    submit_text: 'Update Admin',
-                    submit_method: 'PATCH' %>
+  <%= javascript_include_tag "standalone/react_components" %>
+  <% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>
+  <%= react_component "InviteAdminForm",
+      admin: admin,
+      email: admin.email,
+      selected_permissions: admin.user_permissions.map { |permission| Permissions::ALL_PERMISSIONS[permission.permission_slug.to_sym] }.uniq,
+      selected_facility_groups: admin.user_permissions.where(resource_type: 'FacilityGroup').map { |permission| {resource_id: permission.resource.id, resource_type: permission.resource_type, resource_name: permission.resource.name} if permission.resource.present? }.compact.uniq,
+      organizations: policy_scope([:manage, :admin, Organization.all]),
+      facility_groups: policy_scope([:manage, :admin, FacilityGroup.all]),
+      facilities: policy_scope([:manage, :admin, Facility.all]),
+      permissions: policy([:manage, :admin, User]).allowed_permissions,
+      access_levels: policy([:manage, :admin, User]).allowed_access_levels,
+      submit_route: admin_path(admin),
+      allow_email_edit: false,
+      submit_text: 'Update Admin',
+      submit_method: 'PATCH' %>
 <% end %>
+
