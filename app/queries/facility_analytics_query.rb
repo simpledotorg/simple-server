@@ -96,7 +96,13 @@ class FacilityAnalyticsQuery
   private
 
   def cache_key
-    [self.class.name, @facility.id, @period, @prev_periods, @from_time.to_s(:mon_year)].join("/")
+    [
+      self.class.name,
+      @facility.id,
+      @period,
+      @prev_periods,
+      @from_time.to_s(:mon_year)
+    ].join("/")
   end
 
   def group_by_user_and_date(query_results, key)

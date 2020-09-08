@@ -73,7 +73,13 @@ class DistrictAnalyticsQuery
   private
 
   def cache_key
-    [self.class.name, facilities.map(&:id).sort, @period, @prev_periods, @from_time.to_s(:mon_year)].join("/")
+    [
+      self.class.name,
+      facilities.map(&:id).sort,
+      @period,
+      @prev_periods,
+      @from_time.to_s(:mon_year)
+    ].join("/")
   end
 
   def group_by_facility_and_date(query_results, key)
