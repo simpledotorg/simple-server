@@ -13,8 +13,6 @@ class PhoneNumberAuthentication < ApplicationRecord
 
   pg_search_scope :search_by_phone, against: [:phone_number], using: {tsearch: {any_word: true}}
 
-  pg_search_scope :search_by_phone, against: [:phone_number], using: {tsearch: {any_word: true}}
-
   delegate :facility_group, to: :facility
   delegate :organization, to: :facility_group
 

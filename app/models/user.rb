@@ -59,7 +59,7 @@ class User < ApplicationRecord
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
     against: [:teleconsultation_phone_number],
-    using: {tsearch: {prefix: true, any_word: true}}
+    using: {tsearch: {any_word: true}}
 
   scope :search_by_email,
     ->(term) { joins(:email_authentications).merge(EmailAuthentication.search_by_email(term)) }
