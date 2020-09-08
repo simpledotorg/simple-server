@@ -109,10 +109,15 @@ class UserAccess < Struct.new(:user)
     LEVELS[user.access_level.to_sym][:grant_access]
   end
 
+  # TODO: add better, more flexible constraints to this than just restricting to power_users
+  def modify_access_level?
+    power_user?
+  end
+
   def grant_access(new_user, selected_facility_ids)
+    raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
     return if new_user.power_user?
     return if selected_facility_ids.blank?
-    raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
 
     resources = prepare_grantable_resources(selected_facility_ids)
     # if the user couldn't prepare resources for new_user means they shouldn't have had access to this operation at all

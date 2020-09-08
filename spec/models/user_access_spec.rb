@@ -323,9 +323,10 @@ RSpec.describe UserAccess, type: :model do
 
     it "raises an error if the user could not provide any access" do
       new_user = create(:admin, :viewer_all)
+      selected_facility = create(:facility).id
 
       expect {
-        manager.grant_access(new_user, [create(:facility).id])
+        manager.grant_access(new_user, [selected_facility])
       }.to raise_error(UserAccess::NotAuthorizedError)
     end
 

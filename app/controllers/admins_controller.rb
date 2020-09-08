@@ -48,8 +48,12 @@ class AdminsController < AdminController
   def update
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       User.transaction do
-        @admin.update!(user_params)
-        current_admin.grant_access(@admin, selected_facilities)
+        if access_level_changed? && current_admin.modify_access_level?
+          @admin.update!(user_params)
+          current_admin.grant_access(@admin, selected_facilities)
+        else
+          raise UserAccess::NotAuthorizedError
+        end
       end
 
       redirect_to admins_url, notice: "Admin was successfully updated."
@@ -134,9 +138,15 @@ class AdminsController < AdminController
     {
       full_name: params[:full_name],
       role: params[:role],
-      access_level: params[:access_level],
       organization_id: params[:organization_id],
+      access_level: params[:access_level],
       device_updated_at: Time.current
-    }.compact
+    }.merge(access_level).compact
+  end
+
+  def access_level_changed?
+    return false if user_params[:access_level].blank?
+
+    @admin.access_level != user_params[:access_level]
   end
 end
