@@ -13,7 +13,6 @@ module Reports
         cumulative_registrations: Hash.new(0),
         missed_visits_rate: {},
         missed_visits: {},
-        quarterly_registrations: [],
         registrations: Hash.new(0),
         top_region_benchmarks: {},
         uncontrolled_patients: Hash.new(0),

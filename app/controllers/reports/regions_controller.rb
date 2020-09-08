@@ -51,12 +51,9 @@ class Reports::RegionsController < AdminController
   def cohort
     authorize(:dashboard, :show?)
 
-    @data = Reports::RegionService.new(region: @region,
-                                       period: @period).call
-    @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:cumulative_registrations]
+    last_five_quarters = @period.to_quarter_period.value.downto(4)
+    @data = CohortService.new(region: @region, quarters: last_five_quarters).call
     @quarterly_registrations = @data[:quarterly_registrations]
-    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
   end
 
   private
