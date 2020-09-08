@@ -179,5 +179,3 @@ RSpec.describe AdminAccessPresenter, type: :model do
     end
   end
 end
-
-

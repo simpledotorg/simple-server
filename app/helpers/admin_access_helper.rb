@@ -11,7 +11,7 @@ module AdminAccessHelper
         content_tag(:div, class: "form-check") do
           opts = {
             id: resource.id,
-            class: "access-input form-check-input",
+            class: "access-input form-check-input"
           }
 
           checked = page.eql?(:edit) && checked_fn.call
