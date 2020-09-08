@@ -29,7 +29,7 @@ module AdminAccessHelper
     label_tag(resource.id, resource.name.to_s, class: "form-check-label")
   end
 
-  def access_level_select(form, access_levels, page: :new)
+  def access_level_select(form, access_levels, page: :new, access_level: nil)
     form.select(:access_level,
       {},
       {label: "Access *"},
@@ -40,17 +40,18 @@ module AdminAccessHelper
         required: page.eql?(:new)
       }) do
       access_levels.each do |level|
-        access_level_option(level)
+        access_level_option(level, access_level)
       end
     end
   end
 
-  def access_level_option(level)
+  def access_level_option(level, current_access_level)
     tag =
       content_tag(:option,
         level[:id],
         value: level[:id],
         class: :show,
+        selected: level[:id].to_s.eql?(current_access_level),
         data: {content: access_level_option_data(level)})
 
     concat(tag)
