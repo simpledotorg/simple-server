@@ -1,4 +1,3 @@
-// Show/hide teleconsultation fields on toggling checkbox
 function toggleTeleconsultationFields() {
   $("#teleconsultation-fields").toggle();
 }

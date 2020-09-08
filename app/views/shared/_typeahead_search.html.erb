@@ -38,7 +38,7 @@
   }
 
   function populateSearchResults(searchQuery, response) {
-    let filteredResults = <%= json_transformer %>(response);
+    let filteredResults = <%= results_transformer %>(response);
     let results = searchResultsToHTML(searchQuery, filteredResults);
 
     populateDropdown(results);
