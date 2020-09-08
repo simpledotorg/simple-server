@@ -79,7 +79,7 @@ class Facility < ApplicationRecord
                                         allow_blank: true}
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :teleconsultation_phone_numbers_valid?, if: :teleconsultation_enabled?
+  validate :medical_officers_present?, if: :teleconsultation_enabled?
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -269,19 +269,11 @@ class Facility < ApplicationRecord
     self.teleconsultation_isd_code = ""
   end
 
-  def teleconsultation_phone_numbers_valid?
-    message = "At least one medical officer must be added to enable teleconsultation, all teleconsultation numbers"\
-      " must have a country code and a phone number"
-    if teleconsultation_phone_numbers.blank?
-      errors.add("teleconsultation_phone_numbers_attributes", message)
-      return
-    end
+  def medical_officers_present?
+    message = "At least one medical officer must be added to enable teleconsultation."
 
-    teleconsultation_phone_numbers.each do |mo|
-      if mo.isd_code.blank? || mo.phone_number.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", message)
-        break
-      end
+    if teleconsultation_medical_officers.empty?
+      errors.add("teleconsultation_medical_officers", message)
     end
   end
 end

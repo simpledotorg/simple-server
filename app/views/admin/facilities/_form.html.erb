@@ -47,6 +47,9 @@
                        results_transformer: "filterExistingUsers",
                        search_result_to_row: "userJSONToRow",
                        no_results_message: "noUsersFound" %>
+            <% if @facility.errors["teleconsultation_medical_officers"].present? %>
+                <%= form.errors_on :teleconsultation_medical_officers, hide_attribute_name: true, class: "pr-0" %>
+            <% end %>
           </div>
           <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
             <h5>No medical officers</h5>
