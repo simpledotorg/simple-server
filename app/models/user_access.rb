@@ -110,6 +110,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def grant_access(new_user, selected_facility_ids)
+    return if new_user.power_user?
     return if selected_facility_ids.blank?
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
 

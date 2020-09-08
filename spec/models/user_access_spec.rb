@@ -303,16 +303,17 @@ RSpec.describe UserAccess, type: :model do
     let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
     let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
     let!(:facility_4) { create(:facility) }
-    let!(:viewer_access) {
-      create(:access, user: viewer_all.user, resource: organization_1)
-    }
+
+    let!(:viewer_access) { create(:access, user: viewer_all.user, resource: organization_1) }
     let!(:manager_access) {
-      [create(:access, user: manager.user, resource: organization_1),
+      [
+        create(:access, user: manager.user, resource: organization_1),
         create(:access, user: manager.user, resource: facility_group_2),
-        create(:access, user: manager.user, resource: facility_4)]
+        create(:access, user: manager.user, resource: facility_4)
+      ]
     }
 
-    it "raises an error if the access level of the new user is not grantable by the current" do
+    it "raises an error if the access level of the new user is not grantable by the current user" do
       new_user = create(:admin, :manager)
 
       expect {
@@ -336,9 +337,17 @@ RSpec.describe UserAccess, type: :model do
       expect(new_user.reload.accessible_facilities(:view_pii)).to contain_exactly(facility_1, facility_2)
     end
 
-    it "returns nothing if no facilities are selected" do
+    it "skips granting access to any resource if no facilities are selected" do
       new_user = create(:admin, :viewer_all)
+
       expect(manager.grant_access(new_user, [])).to be_nil
+    end
+
+    it "skips granting access to any resource if the grantee is a power_user" do
+      new_user = create(:admin, :power_user)
+
+      expect(manager.grant_access(new_user, [facility_1.id, facility_2.id])).to be_nil
+      expect(new_user.reload.accesses).to be_empty
     end
 
     context "promote access" do
@@ -407,7 +416,7 @@ RSpec.describe UserAccess, type: :model do
         [:power_user, UserAccess::LEVELS.keys],
         [:manager, [:call_center, :manager, :viewer_all, :viewer_reports_only]],
         [:viewer_all, []],
-        [:viewer_reports_only, [:a]],
+        [:viewer_reports_only, []],
         [:call_center, []],
       ]
     }
@@ -415,6 +424,7 @@ RSpec.describe UserAccess, type: :model do
     it "returns the access levels the current admin can grant to another admin" do
       access_level_matrix.each do |access_level, permitted_access_levels|
         admin = create(:admin, access_level)
+
         expect(admin.permitted_access_levels).to match_array(permitted_access_levels),
           <<-ERROR
 for admin with: #{access_level}
