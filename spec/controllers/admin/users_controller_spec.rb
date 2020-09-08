@@ -59,9 +59,10 @@ RSpec.describe Admin::UsersController, type: :controller do
       it "fetches users for search term" do
         create(:user, full_name: "Doctor Jack")
         create(:user, full_name: "Jack")
+        search_query = "Doctor"
         expect(User).to receive(:search_by_name_or_teleconsultation_phone_number).with(search_query)
 
-        get :index, format: :json, params: {search_query: "Doctor"}
+        get :index, format: :json, params: {search_query: search_query}
 
         expect(response).to be_successful
         expect(JSON(response.body).first["full_name"]).to eq "Doctor Jack"
