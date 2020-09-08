@@ -140,9 +140,7 @@ class Facility < ApplicationRecord
      longitude: "longitude (optional)",
      facility_size: "size (optional)",
      enable_diabetes_management: "enable_diabetes_management (true/false)",
-     enable_teleconsultation: "enable_teleconsultation (true/false)",
-     teleconsultation_phone_number: "teleconsultation_phone_number",
-     teleconsultation_isd_code: "teleconsultation_isd_code"}
+     enable_teleconsultation: "enable_teleconsultation (true/false)"}
 
   def self.parse_facilities(file_contents)
     facilities = []

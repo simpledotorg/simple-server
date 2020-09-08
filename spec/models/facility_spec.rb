@@ -218,8 +218,6 @@ RSpec.describe Facility, type: :model do
                                           state: "Punjab",
                                           country: "India",
                                           enable_diabetes_management: "true",
-                                          teleconsultation_phone_number: nil,
-                                          teleconsultation_isd_code: nil,
                                           import: true)
       expect(facilities.second).to include(organization_name: "OrgOne",
                                            facility_group_name: "FGTwo",
@@ -229,8 +227,6 @@ RSpec.describe Facility, type: :model do
                                            state: "Punjab",
                                            country: "India",
                                            enable_teleconsultation: "true",
-                                           teleconsultation_phone_number: "9999999999",
-                                           teleconsultation_isd_code: "91",
                                            import: true)
     end
 
