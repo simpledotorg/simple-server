@@ -66,7 +66,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def accessible_admins(action)
-    return User.admins if bypass?
+    return User.admins if power_user?
     return User.none if action_to_level(action).include?(:manage)
 
     manageable_facilities = user.accessible_facilities(:manage)
@@ -87,7 +87,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def accessible_users(action)
-    return User.non_admins if bypass?
+    return User.non_admins if power_user?
     return User.none if action_to_level(action).include?(:manage)
 
     User
@@ -104,7 +104,7 @@ class UserAccess < Struct.new(:user)
   end
 
   def permitted_access_levels
-    return LEVELS.keys if bypass?
+    return LEVELS.keys if power_user?
 
     LEVELS[user.access_level.to_sym][:grant_access]
   end
@@ -133,7 +133,7 @@ class UserAccess < Struct.new(:user)
   private
 
   def resources_for(resource_model, action)
-    return resource_model.all if bypass?
+    return resource_model.all if power_user?
     return resource_model.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     resource_ids =
@@ -181,7 +181,7 @@ class UserAccess < Struct.new(:user)
     resources.flatten
   end
 
-  def bypass?
+  def power_user?
     user.power_user?
   end
 
