@@ -67,7 +67,7 @@ class User < ApplicationRecord
     ->(term) { joins(:phone_number_authentications).merge(PhoneNumberAuthentication.search_by_phone(term)) }
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
-  scope :search_by_name_or_teleconsultation_phone_number, ->(term) do
+  scope :teleconsult_search, ->(term) do
     search_by_teleconsultation_phone_number(term).union(search_by_name_or_phone(term))
   end
   scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }

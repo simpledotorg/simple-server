@@ -237,8 +237,8 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe ".search_by_name_or_teleconsultation_phone_number" do
-      include_examples "full_name search", :search_by_name_or_teleconsultation_phone_number
+    describe ".teleconsult_search" do
+      include_examples "full_name search", :teleconsult_search
 
       context "searches against phone_number and teleconsultation_phone_number" do
         let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
@@ -249,7 +249,7 @@ RSpec.describe User, type: :model do
         end
 
         it "matches a user with a teleconsultation phone number" do
-          expect(User.search_by_name_or_teleconsultation_phone_number(user_1.teleconsultation_phone_number))
+          expect(User.teleconsult_search(user_1.teleconsultation_phone_number))
             .to match_array(user_1)
         end
 

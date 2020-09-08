@@ -50,7 +50,7 @@ class Admin::UsersController < AdminController
       end
 
       format.json do
-        @users = users.search_by_name_or_teleconsultation_phone_number(search_query)
+        @users = users.teleconsult_search(search_query)
       end
     end
   end

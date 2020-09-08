@@ -68,9 +68,10 @@ RSpec.describe Admin::UsersController, type: :controller do
       end
 
       specify do
-        expect(User).to receive(:search_by_name_or_teleconsultation_phone_number).with(search_query)
+        search_query = "Doctor"
+        expect(User).to receive(:teleconsult_search).with(search_query)
 
-        get :index, format: :json, params: {search_query: "search query"}
+        get :index, format: :json, params: {search_query: search_query}
       end
     end
   end
