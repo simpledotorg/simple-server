@@ -38,7 +38,7 @@ class Quarter
     advance(months: 3)
   end
 
-  alias succ next_quarter
+  alias_method :succ, :next_quarter
 
   def previous_quarter
     advance(months: -3)
@@ -68,17 +68,16 @@ class Quarter
     date.beginning_of_quarter
   end
 
-  alias beginning_of_quarter start_date
-
   def end_date
     date.end_of_quarter
   end
 
-  alias end_of_quarter end_date
-
   def to_period
     Period.quarter(self)
   end
+
+  alias_method :beginning_of_quarter, :start_date
+  alias_method :end_of_quarter, :end_date
 
   def inspect
     "#<Quarter:#{object_id} #{to_s.inspect}>"
@@ -88,6 +87,8 @@ class Quarter
     to_s == other.to_s
   end
 
+  alias_method :eql?, :==
+
   def <=>(other)
     return -1 if year < other.year
     return -1 if year == other.year && number < other.number
@@ -95,8 +96,6 @@ class Quarter
     return 1 if year > other.year
     return 1 if year == other.year && number > other.number
   end
-
-  alias eql? ==
 
   def hash
     year.hash ^ number.hash

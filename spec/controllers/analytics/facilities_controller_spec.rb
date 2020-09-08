@@ -19,9 +19,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
   let(:oct_2018) { Date.new(2018, 10, 1) }
   let(:sep_2018) { Date.new(2018, 9, 1) }
 
-  let(:analytics_cohort_cache_key) { "analytics/facilities/#{facility.id}/cohort/month" }
-  let(:analytics_dashboard_cache_key) { "analytics/facilities/#{facility.id}/dashboard/month" }
-
   let!(:registered_patients) do
     travel_to(feb_2019) {
       create_list(:patient,
@@ -83,8 +80,6 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
     context "analytics caching for facilities" do
       before do
-        Rails.cache.delete(analytics_cohort_cache_key)
-        Rails.cache.delete(analytics_dashboard_cache_key)
         travel_to(may_2019)
       end
 
@@ -157,19 +152,20 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
           }
 
         get :show, params: {id: facility.id}
+        cohort_cache_key = "CohortAnalyticsQuery/#{facility.id}/month/6/May-2019"
+        dashboard_cache_key = "FacilityAnalyticsQuery/#{facility.id}/month/6/May-2019"
 
-        expect(Rails.cache.exist?(analytics_cohort_cache_key)).to be true
-        expect(Rails.cache.fetch(analytics_cohort_cache_key).deep_symbolize_keys).to eq expected_cache_value[:cohort]
+        expect(Rails.cache.exist?(cohort_cache_key)).to be true
+        expect(Rails.cache.fetch(cohort_cache_key).deep_symbolize_keys).to eq expected_cache_value[:cohort]
 
-        expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
-        expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
+        expect(Rails.cache.exist?(dashboard_cache_key)).to be true
+        expect(Rails.cache.fetch(dashboard_cache_key)).to eq expected_cache_value[:dashboard]
       end
 
       it "never ends up querying the database when cached" do
+        expect_any_instance_of(FacilityAnalyticsQuery).to receive(:results).and_call_original
         get :show, params: {id: facility.id}
-
-        expect_any_instance_of(Facility).to_not receive(:cohort_analytics)
-        expect_any_instance_of(Facility).to_not receive(:dashboard_analytics)
+        expect_any_instance_of(FacilityAnalyticsQuery).to_not receive(:results)
 
         # this get should always have cached values
         get :show, params: {id: facility.id}
