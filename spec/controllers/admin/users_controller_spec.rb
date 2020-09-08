@@ -52,7 +52,9 @@ RSpec.describe Admin::UsersController, type: :controller do
       expect(assigns(:users)).to match_array([])
       expect(response).to be_successful
     end
+  end
 
+  describe "GET #search" do
     context ".json" do
       render_views
 
@@ -61,7 +63,7 @@ RSpec.describe Admin::UsersController, type: :controller do
         create(:user, full_name: "Jack")
         search_query = "Doctor"
 
-        get :index, format: :json, params: {search_query: search_query}
+        get :search, format: :json, params: {search_query: search_query}
 
         expect(response).to be_successful
         expect(JSON(response.body).first["full_name"]).to eq "Doctor Jack"
@@ -71,7 +73,7 @@ RSpec.describe Admin::UsersController, type: :controller do
         search_query = "Doctor"
         expect(User).to receive(:teleconsult_search).with(search_query)
 
-        get :index, format: :json, params: {search_query: search_query}
+        get :search, format: :json, params: {search_query: search_query}
       end
     end
   end

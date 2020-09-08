@@ -199,6 +199,7 @@ Rails.application.routes.draw do
     end
 
     resources :users do
+      get "search", on: :collection, to: "users#search"
       put "reset_otp", to: "users#reset_otp"
       put "disable_access", to: "users#disable_access"
       put "enable_access", to: "users#enable_access"

@@ -43,7 +43,7 @@
           <div class="mo-search">
             <%= render 'shared/typeahead_search',
                        placeholder: "Find medical officers by name or phone number",
-                       url: "/admin/users.json",
+                       url: "/admin/users/search.json",
                        results_transformer: "filterExistingUsers",
                        search_result_to_row: "userJSONToRow",
                        no_results_message: "noUsersFound" %>

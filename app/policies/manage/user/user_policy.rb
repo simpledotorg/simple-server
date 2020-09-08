@@ -5,6 +5,10 @@ class Manage::User::UserPolicy < ApplicationPolicy
       .present?
   end
 
+  def search?
+    index?
+  end
+
   def show?
     user_has_any_permissions?(
       [:approve_health_workers, nil],

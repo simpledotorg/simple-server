@@ -2,9 +2,9 @@ class Admin::UsersController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_user, except: [:index]
+  before_action :set_user, except: [:index, :search]
   around_action :set_time_zone, only: [:show]
-  before_action :set_district, only: [:index]
+  before_action :set_district, only: [:index, :search]
 
   skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
@@ -39,19 +39,30 @@ class Admin::UsersController < AdminController
         .order("users.full_name", "facilities.name", "users.device_created_at")
     end
 
-    respond_to do |format|
-      format.html do
-        @users =
-          if searching?
-            paginate(users.search_by_name_or_phone(search_query))
-          else
-            paginate(users)
-          end
+    @users =
+      if searching?
+        paginate(users.search_by_name_or_phone(search_query))
+      else
+        paginate(users)
       end
+  end
 
-      format.json do
-        @users = users.teleconsult_search(search_query)
-      end
+  def search
+    authorize([:manage, :user, User])
+
+    facilities = if @district == "All"
+      policy_scope([:manage, :user, Facility.all])
+    else
+      policy_scope([:manage, :user, Facility.where(district: @district)])
+    end
+
+    users = policy_scope([:manage, :user, User])
+      .joins(phone_number_authentications: :facility)
+      .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
+      .order("users.full_name", "facilities.name", "users.device_created_at")
+
+    respond_to do |format|
+      format.json { @users = users.teleconsult_search(search_query) }
     end
   end
 
