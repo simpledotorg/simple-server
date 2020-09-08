@@ -401,147 +401,27 @@ RSpec.describe UserAccess, type: :model do
     end
   end
 
-  pending "#access_tree" do
-    let!(:organization_1) { create(:organization) }
-    let!(:organization_2) { create(:organization) }
-    let!(:organization_3) { create(:organization) }
-    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
-    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
-    let!(:facility_group_3) { create(:facility_group, organization: organization_3) }
-    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
-    let!(:facility_4) { create(:facility, facility_group: facility_group_3) }
-    let!(:viewer_access) {
-      create(:access, user: viewer_all.user, resource: organization_1)
-    }
-    let!(:manager_access) {
-      create(:access, user: manager.user, resource: organization_1)
-      create(:access, user: manager.user, resource: facility_3)
-    }
-
-    context "render a nested data structure" do
-      it "only allows the direct parent or ancestors to be in the tree" do
-        expected_access_tree = {
-          organizations: {
-            organization_1 => {
-              can_access: true,
-              total_facility_groups: 1,
-
-              facility_groups: {
-                facility_group_1 => {
-                  can_access: true,
-                  total_facilities: 2,
-
-                  facilities: {
-                    facility_1 => {
-                      can_access: true
-                    },
-
-                    facility_2 => {
-                      can_access: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        expect(viewer_all.access_tree(:view_pii)).to eq(expected_access_tree)
-        expect(viewer_all.access_tree(:manage)).to eq(organizations: {})
-      end
-
-      it "marks the direct parents or ancestors as inaccessible if the access is partial" do
-        expected_access_tree = {
-          organizations: {
-            organization_1 => {
-              can_access: true,
-              total_facility_groups: 1,
-
-              facility_groups: {
-                facility_group_1 => {
-                  can_access: true,
-                  total_facilities: 2,
-
-                  facilities: {
-                    facility_1 => {
-                      can_access: true
-                    },
-
-                    facility_2 => {
-                      can_access: true
-                    }
-                  }
-                }
-              }
-            },
-
-            organization_2 => {
-              can_access: false,
-              total_facility_groups: 1,
-
-              facility_groups: {
-                facility_group_2 => {
-                  can_access: false,
-                  total_facilities: 1,
-
-                  facilities: {
-                    facility_3 => {
-                      can_access: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        expect(manager.access_tree(:view_pii)).to eq(expected_access_tree)
-        expect(manager.access_tree(:manage)).to eq(expected_access_tree)
-      end
-    end
-  end
-
   describe "#permitted_access_levels" do
-    specify do
-      power_user = create(:admin, :power_user)
-      expect(power_user.permitted_access_levels).to match_array(UserAccess::LEVELS.keys)
-    end
+    let!(:access_level_matrix) {
+      [
+        [:power_user, UserAccess::LEVELS.keys],
+        [:manager, [:call_center, :manager, :viewer_all, :viewer_reports_only]],
+        [:viewer_all, []],
+        [:viewer_reports_only, [:a]],
+        [:call_center, []],
+      ]
+    }
 
-    specify do
-      manager = create(:admin, :manager)
-      expect(manager.permitted_access_levels).to match_array([:call_center, :manager, :viewer_all, :viewer_reports_only])
-    end
-
-    specify do
-      viewer_all = create(:admin, :viewer_all)
-      expect(viewer_all.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      manager = create(:admin, :viewer_reports_only)
-      expect(manager.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      manager = create(:admin, :call_center)
-      expect(manager.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      viewer_all = create(:admin, :viewer_all)
-      expect(viewer_all.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      manager = create(:admin, :viewer_reports_only)
-      expect(manager.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      manager = create(:admin, :call_center)
-      expect(manager.permitted_access_levels).to match_array([])
+    it "returns the access levels the current admin can grant to another admin" do
+      access_level_matrix.each do |access_level, permitted_access_levels|
+        admin = create(:admin, access_level)
+        expect(admin.permitted_access_levels).to match_array(permitted_access_levels),
+          <<-ERROR
+for admin with: #{access_level}
+expected: #{permitted_access_levels}
+got: #{admin.permitted_access_levels}
+        ERROR
+      end
     end
   end
 end
