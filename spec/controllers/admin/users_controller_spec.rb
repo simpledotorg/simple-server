@@ -69,11 +69,14 @@ RSpec.describe Admin::UsersController, type: :controller do
         expect(JSON(response.body).first["full_name"]).to eq "Doctor Jack"
       end
 
-      specify do
-        search_query = "Doctor"
-        expect(User).to receive(:teleconsult_search).with(search_query)
+      it "should call teleconsult_search and return the results" do
+        search_query = "Search query"
+        user = create(:user)
+        allow(User).to receive(:teleconsult_search).with(search_query).and_return([user])
 
         get :search, format: :json, params: {search_query: search_query}
+
+        expect(JSON(response.body).first["full_name"]).to eq user.full_name
       end
     end
   end
