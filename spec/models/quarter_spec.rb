@@ -8,10 +8,19 @@ RSpec.describe Quarter, type: :model do
   let(:q1_2020) { Quarter.new(date: Time.parse("January 1st, 2020")) }
   let(:q3_2020) { Quarter.new(date: Time.parse("August 1st, 2020")) }
 
-  it "can parse" do
-    quarter = Quarter.parse("Q2-2020")
-    expect(quarter.number).to eq(2)
-    expect(quarter.year).to eq(2020)
+  context "parse" do
+    it "can parse" do
+      quarter = Quarter.parse("Q2-2020")
+      expect(quarter.number).to eq(2)
+      expect(quarter.year).to eq(2020)
+    end
+
+    it "will handle a string Date" do
+      quarter = Quarter.parse("2020-08-01")
+      expect(quarter.number).to eq(3)
+      expect(quarter.year).to eq(2020)
+      expect(quarter.date).to eq(Date.parse("2020-08-01"))
+    end
   end
 
   it "raises for bad string parsing" do
