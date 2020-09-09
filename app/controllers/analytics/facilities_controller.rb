@@ -11,12 +11,7 @@ class Analytics::FacilitiesController < AnalyticsController
     set_dashboard_analytics(@period, 6)
     set_cohort_analytics(@period, @prev_periods)
 
-    @recent_blood_pressures = @facility
-      .blood_pressures
-      .includes(:patient, :user)
-      .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
-
-    @recent_blood_pressures = paginate(@recent_blood_pressures)
+    @recent_blood_pressures = paginate(@facility.recent_blood_pressures)
 
     respond_to do |format|
       format.html
