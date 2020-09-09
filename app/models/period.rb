@@ -11,7 +11,12 @@ class Period
   end
 
   def self.quarter(value)
-    quarter = case value
+    quarter = cast_to_quarter(value)
+    new(type: :quarter, value: quarter)
+  end
+
+  def self.cast_to_quarter(value)
+    case value
     when String
       Quarter.parse(value)
     when Date, Time, DateTime
@@ -21,14 +26,15 @@ class Period
     else
       raise ArgumentError, "unknown quarter value #{value} #{value.class}"
     end
-    new(type: :quarter, value: quarter)
   end
 
   def initialize(attributes = {})
     super
     self.type = type.intern if type
-    if value.is_a?(String)
-      self.value = parse_string_value(value)
+    self.value = if quarter?
+      self.class.cast_to_quarter(value)
+    else
+      value.to_date
     end
   end
 
@@ -124,13 +130,4 @@ class Period
     end
   end
 
-  private
-
-  def parse_string_value(val)
-    if quarter?
-      Quarter.parse(val)
-    else
-      val.to_date
-    end
-  end
 end

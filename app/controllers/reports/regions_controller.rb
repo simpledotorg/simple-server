@@ -51,8 +51,15 @@ class Reports::RegionsController < AdminController
   def cohort
     authorize(:dashboard, :show?)
 
-    last_five_quarters = @period.to_quarter_period.value.downto(4)
-    @data = CohortService.new(region: @region, quarters: last_five_quarters).call
+    period_params = report_params[:period]
+    @period = if period_params.present?
+      Period.new(period_params)
+    else
+      Period.month(Date.current.beginning_of_month)
+    end
+
+    range = @period.downto(5)
+    @data = CohortService.new(region: @region, range: range).call
     @quarterly_registrations = @data[:quarterly_registrations]
   end
 

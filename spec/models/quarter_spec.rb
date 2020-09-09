@@ -20,6 +20,7 @@ RSpec.describe Quarter, type: :model do
       expect(quarter.number).to eq(3)
       expect(quarter.year).to eq(2020)
       expect(quarter.date).to eq(Date.parse("2020-08-01"))
+      expect(quarter.to_s).to eq("Q3-2020")
     end
   end
 
@@ -62,6 +63,7 @@ RSpec.describe Quarter, type: :model do
     expect(quarter.number).to eq(1)
     expect(quarter.year).to eq(2020)
     expect(quarter.date).to eq(time.to_date)
+    expect(quarter.to_s).to eq("Q1-2020")
   end
 
   it "can return previous and next quarter" do

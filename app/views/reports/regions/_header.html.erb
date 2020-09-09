@@ -43,18 +43,19 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <%= @period.to_s %> report
+        <%= cohort_report_type(@period) %>
       </a>
       <% if action_name == "cohort" %>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
-            <% [:quarter, :month].each do |period_type|
-                period = Period.new(type: period_type, value: @period.to_date)
-                selected = true if period.type == @period.type && period == @period
-            %>
-              <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
+          <% [:quarter, :month].each do |period_type|
+            period = Period.new(type: period_type, value: @period.to_date)
+            selected = true if period.type == @period.type && period == @period
+          %>
+            <%= form_for(period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+              <%= f.hidden_field :type %>
+              <button class="dropdown-item <%= 'active' if selected %>" name="period[value]"
                       type="submit" data-period-type=<%= period.type %> value="<%= period.to_s %>">
-                <%= period %>
+                <%= cohort_report_type(period) %>
               </button>
             <% end %>
           <% end %>
