@@ -6,8 +6,8 @@ class AdminsController < AdminController
   before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_policy_scoped, only: :index
 
+  after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
@@ -48,12 +48,8 @@ class AdminsController < AdminController
   def update
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       User.transaction do
-        if access_level_changed? && current_admin.modify_access_level?
-          @admin.update!(user_params)
-          current_admin.grant_access(@admin, selected_facilities)
-        else
-          raise UserAccess::NotAuthorizedError
-        end
+        @admin.update!(user_params)
+        current_admin.grant_access(@admin, selected_facilities)
       end
 
       redirect_to admins_url, notice: "Admin was successfully updated."
@@ -103,6 +99,10 @@ class AdminsController < AdminController
       return
     end
 
+    if access_level_changed? && !current_admin.modify_access_level?
+      raise UserAccess::NotAuthorizedError
+    end
+
     @admin.assign_attributes(user_params)
 
     if @admin.invalid?
@@ -122,10 +122,6 @@ class AdminsController < AdminController
     end
   end
 
-  def current_admin
-    AdminAccessPresenter.new(super)
-  end
-
   def permission_params
     params[:permissions]
   end
@@ -141,7 +137,7 @@ class AdminsController < AdminController
       organization_id: params[:organization_id],
       access_level: params[:access_level],
       device_updated_at: Time.current
-    }.merge(access_level).compact
+    }.compact
   end
 
   def access_level_changed?
