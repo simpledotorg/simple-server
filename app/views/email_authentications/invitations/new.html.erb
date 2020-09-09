@@ -36,6 +36,11 @@
       <% end %>
     </div>
   </div>
+  <script>
+    const adminInvite = new AdminInvite()
+    adminInvite.onAsyncLoaded()
+    adminInvite.onDOMLoaded()
+  </script>
 <% else %>
   <h1><%= t "devise.invitations.new.header" %></h1>
   <%= javascript_include_tag "standalone/react_components" %>

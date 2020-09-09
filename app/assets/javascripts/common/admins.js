@@ -3,124 +3,67 @@
 //
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const ACCESS_LEVEL_POWER_USER = "power_user"
-const $facilityAccessDiv = () => document.getElementById("facility-access")
-const $selectAllFacilitiesContainer = () => document.getElementById("select-all-facilities")
-const $selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
-const $facilityAccessItemsAccessRatio = () => document.getElementsByClassName("access-ratio")
-const $facilityAccessItemsPadding = () => document.getElementsByClassName("access-item__padding")
-const $facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
-const $accessLevel = () => document.getElementById("access_level")
-const $page = () => $facilityAccessDiv() && $facilityAccessDiv().attributes.getNamedItem('data-page').value
 
-//
-// load things upfront
-//
-window.addEventListener("DOMContentLoaded", onPageLoad);
+AdminCommons = function () { }
 
-function onPageLoad() {
-  accessLevelListener()
-  accessLevelSelector()
+AdminCommons.prototype.facilityAccess = () => document.getElementById("facility-access")
+AdminCommons.prototype.accessLevel = () => document.getElementById("access_level")
+AdminCommons.prototype.facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
+
+AdminCommons.prototype.facilityAccessItemsPadding = function () {
+  return document.getElementsByClassName("access-item__padding")
 }
 
-//
-// wait for the render_async hook before loading the access tree related JS
-//
-document.addEventListener('render_async_load', function (_event) {
-  selectAllButtonListener()
-  checkboxItemListener()
-  resourceRowCollapseListener()
-  editAdmin()
-});
-
-function editAdmin() {
-  if (!isCurrentPage("edit")) return
-
-  // list of all checkboxes under facilityAccessDiv()
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
-
-  // go through all the checkboxes that are pre-checked and update their parents accordingly
-  for (const checkbox of checkboxes) {
-    if (!checkbox.checked) continue
-
-    // a large tree can take a lot of time to load on the DOM,
-    // so we queue up our updates by requesting frames so as to not cause overwhelming repaints
-    requestAnimationFrame(function () {
-      updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
-    })
-  }
-
-  $selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
+AdminCommons.prototype.facilityAccessItemsAccessRatio = function () {
+  return document.getElementsByClassName("access-ratio")
 }
 
-//
-// selecting the access level
-//
-function accessLevelSelector() {
-  if (isCurrentPage("show")) return
-
-  const accessLevel = $("#access_level")
-  // hide access tree if power user pre selected
-  if (isCurrentPage("edit")) {
-    toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
-  }
-
-  // initialize the access_level select dropdown
-  accessLevel.selectpicker({
-    noneSelectedText: "Select an access level..."
-  });
-
+AdminCommons.prototype.selectAllFacilitiesContainer = function () {
+  return document.getElementById("select-all-facilities")
 }
-
-function accessLevelListener() {
-  if (isCurrentPage("show")) return
-
-  $accessLevel().addEventListener("change", onAccessLevelChanged)
-}
-
-function toggleAccessTreeVisibility(isPowerUser) {
-  if (isPowerUser) {
-    $facilityAccessDiv().classList.add("hidden")
-    $facilityAccessPowerUser().classList.remove("hidden")
-  } else {
-    $facilityAccessDiv().classList.remove("hidden")
-    $facilityAccessPowerUser().classList.add("hidden")
-  }
-}
-
-function onAccessLevelChanged({ target }) {
-  toggleAccessTreeVisibility(target.value === ACCESS_LEVEL_POWER_USER)
-}
-
 //
 // manipulating the access tree
 //
-function checkboxItemListener() {
+AdminCommons.prototype.checkboxItemListener = function () {
   // list of all checkboxes under facilityAccessDiv()
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
-
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
   addEventListener("change", e => {
     const targetCheckbox = e.target
 
     // exit if change event did not come from list of checkboxes
     if (checkboxes.indexOf(targetCheckbox) === -1) return
 
-    updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
-    updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
+    this.updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
+    this.updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
   })
 }
 
-function resourceRowCollapseListener() {
+AdminCommons.prototype.resourceRowCollapseListener = function () {
   const collapsibleItems = [
-    $facilityAccessItemsPadding(),
-    $facilityAccessItemsAccessRatio()
+    this.facilityAccessItemsPadding(),
+    this.facilityAccessItemsAccessRatio()
   ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
   for (const item of collapsibleItems) {
-    item.addEventListener("click", onFacilityAccessItemToggled)
+    item.addEventListener("click", this.onFacilityAccessItemToggled.bind(this))
   }
 }
 
-function toggleItemCollapsed(element) {
+AdminCommons.prototype.toggleAccessTreeVisibility = function (isPowerUser) {
+  if (isPowerUser) {
+    this.facilityAccess().classList.add("hidden")
+    this.facilityAccessPowerUser().classList.remove("hidden")
+  } else {
+    this.facilityAccess().classList.remove("hidden")
+    this.facilityAccessPowerUser().classList.add("hidden")
+  }
+}
+
+AdminCommons.prototype.onAccessLevelChanged = function ({ target }) {
+  this.toggleAccessTreeVisibility(target.value === ACCESS_LEVEL_POWER_USER)
+}
+
+AdminCommons.prototype.toggleItemCollapsed = function (element) {
   const collapsed = element.classList.contains("collapsed")
 
   if (collapsed) {
@@ -130,17 +73,17 @@ function toggleItemCollapsed(element) {
   }
 }
 
-function onFacilityAccessItemToggled({ target }) {
+AdminCommons.prototype.onFacilityAccessItemToggled = function ({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(containsClass("access-item-wrapper"))
 
   if (wrapper) {
-    toggleItemCollapsed(parentItem)
+    this.toggleItemCollapsed(parentItem)
   }
 }
 
-function updateParentCheckedState(element, selector) {
+AdminCommons.prototype.updateParentCheckedState = function (element, selector) {
   // find parent and sibling checkboxes
   const parent = (element.closest(["ul"]).parentNode).querySelector(selector)
   const siblings = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
@@ -157,10 +100,10 @@ function updateParentCheckedState(element, selector) {
   parent.indeterminate = some && !every
 
   // recurse until check is the top most parent
-  if (element !== parent) updateParentCheckedState(parent, selector)
+  if (element !== parent) this.updateParentCheckedState(parent, selector)
 }
 
-function updateChildrenCheckedState(parent, selector) {
+AdminCommons.prototype.updateChildrenCheckedState = function (parent, selector) {
   // check/uncheck children (includes check itself)
   const children = nodeListToArray(selector, parent.closest("li"))
 
@@ -171,23 +114,111 @@ function updateChildrenCheckedState(parent, selector) {
   })
 }
 
-//
-// select all button for facility access
-//
-function selectAllButtonListener() {
-  if (isCurrentPage("show")) return
-  if (!$selectAllFacilitiesInput()) return
-  $selectAllFacilitiesContainer().hidden = false
+AdminCommons.prototype.onAsyncLoaded = function () {
+  const _self = this
+  document.addEventListener('render_async_load', function (_event) {
+    // _self.checkboxItemListener()
+    _self.resourceRowCollapseListener()
+    // _self.editAdmin()
+  });
+}
 
-  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, $facilityAccessDiv())
+AdminInvite = function () { }
 
-  $selectAllFacilitiesInput().addEventListener("change", () => {
+AdminInvite.prototype = Object.create(AdminCommons.prototype)
+
+AdminInvite.prototype.selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
+
+AdminInvite.prototype.editAdmin = function () {
+  // list of all checkboxes under facilityAccessDiv()
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
+
+  // go through all the checkboxes that are pre-checked and update their parents accordingly
+  for (const checkbox of checkboxes) {
+    if (!checkbox.checked) continue
+
+    // a large tree can take a lot of time to load on the DOM,
+    // so we queue up our updates by requesting frames so as to not cause overwhelming repaints
+    const _self = this
+    requestAnimationFrame(function () {
+      _self.updateParentCheckedState(checkbox, ACCESS_LIST_INPUT_SELECTOR)
+    })
+  }
+
+  this.selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
+}
+
+AdminInvite.prototype.selectAllButtonListener = function () {
+  // if (!this.selectAllFacilitiesInput) return
+  this.selectAllFacilitiesContainer().hidden = false
+
+  const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
+  const _self = this
+  this.selectAllFacilitiesInput().addEventListener("change", () => {
     for (const checkbox of checkboxes) {
-      checkbox.checked = $selectAllFacilitiesInput().checked
+      checkbox.indeterminate = false
+      checkbox.checked = _self.selectAllFacilitiesInput().checked
     }
   })
 }
 
+
+// ON DOM LOAD
+AdminInvite.prototype.accessLevelSelector = function () {
+  const accessLevel = $("#access_level")
+  // initialize the access_level select dropdown
+  accessLevel.selectpicker({
+    noneSelectedText: "Select an access level..."
+  });
+}
+
+// ON DOM LOAD
+AdminInvite.prototype.accessLevelListener = function () {
+  this.accessLevel().addEventListener("change", this.onAccessLevelChanged.bind(this))
+}
+
+AdminInvite.prototype.onDOMLoaded = function () {
+  const _self = this
+  window.addEventListener("DOMContentLoaded", function () {
+    _self.accessLevelSelector()
+    _self.accessLevelListener()
+  })
+}
+
+//
+// load things upfront
+//
+window.addEventListener("DOMContentLoaded", onDOMContentLoaded);
+
+function onDOMContentLoaded() {
+  // accessLevelListener()
+  // accessLevelSelector()
+}
+
+//
+// wait for the render_async hook before loading the access tree related JS
+//
+
+
+AdminInvite.prototype.onAsyncLoaded = function () {
+  const _self = this
+  document.addEventListener('render_async_load', function () {
+    _self.selectAllButtonListener()
+    _self.checkboxItemListener()
+    _self.resourceRowCollapseListener()
+    _self.editAdmin()
+  });
+}
+
+AdminEdit = function () { }
+
+AdminEdit.prototype = Object.create(AdminInvite.prototype)
+
+AdminEdit.prototype.accessLevelSelector = function () {
+  AdminInvite.prototype.accessLevelSelector.call(this)
+  const accessLevel = $("#access_level")
+  this.toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
+}
 //
 // helpers
 //
@@ -198,6 +229,3 @@ const nodeListToArray = (selector, parent = document) =>
 // return a function that checks if element contains class
 const containsClass = (className) => ({ classList }) =>
   classList && classList.contains(className)
-
-const isCurrentPage = (page) =>
-  !$page() || $page() === page
