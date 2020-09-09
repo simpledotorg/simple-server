@@ -1,29 +1,27 @@
 class CohortService
-  attr_reader :region, :quarters
   CACHE_VERSION = 1
   CACHE_TTL = 7.days
+  attr_reader :range
+  attr_reader :region
 
   def initialize(region:, range: nil)
     @region = region
-    @quarters = range || default_quarters
+    @range = range || default_range
   end
-
-  alias_method :range, :quarters
 
   # Each quarter cohort is made up of patients registered in the previous quarter
   # who has had a follow up visit in the current quarter.
   def call
     result = {quarterly_registrations: []}
-    quarters.each do |results_quarter|
-      quarter_data = compute_quarter(results_quarter)
-      result[:quarterly_registrations] << quarter_data
+    range.each do |period|
+      result[:quarterly_registrations] << compute(period)
     end
     result
   end
 
   private
 
-  def compute_quarter(results_quarter)
+  def compute(results_quarter)
     Rails.cache.fetch(cache_key(results_quarter), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
       cohort_period = results_quarter.previous
       period = {cohort_period: cohort_period.type,
@@ -42,7 +40,7 @@ class CohortService
     end
   end
 
-  def default_quarters
+  def default_range
     Quarter.new(date: Date.current).downto(3)
   end
 
