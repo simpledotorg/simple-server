@@ -10,8 +10,7 @@ RSpec.describe Admin::OrganizationsController, type: :controller do
   end
 
   before do
-    admin = create(:admin, :power_user)
-
+    admin = create(:admin, :owner)
     sign_in(admin.email_authentication)
   end
 
