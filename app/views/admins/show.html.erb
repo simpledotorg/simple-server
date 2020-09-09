@@ -31,8 +31,10 @@
       </div>
       <%= render_async(access_tree_admin_path(current_admin, page: :show),
           error_message: '<p>Sorry, users loading went wrong :(</p>') do %>
-        <div class="spinner spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
+        <div class="spinner-wrapper">
+          <div class="spinner spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
         </div>
       <% end %>
     </div>

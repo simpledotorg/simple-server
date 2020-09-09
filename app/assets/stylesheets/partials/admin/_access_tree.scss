@@ -18,10 +18,6 @@
 }
 
 #facility-access {
-  .spinner {
-    margin: 10em 0 0 15em;
-  }
-
   &.hidden {
     display: none;
   }
@@ -165,6 +161,17 @@
       .form-check-label {
         font-weight: normal;
       }
+    }
+  }
+
+  .spinner-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    .spinner {
+      margin: 10px;
+      margin-top: 10%;
+      align-self: center;
     }
   }
 }
