@@ -104,24 +104,13 @@ class Facility < ApplicationRecord
   end
 
   def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
-    query.patient_counts_by_period(period, prev_periods)
+    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
+    query.call
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = FacilityAnalyticsQuery.new(self,
-      period,
-      prev_periods,
-      include_current_period: include_current_period)
-
-    results = [
-      query.registered_patients_by_period,
-      query.total_registered_patients,
-      query.follow_up_patients_by_period
-    ].compact
-
-    return {} if results.blank?
-    results.inject(&:deep_merge)
+    query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
+    query.call
   end
 
   CSV_IMPORT_COLUMNS =

@@ -21,6 +21,7 @@
 
 <%= render 'shared/analytics_table',
   dashboard_analytics: @dashboard_analytics,
+  period: @period,
   row_resource: User.order(:full_name),
   row_resource_description: "Users",
   row_resource_display_field: :full_name,

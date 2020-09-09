@@ -21,7 +21,7 @@ class PhoneNumberAuthentication < ApplicationRecord
   validates :failed_attempts, numericality: {only_integer: true, less_than_or_equal_to: 5}
   validate :presence_of_password
 
-  alias registration_facility facility
+  alias_method :registration_facility, :facility
 
   def presence_of_password
     unless password_digest.present? || password.present?
