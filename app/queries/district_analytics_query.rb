@@ -13,6 +13,23 @@ class DistrictAnalyticsQuery
     @include_current_period = include_current_period
   end
 
+  def call
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
+      results
+    end
+  end
+
+  def results
+    results = [
+      registered_patients_by_period,
+      total_registered_patients,
+      follow_up_patients_by_period
+    ].compact
+
+    return {} if results.blank?
+    results.inject(&:deep_merge)
+  end
+
   def total_registered_patients
     @total_registered_patients ||=
       Patient
@@ -54,6 +71,16 @@ class DistrictAnalyticsQuery
   end
 
   private
+
+  def cache_key
+    [
+      self.class.name,
+      facilities.map(&:id).sort,
+      @period,
+      @prev_periods,
+      @from_time.to_s(:mon_year)
+    ].join("/")
+  end
 
   def group_by_facility_and_date(query_results, key)
     valid_dates = dates_for_periods(@period,

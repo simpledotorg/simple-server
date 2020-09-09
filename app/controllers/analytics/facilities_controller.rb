@@ -83,23 +83,13 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics =
-      set_analytics_cache(analytics_cache_key_cohort(period)) {
-        @facility.cohort_analytics(period, prev_periods)
-      }
+    @cohort_analytics = @facility.cohort_analytics(period, prev_periods)
   end
 
   def set_dashboard_analytics(period, prev_periods)
-    @dashboard_analytics =
-      set_analytics_cache(analytics_cache_key_dashboard(period)) {
-        @facility.dashboard_analytics(period: period,
-                                      prev_periods: prev_periods,
-                                      include_current_period: @show_current_period)
-      }
-  end
-
-  def analytics_cache_key
-    "analytics/facilities/#{@facility.id}"
+    @dashboard_analytics = @facility.dashboard_analytics(period: period,
+                                                         prev_periods: prev_periods,
+                                                         include_current_period: @show_current_period)
   end
 
   def download_filename
