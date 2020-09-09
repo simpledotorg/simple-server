@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.feature "Organization management", type: :feature do
+RSpec.feature "Organization management with new permissions", type: :feature do
   let!(:owner) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
