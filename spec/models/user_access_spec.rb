@@ -301,12 +301,12 @@ RSpec.describe UserAccess, type: :model do
         }
 
         it "returns the organizations an admin can perform actions on" do
-          permission_matrix.each do |admin, action, current_resource, accessible_resources|
+          permission_matrix.each do |admin, action, current_resource, expected_resources|
             admin.accesses.create(resource: current_resource)
-            expect(admin.accessible_organizations(action)).to match_array(accessible_resources),
+            expect(admin.accessible_organizations(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
-                accessible_resources,
+                expected_resources,
                 admin.accessible_organizations(action))
           end
         end
@@ -339,12 +339,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the facility groups an admin can perform actions on with organization access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_facility_groups(action)).to match_array(accessible_resources),
+              expect(admin.accessible_facility_groups(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_facility_groups(action))
             end
           end
@@ -376,12 +376,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the facility groups an admin can perform actions on with facility group access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_facility_groups(action)).to match_array(accessible_resources),
+              expect(admin.accessible_facility_groups(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_facility_groups(action))
             end
           end
@@ -415,9 +415,9 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the facilities an admin can perform actions on with organization access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_facilities(action)).to match_array(accessible_resources)
+              expect(admin.accessible_facilities(action)).to match_array(expected_resources)
             end
           end
         end
@@ -448,12 +448,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the facilities an admin can perform actions on with facility group access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_facilities(action)).to match_array(accessible_resources),
+              expect(admin.accessible_facilities(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_facilities(action))
             end
           end
@@ -485,12 +485,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the facilities an admin can perform actions on with facility access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_facilities(action)).to match_array(accessible_resources),
+              expect(admin.accessible_facilities(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_facilities(action))
             end
           end
@@ -524,12 +524,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the users an admin can perform actions on with organization access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_users(action)).to match_array(accessible_resources),
+              expect(admin.accessible_users(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_users(action))
             end
           end
@@ -561,12 +561,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the users an admin can perform actions on with facility group access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_users(action)).to match_array(accessible_resources),
+              expect(admin.accessible_users(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_users(action))
             end
           end
@@ -598,12 +598,12 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the users an admin can perform actions on with facility access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_users(action)).to match_array(accessible_resources),
+              expect(admin.accessible_users(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_users(action))
             end
           end
@@ -637,13 +637,13 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the admins an admin can perform actions on with organization access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.update(organization: organization_3)
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_admins(action)).to match_array(accessible_resources),
+              expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_admins(action))
             end
           end
@@ -675,13 +675,13 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the admins an admin can perform actions on with facility group access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.update(organization: organization_1)
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_admins(action)).to match_array(accessible_resources),
+              expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_admins(action))
             end
           end
@@ -713,13 +713,13 @@ RSpec.describe UserAccess, type: :model do
           }
 
           it "returns the admins an admin can perform actions on with facility access" do
-            permission_matrix.each do |admin, action, current_resource, accessible_resources|
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.update(organization: organization_3)
               admin.accesses.create(resource: current_resource)
-              expect(admin.accessible_admins(action)).to match_array(accessible_resources),
+              expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
-                  accessible_resources,
+                  expected_resources,
                   admin.accessible_admins(action))
             end
           end
@@ -741,11 +741,11 @@ RSpec.describe UserAccess, type: :model do
         }
 
         it "returns the organizations a power user has access to" do
-          permission_matrix.each do |admin, action, accessible_resources|
-            expect(admin.accessible_organizations(action)).to match_array(accessible_resources),
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_organizations(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
-                accessible_resources,
+                expected_resources,
                 admin.accessible_organizations(action))
           end
         end
@@ -762,11 +762,11 @@ RSpec.describe UserAccess, type: :model do
         }
 
         it "returns the facility groups a power user has access to" do
-          permission_matrix.each do |admin, action, accessible_resources|
-            expect(admin.accessible_facility_groups(action)).to match_array(accessible_resources),
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_facility_groups(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
-                accessible_resources,
+                expected_resources,
                 admin.accessible_facility_groups(action))
           end
         end
@@ -783,11 +783,11 @@ RSpec.describe UserAccess, type: :model do
         }
 
         it "returns the facilities a power user has access to" do
-          permission_matrix.each do |admin, action, accessible_resources|
-            expect(admin.accessible_facilities(action)).to match_array(accessible_resources),
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_facilities(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
-                accessible_resources,
+                expected_resources,
                 admin.accessible_facilities(action))
           end
         end
@@ -804,11 +804,11 @@ RSpec.describe UserAccess, type: :model do
         }
 
         it "returns the users a power user has access to" do
-          permission_matrix.each do |admin, action, accessible_resources|
-            expect(admin.accessible_users(action)).to match_array(accessible_resources),
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_users(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
-                accessible_resources,
+                expected_resources,
                 admin.accessible_users(action))
           end
         end
@@ -825,11 +825,11 @@ RSpec.describe UserAccess, type: :model do
         }
 
         it "returns the admins a power user has access to" do
-          permission_matrix.each do |admin, action, accessible_resources|
-            expect(admin.accessible_admins(action)).to match_array(accessible_resources),
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_admins(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
-                accessible_resources,
+                expected_resources,
                 admin.accessible_admins(action))
           end
         end
