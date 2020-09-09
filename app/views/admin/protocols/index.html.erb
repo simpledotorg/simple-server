@@ -1,8 +1,14 @@
 <div class="page-header">
   <h1 class="page-title">Protocols</h1>
   <nav class="page-nav">
-    <% if current_admin.power_user? %>
-      <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.power_user? %>
+        <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, Protocol]).new? %>
+        <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+      <% end %>
     <% end %>
   </nav>
 </div>
@@ -15,9 +21,20 @@
                 <div><i class="far fa-calendar-alt light mr-2"></i> Follow-up days: <%= protocol.follow_up_days %></div>
           </div>
           <div class="col-4 text-right">
-            <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
-            <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
-                    <i class="fas fa-trash-alt"></i>
+            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+              <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+                <i class="fas fa-trash-alt"></i>
+              <% end %>
+            <% else %>
+              <% if policy([:manage, protocol]).edit? %>
+                <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+              <% end %>
+              <% if policy([:manage, protocol]).destroy? %>
+                <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+                  <i class="fas fa-trash-alt"></i>
+                <% end %>
+              <% end %>
             <% end %>
           </div>
       </div>

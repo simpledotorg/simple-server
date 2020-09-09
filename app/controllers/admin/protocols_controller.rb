@@ -1,13 +1,18 @@
 class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
+  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
   def index
-    authorize1 { current_admin.power_user? }
-    @protocols = current_admin.accessible_protocols(:manage).order(:name)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.power_user? }
+      @protocols = current_admin.accessible_protocols(:manage).order(:name)
+    else
+      authorize([:manage, Protocol])
+      @protocols = policy_scope([:manage, Protocol]).order(:name)
+    end
   end
 
   def show
@@ -15,16 +20,26 @@ class Admin::ProtocolsController < AdminController
   end
 
   def new
-    authorize1 { current_admin.power_user? }
-    @protocol = Protocol.new
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.power_user? }
+      @protocol = Protocol.new
+    else
+      @protocol = Protocol.new
+      authorize([:manage, @protocol])
+    end
   end
 
   def edit
   end
 
   def create
-    authorize1 { current_admin.power_user? }
-    @protocol = Protocol.new(protocol_params)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.power_user? }
+      @protocol = Protocol.new(protocol_params)
+    else
+      @protocol = Protocol.new(protocol_params)
+      authorize([:manage, @protocol])
+    end
 
     if @protocol.save
       redirect_to [:admin, @protocol], notice: "Protocol was successfully created."
@@ -49,7 +64,12 @@ class Admin::ProtocolsController < AdminController
   private
 
   def set_protocol
-    @protocol = authorize1 { current_admin.accessible_protocols(:manage).find(params[:id]) }
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      @protocol = authorize1 { current_admin.accessible_protocols(:manage).find(params[:id]) }
+    else
+      @protocol = Protocol.find(params[:id])
+      authorize([:manage, @protocol])
+    end
   end
 
   def protocol_params
