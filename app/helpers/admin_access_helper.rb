@@ -22,14 +22,14 @@ module AdminAccessHelper
     end
   end
 
-  def access_level_select(form, access_levels, value: nil, page: :new)
+  def access_level_select(form, access_levels, value: nil, page: :new, disabled: false)
     form.select(:access_level,
       {},
       {label: "Access *"},
       {
         class: "access-levels",
         id: :access_level,
-        disabled: page.eql?(:edit),
+        disabled: disabled,
         required: page.eql?(:new)
       }) do
       access_levels.each do |level|
