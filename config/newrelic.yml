@@ -2,6 +2,10 @@ common: &default_settings
   license_key: <%= ENV['NEW_RELIC_LICENSE_KEY'] %>
   log_level: debug
   app_name: <%= ENV['NEW_RELIC_APP_NAME'] %>
+  transaction_trancer:
+    explain_threshold: 0.25
+  slow_sql:
+    explain_threshold: 0.25
 
 development:
   <<: *default_settings

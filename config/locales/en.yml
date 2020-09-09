@@ -80,7 +80,7 @@ en:
       no_invitations_remaining: "No invitations remaining"
       invitation_removed: "Your invitation was removed."
       new:
-        header: "Send invitation to new Admin"
+        header: "Invite Admin"
         submit_button: "Send an invitation"
       edit:
         header: "Set your password"

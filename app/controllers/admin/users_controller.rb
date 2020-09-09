@@ -12,7 +12,7 @@ class Admin::UsersController < AdminController
 
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_users.any? }
+      authorize1 { current_admin.accessible_users(:manage).any? }
 
       facilities = if @district == "All"
         current_admin.accessible_facilities(:manage)
@@ -20,7 +20,7 @@ class Admin::UsersController < AdminController
         current_admin.accessible_facilities(:manage).where(district: @district)
       end
 
-      users = current_admin.accessible_users
+      users = current_admin.accessible_users(:manage)
         .joins(phone_number_authentications: :facility)
         .where(phone_number_authentications: {registration_facility_id: facilities})
         .order("users.full_name", "facilities.name", "users.device_created_at")
@@ -103,7 +103,7 @@ class Admin::UsersController < AdminController
 
   def set_user
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @user = authorize1 { current_admin.accessible_users.find(params[:id] || params[:user_id]) }
+      @user = authorize1 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
     else
       @user = User.find(params[:id] || params[:user_id])
       authorize([:manage, :user, @user])

@@ -96,6 +96,8 @@ class User < ApplicationRecord
     :accessible_admins,
     :accessible_protocols,
     :accessible_protocol_drugs,
+    :access_across_organizations?,
+    :access_across_facility_groups?,
     :grant_access,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
@@ -117,7 +119,7 @@ class User < ApplicationRecord
     registration_facility.id
   end
 
-  alias facility registration_facility
+  alias_method :facility, :registration_facility
 
   def full_teleconsultation_phone_number
     defaulted_teleconsult_number = teleconsultation_phone_number.presence || phone_number

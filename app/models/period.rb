@@ -94,8 +94,6 @@ class Period
     Period.new(type: type, value: value.advance(options))
   end
 
-  alias eql? ==
-
   def hash
     value.hash ^ type.hash
   end
@@ -105,6 +103,8 @@ class Period
     raise ArgumentError, "can only compare Periods of the same type" if type != other.type
     value <=> other.value
   end
+
+  alias eql? ==
 
   def inspect
     "<Period type:#{type} value=#{value}>"

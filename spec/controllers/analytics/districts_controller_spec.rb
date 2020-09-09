@@ -9,8 +9,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
   let(:facility) { create(:facility, facility_group: facility_group, district: district_name) }
   let(:organization_district) { OrganizationDistrict.new(district_name, organization) }
   let(:sanitized_district_name) { organization_district.district_name.downcase.split(" ").join("-") }
-  let(:analytics_cohort_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/cohort/quarter" }
-  let(:analytics_dashboard_cache_key) { "analytics/organization/#{organization.id}/district/#{sanitized_district_name}/dashboard/quarter" }
 
   before do
     #
@@ -57,8 +55,6 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
     context "analytics caching for districts" do
       before do
-        Rails.cache.delete(analytics_cohort_cache_key)
-        Rails.cache.delete(analytics_dashboard_cache_key)
         Timecop.travel(Date.new(2019, 5, 1))
       end
 
@@ -131,18 +127,23 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
 
         get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}
 
-        expect(Rails.cache.exist?(analytics_cohort_cache_key)).to be true
-        expect(Rails.cache.fetch(analytics_cohort_cache_key).deep_symbolize_keys).to eq expected_cache_value[:cohort]
+        expected_cohort_cache_key = "CohortAnalyticsQuery/#{facility.id}/quarter/5/May-2019"
+        analytics_dashboard_cache_key = "DistrictAnalyticsQuery/#{facility.id}/quarter/6/May-2019"
+
+        expect(Rails.cache.exist?(expected_cohort_cache_key)).to be true
+        expect(Rails.cache.fetch(expected_cohort_cache_key).deep_symbolize_keys).to eq expected_cache_value[:cohort]
 
         expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
         expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
       end
 
       it "never ends up querying the database when cached" do
+        expect_any_instance_of(CohortAnalyticsQuery).to receive(:results).and_call_original
+        expect_any_instance_of(DistrictAnalyticsQuery).to receive(:results).and_call_original
         get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}
 
-        expect_any_instance_of(OrganizationDistrict).to_not receive(:cohort_analytics)
-        expect_any_instance_of(OrganizationDistrict).to_not receive(:dashboard_analytics)
+        expect_any_instance_of(CohortAnalyticsQuery).to_not receive(:results)
+        expect_any_instance_of(DistrictAnalyticsQuery).to_not receive(:results)
 
         # this get should always have cached values
         get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}

@@ -1,20 +1,55 @@
 <div class="page-header">
   <nav class="breadcrumb">
-      <% if policy([:manage, :admin, User]).index? %><%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %><% end %> <i class="fas fa-chevron-right"></i> <%= @admin.full_name %>
+    <% if policy([:manage, :admin, User]).index? %><%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
+    <% end %> <i class="fas fa-chevron-right"></i> <%= @admin.full_name %>
   </nav>
-  
 </div>
 
-<div class="card">
+<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+  <div class="row mt-2">
+    <div class="col-md-5">
+      <h2><%= @admin.full_name %></h2>
+      <span class="user-role"><%= @admin.role %>•</span>
+      <a class="user-email" href="mailto:<%= @admin.email %>"><%= @admin.email %></a>
+    </div>
+    <div class="col-md-7" style="text-align:right;">
+      <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
+    </div>
+  </div>
+
+  <div class="card show-admin-info">
+    <div class="">
+      <h3 class="card-title"><%= @admin.display_access_level.name %></h3>
+      <h6 class="card-subtitle mb-1 text-muted"><%= @admin.display_access_level.description %></h6>
+    </div>
+  </div>
+
+  <div id="facility-access">
+    <div class="card access-tree show">
+      <div class="access-tree__section-header">
+        Facility access
+      </div>
+      <% access_tree = @admin.visible_access_tree %>
+      <%= render access_tree[:render_partial],
+          tree: access_tree[:data],
+          root: access_tree[:root],
+          user_being_edited: nil,
+          tree_depth: 0,
+          page: :show,
+          form: nil %>
+    </div>
+  </div>
+<% else %>
+  <div class="card">
     <div class="row mb-3">
-        <div class="col-md-8">
-            <h2><%= @admin.full_name %></h2>
-        </div>
-        <div class="col-md-4" style="text-align:right;">
-            <% if policy([:manage, :admin, @admin]).edit? %>
-              <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
-            <% end %>  
-        </div>
+      <div class="col-md-8">
+        <h2><%= @admin.full_name %></h2>
+      </div>
+      <div class="col-md-4" style="text-align:right;">
+        <% if policy([:manage, :admin, @admin]).edit? %>
+          <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
+        <% end %>
+      </div>
     </div>
     <p><strong>Email:</strong> <%= mail_to @admin.email %></p>
     <p><strong>Role:</strong> <%= @admin.role %></p>
@@ -31,4 +66,5 @@
         </ul>
       <% end %>
     </ul>
-</div>
+  </div>
+<% end %>

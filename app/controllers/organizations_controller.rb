@@ -14,10 +14,14 @@ class OrganizationsController < AdminController
     end
 
     users = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      current_admin.accessible_users
+      current_admin.accessible_users(:manage)
     else
       policy_scope([:manage, :user, User])
     end
+
+    @users_requesting_approval = users
+      .requested_sync_approval
+      .order(updated_at: :desc)
 
     @users_requesting_approval = paginate(users
                                             .requested_sync_approval
