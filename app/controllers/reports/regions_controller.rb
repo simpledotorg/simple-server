@@ -1,7 +1,9 @@
 class Reports::RegionsController < AdminController
-  layout "application"
+  include Pagination
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
+  before_action :set_page, only: [:details]
+  before_action :set_per_page, only: [:details]
   before_action :set_period, except: :index
   before_action :find_region, except: :index
   around_action :set_time_zone
@@ -46,6 +48,10 @@ class Reports::RegionsController < AdminController
     @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
+
+    if @region.is_a?(Facility)
+      @recent_blood_pressures = paginate(@region.recent_blood_pressures)
+    end
   end
 
   def cohort
