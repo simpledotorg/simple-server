@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_period, except: :index
+  before_action :set_period, except: [:index, :cohort]
   before_action :find_region, except: :index
   around_action :set_time_zone
 

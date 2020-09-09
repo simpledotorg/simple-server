@@ -87,6 +87,12 @@ class Period
     end
   end
 
+  def downto(number)
+    (1..number).inject([self]) do |periods, number|
+      periods << periods.last.previous
+    end
+  end
+
   # Return a new period advanced by some number of time units. Note that the period returned will be of the
   # same type. This is provided to be compatible with the underlying Rails advance method, see that method for details:
   # https://api.rubyonrails.org/classes/Date.html#method-i-advance

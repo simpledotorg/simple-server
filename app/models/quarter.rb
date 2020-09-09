@@ -8,7 +8,7 @@ class Quarter
 
   def self.parse(string)
     match = string.match(PARSE_REGEX)
-    raise ArgumentError, "String to parse as Quarter must match QX-YYYY format" unless match
+    raise ArgumentError, "String to parse as Quarter must match QX-YYYY format; provided: #{string}" unless match
     number = Integer(match[1])
     year = Integer(match[2])
     quarter_month = quarter_to_month(number)

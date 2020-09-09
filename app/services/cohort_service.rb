@@ -3,10 +3,12 @@ class CohortService
   CACHE_VERSION = 1
   CACHE_TTL = 7.days
 
-  def initialize(region:, quarters: nil)
+  def initialize(region:, range: nil)
     @region = region
-    @quarters = quarters || default_quarters
+    @quarters = range || default_quarters
   end
+
+  alias_method :range, :quarters
 
   # Each quarter cohort is made up of patients registered in the previous quarter
   # who has had a follow up visit in the current quarter.
@@ -23,14 +25,15 @@ class CohortService
 
   def compute_quarter(results_quarter)
     Rails.cache.fetch(cache_key(results_quarter), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
-      cohort_quarter = results_quarter.previous_quarter
-      period = {cohort_period: :quarter,
-                registration_quarter: cohort_quarter.number,
-                registration_year: cohort_quarter.year}
+      cohort_period = results_quarter.previous
+      period = {cohort_period: cohort_period.type,
+                registration_quarter: cohort_period.value.try(:number),
+                registration_year: cohort_period.value.try(:year),
+                registration_month: cohort_period.value.try(:month)}
       query = MyFacilities::BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: period)
       {
         results_in: results_quarter.to_s,
-        patients_registered: cohort_quarter.to_s,
+        patients_registered: cohort_period.to_s,
         registered: query.cohort_registrations.count,
         controlled: query.cohort_controlled_bps.count,
         no_bp: query.cohort_missed_visits_count,
