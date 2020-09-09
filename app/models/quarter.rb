@@ -7,12 +7,17 @@ class Quarter
   end
 
   def self.parse(string)
-    match = string.match(PARSE_REGEX)
-    raise ArgumentError, "String to parse as Quarter must match QX-YYYY format; provided: #{string}" unless match
-    number = Integer(match[1])
-    year = Integer(match[2])
-    quarter_month = quarter_to_month(number)
-    date = Date.new(year, quarter_month).beginning_of_month
+    date = if string.match(PARSE_REGEX)
+      match = string.match(PARSE_REGEX)
+      number = Integer(match[1])
+      year = Integer(match[2])
+      quarter_month = quarter_to_month(number)
+      Date.new(year, quarter_month).beginning_of_month
+    elsif string.respond_to?(:to_date)
+      string.to_date
+    else
+      raise ArgumentError, "Quarter.parse expects a a string in QX-YYYY format or an object that responds to to_date; provided: #{string}"
+    end
     new(date: date)
   end
 
