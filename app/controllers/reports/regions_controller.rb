@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   layout "application"
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_period, except: [:index, :cohort]
+  before_action :set_period, only: [:show, :details]
   before_action :find_region, except: :index
   around_action :set_time_zone
 
@@ -50,13 +50,8 @@ class Reports::RegionsController < AdminController
 
   def cohort
     authorize(:dashboard, :show?)
-
-    period_params = report_params[:period]
-    @period = if period_params.present?
-      Period.new(period_params)
-    else
-      Period.month(Date.current.beginning_of_month)
-    end
+    period_params = report_params[:period].presence || {type: :month, value: Date.current.beginning_of_month}
+    @period = Period.new(period_params)
 
     range = @period.downto(5)
     @data = CohortService.new(region: @region, range: range).call
@@ -66,12 +61,8 @@ class Reports::RegionsController < AdminController
   private
 
   def set_period
-    period_params = report_params[:period]
-    @period = if period_params.present?
-      Period.new(period_params)
-    else
-      Reports::RegionService.default_period
-    end
+    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
+    @period = Period.new(period_params)
   end
 
   def set_force_cache

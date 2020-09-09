@@ -38,6 +38,10 @@ class Period
     end
   end
 
+  def attributes
+    {type: type, value: value}
+  end
+
   # Convert this Period to a quarter period - so:
   #   a Period month of June 2020 will return a quarter Period of Q2-2020
   #   a Period quarter just returns itself
