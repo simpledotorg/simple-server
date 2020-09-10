@@ -134,7 +134,7 @@ Rails.application.routes.draw do
     controllers: {invitations: "email_authentications/invitations"}
 
   resources :admins do
-    get :access_tree, to: "admins#access_tree", on: :member
+    get "access_tree/:page", to: "admins#access_tree", on: :member, as: :access_tree
   end
 
   namespace :analytics do
