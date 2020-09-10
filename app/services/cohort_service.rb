@@ -1,5 +1,5 @@
 class CohortService
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
   CACHE_TTL = 7.days
   attr_reader :periods
   attr_reader :region
