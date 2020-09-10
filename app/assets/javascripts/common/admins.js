@@ -201,7 +201,7 @@ AdminAccessEdit.prototype = Object.assign(AdminAccessEdit.prototype, {
   accessLevelSelector: function () {
     // super
     AdminAccessInvite.prototype.accessLevelSelector.call(this)
-    const accessLevel = $("#access_level")
+    const accessLevel = $("#access-level")
     this.toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
   }
 })
