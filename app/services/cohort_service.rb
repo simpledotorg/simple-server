@@ -42,8 +42,8 @@ class CohortService
     Quarter.new(date: Date.current).downto(3)
   end
 
-  def cache_key(quarter)
-    "#{self.class}/#{region.model_name}/#{region.id}/#{quarter}"
+  def cache_key(period)
+    "#{self.class}/#{region.model_name}/#{region.id}/#{period}"
   end
 
   def cache_version
