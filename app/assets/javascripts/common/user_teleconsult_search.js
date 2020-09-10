@@ -65,7 +65,7 @@ UserTeleconsultSearch = function () {
     this.populateDropdown(spinner);
   }
 
-  this.searchURL = "/admin/users/search.json";
+  this.searchURL = "/admin/users/teleconsult_search.json";
 
   this.search = (e) => {
     let searchQuery = e.value;

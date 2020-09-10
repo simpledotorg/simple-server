@@ -2,9 +2,9 @@ class Admin::UsersController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_user, except: [:index, :search]
+  before_action :set_user, except: [:index, :teleconsult_search]
   around_action :set_time_zone, only: [:show]
-  before_action :set_district, only: [:index, :search]
+  before_action :set_district, only: [:index, :teleconsult_search]
 
   skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
@@ -47,7 +47,7 @@ class Admin::UsersController < AdminController
       end
   end
 
-  def search
+  def teleconsult_search
     authorize([:manage, :user, User])
 
     facilities = if @district == "All"

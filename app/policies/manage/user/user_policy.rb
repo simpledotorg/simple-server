@@ -5,7 +5,7 @@ class Manage::User::UserPolicy < ApplicationPolicy
       .present?
   end
 
-  def search?
+  def teleconsult_search?
     index?
   end
 
