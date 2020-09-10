@@ -92,10 +92,15 @@ RSpec.describe Period, type: :model do
     }.to raise_error(ArgumentError, "you are trying to compare a Time with a Period")
   end
 
-  it "cannot compare month and quarter periods" do
+  it "month and quarter periods are never equal" do
+    expect(q1_2019_period).to_not eq(jan_1_2019_month_period)
+  end
+
+  it "month and quarter periods are not comparable" do
+    # this exception comes from Ruby (via Comparable), so we can't easily override it to be more descriptive
     expect {
-      q1_2019_period > jan_1_2019_month_period
-    }.to raise_error(ArgumentError, "can only compare Periods of the same type")
+      q1_2019_period < jan_1_2019_month_period
+    }.to raise_error(ArgumentError, "comparison of Period with Period failed")
   end
 
   it "can be advanced forward and backwards" do
