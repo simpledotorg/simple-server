@@ -4,10 +4,11 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const ACCESS_LEVEL_POWER_USER = "power_user"
 
-AdminAccess = function () { }
+AdminAccess = function (accessDivId) {
+  this.facilityAccess = document.getElementById(accessDivId)
+}
 
 AdminAccess.prototype = {
-  facilityAccess: () => document.getElementById("facility-access"),
   accessLevel: () => document.getElementById("access_level"),
   facilityAccessPowerUser: () => document.getElementById("facility-access-power-user"),
 
@@ -25,7 +26,7 @@ AdminAccess.prototype = {
 
   checkboxItemListener: function () {
     // list of all checkboxes under facilityAccess()
-    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
     addEventListener("change", e => {
       const targetCheckbox = e.target
 
@@ -50,10 +51,10 @@ AdminAccess.prototype = {
 
   toggleAccessTreeVisibility: function (isPowerUser) {
     if (isPowerUser) {
-      this.facilityAccess().classList.add("hidden")
+      this.facilityAccess.classList.add("hidden")
       this.facilityAccessPowerUser().classList.remove("hidden")
     } else {
-      this.facilityAccess().classList.remove("hidden")
+      this.facilityAccess.classList.remove("hidden")
       this.facilityAccessPowerUser().classList.add("hidden")
     }
   },
@@ -119,7 +120,9 @@ AdminAccess.prototype = {
     });
   }
 }
-AdminAccessInvite = function () { }
+AdminAccessInvite = function (accessDivId) {
+  this.facilityAccess = document.getElementById(accessDivId)
+}
 
 AdminAccessInvite.prototype = Object.create(AdminAccess.prototype)
 
@@ -128,7 +131,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
 
   updateIndeterminateCheckboxes: function () {
     // list of all checkboxes under facilityAccess
-    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
 
     // go through all the checkboxes that are pre-checked and update their parents accordingly
     for (const checkbox of checkboxes) {
@@ -148,7 +151,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   selectAllButtonListener: function () {
     this.selectAllFacilitiesContainer().hidden = false
 
-    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
     const _self = this
     this.selectAllFacilitiesInput().addEventListener("change", () => {
       for (const checkbox of checkboxes) {
@@ -188,7 +191,9 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
     });
   }
 })
-AdminAccessEdit = function () { }
+AdminAccessEdit = function (accessDivId) {
+  this.facilityAccess = document.getElementById(accessDivId)
+}
 
 AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 
