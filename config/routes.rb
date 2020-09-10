@@ -122,6 +122,10 @@ Rails.application.routes.draw do
       scope :facility_teleconsultations do
         get "/:facility_id", to: "facility_teleconsultations#show"
       end
+
+      scope :facility_medical_officers do
+        get "sync", to: "facility_medical_officers#sync_to_user"
+      end
     end
   end
 
