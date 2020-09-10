@@ -73,37 +73,73 @@
         <% end %>
       </tr>
 
-      <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
-        <% if dashboard_analytics[resource.id].present? %>
-          <tr>
-            <td class="row-title">
-              <% if row_resource_link == :analytics_facility_path %>
-                <%= link_to resource.send(row_resource_display_field),
-                            send(row_resource_link, resource, period: @period) %>
-              <% else %>
-                <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
+      <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <% row_resource.each do |resource| %>
+          <% if dashboard_analytics[resource.id].present? %>
+            <tr>
+              <td class="row-title">
+                <% if row_resource_link == :analytics_facility_path %>
+                  <%= link_to resource.send(row_resource_display_field),
+                              send(row_resource_link, resource, period: @period) %>
+                <% else %>
+                  <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
+                <% end %>
+              </td>
+
+              <!--Registered patients-->
+              <td style="text-align: center;">
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+              </td>
+
+              <!--Follow-up patients-->
+              <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+                <td style="text-align: center;">
+                  <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                </td>
               <% end %>
-            </td>
 
-            <!--Registered patients-->
-            <td style="text-align: center;">
-              <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
-            </td>
-
-            <!--Follow-up patients-->
-            <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
-              <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+              <!--New registrations-->
+              <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+                <td style="text-align: center;">
+                  <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      <% else %>
+        <% policy_scope([:cohort_report, row_resource]).each do |resource| %>
+          <% if dashboard_analytics[resource.id].present? %>
+            <tr>
+              <td class="row-title">
+                <% if row_resource_link == :analytics_facility_path %>
+                  <%= link_to resource.send(row_resource_display_field),
+                              send(row_resource_link, resource, period: @period) %>
+                <% else %>
+                  <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
+                <% end %>
               </td>
-            <% end %>
 
-            <!--New registrations-->
-            <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+              <!--Registered patients-->
               <td style="text-align: center;">
-                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
               </td>
-            <% end %>
-          </tr>
+
+              <!--Follow-up patients-->
+              <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+                <td style="text-align: center;">
+                  <%= dash_if_zero(dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                </td>
+              <% end %>
+
+              <!--New registrations-->
+              <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+                <td style="text-align: center;">
+                  <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
         <% end %>
       <% end %>
       </tbody>

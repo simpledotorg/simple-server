@@ -201,13 +201,23 @@
 <% if @region.is_a?(FacilityGroup) %>
   <%= render "facility_tables" %>
 <% else %>
-  <%= render "shared/analytics_table",
-    dashboard_analytics: @dashboard_analytics,
-    period: :month,
-    row_resource: User.order(:full_name),
-    row_resource_description: "Users",
-    row_resource_display_field: :full_name,
-    row_resource_link: :admin_user_path %>
+  <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+    <%= render "shared/analytics_table",
+               dashboard_analytics: @dashboard_analytics,
+               period: :month,
+               row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
+               row_resource_description: "Users",
+               row_resource_display_field: :full_name,
+               row_resource_link: :admin_user_path %>
+  <% else %>
+    <%= render "shared/analytics_table",
+               dashboard_analytics: @dashboard_analytics,
+               period: :month,
+               row_resource: User.order(:full_name),
+               row_resource_description: "Users",
+               row_resource_display_field: :full_name,
+               row_resource_link: :admin_user_path %>
+  <% end %>
 <% end %>
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
