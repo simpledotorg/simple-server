@@ -99,7 +99,11 @@ AdminAccess.prototype = {
     parent.indeterminate = some && !every
 
     // recurse until check is the top most parent
-    if (element !== parent) this.updateParentCheckedState(parent, selector)
+    if (element !== parent) {
+      this.updateParentCheckedState(parent, selector)
+    } else {
+      this.updateSelectAllCheckbox()
+    }
   },
 
   updateChildrenCheckedState: function (parent, selector) {
@@ -134,6 +138,11 @@ AdminAccessInvite.prototype = Object.create(AdminAccess.prototype)
 AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   selectAllFacilitiesInput: () => document.getElementById("select-all-facilities-input"),
 
+  updateSelectAllCheckbox: function () {
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
+    this.selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
+  },
+
   updateIndeterminateCheckboxes: function () {
     // list of all checkboxes under facilityAccess
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
@@ -150,7 +159,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
       })
     }
 
-    this.selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
+    this.updateSelectAllCheckbox()
   },
 
   selectAllButtonListener: function () {
@@ -196,7 +205,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
     });
   },
 
-  initialize: function() {
+  initialize: function () {
     this.onDOMLoaded()
     this.onAsyncLoaded()
   }
