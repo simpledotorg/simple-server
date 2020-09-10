@@ -117,7 +117,7 @@ class Facility < ApplicationRecord
     query.call
   end
 
-  CSV_IMPORT_COLUMNS =
+  CSV_IMPORT_COLUMNS = if Flipper.enabled?(:teleconsult_facility_mo_search)
     {organization_name: "organization",
      facility_group_name: "facility_group",
      name: "facility_name",
@@ -134,6 +134,26 @@ class Facility < ApplicationRecord
      facility_size: "size (optional)",
      enable_diabetes_management: "enable_diabetes_management (true/false)",
      enable_teleconsultation: "enable_teleconsultation (true/false)"}
+  else
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block (optional)",
+     district: "district",
+     state: "state",
+     country: "country",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)",
+     enable_teleconsultation: "enable_teleconsultation (true/false)",
+     teleconsultation_phone_number: "teleconsultation_phone_number",
+     teleconsultation_isd_code: "teleconsultation_isd_code"}
+    end
 
   def self.parse_facilities(file_contents)
     facilities = []
