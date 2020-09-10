@@ -85,7 +85,7 @@ RSpec.describe CohortService, type: :model do
       Period.quarter(apr_5),
       Period.quarter(jul_5)
     ]
-    cohort_service = CohortService.new(region: facility, range: quarters)
+    cohort_service = CohortService.new(region: facility, periods: quarters)
 
     expect(cohort_service.call).to eq(
       [

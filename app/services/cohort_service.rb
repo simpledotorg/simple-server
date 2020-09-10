@@ -1,18 +1,18 @@
 class CohortService
   CACHE_VERSION = 1
   CACHE_TTL = 7.days
-  attr_reader :range
+  attr_reader :periods
   attr_reader :region
 
-  def initialize(region:, range: nil)
+  def initialize(region:, periods:)
     @region = region
-    @range = range || default_range
+    @periods = periods
   end
 
   # Each quarter cohort is made up of patients registered in the previous quarter
   # who has had a follow up visit in the current quarter.
   def call
-    range.each_with_object([]) do |period, arry|
+    periods.each_with_object([]) do |period, arry|
       arry << compute(period)
     end
   end

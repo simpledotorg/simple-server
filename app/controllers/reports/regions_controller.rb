@@ -57,8 +57,8 @@ class Reports::RegionsController < AdminController
     period_params = report_params[:period].presence || {type: :month, value: Date.current.beginning_of_month}
     @period = Period.new(period_params)
 
-    range = @period.downto(5)
-    @cohort_data = CohortService.new(region: @region, range: range).call
+    periods = @period.downto(5)
+    @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
   private

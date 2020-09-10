@@ -223,7 +223,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def cohort_stats
     periods = Period.quarter(Date.current).previous.downto(3)
-    CohortService.new(region: current_facility, range: periods).call
+    CohortService.new(region: current_facility, periods: periods).call
   end
 
   #
