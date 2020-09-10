@@ -152,6 +152,8 @@ class UserAccess < Struct.new(:user)
     selected_facilities = Facility.where(id: selected_facility_ids).includes(facility_group: :organization)
     resources = []
 
+    # TODO: if selected_facility_ids is not a subset of accessible_facilities, then raise NotAuthorizedError
+
     accessible_facilities_in_org = accessible_facilities(:manage).group_by(&:organization)
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
       if accessible_organizations(:manage).find_by_id(org).present? &&
