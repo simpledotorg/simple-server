@@ -418,7 +418,7 @@ RSpec.describe UserAccess, type: :model do
         [:manager, [:call_center, :manager, :viewer_all, :viewer_reports_only]],
         [:viewer_all, []],
         [:viewer_reports_only, []],
-        [:call_center, []],
+        [:call_center, []]
       ]
     }
 
@@ -427,11 +427,11 @@ RSpec.describe UserAccess, type: :model do
         admin = create(:admin, access_level)
 
         expect(admin.permitted_access_levels).to match_array(permitted_access_levels),
-          <<-ERROR
-for admin with: #{access_level}
-expected: #{permitted_access_levels}
-got: #{admin.permitted_access_levels}
-        ERROR
+          <<~ERROR
+            for admin with: #{access_level}
+            expected: #{permitted_access_levels}
+            got: #{admin.permitted_access_levels}
+          ERROR
       end
     end
   end

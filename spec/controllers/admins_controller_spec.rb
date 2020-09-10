@@ -114,19 +114,19 @@ RSpec.describe AdminsController, type: :controller do
 
       let(:params) do
         {full_name: full_name,
-          email: email,
-          role: role,
-          organization_id: organization.id}
+         email: email,
+         role: role,
+         organization_id: organization.id}
       end
 
       let(:permission_params) do
         [{permission_slug: :manage_organizations},
           {permission_slug: :manage_facility_groups,
-            resource_type: "Organization",
-            resource_id: organization.id},
+           resource_type: "Organization",
+           resource_id: organization.id},
           {permission_slug: :manage_facilities,
-            resource_type: "FacilityGroup",
-            resource_id: facility_group.id}]
+           resource_type: "FacilityGroup",
+           resource_id: facility_group.id}]
       end
 
       let(:existing_admin) { create(:admin, params) }
@@ -253,7 +253,6 @@ RSpec.describe AdminsController, type: :controller do
             put :update, params: request_params.merge(full_name: nil)
 
             expect(response).to be_redirect
-
           end
 
           it "responds with bad request if role is missing" do
@@ -277,7 +276,7 @@ RSpec.describe AdminsController, type: :controller do
           params =
             {
               full_name: Faker::Name.name,
-              role: "New user title",
+              role: "New user title"
             }
 
           put :update, params: request_params.merge(params)

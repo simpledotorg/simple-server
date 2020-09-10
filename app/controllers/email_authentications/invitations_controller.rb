@@ -29,8 +29,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
           #
           # Automatically add new users as they are granted access to the new access system
           Flipper.enable_actor(:new_permissions_system_aug_2020, Flipper::Actor.new(new_user.flipper_id))
-          #
-          #
         end
       end
     else
