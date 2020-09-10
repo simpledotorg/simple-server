@@ -16,10 +16,6 @@ RSpec.feature "Overdue appointments", type: :feature do
                              permission_slug: :download_overdue_list,
                              resource: ihmi_group)
   end
-  let!(:my_facility_permission) do
-    create(:user_permission, user: supervisor,
-           permission_slug: :view_my_facilities)
-    end
 
   before do
     ENV["IHCI_ORGANIZATION_UUID"] = ihmi.id
