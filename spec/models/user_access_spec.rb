@@ -798,7 +798,7 @@ RSpec.describe UserAccess, type: :model do
           [
             [power_user, :manage, User.non_admins.all],
             [power_user, :view_pii, []],
-            [power_user, :view_reports, []],
+            [power_user, :view_reports, User.non_admins.all],
             [power_user, :manage_overdue_list, []]
           ]
         }
