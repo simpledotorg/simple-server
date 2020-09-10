@@ -6,16 +6,64 @@
         <input type="submit" value="Save" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
       </div>
 
-      <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
-        <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
-        <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *", placeholder: "Email" %>
-        <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
-        <%= access_level_select(form, current_admin.permitted_access_levels, value: @admin.access_level, page: :edit, disabled: !current_admin.modify_access_level?) %>
+      <% form_params = {
+          url: admin_path(admin),
+          method: 'PATCH',
+          local: true,
+          autocomplete: "off",
+          label_errors: true
+      } %>
+      <%= bootstrap_form_with(form_params) do |form| %>
+
+        <%= form.text_field(
+                :full_name,
+                {
+                    value: @admin.full_name,
+                    id: :full_name,
+                    required: true,
+                    autocomplete: "off",
+                    label: "Full name *",
+                    placeholder: "Full name"
+                }
+            ) %>
+
+        <%= form.text_field(
+                :email,
+                {
+                    value: @admin.email,
+                    id: :email,
+                    required: true,
+                    disabled: true,
+                    label: "Email *",
+                    placeholder: "Email"
+                }
+            ) %>
+
+        <%= form.text_field(
+                :role,
+                {
+                    value: @admin.role,
+                    id: :role,
+                    required: true,
+                    help: "CVHO, STS, State Official etc.",
+                    label: 'Job title *',
+                    placeholder: "Job title"
+                }
+            ) %>
+
+        <%= access_level_select(
+                form,
+                current_admin.permitted_access_levels,
+                page: :edit,
+                current_access_level: admin.access_level,
+                disabled: !current_admin.modify_access_level?
+            ) %>
 
         <%= form.label "Facility access *" %>
         <div id="facility-access-power-user" class="hidden">
           Admin has access to all facilities in the system
         </div>
+
         <div id="facility-access">
           <div class="card access-tree">
             <div class="select-all-access-items">
