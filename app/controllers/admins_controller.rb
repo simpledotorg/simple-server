@@ -36,8 +36,9 @@ class AdminsController < AdminController
   end
 
   def access_tree
+    admin = access_tree_for_page.eql?(:show) ? @admin : current_admin
     user_being_edited = access_tree_for_page.eql?(:edit) ? @admin : nil
-    access_tree = current_admin.visible_access_tree
+    access_tree =   admin.visible_access_tree
 
     render partial: access_tree[:render_partial], locals: {
       tree: access_tree[:data],
