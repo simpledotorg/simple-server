@@ -1,5 +1,5 @@
 FacilityTeleconsultFields = function () {
-  this.userSearch =  new UserTeleconsultSearch();
+  this.userSearch = new UserTeleconsultSearch();
 
   this.toggleTeleconsultationFields = () => {
     $("#teleconsultation-fields").toggle();
@@ -56,7 +56,7 @@ FacilityTeleconsultFields = function () {
     if (!this.medicalOfficersCount()) this.showNoMedicalOfficers();
   }
 
-  $(document).ready(() => {
+  this.listen = () => {
     let teleconsultationFields = this;
 
     // Populate MOs from search results
@@ -70,5 +70,6 @@ FacilityTeleconsultFields = function () {
       let userID = $(this).attr('data-user-id');
       teleconsultationFields.removeMedicalOfficer(userID);
     });
-  })
+  }
 }
+

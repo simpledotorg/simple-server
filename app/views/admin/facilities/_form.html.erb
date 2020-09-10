@@ -64,6 +64,8 @@
 </template>
 
 <script>
-  // Initialize facility teleconsultation fields
-  new FacilityTeleconsultFields();
+  // initialize facility teleconsultation fields
+  $(document).ready(() => {
+    new FacilityTeleconsultFields().listen();
+  })
 </script>
