@@ -80,6 +80,10 @@ class Facility < ApplicationRecord
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
 
+  validate :teleconsultation_phone_numbers_valid?, if: -> {
+    teleconsultation_enabled? && !Flipper.enabled?(:teleconsult_facility_mo_search)
+  }
+
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
@@ -253,5 +257,21 @@ class Facility < ApplicationRecord
 
   def clear_isd_code
     self.teleconsultation_isd_code = ""
+  end
+
+  def teleconsultation_phone_numbers_valid?
+    message = "At least one medical officer must be added to enable teleconsultation, all teleconsultation numbers"\
+      " must have a country code and a phone number"
+    if teleconsultation_phone_numbers.blank?
+      errors.add("teleconsultation_phone_numbers_attributes", message)
+      return
+    end
+
+    teleconsultation_phone_numbers.each do |mo|
+      if mo.isd_code.blank? || mo.phone_number.blank?
+        errors.add("teleconsultation_phone_numbers_attributes", message)
+        break
+      end
+    end
   end
 end
