@@ -156,12 +156,15 @@ RSpec.describe Facility, type: :model do
     it "considers only registered hypertensive patients" do
       facility = create(:facility)
 
-      _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility)
-      htn_patients = create_list(:patient, 2, registration_facility: facility)
+      Timecop.freeze("June 15th 2019") do
+        _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility, recorded_at: 3.months.ago)
+        _htn_patients = create_list(:patient, 2, registration_facility: facility, recorded_at: 3.months.ago)
 
-      expect(CohortAnalyticsQuery).to receive(:new).with(match_array(htn_patients)).and_call_original
-
-      facility.cohort_analytics(:month, 3)
+        result = facility.cohort_analytics(:month, 3)
+        april_key = [Date.parse("March 1st 2019"), Date.parse("April 1st 2019")]
+        april_data = result[april_key]
+        expect(april_data["registered"]).to eq({facility.id => 2, "total" => 2})
+      end
     end
   end
 
