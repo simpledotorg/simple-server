@@ -5,11 +5,12 @@
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
-        <%= access_checkbox(
+
+        <%= access_controls(
                 :facilities,
                 facility,
                 page: page,
-                checked_fn: -> { user_being_edited.visible_facilities.include?(facility) }
+                checked: page.eql?(:edit) && user_being_edited.visible_facilities.include?(facility)
             ) %>
 
         <div class="access-item__padding"></div>

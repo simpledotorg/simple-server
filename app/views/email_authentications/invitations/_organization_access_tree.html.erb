@@ -2,11 +2,11 @@
   <ul class="access-item-wrapper">
     <li>
       <div class="access-item organization collapsed">
-        <%= access_checkbox(
+        <%= access_controls(
                 :organizations,
                 organization,
                 page: page,
-                checked_fn: -> { user_being_edited.visible_organizations.include?(organization) }
+                checked: page.eql?(:edit) && user_being_edited.visible_organizations.include?(organization)
             ) %>
 
         <div class="access-item__padding"></div>

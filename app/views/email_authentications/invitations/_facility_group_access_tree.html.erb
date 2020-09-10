@@ -6,11 +6,11 @@
           <span class="spacer"></span>
         <% end %>
 
-        <%= access_checkbox(
+        <%= access_controls(
                 :facility_groups,
                 facility_group,
                 page: page,
-                checked_fn: -> { user_being_edited.visible_facility_groups.include?(facility_group) }
+                checked: page.eql?(:edit) && user_being_edited.visible_facility_groups.include?(facility_group)
             ) %>
 
         <div class="access-item__padding"></div>

@@ -9,7 +9,7 @@
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
         <%= form.text_field :email, id: :email, required: true, label: "Email *", placeholder: "Email" %>
         <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
-        <%= access_level_select(form, current_admin.permitted_access_levels) %>
+        <%= access_level_select(form, current_admin.permitted_access_levels, required: true) %>
 
         <%= form.label "Facility Access *" %>
         <div id="facility-access-power-user" class="hidden">
