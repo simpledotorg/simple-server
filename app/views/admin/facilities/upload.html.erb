@@ -12,7 +12,14 @@
 <% end %>
 <h3>Instructions:</h3>
 <ol>
-  <li>Download and fill in <%= link_to 'this template', '/documents/upload_facilities.csv'%> to create multiple facilities via file upload.</li>
+  <li>Download and fill in
+    <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
+      <%= link_to 'this template', '/documents/upload_facilities.csv'%>
+    <% else %>
+      <%= link_to 'this template', '/documents/upload_facilities_old.csv'%>
+    <% end %>
+    to create multiple facilities via file upload.
+  </li>
   <li>Organizations for the facilities must already exist.
     <% if policy([:manage, Organization]).new? %>
       Click here to create an organization:
