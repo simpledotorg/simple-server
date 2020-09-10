@@ -38,9 +38,7 @@
     </div>
   </div>
   <script>
-    const adminAccessEdit = new AdminAccessEdit("facility-access")
-    adminAccessEdit.onAsyncLoaded()
-    adminAccessEdit.onDOMLoaded()
+    new AdminAccessEdit("facility-access").initialize()
   </script>
 <% else %>
   <%= javascript_include_tag "standalone/react_components" %>

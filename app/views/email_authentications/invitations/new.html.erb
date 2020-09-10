@@ -37,9 +37,7 @@
     </div>
   </div>
   <script>
-    const adminAccessInvite = new AdminAccessInvite("facility-access")
-    adminAccessInvite.onAsyncLoaded()
-    adminAccessInvite.onDOMLoaded()
+    new AdminAccessInvite("facility-access").initialize()
   </script>
 <% else %>
   <h1><%= t "devise.invitations.new.header" %></h1>

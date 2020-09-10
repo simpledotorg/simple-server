@@ -118,8 +118,13 @@ AdminAccess.prototype = {
     document.addEventListener('render_async_load', function (_event) {
       _self.resourceRowCollapseListener()
     });
+  },
+
+  initialize: function () {
+    this.onAsyncLoaded()
   }
 }
+
 AdminAccessInvite = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
@@ -189,8 +194,15 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
       _self.resourceRowCollapseListener()
       _self.updateIndeterminateCheckboxes()
     });
+  },
+
+  initialize: function() {
+    this.onDOMLoaded()
+    this.onAsyncLoaded()
   }
 })
+
+
 AdminAccessEdit = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
