@@ -74,6 +74,8 @@ RSpec.describe Admin::CSV::FacilityValidator do
     end
 
     it "adds an error when attributes are invalid" do
+      enable_flag(:teleconsult_facility_mo_search)
+
       facilities = [build(:facility, district: nil, enable_teleconsultation: false),
         build(:facility, state: nil, enable_teleconsultation: false),
         build(:facility, country: nil, enable_teleconsultation: false),
