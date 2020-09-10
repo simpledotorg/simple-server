@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe UserAccess, type: :model do
   let(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
   let(:manager) { UserAccess.new(create(:admin, :manager)) }
+  let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
   describe "#accessible_organizations" do
     let!(:organization_1) { create(:organization) }
@@ -344,11 +345,22 @@ RSpec.describe UserAccess, type: :model do
       expect(manager.grant_access(new_user, [])).to be_nil
     end
 
-    it "skips granting access to any resource if the grantee is a power_user" do
-      new_user = create(:admin, :power_user)
+    context "grantee is power_user" do
+      it "only allows power users to grant access" do
+        new_user = create(:admin, :power_user)
 
-      expect(manager.grant_access(new_user, [facility_1.id, facility_2.id])).to be_nil
-      expect(new_user.reload.accesses).to be_empty
+        expect(power_user.grant_access(new_user, [facility_1.id, facility_2.id])).to be_nil
+
+        expect {
+          manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        }.to raise_error(UserAccess::NotAuthorizedError)
+      end
+
+      it "skips granting access to any resource" do
+        new_user = create(:admin, :power_user)
+
+        expect(new_user.reload.accesses).to be_empty
+      end
     end
 
     context "promote access" do
