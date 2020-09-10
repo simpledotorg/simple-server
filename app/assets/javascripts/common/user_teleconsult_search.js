@@ -24,12 +24,8 @@ UserTeleconsultSearch = function () {
   }
 
   this.filterExistingUsers = (users) => {
-    if (typeof FacilityTeleconsultFields === undefined) {
-      let existingUsers = new FacilityTeleconsultFields().existingUsers();
-      return users.filter(user => !existingUsers.includes(user["id"]));
-    } else {
-      return users
-    }
+    let existingUsers = new FacilityTeleconsultFields().existingUsers();
+    return users.filter(user => !existingUsers.includes(user["id"]));
   }
 
   this.emptyTypeahead = () => {
@@ -100,5 +96,3 @@ UserTeleconsultSearch = function () {
 
   this.debouncedSearch = this.debounce(this.search);
 }
-
-let debouncedUserSearch = new UserTeleconsultSearch().debouncedSearch;

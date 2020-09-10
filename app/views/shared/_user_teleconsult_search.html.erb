@@ -36,4 +36,7 @@
   </div>
 </template>
 
-<%= inline_js "standalone/user_teleconsult_search.js" %>
+<script>
+  // Initialize search
+  let debouncedUserSearch = new UserTeleconsultSearch().debouncedSearch;
+</script>

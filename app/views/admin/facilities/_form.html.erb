@@ -63,7 +63,6 @@
   <%= render partial: "admin/facilities/teleconsultation_medical_officer", locals: {user: User.new} %>
 </template>
 
-<%= inline_js "standalone/facility_teleconsult_fields.js" %>
 <script>
   // Initialize facility teleconsultation fields
   new FacilityTeleconsultFields();
