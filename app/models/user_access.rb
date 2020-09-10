@@ -74,13 +74,13 @@ class UserAccess < Struct.new(:user)
   end
 
   def accessible_users(action)
-    return User.none unless action == :manage
+    return User.none unless [:manage, :view_reports].include?(action)
     return User.non_admins if bypass?
-    return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
+    return User.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     User
       .non_admins
-      .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})
+      .where(phone_number_authentications: {registration_facility_id: accessible_facilities(action)})
   end
 
   def access_across_organizations?(action)

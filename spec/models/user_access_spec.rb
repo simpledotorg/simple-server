@@ -503,17 +503,17 @@ RSpec.describe UserAccess, type: :model do
             [
               [manager, :manage, organization_3, [user_3, user_4]],
               [manager, :view_pii, organization_3, []],
-              [manager, :view_reports, organization_3, []],
+              [manager, :view_reports, organization_3, [user_3, user_4]],
               [manager, :manage_overdue_list, organization_3, []],
 
               [viewer_all, :manage, organization_3, []],
               [viewer_all, :view_pii, organization_3, []],
-              [viewer_all, :view_reports, organization_3, []],
+              [viewer_all, :view_reports, organization_3, [user_3, user_4]],
               [viewer_all, :manage_overdue_list, organization_3, []],
 
               [viewer_reports_only, :manage, organization_3, []],
               [viewer_reports_only, :view_pii, organization_3, []],
-              [viewer_reports_only, :view_reports, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, [user_3, user_4]],
               [viewer_reports_only, :manage_overdue_list, organization_3, []],
 
               [call_center, :manage, organization_3, []],
@@ -540,17 +540,17 @@ RSpec.describe UserAccess, type: :model do
             [
               [manager, :manage, facility_group_1, [user_1]],
               [manager, :view_pii, facility_group_1, []],
-              [manager, :view_reports, facility_group_1, []],
+              [manager, :view_reports, facility_group_1, [user_1]],
               [manager, :manage_overdue_list, facility_group_1, []],
 
               [viewer_all, :manage, facility_group_1, []],
               [viewer_all, :view_pii, facility_group_1, []],
-              [viewer_all, :view_reports, facility_group_1, []],
+              [viewer_all, :view_reports, facility_group_1, [user_1]],
               [viewer_all, :manage_overdue_list, facility_group_1, []],
 
               [viewer_reports_only, :manage, facility_group_1, []],
               [viewer_reports_only, :view_pii, facility_group_1, []],
-              [viewer_reports_only, :view_reports, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, [user_1]],
               [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
 
               [call_center, :manage, facility_group_1, []],
@@ -577,17 +577,17 @@ RSpec.describe UserAccess, type: :model do
             [
               [manager, :manage, facility_5, [user_5]],
               [manager, :view_pii, facility_5, []],
-              [manager, :view_reports, facility_5, []],
+              [manager, :view_reports, facility_5, [user_5]],
               [manager, :manage_overdue_list, facility_5, []],
 
               [viewer_all, :manage, facility_5, []],
               [viewer_all, :view_pii, facility_5, []],
-              [viewer_all, :view_reports, facility_5, []],
+              [viewer_all, :view_reports, facility_5, [user_5]],
               [viewer_all, :manage_overdue_list, facility_5, []],
 
               [viewer_reports_only, :manage, facility_5, []],
               [viewer_reports_only, :view_pii, facility_5, []],
-              [viewer_reports_only, :view_reports, facility_5, []],
+              [viewer_reports_only, :view_reports, facility_5, [user_5]],
               [viewer_reports_only, :manage_overdue_list, facility_5, []],
 
               [call_center, :manage, facility_5, []],
