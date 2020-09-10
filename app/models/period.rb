@@ -104,7 +104,7 @@ class Period
     value <=> other.value
   end
 
-  alias eql? ==
+  alias_method :eql?, :==
 
   def inspect
     "<Period type:#{type} value=#{value}>"
