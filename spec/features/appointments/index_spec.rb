@@ -16,7 +16,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
   appoint_page = AppointmentsPage::Index.new
   nav_page = Navigations::DashboardPageNavigation.new
 
-  pending "Page verification" do
+  context "Page verification" do
     before(:each) do
       visit root_path
       login.do_login(owner.email, owner.password)
@@ -193,7 +193,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     end
   end
 
-  pending "verify overdue patient list to exclude patients > 12 months overdue" do
+  context "verify overdue patient list to exclude patients > 12 months overdue" do
     before(:each) do
       visit root_path
       login.do_login(owner.email, owner.password)

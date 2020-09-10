@@ -33,7 +33,7 @@ RSpec.feature "Owner Login as Admin", type: :feature do
       login_page.click_successful_message_cross_button
     end
   end
-  pending "counsellors login and logout" do
+  context "counsellors login and logout" do
     before(:each) do
       # create access for counsellor
       counsellor.accesses.create(resource: facility)

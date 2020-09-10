@@ -3,6 +3,8 @@ require "rails_helper"
 RSpec.feature "Overdue appointments", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
+  let!(:facility) { create(:facility, facility_group: ihmi_group) }
+
   let!(:supervisor) { create(:admin, role: "supervisor") }
   let!(:view_overdue_permission) do
     create(:user_permission, user: supervisor,
@@ -14,6 +16,10 @@ RSpec.feature "Overdue appointments", type: :feature do
                              permission_slug: :download_overdue_list,
                              resource: ihmi_group)
   end
+  let!(:my_facility_permission) do
+    create(:user_permission, user: supervisor,
+           permission_slug: :view_my_facilities)
+    end
 
   before do
     ENV["IHCI_ORGANIZATION_UUID"] = ihmi.id
@@ -22,10 +28,10 @@ RSpec.feature "Overdue appointments", type: :feature do
   describe "index" do
     before { sign_in(supervisor.email_authentication) }
 
-    xit "shows Overdue tab" do
+    it "shows Overdue tab" do
       visit root_path
 
-      expect(page).to have_content("Overdue patients")
+      expect(page).to have_content("Overdue")
     end
 
     describe "Overdue patients tab" do

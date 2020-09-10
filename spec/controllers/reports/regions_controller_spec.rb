@@ -17,7 +17,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  pending "index" do
+  context "index" do
     it "loads available districts" do
       sign_in(cvho.email_authentication)
       get :index
@@ -25,7 +25,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  pending "details" do
+  context "details" do
     render_views
 
     before do
@@ -48,7 +48,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  pending "cohort" do
+  context "cohort" do
     render_views
 
     before do
@@ -71,7 +71,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  pending "show" do
+  context "show" do
     render_views
 
     before do
