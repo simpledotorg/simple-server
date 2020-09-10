@@ -17,7 +17,7 @@ FacilityTeleconsultFields = function () {
     $card.find(".medical-officer-phone-number").html(user["userTeleconsultationPhoneNumber"]);
     $card.find("[data-user-id]").attr("data-user-id", userID);
     $card.attr("data-user-id", userID);
-    $card.find("a").attr("href", `/admin/users/${userID}/edit`); //TODO: rewrite
+    $card.find("a").attr("href", `/admin/users/${userID}/edit`);
 
     return $card;
   }
