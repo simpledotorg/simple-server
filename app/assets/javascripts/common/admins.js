@@ -4,28 +4,28 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const ACCESS_LEVEL_POWER_USER = "power_user"
 
-AdminCommons = function () { }
+AdminAccess = function () { }
 
-AdminCommons.prototype.facilityAccess = () => document.getElementById("facility-access")
-AdminCommons.prototype.accessLevel = () => document.getElementById("access_level")
-AdminCommons.prototype.facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
+AdminAccess.prototype.facilityAccess = () => document.getElementById("facility-access")
+AdminAccess.prototype.accessLevel = () => document.getElementById("access_level")
+AdminAccess.prototype.facilityAccessPowerUser = () => document.getElementById("facility-access-power-user")
 
-AdminCommons.prototype.facilityAccessItemsPadding = function () {
+AdminAccess.prototype.facilityAccessItemsPadding = function () {
   return document.getElementsByClassName("access-item__padding")
 }
 
-AdminCommons.prototype.facilityAccessItemsAccessRatio = function () {
+AdminAccess.prototype.facilityAccessItemsAccessRatio = function () {
   return document.getElementsByClassName("access-ratio")
 }
 
-AdminCommons.prototype.selectAllFacilitiesContainer = function () {
+AdminAccess.prototype.selectAllFacilitiesContainer = function () {
   return document.getElementById("select-all-facilities")
 }
 
 //
 // manipulating the access tree
 //
-AdminCommons.prototype.checkboxItemListener = function () {
+AdminAccess.prototype.checkboxItemListener = function () {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
   addEventListener("change", e => {
@@ -39,7 +39,7 @@ AdminCommons.prototype.checkboxItemListener = function () {
   })
 }
 
-AdminCommons.prototype.resourceRowCollapseListener = function () {
+AdminAccess.prototype.resourceRowCollapseListener = function () {
   const collapsibleItems = [
     this.facilityAccessItemsPadding(),
     this.facilityAccessItemsAccessRatio()
@@ -50,7 +50,7 @@ AdminCommons.prototype.resourceRowCollapseListener = function () {
   }
 }
 
-AdminCommons.prototype.toggleAccessTreeVisibility = function (isPowerUser) {
+AdminAccess.prototype.toggleAccessTreeVisibility = function (isPowerUser) {
   if (isPowerUser) {
     this.facilityAccess().classList.add("hidden")
     this.facilityAccessPowerUser().classList.remove("hidden")
@@ -60,11 +60,11 @@ AdminCommons.prototype.toggleAccessTreeVisibility = function (isPowerUser) {
   }
 }
 
-AdminCommons.prototype.onAccessLevelChanged = function ({ target }) {
+AdminAccess.prototype.onAccessLevelChanged = function ({ target }) {
   this.toggleAccessTreeVisibility(target.value === ACCESS_LEVEL_POWER_USER)
 }
 
-AdminCommons.prototype.toggleItemCollapsed = function (element) {
+AdminAccess.prototype.toggleItemCollapsed = function (element) {
   const collapsed = element.classList.contains("collapsed")
 
   if (collapsed) {
@@ -74,7 +74,7 @@ AdminCommons.prototype.toggleItemCollapsed = function (element) {
   }
 }
 
-AdminCommons.prototype.onFacilityAccessItemToggled = function ({ target }) {
+AdminAccess.prototype.onFacilityAccessItemToggled = function ({ target }) {
   const children = Array.from(target.closest("li").childNodes)
   const parentItem = target.closest(".access-item")
   const wrapper = children.find(containsClass("access-item-wrapper"))
@@ -84,7 +84,7 @@ AdminCommons.prototype.onFacilityAccessItemToggled = function ({ target }) {
   }
 }
 
-AdminCommons.prototype.updateParentCheckedState = function (element, selector) {
+AdminAccess.prototype.updateParentCheckedState = function (element, selector) {
   // find parent and sibling checkboxes
   const parent = (element.closest(["ul"]).parentNode).querySelector(selector)
   const siblings = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
@@ -104,7 +104,7 @@ AdminCommons.prototype.updateParentCheckedState = function (element, selector) {
   if (element !== parent) this.updateParentCheckedState(parent, selector)
 }
 
-AdminCommons.prototype.updateChildrenCheckedState = function (parent, selector) {
+AdminAccess.prototype.updateChildrenCheckedState = function (parent, selector) {
   // check/uncheck children (includes check itself)
   const children = nodeListToArray(selector, parent.closest("li"))
 
@@ -115,19 +115,19 @@ AdminCommons.prototype.updateChildrenCheckedState = function (parent, selector) 
   })
 }
 
-AdminCommons.prototype.onAsyncLoaded = function () {
+AdminAccess.prototype.onAsyncLoaded = function () {
   const _self = this
   document.addEventListener('render_async_load', function (_event) {
     _self.resourceRowCollapseListener()
   });
 }
-AdminInvite = function () { }
+AdminAccessInvite = function () { }
 
-AdminInvite.prototype = Object.create(AdminCommons.prototype)
+AdminAccessInvite.prototype = Object.create(AdminAccess.prototype)
 
-AdminInvite.prototype.selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
+AdminAccessInvite.prototype.selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
 
-AdminInvite.prototype.updateIndeterminateCheckboxes = function () {
+AdminAccessInvite.prototype.updateIndeterminateCheckboxes = function () {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
 
@@ -146,7 +146,7 @@ AdminInvite.prototype.updateIndeterminateCheckboxes = function () {
   this.selectAllFacilitiesInput().checked = checkboxes.every(checkbox => checkbox.checked)
 }
 
-AdminInvite.prototype.selectAllButtonListener = function () {
+AdminAccessInvite.prototype.selectAllButtonListener = function () {
   // if (!this.selectAllFacilitiesInput) return
   this.selectAllFacilitiesContainer().hidden = false
 
@@ -162,7 +162,7 @@ AdminInvite.prototype.selectAllButtonListener = function () {
 
 
 // ON DOM LOAD
-AdminInvite.prototype.accessLevelSelector = function () {
+AdminAccessInvite.prototype.accessLevelSelector = function () {
   const accessLevel = $("#access_level")
   // initialize the access_level select dropdown
   accessLevel.selectpicker({
@@ -171,11 +171,11 @@ AdminInvite.prototype.accessLevelSelector = function () {
 }
 
 // ON DOM LOAD
-AdminInvite.prototype.accessLevelListener = function () {
+AdminAccessInvite.prototype.accessLevelListener = function () {
   this.accessLevel().addEventListener("change", this.onAccessLevelChanged.bind(this))
 }
 
-AdminInvite.prototype.onDOMLoaded = function () {
+AdminAccessInvite.prototype.onDOMLoaded = function () {
   const _self = this
   window.addEventListener("DOMContentLoaded", function () {
     _self.accessLevelSelector()
@@ -183,7 +183,7 @@ AdminInvite.prototype.onDOMLoaded = function () {
   })
 }
 
-AdminInvite.prototype.onAsyncLoaded = function () {
+AdminAccessInvite.prototype.onAsyncLoaded = function () {
   const _self = this
   document.addEventListener('render_async_load', function () {
     _self.selectAllButtonListener()
@@ -192,12 +192,12 @@ AdminInvite.prototype.onAsyncLoaded = function () {
     _self.updateIndeterminateCheckboxes()
   });
 }
-AdminEdit = function () { }
+AdminAccessEdit = function () { }
 
-AdminEdit.prototype = Object.create(AdminInvite.prototype)
+AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 
-AdminEdit.prototype.accessLevelSelector = function () {
-  AdminInvite.prototype.accessLevelSelector.call(this)
+AdminAccessEdit.prototype.accessLevelSelector = function () {
+  AdminAccessInvite.prototype.accessLevelSelector.call(this)
   const accessLevel = $("#access_level")
   this.toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
 }
