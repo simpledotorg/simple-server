@@ -2,17 +2,17 @@ class AdminsController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
+  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :verify_params, only: [:update], unless: -> { current_admin.permissions_v2_enabled? }
+  before_action :🆕verify_params, only: [:update], if: -> { current_admin.permissions_v2_enabled? }
   after_action :verify_policy_scoped, only: :index
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       admins = current_admin.accessible_admins(:manage)
       authorize1 { admins.any? }
 
@@ -40,13 +40,13 @@ class AdminsController < AdminController
   end
 
   def edit
-    unless Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    unless current_admin.permissions_v2_enabled?
       authorize([:manage, :admin, current_admin])
     end
   end
 
   def update
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       User.transaction do
         @admin.update!(user_params)
         current_admin.grant_access(@admin, selected_facilities)
@@ -113,7 +113,7 @@ class AdminsController < AdminController
   end
 
   def 🆕set_admin
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
     end
   end

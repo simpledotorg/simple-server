@@ -1,4 +1,4 @@
-<% unless Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+<% unless current_admin.permissions_v2_enabled? %>
   <h1>Edit admin</h1>
 <% end %>
 <%= render 'form', admin: @admin %>
