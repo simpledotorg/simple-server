@@ -118,7 +118,7 @@ class User < ApplicationRecord
     registration_facility.id
   end
 
-  alias facility registration_facility
+  alias_method :facility, :registration_facility
 
   def full_teleconsultation_phone_number
     defaulted_teleconsult_number = teleconsultation_phone_number.presence || phone_number
