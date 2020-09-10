@@ -202,6 +202,8 @@ GEM
       rspec (>= 2.99.0, < 4.0)
     hashdiff (1.0.1)
     hashie (4.1.0)
+    honeycomb-beeline (2.2.0)
+      libhoney (~> 1.14, >= 1.14.2)
     http (4.4.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -239,6 +241,9 @@ GEM
     kaminari-core (1.2.1)
     launchy (2.5.0)
       addressable (~> 2.7)
+    libhoney (1.14.5)
+      addressable (~> 2.0)
+      http (>= 2.0, < 5.0)
     listen (3.1.5)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
@@ -581,6 +586,7 @@ DEPENDENCIES
   github-ds
   groupdate
   guard-rspec
+  honeycomb-beeline
   http
   http_accept_language
   imgkit
