@@ -12,11 +12,9 @@ class CohortService
   # Each quarter cohort is made up of patients registered in the previous quarter
   # who has had a follow up visit in the current quarter.
   def call
-    result = {quarterly_registrations: []}
-    range.each do |period|
-      result[:quarterly_registrations] << compute(period)
+    range.each_with_object([]) do |period, arry|
+      arry << compute(period)
     end
-    result
   end
 
   private

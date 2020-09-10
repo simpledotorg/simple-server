@@ -20,7 +20,6 @@ class Reports::RegionsController < AdminController
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
     @controlled_patients = @data[:controlled_patients]
-    @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
@@ -45,7 +44,6 @@ class Reports::RegionsController < AdminController
                                        period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
-    @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
@@ -60,8 +58,7 @@ class Reports::RegionsController < AdminController
     @period = Period.new(period_params)
 
     range = @period.downto(5)
-    @data = CohortService.new(region: @region, range: range).call
-    @quarterly_registrations = @data[:quarterly_registrations]
+    @cohort_data = CohortService.new(region: @region, range: range).call
   end
 
   private

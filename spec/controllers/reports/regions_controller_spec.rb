@@ -68,8 +68,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district"}
       end
       expect(response).to be_successful
-      data = assigns(:data)
-      pp data
+      data = assigns(:cohort_data)
       pending "need to change data output format"
       expect(data[:controlled_patients][Period.month("June 1 2020")]).to eq(1)
     end
@@ -84,8 +83,9 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
         get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
         expect(response).to be_successful
-        data = assigns(:data)
-        q2_data = data[:quarterly_registrations][1]
+        data = assigns(:cohort_data)
+        expect(data.size).to eq(6)
+        q2_data = data[1]
         expect(q2_data["results_in"]).to eq("Q1-2020")
         expect(q2_data["registered"]).to eq(1)
         expect(q2_data["controlled"]).to eq(1)

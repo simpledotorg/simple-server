@@ -88,7 +88,7 @@ RSpec.describe CohortService, type: :model do
     cohort_service = CohortService.new(region: facility, range: quarters)
 
     expect(cohort_service.call).to eq(
-      quarterly_registrations: [
+      [
         {
           "controlled" => 3,
           "no_bp" => 2,

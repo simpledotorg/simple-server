@@ -10,7 +10,7 @@
         The result for all HTN patients registered in a quarter at their follow-up visit in the following quarter
       </p>
     </div>
-    <% @quarterly_registrations.each_with_index do |cohort, index| %>
+    <% @cohort_data.each_with_index do |cohort, index| %>
       <div class="split-row mt-0px pt-0px mb-16px <%= "split-row-first" if index == 0 %>">
         <div class="row px-lg-0">
           <div class="col-lg-3 nowrap order-lg-1">

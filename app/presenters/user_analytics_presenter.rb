@@ -87,10 +87,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
   end
 
-  def cohorts
-    statistics.dig(:cohorts, :quarterly_registrations)
-  end
-
   def cohort_controlled(cohort)
     display_percentage(cohort[:controlled], cohort[:registered])
   end
