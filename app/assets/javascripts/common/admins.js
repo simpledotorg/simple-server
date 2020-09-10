@@ -21,6 +21,7 @@ AdminCommons.prototype.facilityAccessItemsAccessRatio = function () {
 AdminCommons.prototype.selectAllFacilitiesContainer = function () {
   return document.getElementById("select-all-facilities")
 }
+
 //
 // manipulating the access tree
 //
@@ -117,19 +118,16 @@ AdminCommons.prototype.updateChildrenCheckedState = function (parent, selector) 
 AdminCommons.prototype.onAsyncLoaded = function () {
   const _self = this
   document.addEventListener('render_async_load', function (_event) {
-    // _self.checkboxItemListener()
     _self.resourceRowCollapseListener()
-    // _self.editAdmin()
   });
 }
-
 AdminInvite = function () { }
 
 AdminInvite.prototype = Object.create(AdminCommons.prototype)
 
 AdminInvite.prototype.selectAllFacilitiesInput = () => document.getElementById("select-all-facilities-input")
 
-AdminInvite.prototype.editAdmin = function () {
+AdminInvite.prototype.updateIndeterminateCheckboxes = function () {
   // list of all checkboxes under facilityAccessDiv()
   const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess())
 
@@ -185,31 +183,15 @@ AdminInvite.prototype.onDOMLoaded = function () {
   })
 }
 
-//
-// load things upfront
-//
-window.addEventListener("DOMContentLoaded", onDOMContentLoaded);
-
-function onDOMContentLoaded() {
-  // accessLevelListener()
-  // accessLevelSelector()
-}
-
-//
-// wait for the render_async hook before loading the access tree related JS
-//
-
-
 AdminInvite.prototype.onAsyncLoaded = function () {
   const _self = this
   document.addEventListener('render_async_load', function () {
     _self.selectAllButtonListener()
     _self.checkboxItemListener()
     _self.resourceRowCollapseListener()
-    _self.editAdmin()
+    _self.updateIndeterminateCheckboxes()
   });
 }
-
 AdminEdit = function () { }
 
 AdminEdit.prototype = Object.create(AdminInvite.prototype)
