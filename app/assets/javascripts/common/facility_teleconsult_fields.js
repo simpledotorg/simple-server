@@ -46,7 +46,7 @@ FacilityTeleconsultFields = function () {
   this.addMedicalOfficer = (user) => {
     if (this.isAdded(user)) return false;
 
-    $(".medical-officers").append(this.medicalOfficerCard(user));
+    $(".medical-officers").prepend(this.medicalOfficerCard(user));
     this.hideNoMedicalOfficers();
   }
 

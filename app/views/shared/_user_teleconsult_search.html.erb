@@ -1,13 +1,20 @@
 <div class="typeahead">
-  <%= search_field_tag :search_query,
-                       nil,
-                       id: :search_query,
-                       class: "typeahead-input form-control mb-1",
-                       hide_label: true,
-                       placeholder: "Find medical officers by name or phone number",
-                       onkeyup: "debouncedUserSearch(this)",
-                       autocomplete: "off" %>
-  <div class="typeahead-dropdown"></div>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">
+        <i class="fa fa-search"></i>
+      </span>
+    </div>
+    <%= search_field_tag :search_query,
+                         nil,
+                         id: :search_query,
+                         class: "typeahead-input form-control",
+                         hide_label: true,
+                         placeholder: "Find medical officers by name or phone number",
+                         onkeyup: "debouncedUserSearch(this)",
+                         autocomplete: "off" %>
+    <div class="typeahead-dropdown"></div>
+  </div>
   <div class="typeahead-spinner">
     <div class="spinner-border text-primary"></div>
   </div>
