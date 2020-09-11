@@ -3,26 +3,20 @@ module AdminAccessHelper
     "#{available} #{"facility".pluralize(available)}"
   end
 
-  def access_checkbox(form, name, resource, page: :new, checked_fn: -> { false })
-    return access_resource_label(resource) if page.eql?(:show)
-
+  def access_checkbox(name, resource, checked)
     opts = {
       id: resource.id,
-      class: "access-input",
-      label: resource.name.to_s,
-      checked: page.eql?(:edit) && checked_fn.call
+      class: "access-input form-check-input"
     }
 
-    form.check_box("#{name}[]", opts, resource.id, nil)
+    check_box_tag("#{name}[]", resource.id, checked, opts)
   end
 
   def access_resource_label(resource)
-    content_tag(:div, class: "form-check__show") do
-      label_tag(resource.name.to_s, resource.name.to_s, class: "form-check-label")
-    end
+    label_tag(resource.id, resource.name.to_s, class: "form-check-label")
   end
 
-  def access_level_select(form, available_access_levels, page: :new, disabled: false, current_access_level: nil)
+  def access_level_select(form, access_levels, required: true, disabled: false, current_access_level: nil)
     form.select(:access_level,
       {},
       {label: "Access *"},
@@ -30,9 +24,9 @@ module AdminAccessHelper
         class: "access-levels",
         id: :access_level,
         disabled: disabled,
-        required: page.eql?(:new)
+        required: required
       }) do
-      available_access_levels.each do |level|
+      access_levels.each do |level|
         access_level_option(level, current_access_level)
       end
     end
@@ -61,5 +55,15 @@ module AdminAccessHelper
     HTML
 
     sanitize(option)
+  end
+
+  def access_tree_load_error
+    error_html = <<~ERROR.strip_heredoc.squish
+      <p class='load-error-message'>
+        There was an error, <a href=''> please try again </a>
+      </p>
+    ERROR
+
+    sanitize(error_html)
   end
 end

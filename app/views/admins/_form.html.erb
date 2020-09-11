@@ -13,12 +13,12 @@
           autocomplete: "off",
           label_errors: true
       } %>
-      <%= bootstrap_form_with(form_params) do |form| %>
 
+      <%= bootstrap_form_with(form_params) do |form| %>
         <%= form.text_field(
                 :full_name,
                 {
-                    value: @admin.full_name,
+                    value: admin.full_name,
                     id: :full_name,
                     required: true,
                     autocomplete: "off",
@@ -30,7 +30,7 @@
         <%= form.text_field(
                 :email,
                 {
-                    value: @admin.email,
+                    value: admin.email,
                     id: :email,
                     required: true,
                     disabled: true,
@@ -42,7 +42,7 @@
         <%= form.text_field(
                 :role,
                 {
-                    value: @admin.role,
+                    value: admin.role,
                     id: :role,
                     required: true,
                     help: "CVHO, STS, State Official etc.",
@@ -51,13 +51,12 @@
                 }
             ) %>
 
-        <%= access_level_select(
-                form,
-                current_admin.permitted_access_levels,
-                page: :edit,
-                current_access_level: admin.access_level,
-                disabled: !current_admin.modify_access_level?
-            ) %>
+        <%= access_level_select(form, current_admin.permitted_access_levels,
+            {
+                required: true,
+                disabled: !current_admin.modify_access_level?,
+                current_access_level: admin.access_level
+            }) %>
 
         <%= form.label "Facility access *" %>
         <div id="facility-access-power-user" class="hidden">
@@ -66,18 +65,17 @@
 
         <div id="facility-access">
           <div class="card access-tree">
-            <div class="select-all-access-items">
-              <%= form.check_box :select_all_facilities, id: "select-all-facilities" %>
+            <div id="select-all-facilities" hidden="hidden">
+              <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
             </div>
 
-            <% access_tree = current_admin.visible_access_tree %>
-            <%= render access_tree[:render_partial],
-                tree: access_tree[:data],
-                root: access_tree[:root],
-                user_being_edited: AdminAccessPresenter.new(@admin),
-                tree_depth: 0,
-                page: :edit,
-                form: form %>
+            <%= render_async(access_tree_admin_path(admin, :edit), error_message: access_tree_load_error) do %>
+              <div class="spinner-wrapper">
+                <div class="spinner spinner-border text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
 
@@ -85,6 +83,10 @@
       <% end %>
     </div>
   </div>
+
+  <script>
+    new AdminAccessEdit("facility-access").initialize()
+  </script>
 <% else %>
   <%= javascript_include_tag "standalone/react_components" %>
   <% user_permissions = current_admin.user_permissions.pluck(:permission_slug) %>

@@ -872,6 +872,15 @@ RSpec.describe UserAccess, type: :model do
         end
       end
     end
+
+    def error_message(admin, action, expected, got)
+      <<~MESSAGE
+        access_level: #{admin.access_level}
+        action: #{action}
+        expected: #{expected}
+        got: #{got.to_a}
+      MESSAGE
+    end
   end
 
   describe "#grant_access" do
@@ -1025,14 +1034,5 @@ RSpec.describe UserAccess, type: :model do
         ERROR
       end
     end
-  end
-
-  def error_message(admin, action, expected, got)
-    <<~MESSAGE
-      access_level: #{admin.access_level}
-      action: #{action}
-      expected: #{expected}
-      got: #{got.to_a}
-    MESSAGE
   end
 end

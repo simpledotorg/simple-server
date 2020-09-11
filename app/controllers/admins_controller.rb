@@ -3,7 +3,7 @@ class AdminsController < AdminController
   include SearchHelper
 
   before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :🆕set_admin, only: [:show, :edit, :update, :access_tree], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
@@ -35,8 +35,30 @@ class AdminsController < AdminController
     end
   end
 
+  def access_tree
+    access_tree =
+      case page_for_access_tree
+        when :show
+          AdminAccessPresenter.new(@admin).visible_access_tree
+        when :new, :edit
+          AdminAccessPresenter.new(current_admin).visible_access_tree
+        else
+          head :not_found and return
+      end
+
+    user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
+
+    render partial: access_tree[:render_partial],
+      locals: {
+        tree: access_tree[:data],
+        root: access_tree[:root],
+        user_being_edited: user_being_edited,
+        tree_depth: 0,
+        page: page_for_access_tree,
+      }
+  end
+
   def show
-    @admin = AdminAccessPresenter.new(@admin)
   end
 
   def edit
@@ -138,6 +160,10 @@ class AdminsController < AdminController
       access_level: params[:access_level],
       device_updated_at: Time.current
     }.compact
+  end
+
+  def page_for_access_tree
+    params[:page].to_sym
   end
 
   def access_level_changed?
