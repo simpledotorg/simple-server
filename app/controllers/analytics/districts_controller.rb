@@ -4,6 +4,7 @@ class Analytics::DistrictsController < AnalyticsController
 
   before_action :set_organization_district
   skip_after_action :verify_authorized
+  skip_after_action :verify_authorization_attempted
 
   def show
     @show_current_period = true

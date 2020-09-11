@@ -74,7 +74,11 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_facility
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
-    authorize([:cohort_report, @facility])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:view_reports).include?(@facility) }
+    else
+      authorize([:cohort_report, @facility])
+    end
   end
 
   def set_cohort_analytics(period, prev_periods)
