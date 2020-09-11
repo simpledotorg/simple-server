@@ -48,21 +48,36 @@ class Admin::UsersController < AdminController
   end
 
   def teleconsult_search
-    authorize([:manage, :user, User])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_users(:manage).any? }
 
-    facilities = if @district == "All"
-      policy_scope([:manage, :user, Facility.all])
+      facilities = if @district == "All"
+      current_admin.accessible_facilities(:manage)
+      else
+        current_admin.accessible_facilities(:manage).where(district: @district)
+      end
+
+      users = current_admin.accessible_users(:manage)
+        .joins(phone_number_authentications: :facility)
+        .where(phone_number_authentications: {registration_facility_id: facilities})
+        .order("users.full_name", "facilities.name", "users.device_created_at")
     else
-      policy_scope([:manage, :user, Facility.where(district: @district)])
-    end
+      authorize([:manage, :user, User])
 
-    users = policy_scope([:manage, :user, User])
-      .joins(phone_number_authentications: :facility)
-      .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
-      .order("users.full_name", "facilities.name", "users.device_created_at")
+      facilities = if @district == "All"
+        policy_scope([:manage, :user, Facility.all])
+      else
+        policy_scope([:manage, :user, Facility.where(district: @district)])
+      end
 
-    respond_to do |format|
-      format.json { @users = users.teleconsult_search(search_query) }
+      users = policy_scope([:manage, :user, User])
+        .joins(phone_number_authentications: :facility)
+        .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
+        .order("users.full_name", "facilities.name", "users.device_created_at")
+
+      respond_to do |format|
+        format.json { @users = users.teleconsult_search(search_query) }
+      end
     end
   end
 
