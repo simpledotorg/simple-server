@@ -3,7 +3,7 @@ class LinkTeleconsultationMedicalOfficers
     def call
       linked_users_count, unlinked_numbers_count = 0, 0
 
-      Facility.all.each do |facility|
+      Facility.find_each do |facility|
         facility.teleconsultation_phone_numbers.each do |number|
           medical_officer = find_medical_officer_by_number(number["phone_number"])
           if medical_officer
