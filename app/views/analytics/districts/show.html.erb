@@ -50,7 +50,7 @@
 
   <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
     <% if current_admin
-        .accessible_facility_groups(:view_reports)
+        .accessible_facility_groups(:view_pii)
         .where(organization: @organization_district.organization,
                name: @organization_district.district_name)
         .any? %>
