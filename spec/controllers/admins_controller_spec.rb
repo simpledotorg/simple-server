@@ -113,19 +113,19 @@ RSpec.describe AdminsController, type: :controller do
 
     let(:params) do
       {full_name: full_name,
-       email: email,
-       role: role,
-       organization_id: organization.id}
+        email: email,
+        role: role,
+        organization_id: organization.id}
     end
 
     let(:permission_params) do
       [{permission_slug: :manage_organizations},
         {permission_slug: :manage_facility_groups,
-         resource_type: "Organization",
-         resource_id: organization.id},
+          resource_type: "Organization",
+          resource_id: organization.id},
         {permission_slug: :manage_facilities,
-         resource_type: "FacilityGroup",
-         resource_id: facility_group.id}]
+          resource_type: "FacilityGroup",
+          resource_id: facility_group.id}]
     end
 
     let(:existing_admin) { create(:admin, params) }
@@ -196,6 +196,100 @@ RSpec.describe AdminsController, type: :controller do
           expect(JSON(response.body)).to eq("errors" => ["Role can't be blank"])
         end
       end
+    end
+  end
+
+  describe "#access_tree" do
+    let(:organization) { create(:organization) }
+    let(:current_admin) {
+      current_admin = create(:admin, :manager, organization: organization)
+      current_admin.accesses.create!(resource: organization)
+      current_admin
+    }
+    let(:existing_admin) {
+      admin = create(:admin, :manager, organization: organization)
+      admin.accesses.create!(resource: organization)
+      admin
+    }
+
+    before do
+      facility_group_1 = create(:facility_group, organization: organization)
+      facility_group_2 = create(:facility_group, organization: organization)
+      create(:facility, facility_group: facility_group_1)
+      create(:facility, facility_group: facility_group_2)
+
+      enable_flag(:new_permissions_system_aug_2020, current_admin)
+      sign_in(current_admin.email_authentication)
+    end
+
+    after do
+      disable_flag(:new_permissions_system_aug_2020, current_admin)
+    end
+
+    it "pulls up the tree for the admin when the page is show" do
+      access_tree = AdminAccessPresenter.new(existing_admin).visible_access_tree
+
+      expected_locals = {
+        tree: access_tree[:data],
+        root: :facility_group,
+        user_being_edited: nil,
+        tree_depth: 0,
+        page: :show,
+      }
+
+      expect(controller).to receive(:render).with({
+        partial: access_tree[:render_partial],
+        locals: expected_locals,
+        status: :no_content
+      })
+
+      get :access_tree, params: {id: existing_admin.id, page: :show}, xhr: true
+    end
+
+    it "pulls up the tree for the current admin when the page is new" do
+      access_tree = AdminAccessPresenter.new(current_admin).visible_access_tree
+
+      expected_locals = {
+        tree: access_tree[:data],
+        root: :facility_group,
+        user_being_edited: nil,
+        tree_depth: 0,
+        page: :new,
+      }
+
+      expect(controller).to receive(:render).with({
+        partial: access_tree[:render_partial],
+        locals: expected_locals,
+        status: :no_content
+      })
+
+      get :access_tree, params: {id: current_admin.id, page: :new}, xhr: true
+    end
+
+    it "sets the admin as the user_being_edited when the page is edit" do
+      access_tree = AdminAccessPresenter.new(current_admin).visible_access_tree
+
+      expected_locals = {
+        tree: access_tree[:data],
+        root: :facility_group,
+        user_being_edited: existing_admin,
+        tree_depth: 0,
+        page: :edit,
+      }
+
+      expect(controller).to receive(:render).with({
+        partial: access_tree[:render_partial],
+        locals: expected_locals,
+        status: :no_content
+      })
+
+      get :access_tree, params: {id: existing_admin.id, page: :edit}, xhr: true
+    end
+
+    it "returns a 404 if the page is invalid" do
+      get :access_tree, params: {id: existing_admin.id, page: :garble}
+
+      expect(response).to be_not_found
     end
   end
 end

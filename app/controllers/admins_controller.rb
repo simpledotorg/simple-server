@@ -36,18 +36,27 @@ class AdminsController < AdminController
   end
 
   def access_tree
-    admin = access_tree_for_page.eql?(:show) ? @admin : current_admin
+    access_tree =
+      case access_tree_for_page
+        when :show
+          AdminAccessPresenter.new(@admin).visible_access_tree
+        when :new, :edit
+          AdminAccessPresenter.new(current_admin).visible_access_tree
+        else
+          head :not_found and return
+      end
+
     user_being_edited = access_tree_for_page.eql?(:edit) ? @admin : nil
 
-    access_tree = admin.visible_access_tree
-
-    render partial: access_tree[:render_partial], locals: {
-      tree: access_tree[:data],
-      root: access_tree[:root],
-      user_being_edited: user_being_edited,
-      tree_depth: 0,
-      page: access_tree_for_page,
-    }
+    render partial: access_tree[:render_partial],
+      locals: {
+        tree: access_tree[:data],
+        root: access_tree[:root],
+        user_being_edited: user_being_edited,
+        tree_depth: 0,
+        page: access_tree_for_page,
+      },
+      status: :no_content
   end
 
   def show
@@ -129,12 +138,11 @@ class AdminsController < AdminController
   def 🆕set_admin
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
-      @admin = AdminAccessPresenter.new(@admin)
     end
   end
 
   def current_admin
-    AdminAccessPresenter.new(super)
+    super
   end
 
   def permission_params

@@ -32,7 +32,7 @@ module AdminAccessHelper
     label_tag(resource.id, resource.name.to_s, class: "form-check-label")
   end
 
-  def access_level_select(form, access_levels, required: true, disabled: false, access_level: nil)
+  def access_level_select(form, access_levels, required: true, disabled: false, current_access_level: nil)
     form.select(:access_level,
       {},
       {label: "Access *"},
@@ -43,7 +43,7 @@ module AdminAccessHelper
         required: required
       }) do
       access_levels.each do |level|
-        access_level_option(level, access_level)
+        access_level_option(level, current_access_level)
       end
     end
   end

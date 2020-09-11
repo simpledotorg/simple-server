@@ -2,4 +2,4 @@
   <h1>Edit admin</h1>
 <% end %>
 
-<%= render 'form', admin: @admin %>
+<%= render 'form', admin: AdminAccessPresenter.new(@admin) %>
