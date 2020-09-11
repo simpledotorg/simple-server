@@ -28,10 +28,10 @@ RSpec.describe UserAccess, type: :model do
     let!(:user_4) { create(:user, :with_phone_number_authentication, registration_facility: facility_4) }
     let!(:user_5) { create(:user, :with_phone_number_authentication, registration_facility: facility_5) }
 
-    let!(:admin_1) { create(:admin, :call_center, organization: organization_1) }
-    let!(:admin_2) { create(:admin, :call_center, organization: organization_1) }
-    let!(:admin_3) { create(:admin, :call_center, organization: organization_3) }
-    let!(:admin_4) { create(:admin, :call_center, organization: organization_3) }
+    let!(:admin_1) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_1); admin }
+    let!(:admin_2) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_1); admin }
+    let!(:admin_3) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_3); admin }
+    let!(:admin_4) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_3); admin }
     let!(:admin_5) { create(:admin, :call_center) }
 
     let!(:manager) { create(:admin, :manager) }
@@ -68,6 +68,7 @@ RSpec.describe UserAccess, type: :model do
         it "returns the organizations an admin can perform actions on" do
           permission_matrix.each do |admin, action, current_resource, expected_resources|
             admin.accesses.create(resource: current_resource)
+
             expect(admin.accessible_organizations(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
@@ -379,7 +380,7 @@ RSpec.describe UserAccess, type: :model do
         context "Organization access" do
           let!(:permission_matrix) {
             [
-              [manager, :manage, organization_3, User.admins.where(organization: organization_3)],
+              [manager, :manage, organization_3, [manager, admin_3, admin_4]],
               [manager, :view_pii, organization_3, []],
               [manager, :view_reports, organization_3, []],
               [manager, :manage_overdue_list, organization_3, []],
@@ -403,8 +404,8 @@ RSpec.describe UserAccess, type: :model do
 
           it "returns the admins an admin can perform actions on with organization access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
-              admin.update(organization: organization_3)
               admin.accesses.create(resource: current_resource)
+
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
@@ -417,7 +418,7 @@ RSpec.describe UserAccess, type: :model do
         context "Facility Group access" do
           let!(:permission_matrix) {
             [
-              [manager, :manage, facility_group_1, User.admins.where(organization: organization_1)],
+              [manager, :manage, facility_group_1, [manager, admin_1, admin_2]],
               [manager, :view_pii, facility_group_1, []],
               [manager, :view_reports, facility_group_1, []],
               [manager, :manage_overdue_list, facility_group_1, []],
@@ -441,8 +442,8 @@ RSpec.describe UserAccess, type: :model do
 
           it "returns the admins an admin can perform actions on with facility group access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
-              admin.update(organization: organization_1)
               admin.accesses.create(resource: current_resource)
+
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
@@ -455,7 +456,7 @@ RSpec.describe UserAccess, type: :model do
         context "Facility access" do
           let!(:permission_matrix) {
             [
-              [manager, :manage, facility_4, User.admins.where(organization: organization_3)],
+              [manager, :manage, facility_4, [manager, admin_3, admin_4]],
               [manager, :view_pii, facility_4, []],
               [manager, :view_reports, facility_4, []],
               [manager, :manage_overdue_list, facility_4, []],
@@ -479,8 +480,8 @@ RSpec.describe UserAccess, type: :model do
 
           it "returns the admins an admin can perform actions on with facility access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
-              admin.update(organization: organization_3)
               admin.accesses.create(resource: current_resource)
+
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
