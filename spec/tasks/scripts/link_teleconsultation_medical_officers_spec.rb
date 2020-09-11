@@ -66,5 +66,12 @@ RSpec.describe LinkTeleconsultationMedicalOfficers do
 
       expect(facility_1.reload.teleconsultation_medical_officers).to match_array [facility_1_mos, existing_mo].flatten
     end
+
+    it "skips facilities without any linkable MOs" do
+      described_class.call
+
+      expect(facility_1.teleconsultation_medical_officers).to be_empty
+      expect(facility_2.teleconsultation_medical_officers).to be_empty
+    end
   end
 end
