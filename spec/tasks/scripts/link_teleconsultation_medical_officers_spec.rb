@@ -24,7 +24,7 @@ RSpec.describe LinkTeleconsultationMedicalOfficers do
         ])
     }
 
-    it "should find all medical officers with matching phone_numbers and link them" do
+    it "finds all medical officers with matching phone_numbers and link them" do
       facility_1_users = facility_1_phone_numbers.map { |phone_number|
         create(:user, phone_number: phone_number)
       }
@@ -39,7 +39,7 @@ RSpec.describe LinkTeleconsultationMedicalOfficers do
       expect(facility_2.teleconsultation_medical_officers).to match_array facility_2_users
     end
 
-    it "should find all medical officers with matching teleconsult_phone_numbers and link them" do
+    it "finds all medical officers with matching teleconsult_phone_numbers and link them" do
       facility_1_users = facility_1_phone_numbers.map { |phone_number|
         create(:user, teleconsultation_phone_number: phone_number)
       }
