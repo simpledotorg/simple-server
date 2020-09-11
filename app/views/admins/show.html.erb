@@ -7,7 +7,7 @@
   </nav>
 </div>
 
-<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+<% if current_admin.permissions_v2_enabled? %>
   <div class="row mt-2">
     <div class="col-md-5">
       <h2><%= admin.full_name %></h2>

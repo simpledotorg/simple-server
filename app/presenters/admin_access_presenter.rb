@@ -3,15 +3,22 @@ require "ostruct"
 class AdminAccessPresenter < SimpleDelegator
   include Memery
 
+  attr_reader :admin_access_level
   attr_reader :admin
 
   def initialize(admin)
-    @admin = admin
     super
+    @admin = admin
+    @admin_access_level = admin.access_level
   end
 
   def display_access_level
-    OpenStruct.new(UserAccess::LEVELS.fetch(admin.access_level.to_sym))
+    access_level = if admin_access_level
+      UserAccess::LEVELS.fetch(admin_access_level.to_sym)
+    else
+      {name: "(Not Set)", description: "N/A"}
+    end
+    OpenStruct.new(access_level)
   end
 
   def permitted_access_levels

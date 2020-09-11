@@ -240,4 +240,12 @@ class User < ApplicationRecord
   def flipper_id
     "User;#{id}"
   end
+
+  def feature_enabled?(name)
+    Flipper.enabled?(name, self)
+  end
+
+  def permissions_v2_enabled?
+    feature_enabled?(:new_permissions_system_aug_2020)
+  end
 end

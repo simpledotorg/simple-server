@@ -2,13 +2,13 @@ class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocol
   before_action :set_protocol_drug, only: [:show, :edit, :update, :destroy]
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)
     else
       authorize([:manage, ProtocolDrug])
@@ -20,8 +20,8 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def new
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drug = @protocol.protocol_drugs.new
     else
       @protocol_drug = @protocol.protocol_drugs.new
@@ -33,8 +33,8 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def create
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
     else
       @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
@@ -68,8 +68,8 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def set_protocol_drug
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @protocol_drug = authorize1 { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
+    if current_admin.permissions_v2_enabled?
+      @protocol_drug = authorize_v2 { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
     else
       @protocol_drug = ProtocolDrug.find(params[:id])
       authorize([:manage, @protocol_drug])
