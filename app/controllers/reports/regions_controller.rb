@@ -8,14 +8,29 @@ class Reports::RegionsController < AdminController
   before_action :find_region, except: :index
   around_action :set_time_zone
 
-  def index
-    authorize(:dashboard, :show?)
+  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
-    @organizations = policy_scope([:cohort_report, Organization]).order(:name)
+  def index
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      @organizations = current_admin.accessible_facilities(:view_reports)
+        .flat_map(&:organization)
+        .uniq
+        .compact
+        .sort_by(&:name)
+    else
+      authorize(:dashboard, :show?)
+      @organizations = policy_scope([:cohort_report, Organization]).order(:name)
+    end
   end
 
   def show
-    authorize(:dashboard, :show?)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
@@ -38,7 +53,11 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    authorize(:dashboard, :show?)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
@@ -53,10 +72,13 @@ class Reports::RegionsController < AdminController
   end
 
   def cohort
-    authorize(:dashboard, :show?)
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
     period_params = report_params[:period].presence || {type: :month, value: Date.current.beginning_of_month}
     @period = Period.new(period_params)
-
     periods = @period.downto(5)
     @cohort_data = CohortService.new(region: @region, periods: periods).call
   end

@@ -41,7 +41,7 @@ module AdminPage
 
       def deny_access(user_name)
         within(:xpath, "//div[@name='" + user_name + "']") do
-          find(:xpath, "//a[text()='Deny']").click
+          find(:css, "a.btn-outline-danger").click
         end
         type(REASON_FOR_DENIAL_EDITBOX, "incorrect mobile")
         click(DENY_ACCESS_BUTTON)
