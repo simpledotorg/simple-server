@@ -2,8 +2,14 @@
   <h1 class="page-title">Organizations</h1>
 
   <nav class="page-nav">
-    <% if policy([:manage, Organization]).new? %>
-      <%= link_to 'Add organization', new_admin_organization_path, class: "btn btn-sm btn-success" %>
+    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.power_user? %>
+        <%= link_to 'Add organization', new_admin_organization_path, class: "btn btn-sm btn-success" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, Organization]).new? %>
+        <%= link_to 'Add organization', new_admin_organization_path, class: "btn btn-sm btn-success" %>
+      <% end %>
     <% end %>
   </nav>
 </div>
@@ -13,10 +19,14 @@
     <div class="row">
       <div class="col-10">
         <h5 class="mb-1">
-          <% if policy([:manage, organization]).edit? %>
+          <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
             <%= link_to organization.name, edit_admin_organization_path(organization) %>
           <% else %>
-            <%= organization.name %>
+            <% if policy([:manage, organization]).edit? %>
+              <%= link_to organization.name, edit_admin_organization_path(organization) %>
+            <% else %>
+              <%= organization.name %>
+            <% end %>
           <% end %>
         </h5>
         <div class="desc"><%= organization.description %>.</div>
@@ -32,9 +42,17 @@
         </div>
       </div>
       <div class="col-2 text-right">
-        <% if policy([:manage, organization]).destroy? %>
-          <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
-            <i class="fas fa-trash-alt"></i>
+        <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+          <% if organization.facility_groups.none? %>
+            <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
+              <i class="fas fa-trash-alt"></i>
+            <% end %>
+          <% end %>
+        <% else %>
+          <% if policy([:manage, organization]).destroy? %>
+            <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
+              <i class="fas fa-trash-alt"></i>
+            <% end %>
           <% end %>
         <% end %>
       </div>

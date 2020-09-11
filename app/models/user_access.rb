@@ -97,6 +97,20 @@ class UserAccess < Struct.new(:user)
       .where(phone_number_authentications: {registration_facility_id: accessible_facilities(action)})
   end
 
+  def accessible_protocols(action)
+    return Protocol.all if action == :manage && power_user?
+    return Protocol.all if action == :manage && accessible_organizations(:manage).any?
+
+    Protocol.none
+  end
+
+  def accessible_protocol_drugs(action)
+    return ProtocolDrug.all if action == :manage && power_user?
+    return ProtocolDrug.all if action == :manage && accessible_organizations(:manage).any?
+
+    ProtocolDrug.none
+  end
+
   def access_across_organizations?(action)
     accessible_facilities(action).group_by(&:organization).keys.length > 1
   end
