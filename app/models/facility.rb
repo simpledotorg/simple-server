@@ -136,8 +136,7 @@ class Facility < ApplicationRecord
      latitude: "latitude (optional)",
      longitude: "longitude (optional)",
      facility_size: "size (optional)",
-     enable_diabetes_management: "enable_diabetes_management (true/false)",
-     enable_teleconsultation: "enable_teleconsultation (true/false)"}
+     enable_diabetes_management: "enable_diabetes_management (true/false)"}
   else
     {organization_name: "organization",
      facility_group_name: "facility_group",

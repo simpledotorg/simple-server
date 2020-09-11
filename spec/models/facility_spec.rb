@@ -229,7 +229,6 @@ RSpec.describe Facility, type: :model do
                                            district: "Bhatinda",
                                            state: "Punjab",
                                            country: "India",
-                                           enable_teleconsultation: "true",
                                            import: true)
     end
 
@@ -263,11 +262,6 @@ RSpec.describe Facility, type: :model do
                                              teleconsultation_isd_code: "91",
                                              import: true)
       end
-    end
-
-    it "defaults enable_teleconsultation to false if blank" do
-      facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.first[:enable_teleconsultation]).to be false
     end
 
     it "defaults enable_diabetes_management to false if blank" do
