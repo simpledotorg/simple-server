@@ -24,7 +24,7 @@
 
   .card {
     &.access-tree {
-      padding: 0px;
+      padding: 0;
       min-height: 460px;
     }
   }
@@ -47,12 +47,12 @@
     list-style-type: none;
     display: block;
     height: 100%;
-    padding-left: 0px;
-    margin: 0px;
+    padding-left: 0;
+    margin: 0;
 
     li {
       height: 100%;
-      padding: 0px;
+      padding: 0;
       border-top: 1px solid var(--light);
       position: relative;
       margin-bottom: -1px;
@@ -128,11 +128,11 @@
         label {
           font-weight: 100;
         }
-      }
 
-      .form-check__show {
-        margin: 12px 16px 12px 16px;
-        padding: 0px;
+        &.show {
+          margin: 12px 16px 12px 16px;
+          padding: 0;
+        }
       }
 
       .access-ratio {
@@ -148,7 +148,7 @@
 
         i {
           transform: rotate(0deg);
-          margin: 0px 8px 2px 8px;
+          margin: 0 8px 2px 8px;
           @include transition(0.2s);
           pointer-events: none;
         }

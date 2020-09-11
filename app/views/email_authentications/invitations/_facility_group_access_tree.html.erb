@@ -6,12 +6,15 @@
           <span class="spacer"></span>
         <% end %>
 
-        <%= access_controls(
-                :facility_groups,
-                facility_group,
-                page: page,
-                checked: page.eql?(:edit) && user_being_edited.visible_facility_groups.include?(facility_group)
-            ) %>
+        <div class="form-check <%= "show" if page.eql?(:show) %>">
+
+          <% unless page.eql?(:show) %>
+            <% pre_checked = page.eql?(:edit) && user_being_edited.visible_facility_groups.include?(facility_group) %>
+            <%= access_checkbox(:facility_groups, facility_group, checked: pre_checked) %>
+          <% end %>
+
+          <%= access_resource_label(facility_group) %>
+        </div>
 
         <div class="access-item__padding"></div>
 

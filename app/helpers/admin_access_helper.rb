@@ -3,29 +3,13 @@ module AdminAccessHelper
     "#{available} #{"facility".pluralize(available)}"
   end
 
-  def access_controls(name, resource, page: nil, checked: false)
-    case page
-      when :show
-        content_tag(:div, class: "form-check__show") { access_resource_label(resource) }
-      when :new, :edit
-        access_checkbox(name, resource, checked)
-      else
-        raise ArgumentError, "Unsupported page type: #{page}"
-    end
-  end
-
   def access_checkbox(name, resource, checked)
-    content_tag(:div, class: "form-check") do
-      opts = {
-        id: resource.id,
-        class: "access-input form-check-input"
-      }
+    opts = {
+      id: resource.id,
+      class: "access-input form-check-input"
+    }
 
-      checkbox = check_box_tag("#{name}[]", resource.id, checked, opts)
-      label = access_resource_label(resource)
-
-      concat([checkbox, label].join.html_safe)
-    end
+    check_box_tag("#{name}[]", resource.id, checked, opts)
   end
 
   def access_resource_label(resource)

@@ -2,12 +2,15 @@
   <ul class="access-item-wrapper">
     <li>
       <div class="access-item organization collapsed">
-        <%= access_controls(
-                :organizations,
-                organization,
-                page: page,
-                checked: page.eql?(:edit) && user_being_edited.visible_organizations.include?(organization)
-            ) %>
+        <div class="form-check <%= "show" if page.eql?(:show) %>">
+
+          <% unless page.eql?(:show) %>
+            <% pre_checked = page.eql?(:edit) && user_being_edited.visible_organizations.include?(organization) %>
+            <%= access_checkbox(:organizations, organization, checked: pre_checked) %>
+          <% end %>
+
+          <%= access_resource_label(organization) %>
+        </div>
 
         <div class="access-item__padding"></div>
 
