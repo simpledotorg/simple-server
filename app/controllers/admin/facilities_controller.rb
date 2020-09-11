@@ -18,7 +18,7 @@ class Admin::FacilitiesController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 do
+      authorize_v2 do
         current_admin.accessible_facilities(:manage).any? ||
           current_admin.accessible_facility_groups(:manage).any? ||
           current_admin.accessible_organizations(:manage).any?
@@ -81,7 +81,7 @@ class Admin::FacilitiesController < AdminController
     @facility = new_facility
 
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
+      authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
     else
       authorize([:manage, :facility, @facility])
     end
@@ -94,7 +94,7 @@ class Admin::FacilitiesController < AdminController
     @facility = new_facility(facility_params)
 
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
+      authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
     else
       authorize([:manage, :facility, @facility])
     end
@@ -121,7 +121,7 @@ class Admin::FacilitiesController < AdminController
 
   def upload
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facility_groups(:manage).any? }
+      authorize_v2 { current_admin.accessible_facility_groups(:manage).any? }
     else
       authorize([:manage, :facility, Facility])
     end
@@ -144,7 +144,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_facility_new_permissions
-    @facility = authorize1 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
+    @facility = authorize_v2 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
   end
 
   def set_facility_group_new_permissions

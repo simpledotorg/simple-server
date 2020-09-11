@@ -12,7 +12,7 @@ class AppointmentsController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:manage_overdue_list).any? }
+      authorize_v2 { current_admin.accessible_facilities(:manage_overdue_list).any? }
     else
       authorize [:overdue_list, Appointment], :index?
     end
@@ -68,7 +68,7 @@ class AppointmentsController < AdminController
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
+      authorize_v2 { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
     else
       authorize([:overdue_list, @appointment])
     end

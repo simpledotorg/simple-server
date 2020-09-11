@@ -14,7 +14,7 @@ class AdminsController < AdminController
   def index
     if current_admin.permissions_v2_enabled?
       admins = current_admin.accessible_admins(:manage)
-      authorize1 { admins.any? }
+      authorize_v2 { admins.any? }
 
       @admins =
         if searching?
@@ -140,7 +140,7 @@ class AdminsController < AdminController
 
   def set_admin_v2
     if current_admin.permissions_v2_enabled?
-      @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
+      @admin = authorize_v2 { current_admin.accessible_admins(:manage).find(params[:id]) }
     end
   end
 

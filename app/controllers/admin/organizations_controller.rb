@@ -7,7 +7,7 @@ class Admin::OrganizationsController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.power_user? }
+      authorize_v2 { current_admin.power_user? }
       @organizations = current_admin.accessible_organizations(:manage).order(:name)
     else
       authorize([:manage, Organization])
@@ -17,7 +17,7 @@ class Admin::OrganizationsController < AdminController
 
   def new
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.power_user? }
+      authorize_v2 { current_admin.power_user? }
       @organization = Organization.new
     else
       @organization = Organization.new
@@ -30,7 +30,7 @@ class Admin::OrganizationsController < AdminController
 
   def create
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.power_user? }
+      authorize_v2 { current_admin.power_user? }
       @organization = Organization.new(organization_params)
     else
       @organization = Organization.new(organization_params)
@@ -61,7 +61,7 @@ class Admin::OrganizationsController < AdminController
 
   def set_organization
     if current_admin.permissions_v2_enabled?
-      @organization = authorize1 { current_admin.accessible_organizations(:manage).friendly.find(params[:id]) }
+      @organization = authorize_v2 { current_admin.accessible_organizations(:manage).friendly.find(params[:id]) }
     else
       @organization = Organization.friendly.find(params[:id])
       authorize([:manage, @organization])

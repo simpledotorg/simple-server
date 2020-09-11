@@ -8,7 +8,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)
     else
       authorize([:manage, ProtocolDrug])
@@ -21,7 +21,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def new
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drug = @protocol.protocol_drugs.new
     else
       @protocol_drug = @protocol.protocol_drugs.new
@@ -34,7 +34,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def create
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
     else
       @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
@@ -69,7 +69,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def set_protocol_drug
     if current_admin.permissions_v2_enabled?
-      @protocol_drug = authorize1 { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
+      @protocol_drug = authorize_v2 { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
     else
       @protocol_drug = ProtocolDrug.find(params[:id])
       authorize([:manage, @protocol_drug])

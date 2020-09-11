@@ -16,7 +16,7 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = FacilityGroup.new
 
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
     else
       authorize([:manage, @facility_group])
     end
@@ -29,7 +29,7 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = FacilityGroup.new(facility_group_params)
 
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
+      authorize_v2 { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
     else
       authorize([:manage, @facility_group])
     end
@@ -75,7 +75,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def set_facility_group
     if current_admin.permissions_v2_enabled?
-      @facility_group = authorize1 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
+      @facility_group = authorize_v2 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
     else
       @facility_group = FacilityGroup.friendly.find(params[:id])
       authorize([:manage, @facility_group])

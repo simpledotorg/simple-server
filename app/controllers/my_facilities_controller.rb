@@ -128,7 +128,7 @@ class MyFacilitiesController < AdminController
 
   def authorize_my_facilities
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :view_my_facilities?)
     end

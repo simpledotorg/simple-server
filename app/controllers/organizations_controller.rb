@@ -8,7 +8,7 @@ class OrganizationsController < AdminController
   def index
     if current_admin.permissions_v2_enabled?
       @accessible_facilities = current_admin.accessible_facilities(:view_reports)
-      authorize1 { @accessible_facilities.any? }
+      authorize_v2 { @accessible_facilities.any? }
     else
       authorize(:dashboard, :show?)
     end

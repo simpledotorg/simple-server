@@ -13,7 +13,7 @@ class Reports::RegionsController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
       @organizations = current_admin.accessible_facilities(:view_reports)
         .flat_map(&:organization)
         .uniq
@@ -27,7 +27,7 @@ class Reports::RegionsController < AdminController
 
   def show
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :show?)
     end
@@ -55,7 +55,7 @@ class Reports::RegionsController < AdminController
 
   def details
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :show?)
     end
@@ -75,7 +75,7 @@ class Reports::RegionsController < AdminController
 
   def cohort
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :show?)
     end

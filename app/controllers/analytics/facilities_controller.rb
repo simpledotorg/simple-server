@@ -75,7 +75,7 @@ class Analytics::FacilitiesController < AnalyticsController
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_facilities(:view_reports).include?(@facility) }
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).include?(@facility) }
     else
       authorize([:cohort_report, @facility])
     end

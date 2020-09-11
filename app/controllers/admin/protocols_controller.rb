@@ -7,7 +7,7 @@ class Admin::ProtocolsController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocols = current_admin.accessible_protocols(:manage).order(:name)
     else
       authorize([:manage, Protocol])
@@ -21,7 +21,7 @@ class Admin::ProtocolsController < AdminController
 
   def new
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol = Protocol.new
     else
       @protocol = Protocol.new
@@ -34,7 +34,7 @@ class Admin::ProtocolsController < AdminController
 
   def create
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol = Protocol.new(protocol_params)
     else
       @protocol = Protocol.new(protocol_params)
@@ -65,7 +65,7 @@ class Admin::ProtocolsController < AdminController
 
   def set_protocol
     if current_admin.permissions_v2_enabled?
-      @protocol = authorize1 { current_admin.accessible_protocols(:manage).find(params[:id]) }
+      @protocol = authorize_v2 { current_admin.accessible_protocols(:manage).find(params[:id]) }
     else
       @protocol = Protocol.find(params[:id])
       authorize([:manage, @protocol])

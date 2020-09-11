@@ -12,7 +12,7 @@ class Admin::UsersController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize1 { current_admin.accessible_users(:manage).any? }
+      authorize_v2 { current_admin.accessible_users(:manage).any? }
 
       facilities = if @district == "All"
         current_admin.accessible_facilities(:manage)
@@ -103,7 +103,7 @@ class Admin::UsersController < AdminController
 
   def set_user
     if current_admin.permissions_v2_enabled?
-      @user = authorize1 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
+      @user = authorize_v2 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
     else
       @user = User.find(params[:id] || params[:user_id])
       authorize([:manage, :user, @user])
