@@ -829,6 +829,48 @@ RSpec.describe UserAccess, type: :model do
           end
         end
       end
+
+      context "#accessible_protocols" do
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, Protocol.all],
+            [power_user, :view_pii, []],
+            [power_user, :view_reports, []],
+            [power_user, :manage_overdue_list, []]
+          ]
+        }
+
+        it "returns the protocols a power user has access to" do
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_protocols(action)).to match_array(expected_resources),
+              error_message(admin,
+                action,
+                expected_resources,
+                admin.accessible_protocols(action))
+          end
+        end
+      end
+
+      context "#accessible_protocol_drugs" do
+        let!(:permission_matrix) {
+          [
+            [power_user, :manage, ProtocolDrug.all],
+            [power_user, :view_pii, []],
+            [power_user, :view_reports, []],
+            [power_user, :manage_overdue_list, []]
+          ]
+        }
+
+        it "returns the protocol_drugs a power user has access to" do
+          permission_matrix.each do |admin, action, expected_resources|
+            expect(admin.accessible_protocol_drugs(action)).to match_array(expected_resources),
+              error_message(admin,
+                action,
+                expected_resources,
+                admin.accessible_protocol_drugs(action))
+          end
+        end
+      end
     end
   end
 
