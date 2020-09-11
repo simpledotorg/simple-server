@@ -1313,7 +1313,7 @@
         "array"
       ],
       "items": {
-        "$ref": "#/definitions/teleconsultation_medical_officer"
+        "$ref": "#/definitions/facility_medical_officer"
       }
     }
   },

@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-
 require "shellwords"
 
 MAIN_BRANCH = "master"
@@ -15,6 +14,7 @@ end
 # ------------------
 # Changelog
 # ------------------
+`git fetch --tags`
 last_release = `git describe --tags --abbrev=0 --match "release-*"`.strip
 
 changelog = `git log #{last_release}..HEAD --oneline --decorate=no`
