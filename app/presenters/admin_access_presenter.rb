@@ -43,14 +43,16 @@ class AdminAccessPresenter < SimpleDelegator
   memoize def organization_tree
     facility_group_tree
       .group_by { |facility_group, _facilities| facility_group.organization }
-      .transform_values(&:to_h)
       .sort_by { |organization, _| organization.name }
+      .to_h
+      .transform_values(&:to_h)
   end
 
   memoize def facility_group_tree
     visible_facilities
       .group_by(&:facility_group)
       .sort_by { |facility_group, _| facility_group.name }
+      .to_h
   end
 
   memoize def visible_organizations
