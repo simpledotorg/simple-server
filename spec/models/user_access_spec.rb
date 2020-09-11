@@ -28,10 +28,10 @@ RSpec.describe UserAccess, type: :model do
     let!(:user_4) { create(:user, :with_phone_number_authentication, registration_facility: facility_4) }
     let!(:user_5) { create(:user, :with_phone_number_authentication, registration_facility: facility_5) }
 
-    let!(:admin_1) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_1); admin }
-    let!(:admin_2) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_1); admin }
-    let!(:admin_3) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_3); admin }
-    let!(:admin_4) { admin = create(:admin, :call_center); admin.accesses.create!(resource: organization_3); admin }
+    let!(:admin_1) { create(:admin, :call_center, :with_access, resource: organization_1) }
+    let!(:admin_2) { create(:admin, :call_center, :with_access, resource: organization_1) }
+    let!(:admin_3) { create(:admin, :call_center, :with_access, resource: organization_3) }
+    let!(:admin_4) { create(:admin, :call_center, :with_access, resource: organization_3) }
     let!(:admin_5) { create(:admin, :call_center) }
 
     let!(:manager) { create(:admin, :manager) }
