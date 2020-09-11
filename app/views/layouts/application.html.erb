@@ -152,7 +152,7 @@
                 </li>
               <% end %>
 
-              <% if current_admin.accessible_facilities(:manage_overdue_list).any? %>
+              <% if policy(:dashboard).overdue_list? %>
                 <li class="nav-item">
                   <%= link_to "Overdue", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                 </li>
