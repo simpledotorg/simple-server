@@ -55,7 +55,7 @@
       </a>
       <% if action_name == "cohort" %>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <% [:quarter, :month].each do |period_type|
+          <% [:month, :quarter].each do |period_type|
             period = Period.new(type: period_type, value: @period.to_date)
             selected = true if period == @period
           %>

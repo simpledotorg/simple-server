@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   include Pagination
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_period, only: [:show, :details]
+  before_action :set_period, only: [:show, :details, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: :index
@@ -77,8 +77,6 @@ class Reports::RegionsController < AdminController
     else
       authorize(:dashboard, :show?)
     end
-    period_params = report_params[:period].presence || {type: :month, value: Date.current.beginning_of_month}
-    @period = Period.new(period_params)
     periods = @period.downto(5)
     @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
