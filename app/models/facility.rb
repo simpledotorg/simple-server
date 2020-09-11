@@ -157,7 +157,7 @@ class Facility < ApplicationRecord
      enable_teleconsultation: "enable_teleconsultation (true/false)",
      teleconsultation_phone_number: "teleconsultation_phone_number",
      teleconsultation_isd_code: "teleconsultation_isd_code"}
-    end
+  end
 
   def self.parse_facilities(file_contents)
     facilities = []

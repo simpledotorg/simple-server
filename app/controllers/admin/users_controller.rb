@@ -52,7 +52,7 @@ class Admin::UsersController < AdminController
       authorize1 { current_admin.accessible_users(:manage).any? }
 
       facilities = if @district == "All"
-      current_admin.accessible_facilities(:manage)
+        current_admin.accessible_facilities(:manage)
       else
         current_admin.accessible_facilities(:manage).where(district: @district)
       end
