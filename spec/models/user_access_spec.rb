@@ -39,6 +39,9 @@ RSpec.describe UserAccess, type: :model do
     let!(:viewer_reports_only) { create(:admin, :viewer_reports_only) }
     let!(:call_center) { create(:admin, :call_center) }
 
+    let!(:protocol_1) { create(:protocol) }
+    let!(:protocol_drug_1) { create(:protocol_drug) }
+
     context "non power users" do
       context "#accessible_organizations" do
         let!(:permission_matrix) {
@@ -371,6 +374,232 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_users(action))
+            end
+          end
+        end
+      end
+
+      context "#accessible_protocols" do
+        context "Organization access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, organization_3, Protocol.all],
+              [manager, :view_pii, organization_3, []],
+              [manager, :view_reports, organization_3, []],
+              [manager, :manage_overdue_list, organization_3, []],
+
+              [viewer_all, :manage, organization_3, []],
+              [viewer_all, :view_pii, organization_3, []],
+              [viewer_all, :view_reports, organization_3, []],
+              [viewer_all, :manage_overdue_list, organization_3, []],
+
+              [viewer_reports_only, :manage, organization_3, []],
+              [viewer_reports_only, :view_pii, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, []],
+              [viewer_reports_only, :manage_overdue_list, organization_3, []],
+
+              [call_center, :manage, organization_3, []],
+              [call_center, :view_pii, organization_3, []],
+              [call_center, :view_reports, organization_3, []],
+              [call_center, :manage_overdue_list, organization_3, []]
+            ]
+          }
+
+          it "returns the protocols an admin can perform actions on with organization access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              admin.accesses.create(resource: current_resource)
+              expect(admin.accessible_protocols(action)).to match_array(expected_resources),
+                error_message(admin,
+                  action,
+                  expected_resources,
+                  admin.accessible_protocols(action))
+            end
+          end
+        end
+
+        context "Facility Group access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_group_1, []],
+              [manager, :view_pii, facility_group_1, []],
+              [manager, :view_reports, facility_group_1, []],
+              [manager, :manage_overdue_list, facility_group_1, []],
+
+              [viewer_all, :manage, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, []],
+              [viewer_all, :view_reports, facility_group_1, []],
+              [viewer_all, :manage_overdue_list, facility_group_1, []],
+
+              [viewer_reports_only, :manage, facility_group_1, []],
+              [viewer_reports_only, :view_pii, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, []],
+              [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
+
+              [call_center, :manage, facility_group_1, []],
+              [call_center, :view_pii, facility_group_1, []],
+              [call_center, :view_reports, facility_group_1, []],
+              [call_center, :manage_overdue_list, facility_group_1, []]
+            ]
+          }
+
+          it "returns the protocols an admin can perform actions on with facility group access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              admin.accesses.create(resource: current_resource)
+              expect(admin.accessible_protocols(action)).to match_array(expected_resources),
+                error_message(admin,
+                  action,
+                  expected_resources,
+                  admin.accessible_protocols(action))
+            end
+          end
+        end
+
+        context "Facility access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_5, []],
+              [manager, :view_pii, facility_5, []],
+              [manager, :view_reports, facility_5, []],
+              [manager, :manage_overdue_list, facility_5, []],
+
+              [viewer_all, :manage, facility_5, []],
+              [viewer_all, :view_pii, facility_5, []],
+              [viewer_all, :view_reports, facility_5, []],
+              [viewer_all, :manage_overdue_list, facility_5, []],
+
+              [viewer_reports_only, :manage, facility_5, []],
+              [viewer_reports_only, :view_pii, facility_5, []],
+              [viewer_reports_only, :view_reports, facility_5, []],
+              [viewer_reports_only, :manage_overdue_list, facility_5, []],
+
+              [call_center, :manage, facility_5, []],
+              [call_center, :view_pii, facility_5, []],
+              [call_center, :view_reports, facility_5, []],
+              [call_center, :manage_overdue_list, facility_5, []]
+            ]
+          }
+
+          it "returns the protocols an admin can perform actions on with facility access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              admin.accesses.create(resource: current_resource)
+              expect(admin.accessible_protocols(action)).to match_array(expected_resources),
+                error_message(admin,
+                  action,
+                  expected_resources,
+                  admin.accessible_protocols(action))
+            end
+          end
+        end
+      end
+
+      context "#accessible_protocol_drugs" do
+        context "Organization access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, organization_3, ProtocolDrug.all],
+              [manager, :view_pii, organization_3, []],
+              [manager, :view_reports, organization_3, []],
+              [manager, :manage_overdue_list, organization_3, []],
+
+              [viewer_all, :manage, organization_3, []],
+              [viewer_all, :view_pii, organization_3, []],
+              [viewer_all, :view_reports, organization_3, []],
+              [viewer_all, :manage_overdue_list, organization_3, []],
+
+              [viewer_reports_only, :manage, organization_3, []],
+              [viewer_reports_only, :view_pii, organization_3, []],
+              [viewer_reports_only, :view_reports, organization_3, []],
+              [viewer_reports_only, :manage_overdue_list, organization_3, []],
+
+              [call_center, :manage, organization_3, []],
+              [call_center, :view_pii, organization_3, []],
+              [call_center, :view_reports, organization_3, []],
+              [call_center, :manage_overdue_list, organization_3, []]
+            ]
+          }
+
+          it "returns the protocol_drugs an admin can perform actions on with organization access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              admin.accesses.create(resource: current_resource)
+              expect(admin.accessible_protocol_drugs(action)).to match_array(expected_resources),
+                error_message(admin,
+                  action,
+                  expected_resources,
+                  admin.accessible_protocol_drugs(action))
+            end
+          end
+        end
+
+        context "Facility Group access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_group_1, []],
+              [manager, :view_pii, facility_group_1, []],
+              [manager, :view_reports, facility_group_1, []],
+              [manager, :manage_overdue_list, facility_group_1, []],
+
+              [viewer_all, :manage, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, []],
+              [viewer_all, :view_reports, facility_group_1, []],
+              [viewer_all, :manage_overdue_list, facility_group_1, []],
+
+              [viewer_reports_only, :manage, facility_group_1, []],
+              [viewer_reports_only, :view_pii, facility_group_1, []],
+              [viewer_reports_only, :view_reports, facility_group_1, []],
+              [viewer_reports_only, :manage_overdue_list, facility_group_1, []],
+
+              [call_center, :manage, facility_group_1, []],
+              [call_center, :view_pii, facility_group_1, []],
+              [call_center, :view_reports, facility_group_1, []],
+              [call_center, :manage_overdue_list, facility_group_1, []]
+            ]
+          }
+
+          it "returns the protocol_drugs an admin can perform actions on with facility group access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              admin.accesses.create(resource: current_resource)
+              expect(admin.accessible_protocol_drugs(action)).to match_array(expected_resources),
+                error_message(admin,
+                  action,
+                  expected_resources,
+                  admin.accessible_protocol_drugs(action))
+            end
+          end
+        end
+
+        context "Facility access" do
+          let!(:permission_matrix) {
+            [
+              [manager, :manage, facility_5, []],
+              [manager, :view_pii, facility_5, []],
+              [manager, :view_reports, facility_5, []],
+              [manager, :manage_overdue_list, facility_5, []],
+
+              [viewer_all, :manage, facility_5, []],
+              [viewer_all, :view_pii, facility_5, []],
+              [viewer_all, :view_reports, facility_5, []],
+              [viewer_all, :manage_overdue_list, facility_5, []],
+
+              [viewer_reports_only, :manage, facility_5, []],
+              [viewer_reports_only, :view_pii, facility_5, []],
+              [viewer_reports_only, :view_reports, facility_5, []],
+              [viewer_reports_only, :manage_overdue_list, facility_5, []],
+
+              [call_center, :manage, facility_5, []],
+              [call_center, :view_pii, facility_5, []],
+              [call_center, :view_reports, facility_5, []],
+              [call_center, :manage_overdue_list, facility_5, []]
+            ]
+          }
+
+          it "returns the protocol_drugs an admin can perform actions on with facility access" do
+            permission_matrix.each do |admin, action, current_resource, expected_resources|
+              admin.accesses.create(resource: current_resource)
+              expect(admin.accessible_protocol_drugs(action)).to match_array(expected_resources),
+                error_message(admin,
+                  action,
+                  expected_resources,
+                  admin.accessible_protocol_drugs(action))
             end
           end
         end

@@ -97,14 +97,20 @@ class UserAccess < Struct.new(:user)
       .where(phone_number_authentications: {registration_facility_id: accessible_facilities(action)})
   end
 
-  def accessible_protocols(_action)
-    return Protocol.all if bypass?
+  def accessible_protocols(action)
+    return Protocol.none unless [:manage].include?(action)
+    return Protocol.all if power_user?
+    return Protocol.none unless action_to_level(action).include?(user.access_level.to_sym)
+    return Protocol.all if accessible_organizations(:manage).any?
 
     Protocol.none
   end
 
-  def accessible_protocol_drugs(_action)
-    return ProtocolDrug.all if bypass?
+  def accessible_protocol_drugs(action)
+    return ProtocolDrug.none unless [:manage].include?(action)
+    return ProtocolDrug.all if power_user?
+    return ProtocolDrug.none unless action_to_level(action).include?(user.access_level.to_sym)
+    return ProtocolDrug.all if accessible_organizations(:manage).any?
 
     ProtocolDrug.none
   end
