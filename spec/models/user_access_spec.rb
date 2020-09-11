@@ -3,244 +3,9 @@ require "rails_helper"
 RSpec.describe UserAccess, type: :model do
   let(:viewer_all) { UserAccess.new(create(:admin, :viewer_all)) }
   let(:manager) { UserAccess.new(create(:admin, :manager)) }
+  let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
-  describe "#grant_access" do
-    let!(:organization_1) { create(:organization) }
-    let!(:organization_2) { create(:organization) }
-    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
-    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
-    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
-    let!(:facility_4) { create(:facility) }
-    let!(:viewer_access) {
-      create(:access, user: viewer_all.user, resource: organization_1)
-    }
-    let!(:manager_access) {
-      [create(:access, user: manager.user, resource: organization_1),
-        create(:access, user: manager.user, resource: facility_group_2),
-        create(:access, user: manager.user, resource: facility_4)]
-    }
-
-    it "raises an error if the access level of the new user is not grantable by the current" do
-      new_user = create(:admin, :manager)
-
-      expect {
-        viewer_all.grant_access(new_user, [facility_1.id, facility_2.id])
-      }.to raise_error(UserAccess::NotAuthorizedError)
-    end
-
-    it "raises an error if the user could not provide any access" do
-      new_user = create(:admin, :viewer_all)
-
-      expect {
-        manager.grant_access(new_user, [create(:facility).id])
-      }.to raise_error(UserAccess::NotAuthorizedError)
-    end
-
-    it "only grants access to the selected facilities" do
-      new_user = create(:admin, :viewer_all)
-
-      manager.grant_access(new_user, [facility_1.id, facility_2.id])
-
-      expect(new_user.reload.accessible_facilities(:view_pii)).to contain_exactly(facility_1, facility_2)
-    end
-
-    it "returns nothing if no facilities are selected" do
-      new_user = create(:admin, :viewer_all)
-      expect(manager.grant_access(new_user, [])).to be_nil
-    end
-
-    context "promote access" do
-      it "promotes to FacilityGroup access" do
-        new_user = create(:admin, :viewer_all)
-
-        manager.grant_access(new_user, [facility_3.id])
-        expected_access_resources = %w[FacilityGroup]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-      end
-
-      it "promotes to Organization access" do
-        new_user = create(:admin, :manager)
-
-        manager.grant_access(new_user, [facility_1.id, facility_2.id])
-        expected_access_resources = %w[Organization]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-      end
-
-      it "gives access to individual facilities that cannot be promoted" do
-        new_user = create(:admin, :manager)
-
-        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
-        expected_access_resources = %w[Organization Facility]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-      end
-    end
-
-    context "allows editing accesses" do
-      it "removes access" do
-        new_user = create(:admin, :manager)
-
-        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
-        expected_access_resources = %w[Organization Facility]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-
-        manager.grant_access(new_user, [facility_1.id, facility_2.id])
-        expected_access_resources = %w[Organization]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-      end
-
-      it "adds new access" do
-        new_user = create(:admin, :manager)
-
-        manager.grant_access(new_user, [facility_1.id, facility_2.id])
-        expected_access_resources = %w[Organization]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-
-        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
-        expected_access_resources = %w[Organization Facility]
-
-        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
-      end
-    end
-  end
-
-  pending "#access_tree" do
-    let!(:organization_1) { create(:organization) }
-    let!(:organization_2) { create(:organization) }
-    let!(:organization_3) { create(:organization) }
-    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
-    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
-    let!(:facility_group_3) { create(:facility_group, organization: organization_3) }
-    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
-    let!(:facility_4) { create(:facility, facility_group: facility_group_3) }
-    let!(:viewer_access) {
-      create(:access, user: viewer_all.user, resource: organization_1)
-    }
-    let!(:manager_access) {
-      create(:access, user: manager.user, resource: organization_1)
-      create(:access, user: manager.user, resource: facility_3)
-    }
-
-    context "render a nested data structure" do
-      it "only allows the direct parent or ancestors to be in the tree" do
-        expected_access_tree = {
-          organizations: {
-            organization_1 => {
-              can_access: true,
-              total_facility_groups: 1,
-
-              facility_groups: {
-                facility_group_1 => {
-                  can_access: true,
-                  total_facilities: 2,
-
-                  facilities: {
-                    facility_1 => {
-                      can_access: true
-                    },
-
-                    facility_2 => {
-                      can_access: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        expect(viewer_all.access_tree(:view_pii)).to eq(expected_access_tree)
-        expect(viewer_all.access_tree(:manage)).to eq(organizations: {})
-      end
-
-      it "marks the direct parents or ancestors as inaccessible if the access is partial" do
-        expected_access_tree = {
-          organizations: {
-            organization_1 => {
-              can_access: true,
-              total_facility_groups: 1,
-
-              facility_groups: {
-                facility_group_1 => {
-                  can_access: true,
-                  total_facilities: 2,
-
-                  facilities: {
-                    facility_1 => {
-                      can_access: true
-                    },
-
-                    facility_2 => {
-                      can_access: true
-                    }
-                  }
-                }
-              }
-            },
-
-            organization_2 => {
-              can_access: false,
-              total_facility_groups: 1,
-
-              facility_groups: {
-                facility_group_2 => {
-                  can_access: false,
-                  total_facilities: 1,
-
-                  facilities: {
-                    facility_3 => {
-                      can_access: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-
-        expect(manager.access_tree(:view_pii)).to eq(expected_access_tree)
-        expect(manager.access_tree(:manage)).to eq(expected_access_tree)
-      end
-    end
-  end
-
-  describe "#permitted_access_levels" do
-    specify do
-      power_user = create(:admin, :power_user)
-      expect(power_user.permitted_access_levels).to match_array(UserAccess::LEVELS.keys)
-    end
-
-    specify do
-      manager = create(:admin, :manager)
-      expect(manager.permitted_access_levels).to match_array([:call_center, :manager, :viewer_all, :viewer_reports_only])
-    end
-
-    specify do
-      viewer_all = create(:admin, :viewer_all)
-      expect(viewer_all.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      manager = create(:admin, :viewer_reports_only)
-      expect(manager.permitted_access_levels).to match_array([])
-    end
-
-    specify do
-      manager = create(:admin, :call_center)
-      expect(manager.permitted_access_levels).to match_array([])
-    end
-  end
-
-  context "accessible_*" do
+  describe "accessible_*" do
     let!(:organization_1) { create(:organization) }
     let!(:organization_2) { create(:organization) }
     let!(:organization_3) { create(:organization) }
@@ -263,10 +28,10 @@ RSpec.describe UserAccess, type: :model do
     let!(:user_4) { create(:user, :with_phone_number_authentication, registration_facility: facility_4) }
     let!(:user_5) { create(:user, :with_phone_number_authentication, registration_facility: facility_5) }
 
-    let!(:admin_1) { create(:admin, :call_center, organization: organization_1) }
-    let!(:admin_2) { create(:admin, :call_center, organization: organization_1) }
-    let!(:admin_3) { create(:admin, :call_center, organization: organization_3) }
-    let!(:admin_4) { create(:admin, :call_center, organization: organization_3) }
+    let!(:admin_1) { create(:admin, :call_center, :with_access, resource: organization_1) }
+    let!(:admin_2) { create(:admin, :call_center, :with_access, resource: organization_1) }
+    let!(:admin_3) { create(:admin, :call_center, :with_access, resource: organization_3) }
+    let!(:admin_4) { create(:admin, :call_center, :with_access, resource: organization_3) }
     let!(:admin_5) { create(:admin, :call_center) }
 
     let!(:manager) { create(:admin, :manager) }
@@ -303,6 +68,7 @@ RSpec.describe UserAccess, type: :model do
         it "returns the organizations an admin can perform actions on" do
           permission_matrix.each do |admin, action, current_resource, expected_resources|
             admin.accesses.create(resource: current_resource)
+
             expect(admin.accessible_organizations(action)).to match_array(expected_resources),
               error_message(admin,
                 action,
@@ -614,7 +380,7 @@ RSpec.describe UserAccess, type: :model do
         context "Organization access" do
           let!(:permission_matrix) {
             [
-              [manager, :manage, organization_3, User.admins.where(organization: organization_3)],
+              [manager, :manage, organization_3, [manager, admin_3, admin_4]],
               [manager, :view_pii, organization_3, []],
               [manager, :view_reports, organization_3, []],
               [manager, :manage_overdue_list, organization_3, []],
@@ -638,8 +404,8 @@ RSpec.describe UserAccess, type: :model do
 
           it "returns the admins an admin can perform actions on with organization access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
-              admin.update(organization: organization_3)
               admin.accesses.create(resource: current_resource)
+
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
@@ -652,7 +418,7 @@ RSpec.describe UserAccess, type: :model do
         context "Facility Group access" do
           let!(:permission_matrix) {
             [
-              [manager, :manage, facility_group_1, User.admins.where(organization: organization_1)],
+              [manager, :manage, facility_group_1, [manager, admin_1, admin_2]],
               [manager, :view_pii, facility_group_1, []],
               [manager, :view_reports, facility_group_1, []],
               [manager, :manage_overdue_list, facility_group_1, []],
@@ -676,8 +442,8 @@ RSpec.describe UserAccess, type: :model do
 
           it "returns the admins an admin can perform actions on with facility group access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
-              admin.update(organization: organization_1)
               admin.accesses.create(resource: current_resource)
+
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
@@ -690,7 +456,7 @@ RSpec.describe UserAccess, type: :model do
         context "Facility access" do
           let!(:permission_matrix) {
             [
-              [manager, :manage, facility_4, User.admins.where(organization: organization_3)],
+              [manager, :manage, facility_4, [manager, admin_3, admin_4]],
               [manager, :view_pii, facility_4, []],
               [manager, :view_reports, facility_4, []],
               [manager, :manage_overdue_list, facility_4, []],
@@ -714,8 +480,8 @@ RSpec.describe UserAccess, type: :model do
 
           it "returns the admins an admin can perform actions on with facility access" do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
-              admin.update(organization: organization_3)
               admin.accesses.create(resource: current_resource)
+
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
                 error_message(admin,
                   action,
@@ -833,6 +599,159 @@ RSpec.describe UserAccess, type: :model do
                 admin.accessible_admins(action))
           end
         end
+      end
+    end
+  end
+
+  describe "#grant_access" do
+    let!(:organization_1) { create(:organization) }
+    let!(:organization_2) { create(:organization) }
+    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
+    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
+    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_2) { create(:facility, facility_group: facility_group_1) }
+    let!(:facility_3) { create(:facility, facility_group: facility_group_2) }
+    let!(:facility_4) { create(:facility) }
+
+    let!(:viewer_access) { create(:access, user: viewer_all.user, resource: organization_1) }
+    let!(:manager_access) {
+      [
+        create(:access, user: manager.user, resource: organization_1),
+        create(:access, user: manager.user, resource: facility_group_2),
+        create(:access, user: manager.user, resource: facility_4)
+      ]
+    }
+
+    it "raises an error if the access level of the new user is not grantable by the current user" do
+      new_user = create(:admin, :manager)
+
+      expect {
+        viewer_all.grant_access(new_user, [facility_1.id, facility_2.id])
+      }.to raise_error(UserAccess::NotAuthorizedError)
+    end
+
+    it "raises an error if the user could not provide any access" do
+      new_user = create(:admin, :viewer_all)
+      selected_facility = create(:facility).id
+
+      expect {
+        manager.grant_access(new_user, [selected_facility])
+      }.to raise_error(UserAccess::NotAuthorizedError)
+    end
+
+    it "only grants access to the selected facilities" do
+      new_user = create(:admin, :viewer_all)
+
+      manager.grant_access(new_user, [facility_1.id, facility_2.id])
+
+      expect(new_user.reload.accessible_facilities(:view_pii)).to contain_exactly(facility_1, facility_2)
+    end
+
+    it "skips granting access to any resource if no facilities are selected" do
+      new_user = create(:admin, :viewer_all)
+
+      expect(manager.grant_access(new_user, [])).to be_nil
+    end
+
+    context "grantee is power_user" do
+      it "only allows power users to grant access" do
+        new_user = create(:admin, :power_user)
+
+        expect(power_user.grant_access(new_user, [facility_1.id, facility_2.id])).to be_nil
+
+        expect {
+          manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        }.to raise_error(UserAccess::NotAuthorizedError)
+      end
+
+      it "skips granting access to any resource" do
+        new_user = create(:admin, :power_user)
+
+        expect(new_user.reload.accesses).to be_empty
+      end
+    end
+
+    context "promote access" do
+      it "promotes to FacilityGroup access" do
+        new_user = create(:admin, :viewer_all)
+
+        manager.grant_access(new_user, [facility_3.id])
+        expected_access_resources = %w[FacilityGroup]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "promotes to Organization access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "gives access to individual facilities that cannot be promoted" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+    end
+
+    context "allows editing accesses" do
+      it "removes access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+
+      it "adds new access" do
+        new_user = create(:admin, :manager)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id])
+        expected_access_resources = %w[Organization]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+
+        manager.grant_access(new_user, [facility_1.id, facility_2.id, facility_4.id])
+        expected_access_resources = %w[Organization Facility]
+
+        expect(new_user.reload.accesses.map(&:resource_type)).to match_array(expected_access_resources)
+      end
+    end
+  end
+
+  describe "#permitted_access_levels" do
+    let!(:access_level_matrix) {
+      [
+        [:power_user, UserAccess::LEVELS.keys],
+        [:manager, [:call_center, :manager, :viewer_all, :viewer_reports_only]],
+        [:viewer_all, []],
+        [:viewer_reports_only, []],
+        [:call_center, []]
+      ]
+    }
+
+    it "returns the access levels the current admin can grant to another admin" do
+      access_level_matrix.each do |access_level, permitted_access_levels|
+        admin = create(:admin, access_level)
+
+        expect(admin.permitted_access_levels).to match_array(permitted_access_levels),
+          <<~ERROR
+            for admin with: #{access_level}
+            expected: #{permitted_access_levels}
+            got: #{admin.permitted_access_levels}
+        ERROR
       end
     end
   end

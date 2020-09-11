@@ -95,6 +95,14 @@ FactoryBot.define do
       access_level { :power_user }
     end
 
+    trait :with_access do
+      transient do
+        resource { nil }
+      end
+
+      accesses { [build(:access, user_id: id, resource: resource)] }
+    end
+
     trait(:owner) do
       role { :owner }
 
