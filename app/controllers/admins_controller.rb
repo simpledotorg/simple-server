@@ -3,9 +3,9 @@ class AdminsController < AdminController
   include SearchHelper
 
   before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :🆕set_admin, only: [:show, :edit, :update, :access_tree], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_admin_v2, only: [:show, :edit, :update, :access_tree], if: -> { current_admin.permissions_v2_enabled? }
   before_action :verify_params, only: [:update], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :🆕verify_params, only: [:update], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :verify_params_v2, only: [:update], if: -> { current_admin.permissions_v2_enabled? }
 
   after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
@@ -113,7 +113,7 @@ class AdminsController < AdminController
   #
   # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
   #
-  def 🆕verify_params
+  def verify_params_v2
     if selected_facilities.blank?
       redirect_to edit_admin_path(@admin),
         alert: "At least one facility should be selected for access before inviting an Admin."
@@ -138,7 +138,7 @@ class AdminsController < AdminController
     authorize([:manage, :admin, @admin])
   end
 
-  def 🆕set_admin
+  def set_admin_v2
     if current_admin.permissions_v2_enabled?
       @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
     end
