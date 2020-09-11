@@ -16,16 +16,16 @@
           <div class="col-lg-3 nowrap order-lg-1">
             <h6 class="<% unless cohort["registered"] == 0 %>c-black<% else %>c-grey-medium<% end %>">
               <% unless cohort["registered"] == 0 %>
-                <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
+                Result from last visit in <%= cohort["results_in"] %>
               <% else %>
-                <span class="fw-bold">No data</span>
+                No data available for <%= cohort["results_in"] %>
               <% end %>
             </h6>
             <p class="mb-2 fs-14px c-grey-medium">
               <% unless cohort["registered"] == 0 %>
-                Result from last visit in <%= cohort["results_in"] %>
+                <%= cohort["registered"] %> patients registered in <%= cohort["patients_registered"] %>
               <% else %>
-                No data available for <%= cohort["results_in"] %>
+                <span class="fw-bold">No data</span>
               <% end %>
             </p>
           </div>
