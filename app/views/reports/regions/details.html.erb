@@ -75,10 +75,18 @@
   <% end %>
 </div>
 <% if @region.is_a?(Facility) %>
-  <% if policy([:cohort_report, @region]).view_health_worker_activity? %>
-    <%= render "shared/recent_bp_log",
-                  blood_pressures: @recent_blood_pressures,
-                  display_model: :facility %>
+  <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+    <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
+      <%= render "shared/recent_bp_log",
+                 blood_pressures: @recent_blood_pressures,
+                 display_model: :facility %>
+    <% end %>
+  <% else %>
+    <% if policy([:cohort_report, @region]).view_health_worker_activity? %>
+      <%= render "shared/recent_bp_log",
+                 blood_pressures: @recent_blood_pressures,
+                 display_model: :facility %>
+    <% end %>
   <% end %>
 <% end %>
 <div id="data-json" style="display: none;">
