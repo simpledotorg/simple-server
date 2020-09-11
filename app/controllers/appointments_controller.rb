@@ -4,10 +4,18 @@ class AppointmentsController < AdminController
 
   before_action :set_appointment, only: [:update]
 
+  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
 
   def index
-    authorize [:overdue_list, Appointment], :index?
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:manage_overdue_list).any? }
+    else
+      authorize [:overdue_list, Appointment], :index?
+    end
 
     @search_filters = index_params[:search_filters] || []
     # We have to check to see this is the first page load where we want to apply default search filters. This
@@ -16,7 +24,12 @@ class AppointmentsController < AdminController
       @search_filters = DEFAULT_SEARCH_FILTERS
     end
 
-    scope = policy_scope([:overdue_list, PatientSummary])
+    scope = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      PatientSummary.where(next_appointment_facility_id: current_admin.accessible_facilities(:manage_overdue_list))
+    else
+      policy_scope([:overdue_list, PatientSummary])
+    end
+
     @patient_summaries = PatientSummaryQuery.call(relation: scope, filters: @search_filters)
 
     if current_facility
@@ -54,7 +67,11 @@ class AppointmentsController < AdminController
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
-    authorize([:overdue_list, @appointment])
+    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      authorize1 { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
+    else
+      authorize([:overdue_list, @appointment])
+    end
   end
 
   def appointment_params
