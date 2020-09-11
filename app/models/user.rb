@@ -94,6 +94,8 @@ class User < ApplicationRecord
     :accessible_facility_groups,
     :accessible_users,
     :accessible_admins,
+    :accessible_protocols,
+    :accessible_protocol_drugs,
     :access_across_organizations?,
     :access_across_facility_groups?,
     :modify_access_level?,

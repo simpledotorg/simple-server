@@ -18,6 +18,10 @@
   <%= @protocol_drug.protocol %>
 </p>
 
-<% if policy([:manage, @protocol_drug]).edit? %>
+<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
   <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
+<% else %>
+  <% if policy([:manage, @protocol_drug]).edit? %>
+    <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
+  <% end %>
 <% end %>
