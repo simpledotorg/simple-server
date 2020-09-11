@@ -21,7 +21,8 @@ function getChartDataNode() {
 }
 
 function initializeTables() {
-  const tableSortConfig = { descending: true };
+  const tableSortAscending = { descending: false };
+  const tableSortDescending = { descending: true };
 
   const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
   const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
@@ -29,19 +30,19 @@ function initializeTables() {
   const htnControlledTable = document.getElementById("htn-controlled-table");
 
   if (htnControlledTable) {
-    new Tablesort(htnControlledTable, tableSortConfig);
+    new Tablesort(htnControlledTable, tableSortAscending);
   }
 
   if (noBPMeasureTable) {
-    new Tablesort(noBPMeasureTable, tableSortConfig);
+    new Tablesort(noBPMeasureTable, tableSortDescending);
   }
 
   if (htnNotUnderControlTable) {
-    new Tablesort(htnNotUnderControlTable, tableSortConfig);
+    new Tablesort(htnNotUnderControlTable, tableSortDescending);
   }
 
   if (cumulativeRegistrationsTable) {
-    new Tablesort(cumulativeRegistrationsTable, tableSortConfig);
+    new Tablesort(cumulativeRegistrationsTable, tableSortAscending);
   }
 };
 
