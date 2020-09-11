@@ -44,10 +44,13 @@ class AdminAccessPresenter < SimpleDelegator
     facility_group_tree
       .group_by { |facility_group, _facilities| facility_group.organization }
       .transform_values(&:to_h)
+      .sort_by { |organization, _| organization.name }
   end
 
   memoize def facility_group_tree
-    visible_facilities.group_by(&:facility_group)
+    visible_facilities
+      .group_by(&:facility_group)
+      .sort_by { |facility_group, _| facility_group.name }
   end
 
   memoize def visible_organizations
@@ -59,7 +62,7 @@ class AdminAccessPresenter < SimpleDelegator
   end
 
   memoize def visible_facilities
-    admin.accessible_facilities(:any)
+    admin.accessible_facilities(:any).order(:name)
   end
 
   alias :eql? ==
