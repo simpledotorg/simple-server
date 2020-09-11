@@ -22,7 +22,7 @@
     <% end %>
 
     <div class="admin-list mb-5">
-      <% @admins.each do |admin| %>
+      <% @admins.sort_by(&:email).each do |admin| %>
         <% admin = AdminAccessPresenter.new(admin) %>
 
         <%= link_to(admin_path(admin), class: "admin-list-item") do %>
