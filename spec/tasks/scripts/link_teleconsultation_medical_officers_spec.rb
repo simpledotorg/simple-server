@@ -11,7 +11,8 @@ RSpec.describe LinkTeleconsultationMedicalOfficers do
         enable_teleconsultation: true,
         teleconsultation_phone_numbers: [
           {isd_code: "+91", phone_number: facility_1_phone_numbers.first},
-          {isd_code: "+91", phone_number: facility_1_phone_numbers.second}])
+          {isd_code: "+91", phone_number: facility_1_phone_numbers.second}
+        ])
     }
 
     let!(:facility_2) {
@@ -19,7 +20,8 @@ RSpec.describe LinkTeleconsultationMedicalOfficers do
         enable_teleconsultation: true,
         teleconsultation_phone_numbers: [
           {isd_code: "+91", phone_number: facility_2_phone_numbers.first},
-          {isd_code: "+91", phone_number: facility_2_phone_numbers.second}])
+          {isd_code: "+91", phone_number: facility_2_phone_numbers.second}
+        ])
     }
 
     it "should find all medical officers with matching phone_numbers and link them" do
