@@ -1,10 +1,10 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :verify_params, only: [:create], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕verify_params, only: [:create], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :verify_params, only: [:create], unless: -> { current_admin.permissions_v2_enabled? }
+  before_action :🆕verify_params, only: [:create], if: -> { current_admin.permissions_v2_enabled? }
   helper_method :current_admin
 
   def new
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
     else
       authorize([:manage, :admin, current_admin])
@@ -14,7 +14,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def create
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
 
       User.transaction do

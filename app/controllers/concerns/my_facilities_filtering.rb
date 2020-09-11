@@ -9,7 +9,7 @@ module MyFacilitiesFiltering
       :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
 
     def filter_facilities(scope_namespace = [])
-      facilities = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      facilities = if current_admin.permissions_v2_enabled?
         current_admin.accessible_facilities(:view_reports)
       else
         policy_scope(scope_namespace.concat([Facility]))

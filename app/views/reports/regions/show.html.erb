@@ -201,7 +201,7 @@
 <% if @region.is_a?(FacilityGroup) %>
   <%= render "facility_tables" %>
 <% else %>
-  <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+  <% if current_admin.permissions_v2_enabled? %>
     <%= render "shared/analytics_table",
                dashboard_analytics: @dashboard_analytics,
                period: :month,

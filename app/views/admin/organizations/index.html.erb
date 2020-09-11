@@ -2,7 +2,7 @@
   <h1 class="page-title">Organizations</h1>
 
   <nav class="page-nav">
-    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+    <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.power_user? %>
         <%= link_to 'Add organization', new_admin_organization_path, class: "btn btn-sm btn-success" %>
       <% end %>
@@ -19,7 +19,7 @@
     <div class="row">
       <div class="col-10">
         <h5 class="mb-1">
-          <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+          <% if current_admin.permissions_v2_enabled? %>
             <%= link_to organization.name, edit_admin_organization_path(organization) %>
           <% else %>
             <% if policy([:manage, organization]).edit? %>
@@ -42,7 +42,7 @@
         </div>
       </div>
       <div class="col-2 text-right">
-        <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <% if current_admin.permissions_v2_enabled? %>
           <% if organization.facility_groups.none? %>
             <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
               <i class="fas fa-trash-alt"></i>

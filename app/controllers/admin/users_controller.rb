@@ -6,13 +6,13 @@ class Admin::UsersController < AdminController
   around_action :set_time_zone, only: [:show]
   before_action :set_district, only: [:index]
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_users(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_users(:manage).any? }
 
       facilities = if @district == "All"
         current_admin.accessible_facilities(:manage)
@@ -102,8 +102,8 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @user = authorize1 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
+    if current_admin.permissions_v2_enabled?
+      @user = authorize_v2 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
     else
       @user = User.find(params[:id] || params[:user_id])
       authorize([:manage, :user, @user])

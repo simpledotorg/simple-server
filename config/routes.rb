@@ -218,7 +218,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :email_authentication, ->(a) {
-    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+    if a.user.permissions_v2_enabled?
       a.user.power_user?
     else
       a.user.has_permission?(:view_sidekiq_ui)
@@ -229,7 +229,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :email_authentication, ->(a) {
-    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+    if a.user.permissions_v2_enabled?
       a.user.power_user?
     else
       a.user.has_permission?(:view_flipper_ui)

@@ -1,7 +1,7 @@
 <%= bootstrap_form_with(url: form_url, method: :get, class: "mt-4", layout: :horizontal, local: true) do |form| %>
   <div class="form-row mb-5">
     <div id="district-selector" class="col col-md-2 mb-2">
-      <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.permissions_v2_enabled? %>
         <%= form.select :district,
                         scope_namespace
                             .sort_by(&:district)

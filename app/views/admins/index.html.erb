@@ -2,7 +2,7 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <div class="dropdown">
-      <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+      <% if current_admin.permissions_v2_enabled? %>
         <%= link_to "Invite admin",
             new_email_authentication_invitation_path,
             class: "btn btn-sm btn-primary" %>
@@ -15,7 +15,7 @@
   </nav>
 </div>
 <%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
-<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+<% if current_admin.permissions_v2_enabled? %>
   <% if @admins.exists? %>
     <% if searching? %>
       <span><%= search_entries_info(@admins) %></span>

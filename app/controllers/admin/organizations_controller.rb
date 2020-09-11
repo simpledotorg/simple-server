@@ -1,13 +1,13 @@
 class Admin::OrganizationsController < AdminController
   before_action :set_organization, only: [:edit, :update, :destroy]
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.power_user? }
       @organizations = current_admin.accessible_organizations(:manage).order(:name)
     else
       authorize([:manage, Organization])
@@ -16,8 +16,8 @@ class Admin::OrganizationsController < AdminController
   end
 
   def new
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.power_user? }
       @organization = Organization.new
     else
       @organization = Organization.new
@@ -29,8 +29,8 @@ class Admin::OrganizationsController < AdminController
   end
 
   def create
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.power_user? }
       @organization = Organization.new(organization_params)
     else
       @organization = Organization.new(organization_params)
@@ -60,8 +60,8 @@ class Admin::OrganizationsController < AdminController
   private
 
   def set_organization
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @organization = authorize1 { current_admin.accessible_organizations(:manage).friendly.find(params[:id]) }
+    if current_admin.permissions_v2_enabled?
+      @organization = authorize_v2 { current_admin.accessible_organizations(:manage).friendly.find(params[:id]) }
     else
       @organization = Organization.friendly.find(params[:id])
       authorize([:manage, @organization])

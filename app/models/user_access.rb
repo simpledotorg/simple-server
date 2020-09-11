@@ -1,7 +1,11 @@
-class UserAccess < Struct.new(:user)
+class UserAccess
   class NotAuthorizedError < StandardError; end
-
   class AuthorizationNotPerformedError < StandardError; end
+
+  attr_reader :user
+  def initialize(user)
+    @user = user
+  end
 
   LEVELS = {
     manager: {

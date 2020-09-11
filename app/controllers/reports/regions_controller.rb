@@ -8,12 +8,12 @@ class Reports::RegionsController < AdminController
   before_action :find_region, except: :index
   around_action :set_time_zone
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
       @organizations = current_admin.accessible_facilities(:view_reports)
         .flat_map(&:organization)
         .uniq
@@ -26,8 +26,8 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :show?)
     end
@@ -53,8 +53,8 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :show?)
     end
@@ -72,8 +72,8 @@ class Reports::RegionsController < AdminController
   end
 
   def cohort
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
     else
       authorize(:dashboard, :show?)
     end

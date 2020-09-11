@@ -1,13 +1,13 @@
 class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocols = current_admin.accessible_protocols(:manage).order(:name)
     else
       authorize([:manage, Protocol])
@@ -20,8 +20,8 @@ class Admin::ProtocolsController < AdminController
   end
 
   def new
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol = Protocol.new
     else
       @protocol = Protocol.new
@@ -33,8 +33,8 @@ class Admin::ProtocolsController < AdminController
   end
 
   def create
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_organizations(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @protocol = Protocol.new(protocol_params)
     else
       @protocol = Protocol.new(protocol_params)
@@ -64,8 +64,8 @@ class Admin::ProtocolsController < AdminController
   private
 
   def set_protocol
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @protocol = authorize1 { current_admin.accessible_protocols(:manage).find(params[:id]) }
+    if current_admin.permissions_v2_enabled?
+      @protocol = authorize_v2 { current_admin.accessible_protocols(:manage).find(params[:id]) }
     else
       @protocol = Protocol.find(params[:id])
       authorize([:manage, @protocol])

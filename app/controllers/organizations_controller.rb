@@ -1,19 +1,19 @@
 class OrganizationsController < AdminController
   include Pagination
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       @accessible_facilities = current_admin.accessible_facilities(:view_reports)
-      authorize1 { @accessible_facilities.any? }
+      authorize_v2 { @accessible_facilities.any? }
     else
       authorize(:dashboard, :show?)
     end
 
-    users = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    users = if current_admin.permissions_v2_enabled?
       current_admin.accessible_users(:manage)
     else
       policy_scope([:manage, :user, User])
@@ -28,7 +28,7 @@ class OrganizationsController < AdminController
                                             .order(updated_at: :desc))
 
     @organizations =
-      if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+      if current_admin.permissions_v2_enabled?
         @accessible_facilities
           .includes(facility_group: :organization)
           .flat_map(&:organization)

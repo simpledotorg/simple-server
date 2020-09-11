@@ -18,7 +18,7 @@
         <td><%= protocol_drug.dosage %></td>
         <td><%= protocol_drug.rxnorm_code %></td>
         <td><%= protocol_drug.protocol %></td>
-        <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <% if current_admin.permissions_v2_enabled? %>
           <td><%= link_to 'Edit', edit_admin_protocol_drug_path(protocol_drug) %></td>
           <td><%= link_to 'Delete', [:admin, protocol_drug], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol_drug.name}?" } %></td>
         <% else %>
@@ -36,7 +36,7 @@
 
 <br>
 
-<% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+<% if current_admin.permissions_v2_enabled? %>
   <% if current_admin.accessible_organizations(:manage).any? %>
     <%= link_to 'New protocol drug', new_admin_protocol_drug_path %>
   <% end %>

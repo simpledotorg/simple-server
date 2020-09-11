@@ -4,15 +4,15 @@ class AppointmentsController < AdminController
 
   before_action :set_appointment, only: [:update]
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facilities(:manage_overdue_list).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:manage_overdue_list).any? }
     else
       authorize [:overdue_list, Appointment], :index?
     end
@@ -24,7 +24,7 @@ class AppointmentsController < AdminController
       @search_filters = DEFAULT_SEARCH_FILTERS
     end
 
-    scope = if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    scope = if current_admin.permissions_v2_enabled?
       PatientSummary.where(next_appointment_facility_id: current_admin.accessible_facilities(:manage_overdue_list))
     else
       policy_scope([:overdue_list, PatientSummary])
@@ -67,8 +67,8 @@ class AppointmentsController < AdminController
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
     else
       authorize([:overdue_list, @appointment])
     end
