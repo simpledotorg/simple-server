@@ -8,14 +8,29 @@ class Reports::RegionsController < AdminController
   before_action :find_region, except: :index
   around_action :set_time_zone
 
-  def index
-    authorize(:dashboard, :show?)
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
-    @organizations = policy_scope([:cohort_report, Organization]).order(:name)
+  def index
+    if current_admin.permissions_v2_enabled?
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+      @organizations = current_admin.accessible_facilities(:view_reports)
+        .flat_map(&:organization)
+        .uniq
+        .compact
+        .sort_by(&:name)
+    else
+      authorize(:dashboard, :show?)
+      @organizations = policy_scope([:cohort_report, Organization]).order(:name)
+    end
   end
 
   def show
-    authorize(:dashboard, :show?)
+    if current_admin.permissions_v2_enabled?
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
@@ -39,7 +54,11 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    authorize(:dashboard, :show?)
+    if current_admin.permissions_v2_enabled?
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
@@ -55,7 +74,11 @@ class Reports::RegionsController < AdminController
   end
 
   def cohort
-    authorize(:dashboard, :show?)
+    if current_admin.permissions_v2_enabled?
+      authorize1 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call

@@ -3,11 +3,11 @@ class AdminsController < AdminController
   include SearchHelper
 
   before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :🆕set_admin, only: [:show, :edit, :update, :access_tree], if: -> { current_admin.permissions_v2_enabled? }
   before_action :verify_params, only: [:update], unless: -> { current_admin.permissions_v2_enabled? }
   before_action :🆕verify_params, only: [:update], if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_policy_scoped, only: :index
 
+  after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
   skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
 
@@ -20,7 +20,7 @@ class AdminsController < AdminController
         if searching?
           paginate(admins.search_by_name_or_email(search_query))
         else
-          paginate(admins.order("email_authentications.email"))
+          paginate(admins)
         end
     else
       authorize([:manage, :admin, User])
@@ -35,8 +35,30 @@ class AdminsController < AdminController
     end
   end
 
+  def access_tree
+    access_tree =
+      case page_for_access_tree
+        when :show
+          AdminAccessPresenter.new(@admin).visible_access_tree
+        when :new, :edit
+          AdminAccessPresenter.new(current_admin).visible_access_tree
+        else
+          head :not_found and return
+      end
+
+    user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
+
+    render partial: access_tree[:render_partial],
+      locals: {
+        tree: access_tree[:data],
+        root: access_tree[:root],
+        user_being_edited: user_being_edited,
+        tree_depth: 0,
+        page: page_for_access_tree,
+      }
+  end
+
   def show
-    @admin = AdminAccessPresenter.new(@admin)
   end
 
   def edit
@@ -99,6 +121,10 @@ class AdminsController < AdminController
       return
     end
 
+    if access_level_changed? && !current_admin.modify_access_level?
+      raise UserAccess::NotAuthorizedError
+    end
+
     @admin.assign_attributes(user_params)
 
     if @admin.invalid?
@@ -118,10 +144,6 @@ class AdminsController < AdminController
     end
   end
 
-  def current_admin
-    AdminAccessPresenter.new(super)
-  end
-
   def permission_params
     params[:permissions]
   end
@@ -134,9 +156,19 @@ class AdminsController < AdminController
     {
       full_name: params[:full_name],
       role: params[:role],
-      access_level: params[:access_level],
       organization_id: params[:organization_id],
+      access_level: params[:access_level],
       device_updated_at: Time.current
     }.compact
+  end
+
+  def page_for_access_tree
+    params[:page].to_sym
+  end
+
+  def access_level_changed?
+    return false if user_params[:access_level].blank?
+
+    @admin.access_level != user_params[:access_level]
   end
 end

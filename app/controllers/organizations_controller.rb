@@ -23,7 +23,9 @@ class OrganizationsController < AdminController
       .requested_sync_approval
       .order(updated_at: :desc)
 
-    @users_requesting_approval = paginate(@users_requesting_approval)
+    @users_requesting_approval = paginate(users
+                                            .requested_sync_approval
+                                            .order(updated_at: :desc))
 
     @organizations =
       if current_admin.permissions_v2_enabled?
