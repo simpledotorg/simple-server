@@ -53,7 +53,7 @@ module AdminAccessHelper
       content_tag(:option,
         level[:id],
         value: level[:id],
-        class: :show,
+        class: "show",
         selected: level[:id].to_s.eql?(current_access_level),
         data: {content: access_level_option_data(level)})
 

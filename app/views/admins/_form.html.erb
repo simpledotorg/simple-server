@@ -6,25 +6,79 @@
         <input type="submit" value="Save" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
       </div>
 
-      <%= bootstrap_form_with(url: admin_path(admin), method: 'PATCH', local: true, autocomplete: "off", label_errors: true) do |form| %>
-        <%= form.text_field :full_name, value: @admin.full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
-        <%= form.text_field :email, value: @admin.email, id: :email, required: true, disabled: true, label: "Email *", placeholder: "Email" %>
-        <%= form.text_field :role, value: @admin.role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
-        <%= access_level_select(form, current_admin.permitted_access_levels, required: true, disabled: true, access_level: admin.access_level) %>
+      <% form_params = {
+          url: admin_path(admin),
+          method: 'PATCH',
+          local: true,
+          autocomplete: "off",
+          label_errors: true
+      } %>
+
+      <%= bootstrap_form_with(form_params) do |form| %>
+        <%= form.text_field(
+                :full_name,
+                {
+                    value: admin.full_name,
+                    id: :full_name,
+                    required: true,
+                    autocomplete: "off",
+                    label: "Full name *",
+                    placeholder: "Full name"
+                }
+            ) %>
+
+        <%= form.text_field(
+                :email,
+                {
+                    value: admin.email,
+                    id: :email,
+                    required: true,
+                    disabled: true,
+                    label: "Email *",
+                    placeholder: "Email"
+                }
+            ) %>
+
+        <%= form.text_field(
+                :role,
+                {
+                    value: admin.role,
+                    id: :role,
+                    required: true,
+                    help: "CVHO, STS, State Official etc.",
+                    label: 'Job title *',
+                    placeholder: "Job title"
+                }
+            ) %>
+
+        <%= access_level_select(form, current_admin.permitted_access_levels,
+            {
+                required: true,
+                disabled: !current_admin.modify_access_level?,
+                current_access_level: admin.access_level
+            }) %>
 
         <%= form.label "Facility access *" %>
         <div id="facility-access-power-user" class="hidden">
           Admin has access to all facilities in the system
         </div>
 
-        <div id="facility-access" data-page="edit">
+        <div id="facility-access">
           <div class="card access-tree">
             <div id="select-all-facilities" hidden="hidden">
               <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
             </div>
 
-            <%= render_async(access_tree_admin_path(@admin, :edit),
-                error_message: '<p class="load-error-message">There was an error, <a href=""> please try again </a></p>') do %>
+            <% render_error = sanitize(
+                <<~ERROR.strip_heredoc
+                     <p class="load-error-message">
+                       There was an error, <a href=""> please try again </a>
+                     </p>
+            ERROR
+            ) %>
+
+            <%= render_async(access_tree_admin_path(admin, :edit),
+                error_message: render_error) do %>
               <div class="spinner-wrapper">
                 <div class="spinner spinner-border text-primary" role="status">
                   <span class="sr-only">Loading...</span>
