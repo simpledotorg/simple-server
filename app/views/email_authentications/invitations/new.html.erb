@@ -5,6 +5,7 @@
         <h1><%= t "devise.invitations.new.header" %></h1>
         <input type="submit" value="Send Invite" class="btn btn-primary" onclick="document.getElementById('form-submit').click()">
       </div>
+
       <%= bootstrap_form_with(url: email_authentication_invitation_path, local: true, autocomplete: "off", label_errors: true) do |form| %>
         <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
         <%= form.text_field :email, id: :email, required: true, label: "Email *", placeholder: "Email" %>
@@ -16,14 +17,13 @@
           Admin has access to all facilities in the system
         </div>
 
-        <div id="facility-access" data-page="new">
+        <div id="facility-access">
           <div class="card access-tree">
             <div id="select-all-facilities" hidden="hidden">
               <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
             </div>
 
-            <%= render_async(access_tree_admin_path(current_admin, :new),
-                error_message: '<p class="load-error-message">There was an error, <a href=""> please try again </a></p>') do %>
+            <%= render_async(access_tree_admin_path(current_admin, :new), error_message: access_tree_load_error) do %>
               <div class="spinner-wrapper">
                 <div class="spinner spinner-border text-primary" role="status">
                   <span class="sr-only">Loading...</span>

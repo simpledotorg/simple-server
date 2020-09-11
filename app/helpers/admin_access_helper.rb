@@ -72,4 +72,14 @@ module AdminAccessHelper
 
     sanitize(option)
   end
+
+  def access_tree_load_error
+    error_html = <<~ERROR.strip_heredoc.squish
+      <p class='load-error-message'>
+        There was an error, <a href=''> please try again </a>
+      </p>
+    ERROR
+
+    sanitize(error_html)
+  end
 end
