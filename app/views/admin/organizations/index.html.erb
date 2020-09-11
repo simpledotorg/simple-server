@@ -43,8 +43,10 @@
       </div>
       <div class="col-2 text-right">
         <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-          <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
-            <i class="fas fa-trash-alt"></i>
+          <% if organization.facility_groups.none? %>
+            <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
+              <i class="fas fa-trash-alt"></i>
+            <% end %>
           <% end %>
         <% else %>
           <% if policy([:manage, organization]).destroy? %>
