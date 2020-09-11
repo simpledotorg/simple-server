@@ -25,33 +25,46 @@ RSpec.describe LinkTeleconsultationMedicalOfficers do
     }
 
     it "finds all medical officers with matching phone_numbers and link them" do
-      facility_1_users = facility_1_phone_numbers.map { |phone_number|
+      facility_1_mos = facility_1_phone_numbers.map { |phone_number|
         create(:user, phone_number: phone_number)
       }
 
-      facility_2_users = facility_2_phone_numbers.map { |phone_number|
+      facility_2_mos = facility_2_phone_numbers.map { |phone_number|
         create(:user, phone_number: phone_number)
       }
 
       described_class.call
 
-      expect(facility_1.teleconsultation_medical_officers).to match_array facility_1_users
-      expect(facility_2.teleconsultation_medical_officers).to match_array facility_2_users
+      expect(facility_1.teleconsultation_medical_officers).to match_array facility_1_mos
+      expect(facility_2.teleconsultation_medical_officers).to match_array facility_2_mos
     end
 
     it "finds all medical officers with matching teleconsult_phone_numbers and link them" do
-      facility_1_users = facility_1_phone_numbers.map { |phone_number|
+      facility_1_mos = facility_1_phone_numbers.map { |phone_number|
         create(:user, teleconsultation_phone_number: phone_number)
       }
 
-      facility_2_users = facility_2_phone_numbers.map { |phone_number|
+      facility_2_mos = facility_2_phone_numbers.map { |phone_number|
         create(:user, teleconsultation_phone_number: phone_number)
       }
 
       described_class.call
 
-      expect(facility_1.teleconsultation_medical_officers).to match_array facility_1_users
-      expect(facility_2.teleconsultation_medical_officers).to match_array facility_2_users
+      expect(facility_1.teleconsultation_medical_officers).to match_array facility_1_mos
+      expect(facility_2.teleconsultation_medical_officers).to match_array facility_2_mos
+    end
+
+    it "keeps the already linked MOs" do
+      existing_mo = create(:user)
+      facility_1.teleconsultation_medical_officers = [existing_mo]
+
+      facility_1_mos = facility_1_phone_numbers.map { |phone_number|
+        create(:user, teleconsultation_phone_number: phone_number)
+      }
+
+      described_class.call
+
+      expect(facility_1.reload.teleconsultation_medical_officers).to match_array [facility_1_mos, existing_mo].flatten
     end
   end
 end
