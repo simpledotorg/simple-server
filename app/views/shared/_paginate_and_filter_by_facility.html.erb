@@ -5,16 +5,29 @@
   %>
   <div class="form-row">
     <div id="facility-selector" class="form-group col-md-6">
-      <%= form.select :facility_id,
-                      policy_scope(scope_namespace).sort_by(&:name).map { |facility| [facility.name, facility.id] },
-                      {
-                          hide_label: true,
-                          include_blank: "All facilities",
-                          selected: facility_id,
-                          wrapper: false
-                      },
-                      html_options
-      %>
+      <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <%= form.select :facility_id,
+                        scope_namespace.order(:name).map { |facility| [facility.name, facility.id] },
+                        {
+                            hide_label: true,
+                            include_blank: "All facilities",
+                            selected: facility_id,
+                            wrapper: false
+                        },
+                        html_options
+        %>
+      <% else %>
+        <%= form.select :facility_id,
+                        policy_scope(scope_namespace).sort_by(&:name).map { |facility| [facility.name, facility.id] },
+                        {
+                            hide_label: true,
+                            include_blank: "All facilities",
+                            selected: facility_id,
+                            wrapper: false
+                        },
+                        html_options
+        %>
+      <% end %>
     </div>
     <div id="limit-selector" class="form-group col-md-3">
       <%= form.select :per_page,
