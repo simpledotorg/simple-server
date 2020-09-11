@@ -8,7 +8,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+      authorize1 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)
     else
       authorize([:manage, ProtocolDrug])
@@ -21,7 +21,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def new
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+      authorize1 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drug = @protocol.protocol_drugs.new
     else
       @protocol_drug = @protocol.protocol_drugs.new
@@ -34,7 +34,7 @@ class Admin::ProtocolDrugsController < AdminController
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+      authorize1 { current_admin.accessible_organizations(:manage).any? }
       @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
     else
       @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)

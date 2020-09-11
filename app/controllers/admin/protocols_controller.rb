@@ -7,7 +7,7 @@ class Admin::ProtocolsController < AdminController
 
   def index
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+      authorize1 { current_admin.accessible_organizations(:manage).any? }
       @protocols = current_admin.accessible_protocols(:manage).order(:name)
     else
       authorize([:manage, Protocol])
@@ -21,7 +21,7 @@ class Admin::ProtocolsController < AdminController
 
   def new
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+      authorize1 { current_admin.accessible_organizations(:manage).any? }
       @protocol = Protocol.new
     else
       @protocol = Protocol.new
@@ -34,7 +34,7 @@ class Admin::ProtocolsController < AdminController
 
   def create
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.power_user? }
+      authorize1 { current_admin.accessible_organizations(:manage).any? }
       @protocol = Protocol.new(protocol_params)
     else
       @protocol = Protocol.new(protocol_params)

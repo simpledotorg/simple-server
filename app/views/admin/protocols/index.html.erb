@@ -2,7 +2,7 @@
   <h1 class="page-title">Protocols</h1>
   <nav class="page-nav">
     <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
-      <% if current_admin.power_user? %>
+      <% if current_admin.accessible_organizations(:manage).any? %>
         <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
       <% end %>
     <% else %>
