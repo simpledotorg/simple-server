@@ -75,7 +75,7 @@ RSpec.describe AdminsController, type: :controller do
 
     context "user has permission to manage admins" do
       before { user.user_permissions.create(permission_slug: :manage_admins) }
-      it "responsd with ok" do
+      it "response with ok" do
         get :edit, params: {id: existing_admin.id}
 
         expect(response).to be_ok
@@ -412,7 +412,6 @@ RSpec.describe AdminsController, type: :controller do
       expect(controller).to receive(:render).with({
         partial: access_tree[:render_partial],
         locals: expected_locals,
-        status: :no_content
       })
 
       get :access_tree, params: {id: existing_admin.id, page: :show}, xhr: true
@@ -432,7 +431,6 @@ RSpec.describe AdminsController, type: :controller do
       expect(controller).to receive(:render).with({
         partial: access_tree[:render_partial],
         locals: expected_locals,
-        status: :no_content
       })
 
       get :access_tree, params: {id: current_admin.id, page: :new}, xhr: true
@@ -444,7 +442,7 @@ RSpec.describe AdminsController, type: :controller do
       expected_locals = {
         tree: access_tree[:data],
         root: :facility_group,
-        user_being_edited: existing_admin,
+        user_being_edited: AdminAccessPresenter.new(existing_admin),
         tree_depth: 0,
         page: :edit,
       }
@@ -452,7 +450,6 @@ RSpec.describe AdminsController, type: :controller do
       expect(controller).to receive(:render).with({
         partial: access_tree[:render_partial],
         locals: expected_locals,
-        status: :no_content
       })
 
       get :access_tree, params: {id: existing_admin.id, page: :edit}, xhr: true

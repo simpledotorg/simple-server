@@ -1,13 +1,13 @@
 require "ostruct"
 
-class AdminAccessPresenter < SimpleDelegator
+class AdminAccessPresenter
   include Memery
 
   attr_reader :admin
+  delegate_missing_to :@admin
 
   def initialize(admin)
     @admin = admin
-    super
   end
 
   def display_access_level
@@ -61,4 +61,10 @@ class AdminAccessPresenter < SimpleDelegator
   memoize def visible_facilities
     admin.accessible_facilities(:any)
   end
+
+  def ==(other)
+    admin == other.admin
+  end
+
+  alias :eql? ==
 end

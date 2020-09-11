@@ -46,7 +46,7 @@ class AdminsController < AdminController
           head :not_found and return
       end
 
-    user_being_edited = page_for_access_tree.eql?(:edit) ? @admin : nil
+    user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
 
     render partial: access_tree[:render_partial],
       locals: {
@@ -55,8 +55,7 @@ class AdminsController < AdminController
         user_being_edited: user_being_edited,
         tree_depth: 0,
         page: page_for_access_tree,
-      },
-      status: :no_content
+      }
   end
 
   def show
