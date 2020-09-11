@@ -17,7 +17,6 @@
           <h2><%= organization.name %></h2>
           <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
             <% current_admin.accessible_facilities(:view_reports)
-               .includes(facility_group: :organization)
                .where(facility_groups: {organization: organization})
                .flat_map(&:facility_group)
                .uniq

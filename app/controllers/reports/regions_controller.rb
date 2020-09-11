@@ -15,7 +15,6 @@ class Reports::RegionsController < AdminController
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
       authorize1 { current_admin.accessible_facilities(:view_reports).any? }
       @organizations = current_admin.accessible_facilities(:view_reports)
-        .includes(facility_group: :organization)
         .flat_map(&:organization)
         .uniq
         .compact
