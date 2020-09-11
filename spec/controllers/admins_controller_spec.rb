@@ -114,19 +114,19 @@ RSpec.describe AdminsController, type: :controller do
 
       let(:params) do
         {full_name: full_name,
-          email: email,
-          role: role,
-          organization_id: organization.id}
+         email: email,
+         role: role,
+         organization_id: organization.id}
       end
 
       let(:permission_params) do
         [{permission_slug: :manage_organizations},
           {permission_slug: :manage_facility_groups,
-            resource_type: "Organization",
-            resource_id: organization.id},
+           resource_type: "Organization",
+           resource_id: organization.id},
           {permission_slug: :manage_facilities,
-            resource_type: "FacilityGroup",
-            resource_id: facility_group.id}]
+           resource_type: "FacilityGroup",
+           resource_id: facility_group.id}]
       end
 
       let(:existing_admin) { create(:admin, params) }
@@ -406,12 +406,12 @@ RSpec.describe AdminsController, type: :controller do
         root: :facility_group,
         user_being_edited: nil,
         tree_depth: 0,
-        page: :show,
+        page: :show
       }
 
       expect(controller).to receive(:render).with({
         partial: access_tree[:render_partial],
-        locals: expected_locals,
+        locals: expected_locals
       })
 
       get :access_tree, params: {id: existing_admin.id, page: :show}, xhr: true
@@ -425,12 +425,12 @@ RSpec.describe AdminsController, type: :controller do
         root: :facility_group,
         user_being_edited: nil,
         tree_depth: 0,
-        page: :new,
+        page: :new
       }
 
       expect(controller).to receive(:render).with({
         partial: access_tree[:render_partial],
-        locals: expected_locals,
+        locals: expected_locals
       })
 
       get :access_tree, params: {id: current_admin.id, page: :new}, xhr: true
@@ -444,12 +444,12 @@ RSpec.describe AdminsController, type: :controller do
         root: :facility_group,
         user_being_edited: AdminAccessPresenter.new(existing_admin),
         tree_depth: 0,
-        page: :edit,
+        page: :edit
       }
 
       expect(controller).to receive(:render).with({
         partial: access_tree[:render_partial],
-        locals: expected_locals,
+        locals: expected_locals
       })
 
       get :access_tree, params: {id: existing_admin.id, page: :edit}, xhr: true

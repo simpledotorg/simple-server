@@ -65,7 +65,7 @@ class AdminAccessPresenter < SimpleDelegator
     admin.accessible_facilities(:any).order(:name)
   end
 
-  alias :eql? ==
+  alias_method :eql?, :==
 
   def ==(other)
     admin == other.admin
