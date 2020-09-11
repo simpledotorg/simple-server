@@ -22,28 +22,29 @@ module AdminAccessHelper
     end
   end
 
-  def access_level_select(form, access_levels, value: nil, page: :new)
+  def access_level_select(form, available_access_levels, page: :new, disabled: false, current_access_level: nil)
     form.select(:access_level,
       {},
       {label: "Access *"},
       {
         class: "access-levels",
         id: :access_level,
-        disabled: page.eql?(:edit),
+        disabled: disabled,
         required: page.eql?(:new)
       }) do
-      access_levels.each do |level|
-        access_level_option(level)
+      available_access_levels.each do |level|
+        access_level_option(level, current_access_level)
       end
     end
   end
 
-  def access_level_option(level)
+  def access_level_option(level, current_access_level)
     tag =
       content_tag(:option,
         level[:id],
         value: level[:id],
         class: "show",
+        selected: level[:id].to_s.eql?(current_access_level),
         data: {content: access_level_option_data(level)})
 
     concat(tag)

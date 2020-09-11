@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :access do
-    user { build(:admin) }
+    user
   end
 end

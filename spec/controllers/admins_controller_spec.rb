@@ -55,7 +55,7 @@ RSpec.describe AdminsController, type: :controller do
 
     context "user has permission to manage admins" do
       before { user.user_permissions.create(permission_slug: :manage_admins) }
-      it "responsd with ok" do
+      it "respond with ok" do
         get :show, params: {id: existing_admin.id}
 
         expect(response).to be_ok
@@ -95,7 +95,7 @@ RSpec.describe AdminsController, type: :controller do
 
     context "user has permission to manage admins" do
       before { user.user_permissions.create(permission_slug: :manage_admins) }
-      it "responsd with ok" do
+      it "respond with ok" do
         delete :destroy, params: {id: existing_admin.id}
 
         expect(response).to be_redirect
@@ -104,96 +104,268 @@ RSpec.describe AdminsController, type: :controller do
   end
 
   describe "#update" do
-    let(:organization) { create(:organization) }
-    let(:facility_group) { create(:facility_group, organization: organization) }
+    context "legacy permissions" do
+      let(:organization) { create(:organization) }
+      let(:facility_group) { create(:facility_group, organization: organization) }
 
-    let(:full_name) { Faker::Name.name }
-    let(:email) { Faker::Internet.email }
-    let(:role) { "Test User Role" }
+      let(:full_name) { Faker::Name.name }
+      let(:email) { Faker::Internet.email }
+      let(:role) { "Test User Role" }
 
-    let(:params) do
-      {full_name: full_name,
-       email: email,
-       role: role,
-       organization_id: organization.id}
-    end
+      let(:params) do
+        {full_name: full_name,
+         email: email,
+         role: role,
+         organization_id: organization.id}
+      end
 
-    let(:permission_params) do
-      [{permission_slug: :manage_organizations},
-        {permission_slug: :manage_facility_groups,
-         resource_type: "Organization",
-         resource_id: organization.id},
-        {permission_slug: :manage_facilities,
-         resource_type: "FacilityGroup",
-         resource_id: facility_group.id}]
-    end
+      let(:permission_params) do
+        [{permission_slug: :manage_organizations},
+          {permission_slug: :manage_facility_groups,
+           resource_type: "Organization",
+           resource_id: organization.id},
+          {permission_slug: :manage_facilities,
+           resource_type: "FacilityGroup",
+           resource_id: facility_group.id}]
+      end
 
-    let(:existing_admin) { create(:admin, params) }
+      let(:existing_admin) { create(:admin, params) }
 
-    context "user does not have permission to manage admins" do
-      it "redirects the user" do
-        put :update, params: params.merge(id: existing_admin.id)
+      context "user does not have permission to manage admins" do
+        it "redirects the user" do
+          put :update, params: params.merge(id: existing_admin.id)
 
-        expect(response).to be_redirect
+          expect(response).to be_redirect
+        end
+      end
+
+      context "user has permission to manage admins" do
+        before { user.user_permissions.create(permission_slug: :manage_admins) }
+
+        context "update params are valid" do
+          it "allows updating user full name" do
+            new_name = Faker::Name.name
+            put :update, params: params.merge(id: existing_admin.id, full_name: new_name)
+
+            existing_admin.reload
+
+            expect(response).to be_ok
+            expect(existing_admin.full_name).to eq(new_name)
+          end
+
+          it "allows updating user role" do
+            new_role = "New user role"
+            put :update, params: params.merge(id: existing_admin.id, role: new_role)
+
+            existing_admin.reload
+
+            expect(response).to be_ok
+            expect(existing_admin.role).to eq(new_role)
+          end
+
+          it "does not allow updating user email" do
+            new_email = Faker::Internet.email
+            put :update, params: params.merge(id: existing_admin.id, email: new_email)
+
+            existing_admin.reload
+
+            expect(response).to be_ok
+            expect(existing_admin.role).not_to eq(new_email)
+          end
+
+          it "updates user permissions" do
+            put :update, params: params.merge(id: existing_admin.id, permissions: permission_params)
+
+            existing_admin.reload
+            expect(existing_admin.user_permissions.pluck(:permission_slug))
+              .to match_array(permission_params.map { |p| p[:permission_slug].to_s })
+          end
+        end
+
+        context "update params are invalid" do
+          it "responds with bad request if full name is missing" do
+            put :update, params: params.merge(id: existing_admin.id, full_name: nil)
+
+            expect(response).to be_bad_request
+            expect(JSON(response.body)).to eq("errors" => ["Full name can't be blank"])
+          end
+
+          it "responds with bad request if role is missing" do
+            put :update, params: params.merge(id: existing_admin.id, role: nil)
+
+            expect(response).to be_bad_request
+            expect(JSON(response.body)).to eq("errors" => ["Role can't be blank"])
+          end
+        end
       end
     end
 
-    context "user has permission to manage admins" do
-      before { user.user_permissions.create(permission_slug: :manage_admins) }
+    context "new permissions" do
+      let(:manager) { create(:admin, :manager) }
+      let(:organization) { create(:organization) }
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
+      let(:full_name) { Faker::Name.name }
+      let(:email) { Faker::Internet.email }
+      let(:job_title) { "Title" }
+      let(:params) {
+        {
+          full_name: full_name,
+          email: email,
+          role: job_title,
+          access_level: :manager,
+          organization_id: organization.id
+        }
+      }
+      let(:admin_being_updated) {
+        admin = create(:admin, params)
+        admin.accesses.create!(resource: facility_group)
+        admin
+      }
+      let(:selected_facility_ids) { facilities.map(&:id) }
 
-      context "update params are valid" do
-        it "allows updating user full name" do
-          new_name = Faker::Name.name
-          put :update, params: params.merge(id: existing_admin.id, full_name: new_name)
+      before(:each) do
+        sign_in(manager.email_authentication)
 
-          existing_admin.reload
+        enable_flag(:new_permissions_system_aug_2020, manager)
 
-          expect(response).to be_ok
-          expect(existing_admin.full_name).to eq(new_name)
+        manager.accesses.create!(resource: organization)
+        manager.reload
+      end
+
+      after(:each) do
+        disable_flag(:new_permissions_system_aug_2020, manager)
+      end
+
+      context "validate params" do
+        let(:request_params) { params.merge(id: admin_being_updated.id, facilities: selected_facility_ids) }
+
+        context "update params are valid" do
+          it "responds with a 200" do
+            put :update, params: request_params
+
+            expect(response).to redirect_to(admins_url)
+          end
         end
 
-        it "allows updating user role" do
-          new_role = "New user role"
-          put :update, params: params.merge(id: existing_admin.id, role: new_role)
+        context "update params are invalid" do
+          it "redirects if full name is missing" do
+            put :update, params: request_params.merge(full_name: nil)
 
-          existing_admin.reload
+            expect(response).to be_redirect
+          end
 
-          expect(response).to be_ok
-          expect(existing_admin.role).to eq(new_role)
+          it "responds with bad request if role is missing" do
+            put :update, params: request_params.merge(role: nil)
+
+            expect(response).to be_redirect
+          end
+
+          it "responds with bad request if selected_facilities are missing" do
+            put :update, params: request_params.merge(facilities: nil)
+
+            expect(response).to be_redirect
+          end
+        end
+      end
+
+      context "user has access to manage admins" do
+        let(:request_params) { params.merge(id: admin_being_updated.id, facilities: selected_facility_ids) }
+
+        it "update attributes" do
+          params =
+            {
+              full_name: Faker::Name.name,
+              role: "New user title"
+            }
+
+          put :update, params: request_params.merge(params)
+
+          admin_being_updated.reload
+
+          expect(response).to redirect_to(admins_url)
+          expect(admin_being_updated.full_name).to eq(params[:full_name])
+          expect(admin_being_updated.role).to eq(params[:role])
         end
 
-        it "does not allow updating user email" do
+        it "updating email is disallowed" do
           new_email = Faker::Internet.email
-          put :update, params: params.merge(id: existing_admin.id, email: new_email)
+          put :update, params: request_params.merge(email: new_email)
 
-          existing_admin.reload
+          admin_being_updated.reload
 
-          expect(response).to be_ok
-          expect(existing_admin.role).not_to eq(new_email)
+          expect(response).to redirect_to(admins_url)
+          expect(admin_being_updated.email).not_to eq(new_email)
         end
 
-        it "updates user permissions" do
-          put :update, params: params.merge(id: existing_admin.id, permissions: permission_params)
+        it "updating access level is allowed only if power-user" do
+          # promote to power_user
+          manager.update!(access_level: :power_user)
 
-          existing_admin.reload
-          expect(existing_admin.user_permissions.pluck(:permission_slug))
-            .to match_array(permission_params.map { |p| p[:permission_slug].to_s })
+          new_access_level = "viewer_all"
+          put :update, params: request_params.merge(access_level: new_access_level)
+
+          admin_being_updated.reload
+
+          expect(response).to redirect_to(admins_url)
+          expect(admin_being_updated.access_level).to eq(new_access_level)
+        end
+
+        it "disallow non-power users to update the access level" do
+          new_access_level = "viewer_all"
+          put :update, params: request_params.merge(access_level: new_access_level)
+
+          admin_being_updated.reload
+
+          expect(response).to redirect_to(root_path)
+          expect(admin_being_updated.access_level).to_not eq(new_access_level)
+        end
+
+        it "update the accesses" do
+          facility_group = create(:facility_group, organization: organization)
+          facilities = create_list(:facility, 2, facility_group: facility_group).map(&:id)
+
+          put :update, params: request_params.merge(facilities: facilities)
+
+          admin_being_updated.reload
+
+          expect(response).to redirect_to(admins_url)
+          expect(admin_being_updated.accessible_facilities(:any).map(&:id)).to match_array(facilities)
+        end
+
+        it "only allows managers/power-users to update the accesses" do
+          managers = %w[manager power_user]
+
+          managers.each do |access_level|
+            manager.update!(access_level: access_level)
+
+            put :update, params: request_params
+            expect(response).to redirect_to(admins_url)
+          end
         end
       end
 
-      context "update params are invalid" do
-        it "responds with bad request if full name is missing" do
-          put :update, params: params.merge(id: existing_admin.id, full_name: nil)
+      context "user does not have access to manage admins" do
+        let(:request_params) { params.merge(id: admin_being_updated.id, facilities: selected_facility_ids) }
 
-          expect(response).to be_bad_request
-          expect(JSON(response.body)).to eq("errors" => ["Full name can't be blank"])
+        it "redirects the user if granting is unsuccessful" do
+          manager.accesses.delete_all
+
+          put :update, params: request_params
+
+          expect(response).to redirect_to(root_path)
         end
 
-        it "responds with bad request if role is missing" do
-          put :update, params: params.merge(id: existing_admin.id, role: nil)
+        it "disallows non-managers from updating access" do
+          managers = %w[manager power_user]
+          non_managers = User.access_levels.except(*managers).keys
 
-          expect(response).to be_bad_request
-          expect(JSON(response.body)).to eq("errors" => ["Role can't be blank"])
+          non_managers.each do |access_level|
+            manager.update!(access_level: access_level)
+
+            put :update, params: request_params
+            expect(response).to redirect_to(root_path)
+          end
         end
       end
     end

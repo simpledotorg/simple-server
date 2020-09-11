@@ -6,8 +6,8 @@ class AdminsController < AdminController
   before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_policy_scoped, only: :index
 
+  after_action :verify_policy_scoped, only: :index
   skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
   skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
 
@@ -20,7 +20,7 @@ class AdminsController < AdminController
         if searching?
           paginate(admins.search_by_name_or_email(search_query))
         else
-          paginate(admins.order("email_authentications.email"))
+          paginate(admins)
         end
     else
       authorize([:manage, :admin, User])
@@ -99,6 +99,10 @@ class AdminsController < AdminController
       return
     end
 
+    if access_level_changed? && !current_admin.modify_access_level?
+      raise UserAccess::NotAuthorizedError
+    end
+
     @admin.assign_attributes(user_params)
 
     if @admin.invalid?
@@ -118,10 +122,6 @@ class AdminsController < AdminController
     end
   end
 
-  def current_admin
-    AdminAccessPresenter.new(super)
-  end
-
   def permission_params
     params[:permissions]
   end
@@ -134,9 +134,15 @@ class AdminsController < AdminController
     {
       full_name: params[:full_name],
       role: params[:role],
-      access_level: params[:access_level],
       organization_id: params[:organization_id],
+      access_level: params[:access_level],
       device_updated_at: Time.current
     }.compact
+  end
+
+  def access_level_changed?
+    return false if user_params[:access_level].blank?
+
+    @admin.access_level != user_params[:access_level]
   end
 end
