@@ -98,19 +98,15 @@ class UserAccess < Struct.new(:user)
   end
 
   def accessible_protocols(action)
-    return Protocol.none unless [:manage].include?(action)
     return Protocol.all if power_user?
-    return Protocol.none unless action_to_level(action).include?(user.access_level.to_sym)
-    return Protocol.all if accessible_organizations(:manage).any?
+    return Protocol.all if action == :manage && accessible_organizations(:manage).any?
 
     Protocol.none
   end
 
   def accessible_protocol_drugs(action)
-    return ProtocolDrug.none unless [:manage].include?(action)
     return ProtocolDrug.all if power_user?
-    return ProtocolDrug.none unless action_to_level(action).include?(user.access_level.to_sym)
-    return ProtocolDrug.all if accessible_organizations(:manage).any?
+    return ProtocolDrug.all if action == :manage && accessible_organizations(:manage).any?
 
     ProtocolDrug.none
   end
