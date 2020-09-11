@@ -22,13 +22,18 @@ class CohortService
   def compute(period)
     Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
       cohort_period = period.previous
+      results_in = if period.quarter?
+        period.to_s
+      else
+        [period, period.next].map { |p| p.value.strftime("%b") }.join("/")
+      end
       hsh = {cohort_period: cohort_period.type,
              registration_quarter: cohort_period.value.try(:number),
              registration_year: cohort_period.value.try(:year),
              registration_month: cohort_period.value.try(:month)}
       query = MyFacilities::BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: hsh)
       {
-        results_in: period.to_s,
+        results_in: results_in,
         patients_registered: cohort_period.to_s,
         registered: query.cohort_registrations.count,
         controlled: query.cohort_controlled_bps.count,

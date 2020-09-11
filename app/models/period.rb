@@ -89,6 +89,8 @@ class Period
     end
   end
 
+  alias_method :next, :succ
+
   def previous
     if quarter?
       Period.new(type: type, value: value.previous_quarter)
