@@ -8,7 +8,7 @@
   </p>
   <% if @last_registration_value %>
     <div class="d-flex fd-column fd-lg-row">
-      <div class="order-lg-2 w-lg-224px mt-lg-48px ml-lg-24px">
+      <div class="order-lg-2 w-lg-224px mt-lg-16px ml-lg-24px">
         <div class="d-flex align-baseline mb-8px mb-lg-16px">
           <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
           <div class="d-flex flex-1 align-baseline fd-lg-column">
@@ -27,7 +27,7 @@
               <%= number_to_percentage(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
             </p>
             <p class="flex-1 m-0px fs-14px">
-              Visited in the last 3 months
+              Visited but no BP recorded
               <span
                 data-toggle="tooltip"
                 data-placement="top"
@@ -46,7 +46,7 @@
               <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
             </p>
             <p class="flex-1 m-0px fs-14px">
-              HTN not under control
+              BP not controlled
             </p>
           </div>
         </div>
@@ -57,7 +57,7 @@
               <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
             </p>
             <p class="flex-1 m-0px fs-14px">
-              HTN controlled
+              BP controlled
             </p>
           </div>
         </div>
