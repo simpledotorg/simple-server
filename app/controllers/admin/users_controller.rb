@@ -74,10 +74,10 @@ class Admin::UsersController < AdminController
         .joins(phone_number_authentications: :facility)
         .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
         .order("users.full_name", "facilities.name", "users.device_created_at")
+    end
 
-      respond_to do |format|
-        format.json { @users = users.teleconsult_search(search_query) }
-      end
+    respond_to do |format|
+      format.json { @users = users.teleconsult_search(search_query) }
     end
   end
 
