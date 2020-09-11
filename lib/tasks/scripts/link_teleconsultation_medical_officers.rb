@@ -3,8 +3,8 @@ class LinkTeleconsultationMedicalOfficers
     def call
       linked_users_count, unlinked_numbers_count = 0, 0
 
-      Facility.all.map do |facility|
-        facility.teleconsultation_phone_numbers.map do |number|
+      Facility.all.each do |facility|
+        facility.teleconsultation_phone_numbers.each do |number|
           medical_officer = find_medical_officer_by_number(number["phone_number"])
           if medical_officer
             linked_users_count += 1 if link_medical_officer(medical_officer, facility)
