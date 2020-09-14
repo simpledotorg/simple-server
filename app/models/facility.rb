@@ -18,7 +18,8 @@ class Facility < ApplicationRecord
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
   has_and_belongs_to_many :teleconsultation_medical_officers,
-    class_name: "TeleconsultationMedicalOfficer",
+    -> { distinct },
+    class_name: "User",
     association_foreign_key: :user_id,
     join_table: "facilities_teleconsultation_medical_officers"
 
@@ -78,7 +79,10 @@ class Facility < ApplicationRecord
                                         allow_blank: true}
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :teleconsultation_phone_numbers_valid?, if: :teleconsultation_enabled?
+
+  validate :teleconsultation_phone_numbers_valid?, if: -> {
+    teleconsultation_enabled? && !Flipper.enabled?(:teleconsult_facility_mo_search)
+  }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -117,7 +121,23 @@ class Facility < ApplicationRecord
     query.call
   end
 
-  CSV_IMPORT_COLUMNS =
+  CSV_IMPORT_COLUMNS = if Flipper.enabled?(:teleconsult_facility_mo_search)
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block (optional)",
+     district: "district",
+     state: "state",
+     country: "country",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+  else
     {organization_name: "organization",
      facility_group_name: "facility_group",
      name: "facility_name",
@@ -136,6 +156,7 @@ class Facility < ApplicationRecord
      enable_teleconsultation: "enable_teleconsultation (true/false)",
      teleconsultation_phone_number: "teleconsultation_phone_number",
      teleconsultation_isd_code: "teleconsultation_isd_code"}
+  end
 
   def self.parse_facilities(file_contents)
     facilities = []

@@ -32,7 +32,7 @@ RSpec.describe Facility, type: :model do
 
     describe "#teleconsultation_medical_officers" do
       let!(:facility) { create(:facility) }
-      let!(:medical_officer) { create(:teleconsultation_medical_officer, teleconsultation_facilities: [facility]) }
+      let!(:medical_officer) { create(:user, teleconsultation_facilities: [facility]) }
 
       specify do
         expect(facility.teleconsultation_medical_officers).to contain_exactly medical_officer
@@ -221,8 +221,6 @@ RSpec.describe Facility, type: :model do
                                           state: "Punjab",
                                           country: "India",
                                           enable_diabetes_management: "true",
-                                          teleconsultation_phone_number: nil,
-                                          teleconsultation_isd_code: nil,
                                           import: true)
       expect(facilities.second).to include(organization_name: "OrgOne",
                                            facility_group_name: "FGTwo",
@@ -231,15 +229,39 @@ RSpec.describe Facility, type: :model do
                                            district: "Bhatinda",
                                            state: "Punjab",
                                            country: "India",
-                                           enable_teleconsultation: "true",
-                                           teleconsultation_phone_number: "9999999999",
-                                           teleconsultation_isd_code: "91",
                                            import: true)
     end
 
-    it "defaults enable_teleconsultation to false if blank" do
-      facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.first[:enable_teleconsultation]).to be false
+    context "with old teleconsultation fields" do
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_test_old.csv", "text/csv") }
+
+      it "parses the facilities" do
+        disable_flag(:teleconsult_facility_mo_search)
+
+        facilities = described_class.parse_facilities(upload_file)
+        expect(facilities.first).to include(organization_name: "OrgOne",
+                                            facility_group_name: "FGTwo",
+                                            name: "Test Facility",
+                                            facility_type: "CHC",
+                                            district: "Bhatinda",
+                                            state: "Punjab",
+                                            country: "India",
+                                            enable_diabetes_management: "true",
+                                            teleconsultation_phone_number: nil,
+                                            teleconsultation_isd_code: nil,
+                                            import: true)
+        expect(facilities.second).to include(organization_name: "OrgOne",
+                                             facility_group_name: "FGTwo",
+                                             name: "Test Facility 2",
+                                             facility_type: "CHC",
+                                             district: "Bhatinda",
+                                             state: "Punjab",
+                                             country: "India",
+                                             enable_teleconsultation: "true",
+                                             teleconsultation_phone_number: "9999999999",
+                                             teleconsultation_isd_code: "91",
+                                             import: true)
+      end
     end
 
     it "defaults enable_diabetes_management to false if blank" do

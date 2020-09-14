@@ -458,3 +458,25 @@ h3 .heading-label {
     letter-spacing: 2px;
     margin-bottom: 0.5em;
 }
+
+.medical-officer-card {
+  .whatsapp-icon {
+    font-size: 15px;
+    color: $grey-mid;
+    margin-right: 4px;
+  }
+
+}
+.no-medical-officers {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  min-height: 150px;
+  border: 2px dashed $grey-light;
+  border-radius: 5px;
+  color: $grey-dark;
+
+  h5 {
+    margin: auto;
+  }
+}

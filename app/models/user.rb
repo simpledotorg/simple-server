@@ -57,12 +57,19 @@ class User < ApplicationRecord
   has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
+  pg_search_scope :search_by_teleconsultation_phone_number,
+    against: [:teleconsultation_phone_number],
+    using: {tsearch: {any_word: true}}
+
   scope :search_by_email,
     ->(term) { joins(:email_authentications).merge(EmailAuthentication.search_by_email(term)) }
   scope :search_by_phone,
     ->(term) { joins(:phone_number_authentications).merge(PhoneNumberAuthentication.search_by_phone(term)) }
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
+  scope :teleconsult_search, ->(term) do
+    search_by_teleconsultation_phone_number(term).union(search_by_name_or_phone(term))
+  end
   scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
   scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
 
