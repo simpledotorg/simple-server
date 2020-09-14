@@ -4,7 +4,7 @@
     <%= @facility_group.name %>
   </h1>
   <nav class="page-nav">
-    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+    <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.accessible_facility_groups(:manage).find_by_id(@facility_group) %>
         <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
       <% end %>
@@ -47,7 +47,7 @@
         <td><%= facility.country %></td>
         <td><%= facility.pin %></td>
         <td><%= facility.facility_type %></td>
-        <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+        <% if current_admin.permissions_v2_enabled? %>
           <% if current_admin.accessible_facilities(:manage).find_by_id(facility) %>
             <td><%= link_to 'Edit', edit_admin_facility_group_facility_path(@facility_group, facility) %></td>
             <td><%= link_to 'Delete', [:admin, @facility_group, facility], method: :delete, data: {confirm: "Are you sure you want to delete #{facility.name}?"} %></td>

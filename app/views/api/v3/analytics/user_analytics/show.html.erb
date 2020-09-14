@@ -248,7 +248,7 @@
             <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> Patients with no BP measure</p>
         </div>
 
-        <% @user_analytics.cohorts.each do |cohort| %>
+        <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
           <div class="card cohort">
               <h6><%= pluralize(cohort[:registered], "patient") %> registered in <%= cohort[:patients_registered] %></h6>
               <div style="font-size: 16px; margin: 8px 0 12px 0;">Result from last visit in <%= cohort[:results_in] %></div>
