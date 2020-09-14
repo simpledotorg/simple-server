@@ -43,6 +43,10 @@ class FacilityGroup < ApplicationRecord
     facilities.where(enable_diabetes_management: false).count.zero?
   end
 
+  def discardable?
+    facilities.none? && patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
   private
 
   def set_diabetes_management(value)

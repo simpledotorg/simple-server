@@ -276,6 +276,10 @@ class Facility < ApplicationRecord
     end
   }
 
+  def discardable?
+    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
   private
 
   def clear_isd_code

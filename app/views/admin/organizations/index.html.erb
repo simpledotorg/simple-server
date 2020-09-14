@@ -43,7 +43,7 @@
       </div>
       <div class="col-2 text-right">
         <% if current_admin.permissions_v2_enabled? %>
-          <% if organization.facility_groups.none? %>
+          <% if organization.discardable? %>
             <%= link_to([:admin, organization], method: :delete, class: "btn btn-outline-danger btn-sm", data: { confirm: "Are you sure you want to delete #{organization.name}?" }) do %>
               <i class="fas fa-trash-alt"></i>
             <% end %>

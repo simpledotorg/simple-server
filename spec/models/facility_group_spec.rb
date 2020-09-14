@@ -71,4 +71,52 @@ RSpec.describe FacilityGroup, type: :model do
       end
     end
   end
+
+  describe ".discardable?" do
+    let!(:facility_group) { create(:facility_group) }
+
+    context "isn't discardable if data exists" do
+      it "has patients" do
+        facility = create(:facility, facility_group: facility_group)
+        create(:patient, registration_facility: facility)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has appointments" do
+        facility = create(:facility, facility_group: facility_group)
+        create(:appointment, facility: facility)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has facilities" do
+        create(:facility, facility_group: facility_group)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has blood pressures" do
+        facility = create(:facility, facility_group: facility_group)
+        blood_pressure = create(:blood_pressure, facility: facility)
+        create(:encounter, :with_observables, observable: blood_pressure)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has blood sugars" do
+        facility = create(:facility, facility_group: facility_group)
+        blood_sugar = create(:blood_sugar, facility: facility)
+        create(:encounter, :with_observables, observable: blood_sugar)
+
+        expect(facility_group.discardable?).to be false
+      end
+    end
+
+    context "is discardable if no data exists" do
+      it "has no data" do
+        expect(facility_group.discardable?).to be true
+      end
+    end
+  end
 end

@@ -53,8 +53,12 @@ class Admin::OrganizationsController < AdminController
   end
 
   def destroy
-    @organization.destroy
-    redirect_to admin_organizations_url, notice: "Organization was successfully deleted."
+    if @organization.discardable?
+      @organization.discard
+      redirect_to admin_organizations_url, notice: "Organization was successfully deleted."
+    else
+      redirect_to admin_facilities_url, notice: "Organization cannot be deleted, please delete Facility Groups and try again."
+    end
   end
 
   private
