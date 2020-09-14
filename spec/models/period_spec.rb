@@ -46,13 +46,14 @@ RSpec.describe Period, type: :model do
 
     it "quarters can be created with a Quarter object" do
       quarter_1_2020 = Quarter.new(date: jan_1_2020)
-      period = Period.quarter("Q1-2020")
+      period = Period.new(type: :quarter, value: "Q1-2020")
       expect(period.value).to be_instance_of(Quarter)
       expect(period.value).to eq(quarter_1_2020)
     end
 
     it "quarters can be created with a month Date" do
-      period = Period.quarter(jan_1_2020)
+      period = Period.new(type: :quarter, value: jan_1_2020)
+      expect(period.value).to be_instance_of(Quarter)
       expect(period).to eq(Period.quarter(quarter_1_2020))
     end
   end
@@ -91,10 +92,15 @@ RSpec.describe Period, type: :model do
     }.to raise_error(ArgumentError, "you are trying to compare a Time with a Period")
   end
 
-  it "cannot compare month and quarter periods" do
+  it "month and quarter periods are never equal" do
+    expect(q1_2019_period).to_not eq(jan_1_2019_month_period)
+  end
+
+  it "month and quarter periods are not comparable" do
+    # this exception comes from Ruby (via Comparable), so we can't easily override it to be more descriptive
     expect {
-      q1_2019_period > jan_1_2019_month_period
-    }.to raise_error(ArgumentError, "can only compare Periods of the same type")
+      q1_2019_period < jan_1_2019_month_period
+    }.to raise_error(ArgumentError, "comparison of Period with Period failed")
   end
 
   it "can be advanced forward and backwards" do

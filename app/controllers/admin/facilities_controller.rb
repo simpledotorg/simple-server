@@ -3,22 +3,22 @@ class Admin::FacilitiesController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_facility, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :set_facility, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
 
-  before_action :set_facility_new_permissions, only: [:show, :edit, :update, :destroy], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :set_facility_group_new_permissions, only: [:show, :new, :create, :edit, :update, :destroy], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  before_action :set_facility_new_permissions, only: [:show, :edit, :update, :destroy], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_facility_group_new_permissions, only: [:show, :new, :create, :edit, :update, :destroy], if: -> { current_admin.permissions_v2_enabled? }
 
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_authorization_attempted, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 do
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 do
         current_admin.accessible_facilities(:manage).any? ||
           current_admin.accessible_facility_groups(:manage).any? ||
           current_admin.accessible_organizations(:manage).any?
@@ -27,7 +27,7 @@ class Admin::FacilitiesController < AdminController
       authorize([:manage, :facility, Facility])
     end
 
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       if searching?
         current_admin.accessible_facilities(:manage).search_by_name(search_query)
         facility_groups = FacilityGroup.where(facilities: facilities)
@@ -80,8 +80,8 @@ class Admin::FacilitiesController < AdminController
   def new
     @facility = new_facility
 
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
     else
       authorize([:manage, :facility, @facility])
     end
@@ -93,8 +93,8 @@ class Admin::FacilitiesController < AdminController
   def create
     @facility = new_facility(facility_params)
 
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
     else
       authorize([:manage, :facility, @facility])
     end
@@ -120,8 +120,8 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_facility_groups(:manage).any? }
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facility_groups(:manage).any? }
     else
       authorize([:manage, :facility, Facility])
     end
@@ -144,7 +144,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_facility_new_permissions
-    @facility = authorize1 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
+    @facility = authorize_v2 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
   end
 
   def set_facility_group_new_permissions

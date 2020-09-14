@@ -18,14 +18,14 @@
       <div class="table-responsive">
         <table id="htn-controlled-table" class="table-compact">
           <colgroup>
-            <col>
+            <col class="w-lg-120px">
             <col class="table-divider">
-            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
           </colgroup>
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Name
+                Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 BP controlled
@@ -63,20 +63,20 @@
           BP not controlled
         </h3>
         <p class="c-grey-dark">
-          Hypertensive patients with no recent BP measure recorded
+          Hypertensive patients with BP &ge;140/90 at their most recent visit in the last 3 months
         </p>
       </div>
       <div class="table-responsive">
         <table id="htn-not-under-control-table" class="table-compact">
           <colgroup>
-            <col>
+            <col class="w-lg-120px">
             <col class="table-divider">
-            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
           </colgroup>
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Name
+                Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 BP not controlled
@@ -120,21 +120,20 @@
       <div class="table-responsive">
         <table id="no-bp-measure-table" class="table-compact">
           <colgroup>
-            <col>
+            <col class="w-lg-120px">
             <col class="table-divider">
-            <col class="table-divider">
-            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
           </colgroup>
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Name
+                Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 No visit >3 months
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Visited in the last 3 months but no BP
+                Visited but no BP recorded
               </th>
             </tr>
           </thead>
@@ -172,17 +171,17 @@
       <div class="table-responsive">
         <table id="cumulative-registrations-table" class="table-compact">
           <colgroup>
-            <col>
+            <col class="w-lg-120px">
             <col class="table-divider">
-            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
           </colgroup>
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Name
+                Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                Monthly registrations in <%= @period.to_s %>
+                Registrations in <%= @period.to_s %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
                 Total registrations
