@@ -2,7 +2,10 @@ require "rails_helper"
 
 RSpec.feature "Organization management", type: :feature do
   let!(:owner) { create(:admin) }
-  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_organizations) }
+  let!(:permissions) {
+    [create(:user_permission, user: owner, permission_slug: :manage_organizations),
+      create(:user_permission, user: owner, permission_slug: :view_my_facilities)]
+  }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
 

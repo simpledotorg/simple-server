@@ -12,7 +12,14 @@
 <% end %>
 <h3>Instructions:</h3>
 <ol>
-  <li>Download and fill in <%= link_to 'this template', '/documents/upload_facilities.csv'%> to create multiple facilities via file upload.</li>
+  <li>Download and fill in
+    <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
+      <%= link_to 'this template', '/documents/upload_facilities.csv' %>
+    <% else %>
+      <%= link_to 'this template', '/documents/upload_facilities_with_teleconsult.csv' %>
+    <% end %>
+    to create multiple facilities via file upload.
+  </li>
   <li>Organizations for the facilities must already exist.
     <% if policy([:manage, Organization]).new? %>
       Click here to create an organization:
@@ -24,7 +31,15 @@
       <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
     <% end %></li>
   <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
-  <li class="mt-1">The enable_diabetes_management and enable_teleconsultation fields will be treated as "not enabled" if blank.</li>
+  <li class="mt-1">
+    The enable_diabetes_management
+    <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
+      and enable_teleconsultation fields
+    <% else %>
+      field
+    <% end %>
+    will be treated as "not enabled" if blank.
+  </li>
 </ol>
 <%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
   <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label:'Upload your filled in facilities file'%>
