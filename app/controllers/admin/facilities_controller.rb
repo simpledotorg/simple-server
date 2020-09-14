@@ -115,8 +115,12 @@ class Admin::FacilitiesController < AdminController
   end
 
   def destroy
-    @facility.destroy
-    redirect_to admin_facilities_url, notice: "Facility was successfully deleted."
+    if @facility.discardable?
+      @facility.discard
+      redirect_to admin_facilities_url, notice: "Facility was successfully deleted."
+    else
+      redirect_to admin_facilities_url, notice: "Facility cannot be deleted, please move patient data and try again."
+    end
   end
 
   def upload

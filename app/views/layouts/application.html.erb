@@ -62,7 +62,7 @@
             <% if current_admin.permissions_v2_enabled? %>
               <% if current_admin.accessible_facilities(:view_reports).any? %>
                 <li class="nav-item">
-                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                  <%= link_to "Home", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
               <% end %>
 

@@ -3,7 +3,7 @@
   <nav class="page-nav">
 
     <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) %>
+      <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) && @facility.discardable? %>
         <%= link_to 'Delete facility', [:admin, @facility_group, @facility], method: :delete, data: {confirm: "Are you sure you want to delete #{@facility.name}?"}, class: "btn btn-outline-danger ml-4" %>
       <% end %>
     <% else %>
