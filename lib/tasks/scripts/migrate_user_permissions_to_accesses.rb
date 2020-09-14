@@ -51,7 +51,7 @@ class UserPermissionsToAccesses
     def assign_access_levels
       admins_by_access_level
         .except(:custom) # skip custom access levels
-        .each { |access_level, admins| admins.update_all(access_level: access_level) }
+        .each { |access_level, admins| admins.update_all(access_level: OLD_ACCESS_LEVELS_TO_NEW[access_level]) }
     end
 
     def admins_by_access_level
