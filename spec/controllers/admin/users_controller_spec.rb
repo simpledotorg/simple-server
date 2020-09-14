@@ -54,6 +54,33 @@ RSpec.describe Admin::UsersController, type: :controller do
     end
   end
 
+  describe "GET #teleconsult_search" do
+    context ".json" do
+      render_views
+
+      it "fetches users for search term" do
+        create(:user, full_name: "Doctor Jack")
+        create(:user, full_name: "Jack")
+        search_query = "Doctor"
+
+        get :teleconsult_search, format: :json, params: {search_query: search_query}
+
+        expect(response).to be_successful
+        expect(JSON(response.body).first["full_name"]).to eq "Doctor Jack"
+      end
+
+      it "should call teleconsult_search and return the results" do
+        search_query = "Search query"
+        user = create(:user)
+        allow(User).to receive(:teleconsult_search).with(search_query).and_return([user])
+
+        get :teleconsult_search, format: :json, params: {search_query: search_query}
+
+        expect(JSON(response.body).first["full_name"]).to eq user.full_name
+      end
+    end
+  end
+
   describe "GET #show" do
     it "returns a success response" do
       user = create(:user)

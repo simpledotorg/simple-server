@@ -236,6 +236,48 @@ RSpec.describe User, type: :model do
         end
       end
     end
+
+    describe ".teleconsult_search" do
+      include_examples "full_name search", :teleconsult_search
+
+      context "searches against phone_number and teleconsultation_phone_number" do
+        let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+
+        it "matches a user with a phone number" do
+          expect(User.search_by_name_or_phone(user_1.phone_number)).to match_array(user_1)
+        end
+
+        it "matches a user with a teleconsultation phone number" do
+          expect(User.teleconsult_search(user_1.teleconsultation_phone_number))
+            .to match_array(user_1)
+        end
+
+        it "matches a combination of name and phone number from the same user" do
+          expect(User.search_by_name_or_phone(user_1.phone_number + " " + "John"))
+            .to match_array(user_1)
+
+          expect(User.search_by_name_or_phone("Gupta" + " " + user_2.phone_number))
+            .to match_array(user_2)
+        end
+
+        it "matches a combination of name and teleconsultation_phone_number from the same user" do
+          expect(User.search_by_name_or_phone(user_1.teleconsultation_phone_number + " " + "John"))
+            .to match_array(user_1)
+
+          expect(User.search_by_name_or_phone("Gupta" + " " + user_2.teleconsultation_phone_number))
+            .to match_array(user_2)
+        end
+
+        it "matches multiple users against multiple phone numbers" do
+          expect(User.search_by_name_or_phone("Priya Sri" + " " + user_1.phone_number))
+            .to match_array([user_1, user_2])
+
+          expect(User.search_by_name_or_phone(user_1.phone_number + " " + user_2.phone_number))
+            .to match_array([user_1, user_2])
+        end
+      end
+    end
   end
 
   describe "destroying email authentications" do

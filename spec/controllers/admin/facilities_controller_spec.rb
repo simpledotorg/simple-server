@@ -158,6 +158,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
 
       it "uploads facilities file and passes validations" do
+        enable_flag(:teleconsult_facility_mo_search)
+
         post :upload, params: {upload_facilities_file: upload_file}
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
       end
