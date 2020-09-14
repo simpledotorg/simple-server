@@ -8,12 +8,12 @@
 class UserPermissionsToAccesses
   class << self
     OLD_ACCESS_LEVELS_TO_NEW = {
-      :organization_owner => "manager",
-      :supervisor => "manager",
-      :sts => "manager",
-      :analyst => "view_reports_only",
-      :counsellor => "call_center",
-      :owner => "power_user"
+      organization_owner: "manager",
+      supervisor: "manager",
+      sts: "manager",
+      analyst: "view_reports_only",
+      counsellor: "call_center",
+      owner: "power_user"
     }.freeze
 
     def migrate(dryrun: true)
@@ -41,7 +41,6 @@ class UserPermissionsToAccesses
       admins_by_access_level
         .except(:custom)
         .each do |_access_level, admins|
-
         admins.each do |admin|
           facility_group_accesses = current_facility_groups(admin).map { |fg| {resource: fg} }
           admin.accesses.create!(facility_group_accesses)
@@ -56,7 +55,7 @@ class UserPermissionsToAccesses
     end
 
     def admins_by_access_level
-      admins.inject(init_per_access_level_list) do |by_access_level, admin|
+      admins.each_with_object(init_per_access_level_list) do |admin, by_access_level|
         access_level_to_permissions.each do |access_level, permissions|
           if current_permissions(admin).to_set == permissions.to_set
             by_access_level[access_level] << admin
@@ -64,8 +63,6 @@ class UserPermissionsToAccesses
             by_access_level[:custom] << admin
           end
         end
-
-        by_access_level
       end
     end
 
@@ -74,7 +71,6 @@ class UserPermissionsToAccesses
         [access_level[:name], access_level[:default_permissions]]
       }.to_h
     end
-
 
     def init_per_access_level_list
       Permissions::ACCESS_LEVELS.map { |access_level|
@@ -107,7 +103,7 @@ class UserPermissionsToAccesses
     end
 
     def log(data)
-      data_with_time = "[#{Time.current.strftime("%d.%b.%Y | %-k:%M:%S") }] #{data}"
+      data_with_time = "[#{Time.current.strftime("%d.%b.%Y | %-k:%M:%S")}] #{data}"
       Rails.logger.info(data_with_time)
     end
   end
