@@ -49,7 +49,7 @@ class Admin::UsersController < AdminController
 
   def teleconsult_search
     if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize1 { current_admin.accessible_users(:manage).any? }
+      authorize_v2 { current_admin.accessible_users(:manage).any? }
 
       facilities = if @district == "All"
         current_admin.accessible_facilities(:manage)
