@@ -33,18 +33,14 @@ UserTeleconsultSearch = function () {
     $(".typeahead-input").val("");
   }
 
-  this.resultsJSONToHTML = (results) => {
-    return results.map((result) => {
-      return this.userJSONToRow(result)
+  this.usersJSONToHTML = (users) => {
+    return users.map((user) => {
+      return this.userJSONToRow(user)
     })
   }
 
-  this.noResultsHTML = (searchQuery) => {
-    return this.noUsersFound(searchQuery)
-  }
-
   this.searchResultsToHTML = (searchQuery, results) => {
-    return results.length ? this.resultsJSONToHTML(results) : this.noResultsHTML(searchQuery);
+    return results.length ? this.usersJSONToHTML(results) : this.noUsersFound(searchQuery);
   }
 
   this.populateDropdown = (body) => {
