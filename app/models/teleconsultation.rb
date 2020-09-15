@@ -12,13 +12,13 @@ class Teleconsultation < ApplicationRecord
     medical_officer_number]
   TELECONSULTATION_ANSWERS = {
     yes: "yes",
-      no: "no",
-      unknown: "unknown"
+    no: "no",
+    unknown: "unknown"
   }.freeze
   TELECONSULTATION_TYPES = {
     audio: "audio",
-      video: "video",
-      message: "message"
+    video: "video",
+    message: "message"
   }.freeze
 
   enum patient_took_medicines: TELECONSULTATION_ANSWERS, _prefix: true
