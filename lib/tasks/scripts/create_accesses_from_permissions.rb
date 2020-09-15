@@ -42,8 +42,6 @@ class CreateAccessesFromPermissions
     log "Starting migration..."
 
     User.transaction do
-      admins_by_access_level
-
       log "Assigning access levels..."
       assign_access_levels
       log "Finished assigning access levels."
@@ -59,8 +57,7 @@ class CreateAccessesFromPermissions
   private
 
   def assign_accesses
-    admins_by_access_level
-      .each do |access_level, admins|
+    admins_by_access_level.each do |access_level, admins|
       admins.each do |admin|
         accesses = current_resources(access_level, admin).map { |r| {resource: r} }
         admin.accesses.create!(accesses)
@@ -69,9 +66,7 @@ class CreateAccessesFromPermissions
   end
 
   def assign_access_levels
-    admins_by_access_level
-      .each do |access_level, admins|
-
+    admins_by_access_level.each do |access_level, admins|
       User.where(id: admins).update_all(access_level: OLD_ACCESS_LEVELS_TO_NEW[access_level])
     end
   end
