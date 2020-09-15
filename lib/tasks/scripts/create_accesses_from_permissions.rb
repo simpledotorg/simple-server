@@ -5,7 +5,7 @@
 # To use:
 # require "tasks/scripts/migrate_user_permissions_to_accesses"
 #
-class UserPermissionsToAccesses
+class CreateAccessesFromUserPermiss
   OLD_ACCESS_LEVELS_TO_NEW = {
     organization_owner: "manager",
     supervisor: "manager",
@@ -48,7 +48,13 @@ class UserPermissionsToAccesses
       assign_accesses
       log "Finished assigning accesses."
     end
+
+
+    log "Did not migrate the following custom admins: #{admins_with_custom_permissions.map(&:id).join(", ")}"
+    log "Please manually take care of admins who need to have Organization-level permissions."
   end
+
+  private
 
   def assign_accesses
     admins_by_access_level
@@ -68,26 +74,32 @@ class UserPermissionsToAccesses
   end
 
   def admins_by_access_level
-    admins.each_with_object(init_per_access_level_list) do |admin, by_access_level|
-      access_level_to_permissions.each do |access_level, permissions|
-        if current_permissions(admin).to_set == permissions.to_set
-          by_access_level[access_level] << admin
-        else
-          by_access_level[:custom] << admin
+    @admins_by_access_level ||=
+      admins.each_with_object(init_admins_by_access_level) do |admin, by_access_level|
+        access_level_to_permissions.each do |access_level, permissions|
+          if current_permissions(admin).to_set == permissions.to_set
+            by_access_level[access_level] << admin
+          else
+            by_access_level[:custom] << admin
+          end
         end
       end
-    end
   end
+
+  def admins_with_custom_permissions
+    admins_by_access_level[:custom]
+  end
+
+  def init_admins_by_access_level
+    Permissions::ACCESS_LEVELS.map { |access_level|
+      [access_level[:name], []]
+    }.to_h
+  end
+
 
   def access_level_to_permissions
     Permissions::ACCESS_LEVELS.map { |access_level|
       [access_level[:name], access_level[:default_permissions]]
-    }.to_h
-  end
-
-  def init_per_access_level_list
-    Permissions::ACCESS_LEVELS.map { |access_level|
-      [access_level[:name], []]
     }.to_h
   end
 
@@ -104,11 +116,11 @@ class UserPermissionsToAccesses
   end
 
   def admins
-    User.admins.where(organization: organization)
+    @admins ||= User.admins.where(organization: organization)
   end
 
   def organization
-    Organization.where(name: organization_name)
+    @organization ||= Organization.where(name: organization_name)
   end
 
   def log(data)
