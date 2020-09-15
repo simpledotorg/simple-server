@@ -63,7 +63,7 @@
       display: flex;
       align-items: center;
 
-      .dropdown {
+      .access-item__dropdown {
         padding: 8px;
         font-size: 20px;
         cursor: pointer;
@@ -90,7 +90,7 @@
       }
 
       &.collapsed {
-        .dropdown {
+        .access-item__dropdown {
           i {
             transform: rotate(180deg);
             @include transition(0.3s);

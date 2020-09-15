@@ -20,6 +20,10 @@ AdminAccess.prototype = {
     return document.getElementsByClassName("access-ratio")
   },
 
+  facilityAccessItemsDropdown: function() {
+    return document.getElementsByClassName("access-item__dropdown")
+  },
+
   selectAllFacilitiesContainer: function () {
     return document.getElementById("select-all-facilities")
   },
@@ -42,7 +46,8 @@ AdminAccess.prototype = {
   resourceRowCollapseListener: function () {
     const collapsibleItems = [
       this.facilityAccessItemsPadding(),
-      this.facilityAccessItemsAccessRatio()
+      this.facilityAccessItemsAccessRatio(),
+      this.facilityAccessItemsDropdown()
     ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
     for (const item of collapsibleItems) {
