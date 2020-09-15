@@ -6,6 +6,14 @@ RSpec.describe Teleconsultation, type: :model do
   it { should belong_to(:requester).class_name("User").optional }
   it { should belong_to(:facility).optional }
 
+  context "Validations" do
+    it_behaves_like "a record that validates device timestamps"
+  end
+
+  context "Behavior" do
+    it_behaves_like "a record that is deletable"
+  end
+
   describe "#request" do
     let!(:nurse) { create(:user) }
     let!(:facility) { create(:facility) }

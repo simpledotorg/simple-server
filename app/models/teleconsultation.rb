@@ -1,4 +1,6 @@
 class Teleconsultation < ApplicationRecord
+  include Mergeable
+
   belongs_to :patient
   belongs_to :medical_officer, class_name: "User", foreign_key: :medical_officer_id
   belongs_to :facility, optional: true
@@ -23,6 +25,9 @@ class Teleconsultation < ApplicationRecord
 
   enum patient_took_medicines: TELECONSULTATION_ANSWERS, _prefix: true
   enum patient_consented: TELECONSULTATION_ANSWERS, _prefix: true
+
+  validates :device_created_at, presence: true
+  validates :device_updated_at, presence: true
 
   def request
     attributes.slice(*REQUEST_ATTRIBUTES)
