@@ -11,7 +11,7 @@ class Reports::PatientListsController < AdminController
 
     recipient_email = current_admin.email
 
-    download_params = if region_class = "facility_group"
+    download_params = if region_class == "facility_group"
       {id: @region.id}
     else
       {facility_id: @region.id}
@@ -19,15 +19,15 @@ class Reports::PatientListsController < AdminController
 
     PatientListDownloadJob.perform_later(recipient_email, region_class, download_params)
 
-    redirect_back(fallback_location: reports_region_path(@region))
+    redirect_back(fallback_location: reports_region_path(@region, report_scope: "facility"))
   end
 
   private
 
   def find_region
-    slug = filtered_params[:id]
+    id = filtered_params[:id]
     klass = region_class.classify.constantize
-    @region = klass.find_by!(slug: slug)
+    @region = klass.find(id)
   end
 
   def filtered_params
@@ -41,7 +41,7 @@ class Reports::PatientListsController < AdminController
     when "facility"
       "facility"
     else
-      raise ActiveRecord::RecordNotFound, "unknown report scope #{filtered_params[:report_scope]}"
+      raise ActiveRecord::RecordNotFound, "unknown report scope #{filtered_params[:report_scope].inspect}"
     end
   end
 end

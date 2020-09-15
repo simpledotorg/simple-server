@@ -1,25 +1,31 @@
 require "rails_helper"
 
 RSpec.describe Reports::PatientListsController, type: :controller do
-  let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
+  let(:user) { create(:user) }
+  let(:admin) { create(:admin, :owner) }
   let(:organization) { FactoryBot.create(:organization) }
+  let(:facility) { create(:facility) }
   let(:cvho) do
     create(:admin, :supervisor, organization: organization).tap do |user|
       user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
     end
   end
 
-  def refresh_views
-    ActiveRecord::Base.transaction do
-      LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
-      PatientRegistrationsPerDayPerFacility.refresh
-    end
-  end
-
   context "show" do
+    before do
+      Timecop.freeze("April 15th 2020") do
+        patients_with_controlled_bp = create_list(:patient, 2, recorded_at: 1.month.ago, registration_facility: facility, registration_user: user)
+        patients_with_controlled_bp.map do |patient|
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
+        end
+      end
+    end
+
     it "returns CSV of patient info" do
-      get :show, params: {id: region.id, region_scope: "facility"}
+      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email, "facility", { facility_id: facility.id })
+      sign_in(admin.email_authentication)
+      get :show, params: {id: facility.id, report_scope: "facility"}
+      expect(response).to redirect_to(reports_region_path(facility.slug, report_scope: "facility"))
     end
   end
 end
