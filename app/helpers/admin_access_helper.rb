@@ -3,7 +3,7 @@ module AdminAccessHelper
     "#{available} #{"facility".pluralize(available)}"
   end
 
-  def access_checkbox(name, resource, checked)
+  def access_checkbox(name, resource, checked: false)
     opts = {
       id: resource.id,
       class: "access-input form-check-input"

@@ -50,10 +50,11 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def destroy
-    if @facility_group.discard
+    if @facility_group.discardable?
+      @facility_group.discard
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully deleted."
     else
-      redirect_to admin_facilities_url, alert: "FacilityGroup could not be deleted"
+      redirect_to admin_facilities_url, alert: "FacilityGroup cannot be deleted, please move patient data and try again."
     end
   end
 
