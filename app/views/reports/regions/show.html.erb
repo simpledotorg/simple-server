@@ -222,20 +222,22 @@
 
 <div class="downloads">
   <h4>Downloads</h4>
-    <% if policy([:cohort_report, @region]).patient_list? %>
-      <p>
-        <%= link_to reports_patient_list_path(@region, report_scope: params[:report_scope]) do %>
-          <i class="far fa-file-excel mr-2"></i>
-          Patient line list
-        <% end %>
-      </p>
-      <p>
-        <%= link_to reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true) do %>
-          <i class="far fa-file-excel mr-2"></i>
-          Patient line list (with medication history)
-        <% end %>
-      </p>
-    <% end %>
+
+  <% if policy([:cohort_report, @region]).patient_list? %>
+    <p>
+      <%= link_to reports_patient_list_path(@region, report_scope: params[:report_scope]) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list
+      <% end %>
+    </p>
+    <p>
+      <%= link_to reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list (with medication history)
+      <% end %>
+    </p>
+ <% end %>
+</div>
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
