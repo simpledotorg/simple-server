@@ -59,8 +59,27 @@
     }
 
     .access-item {
-      height: 100%;
+      height: 44px;
       display: flex;
+      align-items: center;
+
+      .dropdown {
+        padding: 8px;
+        font-size: 20px;
+        cursor: pointer;
+        margin-left: 3px;
+        margin-right: -10px;
+
+        i {
+          transform: rotate(0deg);
+          @include transition(0.2s);
+          pointer-events: none;
+        }
+
+        &.hidden {
+          visibility: hidden;
+        }
+      }
 
       &.organization {
         div {
@@ -71,7 +90,7 @@
       }
 
       &.collapsed {
-        span {
+        .dropdown {
           i {
             transform: rotate(180deg);
             @include transition(0.3s);
@@ -115,6 +134,7 @@
         .access-item__padding {
           flex: auto;
           cursor: pointer;
+          height: 100%;
         }
       }
 
@@ -123,35 +143,26 @@
       }
 
       .form-check {
-        margin: 10px;
+        margin-left: 10px;
 
         label {
           font-weight: 100;
         }
 
         &.show {
-          margin: 12px 16px 12px 16px;
           padding: 0;
         }
       }
 
       .access-ratio {
-        padding: 12px;
         margin-left: auto;
         font-size: 15px;
         color: var(--secondary);
         font-weight: normal;
         font-style: normal;
         cursor: pointer;
-        margin-right: -6px;
         user-select: none;
-
-        i {
-          transform: rotate(0deg);
-          margin: 0 8px 2px 8px;
-          @include transition(0.2s);
-          pointer-events: none;
-        }
+        margin-right: 10px;
       }
     }
   }
