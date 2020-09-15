@@ -3,8 +3,9 @@
 # Only adds new information about User#access_level and related Access
 #
 # To use:
-# require "tasks/scripts/migrate_user_permissions_to_accesses"
-# CreateAccessesFromPermissions.do
+#
+# require "tasks/scripts/create_accesses_from_permissions"
+# > CreateAccessesFromPermissions.do
 #
 class CreateAccessesFromPermissions
   OLD_ACCESS_LEVELS_TO_NEW = {
@@ -40,23 +41,25 @@ class CreateAccessesFromPermissions
 
     log "Starting migration..."
 
-    log "Assigning access levels..."
-    assign_access_levels
-    log "Finished assigning access levels."
+    User.transaction do
+      admins_by_access_level
 
-    log "Assigning accesses..."
-    assign_accesses
-    log "Finished assigning accesses."
+      log "Assigning access levels..."
+      assign_access_levels
+      log "Finished assigning access levels."
 
-    log "Did not migrate the following custom admins: #{admins_with_custom_permissions.map(&:id).join(", ")}"
-    log "Please manually take care of admins who need to have Organization-level permissions."
+      log "Assigning accesses..."
+      assign_accesses
+      log "Finished assigning accesses."
+    end
+
+    log "Did not migrate the following custom admins: #{admins_with_custom_permissions.join(", ")}"
   end
 
   private
 
   def assign_accesses
     admins_by_access_level
-      .except(:custom) # skip custom access levels
       .each do |access_level, admins|
       admins.each do |admin|
         accesses = current_resources(access_level, admin).map { |r| {resource: r} }
@@ -67,7 +70,6 @@ class CreateAccessesFromPermissions
 
   def assign_access_levels
     admins_by_access_level
-      .except(:custom) # skip custom access levels
       .each do |access_level, admins|
 
       User.where(id: admins).update_all(access_level: OLD_ACCESS_LEVELS_TO_NEW[access_level])
@@ -79,15 +81,13 @@ class CreateAccessesFromPermissions
       access_level_to_permissions.each do |access_level, permissions|
         if current_permissions(admin).to_set == permissions.to_set
           by_access_level[access_level] << admin
-        else
-          by_access_level[:custom] << admin
         end
       end
     end
   end
 
   def admins_with_custom_permissions
-    admins_by_access_level[:custom]
+    (admins.to_set - admins_by_access_level.values.flatten.to_set).map(&:id)
   end
 
   def init_admins_by_access_level
@@ -95,7 +95,6 @@ class CreateAccessesFromPermissions
       [access_level[:name], []]
     }.to_h
   end
-
 
   def access_level_to_permissions
     Permissions::ACCESS_LEVELS.map { |access_level|
