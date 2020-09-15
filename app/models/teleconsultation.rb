@@ -10,10 +10,15 @@ class Teleconsultation < ApplicationRecord
     patient_took_medicines
     patient_consented
     medical_officer_number]
-  TELCONSULTATION_RECORD_ANSWERS = %w[yes no]
+  TELCONSULTATION_ANSWERS = %w[yes no]
+  TELCONSULTATION_TYPES = {
+      audio: "audio",
+      video: "video",
+      message: "message"
+  }.freeze
 
-  enum patient_took_medicines: TELCONSULTATION_RECORD_ANSWERS, _prefix: true
-  enum patient_consented: TELCONSULTATION_RECORD_ANSWERS, _prefix: true
+  enum patient_took_medicines: TELCONSULTATION_ANSWERS, _prefix: true
+  enum patient_consented: TELCONSULTATION_ANSWERS, _prefix: true
 
   def request
     attributes.slice(*REQUEST_ATTRIBUTES)
