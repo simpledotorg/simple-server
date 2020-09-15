@@ -20,3 +20,16 @@ FactoryBot.define do
     device_updated_at { Time.current }
   end
 end
+
+def build_teleconsultation_payload(teleconsultation = FactoryBot.build(:teleconsultation))
+  Api::V4::TeleconsultationTransformer.to_response(teleconsultation).with_indifferent_access
+end
+
+def build_invalid_teleconsultation_payload
+  build_teleconsultation_payload.merge("created_at" => nil)
+end
+
+def updated_teleconsultation_payload(existing_teleconsultation)
+  update_time = 10.days.from_now
+  build_teleconsultation_payload(existing_teleconsultation).merge("updated_at" => update_time)
+end

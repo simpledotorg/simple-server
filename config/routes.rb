@@ -128,7 +128,7 @@ Rails.application.routes.draw do
       end
 
       scope :teleconsultations do
-        post "sync", to: "facility_medical_officers#sync_to_user"
+        post "sync", to: "teleconsultations#sync_from_user"
       end
     end
   end
