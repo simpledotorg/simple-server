@@ -1,0 +1,2 @@
+class Teleconsultation < ApplicationRecord
+end
