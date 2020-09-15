@@ -100,11 +100,11 @@ RSpec.describe Reports::RegionService, type: :model do
 
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
-      expect(result.adjusted_registrations_for(Period.month("Jan 2019"))).to eq(0)
-      expect(result.adjusted_registrations_for(Period.month("Feb 2019"))).to eq(0)
-      expect(result.adjusted_registrations_for(Period.month("Mar 2019"))).to eq(0)
-      expect(result.adjusted_registrations_for(Period.month("Apr 2019"))).to eq(2)
-      expect(result.adjusted_registrations_for(Period.month("May 2019"))).to eq(2)
+      expect(result.adjusted_patients_for(Period.month("Jan 2019"))).to eq(0)
+      expect(result.adjusted_patients_for(Period.month("Feb 2019"))).to eq(0)
+      expect(result.adjusted_patients_for(Period.month("Mar 2019"))).to eq(0)
+      expect(result.adjusted_patients_for(Period.month("Apr 2019"))).to eq(2)
+      expect(result.adjusted_patients_for(Period.month("May 2019"))).to eq(2)
     end
 
     it "returns counts for last n months for controlled patients and registrations" do
@@ -246,19 +246,19 @@ RSpec.describe Reports::RegionService, type: :model do
 
       expect(result[:registrations][jan_2019.to_period]).to eq(5)
       expect(result[:cumulative_registrations][jan_2019.to_period]).to eq(5)
-      expect(result[:adjusted_registrations][jan_2019.to_period]).to eq(0)
+      expect(result[:adjusted_patients][jan_2019.to_period]).to eq(0)
 
       expect(result[:controlled_patients][jan_2020.to_period]).to eq(2)
       expect(result[:controlled_patients_rate][jan_2020.to_period]).to eq(40.0)
       expect(result[:registrations][jan_2020.to_period]).to eq(0)
       expect(result[:cumulative_registrations][jan_2020.to_period]).to eq(5)
-      expect(result[:adjusted_registrations][jan_2020.to_period]).to eq(5)
+      expect(result[:adjusted_patients][jan_2020.to_period]).to eq(5)
 
       expect(result[:controlled_patients][june_1.to_period]).to eq(3)
       expect(result[:controlled_patients_rate][june_1.to_period]).to eq(60.0)
       expect(result[:registrations][june_1.to_period]).to eq(2)
       expect(result[:cumulative_registrations][june_1.to_period]).to eq(7)
-      expect(result[:adjusted_registrations][june_1.to_period]).to eq(5)
+      expect(result[:adjusted_patients][june_1.to_period]).to eq(5)
     end
   end
 end

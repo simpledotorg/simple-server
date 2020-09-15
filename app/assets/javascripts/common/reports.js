@@ -54,7 +54,7 @@ function getReportingData() {
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
     registrations: jsonData.cumulative_registrations,
-    adjustedRegistrations: jsonData.adjusted_registrations,
+    adjustedPatients: jsonData.adjusted_patients,
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
@@ -80,7 +80,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.controlledPatients],
-    data.adjustedRegistrations,
+    data.adjustedPatients,
   );
 
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
@@ -112,7 +112,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.visitButNoBPMeasure, data.missedVisits],
-    data.adjustedRegistrations,
+    data.adjustedPatients,
   );
 
   const noRecentBPGraphCanvas = document.getElementById("noRecentBPTrend");
@@ -138,7 +138,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.uncontrolledPatients],
-    data.adjustedRegistrations,
+    data.adjustedPatients,
   );
 
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
@@ -206,7 +206,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
-    data.adjustedRegistrations,
+    data.adjustedPatients,
   );
 
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
