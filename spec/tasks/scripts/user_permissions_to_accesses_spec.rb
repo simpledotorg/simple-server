@@ -2,7 +2,7 @@ require "rails_helper"
 require "tasks/scripts/create_accesses_from_permissions"
 
 RSpec.describe CreateAccessesFromPermissions do
-  describe '.do' do
+  describe ".do" do
     let!(:ihci) { create(:organization, name: "IHCI") }
     let!(:facility_group) { create(:facility_group, organization: ihci) }
     let!(:facility) { create(:facility, facility_group: facility_group) }
