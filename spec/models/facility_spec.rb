@@ -229,7 +229,6 @@ RSpec.describe Facility, type: :model do
                                            district: "Bhatinda",
                                            state: "Punjab",
                                            country: "India",
-                                           enable_teleconsultation: "true",
                                            import: true)
     end
 
@@ -265,11 +264,6 @@ RSpec.describe Facility, type: :model do
       end
     end
 
-    it "defaults enable_teleconsultation to false if blank" do
-      facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.first[:enable_teleconsultation]).to be false
-    end
-
     it "defaults enable_diabetes_management to false if blank" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.second[:enable_diabetes_management]).to be false
@@ -303,6 +297,40 @@ RSpec.describe Facility, type: :model do
         teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
           {isd_code: "+91", phone_number: "11111111"}])
       expect(facility.teleconsultation_phone_numbers_with_isd).to eq([{phone_number: "+9100000000"}, {phone_number: "+9111111111"}])
+    end
+  end
+
+  describe ".discardable?" do
+    let!(:facility) { create(:facility) }
+
+    context "isn't discardable if data exists" do
+      it "has patients" do
+        create(:patient, registration_facility: facility)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has blood pressures" do
+        blood_pressure = create(:blood_pressure, facility: facility)
+        create(:encounter, :with_observables, observable: blood_pressure)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has blood sugars" do
+        blood_sugar = create(:blood_sugar, facility: facility)
+        create(:encounter, :with_observables, observable: blood_sugar)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has appointments" do
+        create(:appointment, facility: facility)
+        expect(facility.discardable?).to be false
+      end
+    end
+
+    context "is discardable if no data exists" do
+      it "has no data" do
+        expect(facility.discardable?).to be true
+      end
     end
   end
 end

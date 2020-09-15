@@ -82,13 +82,13 @@ RSpec.describe CohortService, type: :model do
     refresh_views
 
     quarters = [
-      Quarter.new(date: apr_5),
-      Quarter.new(date: jul_5)
+      Period.quarter(apr_5),
+      Period.quarter(jul_5)
     ]
-    cohort_service = CohortService.new(region: facility, quarters: quarters)
+    cohort_service = CohortService.new(region: facility, periods: quarters)
 
     expect(cohort_service.call).to eq(
-      quarterly_registrations: [
+      [
         {
           "controlled" => 3,
           "no_bp" => 2,

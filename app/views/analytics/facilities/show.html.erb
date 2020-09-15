@@ -18,19 +18,33 @@
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
+<% if current_admin.permissions_v2_enabled? %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             period: @period,
+             row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
+             row_resource_description: "Users",
+             row_resource_display_field: :full_name,
+             row_resource_link: :admin_user_path %>
+  <% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
+    <%= render 'shared/recent_bp_log',
+               blood_pressures: @recent_blood_pressures,
+               display_model: :facility %>
+  <% end %>
+<% else %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             period: @period,
+             row_resource: User.order(:full_name),
+             row_resource_description: "Users",
+             row_resource_display_field: :full_name,
+             row_resource_link: :admin_user_path %>
 
-<%= render 'shared/analytics_table',
-  dashboard_analytics: @dashboard_analytics,
-  period: @period,
-  row_resource: User.order(:full_name),
-  row_resource_description: "Users",
-  row_resource_display_field: :full_name,
-  row_resource_link: :admin_user_path %>
-
-<% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
-  <%= render 'shared/recent_bp_log',
-             blood_pressures: @recent_blood_pressures,
-             display_model: :facility %>
+  <% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
+    <%= render 'shared/recent_bp_log',
+               blood_pressures: @recent_blood_pressures,
+               display_model: :facility %>
+  <% end %>
 <% end %>
 
 <div class="downloads">
@@ -49,28 +63,55 @@
     <% end %>
   </p>
 
-  <% if policy([:cohort_report, @facility]).patient_list? %>
-    <p>
-      <%= link_to analytics_facility_patient_list_path(@facility) do %>
-        <i class="far fa-file-excel mr-2"></i>
-        Patient line list
-      <% end %>
-    </p>
-    <p>
-      <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
-        <i class="far fa-file-excel mr-2"></i>
-        Patient line list (with medication history)
-      <% end %>
-    </p>
+  <% if current_admin.permissions_v2_enabled? %>
+    <% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
+      <p>
+        <%= link_to analytics_facility_patient_list_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list
+        <% end %>
+      </p>
+      <p>
+        <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list (with medication history)
+        <% end %>
+      </p>
+    <% end %>
+  <% else %>
+    <% if policy([:cohort_report, @facility]).patient_list? %>
+      <p>
+        <%= link_to analytics_facility_patient_list_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list
+        <% end %>
+      </p>
+      <p>
+        <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list (with medication history)
+        <% end %>
+      </p>
+    <% end %>
   <% end %>
 
   <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
-    <% if policy([:cohort_report, @facility]).whatsapp_graphics? %>
-      <%=
-        render "shared/graphics/graphics_download_links",
-               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
-               options: { facility_id: @facility.id }
-      %>
+    <% if current_admin.permissions_v2_enabled? %>
+      <% if current_admin.accessible_facilities(:view_reports).include?(@facility) %>
+        <%=
+          render "shared/graphics/graphics_download_links",
+                 graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+                 options: { facility_id: @facility.id }
+        %>
+      <% end %>
+    <% else %>
+      <% if policy([:cohort_report, @facility]).whatsapp_graphics? %>
+        <%=
+          render "shared/graphics/graphics_download_links",
+                 graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+                 options: { facility_id: @facility.id }
+        %>
+      <% end %>
     <% end %>
   <% end %>
 </div>

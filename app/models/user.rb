@@ -77,7 +77,7 @@ class User < ApplicationRecord
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
   validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
-  # Revive this validation once all users are migrated to the new permissions system:
+  # TODO: Revive this validation once all users are migrated to the new permissions system:
   # validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
@@ -101,8 +101,11 @@ class User < ApplicationRecord
     :accessible_facility_groups,
     :accessible_users,
     :accessible_admins,
+    :accessible_protocols,
+    :accessible_protocol_drugs,
     :access_across_organizations?,
     :access_across_facility_groups?,
+    :modify_access_level?,
     :grant_access,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
@@ -243,5 +246,13 @@ class User < ApplicationRecord
 
   def flipper_id
     "User;#{id}"
+  end
+
+  def feature_enabled?(name)
+    Flipper.enabled?(name, self)
+  end
+
+  def permissions_v2_enabled?
+    feature_enabled?(:new_permissions_system_aug_2020)
   end
 end

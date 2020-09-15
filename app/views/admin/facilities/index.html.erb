@@ -2,7 +2,7 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+    <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.accessible_facility_groups(:manage).any? %>
         <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
       <% end %>
@@ -12,7 +12,7 @@
       <% end %>
     <% end %>
 
-    <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+    <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.accessible_organizations(:manage).any? %>
         <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
           <i class="fas fa-plus mr-1"></i>
@@ -55,7 +55,7 @@
             <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
           </div>
 
-          <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+          <% if current_admin.permissions_v2_enabled? %>
             <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
               <div class="col-2 text-right">
                 <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
@@ -74,7 +74,7 @@
 
         <div class="row card-row">
           <div class="col-md-4">
-            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+            <% if current_admin.permissions_v2_enabled? %>
               <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
                 <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
                   <i class="fas fa-plus mr-1"></i>
@@ -96,7 +96,7 @@
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
-                <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+                <% if current_admin.permissions_v2_enabled? %>
                   <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
                 <% else %>
                   <% if policy([:manage, :facility, facility]).show? %>

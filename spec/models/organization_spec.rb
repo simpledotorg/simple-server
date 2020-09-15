@@ -38,4 +38,38 @@ RSpec.describe Organization, type: :model do
       expect(org.name).to eq("Org name 1")
     end
   end
+
+  describe ".discardable?" do
+    let!(:organization) { create(:organization) }
+
+    context "isn't discardable if data exists" do
+      it "has users" do
+        facility_group = create(:facility_group, organization: organization)
+        facility = create(:facility, facility_group: facility_group)
+        create(:user, registration_facility: facility)
+
+        expect(organization.discardable?).to be false
+      end
+
+      it "has appointments" do
+        facility_group = create(:facility_group, organization: organization)
+        facility = create(:facility, facility_group: facility_group)
+        create(:appointment, facility: facility)
+
+        expect(organization.discardable?).to be false
+      end
+
+      it "has facility groups" do
+        create(:facility_group, organization: organization)
+
+        expect(organization.discardable?).to be false
+      end
+    end
+
+    context "is discardable if no data exists" do
+      it "has no data" do
+        expect(organization.discardable?).to be true
+      end
+    end
+  end
 end

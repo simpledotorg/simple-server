@@ -56,7 +56,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "is successful" do
+    it "retrieves monthly cohort data by default" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
@@ -68,6 +68,28 @@ RSpec.describe Reports::RegionsController, type: :controller do
         get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district"}
       end
       expect(response).to be_successful
+      data = assigns(:cohort_data)
+      pending "need to change data output format"
+      expect(data[:controlled_patients][Period.month("June 1 2020")]).to eq(1)
+    end
+
+    it "can retrieve quarterly cohort data" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -2))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :cohort, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q2-2020"}}
+        expect(response).to be_successful
+        data = assigns(:cohort_data)
+        expect(data.size).to eq(6)
+        q2_data = data[1]
+        expect(q2_data["results_in"]).to eq("Q1-2020")
+        expect(q2_data["registered"]).to eq(1)
+        expect(q2_data["controlled"]).to eq(1)
+      end
     end
   end
 
@@ -101,20 +123,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
-    end
-
-    it "can retrieve quarterly cohort data" do
-      jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -2))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
-      refresh_views
-
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district", period: {type: "quarter", value: "Q1-2020"}}
-        data = assigns(:data)
-        expect(data[:controlled_patients][Period.quarter("Q1-2020")]).to eq(1)
-      end
     end
 
     it "retrieves facility data" do

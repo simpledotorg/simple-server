@@ -87,10 +87,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     zero_if_unavailable statistics.dig(:all_time, :grouped_by_gender, :hypertension, stat, gender)
   end
 
-  def cohorts
-    statistics.dig(:cohorts, :quarterly_registrations)
-  end
-
   def cohort_controlled(cohort)
     display_percentage(cohort[:controlled], cohort[:registered])
   end
@@ -226,8 +222,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def cohort_stats
-    quarters = Quarter.new(date: Date.current).previous_quarter.downto(3)
-    CohortService.new(region: current_facility, quarters: quarters).call
+    periods = Period.quarter(Date.current).previous.downto(3)
+    CohortService.new(region: current_facility, periods: periods).call
   end
 
   #
