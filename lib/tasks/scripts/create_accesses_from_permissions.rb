@@ -113,13 +113,13 @@ class CreateAccessesFromPermissions
       return CohortReport::FacilityGroupPolicy::Scope.new(admin, FacilityGroup).resolve
     end
 
-    # For the follow access_levels, OverdueList policy serves as a proxy for FG-accesses:
+    # For the following access_levels, OverdueList policy serves as a proxy for FG-accesses:
     # - counsellor
     if [:counsellor].include?(access_level)
       return FacilityGroup.where(facilities: OverdueList::FacilityPolicy::Scope.new(admin, Facility).resolve)
     end
 
-    # For the follow access_levels, we can simply return the organization:
+    # For the following access_levels, we can simply return the organization:
     # - organization_owner
     if [:organization_owner].include?(access_level)
       return organization
