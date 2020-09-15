@@ -12,7 +12,7 @@ RSpec.describe CreateAccessesFromPermissions do
         it "makes #{old_access_level} -> #{new_access_level}" do
           user = create(:admin, old_access_level, access_level: nil, organization: ihci)
 
-          CreateAccessesFromPermissions.do(verbose: false)
+          CreateAccessesFromPermissions.do(dryrun: false, verbose: false)
           user.reload
 
           expect(user.access_level).to eq(new_access_level)
@@ -25,7 +25,7 @@ RSpec.describe CreateAccessesFromPermissions do
         it "creates facility_group accesses for #{access_level}" do
           user = create(:admin, access_level, access_level: nil, organization: ihci, facility_group: facility_group)
 
-          CreateAccessesFromPermissions.do(verbose: false)
+          CreateAccessesFromPermissions.do(dryrun: false, verbose: false)
           user.reload
 
           expect(user.accesses.map(&:resource)).to match_array(facility_group)
@@ -36,7 +36,7 @@ RSpec.describe CreateAccessesFromPermissions do
         it "creates organization accesses for #{access_level}" do
           user = create(:admin, access_level, access_level: nil, organization: ihci)
 
-          CreateAccessesFromPermissions.do(verbose: false)
+          CreateAccessesFromPermissions.do(dryrun: false, verbose: false)
           user.reload
 
           expect(user.accesses.map(&:resource)).to match_array(ihci)
@@ -46,7 +46,7 @@ RSpec.describe CreateAccessesFromPermissions do
       it "creates no accesses for owners" do
         user = create(:admin, :owner, access_level: nil, organization: ihci)
 
-        CreateAccessesFromPermissions.do(verbose: false)
+        CreateAccessesFromPermissions.do(dryrun: false, verbose: false)
         user.reload
 
         expect(user.accesses.map(&:resource)).to be_empty

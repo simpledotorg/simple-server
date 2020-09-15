@@ -23,7 +23,7 @@ class CreateAccessesFromPermissions
 
   attr_reader :organization_name, :dryrun, :verbose
 
-  def initialize(organization_name: "IHCI", dryrun: false, verbose: true)
+  def initialize(organization_name: "IHCI", dryrun: true, verbose: true)
     @organization_name = organization_name
     @dryrun = dryrun
     @verbose = verbose
