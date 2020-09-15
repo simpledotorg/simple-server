@@ -25,9 +25,9 @@ class Reports::PatientListsController < AdminController
   private
 
   def find_region
-    id = filtered_params[:id]
+    slug = filtered_params[:id]
     klass = region_class.classify.constantize
-    @region = klass.find(id)
+    @region = klass.find_by!(slug: slug)
   end
 
   def filtered_params
