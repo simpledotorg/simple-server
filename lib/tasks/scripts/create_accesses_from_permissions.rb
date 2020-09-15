@@ -84,13 +84,13 @@ class CreateAccessesFromPermissions
 
   def admins_by_access_level
     @admins_by_access_level ||=
-      admins.each_with_object(init_admins_by_access_level) do |admin, by_access_level|
+      admins.each_with_object(init_admins_by_access_level) { |admin, by_access_level|
         access_level_to_permissions.each do |access_level, permissions|
           if current_permissions(admin).to_set == permissions.to_set
             by_access_level[access_level] << admin
           end
         end
-      end
+      }
   end
 
   def admins_with_custom_permissions
