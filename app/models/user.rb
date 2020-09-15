@@ -255,4 +255,10 @@ class User < ApplicationRecord
   def permissions_v2_enabled?
     feature_enabled?(:new_permissions_system_aug_2020)
   end
+
+  # Temporary safe default until all access_levels are migrated fully
+  def access_level
+    return "viewer_reports_only" if self[:access_level].blank?
+    self[:access_level]
+  end
 end
