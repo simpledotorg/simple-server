@@ -473,12 +473,13 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
     t.datetime "device_requested_at"
     t.datetime "recorded_at"
     t.datetime "device_recorded_at"
-    t.datetime "device_updated_at"
     t.string "teleconsultation_type"
     t.boolean "patient_took_medicines"
     t.boolean "patient_consented"
     t.string "medical_officer_number"
     t.datetime "deleted_at"
+    t.datetime "device_updated_at"
+    t.datetime "device_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["facility_id"], name: "index_teleconsultations_on_facility_id"

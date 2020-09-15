@@ -11,12 +11,13 @@ class CreateTeleconsultations < ActiveRecord::Migration[5.2]
       t.datetime :device_requested_at
       t.datetime :recorded_at
       t.datetime :device_recorded_at
-      t.datetime :device_updated_at
       t.string :teleconsultation_type
       t.boolean :patient_took_medicines
       t.boolean :patient_consented
       t.string :medical_officer_number
       t.datetime :deleted_at, null: true
+      t.datetime :device_updated_at
+      t.datetime :device_created_at
       t.timestamps
     end
   end

@@ -12,7 +12,6 @@ FactoryBot.define do
 
     recorded_at { device_recorded_at }
     device_recorded_at { Time.now }
-    device_updated_at { Time.now }
 
     request_completed { "yes" }
     teleconsultation_type { "audio" }
@@ -20,5 +19,8 @@ FactoryBot.define do
 
     patient_took_medicines { true }
     patient_consented { true }
+
+    device_created_at { Time.now }
+    device_updated_at { Time.now }
   end
 end
