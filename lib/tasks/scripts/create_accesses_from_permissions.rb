@@ -61,29 +61,36 @@ class CreateAccessesFromPermissions
 
   private
 
-  def assign_accesses
-    admins_by_access_level.each do |access_level, admins|
-      admins.each do |admin|
-        accesses = current_resources(access_level, admin).map { |r| {resource: r} }
-        admin.accesses.create!(accesses)
-      end
-    end
-  end
-
   def assign_access_levels
     admins_by_access_level.each do |access_level, admins|
       User.where(id: admins).update_all(access_level: OLD_ACCESS_LEVELS_TO_NEW[access_level])
     end
   end
 
-  def admins_by_access_level
-    admins.each_with_object(init_admins_by_access_level) do |admin, by_access_level|
-      access_level_to_permissions.each do |access_level, permissions|
-        if current_permissions(admin).to_set == permissions.to_set
-          by_access_level[access_level] << admin
+  def assign_accesses
+    admins_by_access_level.each do |access_level, admins|
+      admins.each do |admin|
+        admin.reload
+
+        accesses = current_resources(access_level, admin).map { |r| {resource: r} }
+
+        User.transaction do
+          admin.accesses.delete_all
+          admin.accesses.create!(accesses)
         end
       end
     end
+  end
+
+  def admins_by_access_level
+    @admins_by_access_level ||=
+      admins.each_with_object(init_admins_by_access_level) do |admin, by_access_level|
+        access_level_to_permissions.each do |access_level, permissions|
+          if current_permissions(admin).to_set == permissions.to_set
+            by_access_level[access_level] << admin
+          end
+        end
+      end
   end
 
   def admins_with_custom_permissions
@@ -135,7 +142,7 @@ class CreateAccessesFromPermissions
   end
 
   def admins
-    User.admins.where(organization: organization)
+    User.admins.where(organization: organization).where(access_level: nil)
   end
 
   def log(data)

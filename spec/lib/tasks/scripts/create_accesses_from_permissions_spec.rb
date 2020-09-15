@@ -3,7 +3,7 @@ require "tasks/scripts/create_accesses_from_permissions"
 
 RSpec.describe CreateAccessesFromPermissions do
   describe ".do" do
-    let!(:ihci) { create(:organization, name: "IHCI") }
+    let(:ihci) { create(:organization, name: "IHCI") }
     let!(:facility_group) { create(:facility_group, organization: ihci) }
     let!(:facility) { create(:facility, facility_group: facility_group) }
 
@@ -17,6 +17,15 @@ RSpec.describe CreateAccessesFromPermissions do
 
           expect(user.access_level).to eq(new_access_level)
         end
+      end
+
+      it "does not set access_levels if it is already set" do
+        user = create(:admin, :analyst, access_level: :manager, organization: ihci)
+
+        CreateAccessesFromPermissions.do(dryrun: false, verbose: false)
+        user.reload
+
+        expect(user.access_level).to eq("manager")
       end
     end
 
