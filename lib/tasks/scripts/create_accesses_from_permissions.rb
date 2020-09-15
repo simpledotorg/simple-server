@@ -121,7 +121,6 @@ class CreateAccessesFromPermissions
 
     # For the follow access_levels, we can simply return the organization:
     # - organization_owner
-    # - owner
     if [:organization_owner].include?(access_level)
       return organization
     end
