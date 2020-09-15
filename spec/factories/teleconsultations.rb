@@ -13,10 +13,10 @@ FactoryBot.define do
     recorded_at { Time.now }
     teleconsultation_type { "audio" }
     medical_officer_number { "" }
-    patient_took_medicines { true }
-    patient_consented { true }
+    patient_took_medicines { "yes" }
+    patient_consented { "yes" }
 
-    device_created_at { Time.now }
-    device_updated_at { Time.now }
+    device_created_at { Time.current }
+    device_updated_at { Time.current }
   end
 end
