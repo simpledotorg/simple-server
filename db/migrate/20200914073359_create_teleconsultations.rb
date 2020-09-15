@@ -8,9 +8,7 @@ class CreateTeleconsultations < ActiveRecord::Migration[5.2]
       t.belongs_to :facility, type: :uuid, foreign_key: true
       t.string :request_completed
       t.datetime :requested_at
-      t.datetime :device_requested_at
       t.datetime :recorded_at
-      t.datetime :device_recorded_at
       t.string :teleconsultation_type
       t.boolean :patient_took_medicines
       t.boolean :patient_consented

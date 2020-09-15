@@ -7,16 +7,12 @@ FactoryBot.define do
     association :requester, factory: :user, strategy: :create
     association :medical_officer, factory: :user, strategy: :create
 
-    device_requested_at { Time.now }
-    requested_at { device_requested_at }
-
-    recorded_at { device_recorded_at }
-    device_recorded_at { Time.now }
-
+    requested_at { Time.now }
     request_completed { "yes" }
+
+    recorded_at { Time.now }
     teleconsultation_type { "audio" }
     medical_officer_number { "" }
-
     patient_took_medicines { true }
     patient_consented { true }
 
