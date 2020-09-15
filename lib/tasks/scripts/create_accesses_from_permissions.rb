@@ -21,18 +21,23 @@ class CreateAccessesFromPermissions
     new(*args).do
   end
 
-  attr_reader :organization_name, :dryrun, :verbose
+  attr_reader :organization, :dryrun, :verbose
 
-  def initialize(organization_name: "IHCI", dryrun: true, verbose: true)
-    @organization_name = organization_name
+  def initialize(organization: Organization.where(name: "IHCI"), dryrun: true, verbose: true)
+    @organization = Organization.where(id: organization)
     @dryrun = dryrun
     @verbose = verbose
   end
 
   def do
-    log "Migrating admins for Organization: #{organization_name}."
-    log "Total admins in #{organization_name}: #{admins.length}."
+    log "Migrating admins for Organization: #{organization.name}."
+    log "Total admins in #{organization.name}: #{admins.length}."
     log "Note that this script will not migrate admins with access_level as: 'custom'."
+
+    unless admins.any?
+      log "Skipping because there are no admins in #{organization.name}"
+      return
+    end
 
     if dryrun
       log "Dryrun. Aborting."
@@ -131,10 +136,6 @@ class CreateAccessesFromPermissions
 
   def admins
     User.admins.where(organization: organization)
-  end
-
-  def organization
-    @organization ||= Organization.where(name: organization_name)
   end
 
   def log(data)
