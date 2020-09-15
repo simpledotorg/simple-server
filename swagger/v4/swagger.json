@@ -663,6 +663,14 @@
       "format": "uuid",
       "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
     },
+    "nullable_uuid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}"
+    },
     "non_empty_string": {
       "type": "string",
       "minLength": 1,
@@ -1388,10 +1396,10 @@
           "type": "object",
           "properties": {
             "requester_id": {
-              "$ref": "#/definitions/uuid"
+              "$ref": "#/definitions/nullable_uuid"
             },
             "facility_id": {
-              "$ref": "#/definitions/uuid"
+              "$ref": "#/definitions/nullable_uuid"
             },
             "requested_at": {
               "$ref": "#/definitions/timestamp"
@@ -1429,7 +1437,10 @@
               ]
             },
             "medical_officer_number": {
-              "$ref": "#/definitions/non_empty_string"
+              "type": [
+                "string",
+                "null"
+              ]
             },
             "prescription_drugs": {
               "type": [

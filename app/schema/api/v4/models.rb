@@ -12,6 +12,10 @@ class Api::V4::Models
        pattern: '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}'}
     end
 
+    def nullable_uuid
+      uuid.merge(type: [:string, "null"])
+    end
+
     def non_empty_string
       {type: :string,
        minLength: 1,
@@ -252,8 +256,8 @@ class Api::V4::Models
           request: {
             type: :object,
             properties: {
-              requester_id: {"$ref" => "#/definitions/uuid"},
-              facility_id: {"$ref" => "#/definitions/uuid"},
+              requester_id: {"$ref" => "#/definitions/nullable_uuid"},
+              facility_id: {"$ref" => "#/definitions/nullable_uuid"},
               requested_at: {"$ref" => "#/definitions/timestamp"}
             }
           },
@@ -264,7 +268,7 @@ class Api::V4::Models
               teleconsultation_type: {type: :string, enum: Teleconsultation::TELECONSULTATION_TYPES.keys},
               patient_took_medicines: {type: :string, enum: Teleconsultation::TELECONSULTATION_ANSWERS.keys},
               patient_consented: {type: :string, enum: Teleconsultation::TELECONSULTATION_ANSWERS.keys},
-              medical_officer_number: {"$ref" => "#/definitions/non_empty_string"},
+              medical_officer_number: {type: [:string, "null"]},
               prescription_drugs: array_of("uuid")
             }
           },
@@ -305,6 +309,7 @@ class Api::V4::Models
     def definitions
       {timestamp: timestamp,
        uuid: uuid,
+       nullable_uuid: nullable_uuid,
        non_empty_string: non_empty_string,
        nullable_timestamp: nullable_timestamp,
        bcrypt_password: bcrypt_password,
