@@ -4,30 +4,31 @@
 #
 # To use:
 # require "tasks/scripts/migrate_user_permissions_to_accesses"
+# CreateAccessesFromPermissions.do
 #
-class CreateAccessesFromUserPermiss
+class CreateAccessesFromPermissions
   OLD_ACCESS_LEVELS_TO_NEW = {
     organization_owner: "manager",
     supervisor: "manager",
     sts: "manager",
-    analyst: "view_reports_only",
+    analyst: "viewer_reports_only",
     counsellor: "call_center",
     owner: "power_user"
   }.freeze
 
-  def self.migrate(*args)
-    new(*args).migrate
+  def self.do(*args)
+    new(*args).do
   end
 
   attr_reader :organization_name, :dryrun, :verbose
 
-  def initialize(organization_name: "IHCI", dryrun: true, verbose: true)
+  def initialize(organization_name: "IHCI", dryrun: false, verbose: true)
     @organization_name = organization_name
     @dryrun = dryrun
     @verbose = verbose
   end
 
-  def migrate
+  def do
     log "Migrating admins for Organization: #{organization_name}."
     log "Total admins in #{organization_name}: #{admins.length}."
     log "Note that this script will not migrate admins with access_level as: 'custom'."
@@ -39,16 +40,13 @@ class CreateAccessesFromUserPermiss
 
     log "Starting migration..."
 
-    User.transaction do
-      log "Assigning access levels..."
-      assign_access_levels
-      log "Finished assigning access levels."
+    log "Assigning access levels..."
+    assign_access_levels
+    log "Finished assigning access levels."
 
-      log "Assigning accesses..."
-      assign_accesses
-      log "Finished assigning accesses."
-    end
-
+    log "Assigning accesses..."
+    assign_accesses
+    log "Finished assigning accesses."
 
     log "Did not migrate the following custom admins: #{admins_with_custom_permissions.map(&:id).join(", ")}"
     log "Please manually take care of admins who need to have Organization-level permissions."
@@ -58,11 +56,11 @@ class CreateAccessesFromUserPermiss
 
   def assign_accesses
     admins_by_access_level
-      .except(:custom)
-      .each do |_access_level, admins|
+      .except(:custom) # skip custom access levels
+      .each do |access_level, admins|
       admins.each do |admin|
-        facility_group_accesses = current_facility_groups(admin).map { |fg| {resource: fg} }
-        admin.accesses.create!(facility_group_accesses)
+        accesses = current_resources(access_level, admin).map { |r| {resource: r} }
+        admin.accesses.create!(accesses)
       end
     end
   end
@@ -70,20 +68,22 @@ class CreateAccessesFromUserPermiss
   def assign_access_levels
     admins_by_access_level
       .except(:custom) # skip custom access levels
-      .each { |access_level, admins| admins.update_all(access_level: OLD_ACCESS_LEVELS_TO_NEW[access_level]) }
+      .each do |access_level, admins|
+
+      User.where(id: admins).update_all(access_level: OLD_ACCESS_LEVELS_TO_NEW[access_level])
+    end
   end
 
   def admins_by_access_level
-    @admins_by_access_level ||=
-      admins.each_with_object(init_admins_by_access_level) do |admin, by_access_level|
-        access_level_to_permissions.each do |access_level, permissions|
-          if current_permissions(admin).to_set == permissions.to_set
-            by_access_level[access_level] << admin
-          else
-            by_access_level[:custom] << admin
-          end
+    admins.each_with_object(init_admins_by_access_level) do |admin, by_access_level|
+      access_level_to_permissions.each do |access_level, permissions|
+        if current_permissions(admin).to_set == permissions.to_set
+          by_access_level[access_level] << admin
+        else
+          by_access_level[:custom] << admin
         end
       end
+    end
   end
 
   def admins_with_custom_permissions
@@ -110,13 +110,34 @@ class CreateAccessesFromUserPermiss
       .map(&:to_sym)
   end
 
-  def current_facility_groups(admin)
-    # Using CohortReport as a proxy to get FG access since that permission is shared across all access levels
-    CohortReport::FacilityGroupPolicy::Scope.new(admin, FacilityGroup).resolve
+  def current_resources(access_level, admin)
+    # For the following access_levels, CohortReport serves as a proxy for FG-accesses:
+    # - supervisor
+    # - sts
+    # - analyst
+    if [:supervisor, :sts, :analyst].include?(access_level)
+      return CohortReport::FacilityGroupPolicy::Scope.new(admin, FacilityGroup).resolve
+    end
+
+    # For the follow access_levels, OverdueList policy serves as a proxy for FG-accesses:
+    # - counsellor
+    if [:counsellor].include?(access_level)
+      return FacilityGroup.where(facilities: OverdueList::FacilityPolicy::Scope.new(admin, Facility).resolve)
+    end
+
+    # For the follow access_levels, we can simply return the organization:
+    # - organization_owner
+    # - owner
+    if [:organization_owner].include?(access_level)
+      return organization
+    end
+
+    # Owners can't have any accesses
+    [] if access_level.eql?(:owner)
   end
 
   def admins
-    @admins ||= User.admins.where(organization: organization)
+    User.admins.where(organization: organization)
   end
 
   def organization
