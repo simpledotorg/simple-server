@@ -130,10 +130,10 @@ RSpec.describe ControlRateService, type: :model do
 
     expect(result[:registrations][Period.month(jan_2019)]).to eq(5)
     expect(result[:cumulative_registrations][Period.month(jan_2019)]).to eq(5)
-    expect(result[:adjusted_patients][Period.month(jan_2019)]).to eq(0)
+    expect(result[:adjusted_registrations][Period.month(jan_2019)]).to eq(0)
 
     expect(result[:cumulative_registrations][Period.month(jan_2020)]).to eq(5)
-    expect(result[:adjusted_patients][Period.month(jan_2020)]).to eq(5)
+    expect(result[:adjusted_registrations][Period.month(jan_2020)]).to eq(5)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(40.0)
 
@@ -163,7 +163,7 @@ RSpec.describe ControlRateService, type: :model do
 
     expect(result[:registrations][Period.month(jan_2020)]).to eq(1)
     expect(result[:cumulative_registrations][Period.month(jan_2020)]).to eq(1)
-    expect(result[:adjusted_patients][Period.month(jan_2020)]).to eq(0)
+    expect(result[:adjusted_registrations][Period.month(jan_2020)]).to eq(0)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(0)
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(0.0)
   end

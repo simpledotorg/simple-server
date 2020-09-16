@@ -45,7 +45,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     )
     registrations = monthly_htn_stats_by_date(
       :controlled_visits,
-      :adjusted_patients,
+      :adjusted_registrations,
       Period.month(htn_control_monthly_period_list.last)
     )
 

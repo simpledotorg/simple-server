@@ -4,7 +4,7 @@
     Visit details of all HTN patients
   </h3>
   <p class="mb-0px c-grey-dark">
-    <%= number_with_delimiter(@data[:adjusted_patients].values.last) %> patients registered until the end of <%= @adjusted_registration_date %>
+    <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> patients registered until the end of <%= @adjusted_registration_date %>
   </p>
   <% if @last_registration_value %>
     <div class="d-flex fd-column fd-lg-row">
@@ -32,7 +32,7 @@
                 data-toggle="tooltip"
                 data-placement="top"
                 data-trigger="hover"
-                title="Patients registered until the end of <%= @data[:adjusted_patients].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
+                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
               >
                 <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
               </span>
