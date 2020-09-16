@@ -124,13 +124,15 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
       end
 
       describe "updates records" do
-        xit "with updated record attributes" do
+        it "with updated record attributes" do
           post :sync_from_user, params: updated_payload, as: :json
 
           updated_records.each do |record|
+            record = Api::V4::TeleconsultationTransformer.from_request(record)
+
             db_record = model.find(record["id"])
             expect(db_record.attributes.with_payload_keys.with_int_timestamps)
-              .to eq(Api::V4::TeleconsultationTransformer.from_request(record).with_int_timestamps)
+              .to eq(record.with_payload_keys.with_int_timestamps)
           end
         end
       end
