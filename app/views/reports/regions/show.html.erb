@@ -161,7 +161,11 @@
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            Total number of hypertensive patient registrations
+            <% if @region.is_a?(Facility) %>
+              All hypertensive patients assigned to <%= @region.name %>
+            <% else %>
+              All hypertensive patients assigned to facilities in <%= @region.name %>
+            <% end %>
           </p>
         </div>
         <div class="mb-12px">
@@ -367,7 +371,7 @@
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            Total number of hypertensive patient registrations
+            All hypertensive patients assigned to facilities in <%= @region.name %>
           </p>
         </div>
         <div class="table-responsive">
@@ -386,7 +390,7 @@
                   Monthly registrations in <%= @period.to_s %>
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                  Total registrations 
+                  Total registrations
                 </th>
               </tr>
             </thead>
