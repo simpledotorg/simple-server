@@ -37,55 +37,63 @@
         <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
       </p>
     </div>
-    <div class="dropdown show order-1 mb-24px order-lg-2 mb-lg-0">
-      <a
-        class="d-block d-lg-inline-block btn btn-primary btn-sm dropdown-toggle"
-        href="#"
-        role="button"
-        id="dropdownMenuLink"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <% if action_name == "cohort" %>
-          <%= cohort_report_type(@period) %>
-        <% else %>
-          <%= @period %>
-        <% end %>
-      </a>
-      <% if action_name == "cohort" %>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <% [:month, :quarter].each do |period_type|
-            period = Period.new(type: period_type, value: @period.to_date)
-            selected = true if period == @period
-          %>
-            <%= form_for(period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
-              <%= f.hidden_field :type %>
-              <button class="dropdown-item <%= 'active' if selected %>" name="period[value]"
-                      type="submit" data-period-type=<%= period.type %> value="<%= period.to_s %>">
-                <%= cohort_report_type(period) %>
-              </button>
-            <% end %>
-          <% end %>
-        </div>
-      <% else %>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
-            <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
-            <% (1..6).each do |num|
-                date = Date.current.beginning_of_month.advance(months: -num)
-                period = Period.new(type: :month, value: date)
-                selected = true if period == @period
-            %>
-              <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
-                      type="submit" data-period-type="month" value="<%= period.value %>">
-                <%= period.value.to_s(:mon_year) %>
-              </button>
-            <% end %>
+
+    <div class="actions order-1 mb-24px order-lg-2 mb-lg-0">
+
+      <%= render "downloads" %>
+
+      <div class="dropdown show order-1 mb-24px mb-lg-0">
+
+        <a
+          class="d-block d-lg-inline-block btn btn-primary btn-sm dropdown-toggle"
+          href="#"
+          role="button"
+          id="dropdownMenuLink"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <% if action_name == "cohort" %>
+            <%= cohort_report_type(@period) %>
+          <% else %>
+            <%= @period %>
           <% end %>
-        </div>
-      <% end %>
+        </a>
+        <% if action_name == "cohort" %>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <% [:month, :quarter].each do |period_type|
+              period = Period.new(type: period_type, value: @period.to_date)
+              selected = true if period == @period
+            %>
+              <%= form_for(period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+                <%= f.hidden_field :type %>
+                <button class="dropdown-item <%= 'active' if selected %>" name="period[value]"
+                        type="submit" data-period-type=<%= period.type %> value="<%= period.to_s %>">
+                  <%= cohort_report_type(period) %>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+              <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
+
+              <% (1..6).each do |num|
+                  date = Date.current.beginning_of_month.advance(months: -num)
+                  period = Period.new(type: :month, value: date)
+                  selected = true if period == @period
+              %>
+                <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
+                        type="submit" data-period-type="month" value="<%= period.value %>">
+                  <%= period.value.to_s(:mon_year) %>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
