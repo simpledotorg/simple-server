@@ -66,11 +66,11 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
     it "creates an audit log for new data created by the user" do
       Timecop.freeze do
         expect(AuditLogger)
-            .to receive(:info).with({user: request_user.id,
-                                     auditable_type: auditable_type,
-                                     auditable_id: record[:id],
-                                     action: "create",
-                                     time: Time.current}.to_json)
+          .to receive(:info).with({user: request_user.id,
+                                   auditable_type: auditable_type,
+                                   auditable_id: record[:id],
+                                   action: "create",
+                                   time: Time.current}.to_json)
 
         post :sync_from_user, params: payload, as: :json
       end
@@ -82,11 +82,11 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
       payload[request_key] = [record]
       Timecop.freeze do
         expect(AuditLogger)
-            .to receive(:info).with({user: request_user.id,
-                                     auditable_type: auditable_type,
-                                     auditable_id: record[:id],
-                                     action: "update",
-                                     time: Time.current}.to_json)
+          .to receive(:info).with({user: request_user.id,
+                                   auditable_type: auditable_type,
+                                   auditable_id: record[:id],
+                                   action: "update",
+                                   time: Time.current}.to_json)
 
         post :sync_from_user, params: payload, as: :json
       end
@@ -99,11 +99,11 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
       payload[request_key] = [record]
       Timecop.freeze do
         expect(AuditLogger)
-            .to receive(:info).with({user: request_user.id,
-                                     auditable_type: auditable_type,
-                                     auditable_id: record[:id],
-                                     action: "touch",
-                                     time: Time.current}.to_json)
+          .to receive(:info).with({user: request_user.id,
+                                   auditable_type: auditable_type,
+                                   auditable_id: record[:id],
+                                   action: "touch",
+                                   time: Time.current}.to_json)
 
         post :sync_from_user, params: payload, as: :json
       end
@@ -130,7 +130,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
           updated_records.each do |record|
             db_record = model.find(record["id"])
             expect(db_record.attributes.with_payload_keys.with_int_timestamps)
-                .to eq(Api::V4::TeleconsultationTransformer.from_request(record).with_int_timestamps)
+              .to eq(Api::V4::TeleconsultationTransformer.from_request(record).with_int_timestamps)
           end
         end
       end

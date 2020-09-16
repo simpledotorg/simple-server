@@ -11,7 +11,6 @@ RSpec.describe Api::V4::TeleconsultationTransformer do
         medical_officer: medical_officer,
         facility: facility,
         request_completed: "yes")
-
     end
 
     it "sends the request data in a request hash" do

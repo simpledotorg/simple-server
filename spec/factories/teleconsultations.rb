@@ -15,7 +15,7 @@ FactoryBot.define do
     medical_officer_number { "" }
     patient_took_medicines { "yes" }
     patient_consented { "yes" }
-    prescription_drugs { [SecureRandom.uuid, SecureRandom.uuid]}
+    prescription_drugs { [SecureRandom.uuid, SecureRandom.uuid] }
 
     device_created_at { Time.current }
     device_updated_at { Time.current }
