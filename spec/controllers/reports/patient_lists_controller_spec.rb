@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::PatientListsController, type: :controller do
   let(:user) { create(:user) }
   let(:non_admin) { create(:admin, :viewer_reports_only) }
-  let(:admin) { create(:admin, :viewer_all) }
+  let(:admin) { create(:admin, :owner, :viewer_all) }
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility_group_2) { create(:facility_group)}

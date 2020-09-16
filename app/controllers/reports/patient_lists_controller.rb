@@ -10,9 +10,12 @@ class Reports::PatientListsController < AdminController
         authorize_v2 { current_admin.accessible_facilities(:view_pii) }
       end
     else
-      authorize([:cohort_report, region_class.classify.constantize], :patient_list?)
+      policy_scope([:cohort_report, region_class.classify.constantize])
     end
     @region = scope.find_by!(slug: params[:id])
+    unless current_admin.permissions_v2_enabled?
+      authorize([:cohort_report, @region], :patient_list?)
+    end
 
     recipient_email = current_admin.email
     download_params = if region_class == "facility_group"
