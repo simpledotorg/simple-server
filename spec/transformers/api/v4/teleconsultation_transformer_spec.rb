@@ -5,12 +5,14 @@ RSpec.describe Api::V4::TeleconsultationTransformer do
     let!(:nurse) { create(:user) }
     let!(:medical_officer) { create(:user) }
     let!(:facility) { create(:facility) }
+    let!(:prescription_drugs) { [SecureRandom.uuid] }
     let!(:teleconsultation) do
       FactoryBot.build(:teleconsultation,
         requester: nurse,
         medical_officer: medical_officer,
         facility: facility,
-        request_completed: "yes")
+        request_completed: "yes",
+        prescription_drugs: prescription_drugs)
     end
 
     it "sends the request data in a request hash" do
@@ -27,7 +29,8 @@ RSpec.describe Api::V4::TeleconsultationTransformer do
         "teleconsultation_type" => "audio",
         "patient_took_medicines" => "yes",
         "patient_consented" => "yes",
-        "medical_officer_number" => "")
+        "medical_officer_number" => "",
+        "prescription_drugs" => prescription_drugs)
     end
   end
 
