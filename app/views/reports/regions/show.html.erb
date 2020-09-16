@@ -229,6 +229,14 @@
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
       <% end %>
+      <div class="pb-4px px-20px">
+        <div class="mb-2">
+          <p class="c-none">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -466,6 +474,12 @@
               <% end %>
             </tbody>
           </table>
+        </div>
+        <div class="mb-2 pt-12px">
+          <p class="c-none mb-0px">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
         </div>
       </div>
     </div>
