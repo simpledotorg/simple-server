@@ -23,8 +23,8 @@ class CreateAccessesFromPermissions
 
   attr_reader :organization, :dryrun, :verbose
 
-  def initialize(organization: Organization.where(name: "IHCI"), dryrun: true, verbose: true)
-    @organization = Organization.where(id: organization)
+  def initialize(organization: Organization.find_by!(name: "IHCI"), dryrun: true, verbose: true)
+    @organization = Organization.find_by!(id: organization)
     @dryrun = dryrun
     @verbose = verbose
   end
@@ -56,7 +56,7 @@ class CreateAccessesFromPermissions
       log "Finished assigning accesses."
     end
 
-    log "Did not migrate the following custom admins: #{admins_with_custom_permissions.join(", ")}"
+    log "Did not migrate the following custom admins: #{admins_with_custom_permissions.join(", ").presence || "none"}"
   end
 
   private
@@ -134,7 +134,7 @@ class CreateAccessesFromPermissions
     # For the following access_levels, we can simply return the organization:
     # - organization_owner
     if [:organization_owner].include?(access_level)
-      return organization
+      return [organization]
     end
 
     # Owners can't have any accesses
