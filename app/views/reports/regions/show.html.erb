@@ -289,6 +289,15 @@
             </tbody>
           </table>
         </div>
+        <div class="mb-2 pt-12px">
+          <p class="c-grey-dark">
+            <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
+          </p>
+          <p class="c-grey-dark mb-0px">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
+        </div>
       </div>
     </div>
     <div class="d-lg-flex w-lg-50 pl-lg-2">
@@ -339,6 +348,15 @@
               <% end %>
             </tbody>
           </table>
+        </div>
+        <div class="mb-2 pt-12px">
+          <p class="c-grey-dark">
+            <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
+          </p>
+          <p class="c-grey-dark mb-0px">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
         </div>
       </div>
     </div>
@@ -391,6 +409,12 @@
               <% end %>
             </tbody>
           </table>
+        </div>
+        <div class="mb-2 pt-12px">
+          <p class="c-grey-dark mb-0px">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
         </div>
       </div>
     </div>
