@@ -31,7 +31,6 @@ module MyFacilitiesFiltering
         if current_admin.permissions_v2_enabled?
           current_admin.accessible_facilities(:view_reports).pluck(:zone).uniq.compact.sort
         else
-
           policy_scope([:manage, :facility, Facility]).pluck(:zone).uniq.compact.sort
         end
     end
