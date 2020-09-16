@@ -92,7 +92,7 @@
       &.collapsed {
         .access-item__dropdown {
           i {
-            transform: rotate(180deg);
+            transform: rotate(-90deg);
             @include transition(0.3s);
             padding-bottom: 2px;
           }
