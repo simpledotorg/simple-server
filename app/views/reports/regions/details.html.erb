@@ -1,4 +1,5 @@
 <%= render "header"%>
+
 <div class="card">
   <h3 class="m-8px c-black">
     Visit details of all HTN patients
@@ -89,6 +90,9 @@
     <% end %>
   <% end %>
 <% end %>
+
+<%= render "downloads" %>
+
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
