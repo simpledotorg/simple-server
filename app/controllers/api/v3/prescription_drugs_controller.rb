@@ -46,6 +46,8 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
         :is_deleted,
         :patient_id,
         :facility_id,
+        :frequency,
+        :duration_in_days,
         :created_at,
         :updated_at
       )
