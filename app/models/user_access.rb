@@ -84,6 +84,7 @@ class UserAccess
       ].flatten.uniq
 
     User
+      .admins
       .from(User
               .admins
               .select("DISTINCT ON (users.id) users.*")
