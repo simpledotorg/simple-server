@@ -6,7 +6,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
   let(:admin) { create(:admin, :owner, :viewer_all) }
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
-  let(:facility_group_2) { create(:facility_group)}
+  let(:facility_group_2) { create(:facility_group) }
   let(:facility) { create(:facility, facility_group: facility_group) }
   let(:cvho) do
     create(:admin, :supervisor, organization: organization).tap do |user|
@@ -38,7 +38,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
 
     it "returns CSV of registered patients in facility" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
-        "facility", {facility_id: facility.id })
+        "facility", {facility_id: facility.id})
       sign_in(admin.email_authentication)
       get :show, params: {id: facility.slug, report_scope: "facility"}
       expect(response).to redirect_to(reports_region_path(facility.slug, report_scope: "facility"))
