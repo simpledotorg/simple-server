@@ -20,7 +20,6 @@ class Api::V4::TeleconsultationsController < Api::V4::SyncController
   end
 
   def teleconsultation_params
-    pp params
     params.require(:teleconsultations).map do |teleconsultation_params|
       teleconsultation_params.permit(
         :id,

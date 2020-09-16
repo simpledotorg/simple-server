@@ -20,7 +20,7 @@ describe "Teleconsultations v4 API", swagger_doc: "v4/swagger.json" do
         run_test!
       end
 
-      # include_examples "returns 403 for post requests for forbidden users", :teleconsultations
+      include_examples "returns 403 for post requests for forbidden users", :teleconsultations
     end
   end
 end
