@@ -66,8 +66,17 @@ class Reports::RegionsController < AdminController
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+
     if @region.is_a?(Facility)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
+    end
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data render_to_string("show.csv.erb"), filename: download_filename
+      end
     end
   end
 

@@ -47,6 +47,11 @@ class FacilityGroup < ApplicationRecord
     facilities.none? && patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
+  def dashboard_analytics(period:, prev_periods:)
+    query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: true)
+    query.call
+  end
+
   private
 
   def set_diabetes_management(value)
