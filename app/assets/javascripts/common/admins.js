@@ -20,7 +20,7 @@ AdminAccess.prototype = {
     return document.getElementsByClassName("access-ratio")
   },
 
-  facilityAccessItemsDropdown: function() {
+  facilityAccessItemsDropdown: function () {
     return document.getElementsByClassName("access-item__dropdown")
   },
 
@@ -40,6 +40,7 @@ AdminAccess.prototype = {
 
       this.updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
       this.updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
+      this.updateFacilityCount(targetCheckbox)
     })
   },
 
@@ -65,7 +66,7 @@ AdminAccess.prototype = {
     }
   },
 
-  onAccessLevelChanged: function ({target}) {
+  onAccessLevelChanged: function ({ target }) {
     this.toggleAccessTreeVisibility(target.value === ACCESS_LEVEL_POWER_USER)
   },
 
@@ -79,7 +80,7 @@ AdminAccess.prototype = {
     }
   },
 
-  onFacilityAccessItemToggled: function ({target}) {
+  onFacilityAccessItemToggled: function ({ target }) {
     const children = Array.from(target.closest("li").childNodes)
     const parentItem = target.closest(".access-item")
     const wrapper = children.find(containsClass("access-item-wrapper"))
@@ -110,6 +111,48 @@ AdminAccess.prototype = {
     } else {
       this.updateSelectAllCheckbox()
     }
+  },
+
+  // walk down the tree and get the first node for each FG, then walk up the tree
+  // and update the counts
+  updateFacilityCount: function (element) {
+    const self = this
+    const leafNodesByFacilityGroup = this.getLeafNodesByFacilityGroup(element)
+    Object.values(leafNodesByFacilityGroup)
+      .filter(node => node.length > 0)
+      .map(node => node[0])
+      .forEach(node => self.updateParentFacilityCount(node, ACCESS_LIST_INPUT_SELECTOR))
+  },
+
+  updateParentFacilityCount: function (element, selector) {
+    const parent = element.closest(["ul"]).parentNode.querySelector(selector)
+    const children = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
+    const { selected, notSelected } = children
+      .filter(({ name }) => name === "facilities[]")
+      .reduce((counter, item) => Object.assign(counter, item.checked
+        ? { selected: counter.selected + 1 }
+        : { notSelected: counter.notSelected + 1 }),
+        { selected: 0, notSelected: 0 })
+    const accessRatioDiv = element.closest(["ul"]).parentNode.querySelector(".access-ratio")
+    accessRatioDiv.textContent = notSelected == 0
+      ? `${selected} facilities selected`
+      : `${selected} of ${selected + notSelected} facilities selected`
+
+    if (element !== parent) {
+      this.updateParentFacilityCount(parent, selector)
+    }
+  },
+
+  getLeafNodesByFacilityGroup: function (element) {
+    const parent = element.closest("li")
+    const children = Array.from(parent.querySelectorAll(".access-item"))
+    return children
+      .filter(item => item.dataset.facilityGroupId)
+      .reduce((nodes, item) => {
+        const facilityGroupId = item.dataset.facilityGroupId
+        const itemsInGroup = nodes[facilityGroupId] ? [...nodes[facilityGroupId], item] : [item]
+        return Object.assign(nodes, { [facilityGroupId]: itemsInGroup })
+      }, {})
   },
 
   updateChildrenCheckedState: function (parent, selector) {
@@ -242,5 +285,5 @@ const nodeListToArray = (selector, parent = document) =>
   [].slice.call(parent.querySelectorAll(selector))
 
 // return a function that checks if element contains class
-const containsClass = (className) => ({classList}) =>
+const containsClass = (className) => ({ classList }) =>
   classList && classList.contains(className)
