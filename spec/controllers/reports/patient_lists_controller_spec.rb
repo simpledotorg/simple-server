@@ -46,7 +46,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
 
     it "returns CSV of registered patients in facility_group" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
-        "facility_group", { id: facility_group.id })
+        "facility_group", {id: facility_group.id })
       sign_in(admin.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
       expect(response).to redirect_to(reports_region_path(facility_group.slug, report_scope: "district"))
