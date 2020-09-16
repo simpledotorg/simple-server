@@ -127,14 +127,12 @@ AdminAccess.prototype = {
   updateParentFacilityCount: function (element, selector) {
     const parent = element.closest(["ul"]).parentNode.querySelector(selector)
     const children = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
-    const { selected, notSelected } = children
+    const [selected, notSelected] = children
       .filter(({ name }) => name === "facilities[]")
-      .reduce((counter, item) => Object.assign(counter, item.checked
-        ? { selected: counter.selected + 1 }
-        : { notSelected: counter.notSelected + 1 }),
-        { selected: 0, notSelected: 0 })
+      .reduce(([selected, notSelected], item) =>
+        item.checked ? [selected + 1, notSelected] : [selected, notSelected + 1], [0, 0])
     const accessRatioDiv = element.closest(["ul"]).parentNode.querySelector(".access-ratio")
-    accessRatioDiv.textContent = notSelected == 0
+    accessRatioDiv.textContent = notSelected === 0
       ? `${selected} facilities selected`
       : `${selected} of ${selected + notSelected} facilities selected`
 
