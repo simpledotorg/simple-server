@@ -1393,13 +1393,16 @@
           "$ref": "#/definitions/uuid"
         },
         "request": {
-          "type": "object",
+          "type": [
+            "object",
+            "null"
+          ],
           "properties": {
             "requester_id": {
-              "$ref": "#/definitions/nullable_uuid"
+              "$ref": "#/definitions/uuid"
             },
             "facility_id": {
-              "$ref": "#/definitions/nullable_uuid"
+              "$ref": "#/definitions/uuid"
             },
             "requested_at": {
               "$ref": "#/definitions/timestamp"
@@ -1407,7 +1410,10 @@
           }
         },
         "record": {
-          "type": "object",
+          "type": [
+            "object",
+            "null"
+          ],
           "properties": {
             "recorded_at": {
               "$ref": "#/definitions/timestamp"

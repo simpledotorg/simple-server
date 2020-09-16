@@ -254,15 +254,15 @@ class Api::V4::Models
           patient_id: {"$ref" => "#/definitions/uuid"},
           medical_officer_id: {"$ref" => "#/definitions/uuid"},
           request: {
-            type: :object,
+            type: [:object, "null"],
             properties: {
-              requester_id: {"$ref" => "#/definitions/nullable_uuid"},
-              facility_id: {"$ref" => "#/definitions/nullable_uuid"},
+              requester_id: {"$ref" => "#/definitions/uuid"},
+              facility_id: {"$ref" => "#/definitions/uuid"},
               requested_at: {"$ref" => "#/definitions/timestamp"}
             }
           },
           record: {
-            type: :object,
+            type: [:object, "null"],
             properties: {
               recorded_at: {"$ref" => "#/definitions/timestamp"},
               teleconsultation_type: {type: :string, enum: Teleconsultation::TELECONSULTATION_TYPES.keys},
