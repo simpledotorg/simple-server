@@ -71,13 +71,6 @@ class Reports::RegionsController < AdminController
     if @region.is_a?(Facility)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
     end
-
-    respond_to do |format|
-      format.html
-      format.csv do
-        send_data render_to_string("show.csv.erb"), filename: download_filename
-      end
-    end
   end
 
   def cohort
@@ -87,9 +80,18 @@ class Reports::RegionsController < AdminController
       authorize(:dashboard, :show?)
     end
     periods = @period.downto(5)
+
     @cohort_data = CohortService.new(region: @region, periods: periods).call
+  end
+
+  def download
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
+
     respond_to do |format|
-      format.html
       format.csv do
         send_data render_to_string("cohort.csv.erb")
       end
