@@ -7,11 +7,12 @@ class Teleconsultation < ApplicationRecord
   belongs_to :requester, class_name: "User", foreign_key: :requester_id, optional: true
 
   REQUEST_ATTRIBUTES = %w[requester_id facility_id requested_at request_completed]
-  RECORD_ATTRIBUTES = %w[recorded_at
+  RECORD_ATTRIBUTES = %i[recorded_at
     teleconsultation_type
     patient_took_medicines
     patient_consented
-    medical_officer_number]
+    medical_officer_number
+    prescription_drugs]
   TELECONSULTATION_ANSWERS = {
     yes: "yes",
     no: "no",

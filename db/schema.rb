@@ -475,6 +475,7 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
     t.string "patient_took_medicines"
     t.string "patient_consented"
     t.string "medical_officer_number"
+    t.uuid "prescription_drugs", default: [], array: true
     t.datetime "deleted_at"
     t.datetime "device_updated_at"
     t.datetime "device_created_at"
