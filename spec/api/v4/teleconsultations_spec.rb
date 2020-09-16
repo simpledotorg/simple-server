@@ -15,12 +15,12 @@ describe "Teleconsultations v4 API", swagger_doc: "v4/swagger.json" do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
-        let(:teleconsultations) { {} }
+        let(:teleconsultations) { {teleconsultations: [build_teleconsultation_payload]} }
 
         run_test!
       end
 
-      include_examples "returns 403 for post requests for forbidden users", :teleconsultations
+      # include_examples "returns 403 for post requests for forbidden users", :teleconsultations
     end
   end
 end
