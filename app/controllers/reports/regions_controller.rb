@@ -79,6 +79,12 @@ class Reports::RegionsController < AdminController
     end
     periods = @period.downto(5)
     @cohort_data = CohortService.new(region: @region, periods: periods).call
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data render_to_string("cohort.csv.erb")
+      end
+    end
   end
 
   private
