@@ -56,7 +56,7 @@ class CreateAccessesFromPermissions
       log "Finished assigning accesses."
     end
 
-    log "Did not migrate the following custom admins: #{admins_with_custom_permissions.join(", ").presence || "none"}"
+    log "Did not migrate the following custom admins: ['#{admins_with_custom_permissions.join("', '")}']"
   end
 
   private
