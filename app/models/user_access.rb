@@ -84,7 +84,6 @@ class UserAccess
       ].flatten.uniq
 
     User
-      .admins
       .from(User
               .admins
               .select("DISTINCT ON (users.id) users.*")
@@ -130,8 +129,9 @@ class UserAccess
     LEVELS[user.access_level.to_sym][:grant_access]
   end
 
+  # TODO: add better, more flexible constraints to this than just restricting to power_users
   def modify_access_level?
-    power_user? || user.accessible_organizations(:manage).any?
+    power_user?
   end
 
   def grant_access(new_user, selected_facility_ids)
