@@ -1,4 +1,5 @@
 <%= render "header" %>
+First
 <div class="d-lg-flex flex-lg-wrap mb-48px">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
@@ -36,7 +37,7 @@
           </p>
         </div>
       </div>
-      <div class="pb-4px">
+      <div>
         <div class="p-relative">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="controlledPatientsTrend"></canvas>
@@ -48,6 +49,17 @@
               </p>
             <% end %>
           </div>
+        </div>
+      </div>
+      <div class="pt-4px pb-4px px-20px">
+        <div class="mb-2">
+          <p class="c-grey-dark">
+            <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
+          </p>
+          <p class="c-grey-dark">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
         </div>
       </div>
     </div>
@@ -88,7 +100,7 @@
           </p>
         </div>
       </div>
-      <div class="pb-4px">
+      <div>
         <div class="p-relative">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
@@ -100,6 +112,17 @@
               </p>
             <% end %>
           </div>
+        </div>
+      </div>
+      <div class="pt-4px pb-4px px-20px">
+        <div class="mb-2">
+          <p class="c-grey-dark">
+            <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
+          </p>
+          <p class="c-grey-dark">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
         </div>
       </div>
     </div>
