@@ -77,16 +77,16 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
 
     if validate_selected_facilities?
-      redirect_to new_email_authentication_invitation_path,
-        alert: "At least one facility should be selected for access before inviting an Admin."
+      flash[:alert] = "At least one facility should be selected for access before inviting an Admin."
+      render :new, status: :bad_request
 
       return
     end
 
     if user.invalid? || email_authentication.invalid?
       user.errors.delete(:email_authentications)
-      redirect_to new_email_authentication_invitation_path,
-        alert: (user.errors.full_messages + email_authentication.errors.full_messages).join("\n")
+      flash[:alert] = (user.errors.full_messages + email_authentication.errors.full_messages).join("\n")
+      render :new, status: :bad_request
     end
   end
 
@@ -111,7 +111,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def selected_facilities
-    params[:facilities].flatten
+    params[:facilities]
   end
 
   def permission_params
@@ -128,5 +128,10 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def validate_selected_facilities?
     selected_facilities.blank? && user_params[:access_level] != "power_user"
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
   end
 end
