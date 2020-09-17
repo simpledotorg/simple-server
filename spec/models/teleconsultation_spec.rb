@@ -20,15 +20,13 @@ RSpec.describe Teleconsultation, type: :model do
     let!(:teleconsultation) do
       FactoryBot.build(:teleconsultation,
         requester: nurse,
-        facility: facility,
-        request_completed: "yes")
+        facility: facility)
     end
 
     it "returns the teleconsult request data" do
       expect(teleconsultation.request).to include("requested_at",
         "requester_id" => nurse.id,
-        "facility_id" => facility.id,
-        "request_completed" => "yes")
+        "facility_id" => facility.id)
     end
   end
 
