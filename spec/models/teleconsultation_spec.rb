@@ -23,6 +23,7 @@ RSpec.describe Teleconsultation, type: :model do
         facility: facility,
         request_completed: "yes")
     end
+
     it "returns the teleconsult request data" do
       expect(teleconsultation.request).to include("requested_at",
         "requester_id" => nurse.id,
@@ -46,6 +47,7 @@ RSpec.describe Teleconsultation, type: :model do
         prescription_drugs: prescription_drug_ids,
         facility: facility)
     end
+
     it "returns the teleconsult record data" do
       expect(teleconsultation.record).to include("recorded_at",
         "teleconsultation_type" => "audio",
