@@ -1437,15 +1437,6 @@
             },
             "medical_officer_number": {
               "$ref": "#/definitions/non_empty_string"
-            },
-            "prescription_drugs": {
-              "type": [
-                "null",
-                "array"
-              ],
-              "items": {
-                "$ref": "#/definitions/uuid"
-              }
             }
           }
         },

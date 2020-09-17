@@ -2119,6 +2119,9 @@
         },
         "duration_in_days": {
           "type": "integer"
+        },
+        "teleconsultation_id": {
+          "$ref": "#/definitions/nullable_uuid"
         }
       },
       "required": [

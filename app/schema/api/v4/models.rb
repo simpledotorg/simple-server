@@ -264,8 +264,7 @@ class Api::V4::Models
               teleconsultation_type: {type: :string, enum: Teleconsultation::TYPES.keys},
               patient_took_medicines: {type: :string, enum: Teleconsultation::TELECONSULTATION_ANSWERS.keys},
               patient_consented: {type: :string, enum: Teleconsultation::TELECONSULTATION_ANSWERS.keys},
-              medical_officer_number: {"$ref" => "#/definitions/non_empty_string"},
-              prescription_drugs: array_of("uuid")
+              medical_officer_number: {"$ref" => "#/definitions/non_empty_string"}
             }
           },
           created_at: {"$ref" => "#/definitions/timestamp"},
