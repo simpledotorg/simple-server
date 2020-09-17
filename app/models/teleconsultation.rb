@@ -6,7 +6,7 @@ class Teleconsultation < ApplicationRecord
   belongs_to :facility, optional: true
   belongs_to :requester, class_name: "User", foreign_key: :requester_id, optional: true
 
-  REQUEST_ATTRIBUTES = %w[requester_id facility_id requested_at].freeze
+  REQUEST_ATTRIBUTES = %w[requester_id facility_id requested_at request_completed].freeze
   RECORD_ATTRIBUTES = %w[
     recorded_at
     teleconsultation_type

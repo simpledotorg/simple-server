@@ -8,7 +8,6 @@ FactoryBot.define do
     association :medical_officer, factory: :user, strategy: :create
 
     requested_at { Time.now }
-    request_completed { "yes" }
 
     recorded_at { Time.now }
     teleconsultation_type { "audio" }
