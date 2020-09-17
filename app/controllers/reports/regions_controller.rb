@@ -92,15 +92,40 @@ class Reports::RegionsController < AdminController
     end
 
     @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+    pp @cohort_analytics
+    pp @cohort_analytics.keys.first.class
 
     respond_to do |format|
       format.csv do
-        send_data render_to_string("cohort.csv.erb")
+        if @region.is_a?(FacilityGroup)
+          set_facility_keys
+          send_data render_to_string("facility_group_cohort.csv.erb")
+        else
+          send_data render_to_string("cohort.csv.erb")
+        end
       end
     end
   end
 
   private
+
+  def set_facility_keys
+    district = {
+      id: :total,
+      name: "Total"
+    }.with_indifferent_access
+
+    facilities = @region.facilities.order(:name).map { |facility|
+      {
+        id: facility.id,
+        name: facility.name,
+        type: facility.facility_type
+      }.with_indifferent_access
+    }
+
+    @facility_keys = [district, *facilities]
+  end
 
   def set_period
     period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes

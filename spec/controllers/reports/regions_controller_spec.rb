@@ -142,4 +142,27 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
   end
+
+  context "download" do
+    render_views
+
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+    end
+
+    it "retrieves monthly cohort data by default" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :download, params: {id: @facility.facility_group.slug, report_scope: "district", period: "quarter", format: "csv"}
+      end
+      expect(response).to be_successful
+    end
+  end
 end
