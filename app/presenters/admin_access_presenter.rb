@@ -57,6 +57,7 @@ class AdminAccessPresenter < SimpleDelegator
 
   memoize def facility_group_tree
     visible_facilities
+      .where.not(facility_group: nil)
       .group_by(&:facility_group)
       .sort_by { |facility_group, _| facility_group.name }
       .to_h

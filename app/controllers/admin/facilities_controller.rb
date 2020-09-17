@@ -28,15 +28,17 @@ class Admin::FacilitiesController < AdminController
     end
 
     if current_admin.permissions_v2_enabled?
+      accessible_facilities = current_admin.accessible_facilities(:manage)
+
       if searching?
-        current_admin.accessible_facilities(:manage).search_by_name(search_query)
+        facilities = accessible_facilities.search_by_name(search_query)
         facility_groups = FacilityGroup.where(facilities: facilities)
 
         @organizations = Organization.where(facility_groups: facility_groups)
         @facility_groups = facility_groups.group_by(&:organization)
         @facilities = facilities.group_by(&:facility_group)
       else
-        accessible_facilities = current_admin.accessible_facilities(:manage)
+
         @facilities = accessible_facilities.group_by(&:facility_group)
 
         visible_facility_groups =
