@@ -36,7 +36,6 @@ RSpec.describe Teleconsultation, type: :model do
     let!(:nurse) { create(:user) }
     let!(:medical_officer) { create(:user) }
     let!(:facility) { create(:facility) }
-    let!(:prescription_drug_ids) { [SecureRandom.uuid] }
     let!(:teleconsultation) do
       FactoryBot.build(:teleconsultation,
         medical_officer: medical_officer,
@@ -44,7 +43,6 @@ RSpec.describe Teleconsultation, type: :model do
         patient_took_medicines: "yes",
         patient_consented: "yes",
         medical_officer_number: "",
-        prescription_drugs: prescription_drug_ids,
         facility: facility)
     end
 
@@ -53,8 +51,7 @@ RSpec.describe Teleconsultation, type: :model do
         "teleconsultation_type" => "audio",
         "patient_took_medicines" => "yes",
         "patient_consented" => "yes",
-        "medical_officer_number" => "",
-        "prescription_drugs" => prescription_drug_ids)
+        "medical_officer_number" => "")
     end
   end
 end

@@ -33,7 +33,7 @@ class Api::V4::TeleconsultationsController < Api::V4::SyncController
         :deleted_at,
         :created_at,
         request: Teleconsultation::REQUEST_ATTRIBUTES,
-        record: Teleconsultation::RECORD_ATTRIBUTES << {prescription_drugs: []}
+        record: Teleconsultation::RECORD_ATTRIBUTES
       )
     end
   end

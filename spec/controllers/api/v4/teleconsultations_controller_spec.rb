@@ -64,11 +64,15 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
     let(:payload) { Hash[request_key, [record]] }
 
     it "creates an audit log for new data created by the user" do
+      user = create(:teleconsultation_medical_officer, registration_facility: request_facility)
+      request.env["HTTP_X_USER_ID"] = user.id
+      request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
+
       Timecop.freeze do
         expect(AuditLogger)
-          .to receive(:info).with({user: request_user.id,
+          .to receive(:info).with({user: user.id,
                                    auditable_type: auditable_type,
-                                   auditable_id: record[:id],
+                                   auditable_id: record["id"],
                                    action: "create",
                                    time: Time.current}.to_json)
 
@@ -125,10 +129,12 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
       describe "updates records" do
         it "with updated record attributes" do
+
+
           post :sync_from_user, params: updated_payload, as: :json
 
           updated_records.each do |record|
-            record = Api::V4::TeleconsultationTransformer.from_request(record)
+            record = Api::V4::TeleconsultationTransformer.from_request(record, retrieve_record: true)
 
             db_record = model.find(record["id"])
             expect(db_record.attributes.with_payload_keys.with_int_timestamps)

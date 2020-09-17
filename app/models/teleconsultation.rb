@@ -13,7 +13,6 @@ class Teleconsultation < ApplicationRecord
     patient_took_medicines
     patient_consented
     medical_officer_number
-    prescription_drugs
   ].freeze
   TELECONSULTATION_ANSWERS = {
     yes: "yes",
