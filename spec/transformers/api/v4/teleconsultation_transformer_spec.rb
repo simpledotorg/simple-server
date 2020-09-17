@@ -14,22 +14,8 @@ RSpec.describe Api::V4::TeleconsultationTransformer do
     end
 
     context "record" do
-      context "when retrieve_record is true" do
-        it "retrieves nested record data in payload" do
-          expect(described_class.from_request(
-            build_teleconsultation_payload,
-            retrieve_record: true
-          )).to include(*Teleconsultation::RECORD_ATTRIBUTES)
-        end
-      end
-
-      context "when retrieve_record is false" do
-        it "does not retrieve the nested record data in payload" do
-          expect(described_class.from_request(
-            build_teleconsultation_payload,
-            retrieve_record: false
-          )).not_to include(*Teleconsultation::RECORD_ATTRIBUTES)
-        end
+      it "retrieves nested record data in payload" do
+        expect(described_class.from_request(build_teleconsultation_payload)).to include(*Teleconsultation::RECORD_ATTRIBUTES)
       end
 
       it "removes the nested record map" do
