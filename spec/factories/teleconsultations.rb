@@ -23,7 +23,11 @@ FactoryBot.define do
 end
 
 def build_teleconsultation_payload(teleconsultation = FactoryBot.build(:teleconsultation))
-  Api::V4::TeleconsultationTransformer.to_response(teleconsultation).with_indifferent_access
+  Api::V4::Transformer.to_response(teleconsultation)
+    .except(*Teleconsultation::REQUEST_ATTRIBUTES)
+    .except(*Teleconsultation::RECORD_ATTRIBUTES)
+    .merge({"request" => teleconsultation.request,
+            "record" => teleconsultation.record})
 end
 
 def build_invalid_teleconsultation_payload

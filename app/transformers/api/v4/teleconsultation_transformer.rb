@@ -1,13 +1,5 @@
 class Api::V4::TeleconsultationTransformer
   class << self
-    def to_response(teleconsultation)
-      Api::V4::Transformer.to_response(teleconsultation)
-        .except(*Teleconsultation::REQUEST_ATTRIBUTES)
-        .except(*Teleconsultation::RECORD_ATTRIBUTES)
-        .merge({"request" => teleconsultation.request,
-                "record" => teleconsultation.record})
-    end
-
     def from_request(teleconsultation)
       request, record = teleconsultation["request"], teleconsultation["record"]
       payload = Api::V4::Transformer.from_request(teleconsultation).except("request", "record")
