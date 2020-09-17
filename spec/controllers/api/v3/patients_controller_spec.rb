@@ -223,12 +223,11 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           expect(PatientPhoneNumber.updated_on_server_since(sync_time).count).to eq 3
 
           patients_payload.each do |updated_patient|
-            updated_patient.with_int_timestamps
             updated_phone_number = updated_patient["phone_numbers"].first
             db_phone_number = PatientPhoneNumber.find(updated_phone_number["id"])
 
             expect(db_phone_number.attributes.with_payload_keys.with_int_timestamps)
-              .to eq(updated_phone_number)
+              .to eq(updated_phone_number.with_int_timestamps)
           end
         end
 
@@ -236,8 +235,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           expect(PatientBusinessIdentifier.updated_on_server_since(sync_time).count).to eq 3
 
           patients_payload.each do |updated_patient|
-            updated_patient.with_int_timestamps
-            updated_business_identifier = updated_patient["business_identifiers"].first
+            updated_business_identifier = updated_patient["business_identifiers"].first.with_int_timestamps
             if updated_business_identifier[:metadata].present?
               updated_business_identifier_metadata = JSON.parse(updated_business_identifier[:metadata])
             end

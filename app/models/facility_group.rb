@@ -15,6 +15,7 @@ class FacilityGroup < ApplicationRecord
   has_many :encounters, through: :facilities
   has_many :prescription_drugs, through: :facilities
   has_many :appointments, through: :facilities
+  has_many :teleconsultations, through: :facilities
 
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
