@@ -70,6 +70,10 @@ class AdminsController < AdminController
   def update
     if current_admin.permissions_v2_enabled?
       User.transaction do
+        if user_params[:access_level] == "power_user"
+          @admin.accesses.delete_all
+        end
+
         @admin.update!(user_params)
         current_admin.grant_access(@admin, selected_facilities)
       end
