@@ -37,16 +37,13 @@
         <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
       </p>
     </div>
-
-
-    <div class="actions order-1 mb-24px order-lg-2 mb-lg-0">
-
-      <%= render "downloads" %>
-
-      <div class="dropdown show order-1 mb-24px mb-lg-0">
-
+    <div class="d-flex actions order-1 mb-24px order-lg-2 mb-lg-0">
+      <div class="d-none d-lg-block order-lg-2 ml-lg-8px">
+        <%= render "downloads" %>
+      </div>
+      <div class="dropdown show w-100pt mb-24px mb-lg-0 w-lg-auto">
         <a
-          class="d-block d-lg-inline-block btn btn-primary btn-sm dropdown-toggle"
+          class="d-block d-lg-inline-block btn btn-sm dropdown-toggle c-black bg-white bs-small"
           href="#"
           role="button"
           id="dropdownMenuLink"
