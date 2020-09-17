@@ -2,13 +2,14 @@
 // elements
 //
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
+const ACCESS_LEVEL_ID = "access-level"
 const ACCESS_LEVEL_POWER_USER = "power_user"
 
 AdminAccess = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
 AdminAccess.prototype = {
-  accessLevel: () => document.getElementById("access_level"),
+  accessLevel: () => document.getElementById(ACCESS_LEVEL_ID),
 
   facilityAccessPowerUser: () => document.getElementById("facility-access-power-user"),
 
@@ -177,10 +178,10 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   },
 
   accessLevelSelector: function () {
-    const accessLevel = $("#access_level")
+    const accessLevel = $(`#${ACCESS_LEVEL_ID}`)
 
     // initialize the access_level select dropdown
-    accessLevel.selectpicker({
+    return accessLevel.selectpicker({
       noneSelectedText: "Select an access level..."
     });
   },
@@ -221,11 +222,9 @@ AdminAccessEdit = function (accessDivId) {
 AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 AdminAccessEdit.prototype = Object.assign(AdminAccessEdit.prototype, {
   accessLevelSelector: function () {
-    // super
-    AdminAccessInvite.prototype.accessLevelSelector.call(this)
+    const _super = AdminAccessInvite.prototype.accessLevelSelector.call(this)
 
-    const accessLevel = $("#access-level")
-    this.toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
+    this.toggleAccessTreeVisibility(_super.val() === ACCESS_LEVEL_POWER_USER)
   }
 })
 
