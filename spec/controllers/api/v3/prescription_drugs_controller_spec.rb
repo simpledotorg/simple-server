@@ -42,7 +42,9 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
             facility: facility,
             teleconsultation_id: create(:teleconsultation).id))
         }
-        teleconsultation_ids = prescription_drugs.map { |p| p["teleconsultation_id"] }
+        teleconsultation_ids = prescription_drugs.map { |prescription_drug|
+          prescription_drug["teleconsultation_id"]
+        }
 
         post(:sync_from_user, params: {prescription_drugs: prescription_drugs}, as: :json)
 
