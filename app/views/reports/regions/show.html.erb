@@ -203,12 +203,12 @@
         </div>
       </div>
       <div>
-        <div class="h-200px mr-13px mb-8px ml-13px pb-4px">
+        <div class="h-200px mr-13px mb-16px ml-13px pb-4px">
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
         <div class="pb-4px px-20px">
           <div class="mb-2">
-            <p class="us-none fs-12px c-transparent">
+            <p class="mb-0px fs-12px <% if @region.is_a?(Facility) %>c-grey-dark<% else %>us-none c-transparent<% end %>">
               <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
               the last 3 months
             </p>
