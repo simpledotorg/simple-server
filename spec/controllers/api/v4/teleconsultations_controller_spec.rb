@@ -129,8 +129,6 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
       describe "updates records" do
         it "with updated record attributes" do
-
-
           post :sync_from_user, params: updated_payload, as: :json
 
           updated_records.each do |record|
