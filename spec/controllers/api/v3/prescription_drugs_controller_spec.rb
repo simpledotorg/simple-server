@@ -39,12 +39,17 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
         prescription_drugs = (1..3).map {
           build_prescription_drug_payload(FactoryBot.build(:prescription_drug,
             patient: patient,
-            facility: facility))
+            facility: facility,
+            teleconsultation_id: create(:teleconsultation).id))
         }
+        teleconsultation_ids = prescription_drugs.map { |p| p["teleconsultation_id"] }
+
         post(:sync_from_user, params: {prescription_drugs: prescription_drugs}, as: :json)
+
         expect(PrescriptionDrug.count).to eq 3
         expect(patient.prescription_drugs.count).to eq 3
         expect(facility.prescription_drugs.count).to eq 3
+        expect(PrescriptionDrug.pluck(:teleconsultation_id)).to match_array teleconsultation_ids
         expect(response).to have_http_status(200)
       end
     end
