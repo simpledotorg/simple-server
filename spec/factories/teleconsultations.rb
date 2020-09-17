@@ -6,6 +6,7 @@ FactoryBot.define do
     association :facility, strategy: :create
     association :requester, factory: :user, strategy: :create
     association :medical_officer, factory: :user, strategy: :create
+    association :requested_medical_officer, factory: :user, strategy: :create
 
     requested_at { Time.now }
 
@@ -24,6 +25,7 @@ def build_teleconsultation_payload(teleconsultation = FactoryBot.build(:telecons
   Api::V4::Transformer.to_response(teleconsultation)
     .except(*Teleconsultation::REQUEST_ATTRIBUTES)
     .except(*Teleconsultation::RECORD_ATTRIBUTES)
+    .except("requested_medical_officer_id")
     .merge({"request" => teleconsultation.request,
             "record" => teleconsultation.record})
 end

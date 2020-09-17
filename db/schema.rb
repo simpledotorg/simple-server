@@ -465,6 +465,7 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
 
   create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
     t.uuid "patient_id", null: false
+    t.uuid "requested_medical_officer_id"
     t.uuid "medical_officer_id", null: false
     t.uuid "requester_id"
     t.uuid "facility_id"
@@ -483,6 +484,7 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
     t.index ["facility_id"], name: "index_teleconsultations_on_facility_id"
     t.index ["medical_officer_id"], name: "index_teleconsultations_on_medical_officer_id"
     t.index ["patient_id"], name: "index_teleconsultations_on_patient_id"
+    t.index ["requested_medical_officer_id"], name: "index_teleconsultations_on_requested_medical_officer_id"
     t.index ["requester_id"], name: "index_teleconsultations_on_requester_id"
   end
 
@@ -559,6 +561,7 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "patients"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
+  add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL

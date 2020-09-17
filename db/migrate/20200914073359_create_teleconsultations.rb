@@ -4,6 +4,7 @@ class CreateTeleconsultations < ActiveRecord::Migration[5.2]
       t.uuid :id, primary_key: true
       t.belongs_to :patient, type: :uuid, null: false, foreign_key: true
       t.belongs_to :medical_officer, type: :uuid, null: false, foreign_key: {to_table: :users}
+      t.belongs_to :requested_medical_officer, type: :uuid, foreign_key: {to_table: :users}
       t.belongs_to :requester, type: :uuid, foreign_key: {to_table: :users}
       t.belongs_to :facility, type: :uuid, foreign_key: true
       t.string :request_completed

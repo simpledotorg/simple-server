@@ -131,7 +131,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
             record = Api::V4::TeleconsultationTransformer.from_request(record)
 
             db_record = model.find(record["id"])
-            expect(db_record.attributes.with_payload_keys.with_int_timestamps)
+            expect(db_record.attributes.except("requested_medical_officer_id").with_payload_keys.with_int_timestamps)
               .to eq(record.with_payload_keys.with_int_timestamps)
           end
         end
@@ -174,6 +174,33 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
           post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
           expect(response).to have_http_status(200)
         end
+
+        it "sets the requested_medical_officer_id to the medical officer id" do
+          teleconsultation = build_teleconsultation_payload
+
+          post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+
+          db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
+          expect(db_teleconsultation.requested_medical_officer_id).to eq db_teleconsultation.medical_officer_id
+        end
+
+        context "when request user cannot teleconsult" do
+          before do
+            user = create(:user, registration_facility: request_facility, teleconsultation_facilities: [])
+            request.env["HTTP_X_USER_ID"] = user.id
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
+          end
+
+          it "saves the request attributes" do
+            teleconsultation = build_teleconsultation_payload
+            teleconsultation["record"] = nil
+
+            post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+
+            db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
+            expect(db_teleconsultation.request.with_int_timestamps).to eq(teleconsultation["request"].with_int_timestamps)
+          end
+        end
       end
 
       context "record" do
@@ -185,6 +212,18 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
             db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
             expect(db_teleconsultation.record.with_int_timestamps).to eq(teleconsultation["record"].with_int_timestamps)
+          end
+
+          it "sets the medical_officer_id to the request user id" do
+            user = create(:teleconsultation_medical_officer, registration_facility: request_facility)
+            request.env["HTTP_X_USER_ID"] = user.id
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
+
+            teleconsultation = build_teleconsultation_payload
+
+            post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+
+            expect(Teleconsultation.find(teleconsultation["id"]).medical_officer_id).to eq user.id
           end
         end
 
