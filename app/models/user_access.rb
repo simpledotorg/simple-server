@@ -136,7 +136,11 @@ class UserAccess
 
   def grant_access(new_user, selected_facility_ids)
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
-    return if new_user.power_user?
+    if new_user.power_user?
+      new_user.accesses.delete_all
+      return
+    end
+
     return if selected_facility_ids.blank?
 
     resources = prepare_grantable_resources(selected_facility_ids)

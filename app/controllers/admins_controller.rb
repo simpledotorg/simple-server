@@ -70,10 +70,6 @@ class AdminsController < AdminController
   def update
     if current_admin.permissions_v2_enabled?
       User.transaction do
-        if user_params[:access_level] == "power_user"
-          @admin.accesses.delete_all
-        end
-
         @admin.update!(user_params)
         current_admin.grant_access(@admin, selected_facilities)
       end
@@ -118,10 +114,9 @@ class AdminsController < AdminController
   # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
   #
   def verify_params_v2
-    if selected_facilities.blank? && user_params[:access_level] != "power_user"
+    if validate_selected_facilities?
       redirect_to edit_admin_path(@admin),
                   alert: "At least one facility should be selected for access before inviting an Admin."
-
       return
     end
 
@@ -174,5 +169,9 @@ class AdminsController < AdminController
     return false if user_params[:access_level].blank?
 
     @admin.access_level != user_params[:access_level]
+  end
+
+  def validate_selected_facilities?
+    selected_facilities.blank? && user_params[:access_level] != "power_user"
   end
 end

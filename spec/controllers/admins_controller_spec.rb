@@ -251,7 +251,7 @@ RSpec.describe AdminsController, type: :controller do
             # promote to power_user
             manager.update!(access_level: :power_user)
 
-            put :update, params: request_params.merge(access_level: :power_user, facilities: selected_facility_ids)
+            put :update, params: request_params.merge(access_level: :power_user, facilities: nil)
             expect(response).to redirect_to(admins_url)
           end
         end
