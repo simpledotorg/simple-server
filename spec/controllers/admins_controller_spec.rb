@@ -260,19 +260,19 @@ RSpec.describe AdminsController, type: :controller do
           it "redirects if full name is missing" do
             put :update, params: request_params.merge(full_name: nil)
 
-            expect(response).to be_redirect
+            expect(response).to be_bad_request
           end
 
           it "responds with bad request if role is missing" do
             put :update, params: request_params.merge(role: nil)
 
-            expect(response).to be_redirect
+            expect(response).to be_bad_request
           end
 
           it "responds with bad request if selected_facilities are missing for non power users" do
             put :update, params: request_params.merge(facilities: nil)
 
-            expect(response).to be_redirect
+            expect(response).to be_bad_request
           end
         end
       end
@@ -306,7 +306,7 @@ RSpec.describe AdminsController, type: :controller do
           expect(admin_being_updated.email).not_to eq(new_email)
         end
 
-        context "updating access level is allowed only if power-user or manager with organization access" do
+        context "updating access level is restricted" do
           it "updating access level is allowed if power-user" do
             # promote to power_user
             manager.update!(access_level: :power_user)

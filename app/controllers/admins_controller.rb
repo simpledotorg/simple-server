@@ -115,8 +115,9 @@ class AdminsController < AdminController
   #
   def verify_params_v2
     if validate_selected_facilities?
-      redirect_to edit_admin_path(@admin),
-                  alert: "At least one facility should be selected for access before inviting an Admin."
+      flash[:alert] = "At least one facility should be selected for access before editing an Admin."
+      render :edit, status: :bad_request
+
       return
     end
 
@@ -127,8 +128,8 @@ class AdminsController < AdminController
     @admin.assign_attributes(user_params)
 
     if @admin.invalid?
-      redirect_to edit_admin_path,
-        alert: @admin.errors.full_messages.join("")
+      flash[:alert] = @admin.errors.full_messages.join("")
+      render :edit, status: :bad_request
     end
   end
 
