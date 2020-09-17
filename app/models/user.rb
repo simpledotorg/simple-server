@@ -82,8 +82,6 @@ class User < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
-  validate :power_users_have_no_accesses, if: -> { power_user? }
-
   delegate :registration_facility,
     :access_token,
     :logged_in_at,
@@ -256,13 +254,5 @@ class User < ApplicationRecord
 
   def permissions_v2_enabled?
     feature_enabled?(:new_permissions_system_aug_2020)
-  end
-
-  private
-
-  def power_users_have_no_accesses
-    if accesses.present?
-      errors.add(:user, "cannot have accesses if they are a power user.")
-    end
   end
 end
