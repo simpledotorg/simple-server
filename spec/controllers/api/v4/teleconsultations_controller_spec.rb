@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
-  let(:request_user) { create(:user) }
+  let(:request_user) { create(:user, teleconsultation_facilities: [create(:facility)]) }
   let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env["X_USER_ID"] = request_user.id
@@ -64,13 +64,9 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
     let(:payload) { Hash[request_key, [record]] }
 
     it "creates an audit log for new data created by the user" do
-      user = create(:teleconsultation_medical_officer, registration_facility: request_facility)
-      request.env["HTTP_X_USER_ID"] = user.id
-      request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
-
       Timecop.freeze do
         expect(AuditLogger)
-          .to receive(:info).with({user: user.id,
+          .to receive(:info).with({user: request_user.id,
                                    auditable_type: auditable_type,
                                    auditable_id: record["id"],
                                    action: "create",
@@ -132,7 +128,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
           post :sync_from_user, params: updated_payload, as: :json
 
           updated_records.each do |record|
-            record = Api::V4::TeleconsultationTransformer.from_request(record, retrieve_record: true)
+            record = Api::V4::TeleconsultationTransformer.from_request(record)
 
             db_record = model.find(record["id"])
             expect(db_record.attributes.with_payload_keys.with_int_timestamps)
@@ -182,12 +178,6 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
       context "record" do
         context "when request user can teleconsult" do
-          before do
-            user = create(:teleconsultation_medical_officer, registration_facility: request_facility)
-            request.env["HTTP_X_USER_ID"] = user.id
-            request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
-          end
-
           it "saves the record attributes" do
             teleconsultation = build_teleconsultation_payload
 
@@ -199,13 +189,27 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
         end
 
         context "when request user cannot teleconsult" do
-          it "does not save the record attributes" do
+          before do
+            user = create(:user, registration_facility: request_facility, teleconsultation_facilities: [])
+            request.env["HTTP_X_USER_ID"] = user.id
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
+          end
+
+          it "returns errors" do
             teleconsultation = build_teleconsultation_payload
 
             post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
 
-            db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
-            expect(db_teleconsultation.record.with_int_timestamps).not_to eq(teleconsultation["record"].with_int_timestamps)
+            expect(JSON(response.body)).to include "errors"
+          end
+
+          it "does not create the teleconsultation" do
+            teleconsultation = build_teleconsultation_payload
+
+            post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+
+            db_teleconsultation = Teleconsultation.where(id: teleconsultation["id"])
+            expect(db_teleconsultation).to be_empty
           end
         end
 

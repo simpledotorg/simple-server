@@ -6,17 +6,13 @@ class Api::V4::TeleconsultationsController < Api::V4::SyncController
   private
 
   def merge_if_valid(teleconsultation_params)
-    validator = Api::V4::TeleconsultationPayloadValidator.new(teleconsultation_params)
+    validator = Api::V4::TeleconsultationPayloadValidator.new(teleconsultation_params.merge(request_user_id: current_user.id))
     logger.debug "Teleconsultation had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.invalid?
       NewRelic::Agent.increment_metric("Merge/Teleconsultation/schema_invalid")
       {errors_hash: validator.errors_hash}
     else
-      transformed_params = Api::V4::TeleconsultationTransformer.from_request(
-        teleconsultation_params,
-        retrieve_record: current_user.can_teleconsult?
-      )
-
+      transformed_params = Api::V4::TeleconsultationTransformer.from_request(teleconsultation_params)
       teleconsultation = Teleconsultation.merge(transformed_params)
       {record: teleconsultation}
     end
