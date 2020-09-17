@@ -411,11 +411,7 @@
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
-            <% if @region.is_a?(Facility) %>
-              All hypertensive patients assigned to <%= @region.name %>
-            <% else %>
-              All hypertensive patients assigned to facilities in <%= @region.name %>
-            <% end %>
+            All hypertensive patients assigned to facilities in <%= @region.name %>
           </p>
         </div>
         <div class="table-responsive">
