@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   include Pagination
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_period, only: [:show, :details, :cohort]
+  before_action :set_period, only: [:show, :details, :cohort, :download]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: :index
@@ -90,6 +90,8 @@ class Reports::RegionsController < AdminController
     else
       authorize(:dashboard, :show?)
     end
+
+    @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
 
     respond_to do |format|
       format.csv do
