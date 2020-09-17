@@ -263,7 +263,7 @@ class Api::V4::Models
               recorded_at: {"$ref" => "#/definitions/timestamp"},
               teleconsultation_type: {type: :string, enum: Teleconsultation::TELECONSULTATION_TYPES.keys},
               patient_took_medicines: {type: :string, enum: Teleconsultation.patient_took_medicines.keys},
-              patient_consented: {type: :string, enum: Teleconsultation.patient_consented.keys},
+              patient_consented: {type: :string, enum: Teleconsultation.patient_consenteds.keys},
               medical_officer_number: {type: [:string, "null"]}
             }
           },
