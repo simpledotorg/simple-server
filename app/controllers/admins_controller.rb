@@ -118,9 +118,9 @@ class AdminsController < AdminController
   # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
   #
   def verify_params_v2
-    if selected_facilities.blank?
+    if selected_facilities.blank? && user_params[:access_level] != "power_user"
       redirect_to edit_admin_path(@admin),
-        alert: "At least one facility should be selected for access before inviting an Admin."
+                  alert: "At least one facility should be selected for access before inviting an Admin."
 
       return
     end

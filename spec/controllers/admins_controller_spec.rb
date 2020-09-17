@@ -121,12 +121,12 @@ RSpec.describe AdminsController, type: :controller do
 
       let(:permission_params) do
         [{permission_slug: :manage_organizations},
-          {permission_slug: :manage_facility_groups,
-           resource_type: "Organization",
-           resource_id: organization.id},
-          {permission_slug: :manage_facilities,
-           resource_type: "FacilityGroup",
-           resource_id: facility_group.id}]
+         {permission_slug: :manage_facility_groups,
+          resource_type: "Organization",
+          resource_id: organization.id},
+         {permission_slug: :manage_facilities,
+          resource_type: "FacilityGroup",
+          resource_id: facility_group.id}]
       end
 
       let(:existing_admin) { create(:admin, params) }
@@ -246,6 +246,14 @@ RSpec.describe AdminsController, type: :controller do
 
             expect(response).to redirect_to(admins_url)
           end
+
+          it "power user can upgrade admin to power user without setting facilities" do
+            # promote to power_user
+            manager.update!(access_level: :power_user)
+
+            put :update, params: request_params.merge(access_level: :power_user, facilities: selected_facility_ids)
+            expect(response).to redirect_to(admins_url)
+          end
         end
 
         context "update params are invalid" do
@@ -261,7 +269,7 @@ RSpec.describe AdminsController, type: :controller do
             expect(response).to be_redirect
           end
 
-          it "responds with bad request if selected_facilities are missing" do
+          it "responds with bad request if selected_facilities are missing for non power users" do
             put :update, params: request_params.merge(facilities: nil)
 
             expect(response).to be_redirect
