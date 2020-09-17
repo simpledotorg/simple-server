@@ -1,6 +1,6 @@
 require "rails_helper"
 RSpec.describe ApprovalNotifierMailer, type: :mailer do
-  describe 'emails' do
+  describe "ApprovalNotifier emails" do
     let!(:old_power_user) { create(:admin, :owner) }
     let!(:new_power_user) { create(:admin, :power_user) }
     let!(:organization) { create(:organization) }
