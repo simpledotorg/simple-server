@@ -1422,16 +1422,14 @@
               "type": "string",
               "enum": [
                 "yes",
-                "no",
-                "unknown"
+                "no"
               ]
             },
             "patient_consented": {
               "type": "string",
               "enum": [
                 "yes",
-                "no",
-                "unknown"
+                "no"
               ]
             },
             "medical_officer_number": {
