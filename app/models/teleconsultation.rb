@@ -14,19 +14,21 @@ class Teleconsultation < ApplicationRecord
     patient_consented
     medical_officer_number
   ].freeze
-  TELECONSULTATION_ANSWERS = {
-    yes: "yes",
-    no: "no",
-    unknown: "unknown"
-  }.freeze
+
   TELECONSULTATION_TYPES = {
     audio: "audio",
     video: "video",
     message: "message"
   }.freeze
 
-  enum patient_took_medicines: TELECONSULTATION_ANSWERS, _prefix: true
-  enum patient_consented: TELECONSULTATION_ANSWERS, _prefix: true
+  enum patient_took_medicines: {
+    yes: "yes",
+    no: "no"
+  }, _prefix: true
+  enum patient_consented: {
+    yes: "yes",
+    no: "no"
+  }, _prefix: true
   enum teleconsultation_type: TELECONSULTATION_TYPES, _prefix: true
 
   validates :device_created_at, presence: true
