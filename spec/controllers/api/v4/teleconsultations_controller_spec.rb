@@ -177,13 +177,32 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
       end
 
       context "record" do
-        it "saves the record attributes" do
-          teleconsultation = build_teleconsultation_payload
+        context "when request user can teleconsult" do
+          before do
+            user = create(:teleconsultation_medical_officer, registration_facility: request_facility)
+            request.env["HTTP_X_USER_ID"] = user.id
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
+          end
 
-          post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+          it "saves the record attributes" do
+            teleconsultation = build_teleconsultation_payload
 
-          db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
-          expect(db_teleconsultation.record.with_int_timestamps).to eq(teleconsultation["record"].with_int_timestamps)
+            post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+
+            db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
+            expect(db_teleconsultation.record.with_int_timestamps).to eq(teleconsultation["record"].with_int_timestamps)
+          end
+        end
+
+        context "when request user cannot teleconsult" do
+          it "does not save the record attributes" do
+            teleconsultation = build_teleconsultation_payload
+
+            post(:sync_from_user, params: {teleconsultations: [teleconsultation]}, as: :json)
+
+            db_teleconsultation = Teleconsultation.find(teleconsultation["id"])
+            expect(db_teleconsultation.record.with_int_timestamps).not_to eq(teleconsultation["record"].with_int_timestamps)
+          end
         end
 
         it "allows null records" do

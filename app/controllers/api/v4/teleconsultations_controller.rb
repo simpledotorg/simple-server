@@ -12,9 +12,12 @@ class Api::V4::TeleconsultationsController < Api::V4::SyncController
       NewRelic::Agent.increment_metric("Merge/Teleconsultation/schema_invalid")
       {errors_hash: validator.errors_hash}
     else
-      record_params = Api::V4::TeleconsultationTransformer.from_request(teleconsultation_params)
+      transformed_params = Api::V4::TeleconsultationTransformer.from_request(
+        teleconsultation_params,
+        retrieve_record: current_user.can_teleconsult?
+      )
 
-      teleconsultation = Teleconsultation.merge(record_params)
+      teleconsultation = Teleconsultation.merge(transformed_params)
       {record: teleconsultation}
     end
   end
