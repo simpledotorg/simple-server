@@ -3,6 +3,9 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   before_action :🆕verify_params, only: [:create], if: -> { current_admin.permissions_v2_enabled? }
   helper_method :current_admin
 
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
+
   def new
     if current_admin.permissions_v2_enabled?
       raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?

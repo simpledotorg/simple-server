@@ -11,7 +11,9 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
   after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]

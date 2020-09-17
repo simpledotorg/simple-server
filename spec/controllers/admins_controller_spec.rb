@@ -298,27 +298,41 @@ RSpec.describe AdminsController, type: :controller do
           expect(admin_being_updated.email).not_to eq(new_email)
         end
 
-        it "updating access level is allowed only if power-user" do
-          # promote to power_user
-          manager.update!(access_level: :power_user)
+        context "updating access level is allowed only if power-user or manager with organization access" do
+          it "updating access level is allowed if power-user" do
+            # promote to power_user
+            manager.update!(access_level: :power_user)
 
-          new_access_level = "viewer_all"
-          put :update, params: request_params.merge(access_level: new_access_level)
+            new_access_level = "viewer_all"
+            put :update, params: request_params.merge(access_level: new_access_level)
 
-          admin_being_updated.reload
+            admin_being_updated.reload
 
-          expect(response).to redirect_to(admins_url)
-          expect(admin_being_updated.access_level).to eq(new_access_level)
-        end
+            expect(response).to redirect_to(admins_url)
+            expect(admin_being_updated.access_level).to eq(new_access_level)
+          end
 
-        it "disallow non-power users to update the access level" do
-          new_access_level = "viewer_all"
-          put :update, params: request_params.merge(access_level: new_access_level)
+          it "updating access level is allowed if manager with organization access" do
+            new_access_level = "viewer_all"
+            put :update, params: request_params.merge(access_level: new_access_level)
 
-          admin_being_updated.reload
+            admin_being_updated.reload
 
-          expect(response).to redirect_to(root_path)
-          expect(admin_being_updated.access_level).to_not eq(new_access_level)
+            expect(response).to redirect_to(admins_url)
+            expect(admin_being_updated.access_level).to eq(new_access_level)
+          end
+
+          it "disallow other admins to update the access level" do
+            manager.accesses.delete_all
+            manager.accesses.create(resource: facility_group)
+            new_access_level = "viewer_all"
+            put :update, params: request_params.merge(access_level: new_access_level)
+
+            admin_being_updated.reload
+
+            expect(response).to redirect_to(root_path)
+            expect(admin_being_updated.access_level).to_not eq(new_access_level)
+          end
         end
 
         it "update the accesses" do
