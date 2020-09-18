@@ -1,7 +1,7 @@
 <ul class="access-item-wrapper facility">
   <% tree.each do |facility| %>
     <li>
-      <div class="access-item facility collapsed" data-facility-group-id="<%=facility[:facility_group_id]%>">
+      <div class="access-item facility collapsed" data-facility-group-id="<%=facility[:facility_group_id]%>" data-access-type="facility" data-id="<%=facility[:id]%>" data-name="<%=facility[:name]%>">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>

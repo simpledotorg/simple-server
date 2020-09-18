@@ -1,7 +1,7 @@
 <% tree.each do |organization, facility_groups| %>
   <ul class="access-item-wrapper">
     <li>
-      <div class="access-item organization collapsed">
+      <div class="access-item organization collapsed" data-access-type="organization" data-id="<%=organization[:id]%>" data-name="<%=organization[:name]%>">
 
         <div class="access-item__dropdown">
           <i class="fas fa-caret-down light"></i>
