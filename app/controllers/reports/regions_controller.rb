@@ -102,15 +102,21 @@ class Reports::RegionsController < AdminController
       format.csv do
         if @region.is_a?(FacilityGroup)
           set_facility_keys
-          send_data render_to_string("facility_group_cohort.csv.erb")
+          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
-          send_data render_to_string("cohort.csv.erb")
+          send_data render_to_string("cohort.csv.erb"), filename: download_filename
         end
       end
     end
   end
 
   private
+
+  def download_filename
+    time = Time.current.to_s(:number)
+    region_name = @region.name.tr(" ", "-")
+    "#{@region.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+  end
 
   def set_facility_keys
     district = {
