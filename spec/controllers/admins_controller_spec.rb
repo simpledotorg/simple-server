@@ -235,8 +235,6 @@ RSpec.describe AdminsController, type: :controller do
 
         context "update params are valid" do
           it "responds with a 200" do
-            puts manager.permissions_v2_enabled?
-
             put :update, params: request_params
 
             expect(response).to redirect_to(admins_url)
