@@ -13,16 +13,10 @@ class Api::V4::TeleconsultationsController < Api::V4::SyncController
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V4::TeleconsultationTransformer.from_request(teleconsultation_params)
-      set_medical_officer(transformed_params)
+      teleconsultation = MergeTeleconsultationService.merge(transformed_params, current_user)
 
-      teleconsultation = Teleconsultation.merge(transformed_params)
       {record: teleconsultation}
     end
-  end
-
-  def set_medical_officer(params)
-    params[:medical_officer_id] = current_user.id if params[:recorded_at]
-    params[:requested_medical_officer_id] = params[:medical_officer_id] if params[:requested_at]
   end
 
   def teleconsultation_params
