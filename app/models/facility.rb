@@ -29,6 +29,7 @@ class Facility < ApplicationRecord
   has_many :patients, -> { distinct }, through: :encounters
   has_many :prescription_drugs
   has_many :appointments
+  has_many :teleconsultations
 
   has_many :registered_patients,
     class_name: "Patient",

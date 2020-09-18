@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_08_183016) do
+ActiveRecord::Schema.define(version: 2020_09_14_073359) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -463,6 +463,31 @@ ActiveRecord::Schema.define(version: 2020_09_08_183016) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
+  create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
+    t.uuid "patient_id", null: false
+    t.uuid "requested_medical_officer_id"
+    t.uuid "medical_officer_id", null: false
+    t.uuid "requester_id"
+    t.uuid "facility_id"
+    t.string "request_completed"
+    t.datetime "requested_at"
+    t.datetime "recorded_at"
+    t.string "teleconsultation_type"
+    t.string "patient_took_medicines"
+    t.string "patient_consented"
+    t.string "medical_officer_number"
+    t.datetime "deleted_at"
+    t.datetime "device_updated_at"
+    t.datetime "device_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_teleconsultations_on_facility_id"
+    t.index ["medical_officer_id"], name: "index_teleconsultations_on_medical_officer_id"
+    t.index ["patient_id"], name: "index_teleconsultations_on_patient_id"
+    t.index ["requested_medical_officer_id"], name: "index_teleconsultations_on_requested_medical_officer_id"
+    t.index ["requester_id"], name: "index_teleconsultations_on_requester_id"
+  end
+
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
     t.string "session_id"
     t.string "result"
@@ -533,6 +558,11 @@ ActiveRecord::Schema.define(version: 2020_09_08_183016) do
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
+  add_foreign_key "teleconsultations", "facilities"
+  add_foreign_key "teleconsultations", "patients"
+  add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
+  add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
+  add_foreign_key "teleconsultations", "users", column: "requester_id"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
