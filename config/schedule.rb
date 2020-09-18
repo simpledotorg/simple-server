@@ -27,6 +27,10 @@ every :day, at: local("02:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
+every :day, at: local("03:00 am"), roles: [:cron] do
+  rake "link_teleconsultation_medical_officers"
+end
+
 every [:sunday, :wednesday], at: local("12:30am"), roles: [:cron] do
   rake "refresh_materialized_db_views"
 end
