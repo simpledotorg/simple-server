@@ -132,7 +132,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
             db_record = model.find(record["id"])
             expect(db_record.attributes.except("requested_medical_officer_id").with_payload_keys.with_int_timestamps)
-              .to eq(record.with_payload_keys.with_int_timestamps)
+              .to eq(record.merge(medical_officer_id: request_user.id).with_payload_keys.with_int_timestamps)
           end
         end
       end
