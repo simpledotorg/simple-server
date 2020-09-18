@@ -18,7 +18,7 @@ RSpec.describe MergeTeleconsultationService, type: :model do
     it "shouldn't override the medical_officer_id if it is already set" do
       saved_teleconsultation = create(:teleconsultation)
       teleconsultation = updated_teleconsultation_payload(saved_teleconsultation)
-                             .merge("medical_officer_id" => create(:user).id)
+        .merge("medical_officer_id" => create(:user).id)
       teleconsultation["record"] = nil
       transformed_params = Api::V4::TeleconsultationTransformer.from_request(teleconsultation)
 
