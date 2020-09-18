@@ -91,7 +91,24 @@
   <% end %>
 <% end %>
 
-<%= render "downloads" %>
+<% if current_admin.permissions_v2_enabled? %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             period: @period.type,
+             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+             row_resource_description: "Facilities",
+             row_resource_display_field: :name,
+             row_resource_link: :reports_region_facility_path %>
+<% else %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             period: @period.type,
+             row_resource: Facility.order(:name),
+             row_resource_description: "Facilities",
+             row_resource_display_field: :name,
+             row_resource_link: :reports_region_facility_path %>
+<% end %>
+
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>

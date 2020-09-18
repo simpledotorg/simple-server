@@ -36,6 +36,8 @@
 .h-10pt { height: 10%; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
+// Spacing
+.mr-4px { margin-right: 4px; }
 // Typography
 .fs-12px { font-size: 12px; }
 .fs-14px { font-size: 14px; }
@@ -119,6 +121,7 @@
   .w-lg-224px { width: 224px; }
   .w-lg-50 { width: 50%; }
   .w-lg-full { width: 100%; }
+  .w-lg-auto { width: auto; }
   .h-lg-380px { height: 380px; }
   .h-lg-full { width: 100%; }
   // Spacing
@@ -130,6 +133,7 @@
   .mb-lg-12px { margin-bottom: 12px; }
   .mb-lg-16px { margin-bottom: 16px; }
   .mb-lg-24px { margin-bottom: 24px; }
+  .ml-lg-8px { margin-left: 8px; }
   .ml-lg-24px { margin-left: 24px; }
   .pt-lg-16px { padding-top: 16px; }
   .pb-lg-0 { padding-bottom: 0; }
