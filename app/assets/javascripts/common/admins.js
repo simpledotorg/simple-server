@@ -119,8 +119,14 @@ AdminAccess.prototype = {
 
   updateTotalFacilityCount: function () {
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
-    const [selected, notSelected] = this.getSelectedCount(checkboxes)
+    const [selected] = this.getSelectedCount(checkboxes)
     this.totalSelectedFacilitiesDiv().textContent = `${selected} facilities selected`
+  },
+
+  findAndUpdateFacilityCount: function () {
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
+    const orgCheckboxes = checkboxes.filter(({ name }) => name === "organizations[]")
+    orgCheckboxes.forEach(this.updateFacilityCount.bind(this))
   },
 
   // walk down the tree and get the first node for each FG, then walk up the tree
@@ -245,6 +251,8 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
         checkbox.indeterminate = false
         checkbox.checked = _self.selectAllFacilitiesInput().checked
       }
+      _self.updateTotalFacilityCount()
+      _self.findAndUpdateFacilityCount()
     })
   },
 
@@ -278,6 +286,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
       _self.checkboxItemListener()
       _self.resourceRowCollapseListener()
       _self.updateIndeterminateCheckboxes()
+      _self.updateTotalFacilityCount()
     });
   },
 
