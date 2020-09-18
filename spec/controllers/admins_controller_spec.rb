@@ -201,10 +201,11 @@ RSpec.describe AdminsController, type: :controller do
     end
 
     context "new permissions" do
-      let(:manager) { create(:admin, :manager) }
       let(:organization) { create(:organization) }
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
+      let(:manager) { create(:admin, :manager, :with_access, resource: organization) }
+      let(:power_user) { create(:admin, :power_user) }
       let(:full_name) { Faker::Name.name }
       let(:email) { Faker::Internet.email }
       let(:job_title) { "Title" }
@@ -217,20 +218,12 @@ RSpec.describe AdminsController, type: :controller do
           organization_id: organization.id
         }
       }
-      let(:admin_being_updated) {
-        admin = create(:admin, params)
-        admin.accesses.create!(resource: facility_group)
-        admin
-      }
+      let(:admin_being_updated) { create(:admin, :with_access, params.merge(resource: facility_group)) }
       let(:selected_facility_ids) { facilities.map(&:id) }
 
       before(:each) do
         sign_in(manager.email_authentication)
-
         enable_flag(:new_permissions_system_aug_2020, manager)
-
-        manager.accesses.create!(resource: organization)
-        manager.reload
       end
 
       after(:each) do
@@ -242,34 +235,33 @@ RSpec.describe AdminsController, type: :controller do
 
         context "update params are valid" do
           it "responds with a 200" do
+            puts manager.permissions_v2_enabled?
+
             put :update, params: request_params
 
             expect(response).to redirect_to(admins_url)
           end
 
-          it "power user can upgrade admin to power user without setting facilities" do
-            # promote to power_user
-            manager.update!(access_level: :power_user)
+          it "allows power users to upgrade admins to a power user without setting facilities" do
+            enable_flag(:new_permissions_system_aug_2020, power_user)
+            sign_in(power_user.email_authentication)
 
             put :update, params: request_params.merge(access_level: :power_user, facilities: nil)
+
             expect(response).to redirect_to(admins_url)
           end
         end
 
         context "update params are invalid" do
-          it "redirects if full name is missing" do
-            put :update, params: request_params.merge(full_name: nil)
+          [:full_name, :role].each do |param|
+            it "responds with bad_request if #{param} is missing" do
+              put :update, params: request_params.merge(param => nil)
 
-            expect(response).to be_bad_request
+              expect(response).to be_bad_request
+            end
           end
 
-          it "responds with bad request if role is missing" do
-            put :update, params: request_params.merge(role: nil)
-
-            expect(response).to be_bad_request
-          end
-
-          it "responds with bad request if selected_facilities are missing for non power users" do
+          it "responds with bad_request if selected facilities are missing for non-power users" do
             put :update, params: request_params.merge(facilities: nil)
 
             expect(response).to be_bad_request
@@ -277,7 +269,7 @@ RSpec.describe AdminsController, type: :controller do
         end
       end
 
-      context "user has access to manage admins" do
+      context "user can manage admins" do
         let(:request_params) { params.merge(id: admin_being_updated.id, facilities: selected_facility_ids) }
 
         it "update attributes" do
@@ -308,8 +300,10 @@ RSpec.describe AdminsController, type: :controller do
 
         context "updating access level is restricted" do
           it "updating access level is allowed if power-user" do
-            # promote to power_user
-            manager.update!(access_level: :power_user)
+            sign_out(manager.email_authentication)
+
+            enable_flag(:new_permissions_system_aug_2020, power_user)
+            sign_in(power_user.email_authentication)
 
             new_access_level = "viewer_all"
             put :update, params: request_params.merge(access_level: new_access_level)
@@ -333,6 +327,7 @@ RSpec.describe AdminsController, type: :controller do
           it "disallow other admins to update the access level" do
             manager.accesses.delete_all
             manager.accesses.create(resource: facility_group)
+
             new_access_level = "viewer_all"
             put :update, params: request_params.merge(access_level: new_access_level)
 
@@ -345,45 +340,43 @@ RSpec.describe AdminsController, type: :controller do
 
         it "update the accesses" do
           facility_group = create(:facility_group, organization: organization)
-          facilities = create_list(:facility, 2, facility_group: facility_group).map(&:id)
+          facilities = create_list(:facility, 2, facility_group: facility_group)
 
-          put :update, params: request_params.merge(facilities: facilities)
+          put :update, params: request_params.merge(facilities: facilities.map(&:id))
 
           admin_being_updated.reload
 
           expect(response).to redirect_to(admins_url)
-          expect(admin_being_updated.accessible_facilities(:any).map(&:id)).to match_array(facilities)
+          expect(admin_being_updated.accessible_facilities(:any)).to match_array(facilities)
         end
 
-        it "only allows managers/power-users to update the accesses" do
-          managers = %w[manager power_user]
+        it "allows managers to update the accesses" do
+          sign_in(manager.email_authentication)
 
-          managers.each do |access_level|
-            manager.update!(access_level: access_level)
+          put :update, params: request_params
+          expect(response).to redirect_to(admins_url)
+        end
 
-            put :update, params: request_params
-            expect(response).to redirect_to(admins_url)
-          end
+        it "allows power users to update the accesses" do
+          enable_flag(:new_permissions_system_aug_2020, power_user)
+          sign_in(power_user.email_authentication)
+
+          put :update, params: request_params
+          expect(response).to redirect_to(admins_url)
         end
       end
 
-      context "user does not have access to manage admins" do
+      context "user cannot manage admins" do
         let(:request_params) { params.merge(id: admin_being_updated.id, facilities: selected_facility_ids) }
-
-        it "redirects the user if granting is unsuccessful" do
-          manager.accesses.delete_all
-
-          put :update, params: request_params
-
-          expect(response).to redirect_to(root_path)
-        end
 
         it "disallows non-managers from updating access" do
           managers = %w[manager power_user]
           non_managers = User.access_levels.except(*managers).keys
 
           non_managers.each do |access_level|
-            manager.update!(access_level: access_level)
+            non_manager = create(:admin, access_level.to_sym, :with_access, resource: organization)
+            enable_flag(:new_permissions_system_aug_2020, non_manager)
+            sign_in(non_manager.email_authentication)
 
             put :update, params: request_params
             expect(response).to redirect_to(root_path)
