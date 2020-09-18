@@ -121,12 +121,12 @@ RSpec.describe AdminsController, type: :controller do
 
       let(:permission_params) do
         [{permission_slug: :manage_organizations},
-         {permission_slug: :manage_facility_groups,
-          resource_type: "Organization",
-          resource_id: organization.id},
-         {permission_slug: :manage_facilities,
-          resource_type: "FacilityGroup",
-          resource_id: facility_group.id}]
+          {permission_slug: :manage_facility_groups,
+           resource_type: "Organization",
+           resource_id: organization.id},
+          {permission_slug: :manage_facilities,
+           resource_type: "FacilityGroup",
+           resource_id: facility_group.id}]
       end
 
       let(:existing_admin) { create(:admin, params) }
