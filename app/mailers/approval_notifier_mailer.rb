@@ -40,10 +40,7 @@ class ApprovalNotifierMailer < ApplicationMailer
   def organization_owner_emails
     permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.organization).map(&:user)
     accesses_users = User.admins.manager_access
-      .select { |admin|
-      admin.accessible_facilities(:manage).include?(user.facility) &&
-        admin.accesses.map(&:resource).include?(user.organization)
-    }
+      .select { |admin| admin.accessible_organizations(:manage).where(id: user.organization).any? }
 
     users = (permissions_users + accesses_users).uniq.compact
     users.map(&:email).join(",")

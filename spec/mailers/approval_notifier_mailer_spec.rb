@@ -3,18 +3,34 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
   describe "ApprovalNotifier emails" do
     let!(:old_power_user) { create(:admin, :owner) }
     let!(:new_power_user) { create(:admin, :power_user) }
+
     let!(:organization) { create(:organization) }
     let!(:old_org_owner) { create(:admin, :organization_owner, organization: organization) }
     let!(:org_manager) { create(:admin, :manager) }
     let!(:org_manager_access) { create(:access, user: org_manager, resource: organization) }
+    let!(:other_organization) { create(:organization) }
+    let!(:old_other_org_owner) { create(:admin, :organization_owner, organization: other_organization) }
+    let!(:other_org_manager) { create(:admin, :manager) }
+    let!(:other_org_manager_access) { create(:access, user: other_org_manager, resource: other_organization) }
+
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:old_fg_supervisor) { create(:admin, :supervisor, facility_group: facility_group) }
     let!(:fg_manager) { create(:admin, :manager) }
     let!(:fg_manager_access) { create(:access, user: fg_manager, resource: facility_group) }
+    let!(:other_facility_group) { create(:facility_group, organization: other_organization) }
+    let!(:old_other_fg_supervisor) { create(:admin, :supervisor, facility_group: other_facility_group) }
+    let!(:other_fg_manager) { create(:admin, :manager) }
+    let!(:other_fg_manager_access) { create(:access, user: other_fg_manager, resource: other_facility_group) }
+
     let!(:facility) { create(:facility, facility_group: facility_group) }
     let!(:facility_manager) { create(:admin, :manager) }
-    let!(:facility_manager_access) { create(:access, user: facility_manager, resource: facility_group) }
+    let!(:facility_manager_access) { create(:access, user: facility_manager, resource: facility) }
+    let!(:other_facility) { create(:facility, facility_group: other_facility_group) }
+    let!(:other_facility_manager) { create(:admin, :manager) }
+    let!(:other_facility_manager_access) { create(:access, user: other_facility_manager, resource: other_facility) }
+
     let!(:user) { create(:user, :sync_requested, organization: organization, registration_facility: facility) }
+    let!(:other_user) { create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility) }
 
     describe "registration_approval_email" do
       let(:mail) { described_class.registration_approval_email(user_id: user.id) }
