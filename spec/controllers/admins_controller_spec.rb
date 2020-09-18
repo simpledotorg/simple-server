@@ -270,7 +270,7 @@ RSpec.describe AdminsController, type: :controller do
       context "user can manage admins" do
         let(:request_params) { params.merge(id: admin_being_updated.id, facilities: selected_facility_ids) }
 
-        it "update attributes" do
+        it "updates attributes" do
           params =
             {
               full_name: Faker::Name.name,
@@ -312,7 +312,7 @@ RSpec.describe AdminsController, type: :controller do
             expect(admin_being_updated.access_level).to eq(new_access_level)
           end
 
-          it "updating access level is allowed if manager with organization access" do
+          it "updating access level is allowed if manager has organization access" do
             new_access_level = "viewer_all"
             put :update, params: request_params.merge(access_level: new_access_level)
 
@@ -322,7 +322,7 @@ RSpec.describe AdminsController, type: :controller do
             expect(admin_being_updated.access_level).to eq(new_access_level)
           end
 
-          it "disallow other admins to update the access level" do
+          it "disallow other admins from updating the access level" do
             manager.accesses.delete_all
             manager.accesses.create(resource: facility_group)
 
@@ -336,31 +336,33 @@ RSpec.describe AdminsController, type: :controller do
           end
         end
 
-        it "update the accesses" do
-          facility_group = create(:facility_group, organization: organization)
-          facilities = create_list(:facility, 2, facility_group: facility_group)
+        context "update accesses" do
+          it "allows managers to update the accesses" do
+            facility_group = create(:facility_group, organization: organization)
+            facilities = create_list(:facility, 2, facility_group: facility_group)
+            sign_in(manager.email_authentication)
 
-          put :update, params: request_params.merge(facilities: facilities.map(&:id))
+            put :update, params: request_params.merge(facilities: facilities.map(&:id))
 
-          admin_being_updated.reload
+            admin_being_updated.reload
 
-          expect(response).to redirect_to(admins_url)
-          expect(admin_being_updated.accessible_facilities(:any)).to match_array(facilities)
-        end
+            expect(response).to redirect_to(admins_url)
+            expect(admin_being_updated.accessible_facilities(:any)).to match_array(facilities)
+          end
 
-        it "allows managers to update the accesses" do
-          sign_in(manager.email_authentication)
+          it "allows power users to update the accesses" do
+            facility_group = create(:facility_group, organization: organization)
+            facilities = create_list(:facility, 2, facility_group: facility_group)
+            enable_flag(:new_permissions_system_aug_2020, power_user)
+            sign_in(power_user.email_authentication)
 
-          put :update, params: request_params
-          expect(response).to redirect_to(admins_url)
-        end
+            put :update, params: request_params.merge(facilities: facilities.map(&:id))
 
-        it "allows power users to update the accesses" do
-          enable_flag(:new_permissions_system_aug_2020, power_user)
-          sign_in(power_user.email_authentication)
+            admin_being_updated.reload
 
-          put :update, params: request_params
-          expect(response).to redirect_to(admins_url)
+            expect(response).to redirect_to(admins_url)
+            expect(admin_being_updated.accessible_facilities(:any)).to match_array(facilities)
+          end
         end
       end
 
