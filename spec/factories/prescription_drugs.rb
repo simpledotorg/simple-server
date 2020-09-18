@@ -21,6 +21,10 @@ FactoryBot.define do
     trait :protocol do
       is_protocol_drug { true }
     end
+
+    trait :for_teleconsultation do
+      association :teleconsultation, strategy: :create
+    end
   end
 end
 

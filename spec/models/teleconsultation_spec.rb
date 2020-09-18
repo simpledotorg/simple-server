@@ -5,6 +5,7 @@ RSpec.describe Teleconsultation, type: :model do
   it { should belong_to(:medical_officer).class_name("User") }
   it { should belong_to(:requester).class_name("User").optional }
   it { should belong_to(:facility).optional }
+  it { should have_many(:prescription_drugs) }
 
   context "Validations" do
     it_behaves_like "a record that validates device timestamps"
