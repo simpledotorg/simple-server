@@ -1,4 +1,16 @@
 class CohortReport::FacilityGroupPolicy < ApplicationPolicy
+  def patient_list?
+    user_has_any_permissions?(
+      [:download_patient_line_list, nil],
+      [:download_patient_line_list, record.organization],
+      [:download_patient_line_list, record]
+    )
+  end
+
+  def patient_list_with_history?
+    patient_list?
+  end
+
   class Scope < Scope
     attr_reader :user, :scope
 
