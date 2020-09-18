@@ -128,11 +128,11 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
     end
 
     context "new permissions" do
-      let(:manager) { create(:admin, :manager) }
-      let(:power_user) { create(:admin, :power_user) }
       let(:organization) { create(:organization) }
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
+      let(:manager) { create(:admin, :manager, :with_access, resource: organization) }
+      let(:power_user) { create(:admin, :power_user) }
       let(:full_name) { Faker::Name.name }
       let(:email) { Faker::Internet.email }
       let(:job_title) { "Title" }
@@ -158,7 +158,6 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
 
       context "validate params" do
         before(:each) do
-          manager.accesses.create!(resource: organization)
           sign_in(manager.email_authentication)
         end
 
@@ -189,6 +188,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
 
           it "sends an email to the invited admin" do
             post :create, params: request_params
+
             invitation_email = ActionMailer::Base.deliveries.last
             expect(invitation_email.to).to include(email)
           end
@@ -239,10 +239,6 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
       end
 
       context "user can manage admins" do
-        before(:each) do
-          manager.accesses.create!(resource: organization)
-        end
-
         it "allows managers to invite new admins" do
           sign_in(manager.email_authentication)
 
