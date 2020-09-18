@@ -2109,16 +2109,23 @@
           "$ref": "#/definitions/uuid"
         },
         "frequency": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "OD",
             "BD",
             "QDS",
-            "TDS"
+            "TDS",
+            null
           ]
         },
         "duration_in_days": {
-          "type": "integer"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "teleconsultation_id": {
           "$ref": "#/definitions/nullable_uuid"

@@ -253,8 +253,8 @@ class Api::V3::Models
          is_deleted: {type: :boolean},
          patient_id: {"$ref" => "#/definitions/uuid"},
          facility_id: {"$ref" => "#/definitions/uuid"},
-         frequency: {type: :string, enum: PrescriptionDrug.frequencies.keys},
-         duration_in_days: {type: :integer},
+         frequency: {type: [:string, "null"], enum: PrescriptionDrug.frequencies.keys << nil},
+         duration_in_days: {type: [:integer, "null"]},
          teleconsultation_id: {"$ref" => "#/definitions/nullable_uuid"}
        },
        required: %w[id created_at updated_at name is_protocol_drug is_deleted patient_id facility_id]}
