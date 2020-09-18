@@ -21,7 +21,7 @@
     defaulted = analytics.dig(:defaulted, :total) || 0
     controlled = analytics.dig(:controlled, :total) || 0
     uncontrolled = analytics.dig(:uncontrolled, :total) || 0
-    if @period.quarter? == :quarter
+    if @period.quarter?
       report_period = quarter_string(report_start)
       cohort_period = quarter_string(cohort_start)
     else
