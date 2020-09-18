@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_14_073359) do
+ActiveRecord::Schema.define(version: 2020_09_17_184207) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -437,8 +437,12 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
     t.boolean "is_deleted", null: false
     t.datetime "deleted_at"
     t.uuid "user_id"
+    t.string "frequency"
+    t.integer "duration_in_days"
+    t.uuid "teleconsultation_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
+    t.index ["teleconsultation_id"], name: "index_prescription_drugs_on_teleconsultation_id"
     t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
@@ -557,6 +561,7 @@ ActiveRecord::Schema.define(version: 2020_09_14_073359) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
+  add_foreign_key "prescription_drugs", "teleconsultations"
   add_foreign_key "protocol_drugs", "protocols"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "patients"

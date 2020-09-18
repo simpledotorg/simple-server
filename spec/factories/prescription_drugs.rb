@@ -8,6 +8,7 @@ FactoryBot.define do
     rxnorm_code { Faker::Code.npi }
     device_created_at { Time.current }
     device_updated_at { Time.current }
+
     association :facility, strategy: :build
     association :patient, strategy: :build
     user
@@ -18,6 +19,12 @@ FactoryBot.define do
 
     trait :protocol do
       is_protocol_drug { true }
+    end
+
+    trait :for_teleconsultation do
+      frequency { "OD" }
+      duration_in_days { 10 }
+      association :teleconsultation, strategy: :create
     end
   end
 end
