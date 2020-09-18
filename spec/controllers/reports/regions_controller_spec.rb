@@ -151,7 +151,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "retrieves monthly cohort data by default" do
+    it "retrieves cohort data for a facility" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
@@ -160,9 +160,26 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :download, params: {id: @facility.facility_group.slug, report_scope: "district", period: "quarter", format: "csv"}
+        get :download, params: {id: @facility.slug, report_scope: "facility", period: "monthly", format: "csv"}
       end
       expect(response).to be_successful
+      expect(response.body).to include("CHC Barnagar Monthly Cohort Report")
+    end
+
+    it "retrieves cohort data for a facility group" do
+      jan_2020 = Time.parse("January 1 2020")
+      facility_group = @facility.facility_group
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :download, params: {id: facility_group.slug, report_scope: "district", period: "quarter", format: "csv"}
+      end
+      expect(response).to be_successful
+      expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
     end
   end
 end

@@ -1,6 +1,6 @@
 <% csv = CSV.generate(headers: true) do |csv| %>
 <% csv << ["Report generated at:", Time.current] %>
-<% csv << ["#{@region.name} #{@period.type}ly Cohort Report"] %>
+<% csv << ["#{@region.name} #{@period.type.to_s.humanize}ly Cohort Report"] %>
 <% csv << [
   'Cohort period',
   'Follow up period',
