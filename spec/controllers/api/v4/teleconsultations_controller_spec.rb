@@ -153,7 +153,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
         post(:sync_from_user, params: {teleconsultations: teleconsultations}, as: :json)
         expect(Teleconsultation.count).to eq 3
-        expect(nurse.teleconsultation_requests.count).to eq 3
+        expect(nurse.requested_teleconsultations.count).to eq 3
         expect(response).to have_http_status(200)
       end
 
