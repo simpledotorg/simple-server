@@ -29,9 +29,9 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def supervisor_emails
     permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.facility_group).map(&:user)
-    accesses_users = User.admins.where(access_level: :manager)
+    accesses_users = User.admins.manager_access
       .select { |admin| admin.accessible_facilities(:manage).include?(user.facility) }
-      .reject { |admin| admin.accesses.map(&:resource_type).include?("Organization") }
+      .reject { |admin| admin.accesses.map(&:resource).include?(user.organization) }
 
     users = (permissions_users + accesses_users).uniq.compact
     users.map(&:email).join(",")
@@ -39,10 +39,10 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def organization_owner_emails
     permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.organization).map(&:user)
-    accesses_users = User.admins.where(access_level: :manager)
+    accesses_users = User.admins.manager_access
       .select { |admin|
       admin.accessible_facilities(:manage).include?(user.facility) &&
-        admin.accesses.map(&:resource_type).include?("Organization")
+        admin.accesses.map(&:resource).include?(user.organization)
     }
 
     users = (permissions_users + accesses_users).uniq.compact
@@ -51,7 +51,7 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def owner_emails
     permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: nil).map(&:user)
-    accesses_users = User.admins.where(access_level: :power_user)
+    accesses_users = User.admins.power_user_access
 
     users = (permissions_users + accesses_users).uniq.compact
     users.map(&:email).join(",")
