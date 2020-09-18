@@ -1,6 +1,6 @@
 <% csv = CSV.generate(headers: true) do |csv| %>
 <% csv << ["Report generated at", Time.current] %>
-<% csv << ["#{@region.name} #{@period.type}ly Cohort Report"] %>
+<% csv << ["#{@region.name} #{@period.type.to_s.humanize}ly Cohort Report"] %>
 <% csv << ['Facility', 'Facility type'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
   [
     'Cohort period',

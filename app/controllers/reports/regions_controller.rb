@@ -2,7 +2,7 @@ class Reports::RegionsController < AdminController
   include Pagination
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
-  before_action :set_period, only: [:show, :details, :cohort, :download]
+  before_action :set_period, only: [:show, :details, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: :index
@@ -90,11 +90,13 @@ class Reports::RegionsController < AdminController
     else
       authorize(:dashboard, :show?)
     end
+    @period = Period.new(type: params[:period], value: Date.current)
+    unless @period.valid?
+      raise ArgumentError, "invalid Period #{@period} #{@period.inspect}"
+    end
 
     @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
-    pp @cohort_analytics
-    pp @cohort_analytics.keys.first.class
 
     respond_to do |format|
       format.csv do

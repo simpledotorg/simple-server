@@ -143,7 +143,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  context "download" do
+  fcontext "download" do
     render_views
 
     before do
@@ -160,7 +160,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :download, params: {id: @facility.slug, report_scope: "facility", period: "monthly", format: "csv"}
+        get :download, params: {id: @facility.slug, report_scope: "facility", period: "month", format: "csv"}
       end
       expect(response).to be_successful
       expect(response.body).to include("CHC Barnagar Monthly Cohort Report")
