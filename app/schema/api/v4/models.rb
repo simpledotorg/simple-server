@@ -242,6 +242,38 @@ class Api::V4::Models
       }
     end
 
+    def teleconsultation
+      {
+        type: :object,
+        properties: {
+          id: {"$ref" => "#/definitions/uuid"},
+          patient_id: {"$ref" => "#/definitions/uuid"},
+          medical_officer_id: {"$ref" => "#/definitions/uuid"},
+          request: {
+            type: [:object, "null"],
+            properties: {
+              requester_id: {"$ref" => "#/definitions/uuid"},
+              facility_id: {"$ref" => "#/definitions/uuid"},
+              requested_at: {"$ref" => "#/definitions/timestamp"}
+            }
+          },
+          record: {
+            type: [:object, "null"],
+            properties: {
+              recorded_at: {"$ref" => "#/definitions/timestamp"},
+              teleconsultation_type: {type: :string, enum: Teleconsultation::TELECONSULTATION_TYPES.keys},
+              patient_took_medicines: {type: :string, enum: Teleconsultation.patient_took_medicines.keys},
+              patient_consented: {type: :string, enum: Teleconsultation.patient_consenteds.keys},
+              medical_officer_number: {type: [:string, "null"]}
+            }
+          },
+          created_at: {"$ref" => "#/definitions/timestamp"},
+          updated_at: {"$ref" => "#/definitions/timestamp"},
+          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
+        }
+      }
+    end
+
     def find_user
       {type: :object,
        properties: {
@@ -285,7 +317,9 @@ class Api::V4::Models
        app_user_capabilities: app_user_capabilities,
        medical_officer: medical_officer,
        facility_medical_officer: facility_medical_officer,
-       facility_medical_officers: array_of("facility_medical_officer")}
+       facility_medical_officers: array_of("facility_medical_officer"),
+       teleconsultation: teleconsultation,
+       teleconsultations: array_of("teleconsultation")}
     end
   end
 end
