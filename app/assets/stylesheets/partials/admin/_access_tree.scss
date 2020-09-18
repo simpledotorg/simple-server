@@ -33,6 +33,13 @@
     height: 100%;
     display: flex;
     padding: 5px 0 5px 0;
+    justify-content: space-between;
+    align-items: center;
+
+    .counter {
+      margin-right: 10px;
+      font-weight: bold;
+    }
 
     .form-check {
       margin: 10px;

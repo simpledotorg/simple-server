@@ -28,6 +28,10 @@ AdminAccess.prototype = {
     return document.getElementById("select-all-facilities")
   },
 
+  totalSelectedFacilitiesDiv: function () {
+    return document.getElementById("total-selected-facilities")
+  },
+
   checkboxItemListener: function () {
     // list of all checkboxes under facilityAccess()
     const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
@@ -113,28 +117,50 @@ AdminAccess.prototype = {
     }
   },
 
+  updateTotalFacilityCount: function () {
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
+    const [selected, notSelected] = this.getSelectedCount(checkboxes)
+    this.totalSelectedFacilitiesDiv().textContent = `${selected} facilities selected`
+  },
+
   // walk down the tree and get the first node for each FG, then walk up the tree
   // and update the counts
   updateFacilityCount: function (element) {
     const self = this
     const leafNodesByFacilityGroup = this.getLeafNodesByFacilityGroup(element)
-    Object.values(leafNodesByFacilityGroup)
-      .filter(node => node.length > 0)
-      .map(node => node[0])
-      .forEach(node => self.updateParentFacilityCount(node, ACCESS_LIST_INPUT_SELECTOR))
+    const facilities = Object.values(leafNodesByFacilityGroup).filter(node => node.length > 0)
+    facilities.forEach(([node]) => self.updateParentFacilityCount(node, ACCESS_LIST_INPUT_SELECTOR))
+
+    this.updateTotalFacilityCount()
   },
 
-  updateParentFacilityCount: function (element, selector) {
-    const parent = element.closest(["ul"]).parentNode.querySelector(selector)
-    const children = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
-    const [selected, notSelected] = children
+  getSelectedCount: function (childNodes) {
+    return childNodes
       .filter(({ name }) => name === "facilities[]")
       .reduce(([selected, notSelected], item) =>
         item.checked ? [selected + 1, notSelected] : [selected, notSelected + 1], [0, 0])
-    const accessRatioDiv = element.closest(["ul"]).parentNode.querySelector(".access-ratio")
-    accessRatioDiv.textContent = notSelected === 0
+  },
+
+  setAccessRatio: function (div, selected, notSelected) {
+    div.textContent = notSelected === 0
       ? `${selected} facilities selected`
       : `${selected} of ${selected + notSelected} facilities selected`
+  },
+
+  getParentNode: function (element, selector) {
+    return element.closest(["ul"]).parentNode.querySelector(selector)
+  },
+
+  getChildNodes: function (parent, selector) {
+    return nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
+  },
+
+  updateParentFacilityCount: function (element, selector) {
+    const parent = this.getParentNode(element, selector)
+    const children = this.getChildNodes(parent, selector)
+    const [selected, notSelected] = this.getSelectedCount(children)
+    const accessRatioDiv = element.closest(["ul"]).parentNode.querySelector(".access-ratio")
+    this.setAccessRatio(accessRatioDiv, selected, notSelected)
 
     if (element !== parent) {
       this.updateParentFacilityCount(parent, selector)
