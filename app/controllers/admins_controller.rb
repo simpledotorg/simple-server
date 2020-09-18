@@ -173,6 +173,6 @@ class AdminsController < AdminController
   end
 
   def validate_selected_facilities?
-    selected_facilities.blank? && user_params[:access_level] != "power_user"
+    selected_facilities.blank? && user_params[:access_level] != User.access_levels[:power_user]
   end
 end
