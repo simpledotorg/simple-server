@@ -143,7 +143,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  fcontext "download" do
+  context "download" do
     render_views
 
     before do
