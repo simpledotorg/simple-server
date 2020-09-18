@@ -15,7 +15,7 @@ class Api::V4::TeleconsultationPayloadValidator < Api::V3::PayloadValidator
   validate :authorized_teleconsult_record, if: -> { record.present? }
 
   def authorized_teleconsult_record
-    unless request_user.can_teleconsult?
+    unless request_user&.can_teleconsult?
       errors.add(
         :user_not_authorized_to_record_this_teleconsult,
         "User is not authorized to record this teleconsult"
