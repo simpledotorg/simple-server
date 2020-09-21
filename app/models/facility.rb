@@ -6,6 +6,7 @@ class Facility < ApplicationRecord
   include PgSearch::Model
   include LiberalEnum
   extend FriendlyId
+  extend RegionSource
 
   before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
 
@@ -14,6 +15,8 @@ class Facility < ApplicationRecord
   attribute :facility_group_name, :string
 
   belongs_to :facility_group, optional: true
+
+  has_one :region, inverse_of: :source, foreign_key: "source_id"
 
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications

@@ -1,5 +1,6 @@
 class FacilityGroup < ApplicationRecord
   extend FriendlyId
+  extend RegionSource
   default_scope -> { kept }
 
   belongs_to :organization
