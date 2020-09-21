@@ -20,7 +20,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   end
 
   before do
-    admin = create(:admin, :organization_owner, organization: organization)
+    admin = create(:admin, :manager, :with_access, resource: organization)
     sign_in(admin.email_authentication)
   end
 
