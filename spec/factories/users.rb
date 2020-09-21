@@ -73,22 +73,27 @@ FactoryBot.define do
 
     trait :call_center do
       access_level { :call_center }
+      role { "call center"}
     end
 
     trait :viewer_reports_only do
       access_level { :viewer_reports_only }
+      role { "Analyst (view reports)" }
     end
 
     trait :viewer_all do
       access_level { :viewer_all }
+      role { "View all data" }
     end
 
     trait :manager do
       access_level { :manager }
+      role { "Manager" }
     end
 
     trait :power_user do
       access_level { :power_user }
+      role { "Power user" }
     end
 
     trait :with_access do
