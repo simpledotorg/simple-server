@@ -82,7 +82,7 @@ class Analytics::FacilitiesController < AnalyticsController
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics = @facility.cohort_analytics(period, prev_periods)
+    @cohort_analytics = @facility.cohort_analytics(period: period, prev_periods: prev_periods)
   end
 
   def set_dashboard_analytics(period, prev_periods)

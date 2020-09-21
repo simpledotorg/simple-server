@@ -178,6 +178,7 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id", to: "regions#show", as: :region
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
+    get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
   end
 
   namespace :my_facilities do

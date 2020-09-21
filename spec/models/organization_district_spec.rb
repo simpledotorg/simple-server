@@ -18,7 +18,7 @@ RSpec.describe OrganizationDistrict, type: :model do
           create(:blood_pressure, :under_control, patient: patient, facility: facility, recorded_at: 3.months.ago)
         end
 
-        result = org_district.cohort_analytics(:month, 3)
+        result = org_district.cohort_analytics(period: :month, prev_periods: 3)
         march_key = [Date.parse("February 1st 2020"), Date.parse("March 1st 2020")]
         march_data = result[march_key]
         # ensure we don't have non HTN patients
