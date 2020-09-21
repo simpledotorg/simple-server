@@ -8,6 +8,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:prescription_drugs) }
     it { should have_many(:patients).through(:encounters) }
     it { should have_many(:appointments) }
+    it { should have_many(:teleconsultations) }
     it { should have_and_belong_to_many(:teleconsultation_medical_officers) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
@@ -160,7 +161,7 @@ RSpec.describe Facility, type: :model do
         _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility, recorded_at: 3.months.ago)
         _htn_patients = create_list(:patient, 2, registration_facility: facility, recorded_at: 3.months.ago)
 
-        result = facility.cohort_analytics(:month, 3)
+        result = facility.cohort_analytics(period: :month, prev_periods: 3)
         april_key = [Date.parse("March 1st 2019"), Date.parse("April 1st 2019")]
         april_data = result[april_key]
         expect(april_data["registered"]).to eq({facility.id => 2, "total" => 2})

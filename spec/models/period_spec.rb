@@ -145,4 +145,9 @@ RSpec.describe Period, type: :model do
     expect(q2_2020_period.start_date).to eq(Date.parse("April 1st, 2020"))
     expect(q2_2020_period.end_date).to eq(Date.parse("June 30, 2020"))
   end
+
+  it "has adjective description" do
+    expect(jan_1_2019_month_period.adjective).to eq("Monthly")
+    expect(q2_2020_period.adjective).to eq("Quarterly")
+  end
 end

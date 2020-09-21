@@ -46,6 +46,12 @@ class User < ApplicationRecord
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
+  has_many :requested_teleconsultations,
+    class_name: "Teleconsultation",
+    foreign_key: :requester_id
+  has_many :recorded_teleconsultations,
+    class_name: "Teleconsultation",
+    foreign_key: :medical_officer_id
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
