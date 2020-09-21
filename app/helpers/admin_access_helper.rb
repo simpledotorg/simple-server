@@ -21,7 +21,7 @@ module AdminAccessHelper
       {},
       {label: "Access *"},
       {
-        class: "access-levels",
+        class: "access-level-wrapper",
         id: "access-level",
         disabled: disabled,
         required: required
