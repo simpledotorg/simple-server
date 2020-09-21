@@ -44,7 +44,7 @@ AdminAccess.prototype = {
 
       this.updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
       this.updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
-      this.updateFacilityCount(targetCheckbox)
+      this.updateTotalFacilityCount()
     })
   },
 
@@ -252,7 +252,6 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
         checkbox.checked = _self.selectAllFacilitiesInput().checked
       }
       _self.updateTotalFacilityCount()
-      _self.findAndUpdateFacilityCount()
     })
   },
 
