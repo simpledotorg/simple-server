@@ -7,6 +7,7 @@
 .l-0 { left: 0; }
 // Pointer events
 .pe-none { pointer-events: none; }
+.us-none { user-select: none; }
 // Display
 .d-none { display: none; }
 .d-block { display: block; }
@@ -30,6 +31,7 @@
 .mt-0px { margin-top: 0px; }
 .mt-4px { margin-top: 4px; }
 .mt-8px { margin-top: 8px; }
+.mt-20px { margin-top: 20px; }
 .mr-4px { margin-right: 4px; }
 .mr-12px { margin-right: 12px; }
 .mr-13px { margin-right: 13px; }
@@ -45,9 +47,11 @@
 .ml-8px { margin-left: 8px; }
 .ml-13px { margin-left: 13px; }
 .mx-0px { margin-right: 0px; margin-left: 0px; }
+.mx-20px { margin-right: 20px; margin-left: 20px; }
 .p-0px { padding: 0px; }
 .pt-0px { padding-top: 0px; }
 .pt-4px { padding-top: 4px; }
+.pt-12px { padding-top: 12px; }
 .pt-20px { padding-top: 20px; }
 .pt-24px { padding-top: 24px; }
 .pb-4px { padding-bottom: 4px; }
@@ -58,6 +62,7 @@
 // Width
 .w-12px { width: 12px; }
 .w-32px { width: 32px; }
+.w-40px { width: 40px; }
 .w-48px { width: 48px; }
 .w-100pt { width: 100%; }
 .mw-100pt { max-width: 100%; }
@@ -66,6 +71,7 @@
 .h-10pt { height: 10%; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
+.h-250px { height: 250px; }
 // Typography
 .fs-12px { font-size: 12px; }
 .fs-14px { font-size: 14px; }
@@ -85,6 +91,7 @@
 .c-purple { color: $purple; }
 .c-red { color: $red; }
 .c-black { color: $black; }
+.c-transparent { color: transparent; }
 .c-grey-dark:hover { color: $grey-dark; }
 .td-none { text-decoration: none; }
 .td-none:hover { text-decoration: none; }

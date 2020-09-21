@@ -29,27 +29,27 @@ RSpec.describe NoBPMeasureService do
 
     Timecop.freeze(jan_1) do # freeze time so all patients are registered before visit range
       # visit: patient has appointment but no BP
-      patient_visited_via_appt = create(:patient, registration_facility: facility)
+      patient_visited_via_appt = create(:patient, assigned_facility: facility)
       create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_visited_via_appt)
 
       # visit: patient has new drugs prescribed but no BP
-      patient_visited_via_drugs = create(:patient, full_name: "visit via drugs", registration_facility: facility)
+      patient_visited_via_drugs = create(:patient, full_name: "visit via drugs", assigned_facility: facility)
       patient_visited_via_drugs.prescription_drugs << build(:prescription_drug, device_created_at: may_15)
 
       # visit: patient has blood sugar but no BP
-      patient_visited_via_blood_sugar = create(:patient, full_name: "visit via blood sugar", registration_facility: facility)
+      patient_visited_via_blood_sugar = create(:patient, full_name: "visit via blood sugar", assigned_facility: facility)
       patient_visited_via_blood_sugar.blood_sugars << build(:blood_sugar, device_created_at: may_15)
 
       # no visit: patient has only a BP
-      _patient_without_visit_and_bp = create(:patient, full_name: "no visits and no BP", registration_facility: facility)
+      _patient_without_visit_and_bp = create(:patient, full_name: "no visits and no BP", assigned_facility: facility)
 
       # no visit: patient has an appointment and a BP
-      patient_with_bp = create(:patient, registration_facility: facility)
+      patient_with_bp = create(:patient, assigned_facility: facility)
       create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
       create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
       # no visit: patient from a different facility has an appointment
-      patient_from_different_facility = create(:patient, registration_facility: facility_2)
+      patient_from_different_facility = create(:patient, assigned_facility: facility_2)
       create(:appointment, creation_facility: facility_2, scheduled_date: may_15, device_created_at: may_15, patient: patient_from_different_facility)
     end
 
