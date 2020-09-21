@@ -13,6 +13,16 @@ RSpec.describe Facility, type: :model do
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
 
+
+    fit "does something w/ slug when renamed" do
+      facility = create(:facility, name: "old_name")
+      expect(facility.slug).to eq("old_name_1")
+      facility.name = "new name"
+      facility.valid?
+      facility.save!
+      expect(facility.slug).to eq("old_name_1")
+    end
+
     context "patients" do
       it "has distinct patients" do
         facility = create(:facility)

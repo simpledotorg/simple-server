@@ -3,6 +3,10 @@ class Region < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
+  validates :name, presence: true
+  validates :slug, presence: true, uniqueness: true
+  validates :path, presence: true
+
   belongs_to :kind, class_name: "RegionKind", foreign_key: "region_kind_id"
   belongs_to :source, polymorphic: true, optional: true
 
@@ -21,17 +25,16 @@ class Region < ApplicationRecord
     region
   end
 
-  def self.backfill
-    root_kind = RegionKind.create! name: "Root", path: "Root"
-    org_kind = RegionKind.create! name: "Organization", path: "Root.Organization"
-    facility_group_kind = RegionKind.create! name: "FacilityGroup", path: "Root.Organization.FacilityGroup"
-    block_kind = RegionKind.create! name: "Block", path: "Root.Organization.FacilityGroup.Block"
-    facility_kind = RegionKind.create! name: "Facility", path: "Root.Organization.FacilityGroup.Block.Facility"
+  def self.backfill!
+    instance_kind = RegionKind.find_by!(name: "Instance")
+    org_kind = instance_kind.children.first
+    facility_group_kind = org_kind.children.first
+    block_kind = facility_group_kind.children.first
+    facility_kind = block_kind.children.first
 
-    root_region = Region.create! name: "TestInstance", kind: root_kind, path: "TestInstance"
-
+    instance = Region.create! name: "India", path: "India", kind: instance_kind
     Organization.all.each do |org|
-      org_region = create_region_from(source: org, kind: org_kind, parent: root_region)
+      org_region = create_region_from(source: org, kind: org_kind, parent: instance)
 
       org.facility_groups.each do |facility_group|
         facility_group_region = create_region_from(source: facility_group, kind: facility_group_kind, parent: org_region)
