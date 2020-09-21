@@ -22,7 +22,7 @@ module AdminAccessHelper
       {label: "Access *"},
       {
         class: "access-levels",
-        id: :access_level,
+        id: "access-level",
         disabled: disabled,
         required: required
       }) do

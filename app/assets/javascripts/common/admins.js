@@ -2,13 +2,15 @@
 // elements
 //
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
+const ACCESS_LEVEL_ID = "access-level"
 const ACCESS_LEVEL_POWER_USER = "power_user"
 
 AdminAccess = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccess.prototype = {
-  accessLevel: () => document.getElementById("access_level"),
+  accessLevel: () => document.getElementById(ACCESS_LEVEL_ID),
 
   facilityAccessPowerUser: () => document.getElementById("facility-access-power-user"),
 
@@ -212,6 +214,7 @@ AdminAccess.prototype = {
 AdminAccessInvite = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccessInvite.prototype = Object.create(AdminAccess.prototype)
 AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   selectAllFacilitiesInput: () => document.getElementById("select-all-facilities-input"),
@@ -256,10 +259,10 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   },
 
   accessLevelSelector: function () {
-    const accessLevel = $("#access_level")
+    const accessLevel = $(`#${ACCESS_LEVEL_ID}`)
 
     // initialize the access_level select dropdown
-    accessLevel.selectpicker({
+    return accessLevel.selectpicker({
       noneSelectedText: "Select an access level..."
     });
   },
@@ -298,14 +301,14 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
 AdminAccessEdit = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 AdminAccessEdit.prototype = Object.assign(AdminAccessEdit.prototype, {
   accessLevelSelector: function () {
     // super
     AdminAccessInvite.prototype.accessLevelSelector.call(this)
-
-    const accessLevel = $("#access-level")
-    this.toggleAccessTreeVisibility(accessLevel.val() === ACCESS_LEVEL_POWER_USER)
+    const _super = AdminAccessInvite.prototype.accessLevelSelector.call(this)
+    this.toggleAccessTreeVisibility(_super.val() === ACCESS_LEVEL_POWER_USER)
   }
 })
 
