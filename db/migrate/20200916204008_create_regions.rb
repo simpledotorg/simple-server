@@ -26,6 +26,5 @@ class CreateRegions < ActiveRecord::Migration[5.2]
       t.index :slug, unique: true
       t.index :path, using: :gist
     end
-
   end
 end
