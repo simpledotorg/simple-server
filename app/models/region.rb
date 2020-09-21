@@ -6,16 +6,12 @@ class Region < ApplicationRecord
   belongs_to :kind, class_name: "RegionKind", foreign_key: "region_kind_id"
   belongs_to :source, polymorphic: true, optional: true
 
-  # def set_path
-  #   self.path =
-  # end
-
   before_discard do
     self.path = nil
   end
 
-  def self.create_region_from(name: nil, source: nil, kind:, parent:)
-    raise ArgumentError, "bad" if (name && source) || (name.blank? && source.blank?)
+  def self.create_region_from(parent:, kind:, name: nil, source: nil)
+    raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
     region = Region.new name: region_name, kind: kind
     region.send :set_slug
@@ -34,16 +30,14 @@ class Region < ApplicationRecord
 
     root_region = Region.create! name: "TestInstance", kind: root_kind, path: "TestInstance"
 
-    org = Organization.all.each do |org|
+    Organization.all.each do |org|
       org_region = create_region_from(source: org, kind: org_kind, parent: root_region)
 
       org.facility_groups.each do |facility_group|
         facility_group_region = create_region_from(source: facility_group, kind: facility_group_kind, parent: org_region)
-        pp facility_group_region
 
         facility_group.facilities.group_by(&:zone).each do |block_name, facilities|
           block_region = create_region_from(name: block_name, kind: block_kind, parent: facility_group_region)
-          pp block_region
           facilities.each do |facility|
             create_region_from(source: facility, kind: facility_kind, parent: block_region)
           end
