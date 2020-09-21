@@ -99,6 +99,7 @@ class UserAccess
 
     User
       .non_admins
+      .includes(phone_number_authentications: :registration_facility_id)
       .where(phone_number_authentications: {registration_facility_id: accessible_facilities(action)})
   end
 
