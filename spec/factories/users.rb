@@ -69,11 +69,7 @@ FactoryBot.define do
     device_updated_at { Time.current }
     sync_approval_status { User.sync_approval_statuses[:denied] }
     email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
-    user_permissions { [] }
     organization
-
-    role { :owner }
-    access_level { :power_user }
 
     trait :call_center do
       access_level { :call_center }
