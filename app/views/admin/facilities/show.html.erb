@@ -87,6 +87,7 @@
         </div>
         <div class="col text-right">
 <<<<<<< HEAD
+<<<<<<< HEAD
           <% if current_admin.permissions_v2_enabled? %>
             <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
           <% else %>
@@ -97,6 +98,10 @@
               <%= link_to 'Delete', [:admin, user], method: :delete, data: {confirm: "Are you sure you want to delete #{user.full_name}?"}, class: "btn btn-sm btn-outline-danger" %>
             <% end %>
           <% end %>
+=======
+          <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
+
+>>>>>>> remove pundit permissions from Admin::FacilitiesController views
 =======
           <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
 
