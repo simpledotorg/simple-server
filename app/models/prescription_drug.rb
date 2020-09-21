@@ -4,9 +4,17 @@ class PrescriptionDrug < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id medicine_name dosage]
 
+  enum frequency: {
+    OD: "OD",
+    BD: "BD",
+    QDS: "QDS",
+    TDS: "TDS"
+  }, _prefix: true
+
   belongs_to :facility, optional: true
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
+  belongs_to :teleconsultation, optional: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
