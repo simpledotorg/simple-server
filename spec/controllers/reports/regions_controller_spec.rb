@@ -184,4 +184,32 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response.headers["Content-Disposition"]).to include('filename="facility_group-quarterly-cohort-report_')
     end
   end
+
+  describe "#whatsapp_graphics" do
+    render_views
+
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+      sign_in(cvho.email_authentication)
+    end
+
+    context "html requested" do
+      it "renders graphics_header partial" do
+        get :whatsapp_graphics, format: :html, params: {id: @facility.slug, report_scope: "facility"}
+
+        expect(response).to be_ok
+        expect(response).to render_template("shared/graphics/_graphics_partial")
+      end
+    end
+
+    context "png requested" do
+      it "renders the image template for downloading" do
+        get :whatsapp_graphics, format: :png, params: {id: @facility_group.slug, report_scope: "district"}
+
+        expect(response).to be_ok
+        expect(response).to render_template("shared/graphics/image_template")
+      end
+    end
+  end
 end
