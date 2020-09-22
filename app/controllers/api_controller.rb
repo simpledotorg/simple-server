@@ -17,10 +17,6 @@ class APIController < ApplicationController
     head :not_found
   end
 
-  def zone_level_sync?
-    Flipper.enabled?(:zone_level_sync)
-  end
-
   private
 
   def current_user
@@ -54,6 +50,10 @@ class APIController < ApplicationController
 
   def current_user_present?
     return head :unauthorized unless current_user.present?
+  end
+
+  def zone_level_sync?
+    Flipper.enabled?(:zone_level_sync)
   end
 
   def validate_sync_approval_status_allowed
