@@ -1,9 +1,16 @@
 module Api::V3::SyncToUser
   extend ActiveSupport::Concern
+
   included do
     def facility_group_records
       current_facility_group
         .send(model_name.name.underscore.pluralize.to_sym)
+        .with_discarded
+    end
+
+    def zone_records
+      current_zone
+        .public_send(model_name.name.underscore.pluralize.to_sym)
         .with_discarded
     end
 
