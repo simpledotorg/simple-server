@@ -180,6 +180,13 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         expect(assigns(:recent_blood_pressures).count).to eq(2)
       end
     end
+
+    it "allow cache to be refreshed forcefully" do
+      request_store = {}
+      allow(RequestStore).to receive(:store).and_return(request_store)
+      get :show, params: {id: facility.id, force_cache: true}
+      expect(request_store[:force_cache]).to eq(true)
+    end
   end
 
   describe "#patient_list" do

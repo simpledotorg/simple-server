@@ -135,4 +135,8 @@ class Period
       value.to_s(:mon_year)
     end
   end
+
+  def adjective
+    "#{type.capitalize}ly"
+  end
 end

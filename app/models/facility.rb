@@ -29,6 +29,7 @@ class Facility < ApplicationRecord
   has_many :patients, -> { distinct }, through: :encounters
   has_many :prescription_drugs
   has_many :appointments
+  has_many :teleconsultations
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -111,7 +112,7 @@ class Facility < ApplicationRecord
     blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
 
-  def cohort_analytics(period, prev_periods)
+  def cohort_analytics(period:, prev_periods:)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.call
   end

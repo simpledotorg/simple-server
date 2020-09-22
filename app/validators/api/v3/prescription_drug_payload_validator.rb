@@ -8,6 +8,9 @@ class Api::V3::PrescriptionDrugPayloadValidator < Api::V3::PayloadValidator
     :is_protocol_drug,
     :patient_id,
     :facility_id,
+    :frequency,
+    :duration_in_days,
+    :teleconsultation_id,
     :created_at,
     :updated_at
   )

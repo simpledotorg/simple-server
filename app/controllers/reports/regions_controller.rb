@@ -66,6 +66,8 @@ class Reports::RegionsController < AdminController
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+
     if @region.is_a?(Facility)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
     end
@@ -78,10 +80,60 @@ class Reports::RegionsController < AdminController
       authorize(:dashboard, :show?)
     end
     periods = @period.downto(5)
+
     @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
+  def download
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
+    @period = Period.new(type: params[:period], value: Date.current)
+    unless @period.valid?
+      raise ArgumentError, "invalid Period #{@period} #{@period.inspect}"
+    end
+
+    @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+
+    respond_to do |format|
+      format.csv do
+        if @region.is_a?(FacilityGroup)
+          set_facility_keys
+          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
+        else
+          send_data render_to_string("cohort.csv.erb"), filename: download_filename
+        end
+      end
+    end
+  end
+
   private
+
+  def download_filename
+    time = Time.current.to_s(:number)
+    region_name = @region.name.tr(" ", "-")
+    "#{@region.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+  end
+
+  def set_facility_keys
+    district = {
+      id: :total,
+      name: "Total"
+    }.with_indifferent_access
+
+    facilities = @region.facilities.order(:name).map { |facility|
+      {
+        id: facility.id,
+        name: facility.name,
+        type: facility.facility_type
+      }.with_indifferent_access
+    }
+
+    @facility_keys = [district, *facilities]
+  end
 
   def set_period
     period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes

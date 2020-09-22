@@ -68,6 +68,10 @@ class Api::V4::Schema
       }
     end
 
+    def teleconsultation_sync_from_user_request
+      sync_from_user_request(:teleconsultations)
+    end
+
     def patient_activate_request
       {
         type: :object,

@@ -7,25 +7,33 @@
         <%= form.label "Teleconsultation number" %>
         <div class="input-group">
           <%= form.text_field :teleconsultation_isd_code,
-                              id: :user_teleconsultation_isd_code,
-                              optional: true,
-                              class: "col-sm-2",
-                              wrapper: false %>
+              id: :user_teleconsultation_isd_code,
+              optional: true,
+              class: "col-sm-2",
+              wrapper: false %>
           <%= form.text_field :teleconsultation_phone_number,
-                              id: :user_teleconsultation_phone_number,
-                              wrapper: false,
-                              autocomplete: "off",
-                              optional: true %>
+              id: :user_teleconsultation_phone_number,
+              wrapper: false,
+              autocomplete: "off",
+              optional: true %>
         </div>
         <small class="form-text text-muted">If different from phone number</small>
       </div>
 
       <%= form.password_field :password, id: :user_password, pattern: "[0-9]{4}", label: "PIN", help: "4 digits only", autocomplete: "new-password", optional: true %>
       <%= form.password_field :password_confirmation, id: :user_password_confirmation, pattern: "[0-9]{4}", label: "PIN confirmation", optional: true %>
-      <%= form.select :registration_facility_id, policy_scope([:manage, :user, Facility]) \
+
+      <% if current_admin.permissions_v2_enabled? %>
+        <%= form.select :registration_facility_id, current_admin.accessible_facilities(:manage) \
           .sort_by { |facility| facility.name.sub /^Dr(.?)(\s*)/, '' } \
           .collect { |facility| [facility.name, facility.id] } %>
+      <% else %>
+        <%= form.select :registration_facility_id, policy_scope([:manage, :user, Facility]) \
+          .sort_by { |facility| facility.name.sub /^Dr(.?)(\s*)/, '' } \
+          .collect { |facility| [facility.name, facility.id] } %>
+      <% end %>
+
       <%= form.primary %>
-    <% end %>
+  <% end %>
   </div>
 </div>
