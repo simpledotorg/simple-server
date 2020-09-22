@@ -17,7 +17,7 @@ class DistrictAnalyticsQuery
   end
 
   def call
-    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
       results
     end
   end
@@ -95,5 +95,9 @@ class DistrictAnalyticsQuery
     query_results.map { |(facility_id, date), value|
       {facility_id => {key => {date => value}.slice(*valid_dates)}}
     }.inject(&:deep_merge)
+  end
+
+  def force_cache?
+    RequestStore.store[:force_cache]
   end
 end

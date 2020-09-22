@@ -1,6 +1,6 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
   before_action :verify_params, only: [:create], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :🆕verify_params, only: [:create], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :verify_params_v2, only: [:create], if: -> { current_admin.permissions_v2_enabled? }
   helper_method :current_admin
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -72,19 +72,21 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   #
   # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
   #
-  def 🆕verify_params
+  def verify_params_v2
     user = User.new(user_params)
     email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
 
-    if selected_facilities.blank?
-      redirect_to new_email_authentication_invitation_path,
-        alert: "At least one facility should be selected for access before inviting an Admin." && return
+    if validate_selected_facilities?
+      flash[:alert] = "At least one facility should be selected for access before inviting an Admin."
+      render :new, status: :bad_request
+
+      return
     end
 
     if user.invalid? || email_authentication.invalid?
       user.errors.delete(:email_authentications)
-      redirect_to new_email_authentication_invitation_path,
-        alert: (user.errors.full_messages + email_authentication.errors.full_messages).join("\n")
+      flash[:alert] = (user.errors.full_messages + email_authentication.errors.full_messages).join("\n")
+      render :new, status: :bad_request
     end
   end
 
@@ -109,7 +111,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def selected_facilities
-    params[:facilities].flatten
+    params[:facilities]
   end
 
   def permission_params
@@ -122,5 +124,14 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def temporary_password
     SecureRandom.base64(16)
+  end
+
+  def validate_selected_facilities?
+    selected_facilities.blank? && user_params[:access_level] != User.access_levels[:power_user]
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
   end
 end

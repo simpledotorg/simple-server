@@ -2,6 +2,11 @@
   <ul class="access-item-wrapper">
     <li>
       <div class="access-item organization collapsed">
+
+        <div class="access-item__dropdown">
+          <i class="fas fa-caret-down light"></i>
+        </div>
+
         <div class="form-check <%= "show" if page.eql?(:show) %>">
 
           <% unless page.eql?(:show) %>
@@ -16,7 +21,6 @@
 
         <span class="access-ratio organization">
           <%= access_facility_count(facility_groups.values.flatten.length) %>
-          <i class="fas fa-caret-up light"></i>
         </span>
       </div>
 
