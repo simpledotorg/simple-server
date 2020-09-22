@@ -8,6 +8,7 @@ const ACCESS_LEVEL_POWER_USER = "power_user"
 AdminAccess = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccess.prototype = {
   accessLevel: () => document.getElementById(ACCESS_LEVEL_ID),
 
@@ -21,8 +22,16 @@ AdminAccess.prototype = {
     return document.getElementsByClassName("access-ratio")
   },
 
+  facilityAccessItemsDropdown: function () {
+    return document.getElementsByClassName("access-item__dropdown")
+  },
+
   selectAllFacilitiesContainer: function () {
     return document.getElementById("select-all-facilities")
+  },
+
+  totalSelectedFacilitiesDiv: function () {
+    return document.getElementById("total-selected-facilities")
   },
 
   checkboxItemListener: function () {
@@ -37,13 +46,15 @@ AdminAccess.prototype = {
 
       this.updateChildrenCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
       this.updateParentCheckedState(targetCheckbox, ACCESS_LIST_INPUT_SELECTOR)
+      this.updateTotalFacilityCount()
     })
   },
 
   resourceRowCollapseListener: function () {
     const collapsibleItems = [
       this.facilityAccessItemsPadding(),
-      this.facilityAccessItemsAccessRatio()
+      this.facilityAccessItemsAccessRatio(),
+      this.facilityAccessItemsDropdown()
     ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
     for (const item of collapsibleItems) {
@@ -61,7 +72,7 @@ AdminAccess.prototype = {
     }
   },
 
-  onAccessLevelChanged: function ({target}) {
+  onAccessLevelChanged: function ({ target }) {
     this.toggleAccessTreeVisibility(target.value === ACCESS_LEVEL_POWER_USER)
   },
 
@@ -75,7 +86,7 @@ AdminAccess.prototype = {
     }
   },
 
-  onFacilityAccessItemToggled: function ({target}) {
+  onFacilityAccessItemToggled: function ({ target }) {
     const children = Array.from(target.closest("li").childNodes)
     const parentItem = target.closest(".access-item")
     const wrapper = children.find(containsClass("access-item-wrapper"))
@@ -108,6 +119,74 @@ AdminAccess.prototype = {
     }
   },
 
+  updateTotalFacilityCount: function () {
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
+    const [selected] = this.getSelectedCount(checkboxes)
+    this.totalSelectedFacilitiesDiv().textContent = `${selected} facilities selected`
+  },
+
+  findAndUpdateFacilityCount: function () {
+    const checkboxes = nodeListToArray(ACCESS_LIST_INPUT_SELECTOR, this.facilityAccess)
+    const orgCheckboxes = checkboxes.filter(({ name }) => name === "organizations[]")
+    orgCheckboxes.forEach(this.updateFacilityCount.bind(this))
+  },
+
+  // walk down the tree and get the first node for each FG, then walk up the tree
+  // and update the counts
+  updateFacilityCount: function (element) {
+    const self = this
+    const leafNodesByFacilityGroup = this.getLeafNodesByFacilityGroup(element)
+    const facilities = Object.values(leafNodesByFacilityGroup).filter(node => node.length > 0)
+    facilities.forEach(([node]) => self.updateParentFacilityCount(node, ACCESS_LIST_INPUT_SELECTOR))
+
+    this.updateTotalFacilityCount()
+  },
+
+  getSelectedCount: function (childNodes) {
+    return childNodes
+      .filter(({ name }) => name === "facilities[]")
+      .reduce(([selected, notSelected], item) =>
+        item.checked ? [selected + 1, notSelected] : [selected, notSelected + 1], [0, 0])
+  },
+
+  setAccessRatio: function (div, selected, notSelected) {
+    div.textContent = notSelected === 0
+      ? `${selected} facilities selected`
+      : `${selected} of ${selected + notSelected} facilities selected`
+  },
+
+  getParentNode: function (element, selector) {
+    return element.closest(["ul"]).parentNode.querySelector(selector)
+  },
+
+  getChildNodes: function (parent, selector) {
+    return nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
+  },
+
+  updateParentFacilityCount: function (element, selector) {
+    const parent = this.getParentNode(element, selector)
+    const children = this.getChildNodes(parent, selector)
+    const [selected, notSelected] = this.getSelectedCount(children)
+    const accessRatioDiv = element.closest(["ul"]).parentNode.querySelector(".access-ratio")
+    this.setAccessRatio(accessRatioDiv, selected, notSelected)
+
+    if (element !== parent) {
+      this.updateParentFacilityCount(parent, selector)
+    }
+  },
+
+  getLeafNodesByFacilityGroup: function (element) {
+    const parent = element.closest("li")
+    const children = Array.from(parent.querySelectorAll(".access-item"))
+    return children
+      .filter(item => item.dataset.facilityGroupId)
+      .reduce((nodes, item) => {
+        const facilityGroupId = item.dataset.facilityGroupId
+        const itemsInGroup = nodes[facilityGroupId] ? [...nodes[facilityGroupId], item] : [item]
+        return Object.assign(nodes, { [facilityGroupId]: itemsInGroup })
+      }, {})
+  },
+
   updateChildrenCheckedState: function (parent, selector) {
     // check/uncheck children (includes check itself)
     const children = nodeListToArray(selector, parent.closest("li"))
@@ -135,6 +214,7 @@ AdminAccess.prototype = {
 AdminAccessInvite = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccessInvite.prototype = Object.create(AdminAccess.prototype)
 AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
   selectAllFacilitiesInput: () => document.getElementById("select-all-facilities-input"),
@@ -174,6 +254,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
         checkbox.indeterminate = false
         checkbox.checked = _self.selectAllFacilitiesInput().checked
       }
+      _self.updateTotalFacilityCount()
     })
   },
 
@@ -207,6 +288,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
       _self.checkboxItemListener()
       _self.resourceRowCollapseListener()
       _self.updateIndeterminateCheckboxes()
+      _self.updateTotalFacilityCount()
     });
   },
 
@@ -219,6 +301,7 @@ AdminAccessInvite.prototype = Object.assign(AdminAccessInvite.prototype, {
 AdminAccessEdit = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
 }
+
 AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 AdminAccessEdit.prototype = Object.assign(AdminAccessEdit.prototype, {
   accessLevelSelector: function () {
@@ -236,5 +319,5 @@ const nodeListToArray = (selector, parent = document) =>
   [].slice.call(parent.querySelectorAll(selector))
 
 // return a function that checks if element contains class
-const containsClass = (className) => ({classList}) =>
+const containsClass = (className) => ({ classList }) =>
   classList && classList.contains(className)

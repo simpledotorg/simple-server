@@ -1,10 +1,14 @@
 <ul class="access-item-wrapper facility">
   <% tree.each do |facility| %>
     <li>
-      <div class="access-item facility collapsed">
+      <div class="access-item facility collapsed" data-facility-group-id="<%=facility[:facility_group_id]%>">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
+
+        <div class="access-item__dropdown hidden">
+          <i class="fas fa-caret-down light"></i>
+        </div>
 
         <div class="form-check <%= "show" if page.eql?(:show) %>">
 

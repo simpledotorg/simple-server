@@ -67,6 +67,7 @@
           <div class="card access-tree">
             <div id="select-all-facilities" hidden="hidden">
               <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
+              <div class="counter" id="total-selected-facilities"></div>
             </div>
 
             <%= render_async(access_tree_admin_path(admin, :edit), error_message: access_tree_load_error) do %>
