@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_17_184207) do
+ActiveRecord::Schema.define(version: 2020_09_22_085803) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -244,6 +244,7 @@ ActiveRecord::Schema.define(version: 2020_09_17_184207) do
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
+    t.index ["zone"], name: "index_facilities_on_zone"
   end
 
   create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
