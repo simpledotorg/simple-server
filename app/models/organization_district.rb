@@ -13,7 +13,7 @@ class OrganizationDistrict < Struct.new(:district_name, :organization)
     Patient.where(registration_facility: facilities)
   end
 
-  def cohort_analytics(period, prev_periods)
+  def cohort_analytics(period:, prev_periods:)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.call
   end

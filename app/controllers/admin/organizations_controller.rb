@@ -7,7 +7,7 @@ class Admin::OrganizationsController < AdminController
 
   def index
     if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.power_user? }
+      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
       @organizations = current_admin.accessible_organizations(:manage).order(:name)
     else
       authorize([:manage, Organization])

@@ -6,6 +6,10 @@
           <span class="spacer"></span>
         <% end %>
 
+        <div class="access-item__dropdown">
+          <i class="fas fa-caret-down light"></i>
+        </div>
+
         <div class="form-check <%= "show" if page.eql?(:show) %>">
 
           <% unless page.eql?(:show) %>
@@ -20,7 +24,6 @@
 
         <span class="access-ratio">
           <%= access_facility_count(facilities.length) %>
-          <i class="fas fa-caret-up light"></i>
         </span>
       </div>
 

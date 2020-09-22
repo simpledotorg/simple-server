@@ -49,7 +49,7 @@ class Patient < ApplicationRecord
     -> { where(identifier_type: "simple_bp_passport").order(device_created_at: :desc) },
     class_name: "PatientBusinessIdentifier"
 
-  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: "PrescriptionDrug"
+  has_many :current_prescription_drugs, -> { where(is_deleted: false).order(created_at: :desc) }, class_name: "PrescriptionDrug"
 
   belongs_to :deleted_by_user, class_name: "User", optional: true
 
