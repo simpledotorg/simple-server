@@ -33,6 +33,13 @@
     height: 100%;
     display: flex;
     padding: 5px 0 5px 0;
+    justify-content: space-between;
+    align-items: center;
+
+    .counter {
+      margin-right: 10px;
+      font-weight: bold;
+    }
 
     .form-check {
       margin: 10px;
@@ -59,8 +66,27 @@
     }
 
     .access-item {
-      height: 100%;
+      height: 44px;
       display: flex;
+      align-items: center;
+
+      .access-item__dropdown {
+        padding: 8px;
+        font-size: 20px;
+        cursor: pointer;
+        margin-left: 3px;
+        margin-right: -10px;
+
+        i {
+          transform: rotate(0deg);
+          @include transition(0.2s);
+          pointer-events: none;
+        }
+
+        &.hidden {
+          visibility: hidden;
+        }
+      }
 
       &.organization {
         div {
@@ -71,11 +97,10 @@
       }
 
       &.collapsed {
-        span {
+        .access-item__dropdown {
           i {
-            transform: rotate(180deg);
+            transform: rotate(-90deg);
             @include transition(0.3s);
-            padding-bottom: 2px;
           }
         }
 
@@ -115,6 +140,7 @@
         .access-item__padding {
           flex: auto;
           cursor: pointer;
+          height: 100%;
         }
       }
 
@@ -123,35 +149,26 @@
       }
 
       .form-check {
-        margin: 10px;
+        margin-left: 10px;
 
         label {
           font-weight: 100;
         }
 
         &.show {
-          margin: 12px 16px 12px 16px;
           padding: 0;
         }
       }
 
       .access-ratio {
-        padding: 12px;
         margin-left: auto;
         font-size: 15px;
         color: var(--secondary);
         font-weight: normal;
         font-style: normal;
         cursor: pointer;
-        margin-right: -6px;
         user-select: none;
-
-        i {
-          transform: rotate(0deg);
-          margin: 0 8px 2px 8px;
-          @include transition(0.2s);
-          pointer-events: none;
-        }
+        margin-right: 10px;
       }
     }
   }

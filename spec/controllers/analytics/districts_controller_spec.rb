@@ -156,6 +156,13 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         expect(response).to be_successful
       end
     end
+
+    it "allow cache to be refreshed forcefully" do
+      request_store = {}
+      allow(RequestStore).to receive(:store).and_return(request_store)
+      get :show, params: {organization_id: organization.id, id: district_name, force_cache: true}
+      expect(request_store[:force_cache]).to eq(true)
+    end
   end
 
   describe "#patient_list" do

@@ -13,11 +13,13 @@ class AdminAccessPresenter < SimpleDelegator
   end
 
   def display_access_level
-    access_level = if admin_access_level
-      UserAccess::LEVELS.fetch(admin_access_level.to_sym)
-    else
-      {name: "(Not Set)", description: "N/A"}
-    end
+    access_level =
+      if admin_access_level
+        UserAccess::LEVELS.fetch(admin_access_level.to_sym)
+      else
+        {name: "(Not Set)", description: "N/A"}
+      end
+
     OpenStruct.new(access_level)
   end
 
