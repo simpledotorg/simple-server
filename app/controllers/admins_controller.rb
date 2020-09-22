@@ -114,9 +114,9 @@ class AdminsController < AdminController
   # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
   #
   def verify_params_v2
-    if selected_facilities.blank?
-      redirect_to edit_admin_path(@admin),
-        alert: "At least one facility should be selected for access before inviting an Admin."
+    if validate_selected_facilities?
+      flash[:alert] = "At least one facility should be selected for access before editing an Admin."
+      render :edit, status: :bad_request
 
       return
     end
@@ -128,8 +128,8 @@ class AdminsController < AdminController
     @admin.assign_attributes(user_params)
 
     if @admin.invalid?
-      redirect_to edit_admin_path,
-        alert: @admin.errors.full_messages.join("")
+      flash[:alert] = @admin.errors.full_messages.join("")
+      render :edit, status: :bad_request
     end
   end
 
@@ -170,5 +170,9 @@ class AdminsController < AdminController
     return false if user_params[:access_level].blank?
 
     @admin.access_level != user_params[:access_level]
+  end
+
+  def validate_selected_facilities?
+    selected_facilities.blank? && user_params[:access_level] != User.access_levels[:power_user]
   end
 end
