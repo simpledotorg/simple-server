@@ -119,4 +119,17 @@ RSpec.describe BloodPressure, type: :model do
       end
     end
   end
+
+  context "#find_or_update_observation!" do
+    let(:blood_pressure) { create(:blood_pressure, :with_encounter) }
+    let!(:encounter) { blood_pressure.encounter }
+    let!(:observation) { blood_pressure.observation }
+    let!(:user) { blood_pressure.user }
+
+    it "should throw an RecordNotUnique error" do
+      observation.discard
+      blood_pressure.reload
+      expect { blood_pressure.find_or_update_observation!(encounter, user) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+  end
 end
