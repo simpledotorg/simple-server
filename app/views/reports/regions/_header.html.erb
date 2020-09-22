@@ -4,7 +4,6 @@
     <li>More detailed cohorts</li>
     <li>Top district and facility benchmarks</li>
     <li>Lost to follow-up rate</li>
-    <li>Facility comparison tables</li>
     <li>State and block level reports</li>
   </ul>
 </div>
@@ -21,44 +20,75 @@
   <p class="mb-12px fs-xxlarge fw-bold">
     <%= @region.name %>
   </p>
+  <%
+    # We want to maintain the request params for Overview and Detail nav links, but _only_ in the
+    # case where its _not_ a quarter (as those pages don't support quarters).
+    url_params = (params.dig(:period, :type) == "quarter") ? {} : request.params
+  %>
   <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
     <div class="d-flex order-2 order-lg-1 jc-between">
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold td-none <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Overview", request.params.merge(action: "show"), :class => "c-grey-dark td-none" %>
+        <%= link_to_unless_current "Overview", url_params.merge(action: "show"), :class => "c-grey-dark td-none" %>
       </p>
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Details trend", request.params.merge(action: "details"), :class => "c-grey-dark td-none" %>
+        <%= link_to_unless_current "Details trend", url_params.merge(action: "details"), :class => "c-grey-dark td-none" %>
       </p>
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Cohort reports", request.params.merge(action: "cohort"), :class => "c-grey-dark td-none" %>
+        <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
       </p>
     </div>
-    <div class="dropdown show order-1 mb-24px order-lg-2 mb-lg-0">
-      <a
-        class="d-block d-lg-inline-block btn btn-primary btn-sm dropdown-toggle"
-        href="#"
-        role="button"
-        id="dropdownMenuLink"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <%= @period.to_s %> report
-      </a>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
-          <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
-
-          <% (1..6).each do |num|
-              selected = false
-              date = Date.current.beginning_of_month.advance(months: -num)
-              period = Period.new(type: :month, value: date)
-          %>
-            <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
-                    type="submit" data-period-type="month" value="<%= period.value %>">
-              <%= period.value.to_s(:mon_year) %>
-            </button>
+    <div class="d-flex actions order-1 mb-24px order-lg-2 mb-lg-0">
+      <div class="d-none d-lg-block order-lg-2 ml-lg-8px">
+        <%= render "downloads" %>
+      </div>
+      <div class="dropdown show w-100pt mb-24px mb-lg-0 w-lg-auto">
+        <a
+          class="d-block d-lg-inline-block btn btn-sm dropdown-toggle c-black bg-white bs-small"
+          href="#"
+          role="button"
+          id="dropdownMenuLink"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <% if action_name == "cohort" %>
+            <%= cohort_report_type(@period) %>
+          <% else %>
+            <%= @period %>
           <% end %>
+        </a>
+        <% if action_name == "cohort" %>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <% [:month, :quarter].each do |period_type|
+              period = Period.new(type: period_type, value: @period.to_date)
+              selected = true if period == @period
+            %>
+              <%= form_for(period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+                <%= f.hidden_field :type %>
+                <button class="dropdown-item <%= 'active' if selected %>" name="period[value]"
+                        type="submit" data-period-type=<%= period.type %> value="<%= period.to_s %>">
+                  <%= cohort_report_type(period) %>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
+              <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
+
+              <% (1..6).each do |num|
+                  date = Date.current.beginning_of_month.advance(months: -num)
+                  period = Period.new(type: :month, value: date)
+                  selected = true if period == @period
+              %>
+                <button class="dropdown-item query-filter-month <%= 'active' if selected %>" name="period[value]"
+                        type="submit" data-period-type="month" value="<%= period.value %>">
+                  <%= period.value.to_s(:mon_year) %>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>

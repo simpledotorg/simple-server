@@ -58,6 +58,7 @@ gem "scenic"
 gem "sentry-raven"
 gem "sidekiq"
 gem "sidekiq-throttled"
+gem "skylight"
 gem "slack-notifier"
 gem "strong_password", "~> 0.0.8"
 gem "timecop", "~> 0.9.0", require: false
@@ -69,6 +70,7 @@ gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "memery"
 gem "bootstrap-select-rails"
+gem "render_async"
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]

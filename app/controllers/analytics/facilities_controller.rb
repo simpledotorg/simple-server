@@ -11,12 +11,7 @@ class Analytics::FacilitiesController < AnalyticsController
     set_dashboard_analytics(@period, 6)
     set_cohort_analytics(@period, @prev_periods)
 
-    @recent_blood_pressures = @facility
-      .blood_pressures
-      .includes(:patient, :user)
-      .order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
-
-    @recent_blood_pressures = paginate(@recent_blood_pressures)
+    @recent_blood_pressures = paginate(@facility.recent_blood_pressures)
 
     respond_to do |format|
       format.html
@@ -79,27 +74,21 @@ class Analytics::FacilitiesController < AnalyticsController
   def set_facility
     facility_id = params[:id] || params[:facility_id]
     @facility = Facility.friendly.find(facility_id)
-    authorize([:cohort_report, @facility])
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).include?(@facility) }
+    else
+      authorize([:cohort_report, @facility])
+    end
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics =
-      set_analytics_cache(analytics_cache_key_cohort(period)) {
-        @facility.cohort_analytics(period, prev_periods)
-      }
+    @cohort_analytics = @facility.cohort_analytics(period: period, prev_periods: prev_periods)
   end
 
   def set_dashboard_analytics(period, prev_periods)
-    @dashboard_analytics =
-      set_analytics_cache(analytics_cache_key_dashboard(period)) {
-        @facility.dashboard_analytics(period: period,
-                                      prev_periods: prev_periods,
-                                      include_current_period: @show_current_period)
-      }
-  end
-
-  def analytics_cache_key
-    "analytics/facilities/#{@facility.id}"
+    @dashboard_analytics = @facility.dashboard_analytics(period: period,
+                                                         prev_periods: prev_periods,
+                                                         include_current_period: @show_current_period)
   end
 
   def download_filename

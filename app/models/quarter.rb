@@ -7,12 +7,17 @@ class Quarter
   end
 
   def self.parse(string)
-    match = string.match(PARSE_REGEX)
-    raise ArgumentError, "String to parse as Quarter must match QX-YYYY format" unless match
-    number = Integer(match[1])
-    year = Integer(match[2])
-    quarter_month = quarter_to_month(number)
-    date = Date.new(year, quarter_month).beginning_of_month
+    date = if string.match(PARSE_REGEX)
+      match = string.match(PARSE_REGEX)
+      number = Integer(match[1])
+      year = Integer(match[2])
+      quarter_month = quarter_to_month(number)
+      Date.new(year, quarter_month).beginning_of_month
+    elsif string.respond_to?(:to_date)
+      string.to_date
+    else
+      raise ArgumentError, "Quarter.parse expects a a string in QX-YYYY format or an object that responds to to_date; provided: #{string}"
+    end
     new(date: date)
   end
 
@@ -38,7 +43,7 @@ class Quarter
     advance(months: 3)
   end
 
-  alias succ next_quarter
+  alias_method :succ, :next_quarter
 
   def previous_quarter
     advance(months: -3)
@@ -68,17 +73,16 @@ class Quarter
     date.beginning_of_quarter
   end
 
-  alias beginning_of_quarter start_date
-
   def end_date
     date.end_of_quarter
   end
 
-  alias end_of_quarter end_date
-
   def to_period
     Period.quarter(self)
   end
+
+  alias_method :beginning_of_quarter, :start_date
+  alias_method :end_of_quarter, :end_date
 
   def inspect
     "#<Quarter:#{object_id} #{to_s.inspect}>"
@@ -88,6 +92,8 @@ class Quarter
     to_s == other.to_s
   end
 
+  alias_method :eql?, :==
+
   def <=>(other)
     return -1 if year < other.year
     return -1 if year == other.year && number < other.number
@@ -95,8 +101,6 @@ class Quarter
     return 1 if year > other.year
     return 1 if year == other.year && number > other.number
   end
-
-  alias eql? ==
 
   def hash
     year.hash ^ number.hash

@@ -24,7 +24,6 @@ module Reports
 
     def call
       result.merge! ControlRateService.new(region, periods: range).call
-      result.merge! CohortService.new(region: region, quarters: last_five_quarters).call
       result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
       result.calculate_percentages(:visited_without_bp_taken)
       result.count_missed_visits

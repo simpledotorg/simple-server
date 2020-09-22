@@ -1,12 +1,30 @@
 class FacilityAnalyticsQuery
   include DashboardHelper
 
+  CACHE_VERSION = 1
+
   def initialize(facility, period = :month, prev_periods = 3, from_time = Time.current, include_current_period: false)
     @facility = facility
     @period = period
     @prev_periods = prev_periods
     @from_time = from_time
     @include_current_period = include_current_period
+  end
+
+  def call
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
+      results
+    end
+  end
+
+  def results
+    results = [
+      registered_patients_by_period,
+      total_registered_patients
+    ].compact
+
+    return {} if results.blank?
+    results.inject(&:deep_merge)
   end
 
   def total_registered_patients
@@ -37,6 +55,17 @@ class FacilityAnalyticsQuery
   end
 
   private
+
+  def cache_key
+    [
+      self.class.name,
+      @facility.id,
+      @period,
+      @prev_periods,
+      @from_time.to_s(:mon_year),
+      CACHE_VERSION
+    ].join("/")
+  end
 
   def group_by_user_and_date(query_results, key)
     valid_dates = dates_for_periods(@period,

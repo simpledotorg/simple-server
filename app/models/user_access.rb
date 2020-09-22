@@ -1,7 +1,11 @@
-class UserAccess < Struct.new(:user)
+class UserAccess
   class NotAuthorizedError < StandardError; end
-
   class AuthorizationNotPerformedError < StandardError; end
+
+  attr_reader :user
+  def initialize(user)
+    @user = user
+  end
 
   LEVELS = {
     manager: {
@@ -66,19 +70,50 @@ class UserAccess < Struct.new(:user)
   end
 
   def accessible_admins(action)
-    return User.admins if bypass?
-    return User.none if action_to_level(action).include?(:manage)
+    return User.none unless action == :manage
+    return User.admins if power_user?
+    return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
 
-    User.admins.where(organization: user.organization)
+    manageable_facilities = user.accessible_facilities(:manage)
+
+    resource_ids =
+      [
+        manageable_facilities.pluck("facilities.id"),
+        manageable_facilities.map(&:facility_group_id),
+        manageable_facilities.map { |facility| facility.organization.id }
+      ].flatten.uniq
+
+    User
+      .admins
+      .from(User
+              .admins
+              .select("DISTINCT ON (users.id) users.*")
+              .joins(:accesses)
+              .where(accesses: {resource_id: resource_ids}), "users")
   end
 
   def accessible_users(action)
-    return User.non_admins if bypass?
-    return User.none if action_to_level(action).include?(:manage)
+    return User.none unless [:manage, :view_reports].include?(action)
+    return User.non_admins if power_user?
+    return User.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     User
       .non_admins
-      .where(phone_number_authentications: {registration_facility_id: accessible_facilities(:manage)})
+      .where(phone_number_authentications: {registration_facility_id: accessible_facilities(action)})
+  end
+
+  def accessible_protocols(action)
+    return Protocol.all if action == :manage && power_user?
+    return Protocol.all if action == :manage && accessible_organizations(:manage).any?
+
+    Protocol.none
+  end
+
+  def accessible_protocol_drugs(action)
+    return ProtocolDrug.all if action == :manage && power_user?
+    return ProtocolDrug.all if action == :manage && accessible_organizations(:manage).any?
+
+    ProtocolDrug.none
   end
 
   def access_across_organizations?(action)
@@ -90,14 +125,19 @@ class UserAccess < Struct.new(:user)
   end
 
   def permitted_access_levels
-    return LEVELS.keys if bypass?
+    return LEVELS.keys if power_user?
 
     LEVELS[user.access_level.to_sym][:grant_access]
   end
 
+  def modify_access_level?
+    power_user? || user.accessible_organizations(:manage).any?
+  end
+
   def grant_access(new_user, selected_facility_ids)
-    return if selected_facility_ids.blank?
     raise NotAuthorizedError unless permitted_access_levels.include?(new_user.access_level.to_sym)
+    return if new_user.power_user?
+    return if selected_facility_ids.blank?
 
     resources = prepare_grantable_resources(selected_facility_ids)
     # if the user couldn't prepare resources for new_user means they shouldn't have had access to this operation at all
@@ -113,7 +153,7 @@ class UserAccess < Struct.new(:user)
   private
 
   def resources_for(resource_model, action)
-    return resource_model.all if bypass?
+    return resource_model.all if power_user?
     return resource_model.none unless action_to_level(action).include?(user.access_level.to_sym)
 
     resource_ids =
@@ -131,6 +171,8 @@ class UserAccess < Struct.new(:user)
   def prepare_grantable_resources(selected_facility_ids)
     selected_facilities = Facility.where(id: selected_facility_ids).includes(facility_group: :organization)
     resources = []
+
+    # TODO: if selected_facility_ids is not a subset of accessible_facilities, then raise NotAuthorizedError
 
     accessible_facilities_in_org = accessible_facilities(:manage).group_by(&:organization)
     selected_facilities.group_by(&:organization).each do |org, selected_facilities_in_org|
@@ -161,7 +203,7 @@ class UserAccess < Struct.new(:user)
     resources.flatten
   end
 
-  def bypass?
+  def power_user?
     user.power_user?
   end
 

@@ -16,6 +16,7 @@ class FacilityGroup < ApplicationRecord
   has_many :encounters, through: :facilities
   has_many :prescription_drugs, through: :facilities
   has_many :appointments, through: :facilities
+  has_many :teleconsultations, through: :facilities
 
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
@@ -42,6 +43,20 @@ class FacilityGroup < ApplicationRecord
 
   def diabetes_enabled?
     facilities.where(enable_diabetes_management: false).count.zero?
+  end
+
+  def discardable?
+    facilities.none? && patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
+  def dashboard_analytics(period:, prev_periods:)
+    query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: true)
+    query.call
+  end
+
+  def cohort_analytics(period:, prev_periods:)
+    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
+    query.call
   end
 
   private

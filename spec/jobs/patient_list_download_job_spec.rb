@@ -16,6 +16,14 @@ RSpec.describe PatientListDownloadJob, type: :job do
       expect(PatientsExporter).to receive(:csv)
       PatientListDownloadJob.perform_now(admin.email, "facility", {facility_id: facility.id})
     end
+
+    it "should work for FacilityGroup" do
+      facility_group = create(:facility_group)
+      facility = create(:facility, facility_group: facility_group)
+      patients = create_list(:patient, 2, registration_facility: facility)
+      expect(PatientsExporter).to receive(:csv).with(patients)
+      PatientListDownloadJob.perform_now(admin.email, "facility_group", {id: facility_group.id})
+    end
   end
 
   context "when with_medication_history is true" do

@@ -3,6 +3,8 @@ require "rails_helper"
 RSpec.feature "Overdue appointments", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
+  let!(:facility) { create(:facility, facility_group: ihmi_group) }
+
   let!(:supervisor) { create(:admin, role: "supervisor") }
   let!(:view_overdue_permission) do
     create(:user_permission, user: supervisor,
@@ -25,7 +27,7 @@ RSpec.feature "Overdue appointments", type: :feature do
     it "shows Overdue tab" do
       visit root_path
 
-      expect(page).to have_content("Overdue patients")
+      expect(page).to have_content("Overdue")
     end
 
     describe "Overdue patients tab" do

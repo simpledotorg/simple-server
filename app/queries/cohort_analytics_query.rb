@@ -1,12 +1,33 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
-  def initialize(patients, period = :month)
-    @patients = patients
+  CACHE_VERSION = 1
+
+  attr_reader :from_time
+  attr_reader :period
+  attr_reader :prev_periods
+
+  def initialize(region, period: :month, prev_periods: nil, from_time: Time.current.beginning_of_month)
+    @facilities = region.facilities
+    @patients = Patient.joins(:assigned_facility).where(facilities: {id: @facilities}).with_hypertension
+    @from_time = from_time
+    @period = period
+
     @include_current_period = true
+    @prev_periods = if prev_periods.nil?
+      @period == :quarter ? 5 : 6
+    else
+      prev_periods
+    end
   end
 
-  def patient_counts_by_period(period, prev_periods, from_time: Time.current)
+  def call
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
+      results
+    end
+  end
+
+  def results
     results = {}
 
     # index is a quick hack to allow toggling the current period in the results.
@@ -56,6 +77,19 @@ class CohortAnalyticsQuery
       controlled: {total: controlled_patients.size, **controlled_counts},
       uncontrolled: {total: uncontrolled_patients.size, **uncontrolled_counts}
     }.with_indifferent_access
+  end
+
+  private
+
+  def cache_key
+    [
+      self.class.name,
+      @facilities.map(&:id).sort,
+      period,
+      prev_periods,
+      from_time.to_s(:mon_year),
+      CACHE_VERSION
+    ].join("/")
   end
 
   def registered(cohort_start, cohort_end)

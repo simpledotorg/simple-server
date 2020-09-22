@@ -4,14 +4,19 @@ class PatientListDownloadJob < ApplicationJob
 
   def perform(recipient_email, model_type, params, with_medication_history: false)
     case model_type
-    when "district" then
+    when "district"
       district_name = params[:district_name]
       organization = Organization.find(params[:organization_id])
       model = OrganizationDistrict.new(district_name, organization)
       model_name = district_name
-    when "facility" then
+    when "facility"
       model = Facility.find(params[:facility_id])
       model_name = model.name
+    when "facility_group"
+      model = FacilityGroup.find(params[:id])
+      model_name = model.name
+    else
+      raise ArgumentError, "unknown model_type #{model_type.inspect}"
     end
 
     exporter = with_medication_history ? PatientsWithHistoryExporter : PatientsExporter

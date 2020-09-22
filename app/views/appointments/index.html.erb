@@ -1,13 +1,23 @@
 <h1>Overdue patients</h1>
 <p>Patients that are overdue for a follow-up visit.</p>
 
-<%= render('shared/paginate_and_filter_by_facility',
-           form_url: appointments_path,
-           current_admin: current_admin,
-           facility_id: @facility_id,
-           per_page: @per_page,
-           form_id: "search-filters",
-           scope_namespace: [:overdue_list, Facility]) %>
+<% if current_admin.permissions_v2_enabled? %>
+  <%= render('shared/paginate_and_filter_by_facility',
+             form_url: appointments_path,
+             current_admin: current_admin,
+             facility_id: @facility_id,
+             per_page: @per_page,
+             form_id: "search-filters",
+             scope_namespace: current_admin.accessible_facilities(:manage_overdue_list)) %>
+<% else %>
+  <%= render('shared/paginate_and_filter_by_facility',
+             form_url: appointments_path,
+             current_admin: current_admin,
+             facility_id: @facility_id,
+             per_page: @per_page,
+             form_id: "search-filters",
+             scope_namespace: [:overdue_list, Facility]) %>
+<% end %>
 
 <% if @patient_summaries.present? %>
   <h2>Patient list</h2>

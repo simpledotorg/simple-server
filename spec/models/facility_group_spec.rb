@@ -11,6 +11,7 @@ RSpec.describe FacilityGroup, type: :model do
     it { have_many(:blood_sugars).through(:facilities) }
     it { have_many(:prescription_drugs).through(:facilities) }
     it { have_many(:appointments).through(:facilities) }
+    it { have_many(:teleconsultations).through(:facilities) }
     it { have_many(:medical_histories).through(:patients) }
     it { have_many(:communications).through(:appointments) }
 
@@ -69,6 +70,54 @@ RSpec.describe FacilityGroup, type: :model do
         facility_group.toggle_diabetes_management
 
         expect(Facility.pluck(:enable_diabetes_management)).to match_array [true, false]
+      end
+    end
+  end
+
+  describe ".discardable?" do
+    let!(:facility_group) { create(:facility_group) }
+
+    context "isn't discardable if data exists" do
+      it "has patients" do
+        facility = create(:facility, facility_group: facility_group)
+        create(:patient, registration_facility: facility)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has appointments" do
+        facility = create(:facility, facility_group: facility_group)
+        create(:appointment, facility: facility)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has facilities" do
+        create(:facility, facility_group: facility_group)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has blood pressures" do
+        facility = create(:facility, facility_group: facility_group)
+        blood_pressure = create(:blood_pressure, facility: facility)
+        create(:encounter, :with_observables, observable: blood_pressure)
+
+        expect(facility_group.discardable?).to be false
+      end
+
+      it "has blood sugars" do
+        facility = create(:facility, facility_group: facility_group)
+        blood_sugar = create(:blood_sugar, facility: facility)
+        create(:encounter, :with_observables, observable: blood_sugar)
+
+        expect(facility_group.discardable?).to be false
+      end
+    end
+
+    context "is discardable if no data exists" do
+      it "has no data" do
+        expect(facility_group.discardable?).to be true
       end
     end
   end

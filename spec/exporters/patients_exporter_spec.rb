@@ -141,10 +141,10 @@ RSpec.describe PatientsExporter do
       "High",
       patient.latest_bp_passport&.shortcode,
       patient.id,
-      prescription_drug_1.name,
-      prescription_drug_1.dosage,
       prescription_drug_2.name,
-      prescription_drug_2.dosage
+      prescription_drug_2.dosage,
+      prescription_drug_1.name,
+      prescription_drug_1.dosage
     ]
   end
 

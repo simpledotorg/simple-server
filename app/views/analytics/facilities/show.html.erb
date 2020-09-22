@@ -18,96 +18,33 @@
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
+<% if current_admin.permissions_v2_enabled? %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             period: @period,
+             row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
+             row_resource_description: "Users",
+             row_resource_display_field: :full_name,
+             row_resource_link: :admin_user_path %>
+  <% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
+    <%= render 'shared/recent_bp_log',
+               blood_pressures: @recent_blood_pressures,
+               display_model: :facility %>
+  <% end %>
+<% else %>
+  <%= render 'shared/analytics_table',
+             dashboard_analytics: @dashboard_analytics,
+             period: @period,
+             row_resource: User.order(:full_name),
+             row_resource_description: "Users",
+             row_resource_display_field: :full_name,
+             row_resource_link: :admin_user_path %>
 
-<div class="card pr-0 pr-md-3">
-  <h2>Users</h2>
-
-  <div class="table-responsive">
-    <table id="analytics-table" class="table-compact">
-      <colgroup>
-        <col>
-        <col class="table-divider">
-        <col class="table-divider">
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-        <col>
-      </colgroup>
-      <thead>
-      <tr>
-        <th></th>
-        <th class="row-label"><strong>Total</strong></th>
-        <th class="row-label" colspan="6"><strong>New registrations</strong></th>
-      </tr>
-
-      <tr class="sorts" data-sort-method="thead">
-        <th class="row-label sort-label sort-label-small" style="text-align: left;" data-sort-default>Name</th>
-        <!--Registered patients-->
-        <th class="row-label sort-label" data-sort-default data-sort-method="number">Registered patients</th>
-
-        <!--New registrations-->
-        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
-          <th class="row-label sort-label sort-label-small" data-sort-method="number">
-            <%= format_period(@period, date) %>
-          </th>
-        <% end %>
-      </tr>
-
-      </thead>
-      <tbody>
-
-      <tr class="row-total" data-sort-method="none">
-        <td class="row-title row-total">All</td>
-
-        <!--Registered patients-->
-        <td class="row-total" style="text-align: center;">
-          <%= dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
-        </td>
-
-        <!--New registrations-->
-        <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
-          <td class="row-total" style="text-align: center;">
-            <%= dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date)) %>
-          </td>
-        <% end %>
-      </tr>
-
-      <% policy_scope([:cohort_report, User.order(:full_name)]).each do |user| %>
-        <% if @dashboard_analytics[user.id].present? %>
-          <tr>
-            <td class="row-title">
-              <%= link_to user.full_name, admin_user_path(user) %>
-            </td>
-
-            <!--Registered patients-->
-            <td style="text-align: center;">
-              <%= dash_if_zero(@dashboard_analytics.dig(user.id, :total_registered_patients)) %>
-            </td>
-
-            <!--New registrations-->
-            <% dates_for_periods(@period, 6, include_current_period: @show_current_period).each do |date| %>
-              <td style="text-align: center;">
-                <%= dash_if_zero(@dashboard_analytics.dig(user.id, :registered_patients_by_period, date)) %>
-              </td>
-            <% end %>
-          </tr>
-        <% end %>
-      <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
-  <%= render 'shared/recent_bp_log',
-             blood_pressures: @recent_blood_pressures,
-             display_model: :facility %>
+  <% if policy([:cohort_report, @facility]).view_health_worker_activity? %>
+    <%= render 'shared/recent_bp_log',
+               blood_pressures: @recent_blood_pressures,
+               display_model: :facility %>
+  <% end %>
 <% end %>
 
 <div class="downloads">
@@ -126,28 +63,55 @@
     <% end %>
   </p>
 
-  <% if policy([:cohort_report, @facility]).patient_list? %>
-    <p>
-      <%= link_to analytics_facility_patient_list_path(@facility) do %>
-        <i class="far fa-file-excel mr-2"></i>
-        Patient line list
-      <% end %>
-    </p>
-    <p>
-      <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
-        <i class="far fa-file-excel mr-2"></i>
-        Patient line list (with medication history)
-      <% end %>
-    </p>
+  <% if current_admin.permissions_v2_enabled? %>
+    <% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
+      <p>
+        <%= link_to analytics_facility_patient_list_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list
+        <% end %>
+      </p>
+      <p>
+        <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list (with medication history)
+        <% end %>
+      </p>
+    <% end %>
+  <% else %>
+    <% if policy([:cohort_report, @facility]).patient_list? %>
+      <p>
+        <%= link_to analytics_facility_patient_list_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list
+        <% end %>
+      </p>
+      <p>
+        <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
+          <i class="far fa-file-excel mr-2"></i>
+          Patient line list (with medication history)
+        <% end %>
+      </p>
+    <% end %>
   <% end %>
 
   <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
-    <% if policy([:cohort_report, @facility]).whatsapp_graphics? %>
-      <%=
-        render "shared/graphics/graphics_download_links",
-               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
-               options: { facility_id: @facility.id }
-      %>
+    <% if current_admin.permissions_v2_enabled? %>
+      <% if current_admin.accessible_facilities(:view_reports).include?(@facility) %>
+        <%=
+          render "shared/graphics/graphics_download_links",
+                 graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+                 options: { facility_id: @facility.id }
+        %>
+      <% end %>
+    <% else %>
+      <% if policy([:cohort_report, @facility]).whatsapp_graphics? %>
+        <%=
+          render "shared/graphics/graphics_download_links",
+                 graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+                 options: { facility_id: @facility.id }
+        %>
+      <% end %>
     <% end %>
   <% end %>
 </div>

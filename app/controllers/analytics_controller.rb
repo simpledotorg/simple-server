@@ -3,6 +3,10 @@ class AnalyticsController < AdminController
   before_action :set_quarter, only: [:whatsapp_graphics]
   before_action :set_period
 
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   CACHE_VERSION = 1
 
@@ -42,19 +46,5 @@ class AnalyticsController < AdminController
     @year, @quarter = previous_year_and_quarter
     @quarter = params[:quarter].to_i if params[:quarter].present?
     @year = params[:year].to_i if params[:year].present?
-  end
-
-  def set_analytics_cache(key)
-    Rails.cache.fetch(key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) { yield }
-  end
-
-  def analytics_cache_key_cohort(period)
-    "#{analytics_cache_key}/cohort/#{period}/#{CACHE_VERSION}"
-  end
-
-  def analytics_cache_key_dashboard(time_period)
-    key = "#{analytics_cache_key}/dashboard/#{time_period}/#{CACHE_VERSION}"
-    key = "#{key}/#{@quarter}/#{@year}" if @quarter && @year
-    key
   end
 end
