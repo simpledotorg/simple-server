@@ -7,9 +7,17 @@ module Observeable
 
   included do
     def find_or_update_observation!(encounter, user)
-      build_observation(encounter: encounter, user: user) if observation.blank?
-      observation.update!(encounter: encounter)
-      observation
+      with_discarded_observations do
+        build_observation(encounter: encounter, user: user) if observation.blank?
+        observation.update!(encounter: encounter)
+        observation
+      end
     end
+  end
+
+  private
+
+  def with_discarded_observations
+    Observation.unscoped { yield }
   end
 end

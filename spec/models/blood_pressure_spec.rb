@@ -126,10 +126,15 @@ RSpec.describe BloodPressure, type: :model do
     let!(:observation) { blood_pressure.observation }
     let!(:user) { blood_pressure.user }
 
-    it "should throw an RecordNotUnique error" do
+    it "updates discarded observations also" do
       observation.discard
       blood_pressure.reload
-      expect { blood_pressure.find_or_update_observation!(encounter, user) }.to raise_error(ActiveRecord::RecordNotUnique)
+
+      encounter.encountered_on = 1.year.ago
+      encounter.save
+      blood_pressure.find_or_update_observation!(encounter, user)
+
+      expect(encounter.encountered_on).to eq 1.year.ago.to_date
     end
   end
 end
