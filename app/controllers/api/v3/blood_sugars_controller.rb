@@ -13,7 +13,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
 
   private
 
-  def facility_group_records
+  def region_records
     current_facility_group.blood_sugars.with_discarded.for_v3
   end
 

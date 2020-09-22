@@ -13,10 +13,6 @@ class Api::V4::BloodSugarsController < Api::V4::SyncController
 
   private
 
-  def facility_group_records
-    current_facility_group.blood_sugars.with_discarded
-  end
-
   def transform_to_response(blood_sugar)
     Api::V4::BloodSugarTransformer.to_response(blood_sugar)
   end

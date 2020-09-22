@@ -2,6 +2,14 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
+    def region_records
+      if Flipper.enabled?(:zone_level_sync)
+        zone_records
+      else
+        facility_group_records
+      end
+    end
+
     def facility_group_records
       current_facility_group
         .send(model_name.name.underscore.pluralize.to_sym)
