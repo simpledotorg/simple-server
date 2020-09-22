@@ -21,7 +21,7 @@ RSpec.describe PatientListDownloadJob, type: :job do
       facility_group = create(:facility_group)
       facility = create(:facility, facility_group: facility_group)
       patients = create_list(:patient, 2, assigned_facility: facility)
-      expect(PatientsExporter).to receive(:csv).with(patients)
+      expect(PatientsExporter).to receive(:csv).with(a_collection_containing_exactly(*patients))
       PatientListDownloadJob.perform_now(admin.email, "facility_group", {id: facility_group.id})
     end
   end
