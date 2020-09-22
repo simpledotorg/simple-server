@@ -5,17 +5,15 @@ RSpec::Matchers.define :facilities do |facilities|
 end
 
 RSpec.describe MyFacilitiesController, type: :controller do
-  let(:facility_group) { create(:facility_group) }
-  let(:supervisor) do
-    create(:admin, :supervisor, facility_group: facility_group).tap do |user|
-      user.user_permissions.create!(permission_slug: "view_my_facilities")
-    end
-  end
+  let!(:facility_group) { create(:facility_group) }
+  let!(:accessible_facility) { create(:facility, facility_group: facility_group) }
+  let!(:viewer_reports_only) { create(:admin, :viewer_reports_only, :with_access, resource: facility_group) }
+  let!(:inaccessible_facility) { create(:facility) }
 
   render_views
 
   before do
-    sign_in(supervisor.email_authentication)
+    sign_in(viewer_reports_only.email_authentication)
   end
 
   describe "GET #index" do
@@ -43,10 +41,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
   end
 
   describe "GET #registrations" do
-    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
-    let!(:facility_not_under_supervisor) { create(:facility) }
+    let!(:inaccessible_facility) { create(:facility) }
     let!(:patients) do
-      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
+      [accessible_facility, inaccessible_facility].map do |facility|
         create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
       end
     end
@@ -64,7 +61,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         .and_return(query_object)
 
       expect(MyFacilities::RegistrationsQuery).to receive(:new)
-        .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
+        .with(hash_including(facilities: facilities(Facility.where(id: accessible_facility))))
 
       expect(query_object).to receive(:registrations).and_return(query_object.registrations)
       expect(query_object).to receive(:total_registrations).and_return(query_object.total_registrations)
@@ -74,10 +71,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
   end
 
   describe "GET #missed_visits" do
-    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
-    let!(:facility_not_under_supervisor) { create(:facility) }
     let!(:patients) do
-      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
+      [accessible_facility, inaccessible_facility].map do |facility|
         create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
       end
     end
@@ -95,7 +90,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         .and_return(query_object)
 
       expect(MyFacilities::MissedVisitsQuery).to receive(:new)
-        .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
+        .with(hash_including(facilities: facilities(Facility.where(id: accessible_facility))))
 
       expect(query_object).to receive(:periods).and_return(query_object.periods)
       expect(query_object).to receive(:missed_visits_by_facility).and_return(query_object.missed_visits_by_facility).at_least(:once)

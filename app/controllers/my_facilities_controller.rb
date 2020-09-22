@@ -10,10 +10,6 @@ class MyFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
-
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
@@ -21,17 +17,9 @@ class MyFacilitiesController < AdminController
   before_action :set_last_updated_at
 
   def index
-    @facilities = if current_admin.permissions_v2_enabled?
-      current_admin.accessible_facilities(:view_reports)
-    else
-      policy_scope([:manage, :facility, Facility])
-    end
+    @facilities = current_admin.accessible_facilities(:view_reports)
 
-    users = if current_admin.permissions_v2_enabled?
-      current_admin.accessible_users(:manage)
-    else
-      policy_scope([:manage, :user, User])
-    end
+    users = current_admin.accessible_users(:manage)
 
     @users_requesting_approval = paginate(users
                                             .requested_sync_approval
@@ -49,7 +37,7 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities(current_admin.accessible_facilities(:view_reports))
 
     bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
@@ -70,7 +58,7 @@ class MyFacilitiesController < AdminController
   end
 
   def registrations
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities(current_admin.accessible_facilities(:view_reports))
 
     registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
                                                                period: @selected_period,
@@ -91,7 +79,7 @@ class MyFacilitiesController < AdminController
   end
 
   def missed_visits
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities(current_admin.accessible_facilities(:view_reports))
 
     missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
                                                               period: @selected_period,
@@ -129,10 +117,6 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :view_my_facilities?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
   end
 end
