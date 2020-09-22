@@ -108,10 +108,10 @@ RSpec.describe CohortAnalyticsQuery do
         end
 
         expected_result = {
-          registered: {
-            :total => 15,
+          cohort_patients: {
+            :total => 17,
             facility1.id => 10,
-            facility2.id => 5
+            facility2.id => 7
           },
           followed_up: {
             :total => 9,
@@ -119,9 +119,9 @@ RSpec.describe CohortAnalyticsQuery do
             facility2.id => 4
           },
           defaulted: {
-            :total => 6,
+            :total => 8,
             facility1.id => 5,
-            facility2.id => 1
+            facility2.id => 3
           },
           controlled: {
             :total => 5,
@@ -190,7 +190,7 @@ RSpec.describe CohortAnalyticsQuery do
         jan_patients_1[0..2].each(&:discard_data)
         analytics = CohortAnalyticsQuery.new(organization_district, period: :month, prev_periods: 3, from_time: report_end)
         counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
-        expect(counts[:cohort_patients][:total]).to eq(12)
+        expect(counts[:cohort_patients][:total]).to eq(14)
       end
     end
 
@@ -243,17 +243,6 @@ RSpec.describe CohortAnalyticsQuery do
         analytics = CohortAnalyticsQuery.new(organization_district, period: :month, prev_periods: 3, from_time: report_end)
         counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
         expect(counts).to eq(expected_result)
-      end
-    end
-
-    context "with discarded patients" do
-      before { jan_patients_1[0..2].each(&:discard_data) }
-
-      it "does not count discarded patients" do
-        analytics = CohortAnalyticsQuery.new(organization_district, period: :month, prev_periods: 3, from_time: report_end)
-        counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
-
-        expect(counts[:cohort_patients][:total]).to eq(14)
       end
     end
   end
