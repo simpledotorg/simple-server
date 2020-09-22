@@ -305,9 +305,8 @@ AdminAccessEdit = function (accessDivId) {
 AdminAccessEdit.prototype = Object.create(AdminAccessInvite.prototype)
 AdminAccessEdit.prototype = Object.assign(AdminAccessEdit.prototype, {
   accessLevelSelector: function () {
-    // super
-    AdminAccessInvite.prototype.accessLevelSelector.call(this)
     const _super = AdminAccessInvite.prototype.accessLevelSelector.call(this)
+
     this.toggleAccessTreeVisibility(_super.val() === ACCESS_LEVEL_POWER_USER)
   }
 })

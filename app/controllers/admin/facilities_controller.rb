@@ -77,6 +77,13 @@ class Admin::FacilitiesController < AdminController
   end
 
   def show
+    @facility_users = if current_admin.permissions_v2_enabled?
+      current_admin
+        .accessible_users(:manage)      
+        .where(phone_number_authentications: {registration_facility_id: @facility})
+    else
+      @facility.users
+    end
   end
 
   def new

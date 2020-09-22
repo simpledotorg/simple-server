@@ -59,11 +59,11 @@
             }) %>
 
         <%= form.label "Facility access *" %>
-        <div id="facility-access-power-user" class="hidden">
+        <div id="facility-access-power-user" class=<%= "hidden" unless admin.power_user? %>>
           Admin has access to all facilities in the system
         </div>
 
-        <div id="facility-access">
+        <div id="facility-access" class=<%= "hidden" if admin.power_user? %>>
           <div class="card access-tree">
             <div id="select-all-facilities" hidden="hidden">
               <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
