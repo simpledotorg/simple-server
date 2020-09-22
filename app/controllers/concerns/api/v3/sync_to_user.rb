@@ -3,7 +3,7 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      if Flipper.enabled?(:zone_level_sync)
+      if zone_level_sync?
         zone_records
       else
         facility_group_records

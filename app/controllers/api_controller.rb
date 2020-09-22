@@ -17,6 +17,10 @@ class APIController < ApplicationController
     head :not_found
   end
 
+  def zone_level_sync?
+    Flipper.enabled?(:zone_level_sync)
+  end
+
   private
 
   def current_user
