@@ -18,10 +18,10 @@ class SeedUsersDataJob
   USER_ACTIVITY_FACTOR.default = 0
 
   FACILITY_SIZE_FACTOR = {
-    large: 100,
-    medium: 50,
-    small: 30,
-    community: 10
+    large: 10,
+    medium: 5,
+    small: 3,
+    community: 1
   }.with_indifferent_access
   FACILITY_SIZE_FACTOR.default = 0
 
