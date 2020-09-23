@@ -51,22 +51,21 @@
           ) %>
 
       <%= access_level_select(form, current_admin.permitted_access_levels,
-                              {
-                                  required: true,
-                                  disabled: !current_admin.modify_access_level?,
-                                  current_access_level: admin.access_level
-                              }) %>
+          {
+              required: true,
+              disabled: !current_admin.modify_access_level?,
+              current_access_level: admin.access_level
+          }) %>
 
       <%= form.label "Facility access *" %>
-      <div id="facility-access-power-user" class=<%= "hidden" unless admin.power_user? %>>
+      <div id="facility-access-power-user" class="hidden">
         Admin has access to all facilities in the system
       </div>
 
-      <div id="facility-access" class=<%= "hidden" if admin.power_user? %>>
+      <div id="facility-access">
         <div class="card access-tree">
           <div id="select-all-facilities" hidden="hidden">
             <%= form.check_box :select_all_facilities, id: "select-all-facilities-input" %>
-            <div class="counter" id="total-selected-facilities"></div>
           </div>
 
           <%= render_async(access_tree_admin_path(admin, :edit), error_message: access_tree_load_error) do %>
@@ -84,5 +83,5 @@
 </div>
 
 <script>
-    new AdminAccessEdit("facility-access").initialize()
+  new AdminAccessEdit("facility-access").initialize()
 </script>
