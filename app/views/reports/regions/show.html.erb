@@ -4,7 +4,7 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="m-8px c-black">
+          <h3 class="mb-8px c-black">
             BP controlled
           </h3>
           <p class="c-grey-dark">
@@ -59,7 +59,7 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="m-8px c-black">
+          <h3 class="mb-8px c-black">
             BP not controlled
           </h3>
           <p class="c-grey-dark">
@@ -113,7 +113,7 @@
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
-        <h3 class="m-8px c-black">
+        <h3 class="mb-8px c-black">
           No BP measure
         </h3>
         <p class="c-grey-dark">
@@ -171,7 +171,7 @@
     <div class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="m-8px c-black">
+          <h3 class="mb-8px c-black">
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
@@ -202,17 +202,23 @@
           </p>
         </div>
       </div>
-      <div>
+      <% if @data.last_value(:cumulative_registrations).zero? %>
+        <div class="d-flex align-center justify-center h-200px mx-20px mb-16px bb-1px bl-1px bb-grey-medium bl-grey-medium">
+          <p class="fs-14px c-grey-medium">
+            No data available
+          </p>
+        </div>
+      <% else %>
         <div class="h-200px mr-13px mb-16px ml-13px pb-4px">
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
-        <div class="pb-4px px-20px">
-          <div class="mb-2">
-            <p class="mb-0px fs-12px <% if @region.is_a?(Facility) %>c-grey-dark<% else %>us-none c-transparent<% end %>">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
-            </p>
-          </div>
+      <% end %>
+      <div class="pb-4px px-20px">
+        <div class="mb-2">
+          <p class="mb-0px fs-12px <% if @region.is_a?(Facility) %>c-grey-dark<% else %>us-none c-transparent<% end %>">
+            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+            the last 3 months
+          </p>
         </div>
       </div>
     </div>
@@ -239,8 +245,6 @@
                row_resource_link: :admin_user_path %>
   <% end %>
 <% end %>
-
-<%= render "downloads" %>
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
