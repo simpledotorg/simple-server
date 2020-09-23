@@ -10,7 +10,7 @@ RSpec.describe Admin::ProtocolsController, type: :controller do
   end
 
   before do
-    sign_in(create(:admin, :owner).email_authentication)
+    sign_in(create(:admin, :power_user).email_authentication)
   end
 
   describe "GET #index" do
