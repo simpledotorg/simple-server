@@ -4,6 +4,7 @@ class Analytics::FacilitiesController < AnalyticsController
   include Pagination
 
   before_action :set_facility
+  before_action :set_force_cache
 
   def show
     @show_current_period = true
@@ -96,5 +97,13 @@ class Analytics::FacilitiesController < AnalyticsController
     facility = @facility.name
     time = Time.current.to_s(:number)
     "facility-#{period}-cohort-report_#{facility}_#{time}.csv"
+  end
+
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def force_cache?
+    params[:force_cache].present?
   end
 end

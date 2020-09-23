@@ -31,7 +31,7 @@
         <%= link_to_unless_current "Overview", url_params.merge(action: "show"), :class => "c-grey-dark td-none" %>
       </p>
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Details trend", url_params.merge(action: "details"), :class => "c-grey-dark td-none" %>
+        <%= link_to_unless_current "Details", url_params.merge(action: "details"), :class => "c-grey-dark td-none" %>
       </p>
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>

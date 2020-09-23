@@ -4,7 +4,7 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="m-8px c-black">
+          <h3 class="mb-8px c-black">
             BP controlled
           </h3>
           <p class="c-grey-dark">
@@ -56,7 +56,7 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="m-8px c-black">
+          <h3 class="mb-8px c-black">
             BP not controlled
           </h3>
           <p class="c-grey-dark">
@@ -107,7 +107,7 @@
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
-        <h3 class="m-8px c-black">
+        <h3 class="mb-8px c-black">
           No BP measure
         </h3>
         <p class="c-grey-dark">
@@ -117,7 +117,7 @@
           <div class="d-flex align-baseline mb-8px mb-lg-4px">
             <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
             <div class="d-flex align-baseline">
-              <p class="w-32px m-0px fs-16px fw-bold">
+              <p class="w-40px m-0px fs-16px fw-bold">
                 <%= percentage_or_na(@data.last_value(:missed_visits_rate), precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
@@ -128,7 +128,7 @@
           <div class="d-flex align-baseline">
             <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
             <div class="d-flex align-baseline">
-              <p class="w-32px m-0px fs-16px fw-bold">
+              <p class="w-40px m-0px fs-16px fw-bold">
                 <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
@@ -157,7 +157,7 @@
     <div class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-2">
-          <h3 class="m-8px c-black">
+          <h3 class="mb-8px c-black">
             Cumulative registrations
           </h3>
           <p class="c-grey-dark">
@@ -185,7 +185,7 @@
         </div>
       </div>
       <% if @data.last_value(:cumulative_registrations).zero? %>
-        <div class="d-flex align-center justify-center h-200px bb-1px bl-1px bb-grey-medium bl-grey-medium">
+        <div class="d-flex align-center justify-center h-200px mx-20px mb-16px bb-1px bl-1px bb-grey-medium bl-grey-medium">
           <p class="fs-14px c-grey-medium">
             No data available
           </p>
@@ -219,8 +219,6 @@
                row_resource_link: :admin_user_path %>
   <% end %>
 <% end %>
-
-<%= render "downloads" %>
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>

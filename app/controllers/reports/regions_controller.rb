@@ -1,5 +1,6 @@
 class Reports::RegionsController < AdminController
   include Pagination
+  include GraphicsDownload
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
   before_action :set_period, only: [:show, :details, :cohort]
@@ -108,6 +109,27 @@ class Reports::RegionsController < AdminController
         end
       end
     end
+  end
+
+  def whatsapp_graphics
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
+
+    previous_quarter = Quarter.current.previous_quarter
+    @year, @quarter = previous_quarter.year, previous_quarter.number
+    @quarter = params[:quarter].to_i if params[:quarter].present?
+    @year = params[:year].to_i if params[:year].present?
+
+    @cohort_analytics = @region.cohort_analytics(period: :quarter, prev_periods: 3)
+    @dashboard_analytics = @region.dashboard_analytics(period: :quarter, prev_periods: 4)
+
+    whatsapp_graphics_handler(
+      @region.organization.name,
+      @region.name
+    )
   end
 
   private

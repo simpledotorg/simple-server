@@ -5,15 +5,15 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
+      window.dataLayer = window.dataLayer || [];
 
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+      function gtag() {
+        dataLayer.push(arguments);
+      }
 
-        gtag('js', new Date());
+      gtag('js', new Date());
 
-        gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
+      gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
     </script>
   <% end %>
 
@@ -91,7 +91,7 @@
             <% if current_admin.accessible_facilities(:manage).any? %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Settings
+                  Manage
                 </a>
 
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
