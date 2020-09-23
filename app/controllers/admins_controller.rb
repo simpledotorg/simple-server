@@ -2,37 +2,19 @@ class AdminsController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :set_admin_v2, only: [:show, :edit, :update, :access_tree], if: -> { current_admin.permissions_v2_enabled? }
-  before_action :verify_params, only: [:update], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :verify_params_v2, only: [:update], if: -> { current_admin.permissions_v2_enabled? }
-
-  after_action :verify_policy_scoped, only: :index
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_admin, only: [:show, :edit, :update, :destroy, :access_tree]
+  before_action :verify_params, only: [:update]
 
   def index
-    if current_admin.permissions_v2_enabled?
-      admins = current_admin.accessible_admins(:manage)
-      authorize_v2 { admins.any? }
+    admins = current_admin.accessible_admins(:manage)
+    authorize { admins.any? }
 
-      @admins =
-        if searching?
-          paginate(admins.search_by_name_or_email(search_query))
-        else
-          paginate(admins.order("email_authentications.email"))
-        end
-    else
-      authorize([:manage, :admin, User])
-      admins = policy_scope([:manage, :admin, User])
-
-      @admins =
-        if searching?
-          paginate(admins.search_by_name_or_email(search_query))
-        else
-          paginate(admins.order("email_authentications.email"))
-        end
-    end
+    @admins =
+      if searching?
+        paginate(admins.search_by_name_or_email(search_query))
+      else
+        paginate(admins.order("email_authentications.email"))
+      end
   end
 
   def access_tree
@@ -62,36 +44,15 @@ class AdminsController < AdminController
   end
 
   def edit
-    unless current_admin.permissions_v2_enabled?
-      authorize([:manage, :admin, current_admin])
-    end
   end
 
   def update
-    if current_admin.permissions_v2_enabled?
-      User.transaction do
-        @admin.update!(user_params)
-        current_admin.grant_access(@admin, selected_facilities)
-      end
-
-      redirect_to admins_url, notice: "Admin was successfully updated."
-    else
-      User.transaction do
-        @admin.update!(user_params)
-        next unless permission_params.present?
-
-        @admin.user_permissions.delete_all
-        permission_params.each do |attributes|
-          @admin.user_permissions.create!(attributes.permit(
-            :permission_slug,
-            :resource_id,
-            :resource_type
-          ))
-        end
-      end
-
-      render json: {}, status: :ok
+    User.transaction do
+      @admin.update!(user_params)
+      current_admin.grant_access(@admin, selected_facilities)
     end
+
+    redirect_to admins_url, notice: "Admin was successfully updated."
   end
 
   def destroy
@@ -102,18 +63,6 @@ class AdminsController < AdminController
   private
 
   def verify_params
-    @admin.assign_attributes(user_params)
-
-    if @admin.invalid?
-      render json: {errors: @admin.errors.full_messages},
-        status: :bad_request
-    end
-  end
-
-  #
-  # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
-  #
-  def verify_params_v2
     if selected_facilities.blank?
       redirect_to edit_admin_path(@admin),
         alert: "At least one facility should be selected for access before inviting an Admin."
@@ -134,14 +83,7 @@ class AdminsController < AdminController
   end
 
   def set_admin
-    @admin = User.find(params[:id])
-    authorize([:manage, :admin, @admin])
-  end
-
-  def set_admin_v2
-    if current_admin.permissions_v2_enabled?
-      @admin = authorize_v2 { current_admin.accessible_admins(:manage).find(params[:id]) }
-    end
+    @admin = authorize { current_admin.accessible_admins(:manage).find(params[:id]) }
   end
 
   def permission_params
