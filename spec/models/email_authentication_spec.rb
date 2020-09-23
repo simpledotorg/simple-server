@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe EmailAuthentication, type: :model do
-  let(:weak_password_error) {"Please choose a stronger password with at least 8 characters. Try a mix of letters, numbers, and symbols."}
+  let(:weak_password_error) { "Please choose a stronger password with at least 8 characters. Try a mix of letters, numbers, and symbols." }
 
   describe "Associations" do
     it { should have_one(:user_authentication) }
