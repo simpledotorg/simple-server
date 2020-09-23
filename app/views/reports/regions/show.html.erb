@@ -41,7 +41,7 @@
             <% end %>
           </div>
         </div>
-        <div class="px-20px">
+        <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="mb-8px fs-12px c-grey-dark">
               <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
@@ -96,7 +96,7 @@
             <% end %>
           </div>
         </div>
-        <div class="px-20px">
+        <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="mb-8px fs-12px c-grey-dark">
               <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
@@ -114,10 +114,10 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <h3 class="mb-8px c-black">
-          No BP measure
+          No BP measure 
         </h3>
         <p class="c-grey-dark">
-          Hypertensive patients with no recent BP measure recorded
+          Hypertensive patients with no recent BP measure 
         </p>
         <div>
           <div class="d-flex align-baseline mb-8px mb-lg-4px">
@@ -138,7 +138,7 @@
                 <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
-                Visited but no BP recorded
+                Visited but no BP taken
                 <span
                   data-toggle="tooltip"
                   data-placement="top"
@@ -156,7 +156,7 @@
         <div class="h-200px mr-13px mb-16px ml-13px">
           <canvas id="noRecentBPTrend"></canvas>
         </div>
-        <div class="px-20px">
+        <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="fs-12px c-grey-dark">
               <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
@@ -172,7 +172,11 @@
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="mb-8px c-black">
-            Cumulative registrations
+            <% if @region.is_a?(Facility) %>
+              Cumulative patients
+            <% else %>
+              Cumulative registrations
+            <% end %>
           </h3>
           <p class="c-grey-dark">
             <% if @region.is_a?(Facility) %>
@@ -213,11 +217,9 @@
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
       <% end %>
-      <div class="pb-4px px-20px">
+      <div class="px-20px pb-8px pb-lg-0">
         <div class="mb-2">
-          <p class="mb-0px fs-12px <% if @region.is_a?(Facility) %>c-grey-dark<% else %>us-none c-transparent<% end %>">
-            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-            the last 3 months
+          <p class="mb-0px fs-12px us-none c-transparent h-lg-34px">
           </p>
         </div>
       </div>

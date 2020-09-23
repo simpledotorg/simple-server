@@ -28,10 +28,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                BP controlled
+                % of patients with BP controlled
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Number of patients
+                Total patients with BP controlled
               </th>
             </tr>
           </thead>
@@ -88,10 +88,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                BP not controlled
+                % of patients with BP not controlled
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Number of patients
+                Total patients with BP not controlled
               </th>
             </tr>
           </thead>
@@ -132,7 +132,7 @@
           No BP measure
         </h3>
         <p class="mb-8px c-grey-dark">
-          Hypertensive patients with no recent BP measure recorded
+          Hypertensive patients with no recent BP measure  
         </p>
       </div>
       <div class="table-responsive">
@@ -148,10 +148,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                No visit >3 months
+                % of patients with no visit in >3 months
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Visited but no BP recorded
+                % of patients with a visit but no BP taken
               </th>
             </tr>
           </thead>
@@ -186,7 +186,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="mb-2">
         <h3 class="c-black">
-          Cumulative registrations
+          Cumulative patients 
         </h3>
         <p class="c-grey-dark">
           All hypertensive patients assigned to facilities in <%= @region.name %>
@@ -205,10 +205,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                Registrations in <%= @period.to_s %>
+                Patients registered in <%= @period.to_s %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Total registrations
+                Cumulative patients
               </th>
             </tr>
           </thead>
