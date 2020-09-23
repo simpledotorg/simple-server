@@ -6,7 +6,7 @@ Rails.application.configure do
     ENV["SIMPLE_SERVER_HOST"] = "#{ENV["HEROKU_APP_NAME"]}.herokuapp.com"
   end
 
-  if ENV["SIMPLE_SERVER_ENV"] == "sandbox"
+  if SIMPLE_SERVER_ENV == "sandbox"
     require "lograge"
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Json.new
