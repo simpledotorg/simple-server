@@ -11,7 +11,11 @@ Rails.application.configure do
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Json.new
     config.colorize_logging = false
+  else
+    # Use default logging formatter so that PID and timestamp are not suppressed.
+    config.log_formatter = ::Logger::Formatter.new
   end
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
