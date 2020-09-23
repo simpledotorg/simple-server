@@ -1,7 +1,4 @@
 namespace :dell_demo do
-  NCD_STAGING_URL = "https://ncd-staging.nhp.gov.in/cphm"
-  NCD_STAGING_ENROLLMENT_API = "#{NCD_STAGING_URL}/enrollment/individual"
-
   desc 'Take a batch of patients from Simple Server
         and push them to the Dell NCD staging server through the Enrollment API'
 
@@ -157,10 +154,12 @@ namespace :dell_demo do
 
       # fire the enrollment API call
       begin
+        ncd_staging_enrollment_api = "https://ncd-staging.nhp.gov.in/cphm/enrollment/individual"
+
         response = HTTP
           .headers(assumed_default_headers)
           .auth("Bearer #{enrollment_api_auth_token}")
-          .post(NCD_STAGING_ENROLLMENT_API, json: enrollment_payload)
+          .post(ncd_staging_enrollment_api, json: enrollment_payload)
 
         response_body = JSON.parse(response.body, symbolize_names: true)
         logger.info "#{log_patient} ==> #{response_body[:individualId]}"
