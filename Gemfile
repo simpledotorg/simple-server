@@ -36,6 +36,7 @@ gem "jbuilder", "~> 2.5"
 gem "jquery-rails"
 gem "kaminari"
 gem "lodash-rails"
+gem "lograge", require: false
 gem "newrelic_rpm"
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"
