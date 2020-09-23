@@ -1,5 +1,10 @@
 <div class="card mt-0 pr-0 pr-md-3">
-  <h2><%= row_resource_description %></h2>
+  <h3 class="mb-8px c-black">
+    <%= row_resource_description %>
+  </h3>
+  <p class="c-grey-dark">
+    Patient registrations by users in <%= @region.name %>
+  </p>
 
   <div class="table-responsive">
     <table id="analytics-table" class="table-compact">

@@ -232,7 +232,7 @@
                dashboard_analytics: @dashboard_analytics,
                period: :month,
                row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
-               row_resource_description: "Users",
+               row_resource_description: "New registrations",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% else %>
@@ -240,7 +240,7 @@
                dashboard_analytics: @dashboard_analytics,
                period: :month,
                row_resource: User.order(:full_name),
-               row_resource_description: "Users",
+               row_resource_description: "New registrations",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% end %>
