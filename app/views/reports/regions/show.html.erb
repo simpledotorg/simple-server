@@ -224,11 +224,9 @@
     </div>
   </div>
 </div>
-<% if @region.is_a?(FacilityGroup) %>
-  <%= render "facility_tables" %>
-<% else %>
+<% if @region.is_a?(Facility) %>
   <% if current_admin.permissions_v2_enabled? %>
-    <%= render "shared/analytics_table",
+    <%= render "analytics/facilities/analytics_table",
                dashboard_analytics: @dashboard_analytics,
                period: :month,
                row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
@@ -236,7 +234,7 @@
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% else %>
-    <%= render "shared/analytics_table",
+    <%= render "analytics/facilities/analytics_table",
                dashboard_analytics: @dashboard_analytics,
                period: :month,
                row_resource: User.order(:full_name),
@@ -244,6 +242,8 @@
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% end %>
+<% else %>
+  <%= render "facility_tables" %>
 <% end %>
 
 <div id="data-json" style="display: none;">
