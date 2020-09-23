@@ -97,22 +97,42 @@
   <% end %>
 <% end %>
 
-<% if current_admin.permissions_v2_enabled? %>
-  <%= render 'shared/analytics_table',
-             dashboard_analytics: @dashboard_analytics,
-             period: @period.type,
-             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-             row_resource_description: "Facilities",
-             row_resource_display_field: :name,
-             row_resource_link: :reports_region_facility_path %>
+<% if @region.is_a?(Facility) %>
+  <% if current_admin.permissions_v2_enabled? %>
+    <%= render "analytics/facilities/analytics_table",
+               dashboard_analytics: @dashboard_analytics,
+               period: @period.type,
+               row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
+               row_resource_description: "Users",
+               row_resource_display_field: :full_name,
+               row_resource_link: :reports_region_facility_path %>
+  <% else %>
+    <%= render "analytics/facilities/analytics_table",
+               dashboard_analytics: @dashboard_analytics,
+               period: @period.type,
+               row_resource: User.order(:full_name),
+               row_resource_description: "Users",
+               row_resource_display_field: :full_name,
+               row_resource_link: :reports_region_facility_path %>
+  <% end %>
 <% else %>
-  <%= render 'shared/analytics_table',
-             dashboard_analytics: @dashboard_analytics,
-             period: @period.type,
-             row_resource: Facility.order(:name),
-             row_resource_description: "Facilities",
-             row_resource_display_field: :name,
-             row_resource_link: :reports_region_facility_path %>
+  <% if current_admin.permissions_v2_enabled? %>
+    <%= render "analytics/districts/analytics_table",
+               dashboard_analytics: @dashboard_analytics,
+               period: @period.type,
+               row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+               row_resource_description: "Facilities",
+               row_resource_display_field: :name,
+               row_resource_link: :reports_region_facility_path %>
+  <% else %>
+    <%= render "analytics/districts/analytics_table",
+               dashboard_analytics: @dashboard_analytics,
+               period: @period.type,
+               row_resource: Facility.order(:name),
+               row_resource_description: "Facilities",
+               row_resource_display_field: :name,
+               row_resource_link: :reports_region_facility_path %>
+  <% end %>
 <% end %>
 
 
