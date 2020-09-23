@@ -3,11 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::RegionsController, type: :controller do
   let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
-  let(:cvho) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -15,6 +11,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
+  end
+
+  before do
+    @facility_group = create(:facility_group, organization: organization)
+    @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
   end
 
   context "index" do
@@ -27,11 +28,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   context "details" do
     render_views
-
-    before do
-      @facility_group = create(:facility_group, organization: organization)
-      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-    end
 
     it "is successful" do
       jan_2020 = Time.parse("January 1 2020")
@@ -50,11 +46,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   context "cohort" do
     render_views
-
-    before do
-      @facility_group = create(:facility_group, organization: organization)
-      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-    end
 
     it "retrieves monthly cohort data by default" do
       jan_2020 = Time.parse("January 1 2020")
