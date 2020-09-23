@@ -19,7 +19,7 @@
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
 <% if current_admin.permissions_v2_enabled? %>
-  <%= render 'shared/analytics_table',
+  <%= render 'analytics_table',
              dashboard_analytics: @dashboard_analytics,
              period: @period,
              row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
@@ -32,7 +32,7 @@
                display_model: :facility %>
   <% end %>
 <% else %>
-  <%= render 'shared/analytics_table',
+  <%= render 'analytics_table',
              dashboard_analytics: @dashboard_analytics,
              period: @period,
              row_resource: User.order(:full_name),
