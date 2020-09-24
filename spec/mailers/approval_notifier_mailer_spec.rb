@@ -1,33 +1,22 @@
 require "rails_helper"
 RSpec.describe ApprovalNotifierMailer, type: :mailer do
   describe "ApprovalNotifier emails" do
-    let!(:old_power_user) { create(:admin, :owner) }
-    let!(:new_power_user) { create(:admin, :power_user) }
+    let!(:power_user) { create(:admin, :power_user) }
 
     let!(:organization) { create(:organization) }
-    let!(:old_org_owner) { create(:admin, :organization_owner, organization: organization) }
-    let!(:org_manager) { create(:admin, :manager) }
-    let!(:org_manager_access) { create(:access, user: org_manager, resource: organization) }
+    let!(:org_manager) { create(:admin, :manager, :with_access, resource: organization) }
     let!(:other_organization) { create(:organization) }
-    let!(:old_other_org_owner) { create(:admin, :organization_owner, organization: other_organization) }
-    let!(:other_org_manager) { create(:admin, :manager) }
-    let!(:other_org_manager_access) { create(:access, user: other_org_manager, resource: other_organization) }
+    let!(:other_org_manager) { create(:admin, :manager, :with_access, resource: other_organization) }
 
     let!(:facility_group) { create(:facility_group, organization: organization) }
-    let!(:old_fg_supervisor) { create(:admin, :supervisor, facility_group: facility_group) }
-    let!(:fg_manager) { create(:admin, :manager) }
-    let!(:fg_manager_access) { create(:access, user: fg_manager, resource: facility_group) }
+    let!(:fg_manager) { create(:admin, :manager, :with_access, resource: facility_group) }
     let!(:other_facility_group) { create(:facility_group, organization: other_organization) }
-    let!(:old_other_fg_supervisor) { create(:admin, :supervisor, facility_group: other_facility_group) }
-    let!(:other_fg_manager) { create(:admin, :manager) }
-    let!(:other_fg_manager_access) { create(:access, user: other_fg_manager, resource: other_facility_group) }
+    let!(:other_fg_manager) { create(:admin, :manager, :with_access, resource: other_facility_group) }
 
     let!(:facility) { create(:facility, facility_group: facility_group) }
-    let!(:facility_manager) { create(:admin, :manager) }
-    let!(:facility_manager_access) { create(:access, user: facility_manager, resource: facility) }
+    let!(:facility_manager) { create(:admin, :manager, :with_access, resource: facility) }
     let!(:other_facility) { create(:facility, facility_group: other_facility_group) }
-    let!(:other_facility_manager) { create(:admin, :manager) }
-    let!(:other_facility_manager_access) { create(:access, user: other_facility_manager, resource: other_facility) }
+    let!(:other_facility_manager) { create(:admin, :manager, :with_access, resource: other_facility) }
 
     let!(:user) { create(:user, :sync_requested, organization: organization, registration_facility: facility) }
     let!(:other_user) { create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility) }
@@ -38,9 +27,9 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
       it "renders the headers" do
         expect(mail.subject).to eq("New Registration: User #{user.full_name} is requesting access to #{organization.name} facilities.")
         expect(mail.from).to eq(["help@simple.org"])
-        expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email, old_fg_supervisor.email)
-        expect(mail.cc).to contain_exactly(org_manager.email, old_org_owner.email)
-        expect(mail.bcc).to include(old_power_user.email, new_power_user.email)
+        expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email)
+        expect(mail.cc).to contain_exactly(org_manager.email)
+        expect(mail.bcc).to include(power_user.email)
       end
 
       it "renders the body, and contains a link to the user's edit page" do
@@ -55,9 +44,9 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
       it "renders the headers" do
         expect(mail.subject).to eq("PIN Reset: User #{user.full_name} is requesting access.")
         expect(mail.from).to eq(["help@simple.org"])
-        expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email, old_fg_supervisor.email)
-        expect(mail.cc).to contain_exactly(org_manager.email, old_org_owner.email)
-        expect(mail.bcc).to include(old_power_user.email, new_power_user.email)
+        expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email)
+        expect(mail.cc).to contain_exactly(org_manager.email)
+        expect(mail.bcc).to include(power_user.email)
       end
 
       it "renders the body, and contains a link to the user's edit page" do
