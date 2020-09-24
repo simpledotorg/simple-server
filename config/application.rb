@@ -18,6 +18,9 @@ Bundler.require(*Rails.groups)
 
 module SimpleServer
   class Application < Rails::Application
+    # Set our "app environment" as early as possible here
+    Object.const_set("SIMPLE_SERVER_ENV", ENV["SIMPLE_SERVER_ENV"])
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
 
