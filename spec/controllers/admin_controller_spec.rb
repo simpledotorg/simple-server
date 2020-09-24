@@ -2,8 +2,6 @@ require "rails_helper"
 
 RSpec.describe AdminController, type: :controller do
   controller do
-    skip_after_action :verify_authorized
-    skip_after_action :verify_policy_scoped
     after_action :verify_authorization_attempted, only: [:not_authorized, :authorized, :authorization_not_attempted]
 
     def not_authorized
