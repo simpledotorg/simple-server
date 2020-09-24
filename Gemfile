@@ -17,6 +17,7 @@ gem "bootstrap_form", ">= 4.5.0"
 gem "connection_pool"
 gem "data-anonymization", require: false
 gem "data_migrate"
+gem "ddtrace", require: false
 gem "devise", ">= 4.7.1"
 gem "devise_invitable", "~> 1.7.0"
 gem "discard", "~> 1.0"
@@ -36,6 +37,7 @@ gem "jbuilder", "~> 2.5"
 gem "jquery-rails"
 gem "kaminari"
 gem "lodash-rails"
+gem "lograge", require: false
 gem "newrelic_rpm"
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"

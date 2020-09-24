@@ -6,6 +6,16 @@ Rails.application.configure do
     ENV["SIMPLE_SERVER_HOST"] = "#{ENV["HEROKU_APP_NAME"]}.herokuapp.com"
   end
 
+  if SIMPLE_SERVER_ENV == "sandbox"
+    require "lograge"
+    config.lograge.enabled = true
+    config.lograge.formatter = Lograge::Formatters::Json.new
+    config.colorize_logging = false
+  else
+    # Use default logging formatter so that PID and timestamp are not suppressed.
+    config.log_formatter = ::Logger::Formatter.new
+  end
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 
@@ -96,9 +106,6 @@ Rails.application.configure do
 
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
-
-  # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
 
   # Use a different logger for distributed setups.
   # require 'syslog/logger'

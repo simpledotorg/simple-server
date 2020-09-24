@@ -11,7 +11,7 @@ module GraphicsDownload
       respond_to do |format|
         format.png do
           filename = graphics_filename(
-            quarter_string(quarter_start(@year, @quarter)).split.join("_"),
+            QuarterHelper.quarter_string(QuarterHelper.quarter_start(@year, @quarter)).split.join("_"),
             organization_name,
             name,
             Date.current
