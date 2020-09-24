@@ -114,10 +114,10 @@
     <div class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <h3 class="mb-8px c-black">
-          No BP measure 
+          No BP measure
         </h3>
         <p class="c-grey-dark">
-          Hypertensive patients with no recent BP measure 
+          Hypertensive patients with no recent BP measure
         </p>
         <div>
           <div class="d-flex align-baseline mb-8px mb-lg-4px">
@@ -233,6 +233,7 @@
                period: :month,
                row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
                row_resource_description: "New registrations",
+               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% else %>
@@ -241,6 +242,7 @@
                period: :month,
                row_resource: User.order(:full_name),
                row_resource_description: "New registrations",
+               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% end %>

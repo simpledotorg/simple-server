@@ -24,6 +24,7 @@
              period: @period,
              row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
              row_resource_description: "Users",
+             row_resource_subtitle: "Patient registrations by users in #{@facility.name}",
              row_resource_display_field: :full_name,
              row_resource_link: :admin_user_path %>
   <% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
@@ -37,6 +38,7 @@
              period: @period,
              row_resource: User.order(:full_name),
              row_resource_description: "Users",
+             row_resource_subtitle: "Patient registrations by users in #{@facility.name}",
              row_resource_display_field: :full_name,
              row_resource_link: :admin_user_path %>
 
