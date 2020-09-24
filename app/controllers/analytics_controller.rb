@@ -8,6 +8,7 @@ class AnalyticsController < AdminController
   after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
+  CACHE_VERSION = 1
 
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
