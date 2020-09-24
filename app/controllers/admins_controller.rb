@@ -2,19 +2,19 @@ class AdminsController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕set_admin, only: [:show, :edit, :update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :verify_params, only: [:update], unless: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  before_action :🆕verify_params, only: [:update], if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  after_action :verify_policy_scoped, only: :index
+  before_action :set_admin, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_admin_v2, only: [:show, :edit, :update, :access_tree], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :verify_params, only: [:update], unless: -> { current_admin.permissions_v2_enabled? }
+  before_action :verify_params_v2, only: [:update], if: -> { current_admin.permissions_v2_enabled? }
 
-  skip_after_action :verify_authorized, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
-  skip_after_action :verify_policy_scoped, if: -> { Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) }
+  after_action :verify_policy_scoped, only: :index
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
 
   def index
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       admins = current_admin.accessible_admins(:manage)
-      authorize1 { admins.any? }
+      authorize_v2 { admins.any? }
 
       @admins =
         if searching?
@@ -35,18 +35,40 @@ class AdminsController < AdminController
     end
   end
 
+  def access_tree
+    access_tree =
+      case page_for_access_tree
+        when :show
+          AdminAccessPresenter.new(@admin).visible_access_tree
+        when :new, :edit
+          AdminAccessPresenter.new(current_admin).visible_access_tree
+        else
+          head :not_found and return
+      end
+
+    user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
+
+    render partial: access_tree[:render_partial],
+      locals: {
+        tree: access_tree[:data],
+        root: access_tree[:root],
+        user_being_edited: user_being_edited,
+        tree_depth: 0,
+        page: page_for_access_tree,
+      }
+  end
+
   def show
-    @admin = AdminAccessPresenter.new(@admin)
   end
 
   def edit
-    unless Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    unless current_admin.permissions_v2_enabled?
       authorize([:manage, :admin, current_admin])
     end
   end
 
   def update
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
+    if current_admin.permissions_v2_enabled?
       User.transaction do
         @admin.update!(user_params)
         current_admin.grant_access(@admin, selected_facilities)
@@ -91,19 +113,23 @@ class AdminsController < AdminController
   #
   # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
   #
-  def 🆕verify_params
-    if selected_facilities.blank?
-      redirect_to edit_admin_path(@admin),
-        alert: "At least one facility should be selected for access before inviting an Admin."
+  def verify_params_v2
+    if validate_selected_facilities?
+      flash[:alert] = "At least one facility should be selected for access before editing an Admin."
+      render :edit, status: :bad_request
 
       return
+    end
+
+    if access_level_changed? && !current_admin.modify_access_level?
+      raise UserAccess::NotAuthorizedError
     end
 
     @admin.assign_attributes(user_params)
 
     if @admin.invalid?
-      redirect_to edit_admin_path,
-        alert: @admin.errors.full_messages.join("")
+      flash[:alert] = @admin.errors.full_messages.join("")
+      render :edit, status: :bad_request
     end
   end
 
@@ -112,14 +138,10 @@ class AdminsController < AdminController
     authorize([:manage, :admin, @admin])
   end
 
-  def 🆕set_admin
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      @admin = authorize1 { current_admin.accessible_admins(:manage).find(params[:id]) }
+  def set_admin_v2
+    if current_admin.permissions_v2_enabled?
+      @admin = authorize_v2 { current_admin.accessible_admins(:manage).find(params[:id]) }
     end
-  end
-
-  def current_admin
-    AdminAccessPresenter.new(super)
   end
 
   def permission_params
@@ -134,9 +156,23 @@ class AdminsController < AdminController
     {
       full_name: params[:full_name],
       role: params[:role],
-      access_level: params[:access_level],
       organization_id: params[:organization_id],
+      access_level: params[:access_level],
       device_updated_at: Time.current
     }.compact
+  end
+
+  def page_for_access_tree
+    params[:page].to_sym
+  end
+
+  def access_level_changed?
+    return false if user_params[:access_level].blank?
+
+    @admin.access_level != user_params[:access_level]
+  end
+
+  def validate_selected_facilities?
+    selected_facilities.blank? && user_params[:access_level] != User.access_levels[:power_user]
   end
 end

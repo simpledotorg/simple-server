@@ -12,14 +12,15 @@ class PatientListDownloadJob < ApplicationJob
     when "facility"
       model = Facility.find(params[:facility_id])
       model_name = model.name
+    when "facility_group"
+      model = FacilityGroup.find(params[:id])
+      model_name = model.name
+    else
+      raise ArgumentError, "unknown model_type #{model_type.inspect}"
     end
 
     exporter = with_medication_history ? PatientsWithHistoryExporter : PatientsExporter
-    patients_csv = exporter.csv(
-      model
-        .registered_patients
-        .order("facilities.state, facilities.district, facilities.name, patients.recorded_at ASC")
-    )
+    patients_csv = exporter.csv(model.assigned_patients)
 
     PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_later
   end

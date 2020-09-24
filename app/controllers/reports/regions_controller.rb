@@ -1,26 +1,41 @@
 class Reports::RegionsController < AdminController
   include Pagination
+  include GraphicsDownload
   skip_after_action :verify_policy_scoped
   before_action :set_force_cache
+  before_action :set_period, only: [:show, :details, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :set_period, except: :index
   before_action :find_region, except: :index
   around_action :set_time_zone
 
-  def index
-    authorize(:dashboard, :show?)
+  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
 
-    @organizations = policy_scope([:cohort_report, Organization]).order(:name)
+  def index
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+      @organizations = current_admin.accessible_facilities(:view_reports)
+        .flat_map(&:organization)
+        .uniq
+        .compact
+        .sort_by(&:name)
+    else
+      authorize(:dashboard, :show?)
+      @organizations = policy_scope([:cohort_report, Organization]).order(:name)
+    end
   end
 
   def show
-    authorize(:dashboard, :show?)
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
     @controlled_patients = @data[:controlled_patients]
-    @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
@@ -39,15 +54,20 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    authorize(:dashboard, :show?)
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
     @controlled_patients = @data[:controlled_patients]
     @registrations = @data[:cumulative_registrations]
-    @quarterly_registrations = @data[:quarterly_registrations]
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
+
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
     if @region.is_a?(Facility)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
@@ -55,25 +75,91 @@ class Reports::RegionsController < AdminController
   end
 
   def cohort
-    authorize(:dashboard, :show?)
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
+    periods = @period.downto(5)
 
-    @data = Reports::RegionService.new(region: @region,
-                                       period: @period).call
-    @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:cumulative_registrations]
-    @quarterly_registrations = @data[:quarterly_registrations]
-    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
+    @cohort_data = CohortService.new(region: @region, periods: periods).call
+  end
+
+  def download
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
+    @period = Period.new(type: params[:period], value: Date.current)
+    unless @period.valid?
+      raise ArgumentError, "invalid Period #{@period} #{@period.inspect}"
+    end
+
+    @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+
+    respond_to do |format|
+      format.csv do
+        if @region.is_a?(FacilityGroup)
+          set_facility_keys
+          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
+        else
+          send_data render_to_string("cohort.csv.erb"), filename: download_filename
+        end
+      end
+    end
+  end
+
+  def whatsapp_graphics
+    if current_admin.permissions_v2_enabled?
+      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    else
+      authorize(:dashboard, :show?)
+    end
+
+    previous_quarter = Quarter.current.previous_quarter
+    @year, @quarter = previous_quarter.year, previous_quarter.number
+    @quarter = params[:quarter].to_i if params[:quarter].present?
+    @year = params[:year].to_i if params[:year].present?
+
+    @cohort_analytics = @region.cohort_analytics(period: :quarter, prev_periods: 3)
+    @dashboard_analytics = @region.dashboard_analytics(period: :quarter, prev_periods: 4)
+
+    whatsapp_graphics_handler(
+      @region.organization.name,
+      @region.name
+    )
   end
 
   private
 
+  def download_filename
+    time = Time.current.to_s(:number)
+    region_name = @region.name.tr(" ", "-")
+    "#{@region.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+  end
+
+  def set_facility_keys
+    district = {
+      id: :total,
+      name: "Total"
+    }.with_indifferent_access
+
+    facilities = @region.facilities.order(:name).map { |facility|
+      {
+        id: facility.id,
+        name: facility.name,
+        type: facility.facility_type
+      }.with_indifferent_access
+    }
+
+    @facility_keys = [district, *facilities]
+  end
+
   def set_period
-    period_params = report_params[:period]
-    @period = if period_params.present?
-      Period.new(period_params)
-    else
-      Reports::RegionService.default_period
-    end
+    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
+    @period = Period.new(period_params)
   end
 
   def set_force_cache

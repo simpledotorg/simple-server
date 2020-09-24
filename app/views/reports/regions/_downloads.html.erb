@@ -1,0 +1,38 @@
+<div class="dropdown show show mb-24px bs-small mb-lg-0">
+  <a class="btn btn-sm dropdown-toggle c-black bg-white" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Downloads
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :quarter, format: :csv), class: "dropdown-item") do %>
+      <i class="far fa-file mr-4px c-grey-medium"></i>
+      Quarterly cohort report
+    <% end %>
+    <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :month, format: :csv), class: "dropdown-item") do %>
+      <i class="far fa-file mr-4px c-grey-medium"></i>
+      Monthly cohort report
+    <% end %>
+
+    <% if policy([:cohort_report, @region]).patient_list? %>
+      <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
+        <i class="far fa-file mr-4px c-grey-medium"></i>
+        Patient line list
+      <% end %>
+      <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true), class: "dropdown-item") do %>
+        <i class="far fa-file mr-4px c-grey-medium"></i>
+        Patient line list<br>
+        with medication history
+      <% end %>
+    <% end %>
+
+    <% previous_quarter_year, previous_quarter = previous_year_and_quarter %>
+    <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "png"), class: "dropdown-item") do %>
+      <i class="fas fa-camera mr-4px c-grey-medium"></i>
+      <%= "#{quarter_string(Date.current.prev_quarter)} snapshot (PNG)" %>
+    <% end %>
+
+    <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "html"), class: "dropdown-item") do %>
+      <i class="far fa-window-maximize mr-4px c-grey-medium"></i>
+      HTML
+    <% end %>
+  </div>
+</div>

@@ -8,9 +8,12 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:prescription_drugs) }
     it { should have_many(:patients).through(:encounters) }
     it { should have_many(:appointments) }
+    it { should have_many(:teleconsultations) }
     it { should have_and_belong_to_many(:teleconsultation_medical_officers) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+    it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+    it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
     context "patients" do
       it "has distinct patients" do
@@ -30,9 +33,31 @@ RSpec.describe Facility, type: :model do
     it { should belong_to(:facility_group).optional }
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
 
+    describe ".assigned_hypertension_patients" do
+      let!(:assigned_facility) { create(:facility) }
+      let!(:registration_facility) { create(:facility) }
+      let!(:assigned_patients) do
+        [create(:patient,
+          assigned_facility: assigned_facility,
+          registration_facility: registration_facility),
+          create(:patient,
+            :without_hypertension,
+            assigned_facility: assigned_facility,
+            registration_facility: registration_facility)]
+      end
+
+      it "returns assigned hypertensive patients for facilities" do
+        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
+      end
+
+      it "ignores registration patients" do
+        expect(registration_facility.assigned_hypertension_patients).to be_empty
+      end
+    end
+
     describe "#teleconsultation_medical_officers" do
       let!(:facility) { create(:facility) }
-      let!(:medical_officer) { create(:teleconsultation_medical_officer, teleconsultation_facilities: [facility]) }
+      let!(:medical_officer) { create(:user, teleconsultation_facilities: [facility]) }
 
       specify do
         expect(facility.teleconsultation_medical_officers).to contain_exactly medical_officer
@@ -157,13 +182,13 @@ RSpec.describe Facility, type: :model do
       facility = create(:facility)
 
       Timecop.freeze("June 15th 2019") do
-        _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility, recorded_at: 3.months.ago)
-        _htn_patients = create_list(:patient, 2, registration_facility: facility, recorded_at: 3.months.ago)
+        _non_htn_patients = create_list(:patient, 2, :without_hypertension, assigned_facility: facility, recorded_at: 3.months.ago)
+        _htn_patients = create_list(:patient, 2, assigned_facility: facility, recorded_at: 3.months.ago)
 
-        result = facility.cohort_analytics(:month, 3)
+        result = facility.cohort_analytics(period: :month, prev_periods: 3)
         april_key = [Date.parse("March 1st 2019"), Date.parse("April 1st 2019")]
         april_data = result[april_key]
-        expect(april_data["registered"]).to eq({facility.id => 2, "total" => 2})
+        expect(april_data["cohort_patients"]).to eq({facility.id => 2, "total" => 2})
       end
     end
   end
@@ -221,8 +246,6 @@ RSpec.describe Facility, type: :model do
                                           state: "Punjab",
                                           country: "India",
                                           enable_diabetes_management: "true",
-                                          teleconsultation_phone_number: nil,
-                                          teleconsultation_isd_code: nil,
                                           import: true)
       expect(facilities.second).to include(organization_name: "OrgOne",
                                            facility_group_name: "FGTwo",
@@ -231,15 +254,39 @@ RSpec.describe Facility, type: :model do
                                            district: "Bhatinda",
                                            state: "Punjab",
                                            country: "India",
-                                           enable_teleconsultation: "true",
-                                           teleconsultation_phone_number: "9999999999",
-                                           teleconsultation_isd_code: "91",
                                            import: true)
     end
 
-    it "defaults enable_teleconsultation to false if blank" do
-      facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.first[:enable_teleconsultation]).to be false
+    context "with old teleconsultation fields" do
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_test_old.csv", "text/csv") }
+
+      it "parses the facilities" do
+        disable_flag(:teleconsult_facility_mo_search)
+
+        facilities = described_class.parse_facilities(upload_file)
+        expect(facilities.first).to include(organization_name: "OrgOne",
+                                            facility_group_name: "FGTwo",
+                                            name: "Test Facility",
+                                            facility_type: "CHC",
+                                            district: "Bhatinda",
+                                            state: "Punjab",
+                                            country: "India",
+                                            enable_diabetes_management: "true",
+                                            teleconsultation_phone_number: nil,
+                                            teleconsultation_isd_code: nil,
+                                            import: true)
+        expect(facilities.second).to include(organization_name: "OrgOne",
+                                             facility_group_name: "FGTwo",
+                                             name: "Test Facility 2",
+                                             facility_type: "CHC",
+                                             district: "Bhatinda",
+                                             state: "Punjab",
+                                             country: "India",
+                                             enable_teleconsultation: "true",
+                                             teleconsultation_phone_number: "9999999999",
+                                             teleconsultation_isd_code: "91",
+                                             import: true)
+      end
     end
 
     it "defaults enable_diabetes_management to false if blank" do
@@ -275,6 +322,40 @@ RSpec.describe Facility, type: :model do
         teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
           {isd_code: "+91", phone_number: "11111111"}])
       expect(facility.teleconsultation_phone_numbers_with_isd).to eq([{phone_number: "+9100000000"}, {phone_number: "+9111111111"}])
+    end
+  end
+
+  describe ".discardable?" do
+    let!(:facility) { create(:facility) }
+
+    context "isn't discardable if data exists" do
+      it "has patients" do
+        create(:patient, registration_facility: facility)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has blood pressures" do
+        blood_pressure = create(:blood_pressure, facility: facility)
+        create(:encounter, :with_observables, observable: blood_pressure)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has blood sugars" do
+        blood_sugar = create(:blood_sugar, facility: facility)
+        create(:encounter, :with_observables, observable: blood_sugar)
+        expect(facility.discardable?).to be false
+      end
+
+      it "has appointments" do
+        create(:appointment, facility: facility)
+        expect(facility.discardable?).to be false
+      end
+    end
+
+    context "is discardable if no data exists" do
+      it "has no data" do
+        expect(facility.discardable?).to be true
+      end
     end
   end
 end

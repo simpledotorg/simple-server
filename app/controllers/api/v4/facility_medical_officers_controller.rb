@@ -14,7 +14,7 @@ class Api::V4::FacilityMedicalOfficersController < APIController
      medical_officers: transform_medical_officers(facility.teleconsultation_medical_officers),
      created_at: Time.current,
      updated_at: Time.current,
-     deleted_at: Time.current}
+     deleted_at: nil}
   end
 
   def transform_medical_officers(medical_officers)

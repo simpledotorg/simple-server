@@ -1,8 +1,14 @@
 <div class="page-header">
   <h1 class="page-title">Protocols</h1>
   <nav class="page-nav">
-    <% if policy([:manage, Protocol]).new? %>
-      <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+    <% if current_admin.permissions_v2_enabled? %>
+      <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
+        <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+      <% end %>
+    <% else %>
+      <% if policy([:manage, Protocol]).new? %>
+        <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
+      <% end %>
     <% end %>
   </nav>
 </div>
@@ -15,14 +21,21 @@
                 <div><i class="far fa-calendar-alt light mr-2"></i> Follow-up days: <%= protocol.follow_up_days %></div>
           </div>
           <div class="col-4 text-right">
-                <% if policy([:manage, protocol]).edit? %>
-                  <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+            <% if current_admin.permissions_v2_enabled? %>
+              <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+                <i class="fas fa-trash-alt"></i>
+              <% end %>
+            <% else %>
+              <% if policy([:manage, protocol]).edit? %>
+                <%= link_to 'Edit', edit_admin_protocol_path(protocol), class: "btn btn-sm btn-outline-primary" %>
+              <% end %>
+              <% if policy([:manage, protocol]).destroy? %>
+                <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
+                  <i class="fas fa-trash-alt"></i>
                 <% end %>
-                <% if policy([:manage, protocol]).destroy? %>
-                  <%= link_to([:admin, protocol], method: :delete, data: { confirm: "Are you sure you want to delete #{protocol.name}?" }, class: "btn btn-sm btn-outline-danger") do %>
-                    <i class="fas fa-trash-alt"></i>
-                  <% end %>
-                <% end %>
+              <% end %>
+            <% end %>
           </div>
       </div>
     </div>

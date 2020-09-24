@@ -1,37 +1,39 @@
 class CohortService
-  attr_reader :region, :quarters
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
   CACHE_TTL = 7.days
+  attr_reader :periods
+  attr_reader :region
 
-  def initialize(region:, quarters: nil)
+  def initialize(region:, periods:)
     @region = region
-    @quarters = quarters || default_quarters
+    @periods = periods
   end
 
-  # Each quarter cohort is made up of patients registered in the previous quarter
-  # who has had a follow up visit in the current quarter.
   def call
-    result = {quarterly_registrations: []}
-    quarters.each do |results_quarter|
-      quarter_data = compute_quarter(results_quarter)
-      result[:quarterly_registrations] << quarter_data
+    periods.each_with_object([]) do |period, arry|
+      arry << compute(period)
     end
-    result
   end
 
   private
 
-  def compute_quarter(results_quarter)
-    Rails.cache.fetch(cache_key(results_quarter), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
-      cohort_quarter = results_quarter.previous_quarter
-      period = {cohort_period: :quarter,
-                registration_quarter: cohort_quarter.number,
-                registration_year: cohort_quarter.year}
-      query = MyFacilities::BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: period)
+  def compute(period)
+    Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
+      cohort_period = period.previous
+      results_in = if period.quarter?
+        period.to_s
+      else
+        [period, period.next].map { |p| p.value.strftime("%b") }.join("/")
+      end
+      hsh = {cohort_period: cohort_period.type,
+             registration_quarter: cohort_period.value.try(:number),
+             registration_year: cohort_period.value.try(:year),
+             registration_month: cohort_period.value.try(:month)}
+      query = MyFacilities::BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: hsh)
       {
-        results_in: results_quarter.to_s,
-        patients_registered: cohort_quarter.to_s,
-        registered: query.cohort_registrations.count,
+        results_in: results_in,
+        patients_registered: cohort_period.to_s,
+        registered: query.cohort_patients.count,
         controlled: query.cohort_controlled_bps.count,
         no_bp: query.cohort_missed_visits_count,
         uncontrolled: query.cohort_uncontrolled_bps.count
@@ -39,12 +41,12 @@ class CohortService
     end
   end
 
-  def default_quarters
+  def default_range
     Quarter.new(date: Date.current).downto(3)
   end
 
-  def cache_key(quarter)
-    "#{self.class}/#{region.model_name}/#{region.id}/#{quarter}"
+  def cache_key(period)
+    "#{self.class}/#{region.model_name}/#{region.id}/#{period}"
   end
 
   def cache_version

@@ -59,25 +59,21 @@
       <div class="collapse navbar-collapse" id="navbars-menu">
         <% if email_authentication_signed_in? %>
           <ul class="navbar-nav mr-auto">
-            <% if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin) %>
+            <% if current_admin.permissions_v2_enabled? %>
               <% if current_admin.accessible_facilities(:view_reports).any? %>
                 <li class="nav-item">
-                  <%= link_to "My Facilities", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+                  <%= link_to "Home", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
                 </li>
-              <% end %>
 
-              <% if current_admin.accessible_facilities(:view_reports).any? %>
                 <li class="nav-item">
                   <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
                     Reports
                     <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
-                      New
-                    </span>
+                          New
+                        </span>
                   <% end %>
                 </li>
-              <% end %>
 
-              <% if current_admin.accessible_facilities(:view_reports).any? %>
                 <li class="nav-item">
                   <%= link_to "Old Reports", organizations_path, class: "nav-link #{active_controller?("organizations", "facility_groups")}" %>
                 </li>
@@ -85,7 +81,7 @@
 
               <% if current_admin.accessible_facilities(:manage_overdue_list).any? %>
                 <li class="nav-item">
-                  <%= link_to "Overdue patients", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+                  <%= link_to "Overdue", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
                 </li>
               <% end %>
 
@@ -96,21 +92,18 @@
               <% if current_admin.accessible_facilities(:manage).any? %>
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle dropdown-more" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Manage
+                    Settings
                   </a>
 
                   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <% if current_admin.accessible_organizations(:manage).any? %>
                       <%= link_to "Organizations", admin_organizations_path, class: "dropdown-item #{active_controller?("admin/organizations")}" %>
+                      <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
                     <% end %>
 
                     <%= link_to "Facilities", admin_facilities_path, class: "dropdown-item #{active_controller?("admin/facilities")}" %>
 
-                    <% if current_admin.power_user? %>
-                      <%= link_to "Protocols", admin_protocols_path, class: "dropdown-item #{active_controller?("admin/protocols")}" %>
-                    <% end %>
-
-                    <% if current_admin.accessible_admins(:manage).any? %>
+                    <% if current_admin.accessible_facilities(:manage).any? %>
                       <%= link_to "Admins", admins_path, class: "dropdown-item #{active_controller?("email_authentications")}" %>
                     <% end %>
 
@@ -140,8 +133,8 @@
                   <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
                     Reports
                     <span class="position-relative badge badge-primary" style="top: -2px; margin-left: 2px;">
-                      New
-                    </span>
+                          New
+                        </span>
                   <% end %>
                 </li>
               <% end %>
@@ -192,7 +185,6 @@
                     <% end %>
                   </div>
                 </li>
-
               <% end %>
             <% end %>
           </ul>
@@ -227,8 +219,8 @@
     <% next unless message.is_a? String %>
 
     <div class="
-      <% if !email_authentication_signed_in? %>col-md-6 mx-auto
-      <% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+          <% if !email_authentication_signed_in? %>col-md-6 mx-auto
+          <% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
       <%= message %>
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
@@ -237,6 +229,7 @@
   <% end %>
 
   <%= content_for?(:content) ? yield(:content) : yield %>
+  <%= content_for :render_async %>
 </main>
 </body>
 </html>

@@ -126,6 +126,10 @@ Rails.application.routes.draw do
       scope :facility_medical_officers do
         get "sync", to: "facility_medical_officers#sync_to_user"
       end
+
+      scope :teleconsultations do
+        post "sync", to: "teleconsultations#sync_from_user"
+      end
     end
   end
 
@@ -133,7 +137,9 @@ Rails.application.routes.draw do
     path: "email_authentications",
     controllers: {invitations: "email_authentications/invitations"}
 
-  resources :admins
+  resources :admins do
+    get "access_tree/:page", to: "admins#access_tree", on: :member, as: :access_tree
+  end
 
   namespace :analytics do
     resources :facilities, only: [:show] do
@@ -167,10 +173,13 @@ Rails.application.routes.draw do
   get "/reports/districts/", to: redirect("/reports/regions/")
 
   namespace :reports do
+    resources :patient_lists, only: [:show]
     resources :regions, only: [:index]
     get "regions/:report_scope/:id", to: "regions#show", as: :region
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
+    get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
+    get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics
   end
 
   namespace :my_facilities do
@@ -204,6 +213,7 @@ Rails.application.routes.draw do
     end
 
     resources :users do
+      get "teleconsult_search", on: :collection, to: "users#teleconsult_search"
       put "reset_otp", to: "users#reset_otp"
       put "disable_access", to: "users#disable_access"
       put "enable_access", to: "users#enable_access"
@@ -217,7 +227,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :email_authentication, ->(a) {
-    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+    if a.user.permissions_v2_enabled?
       a.user.power_user?
     else
       a.user.has_permission?(:view_sidekiq_ui)
@@ -228,7 +238,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :email_authentication, ->(a) {
-    if Flipper.enabled?(:new_permissions_system_aug_2020, a.user)
+    if a.user.permissions_v2_enabled?
       a.user.power_user?
     else
       a.user.has_permission?(:view_flipper_ui)

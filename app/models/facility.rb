@@ -18,7 +18,8 @@ class Facility < ApplicationRecord
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
   has_and_belongs_to_many :teleconsultation_medical_officers,
-    class_name: "TeleconsultationMedicalOfficer",
+    -> { distinct },
+    class_name: "User",
     association_foreign_key: :user_id,
     join_table: "facilities_teleconsultation_medical_officers"
 
@@ -28,6 +29,7 @@ class Facility < ApplicationRecord
   has_many :patients, -> { distinct }, through: :encounters
   has_many :prescription_drugs
   has_many :appointments
+  has_many :teleconsultations
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -40,6 +42,13 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "registration_facility_id"
+  has_many :assigned_patients,
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
+  has_many :assigned_hypertension_patients,
+    -> { with_hypertension },
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
 
@@ -78,7 +87,10 @@ class Facility < ApplicationRecord
                                         allow_blank: true}
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :teleconsultation_phone_numbers_valid?, if: :teleconsultation_enabled?
+
+  validate :teleconsultation_phone_numbers_valid?, if: -> {
+    teleconsultation_enabled? && !Flipper.enabled?(:teleconsult_facility_mo_search)
+  }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, to: :facility_group, allow_nil: true
@@ -107,7 +119,7 @@ class Facility < ApplicationRecord
     blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
 
-  def cohort_analytics(period, prev_periods)
+  def cohort_analytics(period:, prev_periods:)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.call
   end
@@ -117,7 +129,23 @@ class Facility < ApplicationRecord
     query.call
   end
 
-  CSV_IMPORT_COLUMNS =
+  CSV_IMPORT_COLUMNS = if Flipper.enabled?(:teleconsult_facility_mo_search)
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block (optional)",
+     district: "district",
+     state: "state",
+     country: "country",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+  else
     {organization_name: "organization",
      facility_group_name: "facility_group",
      name: "facility_name",
@@ -136,6 +164,7 @@ class Facility < ApplicationRecord
      enable_teleconsultation: "enable_teleconsultation (true/false)",
      teleconsultation_phone_number: "teleconsultation_phone_number",
      teleconsultation_isd_code: "teleconsultation_isd_code"}
+  end
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -254,6 +283,10 @@ class Facility < ApplicationRecord
       false
     end
   }
+
+  def discardable?
+    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
 
   private
 

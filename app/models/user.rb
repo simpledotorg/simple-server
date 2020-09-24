@@ -46,6 +46,12 @@ class User < ApplicationRecord
   has_many :appointments
   has_many :medical_histories
   has_many :prescription_drugs
+  has_many :requested_teleconsultations,
+    class_name: "Teleconsultation",
+    foreign_key: :requester_id
+  has_many :recorded_teleconsultations,
+    class_name: "Teleconsultation",
+    foreign_key: :medical_officer_id
   has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
@@ -57,12 +63,19 @@ class User < ApplicationRecord
   has_many :accesses, dependent: :destroy
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
+  pg_search_scope :search_by_teleconsultation_phone_number,
+    against: [:teleconsultation_phone_number],
+    using: {tsearch: {any_word: true}}
+
   scope :search_by_email,
     ->(term) { joins(:email_authentications).merge(EmailAuthentication.search_by_email(term)) }
   scope :search_by_phone,
     ->(term) { joins(:phone_number_authentications).merge(PhoneNumberAuthentication.search_by_phone(term)) }
   scope :search_by_name_or_email, ->(term) { search_by_name(term).union(search_by_email(term)) }
   scope :search_by_name_or_phone, ->(term) { search_by_name(term).union(search_by_phone(term)) }
+  scope :teleconsult_search, ->(term) do
+    search_by_teleconsultation_phone_number(term).union(search_by_name_or_phone(term))
+  end
   scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
   scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
 
@@ -70,7 +83,7 @@ class User < ApplicationRecord
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
   validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
-  # Revive this validation once all users are migrated to the new permissions system:
+  # TODO: Revive this validation once all users are migrated to the new permissions system:
   # validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
@@ -94,8 +107,11 @@ class User < ApplicationRecord
     :accessible_facility_groups,
     :accessible_users,
     :accessible_admins,
+    :accessible_protocols,
+    :accessible_protocol_drugs,
     :access_across_organizations?,
     :access_across_facility_groups?,
+    :modify_access_level?,
     :grant_access,
     :permitted_access_levels, to: :user_access, allow_nil: false
 
@@ -236,5 +252,13 @@ class User < ApplicationRecord
 
   def flipper_id
     "User;#{id}"
+  end
+
+  def feature_enabled?(name)
+    Flipper.enabled?(name, self)
+  end
+
+  def permissions_v2_enabled?
+    feature_enabled?(:new_permissions_system_aug_2020)
   end
 end

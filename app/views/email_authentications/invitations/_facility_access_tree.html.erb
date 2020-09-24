@@ -1,18 +1,25 @@
-<ul class="access-item-wrapper facility <%= "collapsed" unless tree_depth.zero? %>">
-  <% tree.each do |facility, _facility_info| %>
+<ul class="access-item-wrapper facility">
+  <% tree.each do |facility| %>
     <li>
-      <div class="access-item facility <%= "collapsed" if root == :organization or root == :facility_group %>">
+      <div class="access-item facility collapsed" data-facility-group-id="<%=facility[:facility_group_id]%>">
         <% tree_depth.times do %>
           <span class="spacer"></span>
         <% end %>
 
-        <%= access_checkbox(
-                form,
-                :facilities,
-                facility,
-                page: page,
-                checked_fn: -> { user_being_edited.visible?(:facility, facility) }
-            ) %>
+        <div class="access-item__dropdown hidden">
+          <i class="fas fa-caret-down light"></i>
+        </div>
+
+        <div class="form-check <%= "show" if page.eql?(:show) %>">
+
+          <% unless page.eql?(:show) %>
+            <% pre_checked = page.eql?(:edit) && user_being_edited.visible_facilities.include?(facility) %>
+            <%= access_checkbox(:facilities, facility, checked: pre_checked) %>
+          <% end %>
+
+          <%= access_resource_label(facility) %>
+        </div>
+
         <div class="access-item__padding"></div>
       </div>
     </li>

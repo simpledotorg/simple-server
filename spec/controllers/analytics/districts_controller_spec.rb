@@ -42,111 +42,8 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         end
 
         expect(response.status).to eq(200)
-        expect(assigns(:dashboard_analytics)[facility.id].keys).to match_array(%i[follow_up_patients_by_period
-          registered_patients_by_period
-          total_registered_patients])
-      end
-    end
-
-    it "renders the analytics table view" do
-      get :show, params: {organization_id: organization.id, id: district_name}
-      expect(response).to render_template(partial: "shared/_analytics_table")
-    end
-
-    context "analytics caching for districts" do
-      before do
-        Timecop.travel(Date.new(2019, 5, 1))
-      end
-
-      after do
-        Timecop.return
-      end
-
-      let(:today) { Date.new(2019, 5, 1) }
-      let(:cohort_date1) { (today - (0 * 3).months).beginning_of_quarter }
-      let(:cohort_date2) { (today - (1 * 3).months).beginning_of_quarter }
-      let(:cohort_date3) { (today - (2 * 3).months).beginning_of_quarter }
-      let(:cohort_date4) { (today - (3 * 3).months).beginning_of_quarter }
-      let(:cohort_date5) { (today - (4 * 3).months).beginning_of_quarter }
-      let(:cohort_date6) { (today - (5 * 3).months).beginning_of_quarter }
-
-      it "caches the district correctly" do
-        expected_cache_value =
-          {
-            cohort: {
-              [cohort_date1.prev_quarter, cohort_date1] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [cohort_date2.prev_quarter, cohort_date2] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
-                followed_up: {:total => 3, facility.id.to_sym => 3},
-                defaulted: {:total => 0, facility.id.to_sym => 0},
-                controlled: {:total => 3, facility.id.to_sym => 3},
-                uncontrolled: {:total => 0, facility.id.to_sym => 0}
-              },
-              [cohort_date3.prev_quarter, cohort_date3] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [cohort_date4.prev_quarter, cohort_date4] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [cohort_date5.prev_quarter, cohort_date5] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              }
-            },
-
-            dashboard: {
-              facility.id => {
-                registered_patients_by_period: {cohort_date3 => 3},
-                total_registered_patients: 3,
-                follow_up_patients_by_period: {cohort_date1 => 0,
-                                               cohort_date2 => 3,
-                                               cohort_date3 => 0,
-                                               cohort_date4 => 0,
-                                               cohort_date5 => 0,
-                                               cohort_date6 => 0}
-              }
-            }
-          }
-
-        get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}
-
-        expected_cohort_cache_key = "CohortAnalyticsQuery/#{facility.id}/quarter/5/May-2019"
-        analytics_dashboard_cache_key = "DistrictAnalyticsQuery/#{facility.id}/quarter/6/May-2019"
-
-        expect(Rails.cache.exist?(expected_cohort_cache_key)).to be true
-        expect(Rails.cache.fetch(expected_cohort_cache_key).deep_symbolize_keys).to eq expected_cache_value[:cohort]
-
-        expect(Rails.cache.exist?(analytics_dashboard_cache_key)).to be true
-        expect(Rails.cache.fetch(analytics_dashboard_cache_key)).to eq expected_cache_value[:dashboard]
-      end
-
-      it "never ends up querying the database when cached" do
-        expect_any_instance_of(CohortAnalyticsQuery).to receive(:results).and_call_original
-        expect_any_instance_of(DistrictAnalyticsQuery).to receive(:results).and_call_original
-        get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}
-
-        expect_any_instance_of(CohortAnalyticsQuery).to_not receive(:results)
-        expect_any_instance_of(DistrictAnalyticsQuery).to_not receive(:results)
-
-        # this get should always have cached values
-        get :show, params: {organization_id: organization.id, id: district_name, period: :quarter}
+        expect(assigns(:dashboard_analytics)[facility.id].keys)
+          .to(match_array(%i[patients_with_bp_by_period registered_patients_by_period total_patients]))
       end
     end
 
@@ -155,6 +52,13 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
         get :show, params: {organization_id: organization.id, id: district_name}, format: :csv
         expect(response).to be_successful
       end
+    end
+
+    it "allow cache to be refreshed forcefully" do
+      request_store = {}
+      allow(RequestStore).to receive(:store).and_return(request_store)
+      get :show, params: {organization_id: organization.id, id: district_name, force_cache: true}
+      expect(request_store[:force_cache]).to eq(true)
     end
   end
 
@@ -177,8 +81,10 @@ RSpec.describe Analytics::DistrictsController, type: :controller do
     it "should queue job for line list with history download" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
         "district",
-        {district_name: district_name,
-         organization_id: organization.id},
+        {
+          district_name: district_name,
+          organization_id: organization.id
+        },
         with_medication_history: true)
 
       get :patient_list_with_history, params: {organization_id: organization.id, district_id: district_name}

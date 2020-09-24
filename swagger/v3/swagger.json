@@ -2107,6 +2107,28 @@
         },
         "facility_id": {
           "$ref": "#/definitions/uuid"
+        },
+        "frequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "OD",
+            "BD",
+            "QDS",
+            "TDS",
+            null
+          ]
+        },
+        "duration_in_days": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "teleconsultation_id": {
+          "$ref": "#/definitions/nullable_uuid"
         }
       },
       "required": [

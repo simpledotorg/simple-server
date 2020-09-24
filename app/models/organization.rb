@@ -16,4 +16,8 @@ class Organization < ApplicationRecord
   def districts
     facilities.select(:district).distinct.pluck(:district)
   end
+
+  def discardable?
+    facility_groups.none? && users.none? && appointments.none?
+  end
 end

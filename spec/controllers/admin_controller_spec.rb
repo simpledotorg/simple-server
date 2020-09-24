@@ -7,7 +7,7 @@ RSpec.describe AdminController, type: :controller do
     after_action :verify_authorization_attempted, only: [:not_authorized, :authorized, :authorization_not_attempted]
 
     def not_authorized
-      authorize1 do
+      authorize_v2 do
         false
       end
 
@@ -15,7 +15,7 @@ RSpec.describe AdminController, type: :controller do
     end
 
     def record_not_found
-      authorize1 do
+      authorize_v2 do
         Facility.find(SecureRandom.uuid)
       end
 
@@ -23,7 +23,7 @@ RSpec.describe AdminController, type: :controller do
     end
 
     def authorized
-      authorize1 do
+      authorize_v2 do
         true
       end
 
@@ -35,13 +35,13 @@ RSpec.describe AdminController, type: :controller do
     end
   end
 
-  let(:user) { create(:admin) }
+  let(:user) { create(:admin, :manager) }
 
   before do
     sign_in(user.email_authentication)
   end
 
-  context "authorize1" do
+  context "authorize_v2" do
     it "redirects to root_path when falsey is returned" do
       routes.draw { get "not_authorized" => "admin#not_authorized" }
 
@@ -62,10 +62,18 @@ RSpec.describe AdminController, type: :controller do
       get :authorized
       expect(response.body).to match(/Hello, authorized/)
     end
+
+    it "continues to render as usual when user is power_user" do
+      user.update!(access_level: :power_user)
+      routes.draw { get "not_authorized" => "admin#not_authorized" }
+
+      get :not_authorized
+      expect(response.body).to match(/Not, authorized/)
+    end
   end
 
   context "#verify_authorization_attempted" do
-    it "raises an error if authorize1 is not called but required" do
+    it "raises an error if authorize_v2 is not called but required" do
       routes.draw { get "authorization_not_attempted" => "admin#authorization_not_attempted" }
 
       expect {

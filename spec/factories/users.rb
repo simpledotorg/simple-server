@@ -95,6 +95,14 @@ FactoryBot.define do
       access_level { :power_user }
     end
 
+    trait :with_access do
+      transient do
+        resource { nil }
+      end
+
+      accesses { [build(:access, user_id: id, resource: resource)] }
+    end
+
     trait(:owner) do
       role { :owner }
 
@@ -108,6 +116,16 @@ FactoryBot.define do
 
     trait(:supervisor) do
       role { :supervisor }
+      after :create do |user, options|
+        access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
+        access_level[:default_permissions].each do |slug|
+          user.user_permissions.create(permission_slug: slug, resource: options.facility_group)
+        end
+      end
+    end
+
+    trait(:sts) do
+      role { :sts }
       after :create do |user, options|
         access_level = Permissions::ACCESS_LEVELS.find { |access_level| access_level[:name] == user.role.to_sym }
         access_level[:default_permissions].each do |slug|

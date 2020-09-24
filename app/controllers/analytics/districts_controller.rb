@@ -3,7 +3,9 @@ class Analytics::DistrictsController < AnalyticsController
   include GraphicsDownload
 
   before_action :set_organization_district
+  before_action :set_force_cache
   skip_after_action :verify_authorized
+  skip_after_action :verify_authorization_attempted
 
   def show
     @show_current_period = true
@@ -86,7 +88,7 @@ class Analytics::DistrictsController < AnalyticsController
   end
 
   def set_cohort_analytics(period, prev_periods)
-    @cohort_analytics = @organization_district.cohort_analytics(period, prev_periods)
+    @cohort_analytics = @organization_district.cohort_analytics(period: period, prev_periods: prev_periods)
   end
 
   def set_dashboard_analytics(period, prev_periods)
@@ -117,5 +119,13 @@ class Analytics::DistrictsController < AnalyticsController
     district = @organization_district.district_name
     time = Time.current.to_s(:number)
     "district-#{period}-cohort-report_#{district}_#{time}.csv"
+  end
+
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def force_cache?
+    params[:force_cache].present?
   end
 end
