@@ -37,7 +37,7 @@
 <br>
 
 <% if current_admin.permissions_v2_enabled? %>
-  <% if current_admin.accessible_organizations(:manage).any? %>
+  <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
     <%= link_to 'New protocol drug', new_admin_protocol_drug_path %>
   <% end %>
 <% else %>
