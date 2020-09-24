@@ -65,10 +65,10 @@ RSpec.describe AdminController, type: :controller do
 
     it "continues to render as usual when user is power_user" do
       user.update!(access_level: :power_user)
-      routes.draw { get "authorized" => "admin#authorized" }
+      routes.draw { get "not_authorized" => "admin#not_authorized" }
 
-      get :authorized
-      expect(response.body).to match(/Hello, authorized/)
+      get :not_authorized
+      expect(response.body).to match(/Not, authorized/)
     end
   end
 
