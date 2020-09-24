@@ -2,7 +2,7 @@
   <h1 class="page-title">Protocols</h1>
   <nav class="page-nav">
     <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_organizations(:manage).any? %>
+      <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
         <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
       <% end %>
     <% else %>
