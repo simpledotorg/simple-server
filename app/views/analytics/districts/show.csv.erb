@@ -2,7 +2,7 @@
 <% csv << ["Report generated at", Time.current] %>
 <% period = @period == :quarter ? 'Quarterly' : 'Monthly' %>
 <% csv << ["#{@organization_district.district_name} #{period} Cohort Report"] %>
-<% csv << ['Facility', 'Facility type'].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
+<% csv << ['Facility', 'Facility type'].concat(@cohort_analytics.each_with_index.flat_map do |(_report_dates, _analytics), _|
   [
     'Cohort period',
     'Follow up period',
@@ -19,18 +19,24 @@
 end) %>
 <% csv << [] %>
 <% @facility_keys.each do |facility| %>
-<% csv << [facility[:name], facility[:type]].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
+<% csv << [facility[:name], facility[:type]].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), _|
   cohort_start, report_start = report_dates
-  registered = analytics.dig(:registered, facility[:id]) || 0
+  registered = analytics.dig(:cohort_patients, facility[:id]) || 0
   followed_up = analytics.dig(:followed_up, facility[:id]) || 0
   defaulted = analytics.dig(:defaulted, facility[:id]) || 0
   controlled = analytics.dig(:controlled, facility[:id]) || 0
   uncontrolled = analytics.dig(:uncontrolled, facility[:id]) || 0
+
   if @period == :quarter
     report_period = quarter_string(report_start)
     cohort_period = quarter_string(cohort_start)
   else
-    report_period = [report_start.strftime("%b %-d"), (report_start + 1.month).end_of_month.strftime("%b %-d")].join("-")
+    report_end = (report_start + 1.month).end_of_month
+
+    formatted_report_start_date = report_start.strftime("%B #{report_start.day.ordinalize}")
+    formatted_report_end_date = report_end.strftime("%B #{report_end.day.ordinalize}")
+
+    report_period = [formatted_report_start_date, formatted_report_end_date].join(" – ")
     cohort_period = cohort_start.strftime("%b %Y")
   end
   if registered > 0
@@ -59,15 +65,15 @@ end) %>
 end) %>
 <% end %>
 <% csv << [] %>
-<% csv << ["#{@organization_district.district_name} Facilites Report"] %>
+<% csv << ["#{@organization_district.district_name} Facilities Report"] %>
 <%
   headers = [
     "Facility name",
     "Facility type",
-    "Total registered patients"
+    "Total patients"
   ]
   dates = dates_for_periods(@period, 3, include_current_period: @show_current_period)
-  ["Follow up patients", "Registered patients"].each do |metric|
+  ["Patients with BP recorded", "Registered patients"].each do |metric|
     dates.each do |date|
       headers << "#{metric} #{format_period(@period, date)}"
     end
@@ -77,8 +83,8 @@ end) %>
 <% csv << [
     "All",
     nil,
-    @dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 },
-    *dates.map { |period| analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period) },
+    @dashboard_analytics.sum { |_, row| row[:total_patients] || 0 },
+    *dates.map { |period| analytics_totals(@dashboard_analytics, :patients_with_bp_by_period, period) },
     *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }
   ]
 %>
@@ -87,8 +93,8 @@ end) %>
     <% csv << [
         facility.name,
         facility.facility_type,
-        @dashboard_analytics.dig(facility.id, :total_registered_patients) || 0,
-        *dates.map { |period| @dashboard_analytics.dig(facility.id, :follow_up_patients_by_period, period) || 0 },
+        @dashboard_analytics.dig(facility.id, :total_patients) || 0,
+        *dates.map { |period| @dashboard_analytics.dig(facility.id, :patients_with_bp_by_period, period) || 0 },
         *dates.map { |period| @dashboard_analytics.dig(facility.id, :registered_patients_by_period, period) || 0 }
       ] %>
   <% end %>

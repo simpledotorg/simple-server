@@ -1,5 +1,8 @@
 class DistrictAnalyticsQuery
   include DashboardHelper
+
+  CACHE_VERSION = 1
+
   attr_reader :facilities
 
   def initialize(district_name, facilities, period = :month, prev_periods = 3, from_time = Time.current,
@@ -22,27 +25,27 @@ class DistrictAnalyticsQuery
   def results
     results = [
       registered_patients_by_period,
-      total_registered_patients,
-      follow_up_patients_by_period
+      total_patients,
+      patients_with_bp_by_period
     ].compact
 
     return {} if results.blank?
     results.inject(&:deep_merge)
   end
 
-  def total_registered_patients
-    @total_registered_patients ||=
+  def total_patients
+    @total_patients ||=
       Patient
         .with_hypertension
-        .joins(:registration_facility)
+        .joins(:assigned_facility)
         .where(facilities: {id: facilities})
         .group("facilities.id")
         .count
 
-    return if @total_registered_patients.blank?
+    return if @total_patients.blank?
 
-    @total_registered_patients
-      .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
+    @total_patients
+      .map { |facility_id, count| [facility_id, {total_patients: count}] }
       .to_h
   end
 
@@ -59,15 +62,15 @@ class DistrictAnalyticsQuery
     group_by_facility_and_date(@registered_patients_by_period, :registered_patients_by_period)
   end
 
-  def follow_up_patients_by_period
-    @follow_up_patients_by_period ||=
+  def patients_with_bp_by_period
+    @patients_with_bp_by_period ||=
       Patient
-        .group("blood_pressures.facility_id")
+        .group("assigned_facility_id")
+        .where(assigned_facility: facilities)
         .hypertension_follow_ups_by_period(@period, last: @prev_periods)
-        .where(blood_pressures: {facility: facilities})
         .count
 
-    group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
+    group_by_facility_and_date(@patients_with_bp_by_period, :patients_with_bp_by_period)
   end
 
   private
@@ -78,7 +81,8 @@ class DistrictAnalyticsQuery
       facilities.map(&:id).sort,
       @period,
       @prev_periods,
-      @from_time.to_s(:mon_year)
+      @from_time.to_s(:mon_year),
+      CACHE_VERSION
     ].join("/")
   end
 

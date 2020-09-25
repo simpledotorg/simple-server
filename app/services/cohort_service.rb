@@ -33,7 +33,7 @@ class CohortService
       {
         results_in: results_in,
         patients_registered: cohort_period.to_s,
-        registered: query.cohort_registrations.count,
+        registered: query.cohort_patients.count,
         controlled: query.cohort_controlled_bps.count,
         no_bp: query.cohort_missed_visits_count,
         uncontrolled: query.cohort_uncontrolled_bps.count

@@ -17,10 +17,6 @@ task refresh_materialized_db_views: :environment do
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{tz}'")
 
-      benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerDay") do
-        LatestBloodPressuresPerPatientPerDay.refresh
-      end
-
       benchmark("refresh_materialized_views LatestBloodPressuresPerPatientPerMonth") do
         LatestBloodPressuresPerPatientPerMonth.refresh
       end

@@ -57,9 +57,8 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
         end
 
         expect(response.status).to eq(200)
-        expect(assigns(:dashboard_analytics)[user.id].keys).to match_array(%i[follow_up_patients_by_period
-          registered_patients_by_period
-          total_registered_patients])
+        expect(assigns(:dashboard_analytics)[user.id].keys)
+          .to(match_array(%i[registered_patients_by_period total_registered_patients]))
       end
     end
 
@@ -68,108 +67,9 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
       expect(response).to render_template(partial: "shared/_cohort_charts")
     end
 
-    it "renders the analytics table view" do
-      get :show, params: {id: facility.id}
-      expect(response).to render_template(partial: "shared/_analytics_table")
-    end
-
     it "renders the recent BP view" do
       get :show, params: {id: facility.id}
       expect(response).to render_template(partial: "shared/_recent_bp_log")
-    end
-
-    context "analytics caching for facilities" do
-      before do
-        travel_to(may_2019)
-      end
-
-      after do
-        travel_back
-      end
-
-      it "caches the facility correctly" do
-        create_list(:patient,
-          3,
-          :hypertension,
-          registration_facility: facility,
-          registration_user: user,
-          recorded_at: mar_2019)
-
-        expected_cache_value =
-          {
-            cohort: {
-              [mar_2019, apr_2019] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
-                followed_up: {total: 0},
-                defaulted: {:total => 3, facility.id.to_sym => 3},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [feb_2019, mar_2019] => {
-                registered: {:total => 3, facility.id.to_sym => 3},
-                followed_up: {:total => 3, facility.id.to_sym => 3},
-                defaulted: {:total => 0, facility.id.to_sym => 0},
-                controlled: {:total => 3, facility.id.to_sym => 3},
-                uncontrolled: {:total => 0, facility.id.to_sym => 0}
-              },
-              [jan_2019, feb_2019] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [dec_2018, jan_2019] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [nov_2018, dec_2018] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              },
-              [oct_2018, nov_2018] => {
-                registered: {total: 0},
-                followed_up: {total: 0},
-                defaulted: {total: 0},
-                controlled: {total: 0},
-                uncontrolled: {total: 0}
-              }
-            },
-
-            dashboard: {
-              user.id => {
-                registered_patients_by_period: {feb_2019 => 3, mar_2019 => 3},
-                total_registered_patients: 6,
-                follow_up_patients_by_period: {mar_2019 => 3}
-              }
-            }
-          }
-
-        get :show, params: {id: facility.id}
-        cohort_cache_key = "CohortAnalyticsQuery/#{facility.id}/month/6/May-2019"
-        dashboard_cache_key = "FacilityAnalyticsQuery/#{facility.id}/month/6/May-2019"
-
-        expect(Rails.cache.exist?(cohort_cache_key)).to be true
-        expect(Rails.cache.fetch(cohort_cache_key).deep_symbolize_keys).to eq expected_cache_value[:cohort]
-
-        expect(Rails.cache.exist?(dashboard_cache_key)).to be true
-        expect(Rails.cache.fetch(dashboard_cache_key)).to eq expected_cache_value[:dashboard]
-      end
-
-      it "never ends up querying the database when cached" do
-        expect_any_instance_of(FacilityAnalyticsQuery).to receive(:results).and_call_original
-        get :show, params: {id: facility.id}
-        expect_any_instance_of(FacilityAnalyticsQuery).to_not receive(:results)
-
-        # this get should always have cached values
-        get :show, params: {id: facility.id}
-      end
     end
 
     context "Recent bps" do
@@ -178,6 +78,13 @@ RSpec.describe Analytics::FacilitiesController, type: :controller do
 
         get :show, params: {id: facility.id}
         expect(assigns(:recent_blood_pressures).count).to eq(2)
+      end
+    end
+
+    context "csv download" do
+      it "renders a csv" do
+        get :show, params: {id: facility.id}, format: :csv
+        expect(response).to be_successful
       end
     end
 
