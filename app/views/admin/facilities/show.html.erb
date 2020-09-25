@@ -61,7 +61,7 @@
 <div class="card">
   <h2>Users</h2>
   <% if @facility_users.present? %>
-    <% @facility_users.order(:full_name).each do |user| %>
+    <% @facility_users.each do |user| %>
       <div class="card-row row">
         <div class="col">
           <h5>
