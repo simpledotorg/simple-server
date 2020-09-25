@@ -23,10 +23,6 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   private
 
-  # permissions_users are admins as per the old permissions system
-  # accesses_users are admins as per the new permissions system
-  # we need to send emails to the superset of the two till we flip everyone over to new permissions
-
   def supervisor_emails
     users = User.admins.manager_access
       .select { |admin| admin.accessible_facilities(:manage).include?(user.facility) }
