@@ -28,10 +28,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                BP controlled
+                % of patients with BP controlled
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Number of patients
+                Total patients with BP controlled
               </th>
             </tr>
           </thead>
@@ -53,6 +53,15 @@
             <% end %>
           </tbody>
         </table>
+      </div>
+      <div class="pt-12px">
+        <p class="mb-8px fs-12px c-grey-dark">
+          <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
+        </p>
+        <p class="mb-0px fs-12px c-grey-dark">
+          <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+          the last 3 months
+        </p>
       </div>
     </div>
   </div>
@@ -79,10 +88,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                BP not controlled
+                % of patients with BP not controlled
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Number of patients
+                Total patients with BP not controlled
               </th>
             </tr>
           </thead>
@@ -105,6 +114,15 @@
           </tbody>
         </table>
       </div>
+      <div class="pt-12px">
+      <p class="mb-8px fs-12px c-grey-dark">
+        <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
+      </p>
+      <p class="mb-0px fs-12px c-grey-dark">
+        <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+        the last 3 months
+      </p>
+    </div>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pr-lg-2">
@@ -114,7 +132,7 @@
           No BP measure
         </h3>
         <p class="mb-8px c-grey-dark">
-          Hypertensive patients with no recent BP measure recorded
+          Hypertensive patients with no recent BP measure  
         </p>
       </div>
       <div class="table-responsive">
@@ -130,10 +148,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                No visit >3 months
+                % of patients with no visit in >3 months
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Visited but no BP recorded
+                % of patients with a visit but no BP taken
               </th>
             </tr>
           </thead>
@@ -156,16 +174,22 @@
           </tbody>
         </table>
       </div>
+      <div class="pt-12px">
+      <p class="mb-0px fs-12px c-grey-dark">
+        <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+        the last 3 months
+      </p>
+    </div>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="mb-2">
         <h3 class="c-black">
-          Cumulative registrations
+          Cumulative patients 
         </h3>
         <p class="c-grey-dark">
-          Total number of hypertensive patient registrations
+          All hypertensive patients assigned to facilities in <%= @region.name %>
         </p>
       </div>
       <div class="table-responsive">
@@ -181,10 +205,10 @@
                 Facility
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
-                Registrations in <%= @period.to_s %>
+                Patients registered in <%= @period.to_s %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                Total registrations
+                Cumulative patients
               </th>
             </tr>
           </thead>
@@ -206,6 +230,12 @@
             <% end %>
           </tbody>
         </table>
+      </div>
+      <div class="mb-2 pt-12px">
+        <p class="us-none fs-12px c-transparent">
+          <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+          the last 3 months
+        </p>
       </div>
     </div>
   </div>

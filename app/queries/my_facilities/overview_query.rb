@@ -3,7 +3,7 @@
 class MyFacilities::OverviewQuery
   # Wrap query method calls with the appropriate timezone in which the reports will be consumed
   # This is probably the Rails.application.config.country[:time_zone]
-  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_registrations }`
+  # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_patients }`
   include DayHelper
 
   INACTIVITY_THRESHOLD_DAYS = 7
@@ -12,7 +12,7 @@ class MyFacilities::OverviewQuery
   attr_reader :facilities
 
   def initialize(facilities: Facility.all)
-    @facilities = facilities
+    @facilities = Facility.where(id: facilities)
   end
 
   def total_bps_in_last_n_days(n: INACTIVITY_THRESHOLD_DAYS)

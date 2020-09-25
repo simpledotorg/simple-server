@@ -11,9 +11,11 @@ RSpec.describe AppointmentsController, type: :controller do
   describe "GET #index" do
     render_views
 
+    let!(:appointment_facility) { create(:facility, facility_group: facility_group) }
     let!(:facility_1) { create(:facility, facility_group: facility_group) }
+    let!(:facility_1_patients) { create_list(:patient, 3, assigned_facility: facility_1) }
     let!(:overdue_appointments_in_facility_1) do
-      appointments = create_list(:appointment, 3, :overdue, facility: facility_1)
+      appointments = facility_1_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_1)
         create(:blood_pressure, patient: appointment.patient, facility: facility_1)
@@ -22,8 +24,9 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     let!(:facility_2) { create(:facility, facility_group: facility_group) }
+    let!(:facility_2_patients) { create_list(:patient, 3, assigned_facility: facility_2) }
     let!(:overdue_appointments_in_facility_2) do
-      appointments = create_list(:appointment, 3, :overdue, facility: facility_2)
+      appointments = facility_2_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_2)
         create(:blood_pressure, patient: appointment.patient, facility: facility_2)
@@ -51,7 +54,7 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(response.body).to include("recorded at #{facility_2.name}")
       end
 
-      it "displays appointments for only the selected facility" do
+      it "displays appointments for only the selected assigned facility" do
         get :index, params: {
           facility_id: facility_1.id,
           per_page: "All"

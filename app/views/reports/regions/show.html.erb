@@ -22,23 +22,15 @@
           <p class="m-0px <% if @data.last_value(:controlled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:controlled_patients_rate) %>
               <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
-              <span
-                data-toggle="tooltip"
-                data-placement="top"
-                data-trigger="hover"
-                title="Patients registered until the end of <%= @adjusted_registration_date %>"
-              >
-                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-              </span>
             <% else %>
               No control rate data available
             <% end %>
           </p>
         </div>
       </div>
-      <div class="pb-4px">
-        <div class="p-relative">
-          <div class="h-200px mb-16px ml-13px">
+      <div>
+        <div class="p-relative mb-16px">
+          <div class="h-200px ml-13px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
@@ -47,6 +39,17 @@
                 No data available
               </p>
             <% end %>
+          </div>
+        </div>
+        <div class="px-20px pb-8px pb-lg-0">
+          <div class="mb-2">
+            <p class="mb-8px fs-12px c-grey-dark">
+              <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
+            </p>
+            <p class="fs-12px c-grey-dark">
+              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+              the last 3 months
+            </p>
           </div>
         </div>
       </div>
@@ -74,22 +77,14 @@
           <p class="m-0px <% if @data.last_value(:uncontrolled_patients_rate) %>c-black<% else %>c-grey-medium<% end %>">
             <% if @data.last_value(:uncontrolled_patients_rate) %>
               <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %></span> of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients
-              <span
-                data-toggle="tooltip"
-                data-placement="top"
-                data-trigger="hover"
-                title="Patients registered until the end of <%= @adjusted_registration_date %>"
-              >
-                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-              </span>
             <% else %>
               No control rate data available
             <% end %>
           </p>
         </div>
       </div>
-      <div class="pb-4px">
-        <div class="p-relative">
+      <div>
+        <div class="p-relative mb-16px">
           <div class="h-200px mb-16px ml-13px">
             <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
@@ -99,6 +94,17 @@
                 No data available
               </p>
             <% end %>
+          </div>
+        </div>
+        <div class="px-20px pb-8px pb-lg-0">
+          <div class="mb-2">
+            <p class="mb-8px fs-12px c-grey-dark">
+              <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
+            </p>
+            <p class="fs-12px c-grey-dark">
+              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+              the last 3 months
+            </p>
           </div>
         </div>
       </div>
@@ -111,7 +117,7 @@
           No BP measure
         </h3>
         <p class="c-grey-dark">
-          Hypertensive patients with no recent BP measure recorded
+          Hypertensive patients with no recent BP measure
         </p>
         <div>
           <div class="d-flex align-baseline mb-8px mb-lg-4px">
@@ -132,7 +138,7 @@
                 <%= percentage_or_na(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
               </p>
               <p class="flex-1 m-0px fs-14px">
-                Visited but no BP recorded
+                Visited but no BP taken
                 <span
                   data-toggle="tooltip"
                   data-placement="top"
@@ -146,9 +152,17 @@
           </div>
         </div>
       </div>
-      <div class="pb-4px">
+      <div>
         <div class="h-200px mr-13px mb-16px ml-13px">
           <canvas id="noRecentBPTrend"></canvas>
+        </div>
+        <div class="px-20px pb-8px pb-lg-0">
+          <div class="mb-2">
+            <p class="fs-12px c-grey-dark">
+              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
+              the last 3 months
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -158,10 +172,18 @@
       <div class="pt-20px px-20px">
         <div class="mb-2">
           <h3 class="mb-8px c-black">
-            Cumulative registrations
+            <% if @region.is_a?(Facility) %>
+              Cumulative patients
+            <% else %>
+              Cumulative registrations
+            <% end %>
           </h3>
           <p class="c-grey-dark">
-            Total number of hypertensive patient registrations
+            <% if @region.is_a?(Facility) %>
+              All hypertensive patients assigned to <%= @region.name %>
+            <% else %>
+              All hypertensive patients assigned to facilities in <%= @region.name %>
+            <% end %>
           </p>
         </div>
         <div class="mb-12px">
@@ -195,29 +217,37 @@
           <canvas id="cumulativeRegistrationsTrend"></canvas>
         </div>
       <% end %>
+      <div class="px-20px pb-8px pb-lg-0">
+        <div class="mb-2">
+          <p class="mb-0px fs-12px us-none c-transparent h-lg-34px">
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-<% if @region.is_a?(FacilityGroup) %>
-  <%= render "facility_tables" %>
-<% else %>
+<% if @region.is_a?(Facility) %>
   <% if current_admin.permissions_v2_enabled? %>
-    <%= render "shared/analytics_table",
+    <%= render "analytics/facilities/analytics_table",
                dashboard_analytics: @dashboard_analytics,
                period: :month,
                row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
-               row_resource_description: "Users",
+               row_resource_description: "New registrations",
+               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% else %>
-    <%= render "shared/analytics_table",
+    <%= render "analytics/facilities/analytics_table",
                dashboard_analytics: @dashboard_analytics,
                period: :month,
                row_resource: User.order(:full_name),
-               row_resource_description: "Users",
+               row_resource_description: "New registrations",
+               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% end %>
+<% else %>
+  <%= render "facility_tables" %>
 <% end %>
 
 <div id="data-json" style="display: none;">

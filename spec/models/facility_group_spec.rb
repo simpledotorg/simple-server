@@ -6,6 +6,7 @@ RSpec.describe FacilityGroup, type: :model do
     it { should have_many(:facilities) }
 
     it { have_many(:patients).through(:facilities) }
+    it { have_many(:assigned_patients).through(:facilities).source(:assigned_patients) }
     it { have_many(:blood_pressures).through(:facilities) }
     it { have_many(:blood_sugars).through(:facilities) }
     it { have_many(:prescription_drugs).through(:facilities) }

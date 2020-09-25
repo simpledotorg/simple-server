@@ -35,7 +35,7 @@ RSpec.describe AdminController, type: :controller do
     end
   end
 
-  let(:user) { create(:admin) }
+  let(:user) { create(:admin, :manager) }
 
   before do
     sign_in(user.email_authentication)
@@ -61,6 +61,14 @@ RSpec.describe AdminController, type: :controller do
 
       get :authorized
       expect(response.body).to match(/Hello, authorized/)
+    end
+
+    it "continues to render as usual when user is power_user" do
+      user.update!(access_level: :power_user)
+      routes.draw { get "not_authorized" => "admin#not_authorized" }
+
+      get :not_authorized
+      expect(response.body).to match(/Not, authorized/)
     end
   end
 
