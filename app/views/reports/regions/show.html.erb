@@ -47,8 +47,11 @@
               <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
             </p>
             <p class="fs-12px c-grey-dark">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
+              <% if @region.is_a?(Facility) %>
+                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+              <% else %>
+                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+              <% end %>
             </p>
           </div>
         </div>
@@ -102,8 +105,11 @@
               <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
             </p>
             <p class="fs-12px c-grey-dark">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
+              <% if @region.is_a?(Facility) %>
+                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+              <% else %>
+                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+              <% end %>
             </p>
           </div>
         </div>
@@ -143,7 +149,7 @@
                   data-toggle="tooltip"
                   data-placement="top"
                   data-trigger="hover"
-                  title="Patients registered 3 months prior with an appointment scheduled, updated medicines, or blood sugar taken"
+                  title="Patients who had a blood sugar, medication update, or new appointment made in the last 3 months, but no BP measure was added."
                 >
                   <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
                 </span>
@@ -159,8 +165,11 @@
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="fs-12px c-grey-dark">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
+              <% if @region.is_a?(Facility) %>
+                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+              <% else %>
+                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+              <% end %>
             </p>
           </div>
         </div>
