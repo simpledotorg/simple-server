@@ -14,4 +14,3 @@ RSpec.describe CreateAdminUser do
     end
   end
 end
-
