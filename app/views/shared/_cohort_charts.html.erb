@@ -18,7 +18,7 @@
     <%
       cohort_start, report_start = report_dates
 
-      registered = analytics.dig(:registered, :total) || 0
+      cohort_patients = analytics.dig(:cohort_patients, :total) || 0
       followed_up = analytics.dig(:followed_up, :total) || 0
       defaulted = analytics.dig(:defaulted, :total) || 0
       controlled = analytics.dig(:controlled, :total) || 0
@@ -36,17 +36,17 @@
     <div class="split-row <%= 'split-row-first' if index == 0 %>">
       <div class="row px-lg-0">
         <div class="col-lg-3 nowrap order-lg-1">
-          <h6><%= registered %> patients registered in <%= "#{cohort_period}" %></h6>
+          <h6><%= cohort_patients %> patients registered in <%= "#{cohort_period}" %></h6>
           <div class="small light">Result from last visit in <%= report_period %></div>
         </div>
         <div class="col-lg-9 order-lg-2">
           <table class="split-bars">
             <tr>
-              <% if registered > 0 %>
+              <% if cohort_patients > 0 %>
                 <%
-                  controlled_percent = (controlled.to_f / registered * 100).round
-                  uncontrolled_percent = (uncontrolled.to_f / registered * 100).round
-                  default_percent = (defaulted.to_f / registered * 100).round
+                  controlled_percent = (controlled.to_f / cohort_patients * 100).round
+                  uncontrolled_percent = (uncontrolled.to_f / cohort_patients * 100).round
+                  default_percent = (defaulted.to_f / cohort_patients * 100).round
                 %>
 
                 <td class="bar bar-1" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="<%= defaulted %> patients didn't have a BP taken" style="width: <%= default_percent %>%;"><%= (defaulted > 0 && default_percent == 0) ? "< 1" : default_percent %>%</td>

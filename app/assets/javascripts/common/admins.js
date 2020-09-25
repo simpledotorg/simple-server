@@ -99,6 +99,12 @@ AdminAccess.prototype = {
   updateParentCheckedState: function (element, selector) {
     // find parent and sibling checkboxes
     const parent = (element.closest(["ul"]).parentNode).querySelector(selector)
+
+    if (parent === element) {
+      this.updateSelectAllCheckbox()
+      return
+    }
+
     const siblings = nodeListToArray(selector, parent.closest("li").querySelector(["ul"]))
 
     // get checked state of siblings
@@ -115,8 +121,6 @@ AdminAccess.prototype = {
     // recurse until check is the top most parent
     if (element !== parent) {
       this.updateParentCheckedState(parent, selector)
-    } else {
-      this.updateSelectAllCheckbox()
     }
   },
 
