@@ -10,8 +10,7 @@ RSpec.describe User, type: :model do
   describe "Validations" do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"
-
-    pending { is_expected.to validate_presence_of(:access_level) }
+    it { is_expected.to validate_presence_of(:access_level) }
 
     it {
       is_expected.to(

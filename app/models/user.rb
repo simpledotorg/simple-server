@@ -52,7 +52,6 @@ class User < ApplicationRecord
   has_many :recorded_teleconsultations,
     class_name: "Teleconsultation",
     foreign_key: :medical_officer_id
-  has_many :user_permissions, foreign_key: :user_id, dependent: :delete_all
   has_many :deleted_patients,
     inverse_of: :deleted_by_user,
     class_name: "Patient",
@@ -83,8 +82,7 @@ class User < ApplicationRecord
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
   validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
-  # TODO: Revive this validation once all users are migrated to the new permissions system:
-  # validates :access_level, presence: true, if: -> { email_authentication.present? }
+  validates :access_level, presence: true, if: -> { email_authentication.present? }
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -206,14 +204,6 @@ class User < ApplicationRecord
     self.sync_approval_status_reason = reason
   end
 
-  def authorized?(permission_slug, resource: nil)
-    user_permissions.find_by(permission_slug: permission_slug, resource: resource).present?
-  end
-
-  def has_permission?(permission_slug)
-    user_permissions.where(permission_slug: permission_slug).present?
-  end
-
   def reset_phone_number_authentication_password!(password_digest)
     transaction do
       authentication = phone_number_authentication
@@ -231,10 +221,6 @@ class User < ApplicationRecord
 
   def has_role?(*roles)
     roles.map(&:to_sym).include?(role.to_sym)
-  end
-
-  def resources
-    user_permissions.map(&:resource)
   end
 
   def destroy_email_authentications
@@ -256,9 +242,5 @@ class User < ApplicationRecord
 
   def feature_enabled?(name)
     Flipper.enabled?(name, self)
-  end
-
-  def permissions_v2_enabled?
-    feature_enabled?(:new_permissions_system_aug_2020)
   end
 end
