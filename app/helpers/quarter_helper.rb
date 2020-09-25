@@ -32,7 +32,7 @@ module QuarterHelper
     year = date.year
     quarter = quarter(date)
 
-    "Q#{quarter} #{year}"
+    "Q#{quarter}-#{year}"
   end
 
   def quarter_range_string(date, format)
