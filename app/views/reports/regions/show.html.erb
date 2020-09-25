@@ -242,7 +242,7 @@
                period: :month,
                row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
                row_resource_description: "New registrations",
-               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
+               row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% else %>
@@ -251,7 +251,7 @@
                period: :month,
                row_resource: User.order(:full_name),
                row_resource_description: "New registrations",
-               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
+               row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% end %>
