@@ -7,13 +7,11 @@ RSpec.describe CreateAdminUser do
     let!(:email) { Faker::Internet.email }
     let!(:password) { generate(:strong_password) }
 
-    it "should create a new user with owner permissions" do
+    it "should create a new user with power_user access" do
       user = CreateAdminUser.create_owner(name, email, password)
-      permissions = Permissions::ACCESS_LEVELS.find { |level| level[:name] == :owner }[:default_permissions]
 
-      permissions.each do |permission|
-        expect(user.has_permission?(permission)).to be true
-      end
+      expect(user.power_user?).to be true
     end
   end
 end
+
