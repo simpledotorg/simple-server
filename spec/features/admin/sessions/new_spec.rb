@@ -1,8 +1,9 @@
 require "rails_helper"
 
 RSpec.feature "Owner Login as Admin", type: :feature do
-  let(:owner) { create(:admin, :owner) }
-  let(:counsellor) { create(:admin, :counsellor) }
+  let!(:facility) { create(:facility) }
+  let(:owner) { create(:admin, :power_user) }
+  let(:call_center) { create(:admin, :call_center, :with_access, resource: facility) }
   login_page = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
 
@@ -13,6 +14,7 @@ RSpec.feature "Owner Login as Admin", type: :feature do
     end
 
     it "Logs in " do
+      visit organizations_path
       dashboard_navigation.validate_owners_home_page
       expect(page).to have_content(owner.email)
     end
@@ -26,12 +28,12 @@ RSpec.feature "Owner Login as Admin", type: :feature do
   context "counsellors login and logout" do
     before(:each) do
       visit root_path
-      login_page.do_login(counsellor.email, counsellor.password)
+      login_page.do_login(call_center.email, call_center.password)
     end
 
     it "Logs in " do
       expect(page).to have_content("Patients that are overdue for a follow-up visit.")
-      expect(page).to have_content(counsellor.email)
+      expect(page).to have_content(call_center.email)
     end
 
     it "log Out" do

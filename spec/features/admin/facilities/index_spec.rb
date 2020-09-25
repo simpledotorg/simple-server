@@ -2,9 +2,7 @@
 
 require "rails_helper"
 
-RSpec.feature "Facility page functionality", type: :feature do
-  let(:admin) { create(:admin) }
-
+RSpec.feature "Facility page functionality with new permissions", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
@@ -18,9 +16,7 @@ RSpec.feature "Facility page functionality", type: :feature do
 
   context "facility group listing" do
     context "admin has permission to manage facility groups" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facility_groups)]
-      end
+      let(:admin) { create(:admin, :power_user) }
 
       before(:each) do
         visit root_path
@@ -80,14 +76,23 @@ RSpec.feature "Facility page functionality", type: :feature do
 
   context "facility listing" do
     context "admin has permission to manage facilities for a facility group" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: ihmi_group_bathinda)]
-      end
+      let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: ihmi_group_bathinda)]) }
 
       before(:each) do
+        enable_flag(:new_permissions_system_aug_2020, admin)
         visit root_path
         sign_in(admin.email_authentication)
         visit admin_facilities_path
+      end
+
+      after(:each) do
+        disable_flag(:new_permissions_system_aug_2020, admin)
+      end
+
+      it "Verify facility landing page" do
+        facility_page.verify_facility_page_header
+        expect(page).not_to have_content("IHMI")
+        expect(page).to have_content("Bathinda")
       end
 
       it "displays a new facility link" do
@@ -96,14 +101,17 @@ RSpec.feature "Facility page functionality", type: :feature do
     end
 
     context "admin does not have permission to manage facilities a facility group" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: create(:facility_group))]
-      end
+      let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: create(:facility_group))]) }
 
       before(:each) do
+        enable_flag(:new_permissions_system_aug_2020, admin)
         visit root_path
         sign_in(admin.email_authentication)
         visit admin_facilities_path
+      end
+
+      after(:each) do
+        disable_flag(:new_permissions_system_aug_2020, admin)
       end
 
       it "does not display a new facility link" do

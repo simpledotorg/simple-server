@@ -18,14 +18,9 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
   context "Admin User landing page" do
     before(:each) do
-      enable_flag(:new_permissions_system_aug_2020, owner)
       visit organizations_path
       login_page.do_login(owner.email, owner.password)
       navigation.select_manage_option("Users")
-    end
-
-    after(:each) do
-      disable_flag(:new_permissions_system_aug_2020, owner)
     end
 
     it "Verify User landing page" do
@@ -41,7 +36,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
   end
 
   context " javascript based test", js: true do
-    let(:owner) { create(:admin, :owner) }
+    let(:owner) { create(:admin, :power_user) }
     let!(:ihmi) { create(:organization, name: "IHMI") }
     let!(:group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
     let!(:facility_hoshiarpur) { create(:facility, facility_group: group_bathinda, name: "Hoshiarpur", district: "Hoshiarpur") }
@@ -115,7 +110,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
   end
 
   context "admin should be able to allow/Deny User access  " do
-    let(:owner) { create(:admin, :owner) }
+    let(:owner) { create(:admin, :power_user) }
     let!(:facility_hoshiarpur) { create(:facility, name: "Hoshiarpur") }
     let!(:facility_Buchoo) { create(:facility, name: "CHC Buchho") }
 
