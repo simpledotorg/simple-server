@@ -94,7 +94,11 @@ RSpec.describe AdminsController, type: :controller do
     end
 
     context "user has permission to manage admins" do
-      before { user.user_permissions.create(permission_slug: :manage_admins) }
+      before do
+        user.update!(access_level: :manager)
+        user.accesses.create(resource: existing_admin.organization)
+      end
+
       it "respond with ok" do
         delete :destroy, params: {id: existing_admin.id}
 
@@ -127,11 +131,6 @@ RSpec.describe AdminsController, type: :controller do
 
       before(:each) do
         sign_in(manager.email_authentication)
-        enable_flag(:new_permissions_system_aug_2020, manager)
-      end
-
-      after(:each) do
-        disable_flag(:new_permissions_system_aug_2020, manager)
       end
 
       context "validate params" do
@@ -145,7 +144,6 @@ RSpec.describe AdminsController, type: :controller do
           end
 
           it "allows power users to upgrade admins to a power user without setting facilities" do
-            enable_flag(:new_permissions_system_aug_2020, power_user)
             sign_in(power_user.email_authentication)
 
             put :update, params: request_params.merge(access_level: :power_user, facilities: nil)
@@ -203,8 +201,6 @@ RSpec.describe AdminsController, type: :controller do
         context "updating access level is restricted" do
           it "updating access level is allowed if power-user" do
             sign_out(manager.email_authentication)
-
-            enable_flag(:new_permissions_system_aug_2020, power_user)
             sign_in(power_user.email_authentication)
 
             new_access_level = "viewer_all"
@@ -257,7 +253,6 @@ RSpec.describe AdminsController, type: :controller do
           it "allows power users to update the accesses" do
             facility_group = create(:facility_group, organization: organization)
             facilities = create_list(:facility, 2, facility_group: facility_group)
-            enable_flag(:new_permissions_system_aug_2020, power_user)
             sign_in(power_user.email_authentication)
 
             put :update, params: request_params.merge(facilities: facilities.map(&:id))
@@ -279,7 +274,6 @@ RSpec.describe AdminsController, type: :controller do
 
           non_managers.each do |access_level|
             non_manager = create(:admin, access_level.to_sym, :with_access, resource: organization)
-            enable_flag(:new_permissions_system_aug_2020, non_manager)
             sign_in(non_manager.email_authentication)
 
             put :update, params: request_params
@@ -309,12 +303,7 @@ RSpec.describe AdminsController, type: :controller do
       create(:facility, facility_group: facility_group_1)
       create(:facility, facility_group: facility_group_2)
 
-      enable_flag(:new_permissions_system_aug_2020, current_admin)
       sign_in(current_admin.email_authentication)
-    end
-
-    after do
-      disable_flag(:new_permissions_system_aug_2020, current_admin)
     end
 
     it "pulls up the tree for the admin when the page is show" do

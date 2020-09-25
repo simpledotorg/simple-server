@@ -5,13 +5,17 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   def new
-    raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
+    unless current_admin.power_user? || current_admin.accessible_facilities(:manage).any?
+      raise UserAccess::NotAuthorizedError
+    end
 
     super
   end
 
   def create
-    raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
+    unless current_admin.power_user? || current_admin.accessible_facilities(:manage).any?
+      raise UserAccess::NotAuthorizedError
+    end
 
     User.transaction do
       new_user = User.new(user_params)
@@ -67,10 +71,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def selected_facilities
     params[:facilities]
-  end
-
-  def permission_params
-    params[:permissions]
   end
 
   def invite_params

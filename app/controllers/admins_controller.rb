@@ -86,10 +86,6 @@ class AdminsController < AdminController
     @admin = authorize { current_admin.accessible_admins(:manage).find(params[:id]) }
   end
 
-  def permission_params
-    params[:permissions]
-  end
-
   def selected_facilities
     params[:facilities]
   end
