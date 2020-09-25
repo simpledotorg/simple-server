@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">Protocols</h1>
   <nav class="page-nav">
-    <% if current_admin.accessible_organizations(:manage).any? %>
+    <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
       <%= link_to 'Add protocol', new_admin_protocol_path, class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>

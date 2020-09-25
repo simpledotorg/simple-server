@@ -53,7 +53,7 @@ class AdminController < ApplicationController
     begin
       capture = yield(blk)
 
-      unless capture
+      unless current_admin.power_user? || capture
         raise UserAccess::NotAuthorizedError
       end
 
