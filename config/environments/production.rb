@@ -56,9 +56,6 @@ Rails.application.configure do
   # when problems arise.
   config.log_level = :info
 
-  # Prepend all log lines with the following tags.
-  config.log_tags = [:request_id]
-
   # Use a different cache store in production.
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
     [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
