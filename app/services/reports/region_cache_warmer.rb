@@ -31,14 +31,14 @@ module Reports
       end
 
       notify "starting facility_group caching"
-      Statsd.instance.time("region_cache_warmer.facility_groups") {
+      Statsd.instance.time("region_cache_warmer.facility_groups") do
         cache_facility_groups
-      }
+      end
 
       notify "starting facility caching"
-      Statsd.instance.time("region_cache_warmer.facilities") {
+      Statsd.instance.time("region_cache_warmer.facilities") do
         cache_facilities
-      }
+      end
       notify "finished"
     ensure
       RequestStore.store[:force_cache] = original_force_cache

@@ -3,7 +3,7 @@
 puts "patching Tagged logging"
 module ActiveSupport::TaggedLogging::Formatter
   def call(severity, time, progname, data)
-    data = { msg: data.to_s } unless data.is_a?(Hash)
+    data = {msg: data.to_s} unless data.is_a?(Hash)
     tags = current_tags
     data[:tags] = tags if tags.present?
     _call(severity, time, progname, data)
