@@ -8,6 +8,7 @@ const darkPurpleColor = "rgba(83, 0, 224, 1)";
 const darkGreyColor = "rgba(108, 115, 122, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
 const lightGreyColor = "rgba(240, 242, 245, 1)";
+const transparent = "rgba(0, 0, 0, 0)";
 
 window.addEventListener("DOMContentLoaded", function() {
   if(getChartDataNode()) {
@@ -54,8 +55,8 @@ function getReportingData() {
     controlledPatients: jsonData.controlled_patients,
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
-    registrations: jsonData.cumulative_registrations,
-    adjustedRegistrations: jsonData.adjusted_registrations,
+    monthlyRegistrations: jsonData.registrations,
+    cumulativeRegistrations: jsonData.adjusted_registrations,
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
@@ -81,7 +82,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.controlledPatients],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
@@ -113,7 +114,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.visitButNoBPMeasure, data.missedVisits],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const noRecentBPGraphCanvas = document.getElementById("noRecentBPTrend");
@@ -139,7 +140,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.uncontrolledPatients],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
@@ -147,16 +148,25 @@ function initializeCharts() {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
   }
 
-  const maxRegistrations = Math.max(...Object.values(data.registrations));
+  const maxRegistrations = Math.max(...Object.values(data.cumulativeRegistrations));
   const suggestedMax = Math.round(maxRegistrations) * 1.15;
   const stepSize = Math.round(suggestedMax / 3);
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
-      data: data.registrations,
-      borderWidth: { top: 2 },
+      data: data.monthlyRegistrations,
+      borderWidth: 2,
       rgbaLineColor: darkPurpleColor,
+      rgbaPointColor: lightPurpleColor,
+      rgbaBackgroundColor: transparent,
+      label: "Monthly registrations",
+      graphType: "line",
+    },
+    {
+      data: data.cumulativeRegistrations,
       rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
+      label: "Cumulative registrations",
+      graphType: "bar",
     },
   ], "bar");
 
@@ -207,7 +217,7 @@ function initializeCharts() {
     formatValueAsPercent,
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
@@ -230,6 +240,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
+          type: dataset.graphType ? dataset.graphType : "line",
         };
       }),
     },
