@@ -17,10 +17,11 @@ gem "bootstrap_form", ">= 4.5.0"
 gem "connection_pool"
 gem "data-anonymization", require: false
 gem "data_migrate"
-gem "ddtrace", require: false
+gem "ddtrace"
 gem "devise", ">= 4.7.1"
 gem "devise_invitable", "~> 1.7.0"
 gem "discard", "~> 1.0"
+gem "dogstatsd-ruby"
 gem "dotenv-rails"
 gem "factory_bot_rails", "~> 4.8", require: false
 gem "faker", require: false
