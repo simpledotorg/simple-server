@@ -42,6 +42,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       sign_in(admin.email_authentication)
       get :show, params: {id: facility.slug, report_scope: "facility"}
       expect(response).to redirect_to(reports_region_path(facility.slug, report_scope: "facility"))
+      expect(flash[:notice]).to match("You will soon be emailed a copy of the patient line list for facility")
     end
 
     it "returns CSV of registered patients in facility_group" do
@@ -50,6 +51,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       sign_in(admin.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
       expect(response).to redirect_to(reports_region_path(facility_group.slug, report_scope: "district"))
+      expect(flash[:notice]).to match("You will soon be emailed a copy of the patient line list for district")
     end
   end
 

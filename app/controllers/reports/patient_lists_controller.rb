@@ -25,7 +25,12 @@ class Reports::PatientListsController < AdminController
     end
 
     PatientListDownloadJob.perform_later(recipient_email, region_class, download_params)
-    redirect_back(fallback_location: reports_region_path(@region, report_scope: params[:report_scope]))
+    redirect_back(
+      fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
+      notice: I18n.t("patient_list_email.notice",
+        model_type: filtered_params[:report_scope],
+        model_name: @region.name)
+    )
   end
 
   private
