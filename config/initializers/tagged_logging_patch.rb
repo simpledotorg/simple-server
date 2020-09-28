@@ -1,6 +1,6 @@
 # Patch TaggedLogging for compatibility with JSON logging
 # See https://github.com/tilfin/ougai/wiki/Use-as-Rails-logger for details
-puts "patching Tagged logging"
+
 module ActiveSupport::TaggedLogging::Formatter
   def call(severity, time, progname, data)
     data = {msg: data.to_s} unless data.is_a?(Hash)
