@@ -73,7 +73,7 @@ FactoryBot.define do
 
     trait :call_center do
       access_level { :call_center }
-      role { "call center"}
+      role { "call center" }
     end
 
     trait :viewer_reports_only do

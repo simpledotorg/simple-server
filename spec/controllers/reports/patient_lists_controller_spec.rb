@@ -20,7 +20,6 @@ RSpec.describe Reports::PatientListsController, type: :controller do
   end
 
   context "show" do
-
     it "works for facility groups the admin has acces to" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
         "facility_group", {id: facility_group.id})

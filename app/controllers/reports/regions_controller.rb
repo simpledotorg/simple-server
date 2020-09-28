@@ -89,7 +89,7 @@ class Reports::RegionsController < AdminController
 
   def whatsapp_graphics
     authorize { current_admin.accessible_facilities(:view_reports).any? }
-    
+
     previous_quarter = Quarter.current.previous_quarter
     @year, @quarter = previous_quarter.year, previous_quarter.number
     @quarter = params[:quarter].to_i if params[:quarter].present?
