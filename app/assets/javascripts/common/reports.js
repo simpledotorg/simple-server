@@ -6,6 +6,8 @@ const darkRedColor = "rgba(255, 51, 85, 1)";
 const lightPurpleColor = "rgba(238, 229, 252, 1)";
 const darkPurpleColor = "rgba(83, 0, 224, 1)";
 const darkGreyColor = "rgba(108, 115, 122, 1)";
+const lightBlueColor = "rgba(233, 243, 255, 1)";
+const mediumBlueColor = "rgba(0, 117, 235, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
 const lightGreyColor = "rgba(240, 242, 245, 1)";
 
@@ -89,36 +91,29 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const noRecentBPConfig = createGraphConfig([
-    {
-      data: data.visitButNoBPMeasureRate,
-      borderWidth: 0,
-      rgbaLineColor: darkGreyColor,
-      rgbaBackgroundColor: darkGreyColor,
-      hoverBackgroundColor: darkGreyColor,
-      label: "Visited in the last 3 months",
-    },
+  const missedVisitsConfig = createGraphConfig([
     {
       data: data.missedVisitsRate,
-      borderWidth: 0,
-      rgbaLineColor: mediumGreyColor,
-      rgbaBackgroundColor: mediumGreyColor,
-      label: "No visit >3 months ago",
+      borderWidth: 2,
+      rgbaLineColor: mediumBlueColor,
+      rgbaPointColor: lightBlueColor,
+      rgbaBackgroundColor: lightBlueColor,
+      label: "Missed visits",
     },
-  ], "bar");
-  noRecentBPConfig.options = createGraphOptions(
-    true,
+  ], "line");
+  missedVisitsConfig.options = createGraphOptions(
+    false,
     25,
     100,
     formatValueAsPercent,
     formatRateTooltipText,
-    [data.visitButNoBPMeasure, data.missedVisits],
+    [data.missedVisits],
     data.adjustedRegistrations,
   );
 
-  const noRecentBPGraphCanvas = document.getElementById("noRecentBPTrend");
-  if (noRecentBPGraphCanvas) {
-    new Chart(noRecentBPGraphCanvas.getContext("2d"), noRecentBPConfig);
+  const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
+  if (missedVisitsGraphCanvas) {
+    new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
   const uncontrolledGraphConfig = createGraphConfig([
