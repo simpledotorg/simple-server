@@ -47,8 +47,11 @@
               <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
             </p>
             <p class="fs-12px c-grey-dark">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
+              <% if @region.is_a?(Facility) %>
+                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+              <% else %>
+                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+              <% end %>
             </p>
           </div>
         </div>
@@ -102,8 +105,11 @@
               <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
             </p>
             <p class="fs-12px c-grey-dark">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
+              <% if @region.is_a?(Facility) %>
+                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+              <% else %>
+                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+              <% end %>
             </p>
           </div>
         </div>
@@ -148,8 +154,11 @@
               <strong>Numerator:</strong> Patients with no visit in >3 months
             </p>
             <p class="fs-12px c-grey-dark">
-              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-              the last 3 months
+              <% if @region.is_a?(Facility) %>
+                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+              <% else %>
+                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+              <% end %>
             </p>
           </div>
         </div>
@@ -171,7 +180,7 @@
             <% if @region.is_a?(Facility) %>
               All hypertensive patients assigned to <%= @region.name %>
             <% else %>
-              All hypertensive patients assigned to facilities in <%= @region.name %>
+              All hypertensive patients registered in <%= @region.name %>
             <% end %>
           </p>
         </div>
@@ -190,7 +199,7 @@
             <% if @data.last_value(:cumulative_registrations).zero? %>
               No registration data available
             <% else %>
-              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:registrations)) %> new patients</span> registered in <%= @data[:cumulative_registrations].keys&.last %>
+              <span class="fw-bold"><%= number_with_delimiter(@data.last_value(:registrations)) %> new <% if @data.last_value(:registrations) == 1 %>patient<% else %>patients<% end %></span> registered in <%= @data[:cumulative_registrations].keys&.last %>
             <% end %>
           </p>
         </div>
@@ -222,7 +231,7 @@
                period: :month,
                row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
                row_resource_description: "New registrations",
-               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
+               row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% else %>
@@ -231,7 +240,7 @@
                period: :month,
                row_resource: User.order(:full_name),
                row_resource_description: "New registrations",
-               row_resource_subtitle: "Patient registrations by users in #{@region.name}",
+               row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
                row_resource_display_field: :full_name,
                row_resource_link: :admin_user_path %>
   <% end %>
