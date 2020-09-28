@@ -57,11 +57,7 @@
         <% end %>
       </tr>
 
-      <% if current_admin.permissions_v2_enabled? %>
-        <% resources = row_resource %>
-      <% else %>
-        <% resources = policy_scope([:cohort_report, row_resource]) %>
-      <% end %>
+      <% resources = row_resource %>
 
       <% resources.each do |resource| %>
         <% if dashboard_analytics[resource.id].present? %>
