@@ -271,12 +271,12 @@ RSpec.describe UserAccess, type: :model do
           let!(:permission_matrix) {
             [
               [manager, :manage, organization_3, [user_3, user_4]],
-              [manager, :view_pii, organization_3, []],
+              [manager, :view_pii, organization_3, [user_3, user_4]],
               [manager, :view_reports, organization_3, [user_3, user_4]],
               [manager, :manage_overdue_list, organization_3, []],
 
               [viewer_all, :manage, organization_3, []],
-              [viewer_all, :view_pii, organization_3, []],
+              [viewer_all, :view_pii, organization_3, [user_3, user_4]],
               [viewer_all, :view_reports, organization_3, [user_3, user_4]],
               [viewer_all, :manage_overdue_list, organization_3, []],
 
@@ -308,12 +308,12 @@ RSpec.describe UserAccess, type: :model do
           let!(:permission_matrix) {
             [
               [manager, :manage, facility_group_1, [user_1]],
-              [manager, :view_pii, facility_group_1, []],
+              [manager, :view_pii, facility_group_1, [user_1]],
               [manager, :view_reports, facility_group_1, [user_1]],
               [manager, :manage_overdue_list, facility_group_1, []],
 
               [viewer_all, :manage, facility_group_1, []],
-              [viewer_all, :view_pii, facility_group_1, []],
+              [viewer_all, :view_pii, facility_group_1, [user_1]],
               [viewer_all, :view_reports, facility_group_1, [user_1]],
               [viewer_all, :manage_overdue_list, facility_group_1, []],
 
@@ -345,12 +345,12 @@ RSpec.describe UserAccess, type: :model do
           let!(:permission_matrix) {
             [
               [manager, :manage, facility_5, [user_5]],
-              [manager, :view_pii, facility_5, []],
+              [manager, :view_pii, facility_5, [user_5]],
               [manager, :view_reports, facility_5, [user_5]],
               [manager, :manage_overdue_list, facility_5, []],
 
               [viewer_all, :manage, facility_5, []],
-              [viewer_all, :view_pii, facility_5, []],
+              [viewer_all, :view_pii, facility_5, [user_5]],
               [viewer_all, :view_reports, facility_5, [user_5]],
               [viewer_all, :manage_overdue_list, facility_5, []],
 
@@ -792,7 +792,7 @@ RSpec.describe UserAccess, type: :model do
         let!(:permission_matrix) {
           [
             [power_user, :manage, User.non_admins.all],
-            [power_user, :view_pii, []],
+            [power_user, :view_pii, User.non_admins.all],
             [power_user, :view_reports, User.non_admins.all],
             [power_user, :manage_overdue_list, []]
           ]

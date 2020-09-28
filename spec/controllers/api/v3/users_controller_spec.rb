@@ -3,12 +3,16 @@ require "rails_helper"
 RSpec.describe Api::V3::UsersController, type: :controller do
   require "sidekiq/testing"
 
-  let(:supervisor) { FactoryBot.create(:admin, :supervisor) }
-  let(:organization_owner) { FactoryBot.create(:admin, :organization_owner) }
   let(:facility) { FactoryBot.create(:facility) }
-  let!(:owner) { FactoryBot.create(:admin, :owner) }
-  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
-  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
+  let!(:owner) { FactoryBot.create(:admin, :power_user) }
+  let!(:supervisor) { FactoryBot.create(:admin, :manager, :with_access, resource: facility.facility_group) }
+  let!(:organization_owner) {
+    FactoryBot.create(:admin,
+      :manager,
+      :with_access,
+      resource: facility.organization,
+      organization: facility.organization)
+  }
 
   describe "#register" do
     describe "registration payload is invalid" do

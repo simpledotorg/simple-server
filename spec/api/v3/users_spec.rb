@@ -2,8 +2,13 @@ require "swagger_helper"
 
 describe "Users v3 API", swagger_doc: "v3/swagger.json" do
   let(:facility) { FactoryBot.create(:facility) }
-  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
-  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
+  let!(:supervisor) { FactoryBot.create(:admin, :manager, :with_access, resource: facility.facility_group) }
+  let!(:organization_owner) {
+    FactoryBot.create(:admin,
+      :manager,
+      :with_access,
+      resource: facility.organization,
+      organization: facility.organization) }
 
   path "/users/find" do
     get "Find a existing user" do
