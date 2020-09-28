@@ -37,6 +37,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
     end
 
     it "returns CSV of registered patients in facility" do
+
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
         "facility", {facility_id: facility.id})
       sign_in(admin.email_authentication)
