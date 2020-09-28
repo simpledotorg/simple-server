@@ -10,6 +10,7 @@ const lightBlueColor = "rgba(233, 243, 255, 1)";
 const mediumBlueColor = "rgba(0, 117, 235, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
 const lightGreyColor = "rgba(240, 242, 245, 1)";
+const whiteColor = "rgba(255, 255, 255, 1)";
 const transparent = "rgba(0, 0, 0, 0)";
 
 window.addEventListener("DOMContentLoaded", function() {
@@ -73,7 +74,7 @@ function initializeCharts() {
     data: data.controlRate,
     borderWidth: 2,
     rgbaLineColor: mediumGreenColor,
-    rgbaPointColor: lightGreenColor,
+    rgbaPointColor: whiteColor,
     rgbaBackgroundColor: lightGreenColor,
     label: "HTN controlled",
   }], "line");
@@ -97,7 +98,7 @@ function initializeCharts() {
       data: data.missedVisitsRate,
       borderWidth: 2,
       rgbaLineColor: mediumBlueColor,
-      rgbaPointColor: lightBlueColor,
+      rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightBlueColor,
       label: "Missed visits",
     },
@@ -122,7 +123,7 @@ function initializeCharts() {
       data: data.uncontrolledRate,
       borderWidth: 2,
       rgbaLineColor: darkRedColor,
-      rgbaPointColor: lightRedColor,
+      rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightRedColor,
       label: "HTN not under control",
     }
@@ -151,7 +152,7 @@ function initializeCharts() {
       data: data.monthlyRegistrations,
       borderWidth: 2,
       rgbaLineColor: darkPurpleColor,
-      rgbaPointColor: lightPurpleColor,
+      rgbaPointColor: whiteColor,
       rgbaBackgroundColor: transparent,
       label: "Monthly registrations",
       graphType: "line",
