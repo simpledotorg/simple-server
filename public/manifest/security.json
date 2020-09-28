@@ -1,0 +1,10 @@
+{
+  "v1": [
+    {
+      "country_code": "IN",
+      "endpoint": "https://api-security.simple.org/api/",
+      "display_name": "India",
+      "isd_code": "91"
+    }
+  ]
+}
