@@ -30,7 +30,7 @@ class Reports::PatientListsController < AdminController
       notice: I18n.t("patient_list_email.notice",
         model_type: filtered_params[:report_scope],
         model_name: @region.name)
-      )
+    )
   end
 
   private
