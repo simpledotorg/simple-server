@@ -43,17 +43,6 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="row-total" data-sort-method="none">
-        <td class="type-rank"></td>
-        <td class="type-title">All</td>
-        <td class="type-percent"><em>100%</em></td>
-        <td class="type-number">12,345</td>
-        <td class="type-percent"><em>100%</em></td>
-        <td class="type-number">1,987</td>
-        <td class="type-number">1,413</td>
-        <td class="type-number">64,230</td>
-        <td class="type-number">40,000</td>
-      </tr>
       <% @facilities.each_with_index do |facility, rank| %>
         <tr>
           <td class="type-rank"><%= rank + 1 %></td>
