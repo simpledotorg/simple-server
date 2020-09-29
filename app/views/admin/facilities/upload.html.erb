@@ -35,7 +35,7 @@
   </li>
   <li>Facility Groups for the facilities must already exist.
     <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_organizations(:manage).any? %>
+      <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
         Click here to create a facility group:
         <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
       <% end %>
