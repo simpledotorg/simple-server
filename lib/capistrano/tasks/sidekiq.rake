@@ -4,6 +4,7 @@ namespace :sidekiq do
   desc "Install sidekiq systemd files"
   task :install do
     on roles :sidekiq do
+      execute "mkdir -p .config/systemd/user"
       template "sidekiq@.service", "~/.config/systemd/user/sidekiq@.service"
       template "sidekiq.service", "~/.config/systemd/user/sidekiq.service"
 
