@@ -45,10 +45,10 @@ RSpec.describe TelemedicineReports do
         [],
         [],
         ["Date", "Unique users", "Total TC requests"],
-        ["04 Aug 2020", 2, 6],
-        ["06 Aug 2020", 1, 1],
-        ["07 Aug 2020", 1, 2],
-        ["08 Aug 2020", 1, 1]]
+        ["04-Aug-2020", 2, 6],
+        ["06-Aug-2020", 1, 1],
+        ["07-Aug-2020", 1, 2],
+        ["08-Aug-2020", 1, 1]]
 
       expect(CSV).to receive(:open).with(filename, "w")
 
