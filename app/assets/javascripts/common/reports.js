@@ -147,21 +147,22 @@ function initializeCharts() {
   const maxRegistrations = Math.max(...Object.values(data.cumulativeRegistrations));
   const suggestedMax = Math.round(maxRegistrations) * 1.15;
   const stepSize = Math.round(suggestedMax / 3);
+
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
-      data: data.monthlyRegistrations,
+      data: data.cumulativeRegistrations,
       borderWidth: 2,
       rgbaLineColor: darkPurpleColor,
       rgbaPointColor: whiteColor,
       rgbaBackgroundColor: transparent,
-      label: "Monthly registrations",
+      label: "cumulative registrations",
       graphType: "line",
     },
     {
-      data: data.cumulativeRegistrations,
+      data: data.monthlyRegistrations,
       rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
-      label: "Cumulative registrations",
+      label: "monthly registrations",
       graphType: "bar",
     },
   ], "bar");
@@ -338,8 +339,8 @@ function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   return ` ${percent}% ${label} (${numerator} of ${denominator} patients)`;
 }
 
-function formatSumTooltipText(tooltipItem) {
-  return ` ${formatNumberWithCommas(tooltipItem.value)} cumulative registrations`;
+function formatSumTooltipText(tooltipItem, data) {
+  return ` ${formatNumberWithCommas(tooltipItem.value)} ${data.datasets[tooltipItem.datasetIndex].label}`;
 }
 
 function formatValueAsPercent(value) {
