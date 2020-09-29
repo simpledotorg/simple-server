@@ -8,7 +8,8 @@ describe "Users v3 API", swagger_doc: "v3/swagger.json" do
       :manager,
       :with_access,
       resource: facility.organization,
-      organization: facility.organization) }
+      organization: facility.organization)
+  }
 
   path "/users/find" do
     get "Find a existing user" do

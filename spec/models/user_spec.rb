@@ -10,7 +10,15 @@ RSpec.describe User, type: :model do
   describe "Validations" do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"
-    it { is_expected.to validate_presence_of(:access_level) }
+
+    context "it validates presence of access_level for admins" do
+      before { subject.email_authentications = [create(:email_authentication)] }
+      it { is_expected.to validate_presence_of(:access_level) }
+    end
+
+    context "it doesn't validate presence of access_level for non admins" do
+      it { is_expected.not_to validate_presence_of(:access_level) }
+    end
 
     it {
       is_expected.to(
