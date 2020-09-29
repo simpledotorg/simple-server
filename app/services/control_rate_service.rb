@@ -19,7 +19,8 @@ class ControlRateService
     end
     @quarterly_report = @periods.begin.quarter?
     @results = Reports::Result.new(@periods)
-    logger.info "#{self.class} created for periods: #{periods} facilities: #{facilities.map(&:id)} #{facilities.map(&:name)}"
+    logger.info class: self.class, event: "created", region: region.id, region_name: region.name,
+                periods: periods.inspect, facilities: facilities.map(&:id)
   end
 
   delegate :logger, to: Rails
