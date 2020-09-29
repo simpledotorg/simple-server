@@ -25,7 +25,7 @@ module DashboardHelper
   end
 
   def format_period(period, value)
-    period == :month ? value.strftime("%b %Y") : quarter_string(value)
+    period == :month ? value.strftime("%b-%Y") : quarter_string(value)
   end
 
   def analytics_totals(analytics, metric, date)
