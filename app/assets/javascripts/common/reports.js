@@ -144,12 +144,17 @@ function initializeCharts() {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
   }
 
-  const maxRegistrations = Math.max(...Object.values(data.cumulativeRegistrations));
-  const suggestedMax = Math.round(maxRegistrations) * 1.15;
-  const stepSize = Math.round(suggestedMax / 3);
+  const maxCumulativeRegistrations = Math.max(...Object.values(data.cumulativeRegistrations));
+  const cumulativeRegistrationsMax = Math.round(maxCumulativeRegistrations) * 1.15;
+  const cumulativeRegistrationsStepSize = Math.round(cumulativeRegistrationsMax / 3);
+
+  const maxMonthlyRegistrations = Math.max(...Object.values(data.monthlyRegistrations));
+  const monthlyRegistrationsMax = Math.round(maxMonthlyRegistrations) * 1.15;
+  const monthlyRegistrationsStepSize = Math.round(monthlyRegistrationsMax / 3);
 
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
+      id: "cumulativeRegistrations",
       data: data.cumulativeRegistrations,
       borderWidth: 2,
       rgbaLineColor: darkPurpleColor,
@@ -159,6 +164,7 @@ function initializeCharts() {
       graphType: "line",
     },
     {
+      id: "monthlyRegistrations",
       data: data.monthlyRegistrations,
       rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
@@ -167,13 +173,78 @@ function initializeCharts() {
     },
   ], "bar");
 
-  cumulativeRegistrationsGraphConfig.options = createGraphOptions(
-    false,
-    stepSize,
-    suggestedMax,
-    formatNumberWithCommas,
-    formatSumTooltipText,
-  );
+  const configTest = {
+    animation: false,
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        left: 0,
+        right: 0,
+        top: 20,
+        bottom: 0
+      }
+    },
+    hoverMode: 'index',
+    stacked: false,
+    elements: {
+      point: {
+        pointStyle: "circle",
+        hoverRadius: 5,
+      },
+    },
+    legend: {
+      display: false,
+    },
+    scales: {
+      xAxes: [{
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: true,
+          drawBorder: false,
+        },
+        ticks: {
+          fontColor: mediumGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 10
+        }
+      }],
+      yAxes: [
+        {
+          id: "cumulativeRegistrations",
+          type: "linear",
+          display: true,
+          position: "left",
+          ticks: {
+            max: maxCumulativeRegistrations,
+            stepSize: cumulativeRegistrationsStepSize,
+            beginAtZero: true,
+          },
+        },
+        {
+          id: "monthlyRegistrations",
+          type: "linear",
+          display: true,
+          position: "right",
+          ticks: {
+            max: maxMonthlyRegistrations,
+            stepSize: monthlyRegistrationsStepSize,
+          },
+          gridLines: {
+            drawOnChartArea: false,
+          },
+        },
+      ],
+    },
+  };
+
+  cumulativeRegistrationsGraphConfig.options = configTest;
 
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
   if (cumulativeRegistrationsGraphCanvas) {
@@ -230,6 +301,7 @@ function createGraphConfig(datasetsConfig, graphType) {
       labels: Object.keys(datasetsConfig[0].data),
       datasets: datasetsConfig.map(dataset => {
         return {
+          yAxisID: dataset.id,
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
           borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
