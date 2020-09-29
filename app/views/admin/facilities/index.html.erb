@@ -3,7 +3,7 @@
 
   <div class="page-nav">
     <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_facility_groups(:manage).any? %>
+      <% if current_admin.accessible_facility_groups(:manage).any? || current_admin.power_user? %>
         <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
       <% end %>
     <% else %>
@@ -13,7 +13,7 @@
     <% end %>
 
     <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_organizations(:manage).any? %>
+      <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
         <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
           <i class="fas fa-plus mr-1"></i>
           Add facility group
