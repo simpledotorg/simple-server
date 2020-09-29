@@ -39,6 +39,25 @@ blocks:
             - bundle install --deployment --path vendor/bundle
             - cache store
             - BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap qa deploy
+  - name: Deploy to Security
+      dependencies: []
+      task:
+        secrets:
+          - name: semaphore-deploy-key
+        prologue:
+          commands:
+            - chmod 600 ~/.ssh/semaphore_id_rsa
+            - ssh-add ~/.ssh/semaphore_id_rsa
+        jobs:
+          - name: Deploy to QA
+            commands:
+              - checkout
+              - sem-version ruby 2.5.1
+              - cache restore
+              - yarn install
+              - bundle install --deployment --path vendor/bundle
+              - cache store
+              - BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap security deploy
 agent:
   machine:
     type: e1-standard-2
