@@ -38,8 +38,9 @@
         <th class="row-label sort-label" style="text-align: left;" data-sort-default>Facilities</th>
 
         <!--Patients with BP taken-->
-        <% dates_for_periods(period, 6, include_current_period: @show_current_period).each_with_index do |date, index| %>
-          <th class="row-label sort-label" <%= "data-sort-default" if index == 5 %> data-sort-method="number">
+        <% dates = dates_for_periods(period, 6, include_current_period: @show_current_period) %>
+        <% dates.each do |date| %>
+          <th class="row-label sort-label" <%= "data-sort-default" if date == dates.last %> data-sort-method="number">
             <%= format_period(period, date) %>
           </th>
         <% end %>
