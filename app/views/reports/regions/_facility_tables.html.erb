@@ -189,7 +189,7 @@
     <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="mb-2">
         <h3 class="c-black">
-          Cumulative patients 
+          Cumulative patients
         </h3>
         <p class="c-grey-dark">
           All hypertensive patients assigned to facilities in <%= @region.name %>
@@ -224,7 +224,7 @@
                   <% end %>
                 </td>
                 <td class="ta-left">
-                  <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+                  <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last || 0) %>
                 </td>
                 <td class="ta-left">
                   <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
