@@ -18,6 +18,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     stringio = StringIO.new
     test_logger = Logger.new(stringio)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)
+    allow(Lograge).to receive(:logger).and_return(test_logger)
 
     patient_payloads = 3.times.map { build_payload.call }
     post sync_route, params: {patients: patient_payloads}.to_json, headers: headers
@@ -41,10 +42,10 @@ RSpec.describe "Filter parameter logging spec", type: :request do
   end
 
   it "only logs allowed parameters and filters out everything else" do
-    pending "need to figure out how lograge patches Rails logger"
     stringio = StringIO.new
     test_logger = Logger.new(stringio)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)
+    allow(Lograge).to receive(:logger).and_return(test_logger)
 
     time = Time.parse("January 1 2020 12:00 UTC")
     Timecop.freeze(time) do
