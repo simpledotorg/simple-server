@@ -1,4 +1,4 @@
-**Story card:** <story link>
+**Story card:** [chXXXX](URL)
 
 ## Because
 
