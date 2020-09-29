@@ -49,7 +49,7 @@ blocks:
             - chmod 600 ~/.ssh/semaphore_id_rsa
             - ssh-add ~/.ssh/semaphore_id_rsa
         jobs:
-          - name: Deploy to QA
+          - name: Deploy to Security
             commands:
               - checkout
               - sem-version ruby 2.5.1
