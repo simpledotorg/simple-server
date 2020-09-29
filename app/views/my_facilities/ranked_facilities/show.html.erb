@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-lg-12 pr-lg-0">
+    <div class="card card-responsive">
+      <div>
+        <h3>Ranked facilities (All data on this page is fake)</h3>
+        <p>Ranking by a weighted algorithm of factors below.<sup>1</sup></p>
+      </div>
+
+      <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="analytics-table">
+        <colgroup>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col class="mobile">
+        </colgroup>
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th colspan="2">BP control<sup>2</sup></th>
+            <th colspan="2">Missed Visits</th>
+            <th colspan="2">Registrations</th>
+            <th>OPD load <sup>3</sup></th>
+            <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+          </tr>
+          <tr data-sort-method="thead" class="sorts">
+            <th class="row-label sort-label" data-sort-default data-sort-method="number">Rank</th>
+            <th class="row-label sort-label">Facilities</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>
+              Controlled BP<br>in Aug-2020
+            </th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>
+              No visit<br>&gt;3 months
+            </th>
+            <th class="row-label sort-label" data-sort-method="number">Aug-2020</th>
+            <th class="row-label sort-label" data-sort-method="number">All-time</th>
+            <th class="row-label sort-label" data-sort-method="number">Monthly</th>
+            <th class="mobile"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @facilities.each_with_index do |facility, rank| %>
+            <tr>
+              <td class="type-rank"><%= rank + 1 %></td>
+              <td class="type-title">
+                <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
+                  <%= facility.name %>
+                <% end %>
+              </td>
+              <td class="type-percent">
+                <em>
+                  <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
+                </em>
+              </td>
+              <td class="type-number">
+                <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
+              </td>
+              <td class="type-percent">
+                <em>
+                  <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last, precision: 0) %>
+                </em>
+              </td>
+              <td class="type-number">
+                <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last) %>
+              </td>
+              <td class="type-number">
+                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+              </td>
+              <td class="type-number">
+                <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
+              </td>
+              <td class="type-number">
+                <%= number_with_delimiter(facility.monthly_estimated_opd_load) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <section class="footnotes">
+      <ol>
+        <li><strong>Ranking:</strong> is ranked by...</li>
+        <li><strong>BP control:</strong> Patient had at least 1 BP recorded in the previous 90 days and BP &lt;140/90 at last visit.</li>
+        <li><strong>OPD load:</strong> Outpatient department load is entered by surveillance officers for each facility. Monthly OPD load is an average. Where a facility has no OPD Load entered (see asterisk), the number is an average of other faciities of the same type in this district.</li>
+      </ol>
+    </section>
+  </div>
+</div>

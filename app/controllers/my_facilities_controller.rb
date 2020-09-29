@@ -104,16 +104,6 @@ class MyFacilitiesController < AdminController
     @totals_by_period = missed_visits_query.missed_visit_totals
   end
 
-  def ranked_facilities
-    set_period
-    @facilities = filter_facilities([:manage, :facility])
-
-    @data_for_facility = @facilities.each_with_object({}) { |facility, hsh|
-      hsh[facility.name] = Reports::RegionService.new(region: facility,
-                                                      period: @period).call
-    }
-  end
-
   private
 
   def set_last_updated_at
@@ -144,22 +134,5 @@ class MyFacilitiesController < AdminController
     else
       authorize(:dashboard, :view_my_facilities?)
     end
-  end
-
-  def set_period
-    period_params = report_params[:period]
-    @period = if period_params.present?
-      Period.new(period_params)
-    else
-      Reports::RegionService.default_period
-    end
-  end
-
-  def report_params
-    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
-  end
-
-  def force_cache?
-    report_params[:force_cache].present?
   end
 end
