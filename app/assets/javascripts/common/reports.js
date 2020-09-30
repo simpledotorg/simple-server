@@ -161,87 +161,30 @@ function initializeCharts() {
       graphType: "bar",
     },
   ], "bar");
-
-  const configTest = {
-    animation: false,
-    responsive: true,
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        left: 0,
-        right: 0,
-        top: 20,
-        bottom: 0
-      }
-    },
-    hoverMode: 'index',
-    stacked: false,
-    elements: {
-      point: {
-        pointStyle: "circle",
-        hoverRadius: 5,
-      },
-    },
-    legend: {
-      display: false,
-    },
-    scales: {
-      xAxes: [{
-        stacked: true,
-        display: true,
-        gridLines: {
-          display: false,
-          drawBorder: true,
-        },
-        ticks: {
-          fontColor: darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-        },
-      }],
-      yAxes: [
-        {
-          id: "cumulativeRegistrations",
-          type: "linear",
-          display: true,
-          position: "left",
-          ticks: {
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            max: cumulativeRegistrationsYAxis.max,
-            stepSize: cumulativeRegistrationsYAxis.stepSize,
-          },
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-        },
-        {
-          id: "monthlyRegistrations",
-          type: "linear",
-          display: true,
-          position: "right",
-          ticks: {
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            max: monthlyRegistrationsYAxis.max,
-            stepSize: monthlyRegistrationsYAxis.stepSize,
-          },
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-        },
-      ],
-    },
-  };
-
-  cumulativeRegistrationsGraphConfig.options = configTest;
+  cumulativeRegistrationsGraphConfig.options = createGraphOptions(
+    [createAxisConfig(true, false, false)],
+    [
+      createAxisConfig(
+        true,
+        false,
+        false,
+        cumulativeRegistrationsYAxis.stepSize,
+        cumulativeRegistrationsYAxis.max,
+        "cumulativeRegistrations",
+        "left",
+      ),
+      createAxisConfig(
+        true,
+        true,
+        false,
+        monthlyRegistrationsYAxis.stepSize,
+        monthlyRegistrationsYAxis.max,
+        "monthlyRegistrations",
+        "right",
+      ),
+    ],
+    formatSumTooltipText,
+  );
 
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
   if (cumulativeRegistrationsGraphCanvas) {
@@ -402,8 +345,10 @@ function formatTooltipLabelColor(tooltipItem, data) {
   return styles;
 }
 
-function createAxisConfig(stacked, display, drawBorder, stepSize, max) {
-  return {
+function createAxisConfig(stacked, display, drawBorder, stepSize, max, id, position) {
+  let axisConfig = {
+    id,
+    position: position ? position : "left",
     stacked,
     display: true,
     gridLines: {
@@ -420,6 +365,8 @@ function createAxisConfig(stacked, display, drawBorder, stepSize, max) {
       max,
     },
   };
+
+  return axisConfig;
 };
 
 function createAxisMaxAndStepSize(data) {
