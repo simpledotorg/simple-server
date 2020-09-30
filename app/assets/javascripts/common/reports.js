@@ -79,6 +79,7 @@ function initializeCharts() {
     label: "HTN controlled",
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
+    [createAxisConfig(false, false, true)],
     false,
     25,
     100,
@@ -104,6 +105,7 @@ function initializeCharts() {
     },
   ], "line");
   missedVisitsConfig.options = createGraphOptions(
+    [createAxisConfig(false, false, true)],
     false,
     25,
     100,
@@ -130,6 +132,7 @@ function initializeCharts() {
   ], "line");
 
   uncontrolledGraphConfig.options = createGraphOptions(
+    [createAxisConfig(false, false, true)],
     false,
     25,
     100,
@@ -287,6 +290,7 @@ function initializeCharts() {
   ], "bar");
 
   visitDetailsGraphConfig.options = createGraphOptions(
+    [createAxisConfig(true, true, false)],
     true,
     25,
     100,
@@ -324,7 +328,7 @@ function createGraphConfig(datasetsConfig, graphType) {
   }
 }
 
-function createGraphOptions(stacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
+function createGraphOptions(xAxes, stacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
   return {
     animation: false,
     responsive: true,
@@ -347,7 +351,7 @@ function createGraphOptions(stacked, stepSize, suggestedMax, tickCallbackFunctio
       display: false,
     },
     scales: {
-      xAxes: [createAxisConfig(stacked, false, true)],
+      xAxes,
       yAxes: [{
         stacked,
         display: true,
