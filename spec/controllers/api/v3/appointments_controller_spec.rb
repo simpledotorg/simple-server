@@ -19,12 +19,14 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create(:appointment, options.merge(facility: facility))
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    FactoryBot.create(:appointment, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create_list(:appointment, n, options.merge(facility: facility))
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    FactoryBot.create_list(:appointment, n, {patient: patient}.merge(options))
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
@@ -105,44 +107,17 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
 
-    describe "v3 facility prioritisation" do
-      it "syncs request facility's records first" do
-        request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-        FactoryBot.create_list(:appointment, 2, facility: request_2_facility, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:appointment, 2, facility: request_2_facility, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 10.minutes.ago)
-
-        # GET request 1
-        set_authentication_headers
-        get :sync_to_user, params: {limit: 4}
-        response_1_body = JSON(response.body)
-
-        response_1_record_ids = response_1_body["appointments"].map { |r| r["id"] }
-        response_1_records = model.where(id: response_1_record_ids)
-        expect(response_1_records.count).to eq 4
-        expect(response_1_records.map(&:facility).to_set).to eq Set[request_facility]
-
-        # GET request 2
-        get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
-        response_2_body = JSON(response.body)
-
-        response_2_record_ids = response_2_body["appointments"].map { |r| r["id"] }
-        response_2_records = model.where(id: response_2_record_ids)
-        expect(response_2_records.count).to eq 4
-        expect(response_2_records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
-      end
-    end
-
     describe "syncing within a facility group" do
       let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:appointment, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:appointment, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:appointment, 2, facility: request_facility, updated_at: 7.minutes.ago)
+
+        other_patient = create(:patient)
+        create_record_list(2, patient: other_patient, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
