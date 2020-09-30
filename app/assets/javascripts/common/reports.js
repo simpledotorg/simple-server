@@ -201,8 +201,8 @@ function initializeCharts() {
         stacked: true,
         display: true,
         gridLines: {
-          display: true,
-          drawBorder: false,
+          display: false,
+          drawBorder: true,
         },
         ticks: {
           fontColor: darkGreyColor,
@@ -245,7 +245,7 @@ function initializeCharts() {
           },
           gridLines: {
             display: true,
-            drawBorder: true,
+            drawBorder: false,
           },
         },
       ],
@@ -324,7 +324,7 @@ function createGraphConfig(datasetsConfig, graphType) {
   }
 }
 
-function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
+function createGraphOptions(stacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
   return {
     animation: false,
     responsive: true,
@@ -347,22 +347,9 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       display: false,
     },
     scales: {
-      xAxes: [{
-        stacked: isStacked,
-        display: true,
-        gridLines: {
-          display: false,
-          drawBorder: true,
-        },
-        ticks: {
-          fontColor: darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-        },
-      }],
+      xAxes: [createAxisConfig(stacked, false, true)],
       yAxes: [{
-        stacked: isStacked,
+        stacked,
         display: true,
         gridLines: {
           display: true,
@@ -444,3 +431,20 @@ function formatTooltipLabelColor(tooltipItem, data) {
 
   return styles;
 }
+
+function createAxisConfig(stacked, display, drawBorder) {
+  return {
+    stacked,
+    display: true,
+    gridLines: {
+      display,
+      drawBorder,
+    },
+    ticks: {
+      fontColor: darkGreyColor,
+      fontSize: 12,
+      fontFamily: "Roboto Condensed",
+      padding: 8,
+    },
+  };
+};
