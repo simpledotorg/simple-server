@@ -13,7 +13,7 @@
     <div class="col-sm-5 col-lg-7">
       <% @organizations.each do |organization| %>
       <section>
-        <div class="card">
+        <div class="card org-card">
           <h2><%= organization.name %></h2>
           <% if current_admin.permissions_v2_enabled? %>
             <% current_admin.accessible_facilities(:view_reports)
