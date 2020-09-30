@@ -3,7 +3,9 @@
     <div class="card card-responsive">
       <div>
         <h3>Ranked facilities</h3>
-        <p>Ranking by a weighted algorithm of factors below.<sup>1</sup></p>
+          <p>
+            Facilities are ranked by combining a score of higher BP control rate, lower missed visit rate, and higher registration rate. Max score is 100.<sup>1</sup>
+          </p>
       </div>
 
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="ranked-facilities-table">
@@ -23,8 +25,8 @@
           <tr>
             <th></th>
             <th></th>
-            <th colspan="2">BP control<sup>2</sup></th>
-            <th colspan="2">Missed Visits<sup>3</sup></th>
+            <th colspan="2">BP controlled<sup>2</sup></th>
+            <th colspan="2">Missed visits<sup>3</sup></th>
             <th colspan="2">Registrations</th>
             <th>OPD load<sup>4</sup></th>
             <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
@@ -33,10 +35,10 @@
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Rank</th>
             <th class="row-label sort-label">Facilities</th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
-              Controlled BP<br>in Aug-2020
+              Patients wtih BP &lt;140/90<br>in Aug-2020
             </th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
-              No visit<br>&gt;3 months
+              Patients with no visit<br>in >3 months
             </th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of<br>target OPD <sup>5</sup></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">Aug-2020</th>
@@ -94,14 +96,10 @@
     </div>
     <section class="footnotes">
       <ol>
-        <li>
-          <strong>Ranking:</strong> is ranked by combining a score of higher BP control rate, lower missed visit rate, and higher registration rate. Max score is 100.
-          <ul>
-            <li>Overall score = (50% &times; BP control rate) + (30% &times; (100% - missed visit rate)) + (20% &times; registration rate of target OPD<sup>5</sup>)</li>
-          </ul>
+        <li><strong>Ranking: </strong>Overall score = (50% &times; BP control rate) + (30% &times; (100% - missed visit rate)) + (20% &times; registration rate of target OPD<sup>5</sup>)
         </li>
-        <li><strong>BP control:</strong> Patient had at least 1 BP recorded in the previous 3 months and BP &lt;140/90 at last visit.</li>
-        <li><strong>Missed visits:</strong> Patients who did not have a BP, blood sugar, drug prescribed, or appointment scheduled in the last 3 months
+        <li><strong>BP controlled:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months</li> 
+        <li><strong>Missed visits:</strong> Patients with no visit in the last 3 months</li>
         <li><strong>OPD load:</strong> Outpatient department load is entered by surveillance officers for each facility. Monthly OPD load is an average. Where a facility has no OPD Load entered (see asterisk), the number is an average of other faciities of the same type in this district.</li>
         <li><strong>% of target OPD:</strong> Percent of target OPD registered last month. We estimate a target of 10% of adult OPD patients should be registered.</li>
       </ol>
