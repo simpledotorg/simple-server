@@ -13,8 +13,15 @@ class Api::V3::BloodSugarPayloadValidator < Api::V3::PayloadValidator
   )
 
   validate :validate_schema
+  validate :facility_exists
 
   def schema
     Api::V3::Models.blood_sugar
+  end
+
+  def facility_exists
+    unless Facility.exists?(facility_id)
+      errors.add(:facility_does_not_exist, "Facility does not exist")
+    end
   end
 end
