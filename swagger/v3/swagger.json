@@ -1951,7 +1951,10 @@
           "$ref": "#/definitions/uuid"
         },
         "sync_group_id": {
-          "$ref": "#/definitions/string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "protocol_id": {
           "$ref": "#/definitions/uuid"
