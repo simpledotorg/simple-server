@@ -10,10 +10,6 @@ module Reports
       @result = result
     end
 
-    def call
-      overall_score
-    end
-
     def overall_score
       # max score: 100
       (control_score + visits_score + registrations_score)
