@@ -138,13 +138,8 @@ function initializeCharts() {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
   }
 
-  const maxCumulativeRegistrations = Math.max(...Object.values(data.cumulativeRegistrations));
-  const cumulativeRegistrationsMax = Math.round(maxCumulativeRegistrations * 1.15);
-  const cumulativeRegistrationsStepSize = Math.round(cumulativeRegistrationsMax / 2);
-
-  const maxMonthlyRegistrations = Math.max(...Object.values(data.monthlyRegistrations));
-  const monthlyRegistrationsMax = Math.round(maxMonthlyRegistrations * 1.15);
-  const monthlyRegistrationsStepSize = Math.round(monthlyRegistrationsMax / 2);
+  const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
+  const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
@@ -216,8 +211,8 @@ function initializeCharts() {
             fontSize: 12,
             fontFamily: "Roboto Condensed",
             padding: 8,
-            max: cumulativeRegistrationsMax,
-            stepSize: cumulativeRegistrationsStepSize,
+            max: cumulativeRegistrationsYAxis.max,
+            stepSize: cumulativeRegistrationsYAxis.stepSize,
           },
           gridLines: {
             display: true,
@@ -234,8 +229,8 @@ function initializeCharts() {
             fontSize: 12,
             fontFamily: "Roboto Condensed",
             padding: 8,
-            max: monthlyRegistrationsMax,
-            stepSize: monthlyRegistrationsStepSize,
+            max: monthlyRegistrationsYAxis.max,
+            stepSize: monthlyRegistrationsYAxis.stepSize,
           },
           gridLines: {
             display: true,
@@ -424,5 +419,16 @@ function createAxisConfig(stacked, display, drawBorder, stepSize, max) {
       stepSize,
       max,
     },
+  };
+};
+
+function createAxisMaxAndStepSize(data) {
+  const maxDataValue = Math.max(...Object.values(data));
+  const maxAxisValue = Math.round(maxDataValue * 1.15);
+  const axisStepSize = Math.round(maxAxisValue / 2);
+
+  return {
+    max: maxAxisValue,
+    stepSize: axisStepSize,
   };
 };
