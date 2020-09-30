@@ -19,14 +19,16 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    blood_pressure = FactoryBot.create(:blood_pressure, {facility: facility}.merge(options))
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    blood_pressure = FactoryBot.create(:blood_pressure, {patient: patient}.merge(options))
     create(:encounter, :with_observables, observable: blood_pressure)
     blood_pressure
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    blood_pressures = create_list(:blood_pressure, n, {facility: facility}.merge(options))
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    blood_pressures = create_list(:blood_pressure, n, {patient: patient}.merge(options))
     blood_pressures.each { |record| create(:encounter, :with_observables, observable: record) }
     blood_pressures
   end
@@ -304,7 +306,9 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       before :each do
         set_authentication_headers
 
-        create_record_list(2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        other_patient = create(:patient, registration_facility: facility_in_another_group)
+
+        create_record_list(2, facility: request_facility, patient: other_patient, updated_at: 3.minutes.ago)
         create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
