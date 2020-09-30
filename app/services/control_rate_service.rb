@@ -19,7 +19,7 @@ class ControlRateService
     end
     @quarterly_report = @periods.begin.quarter?
     @results = Reports::Result.new(@periods)
-    logger.info class: self.class, event: "created", region: region.id, region_name: region.name,
+    logger.info class: self.class, msg: "created", region: region.id, region_name: region.name,
                 periods: periods.inspect, facilities: facilities.map(&:id)
   end
 
@@ -101,7 +101,6 @@ class ControlRateService
   def bp_quarterly_query(period)
     quarter = period.value
     cohort_quarter = quarter.previous_quarter
-    Rails.logger.info " ===> quarter #{period} number #{quarter.number}"
     LatestBloodPressuresPerPatientPerQuarter
       .where(assigned_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
