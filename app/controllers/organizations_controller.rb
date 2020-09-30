@@ -29,12 +29,8 @@ class OrganizationsController < AdminController
 
     @organizations =
       if current_admin.permissions_v2_enabled?
-        @accessible_facilities
-          .includes(facility_group: :organization)
-          .flat_map(&:organization)
-          .uniq
-          .compact
-          .sort_by(&:name)
+        org_ids = @accessible_facilities.includes(facility_group: :organization).flat_map(&:organization_id)
+        Organization.where(id: org_ids).order(:name)
       else
         policy_scope([:cohort_report, Organization]).order(:name)
       end
