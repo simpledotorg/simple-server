@@ -4,6 +4,11 @@ class JsonLogger < Ougai::Logger
 
   def initialize(*args)
     super
+    @before_log = lambda do |data|
+      if RequestStore.store[:current_user_id]
+        data[:current_user_id] = RequestStore.store[:current_user_id]
+      end
+    end
     after_initialize if respond_to? :after_initialize
   end
 

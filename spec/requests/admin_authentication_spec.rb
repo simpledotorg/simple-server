@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe "Admin authentication", type: :request do
   include Devise::Test::IntegrationHelpers
 
-  describe "current user id is set into the request store on every authenticated request" do
-    it "works! (now write some real specs)" do
+  describe "current user state" do
+    it "sets the current user into RequestStore for every authenticated request" do
       user = create(:admin, :power_user)
       enable_flag(:new_permissions_system_aug_2020, user)
       password = user.password
