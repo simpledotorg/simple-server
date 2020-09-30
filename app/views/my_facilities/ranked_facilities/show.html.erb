@@ -16,7 +16,6 @@
           <col>
           <col class="table-divider">
           <col>
-          <col>
           <col class="table-divider">
           <col class="mobile">
         </colgroup>
@@ -26,7 +25,7 @@
             <th></th>
             <th colspan="2">BP control<sup>2</sup></th>
             <th colspan="2">Missed Visits<sup>3</sup></th>
-            <th colspan="3">Registrations</th>
+            <th colspan="2">Registrations</th>
             <th>OPD load<sup>4</sup></th>
             <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
           </tr>
@@ -41,7 +40,6 @@
             </th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of<br>target OPD <sup>5</sup></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">Aug-2020</th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="cumulative_registrations">All-time</th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly</th>
             <th class="mobile"></th>
           </tr>
@@ -82,9 +80,6 @@
               </td>
               <td class="type-number" data-sort-column-key="monthly_registrations">
                 <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
-              </td>
-              <td class="type-number" data-sort-column-key="cumulative_registrations">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
               </td>
               <td class="type-number" data-sort-column-key="opd_load">
                 <%= number_with_delimiter(facility.monthly_estimated_opd_load) %>
