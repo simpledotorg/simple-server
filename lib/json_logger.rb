@@ -17,7 +17,7 @@ class JsonLogger < Ougai::Logger
         },
         ddsource: ["ruby"]
       }
-      data = data.merge(datadog_trace_info)
+      data.merge!(datadog_trace_info) unless Rails.env.test? # don't merge the datadog trace info in test, as it clutters up logs
       if RequestStore.store[:current_user_id]
         data[:current_user_id] = RequestStore.store[:current_user_id]
       end
