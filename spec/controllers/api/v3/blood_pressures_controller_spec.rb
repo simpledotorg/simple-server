@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::BloodPressuresController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_user) { create(:user) }
+  let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env["X_USER_ID"] = request_user.id
     request.env["X_FACILITY_ID"] = request_facility.id
@@ -18,16 +18,16 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    patient = FactoryBot.create(:patient, registration_facility: facility)
-    blood_pressure = FactoryBot.create(:blood_pressure, {patient: patient}.merge(options))
+    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    patient = create(:patient, registration_facility: facility)
+    blood_pressure = create(:blood_pressure, {patient: patient}.merge(options))
     create(:encounter, :with_observables, observable: blood_pressure)
     blood_pressure
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    patient = FactoryBot.create(:patient, registration_facility: facility)
+    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    patient = create(:patient, registration_facility: facility)
     blood_pressures = create_list(:blood_pressure, n, {patient: patient}.merge(options))
     blood_pressures.each { |record| create(:encounter, :with_observables, observable: record) }
     blood_pressures
@@ -70,7 +70,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       end
 
       it "creates new blood pressures with associated patient" do
-        patient = FactoryBot.create(:patient)
+        patient = create(:patient)
         blood_pressures = (1..3).map {
           build_blood_pressure_payload(FactoryBot.build(:blood_pressure, patient: patient))
         }
@@ -93,7 +93,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
 
         it "does not modify the recorded_at for a patient if params have recorded_at" do
           patient_recorded_at = 4.months.ago
-          patient = FactoryBot.create(:patient, recorded_at: patient_recorded_at)
+          patient = create(:patient, recorded_at: patient_recorded_at)
           older_bp_recording_date = 5.months.ago
           blood_pressure = build_blood_pressure_payload(FactoryBot.build(:blood_pressure,
             patient: patient,
@@ -115,7 +115,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
 
         it "sets patient's recorded_at to bp's device_created_at if the bp is older" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
           older_bp_recording_date = 2.months.ago
           blood_pressure = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
@@ -129,7 +129,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
 
         it "sets patient's recorded_at to their oldest bp's device_created_at" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
           two_months_ago = 2.months.ago
           three_months_ago = 3.months.ago
           bp_recorded_two_months_ago = build_blood_pressure_payload(
@@ -155,7 +155,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
 
       context "creates encounters" do
         it "assumes the same encounter for the blood_pressures recorded on the same day" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
 
           blood_pressure_recording = Time.new(2019, 1, 1, 1, 1).utc
           encountered_on = blood_pressure_recording.to_date
@@ -179,7 +179,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
 
         it "should create different encounters for blood_pressures recorded on different days" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
 
           day_1 = Time.new(2019, 1, 1, 1, 1).utc
           day_2 = Time.new(2019, 1, 2, 1, 1).utc
@@ -271,7 +271,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
 
     describe "v3 facility prioritisation" do
       it "syncs request facility's records first" do
-        request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+        request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
 
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
@@ -300,8 +300,8 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
     end
 
     describe "syncing within a facility group" do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
-      let(:facility_in_another_group) { FactoryBot.create(:facility) }
+      let(:facility_in_same_group) { create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility_in_another_group) { create(:facility) }
 
       before :each do
         set_authentication_headers
