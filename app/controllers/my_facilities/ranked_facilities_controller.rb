@@ -22,10 +22,19 @@ class MyFacilities::RankedFacilitiesController < AdminController
     set_period
     @facilities = filter_facilities([:manage, :facility])
 
-    @data_for_facility = @facilities.each_with_object({}) { |facility, hsh|
-      hsh[facility.name] = Reports::RegionService.new(region: facility,
-                                                      period: @period).call
-    }
+    @data_for_facility = Hash.new
+    @scores_for_facility = Hash.new
+
+    @facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility,
+                                                                     period: @period).call
+
+      @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
+                                                                          result: @data_for_facility[facility.name])
+    end
+
+    # Sort facilities by overall score, highest to lowest
+    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }.reverse
   end
 
   private

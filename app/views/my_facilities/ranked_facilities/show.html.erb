@@ -16,6 +16,7 @@
           <col>
           <col class="table-divider">
           <col>
+          <col>
           <col class="table-divider">
           <col class="mobile">
         </colgroup>
@@ -24,36 +25,41 @@
             <th></th>
             <th></th>
             <th colspan="2">BP control<sup>2</sup></th>
-            <th colspan="2">Missed Visits</th>
-            <th colspan="2">Registrations</th>
-            <th>OPD load <sup>3</sup></th>
+            <th colspan="2">Missed Visits<sup>3</sup></th>
+            <th colspan="3">Registrations</th>
+            <th>OPD load<sup>4</sup></th>
             <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
           </tr>
           <tr data-sort-method="thead" class="sorts">
-            <th class="row-label sort-label" data-sort-default data-sort-method="number">Rank</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Rank</th>
             <th class="row-label sort-label">Facilities</th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
               Controlled BP<br>in Aug-2020
             </th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled" colspan="2" data-sort-default>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
               No visit<br>&gt;3 months
             </th>
-            <th class="row-label sort-label" data-sort-method="number">Aug-2020</th>
-            <th class="row-label sort-label" data-sort-method="number">All-time</th>
-            <th class="row-label sort-label" data-sort-method="number">Monthly</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of<br>target OPD <sup>5</sup></th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">Aug-2020</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="cumulative_registrations">All-time</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly</th>
             <th class="mobile"></th>
           </tr>
         </thead>
         <tbody>
           <% @facilities.each_with_index do |facility, rank| %>
             <tr>
-              <td class="type-rank"><%= rank + 1 %></td>
+              <td class="type-rank" data-sort-column-key="score" data-toggle="tooltip"
+                  title="Overall score: <%= number_with_precision(@scores_for_facility[facility.name].overall_score, precision: 2) %>"
+              >
+                <%= rank + 1 %>
+              </td>
               <td class="type-title">
                 <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
                   <%= facility.name %>
                 <% end %>
               </td>
-              <td class="type-percent">
+              <td class="type-percent" data-sort-column-key="controlled_patients_rate">
                 <em>
                   <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
                 </em>
@@ -61,7 +67,7 @@
               <td class="type-number">
                 <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
               </td>
-              <td class="type-percent">
+              <td class="type-percent" data-sort-column-key="missed_visits_rate">
                 <em>
                   <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last, precision: 0) %>
                 </em>
@@ -69,13 +75,18 @@
               <td class="type-number">
                 <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last) %>
               </td>
-              <td class="type-number">
+              <td class="type-percent" data-sort-column-key="registration_rate">
+                <em>
+                  <%= number_to_percentage(@scores_for_facility[facility.name].registration_rate, precision: 0) %>
+                </em>
+              </td>
+              <td class="type-number" data-sort-column-key="monthly_registrations">
                 <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
               </td>
-              <td class="type-number">
+              <td class="type-number" data-sort-column-key="cumulative_registrations">
                 <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
               </td>
-              <td class="type-number">
+              <td class="type-number" data-sort-column-key="opd_load">
                 <%= number_with_delimiter(facility.monthly_estimated_opd_load) %>
               </td>
             </tr>
@@ -85,9 +96,16 @@
     </div>
     <section class="footnotes">
       <ol>
-        <li><strong>Ranking:</strong> is ranked by...</li>
-        <li><strong>BP control:</strong> Patient had at least 1 BP recorded in the previous 90 days and BP &lt;140/90 at last visit.</li>
+        <li>
+          <strong>Ranking:</strong> is ranked by combining a score of higher BP control rate, lower missed visit rate, and higher registration rate.
+          <ul>
+            <li>Overall score = (50% &times; BP control rate) + (30% &times; (100% - missed visit rate)) + (20% &times; registration rate of target OPD<sup>5</sup>)</li>
+          </ul>
+        </li>
+        <li><strong>BP control:</strong> Patient had at least 1 BP recorded in the previous 3 months and BP &lt;140/90 at last visit.</li>
+        <li><strong>Missed visits:</strong> Patients who did not have a BP, blood sugar, drug prescribed, or appointment scheduled in the last 3 months
         <li><strong>OPD load:</strong> Outpatient department load is entered by surveillance officers for each facility. Monthly OPD load is an average. Where a facility has no OPD Load entered (see asterisk), the number is an average of other faciities of the same type in this district.</li>
+        <li><strong>% of target OPD:</strong> Percent of target OPD registered last month. We estimate a target of 10% of adult OPD patients should be registered.</li>
       </ol>
     </section>
   </div>
