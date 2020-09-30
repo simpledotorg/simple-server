@@ -13,12 +13,14 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
 
   def create_record(options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create(:prescription_drug, options.merge(facility: facility))
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    FactoryBot.create(:prescription_drug, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
     facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    FactoryBot.create_list(:prescription_drug, n, options.merge(facility: facility))
+    patient = FactoryBot.create(:patient, registration_facility: facility)
+    FactoryBot.create_list(:prescription_drug, n, {patient: patient}.merge(options))
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
@@ -80,10 +82,10 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
     describe "v3 facility prioritisation" do
       it "syncs request facility's records first" do
         request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-        FactoryBot.create_list(:prescription_drug, 2, facility: request_facility, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:prescription_drug, 2, facility: request_facility, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:prescription_drug, 2, facility: request_2_facility, updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:prescription_drug, 2, facility: request_2_facility, updated_at: 10.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
+        create_record_list(2, facility: request_2_facility, updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
@@ -109,12 +111,13 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
     describe "syncing within a facility group" do
       let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { FactoryBot.create(:facility) }
+      let(:other_patient) { create(:patient) }
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:prescription_drug, 2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:prescription_drug, 2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:prescription_drug, 2, facility: request_facility, updated_at: 7.minutes.ago)
+        create_record_list(2, patient: other_patient, updated_at: 3.minutes.ago)
+        create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
       it "only sends data for facilities belonging in the sync group of user's registration facility" do
