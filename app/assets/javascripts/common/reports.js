@@ -80,10 +80,7 @@ function initializeCharts() {
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
     [createAxisConfig(false, false, true)],
-    false,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig(false, true, false, 25, 100)],
     formatRateTooltipText,
     [data.controlledPatients],
     data.cumulativeRegistrations,
@@ -106,10 +103,7 @@ function initializeCharts() {
   ], "line");
   missedVisitsConfig.options = createGraphOptions(
     [createAxisConfig(false, false, true)],
-    false,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig(false, true, false, 25, 100)],
     formatRateTooltipText,
     [data.missedVisits],
     data.cumulativeRegistrations,
@@ -133,10 +127,7 @@ function initializeCharts() {
 
   uncontrolledGraphConfig.options = createGraphOptions(
     [createAxisConfig(false, false, true)],
-    false,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig(false, true, false, 25, 100)],
     formatRateTooltipText,
     [data.uncontrolledPatients],
     data.cumulativeRegistrations,
@@ -291,10 +282,7 @@ function initializeCharts() {
 
   visitDetailsGraphConfig.options = createGraphOptions(
     [createAxisConfig(true, true, false)],
-    true,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig(true, false, false, 25, 100)],
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
     data.cumulativeRegistrations,
@@ -328,7 +316,7 @@ function createGraphConfig(datasetsConfig, graphType) {
   }
 }
 
-function createGraphOptions(xAxes, stacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
+function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerators, denominators) {
   return {
     animation: false,
     responsive: true,
@@ -352,24 +340,7 @@ function createGraphOptions(xAxes, stacked, stepSize, suggestedMax, tickCallback
     },
     scales: {
       xAxes,
-      yAxes: [{
-        stacked,
-        display: true,
-        gridLines: {
-          display: true,
-          drawBorder: false,
-        },
-        ticks: {
-          fontColor: darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          stepSize,
-          suggestedMax,
-          suggestedMin: 0,
-          callback: tickCallbackFunction,
-        }
-      }],
+      yAxes,
     },
     tooltips: {
       mode: "index",
@@ -436,7 +407,7 @@ function formatTooltipLabelColor(tooltipItem, data) {
   return styles;
 }
 
-function createAxisConfig(stacked, display, drawBorder) {
+function createAxisConfig(stacked, display, drawBorder, stepSize, max) {
   return {
     stacked,
     display: true,
@@ -449,6 +420,9 @@ function createAxisConfig(stacked, display, drawBorder) {
       fontSize: 12,
       fontFamily: "Roboto Condensed",
       padding: 8,
+      beginAtZero: true,
+      stepSize,
+      max,
     },
   };
 };
