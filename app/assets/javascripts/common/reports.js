@@ -1,15 +1,15 @@
-const lightGreenColor = "rgba(242, 248, 245, 1)";
+const lightGreenColor = "rgba(242, 248, 245, 0.9)";
 const darkGreenColor = "rgba(0, 122, 49, 1)";
 const mediumGreenColor = "rgba(0, 184, 73, 1)";
-const lightRedColor = "rgba(255, 235, 238, 1)";
+const lightRedColor = "rgba(255, 235, 238, 0.9)";
 const darkRedColor = "rgba(255, 51, 85, 1)";
-const lightPurpleColor = "rgba(238, 229, 252, 1)";
+const lightPurpleColor = "rgba(238, 229, 252, 0.9)";
 const darkPurpleColor = "rgba(83, 0, 224, 1)";
 const darkGreyColor = "rgba(108, 115, 122, 1)";
-const lightBlueColor = "rgba(233, 243, 255, 1)";
+const lightBlueColor = "rgba(233, 243, 255, 0.9)";
 const mediumBlueColor = "rgba(0, 117, 235, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
-const lightGreyColor = "rgba(240, 242, 245, 1)";
+const lightGreyColor = "rgba(240, 242, 245, 0.9)";
 const whiteColor = "rgba(255, 255, 255, 1)";
 const transparent = "rgba(0, 0, 0, 0)";
 
@@ -145,12 +145,12 @@ function initializeCharts() {
   }
 
   const maxCumulativeRegistrations = Math.max(...Object.values(data.cumulativeRegistrations));
-  const cumulativeRegistrationsMax = Math.round(maxCumulativeRegistrations) * 1.15;
-  const cumulativeRegistrationsStepSize = Math.round(cumulativeRegistrationsMax / 3);
+  const cumulativeRegistrationsMax = Math.round(maxCumulativeRegistrations * 1.15);
+  const cumulativeRegistrationsStepSize = Math.round(cumulativeRegistrationsMax / 2);
 
   const maxMonthlyRegistrations = Math.max(...Object.values(data.monthlyRegistrations));
-  const monthlyRegistrationsMax = Math.round(maxMonthlyRegistrations) * 1.15;
-  const monthlyRegistrationsStepSize = Math.round(monthlyRegistrationsMax / 3);
+  const monthlyRegistrationsMax = Math.round(maxMonthlyRegistrations * 1.15);
+  const monthlyRegistrationsStepSize = Math.round(monthlyRegistrationsMax / 2);
 
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
@@ -205,15 +205,11 @@ function initializeCharts() {
           drawBorder: false,
         },
         ticks: {
-          fontColor: mediumGreyColor,
+          fontColor: darkGreyColor,
           fontSize: 12,
           fontFamily: "Roboto Condensed",
           padding: 8,
-          maxRotation: 0,
-          minRotation: 0,
-          autoSkip: true,
-          maxTicksLimit: 10
-        }
+        },
       }],
       yAxes: [
         {
@@ -222,9 +218,16 @@ function initializeCharts() {
           display: true,
           position: "left",
           ticks: {
-            max: maxCumulativeRegistrations,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            max: cumulativeRegistrationsMax,
             stepSize: cumulativeRegistrationsStepSize,
-            beginAtZero: true,
+          },
+          gridLines: {
+            display: true,
+            drawBorder: false,
           },
         },
         {
@@ -233,11 +236,16 @@ function initializeCharts() {
           display: true,
           position: "right",
           ticks: {
-            max: maxMonthlyRegistrations,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            max: monthlyRegistrationsMax,
             stepSize: monthlyRegistrationsStepSize,
           },
           gridLines: {
-            drawOnChartArea: false,
+            display: true,
+            drawBorder: true,
           },
         },
       ],
@@ -343,19 +351,15 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
         stacked: isStacked,
         display: true,
         gridLines: {
-          display: true,
-          drawBorder: false,
+          display: false,
+          drawBorder: true,
         },
         ticks: {
-          fontColor: mediumGreyColor,
+          fontColor: darkGreyColor,
           fontSize: 12,
           fontFamily: "Roboto Condensed",
           padding: 8,
-          maxRotation: 0,
-          minRotation: 0,
-          autoSkip: true,
-          maxTicksLimit: 10
-        }
+        },
       }],
       yAxes: [{
         stacked: isStacked,
@@ -365,7 +369,7 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
           drawBorder: false,
         },
         ticks: {
-          fontColor: "#ADB2B8",
+          fontColor: darkGreyColor,
           fontSize: 12,
           fontFamily: "Roboto Condensed",
           padding: 8,
