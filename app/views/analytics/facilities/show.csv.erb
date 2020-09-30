@@ -33,7 +33,7 @@
       formatted_report_end_date = report_end.strftime("%B #{report_end.day.ordinalize}")
 
       report_period = [formatted_report_start_date, formatted_report_end_date].join(" – ")
-      cohort_period = cohort_start.strftime("%b %Y")
+      cohort_period = cohort_start.strftime("%b-%Y")
     end
 
     if registered > 0

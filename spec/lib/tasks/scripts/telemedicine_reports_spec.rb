@@ -31,13 +31,13 @@ RSpec.describe TelemedicineReports do
       filename = "telemedicine_report_03_Aug_to_09_Aug.csv"
       # This result is dependent on the factories, could become flaky if the factories change significantly.
       # We should drop these specs once we switch over to the Telemed MVP
-      report_data = [["", "", "", "", "", "", "", "Between #{period_start.strftime("%d %b %Y")} and #{period_end.strftime("%d %b %Y")}", "", "", "", "", ""],
+      report_data = [["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", ""],
         ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult Button Clicks", "Teleconsult requests percentage"],
         [facility_1.state, "", "", 10, 1, 1, "", 2, 2, 0, 2, 10, "500%"],
         ["", facility_1.district, "", 10, 1, 1, "", 2, 2, 0, 2, 10, "500%"],
         [],
         [],
-        ["", "", "", "", "", "", "", "Between #{period_start.strftime("%d %b %Y")} and #{period_end.strftime("%d %b %Y")}", "", "", "", "", ""],
+        ["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", ""],
         ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult Button Clicks", "Teleconsult requests percentage"],
         [facility_1.state, "", "", 10, 1, 1, "", 2, 2, 0, 2, 10, "500%"],
         ["", facility_1.district, "", 10, 1, 1, "", 2, 2, 0, 2, 10, "500%"],
@@ -45,10 +45,10 @@ RSpec.describe TelemedicineReports do
         [],
         [],
         ["Date", "Unique users", "Total TC requests"],
-        ["04 Aug 2020", 2, 6],
-        ["06 Aug 2020", 1, 1],
-        ["07 Aug 2020", 1, 2],
-        ["08 Aug 2020", 1, 1]]
+        ["04-Aug-2020", 2, 6],
+        ["06-Aug-2020", 1, 1],
+        ["07-Aug-2020", 1, 2],
+        ["08-Aug-2020", 1, 1]]
 
       expect(CSV).to receive(:open).with(filename, "w")
 
