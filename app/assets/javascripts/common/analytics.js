@@ -4,6 +4,6 @@ window.addEventListener("DOMContentLoaded", function() {
   }
 
   if($('#ranked-facilities-table').length) {
-    new Tablesort(document.getElementById('ranked-facilities-table'), { descending: false})
+    new Tablesort(document.getElementById('ranked-facilities-table'), { descending: true })
   }
 });
