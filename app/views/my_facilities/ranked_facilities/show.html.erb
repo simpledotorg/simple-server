@@ -82,6 +82,9 @@
                 <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
               </td>
               <td class="type-number" data-sort-column-key="opd_load">
+                <% unless facility.opd_load_estimated? %>
+                  <small>(est.)</small>
+                <% end %>
                 <%= number_with_delimiter(facility.opd_load) %>
               </td>
             </tr>
