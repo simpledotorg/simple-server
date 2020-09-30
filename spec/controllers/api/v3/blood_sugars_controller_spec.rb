@@ -19,14 +19,16 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
 
   def create_record(options = {})
     facility = create(:facility, facility_group: request_user.facility.facility_group)
-    record = create(:blood_sugar, {facility: facility}.merge(options))
+    patient = create(:patient, registration_facility: facility)
+    record = create(:blood_sugar, {patient: patient}.merge(options))
     create(:encounter, :with_observables, observable: record)
     record
   end
 
   def create_record_list(n, options = {})
     facility = create(:facility, facility_group: request_user.facility.facility_group)
-    records = create_list(:blood_sugar, n, {facility: facility}.merge(options))
+    patient = create(:patient, registration_facility: facility)
+    records = create_list(:blood_sugar, n, {patient: patient}.merge(options))
     records.each { |r| create(:encounter, :with_observables, observable: r) }
     records
   end
@@ -279,11 +281,12 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
     describe "syncing within a facility group" do
       let(:facility_in_same_group) { create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { create(:facility) }
+      let(:other_patient) { create(:patient) }
 
       before :each do
         set_authentication_headers
 
-        create_record_list(2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
+        create_record_list(2, patient: other_patient, updated_at: 3.minutes.ago)
         create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end

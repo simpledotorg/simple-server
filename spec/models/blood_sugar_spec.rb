@@ -43,10 +43,35 @@ RSpec.describe BloodSugar, type: :model do
     let!(:post_prandial) { create(:blood_sugar, blood_sugar_type: :post_prandial) }
     let!(:hba1c) { create(:blood_sugar, blood_sugar_type: :hba1c) }
 
-    context "#for_v3" do
+    describe ".for_v3" do
       it "only includes non hba1c blood sugars" do
         expect(BloodSugar.for_v3).not_to include(hba1c)
         expect(BloodSugar.for_v3.count).to eq 3
+      end
+    end
+
+    describe ".syncable_to_region" do
+      it "returns all patients registered in the region" do
+        facility_group = create(:facility_group)
+        facility = create(:facility, facility_group: facility_group)
+        patient = create(:patient)
+        other_patient = create(:patient)
+
+        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
+
+        blood_sugars = [
+          create(:blood_sugar, patient: patient, facility: facility),
+          create(:blood_sugar, patient: patient, facility: facility).tap(&:discard),
+          create(:blood_sugar, patient: patient)
+        ]
+
+        other_blood_sugars = [
+          create(:blood_sugar, patient: other_patient, facility: facility),
+          create(:blood_sugar, patient: other_patient, facility: facility).tap(&:discard),
+          create(:blood_sugar, patient: other_patient)
+        ]
+
+        expect(BloodSugar.syncable_to_region(facility_group)).to contain_exactly(*blood_sugars)
       end
     end
   end
