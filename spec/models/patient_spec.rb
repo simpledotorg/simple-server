@@ -281,6 +281,30 @@ describe Patient, type: :model do
         expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
       end
     end
+
+    describe ".syncable_to_region" do
+      it "returns all patients registered in the region" do
+        facility_group = create(:facility_group)
+        other_facility_group = create(:facility_group)
+
+        facility = create(:facility, facility_group: facility_group)
+        other_facility = create(:facility, facility_group: other_facility_group)
+
+        patients = [
+          create(:patient, registration_facility: facility),
+          create(:patient, registration_facility: facility).tap(&:discard),
+          create(:patient, registration_facility: facility, assigned_facility: other_facility)
+        ]
+
+        other_patients = [
+          create(:patient, registration_facility: other_facility),
+          create(:patient, registration_facility: other_facility).tap(&:discard),
+          create(:patient, registration_facility: other_facility, assigned_facility: facility)
+        ]
+
+        expect(Patient.syncable_to_region(facility_group)).to contain_exactly(*patients)
+      end
+    end
   end
 
   context "Utility methods" do

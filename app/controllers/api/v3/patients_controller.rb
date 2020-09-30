@@ -13,6 +13,10 @@ class Api::V3::PatientsController < Api::V3::SyncController
     {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
+  def facility_group_records
+    Patient.syncable_to_region(current_facility_group)
+  end
+
   def current_facility_records
     facility_group_records
       .includes(:address, :phone_numbers, :business_identifiers)
