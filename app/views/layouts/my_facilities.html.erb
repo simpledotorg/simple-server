@@ -109,7 +109,7 @@
         <%= link_to 'Overview', my_facilities_overview_path,
             class: "nav-link #{active_action?("index")}" %>
         <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(preserve_query_params(request.query_parameters, ["size", "period"])),
-            class: "nav-link #{active_action?("ranked_facilities")}" %>
+            class: "nav-link #{active_controller?("my_facilities/ranked_facilities")}" %>
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
             class: "nav-link #{active_action?("blood_pressure_control")}" %>
         <%= link_to 'Missed Visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
