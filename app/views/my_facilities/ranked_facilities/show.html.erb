@@ -4,7 +4,7 @@
       <div>
         <h3>Ranked facilities</h3>
           <p>
-            Facilities are ranked by combining a score of higher BP control rate, lower missed visit rate, and higher registration rate. Max score is 100.<sup>1</sup>
+            Facilities are ranked by combining a score of BP controlled, missed visits, and % of target registrations. The highest score is 100.<sup>1</sup>
           </p>
       </div>
 
@@ -35,13 +35,13 @@
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Rank</th>
             <th class="row-label sort-label">Facilities</th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
-              Patients wtih BP &lt;140/90<br>in Aug-2020
+              Patients with BP &lt;140/90<br>in Aug-2020
             </th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
               Patients with no visit<br>in >3 months
             </th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of target<br>registrations <sup>5</sup></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">Aug-2020</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of target<br>registrations <sup>5</sup></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly</th>
             <th class="mobile"></th>
           </tr>
@@ -75,13 +75,13 @@
               <td class="type-number">
                 <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last) %>
               </td>
+              <td class="type-number" data-sort-column-key="monthly_registrations">
+                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+              </td>
               <td class="type-percent" data-sort-column-key="registration_rate">
                 <em>
                   <%= number_to_percentage(@scores_for_facility[facility.name].registration_rate, precision: 0) %>
                 </em>
-              </td>
-              <td class="type-number" data-sort-column-key="monthly_registrations">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
               </td>
               <td class="type-number" data-sort-column-key="opd_load">
                 <% unless facility.opd_load_estimated? %>
@@ -96,12 +96,12 @@
     </div>
     <section class="footnotes">
       <ol>
-        <li><strong>Ranking: </strong>Overall score = (50% &times; BP control rate) + (30% &times; (100% - missed visit rate)) + (20% &times; registration rate of target OPD<sup>5</sup>)
+        <li><strong>Ranking: </strong>Overall score = (50% &times; BP controlled) + (30% &times; (100% - missed visits)) + (20% &times; % of target registrations<sup>5</sup>)
         </li>
         <li><strong>BP controlled:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months</li> 
         <li><strong>Missed visits:</strong> Patients with no visit in the last 3 months</li>
-        <li><strong>OPD load:</strong> Outpatient department load is entered by surveillance officers for each facility. Monthly OPD load is an average. Where a facility has no OPD Load entered (see asterisk), the number is an average of other faciities of the same type in this district.</li>
-        <li><strong>% of target registrations:</strong> Percent of target OPD registered last month. We estimate a target of 10% of adult OPD patients should be registered.</li>
+        <li><strong>OPD load:</strong> A facility's estimated monthly adult outpatient department load. Facilities with no OPD load (marked "est") use the average OPD load of all district facilities of the same size.</li>
+        <li><strong>Target registrations:</strong> 10% of a facility's OPD load.</li>
       </ol>
     </section>
   </div>
