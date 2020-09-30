@@ -35,8 +35,7 @@ module Reports
 
     def registration_rate
       monthly_registrations = @result.registrations.values.last
-      monthly_opd_load = @region.monthly_estimated_opd_load
-      target_registrations = monthly_opd_load * TARGET_REGISTRATION_RATE
+      target_registrations = @region.opd_load * TARGET_REGISTRATION_RATE
 
       (monthly_registrations / target_registrations) * 100
     end
