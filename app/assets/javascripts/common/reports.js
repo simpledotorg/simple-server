@@ -79,8 +79,18 @@ function initializeCharts() {
     label: "HTN controlled",
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
-    [createAxisConfig(false, false, true)],
-    [createAxisConfig(false, true, false, 25, 100)],
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.controlledPatients],
     data.cumulativeRegistrations,
@@ -102,8 +112,18 @@ function initializeCharts() {
     },
   ], "line");
   missedVisitsConfig.options = createGraphOptions(
-    [createAxisConfig(false, false, true)],
-    [createAxisConfig(false, true, false, 25, 100)],
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.missedVisits],
     data.cumulativeRegistrations,
@@ -126,8 +146,18 @@ function initializeCharts() {
   ], "line");
 
   uncontrolledGraphConfig.options = createGraphOptions(
-    [createAxisConfig(false, false, true)],
-    [createAxisConfig(false, true, false, 25, 100)],
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.uncontrolledPatients],
     data.cumulativeRegistrations,
@@ -162,26 +192,30 @@ function initializeCharts() {
     },
   ], "bar");
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
-    [createAxisConfig(true, false, false)],
+    [createAxisConfig({
+      stacked: true,
+      display: false,
+      drawBorder: false,
+    })],
     [
-      createAxisConfig(
-        true,
-        false,
-        false,
-        cumulativeRegistrationsYAxis.stepSize,
-        cumulativeRegistrationsYAxis.max,
-        "cumulativeRegistrations",
-        "left",
-      ),
-      createAxisConfig(
-        true,
-        true,
-        false,
-        monthlyRegistrationsYAxis.stepSize,
-        monthlyRegistrationsYAxis.max,
-        "monthlyRegistrations",
-        "right",
-      ),
+      createAxisConfig({
+        stacked: true,
+        display: false,
+        drawBorder: false,
+        stepSize: cumulativeRegistrationsYAxis.stepSize,
+        max: cumulativeRegistrationsYAxis.max,
+        id: "cumulativeRegistrations",
+        position: "left",
+      }),
+      createAxisConfig({
+        stacked: true,
+        display: true,
+        drawBorder: false,
+        stepSize: monthlyRegistrationsYAxis.stepSize,
+        max: monthlyRegistrationsYAxis.max,
+        id: "monthlyRegistrations",
+        position: "right",
+      }),
     ],
     formatSumTooltipText,
   );
@@ -219,8 +253,18 @@ function initializeCharts() {
   ], "bar");
 
   visitDetailsGraphConfig.options = createGraphOptions(
-    [createAxisConfig(true, true, false)],
-    [createAxisConfig(true, false, false, 25, 100)],
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
     data.cumulativeRegistrations,
@@ -345,7 +389,8 @@ function formatTooltipLabelColor(tooltipItem, data) {
   return styles;
 }
 
-function createAxisConfig(stacked, display, drawBorder, stepSize, max, id, position) {
+function createAxisConfig(config) {
+  const { stacked, display, drawBorder, stepSize, max, id, position } = config;
   let axisConfig = {
     id,
     position: position ? position : "left",
