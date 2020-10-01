@@ -70,14 +70,17 @@ function getReportingData() {
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlledGraphConfig = createGraphConfig([{
-    data: data.controlRate,
-    borderWidth: 2,
-    rgbaLineColor: mediumGreenColor,
-    rgbaPointColor: whiteColor,
-    rgbaBackgroundColor: lightGreenColor,
-    label: "HTN controlled",
-  }], "line");
+  const controlledGraphConfig = createGraphConfig({
+    datasets: [{
+      data: data.controlRate,
+      borderWidth: 2,
+      rgbaLineColor: mediumGreenColor,
+      rgbaPointColor: lightGreenColor,
+      rgbaBackgroundColor: lightGreenColor,
+      label: "HTN controlled",
+    }],
+    graphType: "line",
+  });
   controlledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
@@ -101,16 +104,17 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const missedVisitsConfig = createGraphConfig([
-    {
+  const missedVisitsConfig = createGraphConfig({
+    datasets: [{
       data: data.missedVisitsRate,
       borderWidth: 2,
       rgbaLineColor: mediumBlueColor,
       rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightBlueColor,
       label: "Missed visits",
-    },
-  ], "line");
+    }],
+    graphType: "line",
+  });
   missedVisitsConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
@@ -134,17 +138,17 @@ function initializeCharts() {
     new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
-  const uncontrolledGraphConfig = createGraphConfig([
-    {
+  const uncontrolledGraphConfig = createGraphConfig({
+    datasets: [{
       data: data.uncontrolledRate,
       borderWidth: 2,
       rgbaLineColor: darkRedColor,
       rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightRedColor,
       label: "HTN not under control",
-    }
-  ], "line");
-
+    }],
+    graphType: "line",
+  });
   uncontrolledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
@@ -171,26 +175,29 @@ function initializeCharts() {
   const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
   const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
-  const cumulativeRegistrationsGraphConfig = createGraphConfig([
-    {
-      id: "cumulativeRegistrations",
-      data: data.cumulativeRegistrations,
-      borderWidth: 2,
-      rgbaLineColor: darkPurpleColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: transparent,
-      label: "cumulative registrations",
-      graphType: "line",
-    },
-    {
-      id: "monthlyRegistrations",
-      data: data.monthlyRegistrations,
-      rgbaBackgroundColor: lightPurpleColor,
-      hoverBackgroundColor: lightPurpleColor,
-      label: "monthly registrations",
-      graphType: "bar",
-    },
-  ], "bar");
+  const cumulativeRegistrationsGraphConfig = createGraphConfig({
+    datasets: [
+      {
+        id: "cumulativeRegistrations",
+        data: data.cumulativeRegistrations,
+        borderWidth: 2,
+        rgbaLineColor: darkPurpleColor,
+        rgbaPointColor: whiteColor,
+        rgbaBackgroundColor: transparent,
+        label: "cumulative registrations",
+        graphType: "line",
+      },
+      {
+        id: "monthlyRegistrations",
+        data: data.monthlyRegistrations,
+        rgbaBackgroundColor: lightPurpleColor,
+        hoverBackgroundColor: lightPurpleColor,
+        label: "monthly registrations",
+        graphType: "bar",
+      },
+    ],
+    graphType: "bar",
+  });
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: true,
@@ -225,41 +232,48 @@ function initializeCharts() {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
   }
 
-  const visitDetailsGraphConfig = createGraphConfig([
-    {
-      data: data.controlRate,
-      rgbaBackgroundColor: mediumGreenColor,
-      hoverBackgroundColor: mediumGreenColor,
-      label: "HTN controlled",
-    },
-    {
-      data: data.uncontrolledRate,
-      rgbaBackgroundColor: darkRedColor,
-      hoverBackgroundColor: darkRedColor,
-      label: "HTN not under control",
-    },
-    {
-      data: data.visitButNoBPMeasureRate,
-      rgbaBackgroundColor: darkGreyColor,
-      hoverBackgroundColor: darkGreyColor,
-      label: "Visited in the last 3 months",
-    },
-    {
-      data: data.missedVisitsRate,
-      rgbaBackgroundColor: mediumGreyColor,
-      hoverBackgroundColor: mediumGreyColor,
-      label: "No visit >3 months",
-    }
-  ], "bar");
-
+  const visitDetailsGraphConfig = createGraphConfig({
+    datasets: [
+      {
+        data: data.controlRate,
+        rgbaBackgroundColor: mediumGreenColor,
+        hoverBackgroundColor: mediumGreenColor,
+        label: "HTN controlled",
+        graphType: "bar",
+      },
+      {
+        data: data.uncontrolledRate,
+        rgbaBackgroundColor: darkRedColor,
+        hoverBackgroundColor: darkRedColor,
+        label: "HTN not under control",
+        graphType: "bar",
+      },
+      {
+        data: data.visitButNoBPMeasureRate,
+        rgbaBackgroundColor: darkGreyColor,
+        hoverBackgroundColor: darkGreyColor,
+        label: "Visited in the last 3 months",
+        graphType: "bar",
+      },
+      {
+        data: data.missedVisitsRate,
+        rgbaBackgroundColor: mediumGreyColor,
+        hoverBackgroundColor: mediumGreyColor,
+        label: "No visit >3 months",
+        graphType: "bar",
+      }
+    ],
+    graphType: "bar",
+    numberOfMonths: 6,
+  });
   visitDetailsGraphConfig.options = createGraphOptions(
     [createAxisConfig({
-      stacked: false,
+      stacked: true,
       display: false,
       drawBorder: true,
     })],
     [createAxisConfig({
-      stacked: false,
+      stacked: true,
       display: true,
       drawBorder: false,
       stepSize: 25,
@@ -276,12 +290,18 @@ function initializeCharts() {
   }
 }
 
-function createGraphConfig(datasetsConfig, graphType) {
+function createGraphConfig(config) {
+  let { datasets, graphType, numberOfMonths } = config;
+
+  if (numberOfMonths == undefined) {
+    numberOfMonths = 24;
+  }
+
   return {
     type: graphType,
     data: {
-      labels: Object.keys(datasetsConfig[0].data),
-      datasets: datasetsConfig.map(dataset => {
+      labels: Object.keys(datasets[0].data).slice(0, numberOfMonths),
+      datasets: datasets.map(dataset => {
         return {
           yAxisID: dataset.id,
           label: dataset.label,
@@ -290,7 +310,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
-          data: Object.values(dataset.data),
+          data: Object.values(dataset.data).slice(0, numberOfMonths),
           type: dataset.graphType ? dataset.graphType : "line",
         };
       }),
