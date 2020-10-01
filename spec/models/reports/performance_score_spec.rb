@@ -63,6 +63,18 @@ describe Reports::PerformanceScore, type: :model do
       @opd_load = 1000
       expect(perf_score.registrations_rate).to eq(0)
     end
+
+    it "functions when opd_load is 0" do
+      @registrations = 80
+      @opd_load = 0
+      expect(perf_score.registrations_rate).to eq(100)
+    end
+
+    it "functions when registrations and opd_load is 0" do
+      @registrations = 0
+      @opd_load = 0
+      expect(perf_score.registrations_rate).to eq(0)
+    end
   end
 
   describe "#target_registrations" do

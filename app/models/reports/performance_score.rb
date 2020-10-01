@@ -32,7 +32,14 @@ module Reports
     end
 
     def registrations_rate
-      (@result.registrations.values.last / target_registrations) * 100
+      registrations = @result.registrations.values.last
+
+      # If the target is zero, return 100% if any registrations occurred
+      if target_registrations == 0
+        return (registrations > 0) ? 100 : 0
+      end
+
+      (registrations / target_registrations) * 100
     end
 
     def target_registrations
