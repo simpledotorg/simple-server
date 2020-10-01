@@ -149,7 +149,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
         create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
-      it "only sends data for facilities belonging in the sync group of user's registration facility" do
+      it "only sends data belonging to patients in the sync group of user's facility" do
         get :sync_to_user, params: {limit: 15}
 
         response_appointments = JSON(response.body)["appointments"]

@@ -57,7 +57,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       create_list(:medical_history, 2, patient: patient_in_another_group, updated_at: 3.minutes.ago)
     end
 
-    it "only sends data for facilities belonging in the sync group of user's registration facility" do
+    it "only sends data belonging to patients in the sync group of user's facility" do
       get :sync_to_user, params: {limit: 15}
 
       response_medical_histories = JSON(response.body)["medical_histories"]

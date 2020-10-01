@@ -111,7 +111,7 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
     describe "syncing within a facility group" do
       let(:facility_in_same_group) { create(:facility, facility_group: request_user.facility.facility_group) }
       let(:facility_in_another_group) { create(:facility) }
-      let(:other_patient) { create(:patient) }
+      let(:other_patient) { create(:patient, registration_facility: facility_in_another_group) }
 
       before :each do
         set_authentication_headers
@@ -120,7 +120,7 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
         create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
       end
 
-      it "only sends data for facilities belonging in the sync group of user's registration facility" do
+      it "only sends data belonging to patients in the sync group of user's facility" do
         get :sync_to_user, params: {limit: 15}
 
         response_prescription_drugs = JSON(response.body)["prescription_drugs"]
