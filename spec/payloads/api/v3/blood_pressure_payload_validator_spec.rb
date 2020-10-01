@@ -7,7 +7,7 @@ describe Api::V3::BloodPressurePayloadValidator, type: :model do
       blood_pressure = build_blood_pressure_payload(create(:blood_pressure, facility: facility))
       facility.discard
 
-      validator = Api::V3::BloodPressurePayloadValidator.new(blood_pressure)
+      validator = described_class.new(blood_pressure)
       expect(validator.valid?).to be false
     end
   end
