@@ -15,7 +15,9 @@
       </h1>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
         <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "Ranked facilities", my_facilities_ranked_facilities_path(request.query_parameters), class: "dropdown-item" %>
+        <% if current_admin.feature_enabled?(:ranked_facilities) %>
+          <%= link_to "Ranked facilities", my_facilities_ranked_facilities_path(request.query_parameters), class: "dropdown-item" %>
+        <% end %>
         <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Missed visits", my_facilities_missed_visits_path(request.query_parameters), class: "dropdown-item" %>
         <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
@@ -108,8 +110,10 @@
         <h4 class="pl-2 mt-3">My Facilities</h4>
         <%= link_to 'Overview', my_facilities_overview_path,
             class: "nav-link #{active_action?("index")}" %>
-        <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(preserve_query_params(request.query_parameters, ["size", "period"])),
-            class: "nav-link #{active_controller?("my_facilities/ranked_facilities")}" %>
+        <% if current_admin.feature_enabled?(:ranked_facilities) %>
+          <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+              class: "nav-link #{active_controller?("my_facilities/ranked_facilities")}" %>
+        <% end %>
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
             class: "nav-link #{active_action?("blood_pressure_control")}" %>
         <%= link_to 'Missed Visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
