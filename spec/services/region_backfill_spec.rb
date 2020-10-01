@@ -23,6 +23,12 @@ RSpec.describe RegionBackfill, type: :model do
         RegionBackfill.call(dry_run: true)
       }.to_not change { Region.count }
     end
+
+    it "logs attributes of records it would create" do
+      expect(Rails.logger).to receive(:info).with(msg: "create", region: hash_including(name: "India")).exactly(1).times
+      expect(Rails.logger).to receive(:info).with(msg: "save", region: instance_of(Hash)).at_least(3).times
+      RegionBackfill.call(dry_run: true)
+    end
   end
 
   context "write mode" do

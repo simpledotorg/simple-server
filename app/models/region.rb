@@ -28,4 +28,10 @@ class Region < ApplicationRecord
   def self.backfill!
     RegionBackfill.backfill!
   end
+
+  def dry_run_info
+    attrs = attributes.slice("name", "slug", "path")
+    attrs.merge!("region_kind" => kind.name)
+    attrs.symbolize_keys
+  end
 end

@@ -49,7 +49,7 @@ class RegionBackfill
       Region.create! attrs
     else
       region = Region.new attrs
-      logger.info "create", region: region
+      logger.info msg: "create", region: region.dry_run_info
       region
     end
   end
@@ -62,7 +62,7 @@ class RegionBackfill
     region.source = source if source
     region.path = "#{parent.path}.#{region.slug.tr("-", "_")}"
     if dry_run?
-      logger.info msg: "save", region: region
+      logger.tagged(class: self.class.name) { logger.info msg: "save", region: region.dry_run_info }
     else
       region.save!
     end

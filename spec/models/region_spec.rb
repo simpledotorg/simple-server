@@ -18,7 +18,7 @@ RSpec.describe Region, type: :model do
     facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
     facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
 
-    Region.backfill!
+    RegionBackfill.call(dry_run: false)
 
     facility_group_2.discard
     expect(facility_group_2.region.reload.path).to be_nil
