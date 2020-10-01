@@ -86,7 +86,7 @@
               </td>
               <td class="type-percent" data-sort-column-key="registration_rate">
                 <em>
-                  <%= number_to_percentage(@scores_for_facility[facility.name].registration_rate, precision: 0) %>
+                  <%= number_to_percentage(@scores_for_facility[facility.name].registrations_rate, precision: 0) %>
                 </em>
               </td>
               <td class="type-number" data-sort-column-key="opd_load">
@@ -102,7 +102,7 @@
     </div>
     <section class="footnotes">
       <ol>
-        <li><strong>BP controlled:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months</li> 
+        <li><strong>BP controlled:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months</li>
         <li><strong>Missed visits:</strong> Patients with no visit in the last 3 months</li>
         <li><strong>OPD load:</strong> A facility's estimated monthly adult outpatient department load. Facilities with no OPD load (marked "est") use the average OPD load of all district facilities of the same size.</li>
         <li><strong>Target registrations:</strong> 10% of a facility's OPD load.</li>
