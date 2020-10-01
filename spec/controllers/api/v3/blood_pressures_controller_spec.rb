@@ -263,7 +263,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       end
     end
 
-    context "for a soft deleted facility" do
+    context "for a discarded facility" do
       before :each do
         set_authentication_headers
       end
