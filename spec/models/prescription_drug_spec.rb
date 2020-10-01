@@ -31,7 +31,7 @@ RSpec.describe PrescriptionDrug, type: :model do
           create(:prescription_drug, patient: patient)
         ]
 
-        other_prescription_drugs = [
+        _other_prescription_drugs = [
           create(:prescription_drug, patient: other_patient, facility: facility),
           create(:prescription_drug, patient: other_patient, facility: facility).tap(&:discard),
           create(:prescription_drug, patient: other_patient)

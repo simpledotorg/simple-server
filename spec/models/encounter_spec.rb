@@ -49,7 +49,7 @@ describe Encounter, type: :model do
           create(:encounter, patient: patient)
         ]
 
-        other_encounters = [
+        _other_encounters = [
           create(:encounter, patient: other_patient, facility: facility),
           create(:encounter, patient: other_patient, facility: facility).tap(&:discard),
           create(:encounter, patient: other_patient)

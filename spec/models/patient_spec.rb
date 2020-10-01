@@ -296,7 +296,7 @@ describe Patient, type: :model do
           create(:patient, registration_facility: facility, assigned_facility: other_facility)
         ]
 
-        other_patients = [
+        _other_patients = [
           create(:patient, registration_facility: other_facility),
           create(:patient, registration_facility: other_facility).tap(&:discard),
           create(:patient, registration_facility: other_facility, assigned_facility: facility)

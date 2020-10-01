@@ -14,7 +14,6 @@ describe MedicalHistory, type: :model do
     describe ".syncable_to_region" do
       it "returns all patients registered in the region" do
         facility_group = create(:facility_group)
-        facility = create(:facility, facility_group: facility_group)
         patient = create(:patient)
         other_patient = create(:patient)
 
@@ -26,7 +25,7 @@ describe MedicalHistory, type: :model do
           create(:medical_history, patient: patient).tap(&:discard)
         ]
 
-        other_medical_histories = [
+        _other_medical_histories = [
           create(:medical_history, patient: other_patient),
           create(:medical_history, patient: other_patient).tap(&:discard)
         ]

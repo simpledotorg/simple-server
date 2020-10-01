@@ -65,7 +65,7 @@ RSpec.describe BloodSugar, type: :model do
           create(:blood_sugar, patient: patient)
         ]
 
-        other_blood_sugars = [
+        _other_blood_sugars = [
           create(:blood_sugar, patient: other_patient, facility: facility),
           create(:blood_sugar, patient: other_patient, facility: facility).tap(&:discard),
           create(:blood_sugar, patient: other_patient)

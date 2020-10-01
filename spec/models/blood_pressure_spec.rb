@@ -55,7 +55,7 @@ RSpec.describe BloodPressure, type: :model do
           create(:blood_pressure, patient: patient)
         ]
 
-        other_blood_pressures = [
+        _other_blood_pressures = [
           create(:blood_pressure, patient: other_patient, facility: facility),
           create(:blood_pressure, patient: other_patient, facility: facility).tap(&:discard),
           create(:blood_pressure, patient: other_patient)

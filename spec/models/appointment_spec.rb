@@ -120,7 +120,7 @@ describe Appointment, type: :model do
           create(:appointment, patient: patient)
         ]
 
-        other_appointments = [
+        _other_appointments = [
           create(:appointment, patient: other_patient, facility: facility),
           create(:appointment, patient: other_patient, facility: facility).tap(&:discard),
           create(:appointment, patient: other_patient)
