@@ -17,11 +17,11 @@ RSpec.describe Facility, type: :model do
 
     it "does not change the slug when renamed" do
       facility = create(:facility, name: "old_name")
-      expect(facility.slug).to eq("old_name_1")
+      original_slug = facility.slug
       facility.name = "new name"
       facility.valid?
       facility.save!
-      expect(facility.slug).to eq("old_name_1")
+      expect(facility.slug).to eq(original_slug)
     end
 
     context "patients" do
