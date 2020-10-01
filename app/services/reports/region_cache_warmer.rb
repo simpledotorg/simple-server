@@ -26,24 +26,20 @@ module Reports
 
     def call
       if Flipper.enabled?(:disable_region_cache_warmer)
-        notify "#{self.class.name} is disabled via Flipper! Bailing out early"
+        notify "disabled via flipper - exiting"
         return
       end
 
-      notify "Starting FacilityGroup caching"
-      time = Benchmark.realtime {
+      notify "starting facility_group caching"
+      Statsd.instance.time("region_cache_warmer.facility_groups") do
         cache_facility_groups
-      }
-      notify "Finished FacilityGroups caching in #{time.round} seconds."
+      end
 
-      notify "Starting Facility caching."
-      time = Benchmark.realtime {
+      notify "starting facility caching"
+      Statsd.instance.time("region_cache_warmer.facilities") do
         cache_facilities
-      }
-      end_time = Time.current
-      total_time = end_time - start_time
-      notify "Finished Facility caching in #{time.round} seconds, total cache time was #{total_time.round} seconds."
-      notify "#{self.class.name} All done!"
+      end
+      notify "finished"
     ensure
       RequestStore.store[:force_cache] = original_force_cache
     end
@@ -51,28 +47,17 @@ module Reports
     private
 
     def notify(msg)
-      return unless notifier
-      notifier.ping "[#{country_code}_#{environment}] #{msg}"
-    end
-
-    def country_code
-      Rails.application.config.country[:abbreviation]
-    end
-
-    def environment
-      ENV["SIMPLE_SERVER_ENV"]
+      Rails.logger.info msg: msg, class: self.class.name
     end
 
     def cache_facility_groups
       FacilityGroup.all.each do |region|
-        logger.info { "class=#{self.class.name} region=#{region.name}" }
         RegionService.new(region: region, period: period).call
       end
     end
 
     def cache_facilities
       Facility.all.each do |region|
-        logger.info { "class=#{self.class.name} region=#{region.name}" }
         RegionService.new(region: region, period: period).call
       end
     end
