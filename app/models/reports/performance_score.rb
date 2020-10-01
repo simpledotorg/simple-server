@@ -20,20 +20,23 @@ module Reports
     end
 
     def visits_score
-      visits_rate = 100 - @result.missed_visits_rate.values.last
-
       VISITS_SCORE_WEIGHT * visits_rate
     end
 
-    def registrations_score
-      REGISTRATIONS_SCORE_WEIGHT * registration_rate
+    def visits_rate
+      100 - @result.missed_visits_rate.values.last
     end
 
-    def registration_rate
-      monthly_registrations = @result.registrations.values.last
-      target_registrations = @region.opd_load * TARGET_REGISTRATION_RATE
+    def registrations_score
+      REGISTRATIONS_SCORE_WEIGHT * registrations_rate
+    end
 
-      (monthly_registrations / target_registrations) * 100
+    def registrations_rate
+      (@result.registrations.values.last / target_registrations) * 100
+    end
+
+    def target_registrations
+      @region.opd_load * TARGET_REGISTRATION_RATE
     end
   end
 end
