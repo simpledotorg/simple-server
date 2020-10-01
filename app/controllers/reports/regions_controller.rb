@@ -60,13 +60,6 @@ class Reports::RegionsController < AdminController
       authorize(:dashboard, :show?)
     end
 
-    @data = Reports::RegionService.new(region: @region,
-                                       period: @period).call
-    @controlled_patients = @data[:controlled_patients]
-    @registrations = @data[:cumulative_registrations]
-    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
-    @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
-
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
     if @region.is_a?(Facility)
