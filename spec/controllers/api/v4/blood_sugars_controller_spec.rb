@@ -231,9 +231,7 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
 
     context "for a soft deleted facility" do
       before :each do
-        request.env["HTTP_X_USER_ID"] = request_user.id
-        request.env["HTTP_X_FACILITY_ID"] = request_facility.id
-        request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+        set_authentication_headers
       end
 
       it "returns an error and does not create the blood sugar" do
