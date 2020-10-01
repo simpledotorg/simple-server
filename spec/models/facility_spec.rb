@@ -15,8 +15,7 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
     it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
-
-    fit "does something w/ slug when renamed" do
+    it "does not change the slug when renamed" do
       facility = create(:facility, name: "old_name")
       expect(facility.slug).to eq("old_name_1")
       facility.name = "new name"
