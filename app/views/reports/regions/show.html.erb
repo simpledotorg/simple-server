@@ -19,7 +19,7 @@
           <div>
             <% if @data.last_value(:controlled_patients_rate) %>
               <p class="m-0px c-black">
-                <%= number_with_delimiter(@data.last_value(:controlled_patients)) %> patients with controlled BP between START_DATE to END_DATE
+                <span id="bp-controlled-value"><%= number_with_delimiter(@data.last_value(:controlled_patients)) %></span> patients with controlled BP between START_DATE to <span id="bp-controlled-end-date">END_DATE</span>
               </p>
               <p class="m-0px c-grey-dark">
                 of <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> patients registered till START_DATE 

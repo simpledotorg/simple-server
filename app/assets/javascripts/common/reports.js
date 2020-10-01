@@ -345,26 +345,8 @@ function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerators, d
       yAxes,
     },
     tooltips: {
-      mode: "index",
-      intersect: false,
-      position: "average",
-      backgroundColor: "rgba(0,0,0,1)",
-      bodyFontFamily: "Roboto Condensed",
-      bodyFontSize: 12,
-      caretSize: 6,
-      titleFontFamily: "Roboto Condensed",
-      titleFontSize: 14,
-      xPadding: 10,
-      yPadding: 10,
-      itemSort: function (a, b) {
-        return b.datasetIndex - a.datasetIndex;
-      },
-      callbacks: {
-        label: function (tooltipItem, data) {
-          return tooltipCallbackFunction(tooltipItem, data, numerators, denominators);
-        },
-        labelColor: formatTooltipLabelColor
-      }
+      enabled: false,
+      custom: customTooltip
     }
   };
 }
@@ -443,4 +425,20 @@ function createAxisMaxAndStepSize(data) {
     max: maxAxisValue,
     stepSize: axisStepSize,
   };
+};
+
+function customTooltip(tooltipModel) {
+  const { dataPoints } = tooltipModel;
+  const valueElement = document.getElementById("bp-controlled-value");
+  const defaultValue = valueElement.textContent;
+  const endDateElement = document.getElementById("bp-controlled-end-date");
+  const defaultEndDate = endDateElement.textContent;
+
+  if (dataPoints == undefined) {
+    valueElement.innerHTML = defaultValue;
+    endDateElement.innerHTML = defaultEndDate;
+  } else {
+    valueElement.innerHTML = dataPoints[0].value;
+    endDateElement.innerHTML = dataPoints[0].label;
+  }
 };
