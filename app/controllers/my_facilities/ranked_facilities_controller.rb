@@ -22,8 +22,8 @@ class MyFacilities::RankedFacilitiesController < AdminController
     set_period
     @facilities = filter_facilities([:manage, :facility])
 
-    @data_for_facility = Hash.new
-    @scores_for_facility = Hash.new
+    @data_for_facility = {}
+    @scores_for_facility = {}
 
     @facilities.each do |facility|
       @data_for_facility[facility.name] = Reports::RegionService.new(region: facility,

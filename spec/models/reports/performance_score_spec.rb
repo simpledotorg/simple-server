@@ -3,10 +3,11 @@ require "rails_helper"
 describe Reports::PerformanceScore, type: :model do
   let(:facility) { build(:facility, monthly_estimated_opd_load: @opd_load) }
   let(:result) do
-    double("Reports::Result",
-     controlled_patients_rate: { _: @control_rate },
-     missed_visits_rate: { _: @missed_visits_rate },
-     registrations: { _: @registrations }
+    double(
+      "Reports::Result",
+      controlled_patients_rate: {_: @control_rate},
+      missed_visits_rate: {_: @missed_visits_rate},
+      registrations: {_: @registrations}
     )
   end
   let(:perf_score) { Reports::PerformanceScore.new(region: facility, result: result) }

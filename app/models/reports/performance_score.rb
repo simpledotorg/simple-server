@@ -35,8 +35,8 @@ module Reports
       registrations = @result.registrations.values.last
 
       # If the target is zero, return 100% if any registrations occurred
-      if target_registrations == 0
-        return (registrations > 0) ? 100 : 0
+      if target_registrations <= 0
+        return registrations > 0 ? 100 : 0
       end
 
       (registrations / target_registrations) * 100
