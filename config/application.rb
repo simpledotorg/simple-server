@@ -18,6 +18,9 @@ Bundler.require(*Rails.groups)
 
 module SimpleServer
   class Application < Rails::Application
+    # Set our "app environment" as early as possible here
+    Object.const_set("SIMPLE_SERVER_ENV", ENV["SIMPLE_SERVER_ENV"])
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
 
@@ -38,5 +41,8 @@ module SimpleServer
     config.i18n.available_locales = %w[en mr-IN pa-Guru-IN bn-BD kn-IN en_BD en_IN en_ET en-IND bn-IN hi-IN ta-IN te-IN am-ET om-ET ti-ET]
     config.i18n.fallbacks = [:en]
     config.i18n.default_locale = :en
+
+    require "json_logger"
+    config.logger = ActiveSupport::TaggedLogging.new(JsonLogger.new(Rails.root.join("log", "#{Rails.env}.log")))
   end
 end

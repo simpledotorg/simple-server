@@ -51,7 +51,7 @@ class NoBPMeasureService
       WHERE "patients"."deleted_at" IS NULL
         AND "medical_histories"."deleted_at" IS NULL
         AND "medical_histories"."hypertension" = :hypertension
-        AND "patients"."registration_facility_id" in :facilities
+        AND "patients"."assigned_facility_id" in :facilities
         AND patients.recorded_at <= :registration_date
         AND (appointments.id IS NOT NULL
             OR prescription_drugs.id IS NOT NULL

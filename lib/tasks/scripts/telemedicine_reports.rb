@@ -63,7 +63,7 @@ class TelemedicineReports
       "",
       "",
       "",
-      "Between #{period_start.strftime("%d %b %Y")} and #{period_end.strftime("%d %b %Y")}",
+      "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}",
       "",
       "",
       "",
@@ -136,7 +136,7 @@ class TelemedicineReports
       "",
       "",
       "",
-      "Between #{period_start.strftime("%d %b %Y")} and #{period_end.strftime("%d %b %Y")}",
+      "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}",
       "",
       "",
       "",
@@ -220,7 +220,7 @@ class TelemedicineReports
     @report_array << []
 
     daily_activity_data = @mixpanel_data[:hydrated].group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
-      [date.strftime("%d %b %Y"), rows.uniq { |row| row[:user_id] }.count, sum_values(rows, :clicks)]
+      [date.strftime("%d-%b-%Y"), rows.uniq { |row| row[:user_id] }.count, sum_values(rows, :clicks)]
     }
 
     @report_array << ["Date", "Unique users", "Total TC requests"]

@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe "Filter parameter logging spec", type: :request do
   let(:request_user) { FactoryBot.create(:user) }
   let(:sync_route) { "/api/v3/patients/sync" }
-  let(:build_payload) { -> { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
+  let(:build_payload) { -> { build_patient_payload(FactoryBot.build(:patient, age: 9999, registration_facility: request_user.facility)) } }
 
   let(:auth_headers) do
     {"HTTP_X_USER_ID" => request_user.id,
@@ -18,6 +18,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     stringio = StringIO.new
     test_logger = Logger.new(stringio)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)
+    allow(Lograge).to receive(:logger).and_return(test_logger)
 
     patient_payloads = 3.times.map { build_payload.call }
     post sync_route, params: {patients: patient_payloads}.to_json, headers: headers
@@ -28,6 +29,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     patients.each do |patient|
       expect(output).to_not match(/\b#{patient.full_name}\b/)
       expect(output).to_not match(/\b#{patient.date_of_birth}\b/) if patient.date_of_birth
+      expect(output).to_not match(/\b#{patient.age}\b/)
       if patient.address
         expect(output).to_not match(/\b#{patient.address.street_address}\b/)
         expect(output).to_not match(/\b#{patient.address.village_or_colony}\b/)
@@ -44,6 +46,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     stringio = StringIO.new
     test_logger = Logger.new(stringio)
     allow(ActionController::Base).to receive(:logger).and_return(test_logger)
+    allow(Lograge).to receive(:logger).and_return(test_logger)
 
     time = Time.parse("January 1 2020 12:00 UTC")
     Timecop.freeze(time) do

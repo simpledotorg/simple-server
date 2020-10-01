@@ -4,9 +4,15 @@ RSpec.describe PatientsWithHistoryExporter do
   include QuarterHelper
 
   let!(:now) { Time.current }
-
-  let!(:patient) { create(:patient, status: "dead") }
-  let!(:facility) { patient.registration_facility }
+  let!(:facility) { create(:facility) }
+  let!(:registration_facility) { create(:facility) }
+  let!(:patient) {
+    create(:patient,
+      assigned_facility: facility,
+      registration_facility: registration_facility,
+      status: "dead",
+      address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
+  }
   let!(:user) { patient.registration_user }
 
   let!(:bp_1) { create(:blood_pressure, :with_encounter, :critical, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
@@ -57,6 +63,10 @@ RSpec.describe PatientsWithHistoryExporter do
       "Patient District",
       "Patient Zone",
       "Patient State",
+      "Preferred Facility Name",
+      "Preferred Facility Type",
+      "Preferred Facility District",
+      "Preferred Facility State",
       "Registration Facility Name",
       "Registration Facility Type",
       "Registration Facility District",
@@ -160,6 +170,10 @@ RSpec.describe PatientsWithHistoryExporter do
       facility.facility_type,
       facility.district,
       facility.state,
+      registration_facility.name,
+      registration_facility.facility_type,
+      registration_facility.district,
+      registration_facility.state,
       "no",
       "yes",
       "High",

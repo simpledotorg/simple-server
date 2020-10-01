@@ -1,47 +1,47 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    actioncable (5.2.4.3)
-      actionpack (= 5.2.4.3)
+    actioncable (5.2.4.4)
+      actionpack (= 5.2.4.4)
       nio4r (~> 2.0)
       websocket-driver (>= 0.6.1)
-    actionmailer (5.2.4.3)
-      actionpack (= 5.2.4.3)
-      actionview (= 5.2.4.3)
-      activejob (= 5.2.4.3)
+    actionmailer (5.2.4.4)
+      actionpack (= 5.2.4.4)
+      actionview (= 5.2.4.4)
+      activejob (= 5.2.4.4)
       mail (~> 2.5, >= 2.5.4)
       rails-dom-testing (~> 2.0)
-    actionpack (5.2.4.3)
-      actionview (= 5.2.4.3)
-      activesupport (= 5.2.4.3)
+    actionpack (5.2.4.4)
+      actionview (= 5.2.4.4)
+      activesupport (= 5.2.4.4)
       rack (~> 2.0, >= 2.0.8)
       rack-test (>= 0.6.3)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (5.2.4.3)
-      activesupport (= 5.2.4.3)
+    actionview (5.2.4.4)
+      activesupport (= 5.2.4.4)
       builder (~> 3.1)
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.0.3)
     active_record_union (1.3.0)
       activerecord (>= 4.0)
-    activejob (5.2.4.3)
-      activesupport (= 5.2.4.3)
+    activejob (5.2.4.4)
+      activesupport (= 5.2.4.4)
       globalid (>= 0.3.6)
-    activemodel (5.2.4.3)
-      activesupport (= 5.2.4.3)
-    activerecord (5.2.4.3)
-      activemodel (= 5.2.4.3)
-      activesupport (= 5.2.4.3)
+    activemodel (5.2.4.4)
+      activesupport (= 5.2.4.4)
+    activerecord (5.2.4.4)
+      activemodel (= 5.2.4.4)
+      activesupport (= 5.2.4.4)
       arel (>= 9.0)
     activerecord-import (1.0.4)
       activerecord (>= 3.2)
-    activestorage (5.2.4.3)
-      actionpack (= 5.2.4.3)
-      activerecord (= 5.2.4.3)
+    activestorage (5.2.4.4)
+      actionpack (= 5.2.4.4)
+      activerecord (= 5.2.4.4)
       marcel (~> 0.3.1)
-    activesupport (5.2.4.3)
+    activesupport (5.2.4.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -50,6 +50,7 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
+    amazing_print (1.2.1)
     arel (9.0.0)
     ast (2.4.1)
     auto_strip_attributes (2.6.0)
@@ -112,7 +113,7 @@ GEM
     coderay (1.1.2)
     composite_primary_keys (11.3.1)
       activerecord (~> 5.2.4)
-    concurrent-ruby (1.1.6)
+    concurrent-ruby (1.1.7)
     connection_pool (2.2.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -128,6 +129,8 @@ GEM
       thor (~> 0.20.3)
     data_migrate (6.3.0)
       rails (>= 5.0)
+    ddtrace (0.40.0)
+      msgpack
     devise (4.7.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -141,6 +144,7 @@ GEM
     discard (1.2.0)
       activerecord (>= 4.2, < 7)
     docile (1.3.2)
+    dogstatsd-ruby (4.8.1)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.5)
@@ -213,7 +217,7 @@ GEM
     http-parser (1.2.1)
       ffi-compiler (>= 1.0, < 2.0)
     http_accept_language (2.1.1)
-    i18n (1.8.3)
+    i18n (1.8.5)
       concurrent-ruby (~> 1.0)
     imgkit (1.6.2)
     jbuilder (2.10.0)
@@ -250,7 +254,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.5.0)
+    loofah (2.7.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     lumberjack (1.2.4)
@@ -265,7 +269,7 @@ GEM
     mimemagic (0.3.5)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    minitest (5.14.1)
+    minitest (5.14.2)
     msgpack (1.3.3)
     multipart-post (2.1.1)
     nenv (0.3.0)
@@ -273,13 +277,16 @@ GEM
       net-ssh (>= 2.6.5, < 7.0.0)
     net-ssh (6.0.2)
     newrelic_rpm (6.10.0.364)
-    nio4r (2.5.2)
-    nokogiri (1.10.9)
+    nio4r (2.5.4)
+    nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oj (3.10.14)
     orm_adapter (0.5.0)
+    ougai (1.8.5)
+      oj (~> 3.10)
     parallel (1.19.2)
     parallel_tests (2.32.0)
       parallel
@@ -316,18 +323,18 @@ GEM
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
-    rails (5.2.4.3)
-      actioncable (= 5.2.4.3)
-      actionmailer (= 5.2.4.3)
-      actionpack (= 5.2.4.3)
-      actionview (= 5.2.4.3)
-      activejob (= 5.2.4.3)
-      activemodel (= 5.2.4.3)
-      activerecord (= 5.2.4.3)
-      activestorage (= 5.2.4.3)
-      activesupport (= 5.2.4.3)
+    rails (5.2.4.4)
+      actioncable (= 5.2.4.4)
+      actionmailer (= 5.2.4.4)
+      actionpack (= 5.2.4.4)
+      actionview (= 5.2.4.4)
+      activejob (= 5.2.4.4)
+      activemodel (= 5.2.4.4)
+      activerecord (= 5.2.4.4)
+      activestorage (= 5.2.4.4)
+      activesupport (= 5.2.4.4)
       bundler (>= 1.3.0)
-      railties (= 5.2.4.3)
+      railties (= 5.2.4.4)
       sprockets-rails (>= 2.0.0)
     rails-controller-testing (1.0.4)
       actionpack (>= 5.0.1.x)
@@ -343,9 +350,9 @@ GEM
       ruby-graphviz (~> 1.2)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
-    railties (5.2.4.3)
-      actionpack (= 5.2.4.3)
-      activesupport (= 5.2.4.3)
+    railties (5.2.4.4)
+      actionpack (= 5.2.4.4)
+      activesupport (= 5.2.4.4)
       method_source
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
@@ -379,7 +386,7 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.8.2)
       redis (>= 4, < 5)
-    regexp_parser (1.7.1)
+    regexp_parser (1.8.0)
     render_async (2.1.7)
     request_store (1.5.0)
       rack (>= 1.4)
@@ -433,19 +440,20 @@ GEM
     rswag-ui (1.6.0)
       actionpack (>= 3.1, < 6.0)
       railties (>= 3.1, < 6.0)
-    rubocop (0.90.0)
+    rubocop (0.91.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.1)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.7)
       rexml
-      rubocop-ast (>= 0.3.0, < 1.0)
+      rubocop-ast (>= 0.4.0, < 1.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (0.3.0)
+    rubocop-ast (0.4.2)
       parser (>= 2.7.1.4)
-    rubocop-performance (1.8.0)
+    rubocop-performance (1.8.1)
       rubocop (>= 0.87.0)
+      rubocop-ast (>= 0.4.0)
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.10.1)
@@ -485,10 +493,6 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
     simplecov-html (0.12.2)
-    skylight (4.3.1)
-      skylight-core (= 4.3.1)
-    skylight-core (4.3.1)
-      activesupport (>= 4.2.0)
     slack-notifier (2.3.2)
     spring (2.1.0)
     spring-commands-rspec (1.0.4)
@@ -496,7 +500,7 @@ GEM
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.2.1)
+    sprockets-rails (3.2.2)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
@@ -506,9 +510,9 @@ GEM
     sshkit-interactive (0.3.0)
       sshkit (~> 1.12)
     stackprof (0.2.15)
-    standard (0.6.0)
-      rubocop (~> 0.90)
-      rubocop-performance (~> 1.8.0)
+    standard (0.6.2)
+      rubocop (= 0.91.1)
+      rubocop-performance (= 1.8.1)
     strong_password (0.0.8)
     thor (0.20.3)
     thread_safe (0.3.6)
@@ -544,7 +548,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    websocket-driver (0.7.2)
+    websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     whenever (1.0.0)
@@ -559,6 +563,7 @@ PLATFORMS
 DEPENDENCIES
   active_record_union
   activerecord-import
+  amazing_print
   auto_strip_attributes
   bcrypt (~> 3.1, >= 3.1.11)
   bootsnap
@@ -578,9 +583,11 @@ DEPENDENCIES
   connection_pool
   data-anonymization
   data_migrate
+  ddtrace
   devise (>= 4.7.1)
   devise_invitable (~> 1.7.0)
   discard (~> 1.0)
+  dogstatsd-ruby
   dotenv-rails
   factory_bot_rails (~> 4.8)
   faker
@@ -607,6 +614,7 @@ DEPENDENCIES
   memery
   memory_profiler
   newrelic_rpm
+  ougai
   parallel_tests
   passenger
   pg (>= 0.18, < 2.0)
@@ -617,7 +625,7 @@ DEPENDENCIES
   puma
   pundit
   rack-mini-profiler
-  rails (= 5.2.4.3)
+  rails (= 5.2.4.4)
   rails-controller-testing
   rails-erd
   rb-readline
@@ -638,7 +646,6 @@ DEPENDENCIES
   sidekiq
   sidekiq-throttled
   simplecov
-  skylight
   slack-notifier
   spring
   spring-commands-rspec
