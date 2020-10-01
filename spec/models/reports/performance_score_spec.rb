@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe Reports::PerformanceScore, type: :model do
-
+  let(:facility) { build(:facility, monthly_estimated_opd_load: @opd_load) }
   let(:result) do
     double("Reports::Result",
      controlled_patients_rate: { _: @control_rate },
@@ -9,7 +9,6 @@ describe Reports::PerformanceScore, type: :model do
      registrations: { _: @registrations }
     )
   end
-  let(:facility) { build(:facility, monthly_estimated_opd_load: @opd_load) }
   let(:perf_score) { Reports::PerformanceScore.new(region: facility, result: result) }
 
   describe "#overall_score" do
