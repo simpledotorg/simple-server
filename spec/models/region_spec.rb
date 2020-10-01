@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Region, type: :model do
   before do
     # duplicating this from the data migration for now
-    instance = RegionKind.create! name: "Instance", path: "Instance"
+    instance = RegionKind.create! name: "Root", path: "Root"
     org = RegionKind.create! name: "Organization", parent: instance
     facility_group = RegionKind.create! name: "FacilityGroup", parent: org
     block = RegionKind.create! name: "Block", parent: facility_group
@@ -11,7 +11,6 @@ RSpec.describe Region, type: :model do
   end
 
   it "backfills" do
-    pp RegionKind.all
     org = create(:organization, name: "Test Organization")
     facility_group_1 = create(:facility_group, organization: org)
     facility_group_2 = create(:facility_group, organization: org)
@@ -27,10 +26,6 @@ RSpec.describe Region, type: :model do
     expect(root.root?).to be true
     org = root.children.first
     expect(org.children.map(&:source)).to contain_exactly(facility_group_1, facility_group_2)
-
-    pp "descendants ->"
-    pp org.descendants
-    pp org.leaves
 
     block_regions = Region.where(kind: RegionKind.find_by!(name: "Block"))
     expect(block_regions.size).to eq(2)

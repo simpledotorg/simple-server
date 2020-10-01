@@ -26,13 +26,14 @@ class Region < ApplicationRecord
   end
 
   def self.backfill!
-    instance_kind = RegionKind.find_by!(name: "Instance")
-    org_kind = instance_kind.children.first
+    root_kind = RegionKind.find_by!(name: "Root")
+    org_kind = root_kind.children.first
     facility_group_kind = org_kind.children.first
     block_kind = facility_group_kind.children.first
     facility_kind = block_kind.children.first
 
-    instance = Region.create! name: "India", path: "India", kind: instance_kind
+    current_country_name = CountryConfig.current[:name]
+    instance = Region.create! name: current_country_name, path: current_country_name, kind: root_kind
     Organization.all.each do |org|
       org_region = create_region_from(source: org, kind: org_kind, parent: instance)
 
