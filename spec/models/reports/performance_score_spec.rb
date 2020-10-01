@@ -12,6 +12,17 @@ describe Reports::PerformanceScore, type: :model do
   let(:facility) { build(:facility, monthly_estimated_opd_load: @opd_load) }
   let(:perf_score) { Reports::PerformanceScore.new(region: facility, result: result) }
 
+  describe "#overall_score" do
+    it "returns a score that sums control, visits, and registration scores" do
+      @control_rate = 40
+      @missed_visits_rate = 60
+      @registrations = 80
+      @opd_load = 1000
+
+      expect(perf_score.overall_score).to eq(20 + 12 + 16)
+    end
+  end
+
   describe "#control_score" do
     it "returns a 50% weighted score based on control rate" do
       @control_rate = 40
