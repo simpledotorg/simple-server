@@ -14,7 +14,6 @@ class Region < ApplicationRecord
     self.path = nil
   end
 
-  ALLOW_CHARACTERS_IN_LTREE_LABEL = /[A-Za-z0-9_]/
   MAX_LABEL_LENGTH = 255
 
   # A label is a sequence of alphanumeric characters and underscores.
