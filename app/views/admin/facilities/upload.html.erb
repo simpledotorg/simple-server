@@ -50,9 +50,9 @@
   <li class="mt-1">
     The enable_diabetes_management
     <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
-      and enable_teleconsultation fields
-    <% else %>
       field
+    <% else %>
+      and enable_teleconsultation fields
     <% end %>
     will be treated as "not enabled" if blank.
   </li>
