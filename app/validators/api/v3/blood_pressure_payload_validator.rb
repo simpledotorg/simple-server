@@ -21,6 +21,7 @@ class Api::V3::BloodPressurePayloadValidator < Api::V3::PayloadValidator
 
   def facility_exists
     unless Facility.exists?(facility_id)
+      logger.info "Blood pressure #{id} synced at nonexistent facility #{facility_id}"
       errors.add(:facility_does_not_exist, "Facility does not exist")
     end
   end
