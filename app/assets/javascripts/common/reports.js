@@ -1,15 +1,17 @@
-const lightGreenColor = "rgba(242, 248, 245, 1)";
+const lightGreenColor = "rgba(242, 248, 245, 0.9)";
 const darkGreenColor = "rgba(0, 122, 49, 1)";
 const mediumGreenColor = "rgba(0, 184, 73, 1)";
-const lightRedColor = "rgba(255, 235, 238, 1)";
+const lightRedColor = "rgba(255, 235, 238, 0.9)";
 const darkRedColor = "rgba(255, 51, 85, 1)";
-const lightPurpleColor = "rgba(238, 229, 252, 1)";
+const lightPurpleColor = "rgba(238, 229, 252, 0.9)";
 const darkPurpleColor = "rgba(83, 0, 224, 1)";
 const darkGreyColor = "rgba(108, 115, 122, 1)";
-const lightBlueColor = "rgba(233, 243, 255, 1)";
+const lightBlueColor = "rgba(233, 243, 255, 0.9)";
 const mediumBlueColor = "rgba(0, 117, 235, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
-const lightGreyColor = "rgba(240, 242, 245, 1)";
+const lightGreyColor = "rgba(240, 242, 245, 0.9)";
+const whiteColor = "rgba(255, 255, 255, 1)";
+const transparent = "rgba(0, 0, 0, 0)";
 
 window.addEventListener("DOMContentLoaded", function() {
   if(getChartDataNode()) {
@@ -56,8 +58,8 @@ function getReportingData() {
     controlledPatients: jsonData.controlled_patients,
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
-    registrations: jsonData.cumulative_registrations,
-    adjustedRegistrations: jsonData.adjusted_registrations,
+    monthlyRegistrations: jsonData.registrations,
+    cumulativeRegistrations: jsonData.adjusted_registrations,
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
@@ -72,18 +74,26 @@ function initializeCharts() {
     data: data.controlRate,
     borderWidth: 2,
     rgbaLineColor: mediumGreenColor,
-    rgbaPointColor: lightGreenColor,
+    rgbaPointColor: whiteColor,
     rgbaBackgroundColor: lightGreenColor,
     label: "HTN controlled",
   }], "line");
   controlledGraphConfig.options = createGraphOptions(
-    false,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.controlledPatients],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
@@ -96,19 +106,27 @@ function initializeCharts() {
       data: data.missedVisitsRate,
       borderWidth: 2,
       rgbaLineColor: mediumBlueColor,
-      rgbaPointColor: lightBlueColor,
+      rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightBlueColor,
       label: "Missed visits",
     },
   ], "line");
   missedVisitsConfig.options = createGraphOptions(
-    false,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.missedVisits],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
@@ -121,20 +139,28 @@ function initializeCharts() {
       data: data.uncontrolledRate,
       borderWidth: 2,
       rgbaLineColor: darkRedColor,
-      rgbaPointColor: lightRedColor,
+      rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightRedColor,
       label: "HTN not under control",
     }
   ], "line");
 
   uncontrolledGraphConfig.options = createGraphOptions(
-    false,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.uncontrolledPatients],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
@@ -142,24 +168,55 @@ function initializeCharts() {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
   }
 
-  const maxRegistrations = Math.max(...Object.values(data.registrations));
-  const suggestedMax = Math.round(maxRegistrations) * 1.15;
-  const stepSize = Math.round(suggestedMax / 3);
+  const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
+  const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
+
   const cumulativeRegistrationsGraphConfig = createGraphConfig([
     {
-      data: data.registrations,
-      borderWidth: { top: 2 },
+      id: "cumulativeRegistrations",
+      data: data.cumulativeRegistrations,
+      borderWidth: 2,
       rgbaLineColor: darkPurpleColor,
+      rgbaPointColor: whiteColor,
+      rgbaBackgroundColor: transparent,
+      label: "cumulative registrations",
+      graphType: "line",
+    },
+    {
+      id: "monthlyRegistrations",
+      data: data.monthlyRegistrations,
       rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
+      label: "monthly registrations",
+      graphType: "bar",
     },
   ], "bar");
-
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
-    false,
-    stepSize,
-    suggestedMax,
-    formatNumberWithCommas,
+    [createAxisConfig({
+      stacked: true,
+      display: false,
+      drawBorder: false,
+    })],
+    [
+      createAxisConfig({
+        stacked: true,
+        display: false,
+        drawBorder: false,
+        stepSize: cumulativeRegistrationsYAxis.stepSize,
+        max: cumulativeRegistrationsYAxis.max,
+        id: "cumulativeRegistrations",
+        position: "left",
+      }),
+      createAxisConfig({
+        stacked: true,
+        display: true,
+        drawBorder: false,
+        stepSize: monthlyRegistrationsYAxis.stepSize,
+        max: monthlyRegistrationsYAxis.max,
+        id: "monthlyRegistrations",
+        position: "right",
+      }),
+    ],
     formatSumTooltipText,
   );
 
@@ -196,13 +253,21 @@ function initializeCharts() {
   ], "bar");
 
   visitDetailsGraphConfig.options = createGraphOptions(
-    true,
-    25,
-    100,
-    formatValueAsPercent,
+    [createAxisConfig({
+      stacked: false,
+      display: false,
+      drawBorder: true,
+    })],
+    [createAxisConfig({
+      stacked: false,
+      display: true,
+      drawBorder: false,
+      stepSize: 25,
+      max: 100,
+    })],
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
-    data.adjustedRegistrations,
+    data.cumulativeRegistrations,
   );
 
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
@@ -218,6 +283,7 @@ function createGraphConfig(datasetsConfig, graphType) {
       labels: Object.keys(datasetsConfig[0].data),
       datasets: datasetsConfig.map(dataset => {
         return {
+          yAxisID: dataset.id,
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
           borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
@@ -225,13 +291,14 @@ function createGraphConfig(datasetsConfig, graphType) {
           pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
           data: Object.values(dataset.data),
+          type: dataset.graphType ? dataset.graphType : "line",
         };
       }),
     },
   }
 }
 
-function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunction, tooltipCallbackFunction, numerators, denominators) {
+function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerators, denominators) {
   return {
     animation: false,
     responsive: true,
@@ -254,42 +321,8 @@ function createGraphOptions(isStacked, stepSize, suggestedMax, tickCallbackFunct
       display: false,
     },
     scales: {
-      xAxes: [{
-        stacked: isStacked,
-        display: true,
-        gridLines: {
-          display: true,
-          drawBorder: false,
-        },
-        ticks: {
-          fontColor: mediumGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          maxRotation: 0,
-          minRotation: 0,
-          autoSkip: true,
-          maxTicksLimit: 10
-        }
-      }],
-      yAxes: [{
-        stacked: isStacked,
-        display: true,
-        gridLines: {
-          display: true,
-          drawBorder: false,
-        },
-        ticks: {
-          fontColor: "#ADB2B8",
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          stepSize,
-          suggestedMax,
-          suggestedMin: 0,
-          callback: tickCallbackFunction,
-        }
-      }],
+      xAxes,
+      yAxes,
     },
     tooltips: {
       mode: "index",
@@ -326,8 +359,8 @@ function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
   return ` ${percent}% ${label} (${numerator} of ${denominator} patients)`;
 }
 
-function formatSumTooltipText(tooltipItem) {
-  return ` ${formatNumberWithCommas(tooltipItem.value)} cumulative registrations`;
+function formatSumTooltipText(tooltipItem, data) {
+  return ` ${formatNumberWithCommas(tooltipItem.value)} ${data.datasets[tooltipItem.datasetIndex].label}`;
 }
 
 function formatValueAsPercent(value) {
@@ -355,3 +388,39 @@ function formatTooltipLabelColor(tooltipItem, data) {
 
   return styles;
 }
+
+function createAxisConfig(config) {
+  const { stacked, display, drawBorder, stepSize, max, id, position } = config;
+  let axisConfig = {
+    id,
+    position: position ? position : "left",
+    stacked,
+    display: true,
+    gridLines: {
+      display,
+      drawBorder,
+    },
+    ticks: {
+      fontColor: darkGreyColor,
+      fontSize: 12,
+      fontFamily: "Roboto Condensed",
+      padding: 8,
+      beginAtZero: true,
+      stepSize,
+      max,
+    },
+  };
+
+  return axisConfig;
+};
+
+function createAxisMaxAndStepSize(data) {
+  const maxDataValue = Math.max(...Object.values(data));
+  const maxAxisValue = Math.round(maxDataValue * 1.15);
+  const axisStepSize = Math.round(maxAxisValue / 2);
+
+  return {
+    max: maxAxisValue,
+    stepSize: axisStepSize,
+  };
+};

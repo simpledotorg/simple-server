@@ -42,6 +42,7 @@
 // Spacing
 .mx-20px { margin-right: 20px; margin-left: 20px; }
 .mr-4px { margin-right: 4px; }
+.mr-8px { margin-right: 8px; }
 .pb-8px { padding-bottom: 8px; }
 // Typography
 .fs-12px { font-size: 12px; }
@@ -69,11 +70,13 @@
 .td-none:hover { text-decoration: none; }
 .tt-uppercase { text-transform: uppercase; }
 // Borders
+.b-2px { border: 2px solid; }
 .bt-1px { border-top: 1px solid; }
 .bt-2px { border-top: 2px solid; }
 .bb-1px { border-bottom: 1px solid; }
 .bb-2px { border-bottom: 2px solid; }
 .bl-1px { border-left: 1px solid; }
+.bc-purple { border-color: $purple; }
 .bt-grey-light { border-top-color: $grey-light; }
 .bb-grey-light { border-bottom-color: $grey-light; }
 .bb-grey-medium { border-bottom-color: $grey-mid; }
@@ -84,6 +87,7 @@
 // Border radius
 .br-2px { border-radius: 2px; }
 .br-4px { border-radius: 4px; }
+.br-6px { border-radius: 6px; }
 // Background colors
 .bg-red-medium { background-color: $red; }
 .bg-green-dark { background-color: $green-dark; }
