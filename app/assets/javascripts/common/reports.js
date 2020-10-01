@@ -68,14 +68,17 @@ function getReportingData() {
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlledGraphConfig = createGraphConfig([{
-    data: data.controlRate,
-    borderWidth: 2,
-    rgbaLineColor: mediumGreenColor,
-    rgbaPointColor: lightGreenColor,
-    rgbaBackgroundColor: lightGreenColor,
-    label: "HTN controlled",
-  }], "line");
+  const controlledGraphConfig = createGraphConfig({
+    datasets: [{
+      data: data.controlRate,
+      borderWidth: 2,
+      rgbaLineColor: mediumGreenColor,
+      rgbaPointColor: lightGreenColor,
+      rgbaBackgroundColor: lightGreenColor,
+      label: "HTN controlled",
+    }],
+    graphType: "line",
+  });
   controlledGraphConfig.options = createGraphOptions(
     false,
     25,
@@ -91,16 +94,17 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const missedVisitsConfig = createGraphConfig([
-    {
+  const missedVisitsConfig = createGraphConfig({
+    datasets: [{
       data: data.missedVisitsRate,
       borderWidth: 2,
       rgbaLineColor: mediumBlueColor,
       rgbaPointColor: lightBlueColor,
       rgbaBackgroundColor: lightBlueColor,
       label: "Missed visits",
-    },
-  ], "line");
+    }],
+    graphType: "line",
+  });
   missedVisitsConfig.options = createGraphOptions(
     false,
     25,
@@ -116,17 +120,17 @@ function initializeCharts() {
     new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
-  const uncontrolledGraphConfig = createGraphConfig([
-    {
+  const uncontrolledGraphConfig = createGraphConfig({
+    datasets: [{
       data: data.uncontrolledRate,
       borderWidth: 2,
       rgbaLineColor: darkRedColor,
       rgbaPointColor: lightRedColor,
       rgbaBackgroundColor: lightRedColor,
       label: "HTN not under control",
-    }
-  ], "line");
-
+    }],
+    graphType: "line",
+  });
   uncontrolledGraphConfig.options = createGraphOptions(
     false,
     25,
@@ -145,15 +149,16 @@ function initializeCharts() {
   const maxRegistrations = Math.max(...Object.values(data.registrations));
   const suggestedMax = Math.round(maxRegistrations) * 1.15;
   const stepSize = Math.round(suggestedMax / 3);
-  const cumulativeRegistrationsGraphConfig = createGraphConfig([
-    {
+  const cumulativeRegistrationsGraphConfig = createGraphConfig({
+    datasets: [{
       data: data.registrations,
       borderWidth: { top: 2 },
       rgbaLineColor: darkPurpleColor,
       rgbaBackgroundColor: lightPurpleColor,
       hoverBackgroundColor: lightPurpleColor,
-    },
-  ], "bar");
+    }],
+    graphType: "bar",
+  });
 
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     false,
@@ -168,32 +173,36 @@ function initializeCharts() {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
   }
 
-  const visitDetailsGraphConfig = createGraphConfig([
-    {
-      data: data.controlRate,
-      rgbaBackgroundColor: mediumGreenColor,
-      hoverBackgroundColor: mediumGreenColor,
-      label: "HTN controlled",
-    },
-    {
-      data: data.uncontrolledRate,
-      rgbaBackgroundColor: darkRedColor,
-      hoverBackgroundColor: darkRedColor,
-      label: "HTN not under control",
-    },
-    {
-      data: data.visitButNoBPMeasureRate,
-      rgbaBackgroundColor: darkGreyColor,
-      hoverBackgroundColor: darkGreyColor,
-      label: "Visited in the last 3 months",
-    },
-    {
-      data: data.missedVisitsRate,
-      rgbaBackgroundColor: mediumGreyColor,
-      hoverBackgroundColor: mediumGreyColor,
-      label: "No visit >3 months",
-    }
-  ], "bar");
+  const visitDetailsGraphConfig = createGraphConfig({
+    datasets: [
+      {
+        data: data.controlRate,
+        rgbaBackgroundColor: mediumGreenColor,
+        hoverBackgroundColor: mediumGreenColor,
+        label: "HTN controlled",
+      },
+      {
+        data: data.uncontrolledRate,
+        rgbaBackgroundColor: darkRedColor,
+        hoverBackgroundColor: darkRedColor,
+        label: "HTN not under control",
+      },
+      {
+        data: data.visitButNoBPMeasureRate,
+        rgbaBackgroundColor: darkGreyColor,
+        hoverBackgroundColor: darkGreyColor,
+        label: "Visited in the last 3 months",
+      },
+      {
+        data: data.missedVisitsRate,
+        rgbaBackgroundColor: mediumGreyColor,
+        hoverBackgroundColor: mediumGreyColor,
+        label: "No visit >3 months",
+      }
+    ],
+    graphType: "bar",
+    numberOfMonths: 6,
+  });
 
   visitDetailsGraphConfig.options = createGraphOptions(
     true,
@@ -211,12 +220,18 @@ function initializeCharts() {
   }
 }
 
-function createGraphConfig(datasetsConfig, graphType) {
+function createGraphConfig(config) {
+  let { datasets, graphType, numberOfMonths } = config;
+
+  if (numberOfMonths == undefined) {
+    numberOfMonths = 24;
+  }
+
   return {
     type: graphType,
     data: {
-      labels: Object.keys(datasetsConfig[0].data),
-      datasets: datasetsConfig.map(dataset => {
+      labels: Object.keys(datasets[0].data).slice(0, numberOfMonths),
+      datasets: datasets.map(dataset => {
         return {
           label: dataset.label,
           backgroundColor: dataset.rgbaBackgroundColor,
@@ -224,7 +239,7 @@ function createGraphConfig(datasetsConfig, graphType) {
           borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
-          data: Object.values(dataset.data),
+          data: Object.values(dataset.data).slice(0, numberOfMonths),
         };
       }),
     },
