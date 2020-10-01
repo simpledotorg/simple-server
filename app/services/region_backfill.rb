@@ -1,5 +1,12 @@
 class RegionBackfill
-  def self.backfill!
+  def self.call
+    new.call
+  end
+
+  def initialize
+  end
+
+  def call
     root_kind = RegionKind.find_by!(name: "Root")
     org_kind = root_kind.children.first
     facility_group_kind = org_kind.children.first
