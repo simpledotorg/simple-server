@@ -1,27 +1,37 @@
 require "rails_helper"
 
 RSpec.describe Region, type: :model do
-  before do
-    # duplicating this from the data migration for now
-    instance = RegionKind.create! name: "Root", path: "Root"
-    org = RegionKind.create! name: "Organization", parent: instance
-    facility_group = RegionKind.create! name: "FacilityGroup", parent: org
-    block = RegionKind.create! name: "Block", parent: facility_group
-    _facility = RegionKind.create! name: "Facility", parent: block
+  context "validations" do
+    it "requires a region type" do
+      region = Region.new(name: "foo", path: "foo")
+      expect(region).to_not be_valid
+      expect(region.errors[:type]).to eq(["must exist"])
+    end
   end
 
-  it "can soft delete nodes" do
-    org = create(:organization, name: "Test Organization")
-    facility_group_1 = create(:facility_group, organization: org)
-    facility_group_2 = create(:facility_group, organization: org)
+  context "behavior" do
+    before do
+      # duplicating this from the data migration for now
+      instance = RegionType.create! name: "Root", path: "Root"
+      org = RegionType.create! name: "Organization", parent: instance
+      facility_group = RegionType.create! name: "FacilityGroup", parent: org
+      block = RegionType.create! name: "Block", parent: facility_group
+      _facility = RegionType.create! name: "Facility", parent: block
+    end
 
-    facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
-    facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
+    it "can soft delete nodes" do
+      org = create(:organization, name: "Test Organization")
+      facility_group_1 = create(:facility_group, organization: org)
+      facility_group_2 = create(:facility_group, organization: org)
 
-    RegionBackfill.call(dry_run: false)
+      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
 
-    facility_group_2.discard
-    expect(facility_group_2.region.reload.path).to be_nil
-    expect(org.region.children.map(&:source)).to contain_exactly(facility_group_1)
+      RegionBackfill.call(dry_run: false)
+
+      facility_group_2.discard
+      expect(facility_group_2.region.reload.path).to be_nil
+      expect(org.region.children.map(&:source)).to contain_exactly(facility_group_1)
+    end
   end
 end

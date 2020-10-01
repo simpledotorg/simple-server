@@ -7,17 +7,17 @@ class Region < ApplicationRecord
   validates :slug, presence: true, uniqueness: true
   validates :path, presence: true
 
-  belongs_to :kind, class_name: "RegionKind", foreign_key: "region_kind_id"
+  belongs_to :type, class_name: "RegionType", foreign_key: "region_type_id"
   belongs_to :source, polymorphic: true, optional: true
 
   before_discard do
     self.path = nil
   end
 
-  def self.create_region_from(parent:, kind:, name: nil, source: nil)
+  def self.create_region_from(parent:, type:, name: nil, source: nil)
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
-    region = Region.new name: region_name, kind: kind
+    region = Region.new name: region_name, type: type
     region.send :set_slug
     region.source = source if source
     region.path = "#{parent.path}.#{region.slug.tr("-", "_")}"
@@ -31,7 +31,7 @@ class Region < ApplicationRecord
 
   def dry_run_info
     attrs = attributes.slice("name", "slug", "path")
-    attrs.merge!("region_kind" => kind.name)
+    attrs["region_type"] = type.name
     attrs.symbolize_keys
   end
 end

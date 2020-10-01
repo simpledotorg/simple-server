@@ -1,4 +1,4 @@
-class RegionKind < ApplicationRecord
+class RegionType < ApplicationRecord
   ltree :path
 
   validates :name, presence: true, uniqueness: true

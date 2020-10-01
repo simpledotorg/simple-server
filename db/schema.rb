@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_17_184207) do
+ActiveRecord::Schema.define(version: 2020_10_01_194549) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -143,7 +143,9 @@ ActiveRecord::Schema.define(version: 2020_09_17_184207) do
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
-  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  create_table "data_migrations", id: false, force: :cascade do |t|
+    t.string "version", null: false
+    t.index ["version"], name: "unique_data_migrations", unique: true
   end
 
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -466,14 +468,14 @@ ActiveRecord::Schema.define(version: 2020_09_17_184207) do
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
   end
 
-  create_table "region_kinds", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "region_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.ltree "path", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_region_kinds_on_name", unique: true
-    t.index ["path"], name: "index_region_kinds_on_path", using: :gist
+    t.index ["name"], name: "index_region_types_on_name", unique: true
+    t.index ["path"], name: "index_region_types_on_path", using: :gist
   end
 
   create_table "regions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -482,13 +484,13 @@ ActiveRecord::Schema.define(version: 2020_09_17_184207) do
     t.string "description"
     t.string "source_type"
     t.uuid "source_id"
-    t.uuid "region_kind_id"
+    t.uuid "region_type_id"
     t.ltree "path"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["path"], name: "index_regions_on_path", using: :gist
-    t.index ["region_kind_id"], name: "index_regions_on_region_kind_id"
+    t.index ["region_type_id"], name: "index_regions_on_region_type_id"
     t.index ["slug"], name: "index_regions_on_slug", unique: true
     t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"
   end
@@ -589,7 +591,7 @@ ActiveRecord::Schema.define(version: 2020_09_17_184207) do
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "prescription_drugs", "teleconsultations"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "regions", "region_kinds"
+  add_foreign_key "regions", "region_types"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "patients"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
