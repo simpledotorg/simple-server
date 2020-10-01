@@ -60,7 +60,7 @@ class RegionBackfill
     region = Region.new name: region_name, type: type
     region.send :set_slug
     region.source = source if source
-    region.path = "#{parent.path}.#{region.slug.tr("-", "_")}"
+    region.path = "#{parent.path}.#{region.name_to_path_label}"
     if dry_run?
       logger.tagged(class: self.class.name) { logger.info msg: "save", region: region.dry_run_info }
     else

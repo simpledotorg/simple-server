@@ -14,15 +14,14 @@ class Region < ApplicationRecord
     self.path = nil
   end
 
-  def self.create_region_from(parent:, type:, name: nil, source: nil)
-    raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
-    region_name = name || source.name
-    region = Region.new name: region_name, type: type
-    region.send :set_slug
-    region.source = source if source
-    region.path = "#{parent.path}.#{region.slug.tr("-", "_")}"
-    region.save!
-    region
+  ALLOW_CHARACTERS_IN_LTREE_LABEL = /[A-Za-z0-9_]/
+  MAX_LABEL_LENGTH = 255
+
+  # A label is a sequence of alphanumeric characters and underscores.
+  # (In C locale the characters A-Za-z0-9_ are allowed).
+  # Labels must be less than 256 bytes long.
+  def name_to_path_label
+    name.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 
   def self.backfill!
