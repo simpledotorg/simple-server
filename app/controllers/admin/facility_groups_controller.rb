@@ -3,9 +3,9 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
+  after_action :verify_authorization_attempted
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -15,11 +15,7 @@ class Admin::FacilityGroupsController < AdminController
   def new
     @facility_group = FacilityGroup.new
 
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
-    else
-      authorize([:manage, @facility_group])
-    end
+    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
   end
 
   def edit
@@ -28,11 +24,7 @@ class Admin::FacilityGroupsController < AdminController
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
 
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
-    else
-      authorize([:manage, @facility_group])
-    end
+    authorize_v2 { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
     if @facility_group.save && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
@@ -61,13 +53,8 @@ class Admin::FacilityGroupsController < AdminController
   private
 
   def set_organizations
-    @organizations =
-      if current_admin.permissions_v2_enabled?
-        # include the facility group's organization along with the ones you can access
-        current_admin.accessible_organizations(:manage).presence || [@facility_group.organization]
-      else
-        policy_scope([:manage, :facility, Organization])
-      end
+    # include the facility group's organization along with the ones you can access
+    @organizations = current_admin.accessible_organizations(:manage).presence || [@facility_group.organization]
   end
 
   def set_protocols
@@ -75,12 +62,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_facility_group
-    if current_admin.permissions_v2_enabled?
-      @facility_group = authorize_v2 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
-    else
-      @facility_group = FacilityGroup.friendly.find(params[:id])
-      authorize([:manage, @facility_group])
-    end
+    @facility_group = authorize_v2 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
   end
 
   def facility_group_params
