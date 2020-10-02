@@ -27,8 +27,9 @@ class Region < ApplicationRecord
     RegionBackfill.backfill!
   end
 
-  def dry_run_info
+  def log_payload
     attrs = attributes.slice("name", "slug", "path")
+    attrs["id"] = id.presence
     attrs["region_type"] = type.name
     attrs.symbolize_keys
   end

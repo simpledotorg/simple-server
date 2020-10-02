@@ -3,9 +3,12 @@ class RegionBackfill
     new(*args).call
   end
 
+  attr_reader :logger
+
   def initialize(dry_run: true)
     @dry_run = dry_run
     @write = !@dry_run
+    @logger = Rails.logger.child(class: self.class.name, dry_run: dry_run)
   end
 
   def dry_run?
@@ -16,17 +19,20 @@ class RegionBackfill
     @write
   end
 
-  delegate :logger, to: Rails
-
   def call
-    root_kind = RegionType.find_by!(name: "Root")
-    org_kind = root_kind.children.first
-    facility_group_kind = org_kind.children.first
-    block_kind = facility_group_kind.children.first
-    facility_kind = block_kind.children.first
+    create_region_types
+    create_regions
+  end
+
+  def create_regions
+    root_type = find_region_type("Root")
+    org_kind = find_region_type("Organization")
+    facility_group_kind = find_region_type("FacilityGroup")
+    block_kind = find_region_type("Block")
+    facility_kind = find_region_type("Facility")
 
     current_country_name = CountryConfig.current[:name]
-    instance = create_or_fake_object name: current_country_name, path: current_country_name, type: root_kind
+    instance = create_or_fake_object name: current_country_name, path: current_country_name, type: root_type
 
     Organization.all.each do |org|
       org_region = create_region_from(source: org, type: org_kind, parent: instance)
@@ -35,6 +41,10 @@ class RegionBackfill
         facility_group_region = create_region_from(source: facility_group, type: facility_group_kind, parent: org_region)
 
         facility_group.facilities.group_by(&:zone).each do |block_name, facilities|
+          if block_name.blank?
+            logger.info msg: "skip_block", error: "block_name is blank", block_name: block_name, facilities: facilities.map(&:name)
+            next
+          end
           block_region = create_region_from(name: block_name, type: block_kind, parent: facility_group_region)
           facilities.each do |facility|
             create_region_from(source: facility, type: facility_kind, parent: block_region)
@@ -44,26 +54,46 @@ class RegionBackfill
     end
   end
 
-  def create_or_fake_object(attrs)
-    if write?
-      Region.create! attrs
+  def find_region_type(name)
+    if dry_run?
+      RegionType.new name: name
     else
-      region = Region.new attrs
-      logger.info msg: "create", region: region.dry_run_info
-      region
+      RegionType.find_by! name: name
     end
   end
 
+  def create_region_types
+    logger.info msg: "create_region_types"
+    unless dry_run?
+      root = RegionType.create! name: "Root", path: "Root"
+      org = RegionType.create! name: "Organization", parent: root
+      facility_group = RegionType.create! name: "FacilityGroup", parent: org
+      block = RegionType.create! name: "Block", parent: facility_group
+      _facility = RegionType.create! name: "Facility", parent: block
+    end
+    root
+  end
+
+  def create_or_fake_object(attrs)
+    region = Region.new(attrs)
+    logger.info msg: "create", region: region.log_payload
+    unless dry_run?
+      region.save!
+    end
+    region
+  end
+
   def create_region_from(parent:, type:, name: nil, source: nil)
+    logger.info msg: "create_region_from", parent: parent.name, type: type.name, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
     region = Region.new name: region_name, type: type
     region.send :set_slug
     region.source = source if source
     region.path = "#{parent.path}.#{region.name_to_path_label}"
-    if dry_run?
-      logger.tagged(class: self.class.name) { logger.info msg: "save", region: region.dry_run_info }
-    else
+
+    logger.info msg: "create", region: region.log_payload
+    unless dry_run?
       region.save!
     end
     region

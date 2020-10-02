@@ -1,15 +1,6 @@
 require "rails_helper"
 
 RSpec.describe RegionBackfill, type: :model do
-  before do
-    # duplicating this from the data migration for now
-    instance = RegionType.create! name: "Root", path: "Root"
-    org = RegionType.create! name: "Organization", parent: instance
-    facility_group = RegionType.create! name: "FacilityGroup", parent: org
-    block = RegionType.create! name: "Block", parent: facility_group
-    _facility = RegionType.create! name: "Facility", parent: block
-  end
-
   context "dry run mode" do
     before do
       org = create(:organization, name: "Test Organization")
@@ -22,12 +13,6 @@ RSpec.describe RegionBackfill, type: :model do
       expect {
         RegionBackfill.call(dry_run: true)
       }.to_not change { Region.count }
-    end
-
-    it "logs attributes of records it would create" do
-      expect(Rails.logger).to receive(:info).with(msg: "create", region: hash_including(name: "India")).exactly(1).times
-      expect(Rails.logger).to receive(:info).with(msg: "save", region: instance_of(Hash)).at_least(3).times
-      RegionBackfill.call(dry_run: true)
     end
   end
 
