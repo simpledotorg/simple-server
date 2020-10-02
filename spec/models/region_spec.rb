@@ -10,14 +10,6 @@ RSpec.describe Region, type: :model do
   end
 
   context "behavior" do
-    before do
-      instance = RegionType.create! name: "Root", path: "Root"
-      org = RegionType.create! name: "Organization", parent: instance
-      facility_group = RegionType.create! name: "FacilityGroup", parent: org
-      block = RegionType.create! name: "Block", parent: facility_group
-      _facility = RegionType.create! name: "Facility", parent: block
-    end
-
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org)
