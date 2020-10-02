@@ -293,6 +293,8 @@ function initializeCharts() {
 function createGraphConfig(config) {
   let { datasets, graphType, numberOfMonths } = config;
 
+  const totalMonths = Object.keys(datasets[0].data).length;
+
   if (numberOfMonths == undefined) {
     numberOfMonths = 24;
   }
@@ -300,7 +302,7 @@ function createGraphConfig(config) {
   return {
     type: graphType,
     data: {
-      labels: Object.keys(datasets[0].data).slice(0, numberOfMonths),
+      labels: Object.keys(datasets[0].data).slice(totalMonths - numberOfMonths, totalMonths),
       datasets: datasets.map(dataset => {
         return {
           yAxisID: dataset.id,
@@ -310,7 +312,7 @@ function createGraphConfig(config) {
           borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
-          data: Object.values(dataset.data).slice(0, numberOfMonths),
+          data: Object.values(dataset.data).slice(totalMonths - numberOfMonths, totalMonths),
           type: dataset.graphType ? dataset.graphType : "line",
         };
       }),
