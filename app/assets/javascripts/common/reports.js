@@ -258,8 +258,8 @@ function initializeCharts() {
       },
       {
         data: data.missedVisitsRate,
-        rgbaBackgroundColor: mediumGreyColor,
-        hoverBackgroundColor: mediumGreyColor,
+        rgbaBackgroundColor: mediumBlueColor,
+        hoverBackgroundColor: mediumBlueColor,
         label: "No visit >3 months",
         graphType: "bar",
       }
@@ -271,11 +271,11 @@ function initializeCharts() {
     [createAxisConfig({
       stacked: true,
       display: false,
-      drawBorder: true,
+      drawBorder: false,
     })],
     [createAxisConfig({
       stacked: true,
-      display: true,
+      display: false,
       drawBorder: false,
       stepSize: 25,
       max: 100,

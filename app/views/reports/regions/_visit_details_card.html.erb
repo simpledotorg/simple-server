@@ -1,74 +1,208 @@
 <div class="mt-8px mx-0px mb-16px p-20px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
-  <h3 class="mb-12px c-black">
+  <p class="mb-0px fw-bold fs-20px c-black">
     Visit details of all hypertensive patients
-  </h3>
-  <p class="mb-0px c-grey-dark">
-    <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> assigned patients until the end of <%= @adjusted_registration_date %>
   </p>
   <% if @last_registration_value %>
     <div class="d-flex fd-column fd-lg-row">
-      <div class="order-lg-2 w-lg-224px mt-lg-16px ml-lg-24px">
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
+      <div class="h-300px w-lg-45 h-lg-auto">
+        <canvas id="missedVisitDetails"></canvas>
+      </div>
+      <div class="flex-lg-1 mt-lg-16px ml-lg-24px">
+        <div id="visit-details-missed-visits">
+          <p class="mb-8px fw-bold">
+            Missed visits
+          </p>
+          <div class="mb-12px d-lg-flex align-lg-center">
+            <p class="rate mb-0px fs-32px fw-bold <% if @data.last_value(:missed_visits_rate) %>c-blue<% else %>c-grey-medium<% end %> mr-lg-12px">
+              <% if @data.last_value(:missed_visits_rate) %>
+                <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
+              <% else %>
+                No data
+              <% end %>
             </p>
-            <p class="flex-1 m-0px fs-14px">
-              No visit >3 months
-            </p>
+            <div>
+              <% if @data.last_value(:missed_visits_rate) %>
+                <p class="m-0px c-black">
+                  <span class="total-patients">
+                    <%= number_with_delimiter(@data.last_value(:missed_visits_rate)) %>
+                  </span>
+                  patients with no visit between
+                  <span class="period-start">
+                    START_DATE
+                  </span>
+                  to
+                  <span id="period-end">
+                    END_DATE
+                  </span>
+                </p>
+                <p class="m-0px c-grey-dark">
+                  of
+                  <span id="cumulative-registrations">
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                  </span>
+                  patients registered till
+                  <span id="period-start">
+                    START_DATE
+                  </span>
+                </p>
+              <% else %>
+                <p class="m-0px c-grey-medium">
+                  No BP not controlled data available
+                </p>
+              <% end %>
+            </div>
           </div>
         </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= number_to_percentage(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
+        <div id="visit-details-visit-but-no-bp-taken">
+          <p class="mb-8px fw-bold">
+            Visit but no BP taken
+          </p>
+          <div class="mb-12px d-lg-flex align-lg-center">
+            <p class="rate mb-0px fs-32px fw-bold <% if @data.last_value(:visited_without_bp_taken_rate) %>c-grey-dark<% else %>c-grey-medium<% end %> mr-lg-12px">
+              <% if @data.last_value(:visited_without_bp_taken_rate) %>
+                <%= number_to_percentage(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
+              <% else %>
+                No data
+              <% end %>
             </p>
-            <p class="flex-1 m-0px fs-14px">
-              Visited but no BP recorded
-              <span
-                data-toggle="tooltip"
-                data-placement="top"
-                data-trigger="hover"
-                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
-              >
-                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-              </span>
-            </p>
+            <div>
+              <% if @data.last_value(:visited_without_bp_taken_rate) %>
+                <p class="m-0px c-black">
+                  <span class="total-patients">
+                    <%= number_with_delimiter(@data.last_value(:visited_without_bp_taken_rate)) %>
+                  </span>
+                  patients with a visit but no BP taken between
+                  <span class="period-start">
+                    START_DATE
+                  </span>
+                  to
+                  <span id="period-end">
+                    END_DATE
+                  </span>
+                </p>
+                <p class="m-0px c-grey-dark">
+                  of
+                  <span id="cumulative-registrations">
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                  </span>
+                  patients registered till
+                  <span id="period-start">
+                    START_DATE
+                  </span>
+                </p>
+              <% else %>
+                <p class="m-0px c-grey-medium">
+                  No BP not controlled data available
+                </p>
+              <% end %>
+            </div>
           </div>
         </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-red-medium"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
+        <div id="visit-details-bp-uncontrolled">
+          <p class="mb-8px fw-bold">
+            BP not controlled
+          </p>
+          <div class="mb-12px d-lg-flex align-lg-center">
+            <p class="rate mb-0px fs-32px fw-bold <% if @data.last_value(:uncontrolled_patients_rate) %>c-red<% else %>c-grey-medium<% end %> mr-lg-12px">
+              <% if @data.last_value(:uncontrolled_patients_rate) %>
+                <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
+              <% else %>
+                No data
+              <% end %>
             </p>
-            <p class="flex-1 m-0px fs-14px">
-              BP not controlled
-            </p>
+            <div>
+              <% if @data.last_value(:uncontrolled_patients_rate) %>
+                <p class="m-0px c-black">
+                  <span class="total-patients">
+                    <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
+                  </span>
+                  patients with not controlled BP between
+                  <span class="period-start">
+                    START_DATE
+                  </span>
+                  to
+                  <span id="period-end">
+                    END_DATE
+                  </span>
+                </p>
+                <p class="m-0px c-grey-dark">
+                  of
+                  <span id="cumulative-registrations">
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                  </span>
+                  patients registered till
+                  <span id="period-start">
+                    START_DATE
+                  </span>
+                </p>
+              <% else %>
+                <p class="m-0px c-grey-medium">
+                  No BP not controlled data available
+                </p>
+              <% end %>
+            </div>
           </div>
         </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-green-dark"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
+        <div id="visit-details-bp-controlled" class="mb-20px pb-8px bb-1px bb-grey-light">
+          <p class="mb-8px fw-bold">
+            BP controlled
+          </p>
+          <div class="mb-12px d-lg-flex align-lg-center">
+            <p class="rate mb-0px fs-32px fw-bold <% if @data[:controlled_patients_rate].values.last %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px">
+              <% if @data.last_value(:controlled_patients_rate) %>
+                <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+              <% else %>
+                No data
+              <% end %>
             </p>
-            <p class="flex-1 m-0px fs-14px">
-              BP controlled
-            </p>
+            <div>
+              <% if @data.last_value(:controlled_patients_rate) %>
+                <p class="m-0px c-black">
+                  <span class="total-patients">
+                    <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
+                  </span>
+                  patients with controlled BP between
+                  <span class="period-start">
+                    START_DATE
+                  </span>
+                  to
+                  <span id="period-end">
+                    END_DATE
+                  </span>
+                </p>
+                <p class="m-0px c-grey-dark">
+                  of
+                  <span id="cumulative-registrations">
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                  </span>
+                  patients registered till
+                  <span id="period-start">
+                    START_DATE
+                  </span>
+                </p>
+              <% else %>
+                <p class="m-0px c-grey-medium">
+                  No BP controlled data available
+                </p>
+              <% end %>
+            </div>
           </div>
         </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <p class="mb-0px fs-12px c-grey-dark">
-            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-            the last 3 months
+        <div class="d-flex fd-column align-baseline mb-8px mb-lg-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Visit but no BP taken numerator:</strong> Patients with a visit in the last 3 months but no BP taken
+          </p>
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>All other numerators:</strong> Same numerators as cards above
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <% if @region.is_a?(Facility) %>
+              <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
+            <% else %>
+              <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
+            <% end %>
           </p>
         </div>
-      </div>
-      <div class="flex-lg-1 order-lg-1">
-        <canvas id="missedVisitDetails"></canvas>
       </div>
     </div>
   <% else %>

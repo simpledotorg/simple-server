@@ -38,8 +38,10 @@
 .h-10pt { height: 10%; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
+.h-300px { height: 300px; } 
 .h-250px { height: 250px; }
 // Spacing
+.mb-20px { margin-bottom: 20px; }
 .mx-20px { margin-right: 20px; margin-left: 20px; }
 .mr-4px { margin-right: 4px; }
 .mr-8px { margin-right: 8px; }
@@ -131,9 +133,11 @@
   .w-lg-120px { width: 120px; }
   .w-lg-200px { width: 200px; }
   .w-lg-224px { width: 224px; }
+  .w-lg-45 { width: 45%; }
   .w-lg-50 { width: 50%; }
   .w-lg-full { width: 100%; }
   .w-lg-auto { width: auto; }
+  .h-lg-auto { height: auto; }
   .h-lg-34px { height: 34px; }
   .h-lg-380px { height: 380px; }
   .h-lg-full { width: 100%; }
