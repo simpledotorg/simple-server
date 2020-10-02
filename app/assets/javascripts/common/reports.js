@@ -428,6 +428,7 @@ function createAxisMaxAndStepSize(data) {
 };
 
 function customTooltip(tooltipModel) {
+  // Rate, Patients Numerator, Patients denominator, Start date, End date
   const { dataPoints } = tooltipModel;
   const valueElement = document.getElementById("bp-controlled-value");
   const defaultValue = valueElement.textContent;
