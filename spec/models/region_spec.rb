@@ -39,8 +39,8 @@ RSpec.describe Region, type: :model do
       facility_group_1 = create(:facility_group, organization: org)
       facility_group_2 = create(:facility_group, organization: org)
 
-      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
-      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
+      _facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
+      _facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
 
       RegionBackfill.call(dry_run: false)
 
