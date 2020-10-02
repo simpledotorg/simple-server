@@ -108,6 +108,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "returns period info for every month" do
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][dec_2019_period]).to eq({"bp_control_start_date" => "1-Oct-2019", "bp_control_end_date" => "31-Dec-2019"})
+    end
+
     it "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
