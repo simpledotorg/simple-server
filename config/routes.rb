@@ -188,6 +188,7 @@ Rails.application.routes.draw do
     get "blood_pressure_control", to: "blood_pressure_control"
     get "registrations", to: "registrations"
     get "missed_visits", to: "missed_visits"
+    get "medication_inventory", to: "medication_inventory"
   end
 
   scope :resources do

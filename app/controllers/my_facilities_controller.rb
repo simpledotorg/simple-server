@@ -104,6 +104,9 @@ class MyFacilitiesController < AdminController
     @totals_by_period = missed_visits_query.missed_visit_totals
   end
 
+  def medication_inventory
+  end
+
   private
 
   def set_last_updated_at

@@ -113,6 +113,8 @@
             class: "nav-link #{active_action?("missed_visits")}" %>
         <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
             class: "nav-link #{active_action?("registrations")}" %>
+        <%= link_to 'Medication inventory', my_facilities_medication_inventory_path(preserve_query_params(request.query_parameters, ["size", "period"])),
+            class: "nav-link #{active_action?("medication_inventory")}" %>
       </nav>
 
       <% unless request.path == my_facilities_overview_path %>
