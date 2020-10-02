@@ -63,7 +63,8 @@ function getReportingData() {
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
-    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate
+    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate,
+    periodInfo: jsonData.period_info
   };
 };
 
@@ -318,7 +319,7 @@ function createGraphConfig(config) {
   }
 }
 
-function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerators, denominators) {
+function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerator, denominator, periodInfo) {
   return {
     animation: false,
     responsive: true,
@@ -344,9 +345,12 @@ function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerators, d
       xAxes,
       yAxes,
     },
+    // TODO Remove from this funct
     tooltips: {
       enabled: false,
-      custom: customTooltip
+      custom: function (tooltipModel) {
+        return tooltipCallbackFunction(tooltipModel, numerator, denominator, periodInfo);
+      }
     }
   };
 }
@@ -427,8 +431,7 @@ function createAxisMaxAndStepSize(data) {
   };
 };
 
-function customTooltip(tooltipModel) {
-  // Rate, Patients Numerator, Patients denominator, Start date, End date
+function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
   const { dataPoints } = tooltipModel;
   const valueElement = document.getElementById("bp-controlled-value");
   const defaultValue = valueElement.textContent;
