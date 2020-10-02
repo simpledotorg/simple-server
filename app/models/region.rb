@@ -23,10 +23,6 @@ class Region < ApplicationRecord
     name.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 
-  def self.backfill!
-    RegionBackfill.backfill!
-  end
-
   def log_payload
     attrs = attributes.slice("name", "slug", "path")
     attrs["id"] = id.presence
