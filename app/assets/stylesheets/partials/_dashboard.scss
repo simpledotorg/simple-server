@@ -99,7 +99,8 @@ th sup {
             word-break: break-word;
             text-transform: none;
             letter-spacing: 0;
-            font-size: 14px;
+            font-size: 13px;
+            white-space: nowrap;
 
             i {
                 margin-left: 4px;
@@ -209,20 +210,29 @@ th sup {
     td.type-percent {
       text-align: center;
     }
+    
+    td.type-title {
+      a {
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 6em;
+      }
+    }
 
     td.type-percent em {
       font-style: normal;
-      background: #F1DBFF;
-      color: #BE72E3;
       border-radius: 100px;
       padding: 2px;
       width: 3.5em;
       display: block;
-    }
-
-    .row-total td.type-percent em {
       background: rgba(0,0,0,0.1);
       color: rgba(0,0,0,0.6);
+    }
+    
+    td.type-percent-warning em {
+      background: $red;
+      color: #fff;
     }
 
     td.type-rank i {
@@ -232,6 +242,19 @@ th sup {
 
     td.type-rank i.fa-long-arrow-alt-down {
       color: $red;
+    }
+    
+    tr.row-blank td {
+      background: $grey-lightest;
+    }
+    
+    td.type-blank {
+      text-align: center;
+      color: $grey-mid;
+      
+      &.type-title {
+        text-align: left;
+      }
     }
 }
 

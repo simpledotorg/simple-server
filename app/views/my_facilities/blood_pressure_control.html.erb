@@ -19,13 +19,11 @@
         <%  "Q#{registration_quarter}-#{registration_year}" %>
       <% end %>
       <div class="row">
-        <div class="col-lg-9 pr-5 pr-md-0">
+        <div class="col-lg-12">
           <h3>BP control</h3>
           <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:cohort_patients]) %> patients registered in <%= registration_period %>,
             at their last visit in <%= visited_in_period %>.
-        </div>
-
-        <div class="mt-1 mb-3 col-lg-3">
+          </p>
           <div class="dropdown show">
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">

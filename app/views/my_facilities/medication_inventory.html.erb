@@ -1,1 +1,350 @@
-<p>Test view</p>
+<div class="card">
+	<div class="row">
+		<div class="col-6">
+			<h2>Drug stock</h2>
+		</div>
+		<div class="col-6 text-right">
+			<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#DrugReportModal">Add a drug report</button>
+		</div>
+	</div>
+	
+	<!-- Modal -->
+	<div class="modal fade" id="DrugReportModal" tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h2 class="modal-title" id="exampleModalLabel">Drug stock report</h2>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true">&times;</span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+			    <div class="form-group">
+				  <label for="medicationDate">Date</label>
+				  <input type="date" class="form-control" id="medicationDate" value="2020-10-03">
+			    </div>
+			  	<div class="form-group">
+					<label for="medicationFacility">Facility</label>
+					<select class="form-control" id="medicationFacility">
+					  <option>Choose a facility...</option>
+					  <option>CHC Mango</option>
+					  <option>CHC Turkey Fig</option>
+					  <option>DH Fruitvale</option>
+					  <option>HWC Blueberries</option>
+					  <option>HWC Pomegranate</option>
+					  <option>PHC Apple</option>
+					  <option>PHC Mandarin Orange</option>
+					  <option>PHC Melon</option>
+					  <option>PHC Peach</option>
+					  <option>SDH Coconut</option>
+					</select>
+				</div>
+				<h3 class="pt-4">Current stock</h3>
+				<p>Leave blank if unknown. Enter "0" if stock is empty.</p>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Amlodipine 5 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+						  	<div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Amlodipine 10 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+							  <div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Telmisartin 20 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+							  <div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Telmisartin 40 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+							  <div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Losartan 50 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+							  <div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Hydrochlorathiazide 12.5 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+							  <div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+				<div class="form-group">
+					  <label for="medicationAmlodipine5mg">Hydrochlorathiazide 25 mg</label>
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" id="medicationAmlodipine5mg" aria-describedby="basic-addon3">
+							  <div class="input-group-append">
+							  <span class="input-group-text" id="basic-addon3">tablets</span>
+							</div>
+						</div>
+				</div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-primary">Save report</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	<div>
+		<p>Patients registered and stock position of protocol drugs</p>
+		<div class="dropdown show">
+			<a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
+			   role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+			  Oct-2020
+			</a>
+			<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+				<button type="submit" name="period" value="Oct-2020" class="dropdown-item" form="query-filters">Oct-2020</button>
+				<button type="submit" name="period" value="Sep-2020" class="dropdown-item" form="query-filters">Sep-2020</button>
+				<button type="submit" name="period" value="Aug-2020" class="dropdown-item" form="query-filters">Aug-2020</button>
+				<button type="submit" name="period" value="Jul-2020" class="dropdown-item" form="query-filters">Jul-2020</button>
+				<button type="submit" name="period" value="Jun-2020" class="dropdown-item" form="query-filters">Jun-2020</button>
+				<button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">May-2020</button>
+			</div>
+		  </div>
+	</div>
+	<table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
+	<colgroup>
+	  <col>
+	  <col class="table-divider">
+	  <col>
+	  <col>
+	  <col class="table-divider">
+	  <col>
+	  <col>
+	  <col>
+	  <col class="table-divider">
+	  <col>
+	  <col>
+	</colgroup>
+	<thead>
+	<tr>
+	  <th></th>
+	  <th colspan="3">ARB tablets</th>
+	  <th colspan="4">CCB tablets</th>
+	  <th colspan="3">Diuretic tablets</th>
+	</tr>
+	<tr data-sort-method="thead" class="sorts">
+	  <th class="row-label sort-label" data-sort-default>Facilities</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Amlodipine<br>5 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Amlodipine<br>10 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Patient<br>days</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>20 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>40 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Losartan<br>50 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Patient<br>days</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">HCTZ<br>12.5 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">HCTZ<br>25 mg</th>
+	  <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Patient<br>days</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr class="row-total" data-sort-method="none">
+	  <td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="All facilities: 23,489 patients">All</td>
+	  <td class="type-number">2,089,694</td>
+	  <td class="type-number">291,000</td>
+	  <td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(2,089,694+291,000*2)/(23,489 patients*1.4) = 81 days"><em>81</em></td>
+	  <td class="type-number">886,915</td>
+	  <td class="type-number">1000</td>
+	  <td class="type-number">128760</td>
+	  <td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(886,915+1000*2+128760)/(23,489 patients*0.37) = 117 days"><em>117</em></td>
+	  <td class="type-number">228,365</td>
+	  <td class="type-number">51,270</td>
+	  <td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(228,365+51,270)/(23,489 patients*0.06) = 198 days"><em>198</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Blueberries: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Blueberries</a></td>
+		<td class="type-number">6,500</td>
+		<td class="type-number">7,200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(6,500+7,200*2)/(201 patients*1.4) = 74 days"><em>74</em></td>
+		<td class="type-number">8,000</td>
+		<td class="type-number">0</td>
+		<td class="type-number">0</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(8,000+0*2+0)/(201 patients*0.37) = 117 days"><em>117</em></td>
+		<td class="type-number">400</td>
+		<td class="type-number">0</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(400+0)/(201 patients*0.06) = 33 days"><em>33</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Melon: 338 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Melon</a></td>
+		<td class="type-number">12,000</td>
+		<td class="type-number">200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(12,000+200*2)/(338 patients*1.4) = 26 days"><em>27</em></td>
+		<td class="type-number">300</td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-number">500</td>
+		<td class="type-percent type-percent-warning" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(300+0*2+500)/(338 patients*0.37) = 6 days"><em>6</em></td>
+		<td class="type-number">1,000</td>
+		<td class="type-number">400</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+400)/(338 patients*0.06) = 69 days"><em>69</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="DH Fruity: 2,175 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">DH Fruitvale</a></td>
+		<td class="type-number">45,800</td>
+		<td class="type-number">4,600</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(45,800+4,600*2)/(2,175 patients*1.4) = 18 days"><em>18</em></td>
+		<td class="type-number">167,700</td>
+		<td class="type-number">1000</td>
+		<td class="type-number">57,200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(167,700+1000*2+57,200)/(2,175 patients*0.37) = 282 days"><em>282</em></td>
+		<td class="type-number">1000</td>
+		<td class="type-number">100</td>
+		<td class="type-percent type-percent-warning" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+100)/(2,175 patients*0.06) = 8 days"><em>8</em></td>
+	</tr>	
+	<tr class="row-blank">
+		<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Turkey Fig: 198 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Turkey Fig</a></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+	</tr>
+	<tr class="row-blank">
+		<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Apple: 567 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Apple</a></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Pomegranate: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Pomegranate</a></td>
+		<td class="type-number">6,500</td>
+		<td class="type-number">7,200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(6,500+7,200*2)/(201 patients*1.4) = 74 days"><em>74</em></td>
+		<td class="type-number">8,000</td>
+		<td class="type-number">0</td>
+		<td class="type-number">0</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(8,000+0*2+0)/(201 patients*0.37) = 117 days"><em>117</em></td>
+		<td class="type-number">400</td>
+		<td class="type-number">0</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(400+0)/(201 patients*0.06) = 33 days"><em>33</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Mandarin Orange: 78 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Mandarin Orange</a></td>
+		<td class="type-number">2,000</td>
+		<td class="type-number">500</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(2000+500*2)/(78 patients*1.4) = 74 days"><em>27</em></td>
+		<td class="type-number">800</td>
+		<td class="type-number">0</td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(800+0*2+0)/(78 patients*0.37) = 28 days"><em>28</em></td>
+		<td class="type-number">600</td>
+		<td class="type-number">300</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(600+300)/(78 patients*0.06) = 192 days"><em>192</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="SDH Coconut: 2,175 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">SDH Coconut</a></td>
+		<td class="type-number">45,800</td>
+		<td class="type-number">4,600</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(45,800+4,600*2)/(2,175 patients*1.4) = 18 days"><em>18</em></td>
+		<td class="type-number">167,700</td>
+		<td class="type-number">1000</td>
+		<td class="type-number">57,200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(167,700+1000*2+57,200)/(2,175 patients*0.37) = 282 days"><em>282</em></td>
+		<td class="type-number">1000</td>
+		<td class="type-number">100</td>
+		<td class="type-percent type-percent-warning" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+100)/(2,175 patients*0.06) = 8 days"><em>8</em></td>
+	</tr>	
+	<tr class="row-blank">
+		<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Mango: 198 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Mango</a></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+	</tr>
+	<tr class="row-blank">
+		<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Peach: 567 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Peach</a></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-blank"><span>?</span></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Surinam Cherry: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Surinam Cherry</a></td>
+		<td class="type-number">6,500</td>
+		<td class="type-number">7,200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(6,500+7,200*2)/(201 patients*1.4) = 74 days"><em>74</em></td>
+		<td class="type-number">8,000</td>
+		<td class="type-number">0</td>
+		<td class="type-number">0</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(8,000+0*2+0)/(201 patients*0.37) = 117 days"><em>117</em></td>
+		<td class="type-number">400</td>
+		<td class="type-number">0</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(400+0)/(201 patients*0.06) = 33 days"><em>33</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Jackfruit: 10 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Jackfruit</a></td>
+		<td class="type-number">1000</td>
+		<td class="type-number">500</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+500*2)/(10 patients*1.4) = 143 days"><em>143</em></td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-blank"><span>?</span></td>
+		<td class="type-number">100</td>
+		<td class="type-number">300</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(100+300)/(10 patients*0.06) = 667 days"><em>667</em></td>
+	</tr>
+	<tr>
+		<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Necatarine: 203 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Necatarine</a></td>
+		<td class="type-number">700</td>
+		<td class="type-number">1,000</td>
+		<td class="type-percent type-percent-warning" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(700+1000*2)/(203 patients*1.4) = 10 days"><em>10</em></td>
+		<td class="type-number">400</td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-blank"><span>&#8212;</span></td>
+		<td class="type-percent type-percent-warning" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(400+0*2+0)/(203 patients*0.37) = 5 days"><em>5</em></td>
+		<td class="type-number">200</td>
+		<td class="type-number">200</td>
+		<td class="type-percent" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(200+200)/(203 patients*0.06) = 33 days"><em>33</em></td>
+	</tr>
+</div>
