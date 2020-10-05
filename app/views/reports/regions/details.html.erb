@@ -17,7 +17,7 @@
 
 <% unless @region.is_a?(Facility) %>
   <% if current_admin.permissions_v2_enabled? %>
-    <%= render "analytics/districts/follow_ups_table",
+    <%= render "follow_ups_table",
                dashboard_analytics: @dashboard_analytics,
                period: @period.type,
                row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
@@ -30,7 +30,7 @@
                row_resource_display_field: :name,
                row_resource_link: :reports_region_facility_path %>
   <% else %>
-    <%= render "analytics/districts/follow_ups_table",
+    <%= render "follow_ups_table",
                dashboard_analytics: @dashboard_analytics,
                period: @period.type,
                row_resource: Facility.order(:name),
