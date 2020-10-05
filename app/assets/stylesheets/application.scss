@@ -252,9 +252,10 @@ footer {
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         border-bottom: 1px solid rgba(0,0,0,0.07);
     }
+    
     button.navbar-toggler {
         font-size: 15px;
-        padding: 8px 20px;
+        padding: 8px 16px;
     }
     .dropdown-item {
         font-size: 14px;
@@ -506,13 +507,59 @@ Subnav
     color: $grey-dark;
 }
 
+.nav-link {
+  display: inline-block;
+}
+
+@include media-breakpoint-up(sm) {
+  .nav-bottom,
+  .nav-top {
+    display: inline;
+  }
+  
+  #navbars-menu.collapse {
+    display: inline !important;
+  }
+  
+  #nav-main {
+    .nav-link {
+      padding-left: 0;
+    }
+  }
+}
+
 @include media-breakpoint-down(sm) {
-    #navbars-menu {
+    body {
+      padding-top: 140px;
+    }
+    
+    .navbar {
+      display: block;
+    }
+    
+    .navbar-toggler {
+      float: right;
+      margin-top: 4px;
+      color: $grey-darkest !important;
+    }
+    
+    .nav-bottom {
+      border-top: 1px solid $grey-lightest;
+      margin-top: 8px;
+      
+      .nav-link {
+        font-size: 18px;
+        padding-left: 0;
+        padding-top: 12px;
+      }
+    }
+    #navbars-menu.collapse  {
         margin-top: 8px;
             .nav-link {
                 border-top: 1px solid $grey-lightest;
                 padding: 16px 0;
                 font-size: 16px;
+                display: block;
         }
     }
 }
