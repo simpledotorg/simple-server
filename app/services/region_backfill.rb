@@ -29,11 +29,11 @@ class RegionBackfill
     logger.info msg: "complete", success_counts: success_counts, invalid_counts: invalid_counts
   end
 
-  NullRegion = Struct.new(:name, keyword_init: true) do
+  NullRegion = Struct.new(:name, keyword_init: true) {
     def path
       nil
     end
-  end
+  }
 
   def create_regions
     root_type = find_region_type("Root")
