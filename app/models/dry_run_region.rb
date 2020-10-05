@@ -8,7 +8,7 @@ class DryRunRegion < SimpleDelegator
     @dry_run = dry_run
     @logger = logger
     @region = region
-    logger.info msg: "initialize", region: @region.log_payload
+    logger.info msg: "initialize", region: log_payload
   end
 
   def dry_run?
