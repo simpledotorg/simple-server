@@ -2,82 +2,41 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <div class="dropdown">
-      <% if current_admin.permissions_v2_enabled? %>
-        <%= link_to "Invite admin",
-            new_email_authentication_invitation_path,
-            class: "btn btn-sm btn-primary" %>
-      <% else %>
-        <%= link_to "Add new admin",
-            new_email_authentication_invitation_path,
-            class: "btn btn-sm btn-primary" %>
-      <% end %>
+      <%= link_to "Invite admin",
+          new_email_authentication_invitation_path,
+          class: "btn btn-sm btn-primary" %>
     </div>
   </nav>
 </div>
 <%= render 'shared/search_form', path: admins_path, placeholder: 'Search by name or email...' %>
-<% if current_admin.permissions_v2_enabled? %>
-  <% if @admins.exists? %>
-    <% if searching? %>
-      <span><%= search_entries_info(@admins) %></span>
-    <% end %>
-
-    <div class="admin-list mb-5">
-      <% @admins.sort_by(&:email).each do |admin| %>
-        <% admin = AdminAccessPresenter.new(admin) %>
-
-        <%= link_to(admin_path(admin), class: "admin-list-item") do %>
-          <div class="wrap-auto">
-            <h5 class="title">
-              <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
-              <% if admin.invited_to_sign_up? %>
-                <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
-              <% end %>
-            </h5>
-            <div class="email"><%= admin.email %></div>
-          </div>
-
-          <div class="text-right">
-            <span class="access"><%= admin.display_access_level.name %></span>
-          </div>
-        <% end %>
-      <% end %>
-    </div>
-  <% else %>
-    <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
+<% if @admins.exists? %>
+  <% if searching? %>
+    <span><%= search_entries_info(@admins) %></span>
   <% end %>
-<% else %>
-  <% if @admins.exists? %>
-    <% if searching? %>
-      <span><%= search_entries_info(@admins) %></span>
-    <% end %>
-    <% @admins.each do |admin| %>
-      <div class="card" title="<%= admin.email %>">
-        <div class="row">
-          <div class="col col-md-6">
-            <h5>
-              <%= link_to admin.full_name, admin_path(admin) %>
-            </h5>
-            <div class="mt-2"><%= admin.email %></div>
-          </div>
-          <div class="col-md-6 text-right">
+
+  <div class="admin-list mb-5">
+    <% @admins.sort_by(&:email).each do |admin| %>
+      <% admin = AdminAccessPresenter.new(admin) %>
+
+      <%= link_to(admin_path(admin), class: "admin-list-item") do %>
+        <div class="wrap-auto">
+          <h5 class="title">
+            <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
             <% if admin.invited_to_sign_up? %>
-              <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 90%; font-weight: normal;">Invite sent</span>
+              <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
             <% end %>
-            <% if policy([:manage, :admin, admin]).edit? %>
-              <%= link_to 'Edit', edit_admin_path(admin), class: "btn btn-sm btn-outline-primary" %>
-            <% end %>
-            <% if policy([:manage, :admin, admin]).destroy? %>
-              <%= link_to(admin_path(admin), method: :delete, data: {confirm: "Are you sure you want to delete #{admin.email}?"}, class: "btn btn-sm btn-outline-danger") do %>
-                <i class="fas fa-trash-alt"></i>
-              <% end %>
-            <% end %>
-          </div>
+          </h5>
+          <div class="email"><%= admin.email %></div>
         </div>
-      </div>
+
+        <div class="text-right">
+          <span class="access"><%= admin.display_access_level.name %></span>
+        </div>
+      <% end %>
     <% end %>
-  <% else %>
-    <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
-  <% end %>
+  </div>
+<% else %>
+  <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
 <% end %>
 
 <%= paginate @admins %>

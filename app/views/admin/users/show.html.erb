@@ -1,58 +1,54 @@
 <nav class="breadcrumb">
-    <%= link_to 'All users', admin_users_path %> <i class="fas fa-chevron-right"></i> <%= @user.full_name %>
+  <%= link_to 'All users', admin_users_path %> <i class="fas fa-chevron-right"></i> <%= @user.full_name %>
 </nav>
 
 <div class="page-header">
-    <h1 class="page-title"><%= @user.full_name %></h1>
-    <nav class="page-nav">
-        <% if policy([:manage, :user, @user]).edit? %>
-            <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
-        <% end %>
-        <% unless @user.sync_approval_status == 'denied' %>
-          <% if policy([:manage, :user, @user]).disable_access? %>
-            <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
-          <% end %>
-        <% end %>
-        <% unless @user.sync_approval_status == 'allowed' %>
-          <% if policy([:manage, :user, @user]).enable_access? %>
-            <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
-          <% end %>
-        <% end %>
+  <h1 class="page-title"><%= @user.full_name %></h1>
+  <nav class="page-nav">
+    <%= link_to 'Edit user', edit_admin_user_path(@user), class: 'btn btn-primary btn-sm' %>
 
-        <%= render partial: "deny_access_modal", locals: {user: @user} %>
-    </nav>
+    <% unless @user.sync_approval_status == 'denied' %>
+      <%= link_to 'Deny access', '#deny-access-modal-' + @user.id , 'data-toggle' => 'modal', class: 'btn btn-danger btn-sm' %>
+    <% end %>
+
+    <% unless @user.sync_approval_status == 'allowed' %>
+      <%= link_to 'Allow access', admin_user_enable_access_path(@user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: 'btn btn-success btn-sm' %>
+    <% end %>
+
+    <%= render partial: "deny_access_modal", locals: {user: @user} %>
+  </nav>
 </div>
 
 <div class="card">
-    <h2>User details</h2>
+  <h2>User details</h2>
 
-    <div class="row pt-2 pb-2">
-      <div class="col-sm-2"><strong>Phone number:</strong></div>
-      <div class="col-sm-10"><%= @user.phone_number %></div>
-    </div>
+  <div class="row pt-2 pb-2">
+    <div class="col-sm-2"><strong>Phone number:</strong></div>
+    <div class="col-sm-10"><%= @user.phone_number %></div>
+  </div>
 
-    <div class="row pt-2 pb-2">
-      <div class="col-sm-2"><strong>Registration facility:</strong></div>
-      <div class="col-sm-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
-    </div>
+  <div class="row pt-2 pb-2">
+    <div class="col-sm-2"><strong>Registration facility:</strong></div>
+    <div class="col-sm-10"><%= link_to @user.facility.name, [:admin, @user.facility.facility_group, @user.facility] %></div>
+  </div>
 
-    <div class="row pt-2 pb-2">
-      <div class="col-sm-2"><strong>Sync status:</strong></div>
-      <div class="col-sm-10"><%= @user.sync_approval_status %></div>
-    </div>
+  <div class="row pt-2 pb-2">
+    <div class="col-sm-2"><strong>Sync status:</strong></div>
+    <div class="col-sm-10"><%= @user.sync_approval_status %></div>
+  </div>
 
-    <div class="row pt-2 pb-5">
-      <div class="col-sm-2"><strong>Sync reason:</strong></div>
-      <div class="col-sm-10"><%= @user.sync_approval_status_reason %></div>
-    </div>
+  <div class="row pt-2 pb-5">
+    <div class="col-sm-2"><strong>Sync reason:</strong></div>
+    <div class="col-sm-10"><%= @user.sync_approval_status_reason %></div>
+  </div>
 
-    <div class="card-footer">
-      First login: <%= @user.logged_in_at.present? ? l(@user.logged_in_at) : '&lt;Not logged in yet&gt;'.html_safe %>
-    </div>
+  <div class="card-footer">
+    First login: <%= @user.logged_in_at.present? ? l(@user.logged_in_at) : '&lt;Not logged in yet&gt;'.html_safe %>
+  </div>
 </div>
 
-<% if policy([:cohort_report, @user.registration_facility]).view_health_worker_activity? %>
-<%= render 'shared/recent_bp_log',
-           blood_pressures: @recent_blood_pressures,
-           display_model: :user %>
+<% if current_admin.accessible_users(:view_pii).include?(@user) %>
+  <%= render 'shared/recent_bp_log',
+             blood_pressures: @recent_blood_pressures,
+             display_model: :user %>
 <% end %>

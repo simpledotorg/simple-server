@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "test protocol screen functionality", type: :feature do
-  let(:owner) { create(:admin) }
-  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_protocols) }
+  let(:owner) { create(:admin, :power_user) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
 
   protocol_new = AdminPage::Protocols::New.new
@@ -10,9 +9,14 @@ RSpec.feature "test protocol screen functionality", type: :feature do
   protocol_show = AdminPage::Protocols::Show.new
 
   before(:each) do
+    enable_flag(:new_permissions_system_aug_2020, owner)
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_protocols_path
+  end
+
+  after(:each) do
+    disable_flag(:new_permissions_system_aug_2020, owner)
   end
 
   context "protocol landing page" do

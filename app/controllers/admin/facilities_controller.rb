@@ -3,97 +3,63 @@ class Admin::FacilitiesController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_facility, only: [:show, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy], unless: -> { current_admin.permissions_v2_enabled? }
-
-  before_action :set_facility_new_permissions, only: [:show, :edit, :update, :destroy], if: -> { current_admin.permissions_v2_enabled? }
-  before_action :set_facility_group_new_permissions, only: [:show, :new, :create, :edit, :update, :destroy], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_facility, only: [:show, :edit, :update, :destroy]
+  before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
 
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
+  after_action :verify_authorization_attempted
 
   def index
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 do
-        current_admin.accessible_facilities(:manage).any? ||
-          current_admin.accessible_facility_groups(:manage).any? ||
-          current_admin.accessible_organizations(:manage).any?
-      end
-    else
-      authorize([:manage, :facility, Facility])
+    authorize_v2 do
+      current_admin.accessible_facilities(:manage).any? ||
+        current_admin.accessible_facility_groups(:manage).any? ||
+        current_admin.accessible_organizations(:manage).any?
     end
 
-    if current_admin.permissions_v2_enabled?
-      accessible_facilities = current_admin.accessible_facilities(:manage)
+    accessible_facilities = current_admin.accessible_facilities(:manage)
 
-      if searching?
-        facilities = accessible_facilities.search_by_name(search_query)
-        facility_groups = FacilityGroup.where(facilities: facilities)
+    if searching?
+      facilities = accessible_facilities.search_by_name(search_query)
+      facility_groups = FacilityGroup.where(facilities: facilities)
 
-        @organizations = Organization.where(facility_groups: facility_groups)
-        @facility_groups = facility_groups.group_by(&:organization)
-        @facilities = facilities.group_by(&:facility_group)
-      else
-
-        @facilities = accessible_facilities.group_by(&:facility_group)
-
-        visible_facility_groups =
-          accessible_facilities
-            .map(&:facility_group)
-            .concat(current_admin.accessible_facility_groups(:manage).to_a)
-            .uniq
-            .compact
-        @facility_groups = visible_facility_groups.group_by(&:organization)
-
-        @organizations =
-          visible_facility_groups
-            .map(&:organization)
-            .concat(current_admin.accessible_organizations(:manage).to_a)
-            .uniq
-            .compact
-      end
+      @organizations = Organization.where(facility_groups: facility_groups)
+      @facility_groups = facility_groups.group_by(&:organization)
+      @facilities = facilities.group_by(&:facility_group)
     else
-      if searching?
-        facilities = policy_scope([:manage, :facility, Facility]).search_by_name(search_query)
-        facility_groups = FacilityGroup.where(facilities: facilities)
 
-        @organizations = Organization.where(facility_groups: facility_groups)
-        @facility_groups = facility_groups.group_by(&:organization)
-        @facilities = facilities.group_by(&:facility_group)
-      else
-        @organizations = policy_scope([:manage, :facility, Organization])
-        @facility_groups = @organizations.map { |organization|
-          [organization, policy_scope([:manage, :facility, organization.facility_groups])]
-        }.to_h
-        @facilities = @facility_groups.values.flatten.map { |facility_group|
-          [facility_group, policy_scope([:manage, :facility, facility_group.facilities])]
-        }.to_h
-      end
+      @facilities = accessible_facilities.group_by(&:facility_group)
+
+      visible_facility_groups =
+        accessible_facilities
+          .map(&:facility_group)
+          .concat(current_admin.accessible_facility_groups(:manage).to_a)
+          .uniq
+          .compact
+      @facility_groups = visible_facility_groups.group_by(&:organization)
+
+      @organizations =
+        visible_facility_groups
+          .map(&:organization)
+          .concat(current_admin.accessible_organizations(:manage).to_a)
+          .uniq
+          .compact
     end
   end
 
   def show
-    @facility_users = if current_admin.permissions_v2_enabled?
-      current_admin
+    @facility_users = current_admin
         .accessible_users(:manage)      
         .where(phone_number_authentications: {registration_facility_id: @facility})
-    else
-      @facility.users
-    end
   end
 
   def new
     @facility = new_facility
 
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
-    else
-      authorize([:manage, :facility, @facility])
-    end
+    authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
   end
 
   def edit
@@ -102,11 +68,7 @@ class Admin::FacilitiesController < AdminController
   def create
     @facility = new_facility(facility_params)
 
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
-    else
-      authorize([:manage, :facility, @facility])
-    end
+    authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
 
     if @facility.save
       redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully created."
@@ -133,11 +95,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facility_groups(:manage).any? }
-    else
-      authorize([:manage, :facility, Facility])
-    end
+    authorize_v2 { current_admin.accessible_facility_groups(:manage).any? }
 
     return render :upload, status: :bad_request if @errors.present?
 
@@ -156,22 +114,14 @@ class Admin::FacilitiesController < AdminController
     end
   end
 
-  def set_facility_new_permissions
+  def set_facility
     @facility = authorize_v2 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
   end
 
-  def set_facility_group_new_permissions
+  def set_facility_group
     @facility_group = current_admin.accessible_facility_groups(:manage).friendly.find(params[:facility_group_id])
   end
 
-  def set_facility
-    @facility = Facility.friendly.find(params[:id])
-    authorize([:manage, :facility, @facility])
-  end
-
-  def set_facility_group
-    @facility_group = FacilityGroup.friendly.find(params[:facility_group_id])
-  end
 
   def facility_params
     params.require(:facility).permit(
