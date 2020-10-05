@@ -148,7 +148,6 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
 
           post :create, params: request_params
           expect(response).to redirect_to(root_path)
-
         end
       end
     end
