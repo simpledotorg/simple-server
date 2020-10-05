@@ -21,8 +21,9 @@ RSpec.feature "Verify Dashboard", type: :feature do
     visit organizations_path
     login_page.do_login(owner.email, owner.password)
 
-    # assertion
-    expect(dashboard.get_organization_count).to eq(2)
+    #
+    # two organizations + 1 user approvals card
+    expect(dashboard.get_card_count).to eq(3)
     expect(page).to have_content("IHMI")
     expect(page).to have_content("PATH")
   end
@@ -33,7 +34,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
 
     # total number of organization present in dashboard
     visit organizations_path
-    var_organization_count = dashboard.get_organization_count
+    var_organization_count = dashboard.get_card_count
 
     dashboard_navigation.select_manage_option("Organizations")
 
@@ -52,7 +53,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
 
     # assertion at dashboard screen
     expect(page).to have_content("Test")
-    expect(dashboard.get_organization_count).to eq(var_organization_count + 1)
+    expect(dashboard.get_card_count).to eq(var_organization_count + 1)
   end
 
   it "SignIn as Owner and verify approval request in dashboard" do
