@@ -4,7 +4,6 @@ class Analytics::DistrictsController < AnalyticsController
 
   before_action :set_organization_district
   before_action :set_force_cache
-  skip_after_action :verify_authorized
   skip_after_action :verify_authorization_attempted
 
   def show
