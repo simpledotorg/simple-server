@@ -262,6 +262,25 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
       end
     end
+
+    context "for a discarded facility" do
+      before :each do
+        set_authentication_headers
+      end
+
+      it "returns an error and does not create the blood pressure" do
+        facility = create(:facility)
+        blood_pressures = [build_blood_pressure_payload(FactoryBot.build(:blood_pressure, facility: facility))]
+        facility.discard
+
+        post(:sync_from_user, params: {blood_pressures: blood_pressures}, as: :json)
+
+        expect(BloodPressure.count).to eq 0
+        expect(Encounter.count).to eq 0
+        expect(response).to have_http_status(200)
+        expect(JSON(response.body)["errors"]).not_to be_empty
+      end
+    end
   end
 
   describe "GET sync: send data from server to device;" do
