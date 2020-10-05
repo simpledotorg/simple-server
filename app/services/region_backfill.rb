@@ -29,6 +29,12 @@ class RegionBackfill
     logger.info msg: "complete", success_counts: success_counts, invalid_counts: invalid_counts
   end
 
+  NullRegion = Struct.new(:name, keyword_init: true) do
+    def path
+      nil
+    end
+  end
+
   def create_regions
     root_type = find_region_type("Root")
     org_type = find_region_type("Organization")
@@ -37,7 +43,8 @@ class RegionBackfill
     facility_type = find_region_type("Facility")
 
     current_country_name = CountryConfig.current[:name]
-    instance = create_or_fake_object name: current_country_name, path: current_country_name, type: root_type
+    root_parent = NullRegion.new(name: "__root__")
+    instance = create_region_from name: current_country_name, region_type: root_type, parent: root_parent
 
     Organization.all.each do |org|
       org_region = create_region_from(source: org, region_type: org_type, parent: instance)
@@ -80,37 +87,57 @@ class RegionBackfill
     root
   end
 
-  def create_or_fake_object(attrs)
-    region = Region.new(attrs)
-    logger.info msg: "create", region: region.log_payload
-    unless dry_run?
-      region.save!
+  class DryRunRegion < SimpleDelegator
+    attr_reader :logger
+
+    def initialize(region, dry_run:, logger:)
+      super(region)
+      @dry_run = dry_run
+      @logger = logger
+      @region = region
+      logger.info msg: "initialize", region: @region.log_payload
     end
-    region
+
+    def dry_run?
+      @dry_run
+    end
+
+    def save_or_check_validity
+      result = if dry_run?
+        valid?
+      else
+        @region.save
+      end
+      logger.info msg: "save", result: result, region: log_payload
+      result
+    end
+
+    def set_slug
+      @region.send(:set_slug)
+    end
+
+    def save
+      raise ArgumentError, "call save_or_check_validity instead"
+    end
+
+    def save!
+      raise ArgumentError, "call save_or_check_validity instead"
+    end
   end
 
   def create_region_from(parent:, region_type:, name: nil, source: nil)
     logger.info msg: "create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
-    region = Region.new name: region_name, type: region_type
-    region.send :set_slug
+    region = DryRunRegion.new(Region.new(name: region_name, type: region_type), dry_run: dry_run?, logger: logger)
+    region.set_slug
     region.source = source if source
-    region.path = "#{parent.path}.#{region.name_to_path_label}"
+    region.path = [parent.path, region.name_to_path_label].compact.join(".")
 
-    logger.info msg: "create", region: region.log_payload
-    if dry_run?
-      if region.valid?
-        count_success(region_type)
-      else
-        count_invalid(region_type)
-      end
+    if region.save_or_check_validity
+      count_success(region_type)
     else
-      if region.save
-        count_success(region_type)
-      else
-        count_invalid(region_type)
-      end
+      count_invalid(region_type)
     end
     region
   end

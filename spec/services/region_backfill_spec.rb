@@ -19,12 +19,12 @@ RSpec.describe RegionBackfill, type: :model do
   context "write mode" do
     it "backfills" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, organization: org)
-      facility_group_2 = create(:facility_group, organization: org)
+      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
+      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
 
-      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
-      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
-      facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2)
+      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ")
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, zone: "Block 123")
+      facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, zone: "Block ZZZ")
 
       RegionBackfill.call(dry_run: false)
 
@@ -34,8 +34,8 @@ RSpec.describe RegionBackfill, type: :model do
       expect(org.children.map(&:source)).to contain_exactly(facility_group_1, facility_group_2)
 
       block_regions = Region.where(type: RegionType.find_by!(name: "Block"))
-      expect(block_regions.size).to eq(2)
-      expect(block_regions.map(&:name).uniq).to eq(["Block ABC"])
+      expect(block_regions.size).to eq(3)
+      expect(block_regions.map(&:name)).to contain_exactly("Block XYZ", "Block 123", "Block ZZZ")
 
       expect(org.leaves.map(&:source)).to contain_exactly(facility_1, facility_2, facility_3)
       expect(org.leaves.map(&:type).uniq).to contain_exactly(RegionType.find_by!(name: "Facility"))
