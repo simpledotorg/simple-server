@@ -55,7 +55,7 @@
               <td class="nowrap"><%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %></td>
             <% end %>
             <% if display_model == :user %>
-              <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, reports_region_path(bp.facility, report_scope: "facility")) : "unknown" %></td>
+              <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, reports_region_facility_path(bp.facility)) : "unknown" %></td>
             <% end %>
           </tr>
         <% end %>

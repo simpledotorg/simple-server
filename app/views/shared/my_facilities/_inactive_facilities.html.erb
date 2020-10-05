@@ -22,7 +22,7 @@
       <tbody>
       <% @inactive_facilities.sort_by(&:name).each do |facility| %>
         <tr>
-          <td><%= link_to facility.name, reports_region_path(facility, report_scope: "facility") %></td>
+          <td><%= link_to facility.name, reports_region_facility_path(facility) %></td>
           <td class="text-right" data-sort-column-key="week">
             <%= @inactive_facilities_bp_counts[:last_week][facility.id].to_i %>
           </td>
