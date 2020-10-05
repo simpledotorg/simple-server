@@ -93,7 +93,7 @@ class UserAccess
   end
 
   def accessible_users(action)
-    return User.none unless [:manage, :view_reports].include?(action)
+    return User.none unless [:manage, :view_reports, :view_pii].include?(action)
     return User.non_admins if power_user?
     return User.none unless action_to_level(action).include?(user.access_level.to_sym)
 
