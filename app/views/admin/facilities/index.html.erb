@@ -2,29 +2,14 @@
   <h1 class="page-title">Facilities</h1>
 
   <div class="page-nav">
-    <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_facility_groups(:manage).any? || current_admin.power_user? %>
-        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
-      <% end %>
-    <% else %>
-      <% if policy([:manage, :facility, Facility]).upload? %>
-        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
-      <% end %>
+    <% if current_admin.accessible_facility_groups(:manage).any? || current_admin.power_user? %>
+      <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
     <% end %>
 
-    <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-          <i class="fas fa-plus mr-1"></i>
-          Add facility group
-        <% end %>
-      <% end %>
-    <% else %>
-      <% if policy([:manage, FacilityGroup]).new? %>
-        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-          <i class="fas fa-plus mr-1"></i>
-          Add facility group
-        <% end %>
+    <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
+      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+        <i class="fas fa-plus mr-1"></i>
+        Add facility group
       <% end %>
     <% end %>
   </div>
@@ -55,18 +40,10 @@
             <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
           </div>
 
-          <% if current_admin.permissions_v2_enabled? %>
-            <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
-              <div class="col-2 text-right">
-                <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
-              </div>
-            <% end %>
-          <% else %>
-            <% if policy([:manage, facility_group]).edit? %>
-              <div class="col-2 text-right">
-                <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
-              </div>
-            <% end %>
+          <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
+            <div class="col-2 text-right">
+              <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+            </div>
           <% end %>
         </div>
 
@@ -74,19 +51,10 @@
 
         <div class="row card-row">
           <div class="col-md-4">
-            <% if current_admin.permissions_v2_enabled? %>
-              <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
-                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
-                  <i class="fas fa-plus mr-1"></i>
-                  Add a facility
-                <% end %>
-              <% end %>
-            <% else %>
-              <% if policy([:manage, :facility, facility_group.facilities.new]).new? %>
-                <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
-                  <i class="fas fa-plus mr-1"></i>
-                  Add a facility
-                <% end %>
+            <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
+              <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
+                <i class="fas fa-plus mr-1"></i>
+                Add a facility
               <% end %>
             <% end %>
           </div>
@@ -96,15 +64,7 @@
           <div class="row card-row">
             <div class="col-md-4">
               <h5>
-                <% if current_admin.permissions_v2_enabled? %>
-                  <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
-                <% else %>
-                  <% if policy([:manage, :facility, facility]).show? %>
-                    <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
-                  <% else %>
-                    <%= facility.name %>
-                  <% end %>
-                <% end %>
+                <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
               </h5>
             </div>
             <div class="col-md-1"><span class="text-muted"><%= facility.facility_type %></span></div>

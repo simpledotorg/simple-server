@@ -230,6 +230,25 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
         end
       end
     end
+
+    context "for a discarded facility" do
+      before :each do
+        set_authentication_headers
+      end
+
+      it "returns an error and does not create the blood sugar" do
+        facility = create(:facility)
+        blood_sugars = [build_blood_sugar_payload(FactoryBot.build(:blood_sugar, facility: facility))]
+        facility.discard
+
+        post(:sync_from_user, params: {blood_sugars: blood_sugars}, as: :json)
+
+        expect(BloodSugar.count).to eq 0
+        expect(Encounter.count).to eq 0
+        expect(response).to have_http_status(200)
+        expect(JSON(response.body)["errors"]).not_to be_empty
+      end
+    end
   end
 
   describe "GET sync: send data from server to device;" do
