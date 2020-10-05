@@ -1,18 +1,13 @@
 class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
+  after_action :verify_authorization_attempted
 
   def index
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
-      @protocols = current_admin.accessible_protocols(:manage).order(:name)
-    else
-      authorize([:manage, Protocol])
-      @protocols = policy_scope([:manage, Protocol]).order(:name)
-    end
+    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    @protocols = current_admin.accessible_protocols(:manage).order(:name)
   end
 
   def show
@@ -20,26 +15,16 @@ class Admin::ProtocolsController < AdminController
   end
 
   def new
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
-      @protocol = Protocol.new
-    else
-      @protocol = Protocol.new
-      authorize([:manage, @protocol])
-    end
+    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    @protocol = Protocol.new
   end
 
   def edit
   end
 
   def create
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_organizations(:manage).any? }
-      @protocol = Protocol.new(protocol_params)
-    else
-      @protocol = Protocol.new(protocol_params)
-      authorize([:manage, @protocol])
-    end
+    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    @protocol = Protocol.new(protocol_params)
 
     if @protocol.save
       redirect_to [:admin, @protocol], notice: "Protocol was successfully created."
@@ -64,12 +49,7 @@ class Admin::ProtocolsController < AdminController
   private
 
   def set_protocol
-    if current_admin.permissions_v2_enabled?
-      @protocol = authorize_v2 { current_admin.accessible_protocols(:manage).find(params[:id]) }
-    else
-      @protocol = Protocol.find(params[:id])
-      authorize([:manage, @protocol])
-    end
+    @protocol = authorize_v2 { current_admin.accessible_protocols(:manage).find(params[:id]) }
   end
 
   def protocol_params
