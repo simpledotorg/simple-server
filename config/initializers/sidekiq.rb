@@ -25,7 +25,10 @@ Sidekiq.configure_client do |config|
 end
 
 Sidekiq.configure_server do |config|
-  config.server_middleware { |chain| chain.add SetLocalTimezone }
+  config.server_middleware do |chain|
+    chain.add SetLocalTimezone
+    chain.add Sidekiq::Statsd::ServerMiddleware, env: Rails.env, prefix: "worker", statsd: Statsd.instance.statsd
+  end
   config.redis = SidekiqConfig.connection_pool
 end
 
