@@ -87,44 +87,6 @@ class RegionBackfill
     root
   end
 
-  class DryRunRegion < SimpleDelegator
-    attr_reader :logger
-
-    def initialize(region, dry_run:, logger:)
-      super(region)
-      @dry_run = dry_run
-      @logger = logger
-      @region = region
-      logger.info msg: "initialize", region: @region.log_payload
-    end
-
-    def dry_run?
-      @dry_run
-    end
-
-    def save_or_check_validity
-      result = if dry_run?
-        valid?
-      else
-        @region.save
-      end
-      logger.info msg: "save", result: result, region: log_payload
-      result
-    end
-
-    def set_slug
-      @region.send(:set_slug)
-    end
-
-    def save
-      raise ArgumentError, "call save_or_check_validity instead"
-    end
-
-    def save!
-      raise ArgumentError, "call save_or_check_validity instead"
-    end
-  end
-
   def create_region_from(parent:, region_type:, name: nil, source: nil)
     logger.info msg: "create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
