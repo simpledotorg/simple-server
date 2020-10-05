@@ -57,10 +57,6 @@ GEM
       activerecord (>= 4.0)
     autoprefixer-rails (9.7.6)
       execjs
-    babel-source (5.8.35)
-    babel-transpiler (0.7.0)
-      babel-source (>= 4.0, < 6)
-      execjs (~> 2.0)
     bcrypt (3.1.13)
     bindex (0.8.1)
     bootsnap (1.4.6)
@@ -362,12 +358,6 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rb-readline (0.5.5)
-    react-rails (2.6.1)
-      babel-transpiler (>= 0.7.0)
-      connection_pool
-      execjs
-      railties (>= 3.2)
-      tilt
     redis (4.1.4)
     redis-actionpack (5.2.0)
       actionpack (>= 5, < 7)
@@ -629,7 +619,6 @@ DEPENDENCIES
   rails-controller-testing
   rails-erd
   rb-readline
-  react-rails
   redis
   redis-rails
   render_async
