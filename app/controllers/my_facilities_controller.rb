@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class MyFacilitiesController < AdminController
-  include DistrictFiltering
   include Pagination
   include MyFacilitiesFiltering
   include CohortPeriodSelection
