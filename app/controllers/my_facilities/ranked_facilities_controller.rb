@@ -35,7 +35,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
                                                                      period: @period).call
 
       @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
-                                                                          result: @data_for_facility[facility.name])
+                                                                          reports_result: @data_for_facility[facility.name])
     end
 
     # Sort facilities by overall score, highest to lowest
