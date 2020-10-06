@@ -8,3 +8,5 @@ unless Rails.env.development? || Rails.env.test?
       service_name: "#{SIMPLE_SERVER_ENV}-rails-app"
   end
 end
+
+require "statsd"
