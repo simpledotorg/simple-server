@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Analytics::DistrictsController, type: :controller do
-  let(:admin) { create(:admin, :owner) }
+  let(:admin) { create(:admin, :power_user) }
 
   let(:district_name) { "Bathinda" }
   let(:organization) { create(:organization) }
