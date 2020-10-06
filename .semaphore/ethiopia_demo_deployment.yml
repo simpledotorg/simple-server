@@ -1,15 +1,15 @@
 version: v1.0
-name: Ethiopia Production Deployment
+name: Ethiopia Demo Deployment
 blocks:
-  - name: Deploy to Ethiopia Production
+  - name: Deploy to Ethiopia Demo
     task:
       jobs:
-        - name: Deploy to Ethiopia Production
+        - name: Deploy to Ethiopia Demo
           commands:
             - git clone https://github.com/simpledotorg/deployment
             - cd deployment/standalone
             - make init
-            - make deploy hosts=ethiopia/production password_file=~/.ansible/password_file
+            - make deploy hosts=ethiopia/demo password_file=~/.ansible/password_file
       secrets:
         - name: ansible
         - name: semaphore-deploy-key
@@ -21,3 +21,6 @@ agent:
   machine:
     type: e1-standard-2
     os_image: ubuntu1804
+promotions:
+  - name: Ethiopia Production Deployment
+    pipeline_file: ethiopia_production_deployment.yml
