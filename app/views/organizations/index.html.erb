@@ -4,8 +4,8 @@
   <div class="row">
     <div class="col-sm-5 col-lg-7">
       <% @organizations.each do |organization| %>
-        <section id="facility-groups">
-          <div class="card" title="<%= organization.name %>">
+        <section class="facility-groups">
+          <div class="card organization" title="<%= organization.name %>">
             <h2><%= organization.name %></h2>
             <% @accessible_facilities.includes(facility_group: :organization)
                    .where(facility_groups: {organization: organization})
