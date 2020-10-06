@@ -41,12 +41,12 @@
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Rank</th>
             <th class="row-label sort-label">Facilities</th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
-              Patients with BP &lt;140/90<br>in Aug-2020
+              Patients with BP<br>&lt;140/90 in <%= @period %>
             </th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
-              Patients with no visit<br>in >3 months
+              Patients with no<br>visit in &gt;3 months
             </th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">New registrations<br>in Aug-2020</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">New registrations<br>in <%= @period %></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of target<br>registrations <sup>4</sup></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly</th>
             <th class="mobile"></th>
