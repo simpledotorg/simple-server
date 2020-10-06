@@ -20,7 +20,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
 
   def show
     unless current_admin.feature_enabled?(:ranked_facilities)
-      redirect_to my_facilities_overview_path(request.query_parameters)
+      redirect_to my_facilities_overview_path(request.query_parameters) and return
     end
 
     set_period
