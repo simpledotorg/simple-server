@@ -6,6 +6,7 @@ class Facility < ApplicationRecord
   include PgSearch::Model
   include LiberalEnum
   extend FriendlyId
+  extend RegionSource
 
   before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
 
