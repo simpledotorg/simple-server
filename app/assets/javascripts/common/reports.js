@@ -145,6 +145,18 @@ function initializeCharts() {
     [data.missedVisits],
     data.cumulativeRegistrations,
   );
+  missedVisitsConfig.options.tooltips = {
+    enabled: false,
+    custom: function (tooltipModel) {
+      return singleLineChartTooltip({
+        tooltipModel,
+        elementId: "missed-visits",
+        totalPatients: data.missedVisits,
+        cumulativeRegistrations: data.cumulativeRegistrations,
+        periodInfo: data.periodInfo,
+      });
+    }
+  };
 
   const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
   if (missedVisitsGraphCanvas) {
