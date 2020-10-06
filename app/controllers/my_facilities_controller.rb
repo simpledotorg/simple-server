@@ -10,9 +10,9 @@ class MyFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+  skip_after_action :verify_authorized
+  skip_after_action :verify_policy_scoped
+  after_action :verify_authorization_attempted
 
   around_action :set_time_zone
   before_action :authorize_my_facilities
@@ -21,17 +21,8 @@ class MyFacilitiesController < AdminController
   before_action :set_last_updated_at
 
   def index
-    @facilities = if current_admin.permissions_v2_enabled?
-      current_admin.accessible_facilities(:view_reports)
-    else
-      policy_scope([:manage, :facility, Facility])
-    end
-
-    users = if current_admin.permissions_v2_enabled?
-      current_admin.accessible_users(:manage)
-    else
-      policy_scope([:manage, :user, User])
-    end
+    @facilities = current_admin.accessible_facilities(:view_reports)
+    users = current_admin.accessible_users(:manage)
 
     @users_requesting_approval = paginate(users
                                             .requested_sync_approval
@@ -129,10 +120,6 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :view_my_facilities?)
-    end
+    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
   end
 end
