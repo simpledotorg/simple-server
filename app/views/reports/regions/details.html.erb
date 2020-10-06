@@ -1,48 +1,25 @@
 <%= render "header"%>
 <% if @region.is_a?(Facility) %>
-  <% if current_admin.permissions_v2_enabled? %>
-    <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
-      <%= render "shared/recent_bp_log",
-                 blood_pressures: @recent_blood_pressures,
-                 display_model: :facility %>
-    <% end %>
-  <% else %>
-    <% if policy([:cohort_report, @region]).view_health_worker_activity? %>
-      <%= render "shared/recent_bp_log",
-                 blood_pressures: @recent_blood_pressures,
-                 display_model: :facility %>
-    <% end %>
+  <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
+    <%= render "shared/recent_bp_log",
+               blood_pressures: @recent_blood_pressures,
+               display_model: :facility %>
   <% end %>
 <% end %>
 
 <% unless @region.is_a?(Facility) %>
-  <% if current_admin.permissions_v2_enabled? %>
-    <%= render "analytics/districts/follow_ups_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-    <%= render "analytics/districts/registrations_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-  <% else %>
-    <%= render "analytics/districts/follow_ups_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: Facility.order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-    <%= render "analytics/districts/registrations_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: Facility.order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-  <% end %>
+  <%= render "analytics/districts/follow_ups_table",
+             dashboard_analytics: @dashboard_analytics,
+             period: @period.type,
+             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+             row_resource_display_field: :name,
+             row_resource_link: :reports_region_facility_path %>
+  <%= render "analytics/districts/registrations_table",
+             dashboard_analytics: @dashboard_analytics,
+             period: @period.type,
+             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+             row_resource_display_field: :name,
+             row_resource_link: :reports_region_facility_path %>
 <% end %>
 
 
