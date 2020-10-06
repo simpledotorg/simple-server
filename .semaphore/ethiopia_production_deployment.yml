@@ -14,6 +14,7 @@ blocks:
             - make deploy hosts=ethiopia.production password_file=~/.ansible/password_file
       secrets:
         - name: ansible
+        - name: semaphore-deploy-key
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
