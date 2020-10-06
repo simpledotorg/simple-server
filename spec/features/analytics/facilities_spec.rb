@@ -1,13 +1,7 @@
 require "rails_helper"
 
 RSpec.feature "Facility analytics", type: :feature do
-  let!(:owner) { create(:admin) }
-  let!(:user_permission) do
-    [
-      create(:user_permission, user: owner, permission_slug: :view_cohort_reports),
-      create(:user_permission, user: owner, permission_slug: :view_health_worker_activity)
-    ]
-  end
+  let!(:owner) { create(:admin, :power_user) }
   let!(:facility) { create(:facility) }
   let!(:other_facility) { create(:facility) }
   let!(:bp_1) { create(:blood_pressure, facility: facility, systolic: 145, diastolic: 95, recorded_at: Time.zone.parse("2019-03-15 8:00am +05:30")) }
