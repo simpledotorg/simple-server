@@ -179,6 +179,18 @@ function initializeCharts() {
     [data.uncontrolledPatients],
     data.cumulativeRegistrations,
   );
+  uncontrolledGraphConfig.options.tooltips = {
+    enabled: false,
+    custom: function (tooltipModel) {
+      return singleLineChartTooltip({
+        tooltipModel,
+        elementId: "bp-uncontrolled",
+        totalPatients: data.uncontrolledPatients,
+        cumulativeRegistrations: data.cumulativeRegistrations,
+        periodInfo: data.periodInfo,
+      });
+    }
+  };
 
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
   if (uncontrolledGraphCanvas) {
