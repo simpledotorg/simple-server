@@ -160,11 +160,6 @@ Rails.application.routes.draw do
   end
 
   resources :appointments, only: [:index, :update]
-  resources :patients do
-    collection do
-      get :lookup
-    end
-  end
 
   resources :organizations, only: [:index], path: "dashboard"
 
