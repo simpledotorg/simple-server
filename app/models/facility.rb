@@ -94,7 +94,7 @@ class Facility < ApplicationRecord
   }
 
   delegate :protocol, to: :facility_group, allow_nil: true
-  delegate :organization, to: :facility_group, allow_nil: true
+  delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
   def hypertension_follow_ups_by_period(*args)

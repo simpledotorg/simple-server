@@ -72,7 +72,7 @@
         <% if dashboard_analytics[resource.id].present? %>
           <tr>
             <td class="row-title">
-              <% if row_resource_link == :analytics_facility_path %>
+              <% if row_resource_link == :reports_region_facility_path %>
                 <%= link_to resource.send(row_resource_display_field),
                             send(row_resource_link, resource, period: @period) %>
               <% else %>
