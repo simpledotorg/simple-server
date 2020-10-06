@@ -12,7 +12,7 @@
       Monthly cohort report
     <% end %>
 
-    <% if policy([:cohort_report, @region]).patient_list? %>
+    <% if @region.facilities.all? { |facility| current_admin.accessible_facilities(:view_pii).include?(facility) } %>
       <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
         <i class="far fa-file mr-4px c-grey-medium"></i>
         Patient line list

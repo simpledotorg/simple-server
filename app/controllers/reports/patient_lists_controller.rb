@@ -1,5 +1,4 @@
 class Reports::PatientListsController < AdminController
-
   def show
     scope = if region_class == "facility_group"
       authorize_v2 { current_admin.accessible_facility_groups(:view_pii) }
