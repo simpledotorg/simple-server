@@ -14,23 +14,18 @@
 </div>
 
 <%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics, quarter: current_quarter, year: current_year %>
-<% if current_admin.permissions_v2_enabled? %>
-  <%= render 'analytics_table',
-             dashboard_analytics: @dashboard_analytics,
-             period: @period,
-             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-             row_resource_description: "Facilities",
-             row_resource_display_field: :name,
-             row_resource_link: :analytics_facility_path %>
-<% else %>
-  <%= render 'analytics_table',
-             dashboard_analytics: @dashboard_analytics,
-             period: @period,
-             row_resource: Facility.order(:name),
-             row_resource_description: "Facilities",
-             row_resource_display_field: :name,
-             row_resource_link: :analytics_facility_path %>
-<% end %>
+<%= render 'follow_ups_table',
+           dashboard_analytics: @dashboard_analytics,
+           period: @period,
+           row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+           row_resource_display_field: :name,
+           row_resource_link: :analytics_facility_path %>
+<%= render 'registrations_table',
+           dashboard_analytics: @dashboard_analytics,
+           period: @period,
+           row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+           row_resource_display_field: :name,
+           row_resource_link: :analytics_facility_path %>
 
 <div class="downloads">
   <h4>Downloads</h4>
@@ -48,73 +43,41 @@
     <% end %>
   </p>
 
-  <% if current_admin.permissions_v2_enabled? %>
+  <% if current_admin
+      .accessible_facility_groups(:view_pii)
+      .where(organization: @organization_district.organization,
+             name: @organization_district.district_name)
+      .any? %>
+    <p>
+      <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id,
+                                                                    district_id: @organization_district.district_name) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list
+      <% end %>
+    </p>
+    <p>
+      <%= link_to analytics_organization_district_patient_list_with_history_path(organization_id: @organization_district.organization.id,
+                                                                                 district_id: @organization_district.district_name) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list (with medication history)
+      <% end %>
+    </p>
+    <% end %>
+
+  <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
     <% if current_admin
-        .accessible_facility_groups(:view_pii)
+        .accessible_facility_groups(:view_reports)
         .where(organization: @organization_district.organization,
                name: @organization_district.district_name)
         .any? %>
-      <p>
-        <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id,
-                                                                      district_id: @organization_district.district_name) do %>
-          <i class="far fa-file-excel mr-2"></i>
-          Patient line list
-        <% end %>
-      </p>
-      <p>
-        <%= link_to analytics_organization_district_patient_list_with_history_path(organization_id: @organization_district.organization.id,
-                                                                                   district_id: @organization_district.district_name) do %>
-          <i class="far fa-file-excel mr-2"></i>
-          Patient line list (with medication history)
-        <% end %>
-      </p>
-    <% end %>
-  <% else %>
-    <% if policy([:cohort_report, @organization_district]).patient_list? %>
-      <p>
-        <%= link_to analytics_organization_district_patient_list_path(organization_id: @organization_district.organization.id,
-                                                                      district_id: @organization_district.district_name) do %>
-          <i class="far fa-file-excel mr-2"></i>
-          Patient line list
-        <% end %>
-      </p>
-      <p>
-        <%= link_to analytics_organization_district_patient_list_with_history_path(organization_id: @organization_district.organization.id,
-                                                                                   district_id: @organization_district.district_name) do %>
-          <i class="far fa-file-excel mr-2"></i>
-          Patient line list (with medication history)
-        <% end %>
-      </p>
-    <% end %>
-  <% end %>
-
-  <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
-    <% if current_admin.permissions_v2_enabled? %>
-      <% if current_admin
-          .accessible_facility_groups(:view_reports)
-          .where(organization: @organization_district.organization,
-                 name: @organization_district.district_name)
-          .any? %>
-        <%=
-          render "shared/graphics/graphics_download_links",
-                 graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
-                 options: {
-                     organization_id: @organization_district.organization.id,
-                     district_id: @organization_district.district_name
-                 }
-        %>
-      <% end %>
-    <% else %>
-      <% if policy([:cohort_report, @organization_district]).whatsapp_graphics? %>
-        <%=
-          render "shared/graphics/graphics_download_links",
-                 graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
-                 options: {
-                     organization_id: @organization_district.organization.id,
-                     district_id: @organization_district.district_name
-                 }
-        %>
-      <% end %>
+      <%=
+        render "shared/graphics/graphics_download_links",
+               graphics_path: -> (options) { analytics_organization_district_graphics_path(options) },
+               options: {
+                   organization_id: @organization_district.organization.id,
+                   district_id: @organization_district.district_name
+               }
+      %>
     <% end %>
   <% end %>
 </div>

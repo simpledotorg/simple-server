@@ -7,7 +7,7 @@
   </p>
 
   <div class="table-responsive">
-    <table id="analytics-table" class="table-compact">
+    <table class="analytics-table table-compact">
       <colgroup>
         <col>
         <col class="table-divider">
@@ -57,13 +57,7 @@
         <% end %>
       </tr>
 
-      <% if current_admin.permissions_v2_enabled? %>
-        <% resources = row_resource %>
-      <% else %>
-        <% resources = policy_scope([:cohort_report, row_resource]) %>
-      <% end %>
-
-      <% resources.each do |resource| %>
+      <% row_resource.each do |resource| %>
         <% if dashboard_analytics[resource.id].present? %>
           <tr>
             <td class="row-title">

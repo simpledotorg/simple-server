@@ -16,7 +16,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   end
 
   before do
-    admin = create(:admin, :supervisor, facility_group: facility_group)
+    admin = create(:admin, :manager, :with_access, resource: facility_group)
     sign_in(admin.email_authentication)
   end
 

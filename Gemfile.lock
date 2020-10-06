@@ -50,16 +50,13 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     airbrussh (1.4.0)
       sshkit (>= 1.6.1, != 1.7.0)
+    amazing_print (1.2.1)
     arel (9.0.0)
     ast (2.4.1)
     auto_strip_attributes (2.6.0)
       activerecord (>= 4.0)
     autoprefixer-rails (9.7.6)
       execjs
-    babel-source (5.8.35)
-    babel-transpiler (0.7.0)
-      babel-source (>= 4.0, < 6)
-      execjs (~> 2.0)
     bcrypt (3.1.13)
     bindex (0.8.1)
     bootsnap (1.4.6)
@@ -282,7 +279,10 @@ GEM
     notiffany (0.1.3)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    oj (3.10.14)
     orm_adapter (0.5.0)
+    ougai (1.8.5)
+      oj (~> 3.10)
     parallel (1.19.2)
     parallel_tests (2.32.0)
       parallel
@@ -355,12 +355,6 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rb-readline (0.5.5)
-    react-rails (2.6.1)
-      babel-transpiler (>= 0.7.0)
-      connection_pool
-      execjs
-      railties (>= 3.2)
-      tilt
     redis (4.1.4)
     redis-actionpack (5.2.0)
       actionpack (>= 5, < 7)
@@ -556,6 +550,7 @@ PLATFORMS
 DEPENDENCIES
   active_record_union
   activerecord-import
+  amazing_print
   auto_strip_attributes
   bcrypt (~> 3.1, >= 3.1.11)
   bootsnap
@@ -606,6 +601,7 @@ DEPENDENCIES
   memery
   memory_profiler
   newrelic_rpm
+  ougai
   parallel_tests
   passenger
   pg (>= 0.18, < 2.0)
@@ -619,7 +615,6 @@ DEPENDENCIES
   rails-controller-testing
   rails-erd
   rb-readline
-  react-rails
   redis
   redis-rails
   render_async

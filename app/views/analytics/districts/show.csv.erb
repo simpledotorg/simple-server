@@ -37,7 +37,7 @@ end) %>
     formatted_report_end_date = report_end.strftime("%B #{report_end.day.ordinalize}")
 
     report_period = [formatted_report_start_date, formatted_report_end_date].join(" – ")
-    cohort_period = cohort_start.strftime("%b %Y")
+    cohort_period = cohort_start.strftime("%b-%Y")
   end
   if registered > 0
     controlled_percent = (controlled.to_f / registered * 100).round
@@ -88,7 +88,7 @@ end) %>
     *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }
   ]
 %>
-<% policy_scope([:cohort_report, Facility.order(:name)]).each do |facility| %>
+<% current_admin.accessible_facilities(:view_reports).order(:name).each do |facility| %>
   <% if @dashboard_analytics[facility.id].present? %>
     <% csv << [
         facility.name,

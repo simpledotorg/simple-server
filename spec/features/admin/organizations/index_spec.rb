@@ -1,19 +1,19 @@
 require "rails_helper"
 
 RSpec.feature "Organization management", type: :feature do
-  let!(:owner) { create(:admin) }
-  let!(:permissions) {
-    [create(:user_permission, user: owner, permission_slug: :manage_organizations),
-      create(:user_permission, user: owner, permission_slug: :view_my_facilities)]
-  }
+  let!(:owner) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
+  let!(:facility) { create(:facility) }
 
   login = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
   organization_page = AdminPage::Organizations::Index.new
 
   describe "test organization screen" do
+    before { Flipper.enable(:new_permissions_system_aug_2020) }
+    after { Flipper.disable(:new_permissions_system_aug_2020) }
+
     it "Verify organisation is displayed in ManageOrganisation" do
       visit root_path
       login.do_login(owner.email, owner.password)
