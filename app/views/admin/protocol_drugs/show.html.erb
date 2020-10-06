@@ -18,10 +18,4 @@
   <%= @protocol_drug.protocol %>
 </p>
 
-<% if current_admin.permissions_v2_enabled? %>
-  <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
-<% else %>
-  <% if policy([:manage, @protocol_drug]).edit? %>
-    <%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |
-  <% end %>
-<% end %>
+<%= link_to 'Edit', edit_protocol_drug_path(@protocol_drug) %> |

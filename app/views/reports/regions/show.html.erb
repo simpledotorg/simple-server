@@ -295,25 +295,14 @@
 </div>
 <%= render "visit_details_card" %>
 <% if @region.is_a?(Facility) %>
-  <% if current_admin.permissions_v2_enabled? %>
-    <%= render "analytics/facilities/analytics_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: :month,
-               row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
-               row_resource_description: "New registrations",
-               row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
-               row_resource_display_field: :full_name,
-               row_resource_link: :admin_user_path %>
-  <% else %>
-    <%= render "analytics/facilities/analytics_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: :month,
-               row_resource: User.order(:full_name),
-               row_resource_description: "New registrations",
-               row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
-               row_resource_display_field: :full_name,
-               row_resource_link: :admin_user_path %>
-  <% end %>
+  <%= render "new_registrations_table",
+             dashboard_analytics: @dashboard_analytics,
+             period: :month,
+             row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
+             row_resource_description: "New registrations",
+             row_resource_subtitle: "Patients registered by users at #{@region.name}. Registrations include patients registered at this facility who are assigned to another facility.",
+             row_resource_display_field: :full_name,
+             row_resource_link: :admin_user_path %>
 <% else %>
   <%= render "facility_tables" %>
 <% end %>

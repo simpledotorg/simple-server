@@ -24,42 +24,6 @@ RSpec.describe Reports::PatientListsController, type: :controller do
   end
 
   context "show" do
-    before do
-      Flipper.disable(:new_permissions_system_aug_2020)
-    end
-
-    it "rejects admins without proper authorization" do
-      expect(PatientListDownloadJob).to_not receive(:perform_later)
-      analyst = create(:admin, :analyst)
-      sign_in(analyst.email_authentication)
-      get :show, params: {id: facility.slug, report_scope: "facility"}
-      expect(response).to redirect_to(root_url)
-    end
-
-    it "returns CSV of registered patients in facility" do
-      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
-        "facility", {facility_id: facility.id})
-      sign_in(admin.email_authentication)
-      get :show, params: {id: facility.slug, report_scope: "facility"}
-      expect(response).to redirect_to(reports_region_path(facility.slug, report_scope: "facility"))
-      expect(flash[:notice]).to match("You will soon be emailed a copy of the patient line list for facility")
-    end
-
-    it "returns CSV of registered patients in facility_group" do
-      expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
-        "facility_group", {id: facility_group.id})
-      sign_in(admin.email_authentication)
-      get :show, params: {id: facility_group.slug, report_scope: "district"}
-      expect(response).to redirect_to(reports_region_path(facility_group.slug, report_scope: "district"))
-      expect(flash[:notice]).to match("You will soon be emailed a copy of the patient line list for district")
-    end
-  end
-
-  context "show (with permissions_v2 enabled)" do
-    before do
-      Flipper.enable(:new_permissions_system_aug_2020)
-    end
-
     it "works for facility groups the admin has acces to" do
       expect(PatientListDownloadJob).to receive(:perform_later).with(admin.email,
         "facility_group", {id: facility_group.id})
