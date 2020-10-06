@@ -52,3 +52,7 @@ promotions:
     pipeline_file: india_demo_deployment.yml
     auto_promote:
       when: tag =~ '^release-.*' AND result = 'passed'
+  - name: Ethiopia Demo Deployment
+    pipeline_file: ethiopia_demo_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'
