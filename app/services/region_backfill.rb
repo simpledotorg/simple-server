@@ -3,6 +3,8 @@ class RegionBackfill
     new(*args).call
   end
 
+  class UnsupportedCountry < RuntimeError; end
+
   attr_reader :logger
   attr_reader :invalid_counts
   attr_reader :success_counts
@@ -36,13 +38,16 @@ class RegionBackfill
   }
 
   def create_regions
+    current_country_name = CountryConfig.current[:name]
+    if current_country_name != "India" && !dry_run?
+      raise UnsupportedCountry, "#{self.class.name} not yet ready to run in write mode in #{current_country_name}"
+    end
     root_type = find_region_type("Root")
     org_type = find_region_type("Organization")
     facility_group_type = find_region_type("FacilityGroup")
     block_type = find_region_type("Block")
     facility_type = find_region_type("Facility")
 
-    current_country_name = CountryConfig.current[:name]
     root_parent = NullRegion.new(name: "__root__")
     instance = create_region_from name: current_country_name, region_type: root_type, parent: root_parent
 

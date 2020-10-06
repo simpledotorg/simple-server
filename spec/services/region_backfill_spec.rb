@@ -17,6 +17,13 @@ RSpec.describe RegionBackfill, type: :model do
   end
 
   context "write mode" do
+    it "fails in countries other than India for now" do
+      allow(CountryConfig).to receive(:current).and_return({name: "Bangladesh"})
+      expect {
+        RegionBackfill.call(dry_run: false)
+      }.to raise_error(RegionBackfill::UnsupportedCountry)
+    end
+
     it "backfills" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "fg1", organization: org)
