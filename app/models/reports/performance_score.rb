@@ -5,9 +5,9 @@ module Reports
     REGISTRATIONS_SCORE_WEIGHT = 0.2
     TARGET_REGISTRATION_RATE = 0.1
 
-    def initialize(region:, result:)
+    def initialize(region:, reports_result:)
       @region = region
-      @result = result
+      @reports_result = reports_result
     end
 
     def overall_score
@@ -16,7 +16,7 @@ module Reports
     end
 
     def control_score
-      CONTROL_SCORE_WEIGHT * @result.controlled_patients_rate.values.last
+      CONTROL_SCORE_WEIGHT * (@reports_result.controlled_patients_rate.values.last || 0)
     end
 
     def visits_score
@@ -24,7 +24,7 @@ module Reports
     end
 
     def visits_rate
-      100 - @result.missed_visits_rate.values.last
+      100 - (@reports_result.missed_visits_rate.values.last || 0)
     end
 
     def registrations_score
@@ -32,7 +32,7 @@ module Reports
     end
 
     def registrations_rate
-      registrations = @result.registrations.values.last
+      registrations = @reports_result.registrations.values.last || 0
 
       # If the target is zero, return 100% if any registrations occurred
       if target_registrations <= 0
@@ -43,7 +43,7 @@ module Reports
     end
 
     def target_registrations
-      @region.opd_load * TARGET_REGISTRATION_RATE
+      TARGET_REGISTRATION_RATE * (@region.opd_load || 0)
     end
   end
 end

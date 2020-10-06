@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe Reports::PerformanceScore, type: :model do
   let(:facility) { build(:facility, monthly_estimated_opd_load: @opd_load) }
-  let(:result) do
+  let(:reports_result) do
     double(
       "Reports::Result",
       controlled_patients_rate: {_: @control_rate},
@@ -10,7 +10,7 @@ describe Reports::PerformanceScore, type: :model do
       registrations: {_: @registrations}
     )
   end
-  let(:perf_score) { Reports::PerformanceScore.new(region: facility, result: result) }
+  let(:perf_score) { Reports::PerformanceScore.new(region: facility, reports_result: reports_result) }
 
   describe "#overall_score" do
     it "returns a score that sums control, visits, and registration scores" do
@@ -33,6 +33,11 @@ describe Reports::PerformanceScore, type: :model do
       @control_rate = 0
       expect(perf_score.control_score).to eq(0)
     end
+
+    it "functions when control rate is 0" do
+      @control_rate = nil
+      expect(perf_score.control_score).to eq(0)
+    end
   end
 
   describe "#visits_score" do
@@ -50,6 +55,11 @@ describe Reports::PerformanceScore, type: :model do
 
     it "functions when missed_visits is 0" do
       @missed_visits_rate = 0
+      expect(perf_score.visits_rate).to eq(100)
+    end
+
+    it "functions when missed_visits is 0" do
+      @missed_visits_rate = nil
       expect(perf_score.visits_rate).to eq(100)
     end
   end
@@ -71,6 +81,12 @@ describe Reports::PerformanceScore, type: :model do
 
     it "functions when registrations is 0" do
       @registrations = 0
+      @opd_load = 1000
+      expect(perf_score.registrations_rate).to eq(0)
+    end
+
+    it "functions when registrations is nil" do
+      @registrations = nil
       @opd_load = 1000
       expect(perf_score.registrations_rate).to eq(0)
     end
