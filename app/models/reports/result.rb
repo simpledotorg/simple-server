@@ -52,6 +52,10 @@ module Reports
       self[key].values.last
     end
 
+    def last_key(key)
+      self[key].keys.last
+    end
+
     [:adjusted_registrations, :controlled_patients, :controlled_patients_rate, :cumulative_registrations,
       :missed_visits, :missed_visits_rate, :period_info, :registrations, :uncontrolled_patients,
       :uncontrolled_patients_rate, :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|

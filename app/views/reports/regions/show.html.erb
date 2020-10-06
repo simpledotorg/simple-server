@@ -241,7 +241,7 @@
           </p>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="rate mb-0px fs-32px fw-bold <% if @data.last_value(:adjusted_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px">
+          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:adjusted_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
             <% if @data.last_value(:adjusted_registrations).zero? %>
               No data
             <% else %>
@@ -252,17 +252,17 @@
             <% if @data.last_value(:adjusted_registrations) %>
               <p class="m-0px c-black">
                 Patients registered till
-                <span class="period-end">
-                  END_DATE
+                <span data-registrations-period-end="<%= @data.last_value(:period_info)["bp_control_end_date"] %>">
+                  <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
               <p class="m-0px c-grey-dark">
-                <span class="monthly-registrations">
-                  MONTHLY_REGISTRATIONS
+                <span data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>">
+                  <%= number_with_delimiter(@data.last_value(:registrations)) %>
                 </span>
                 new patients registered in
-                <span class="month-end">
-                  DATE
+                <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
+                  <%= @data.last_key(:registrations) %>
                 </span>
               </p>
             <% else %>

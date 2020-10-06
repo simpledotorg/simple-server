@@ -102,7 +102,7 @@ function initializeCharts() {
   controlledGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltipModel) {
-      return singleLineChartTooltip({
+      return onePlotTooltip({
         tooltipModel,
         elementId: "bp-controlled",
         totalPatients: data.controlledPatients,
@@ -148,7 +148,7 @@ function initializeCharts() {
   missedVisitsConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltipModel) {
-      return singleLineChartTooltip({
+      return onePlotTooltip({
         tooltipModel,
         elementId: "missed-visits",
         totalPatients: data.missedVisits,
@@ -194,7 +194,7 @@ function initializeCharts() {
   uncontrolledGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltipModel) {
-      return singleLineChartTooltip({
+      return onePlotTooltip({
         tooltipModel,
         elementId: "bp-uncontrolled",
         totalPatients: data.uncontrolledPatients,
@@ -263,6 +263,18 @@ function initializeCharts() {
     ],
     formatSumTooltipText,
   );
+  cumulativeRegistrationsGraphConfig.options.tooltips = {
+    enabled: false,
+    custom: function (tooltipModel) {
+      return twoPlotsTooltip({
+        tooltipModel,
+        elementId: "cumulative-registrations",
+        cumulativeRegistrations: data.cumulativeRegistrations,
+        monthlyRegistrations: data.monthlyRegistrations,
+        periodInfo: data.periodInfo,
+      });
+    }
+  };
 
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
   if (cumulativeRegistrationsGraphCanvas) {
@@ -480,7 +492,7 @@ function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
   }
 };
 
-function singleLineChartTooltip(config) {
+function onePlotTooltip(config) {
   const { tooltipModel, elementId, totalPatients, cumulativeRegistrations, periodInfo } = config;
   const { dataPoints } = tooltipModel;
 
@@ -506,5 +518,28 @@ function singleLineChartTooltip(config) {
     periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
     registrationsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
     registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
+  }
+}
+
+function twoPlotsTooltip(config) {
+  const { tooltipModel, elementId, cumulativeRegistrations, monthlyRegistrations, periodInfo } = config;
+  const { dataPoints } = tooltipModel;
+
+  const cardNode = document.getElementById(elementId);
+  const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
+  const monthlyRegistrationsNode = cardNode.querySelector("[data-monthly-registrations]");
+  const registrationsMonthEndNode = cardNode.querySelector("[data-registrations-month-end]");
+
+  if (dataPoints == undefined) {
+    totalPatientsNode.innerHTML = totalPatientsNode.getAttribute("data-total-patients");
+    registrationsPeriodEndNode.innerHTML = registrationsPeriodEndNode.getAttribute("data-registrations-period-end");
+    monthlyRegistrationsNode.innerHTML = monthlyRegistrationsNode.getAttribute("data-monthly-registrations");
+    registrationsMonthEndNode.innerHTML = registrationsMonthEndNode.getAttribute("data-registrations-month-end");
+  } else {
+    totalPatientsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
+    registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
+    monthlyRegistrationsNode.innerHTML = Object.values(monthlyRegistrations)[dataPoints[0].index];
+    registrationsMonthEndNode.innerHTML = Object.keys(monthlyRegistrations)[dataPoints[0].index];
   }
 }
