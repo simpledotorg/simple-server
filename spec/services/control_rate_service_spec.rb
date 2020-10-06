@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe ControlRateService, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
-  let(:user) { create(:admin, :supervisor, organization: organization) }
+  let(:user) { create(:admin, :manager, :with_access, resource:organization, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }

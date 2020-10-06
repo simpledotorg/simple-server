@@ -49,7 +49,7 @@ RSpec.describe CohortReport::FacilityGroupPolicy::Scope do
     end
 
     context "other users" do
-      let(:user) { create(:admin, :owner) }
+      let(:user) { create(:admin, :power_user) }
       before do
         user.user_permissions.where(permission_slug: :view_cohort_reports).delete_all
       end
