@@ -232,9 +232,6 @@ footer {
 }
 
 @include media-breakpoint-down(md) {
-    body {
-        padding-top: 4.5rem;
-    }
     main.container {
         margin: 0 !important;
     }
@@ -251,6 +248,20 @@ footer {
     .navbar {
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         border-bottom: 1px solid rgba(0,0,0,0.07);
+        
+        #navbarNav, 
+        .navbar-nav {
+          display: inline;
+        }
+        
+        .nav-item,
+        .nav-link {
+          display: inline-block;
+        }
+        
+        .nav-link {
+          padding: 6px 10px 6px 0;
+        }
     }
     
     button.navbar-toggler {
@@ -507,27 +518,6 @@ Subnav
     color: $grey-dark;
 }
 
-.nav-link {
-  display: inline-block;
-}
-
-@include media-breakpoint-up(sm) {
-  .nav-bottom,
-  .nav-top {
-    display: inline;
-  }
-  
-  #navbars-menu.collapse {
-    display: inline !important;
-  }
-  
-  #nav-main {
-    .nav-link {
-      padding-left: 0;
-    }
-  }
-}
-
 @include media-breakpoint-down(sm) {
     body {
       padding-top: 140px;
@@ -535,32 +525,6 @@ Subnav
     
     .navbar {
       display: block;
-    }
-    
-    .navbar-toggler {
-      float: right;
-      margin-top: 4px;
-      color: $grey-darkest !important;
-    }
-    
-    .nav-bottom {
-      border-top: 1px solid $grey-lightest;
-      margin-top: 8px;
-      
-      .nav-link {
-        font-size: 18px;
-        padding-left: 0;
-        padding-top: 12px;
-      }
-    }
-    #navbars-menu.collapse  {
-        margin-top: 8px;
-            .nav-link {
-                border-top: 1px solid $grey-lightest;
-                padding: 16px 0;
-                font-size: 16px;
-                display: block;
-        }
     }
 }
 
