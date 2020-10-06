@@ -5,29 +5,16 @@
   %>
   <div class="form-row">
     <div id="facility-selector" class="form-group col-md-6">
-      <% if current_admin.permissions_v2_enabled? %>
-        <%= form.select :facility_id,
-                        scope_namespace.order(:name).map { |facility| [facility.name, facility.id] },
-                        {
-                            hide_label: true,
-                            include_blank: "All facilities",
-                            selected: facility_id,
-                            wrapper: false
-                        },
-                        html_options
-        %>
-      <% else %>
-        <%= form.select :facility_id,
-                        policy_scope(scope_namespace).sort_by(&:name).map { |facility| [facility.name, facility.id] },
-                        {
-                            hide_label: true,
-                            include_blank: "All facilities",
-                            selected: facility_id,
-                            wrapper: false
-                        },
-                        html_options
-        %>
-      <% end %>
+      <%= form.select :facility_id,
+                      scope_namespace.order(:name).map { |facility| [facility.name, facility.id] },
+                      {
+                          hide_label: true,
+                          include_blank: "All facilities",
+                          selected: facility_id,
+                          wrapper: false
+                      },
+                      html_options
+      %>
     </div>
     <div id="limit-selector" class="form-group col-md-3">
       <%= form.select :per_page,
