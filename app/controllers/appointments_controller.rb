@@ -4,10 +4,6 @@ class AppointmentsController < AdminController
 
   before_action :set_appointment, only: [:update]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
 
   def index

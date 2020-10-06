@@ -1,10 +1,6 @@
 class OrganizationsController < AdminController
   include Pagination
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
     @accessible_facilities = current_admin.accessible_facilities(:view_reports)
     authorize_v2 { @accessible_facilities.any? }

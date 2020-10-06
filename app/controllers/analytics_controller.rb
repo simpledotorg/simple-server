@@ -3,10 +3,6 @@ class AnalyticsController < AdminController
   before_action :set_quarter, only: [:whatsapp_graphics]
   before_action :set_period
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   CACHE_VERSION = 1
 

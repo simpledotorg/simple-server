@@ -1,16 +1,13 @@
 class Reports::RegionsController < AdminController
   include Pagination
   include GraphicsDownload
-  skip_after_action :verify_policy_scoped
+
   before_action :set_force_cache
   before_action :set_period, only: [:show, :details, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: :index
   around_action :set_time_zone
-
-  skip_after_action :verify_authorized
-  after_action :verify_authorization_attempted
 
   def index
     authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }

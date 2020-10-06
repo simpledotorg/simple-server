@@ -3,10 +3,6 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def show
     @facilities = @facility_group.facilities.order(:name)
     @users = @facility_group.users.order(:full_name)

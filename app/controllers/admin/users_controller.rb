@@ -6,10 +6,6 @@ class Admin::UsersController < AdminController
   around_action :set_time_zone, only: [:show]
   before_action :set_district, only: [:index, :teleconsult_search]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
     authorize_v2 { current_admin.accessible_users(:manage).any? }
 

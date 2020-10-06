@@ -1,10 +1,6 @@
 class Admin::OrganizationsController < AdminController
   before_action :set_organization, only: [:edit, :update, :destroy]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
     authorize_v2 { current_admin.accessible_organizations(:manage).any? }
     @organizations = current_admin.accessible_organizations(:manage).order(:name)

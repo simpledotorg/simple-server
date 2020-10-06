@@ -1,10 +1,6 @@
 class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
     authorize_v2 { current_admin.accessible_organizations(:manage).any? }
     @protocols = current_admin.accessible_protocols(:manage).order(:name)

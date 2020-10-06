@@ -10,10 +10,6 @@ class MyFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]

@@ -2,10 +2,6 @@ class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocol
   before_action :set_protocol_drug, only: [:show, :edit, :update, :destroy]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
     authorize_v2 { current_admin.accessible_organizations(:manage).any? }
     @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)

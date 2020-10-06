@@ -1,6 +1,4 @@
 class Reports::PatientListsController < AdminController
-  skip_after_action :verify_authorized
-  after_action :verify_authorization_attempted
 
   def show
     scope = if region_class == "facility_group"

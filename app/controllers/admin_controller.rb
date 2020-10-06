@@ -1,10 +1,8 @@
 class AdminController < ApplicationController
   before_action :authenticate_email_authentication!
 
-  after_action :verify_authorized, except: [:root]
-  after_action :verify_policy_scoped, only: :index
+  after_action :verify_authorization_attempted, except: [:root]
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   rescue_from ActiveRecord::RecordInvalid do

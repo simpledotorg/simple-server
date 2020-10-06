@@ -9,10 +9,6 @@ class Admin::FacilitiesController < AdminController
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
     authorize_v2 do
       current_admin.accessible_facilities(:manage).any? ||

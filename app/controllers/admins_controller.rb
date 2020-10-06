@@ -5,9 +5,6 @@ class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :access_tree, :destroy]
   before_action :verify_params, only: [:update]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-
   def index
     admins = current_admin.accessible_admins(:manage)
     authorize_v2 { admins.any? }
