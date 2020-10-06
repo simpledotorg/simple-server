@@ -461,29 +461,26 @@ function singleLineChartTooltip(config) {
   const { dataPoints } = tooltipModel;
 
   const cardNode = document.getElementById(elementId);
-  const rateNode = cardNode.querySelector(".rate");
-  const totalPatientsNode = cardNode.querySelector(".total-patients");
-  const periodStartNode = cardNode.querySelector(".period-start");
-  const periodEndNode = cardNode.querySelector(".period-end");
-  const cumulativeRegistrationsNode = cardNode.querySelector(".cumulative-registrations");
-
-  const defaultRate = rateNode.textContent;
-  const defaultTotalPatients = totalPatientsNode.textContent;
-  const defaultPeriodStart = periodStartNode.textContent;
-  const defaultPeriodEnd = periodEndNode.textContent;
-  const defaultCumulativeRegistrations = cumulativeRegistrationsNode.textContent;
+  const rateNode = cardNode.querySelector("[data-rate]");
+  const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+  const periodStartNode = cardNode.querySelector("[data-period-start]");
+  const periodEndNode = cardNode.querySelector("[data-period-end]");
+  const registrationsNode = cardNode.querySelector("[data-registrations]");
+  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]") 
 
   if (dataPoints == undefined) {
-    rateNode.innerHTML = defaultRate;
-    totalPatientsNode.innerHTML = defaultTotalPatients;
-    periodStartNode.innerHTML = defaultPeriodStart;
-    periodEndNode.innerHTML = defaultPeriodEnd;
-    cumulativeRegistrationsNode.innerHTML = defaultCumulativeRegistrations;
+    rateNode.innerHTML = rateNode.getAttribute("data-rate");
+    totalPatientsNode.innerHTML = totalPatientsNode.getAttribute("data-total-patients");
+    periodStartNode.innerHTML = periodStartNode.getAttribute("data-period-start");
+    periodEndNode.innerHTML = periodEndNode.getAttribute("data-period-end");
+    registrationsNode.innerHTML = registrationsNode.getAttribute("data-registrations");
+    registrationsPeriodEndNode.innerHTML = periodStartNode.getAttribute("data-period-start");
   } else {
-    rateNode.innerHTML = dataPoints[0].value;
+    rateNode.innerHTML = dataPoints[0].value + "%";
     totalPatientsNode.innerHTML = Object.values(totalPatients)[dataPoints[0].index];
     periodStartNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
     periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    cumulativeRegistrationsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
+    registrationsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
+    registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
   }
 }
