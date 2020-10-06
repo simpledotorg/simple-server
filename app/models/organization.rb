@@ -1,5 +1,6 @@
 class Organization < ApplicationRecord
   extend FriendlyId
+  extend RegionSource
 
   has_many :facility_groups, dependent: :destroy
   has_many :facilities, through: :facility_groups

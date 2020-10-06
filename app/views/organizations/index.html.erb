@@ -7,19 +7,16 @@
         <section id="facility-groups">
           <div class="card" title="<%= organization.name %>">
             <h2><%= organization.name %></h2>
-            <% if current_admin.permissions_v2_enabled? %>
-              <% @organizations.includes(:facility_groups).flat_map(&:facility_groups).each do |district| %>
-                <%= link_to(reports_region_district_path(district), class: "link-row") do %>
-                  <i class='fas fa-angle-right light'></i>
-                  <%= district.name %>
-                <% end %>
-              <% end %>
-            <% else %>
-              <% @organizations.includes(:facility_groups).flat_map(&:facility_groups).each do |district| %>
-                <%= link_to(reports_region_district_path(district), class: "link-row") do %>
-                  <i class='fas fa-angle-right light'></i>
-                  <%= district.name %>
-                <% end %>
+            <% @accessible_facilities.includes(facility_group: :organization)
+                   .where(facility_groups: {organization: organization})
+                   .flat_map(&:facilities)
+                   .group_by(&:district)
+                   .keys
+                   .sort
+                   .each do |district| %>
+              <%= link_to(reports_region_district_path(district), class: "link-row") do %>
+                <i class='fas fa-angle-right light'></i>
+                <%= district %>
               <% end %>
             <% end %>
           </div>
