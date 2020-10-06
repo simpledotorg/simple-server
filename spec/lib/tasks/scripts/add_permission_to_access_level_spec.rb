@@ -1,7 +1,6 @@
 require "rails_helper"
 require "tasks/scripts/add_permission_to_access_level"
 
-
 RSpec.xdescribe AddPermissionToAccessLevel do
   describe "#valid?" do
     it "validates that the permission exists" do
