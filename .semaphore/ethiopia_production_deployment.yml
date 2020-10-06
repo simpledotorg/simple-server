@@ -13,6 +13,7 @@ blocks:
             - echo $SEMAPHORE_GIT_DIR
             - echo $SEMAPHORE_GIT_SHA
             - cd deployment/standalone
+            - make init
             - make deploy hosts=ethiopia.production password_file=~/.ansible/password_file
       secrets:
         - name: ansible
