@@ -99,6 +99,18 @@ function initializeCharts() {
     [data.controlledPatients],
     data.cumulativeRegistrations,
   );
+  controlledGraphConfig.options.tooltips = {
+    enabled: false,
+    custom: function (tooltipModel) {
+      return singleLineChartTooltip({
+        tooltipModel,
+        elementId: "bp-controlled",
+        totalPatients: data.controlledPatients,
+        cumulativeRegistrations: data.cumulativeRegistrations,
+        periodInfo: data.periodInfo,
+      });
+    }
+  };
 
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
   if (controlledGraphCanvas) {
@@ -345,13 +357,8 @@ function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerator, de
       xAxes,
       yAxes,
     },
-    // TODO Remove from this funct
-    tooltips: {
-      enabled: false,
-      custom: function (tooltipModel) {
-        return tooltipCallbackFunction(tooltipModel, numerator, denominator, periodInfo);
-      }
-    }
+    // TODO Please delete
+    tooltips: { enabled: false },
   };
 }
 
@@ -446,3 +453,35 @@ function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
     endDateElement.innerHTML = dataPoints[0].label;
   }
 };
+
+function singleLineChartTooltip(config) {
+  const { tooltipModel, elementId, totalPatients, cumulativeRegistrations, periodInfo } = config;
+  const { dataPoints } = tooltipModel;
+
+  const cardNode = document.getElementById(elementId);
+  const rateNode = cardNode.querySelector(".rate");
+  const totalPatientsNode = cardNode.querySelector(".total-patients");
+  const periodStartNode = cardNode.querySelector(".period-start");
+  const periodEndNode = cardNode.querySelector(".period-end");
+  const cumulativeRegistrationsNode = cardNode.querySelector(".cumulative-registrations");
+
+  const defaultRate = rateNode.textContent;
+  const defaultTotalPatients = totalPatientsNode.textContent;
+  const defaultPeriodStart = periodStartNode.textContent;
+  const defaultPeriodEnd = periodEndNode.textContent;
+  const defaultCumulativeRegistrations = cumulativeRegistrationsNode.textContent;
+
+  if (dataPoints == undefined) {
+    rateNode.innerHTML = defaultRate;
+    totalPatientsNode.innerHTML = defaultTotalPatients;
+    periodStartNode.innerHTML = defaultPeriodStart;
+    periodEndNode.innerHTML = defaultPeriodEnd;
+    cumulativeRegistrationsNode.innerHTML = defaultCumulativeRegistrations;
+  } else {
+    rateNode.innerHTML = dataPoints[0].value;
+    totalPatientsNode.innerHTML = Object.values(totalPatients)[dataPoints[0].index];
+    periodStartNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
+    periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
+    cumulativeRegistrationsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
+  }
+}

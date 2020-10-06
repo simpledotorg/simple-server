@@ -24,11 +24,11 @@
                 </span>
                 patients with controlled BP between
                 <span class="period-start">
-                  START_DATE
+                  <%= @data.last_value(:period_info)["bp_control_start_date"] %>
                 </span>
                 to
                 <span class="period-end">
-                  END_DATE
+                  <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
               <p class="m-0px c-grey-dark">
@@ -38,7 +38,7 @@
                 </span>
                 patients registered till
                 <span class="period-start">
-                  START_DATE
+                  <%= @data.last_value(:period_info)["bp_control_start_date"] %>
                 </span>
               </p>
             <% else %>
