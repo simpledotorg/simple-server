@@ -103,11 +103,7 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context "for all organizations" do
-      let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :approve_health_workers, resource: nil)
-        ])
-      end
+      let(:admin) { create(:admin, :power_user) }
 
       it "lists all users requesting approval" do
         visit root_path
@@ -117,11 +113,7 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context "for a specific facility group" do
-      let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :approve_health_workers, resource: user1.registration_facility.facility_group)
-        ])
-      end
+      let(:admin) { create(:admin, :manager, :with_access, resource: user1.registration_facility.facility_group) }
 
       it "lists all users requesting approval in authorized facility group" do
         expect(page).to have_content(user1.full_name)
@@ -133,11 +125,7 @@ RSpec.feature "Home page", type: :feature do
     end
 
     context "for a specific organization" do
-      let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :approve_health_workers, resource: user1.organization)
-        ])
-      end
+      let(:admin) { create(:admin, :manager, :with_access, resource: user1.organization) }
 
       it "lists all users requesting approval in authorized organization" do
         expect(page).to have_content(user1.full_name)
