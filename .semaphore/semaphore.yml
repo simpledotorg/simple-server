@@ -32,7 +32,5 @@ blocks:
             - 'bundle exec rake db:test:prepare'
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
-  - name: Deploy to dev environments
-    pipeline_file: development_deployment.yml
-    auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+  - name: Deploy to ethiopia environments
+    pipeline_file: ethiopia_production_deployment.yml
