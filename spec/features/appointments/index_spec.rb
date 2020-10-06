@@ -4,17 +4,14 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
   let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
-  let!(:owner) { create(:admin) }
-  let!(:permissions) do
-    [
-      create(:user_permission, user: owner, permission_slug: :view_overdue_list),
-      create(:user_permission, user: owner, permission_slug: :download_overdue_list)
-    ]
-  end
+  let!(:owner) { create(:admin, :power_user) }
 
   login = AdminPage::Sessions::New.new
   appoint_page = AppointmentsPage::Index.new
   nav_page = Navigations::DashboardPageNavigation.new
+
+  before(:all) { Flipper.enable(:new_permissions_system_aug_2020) }
+  after(:all) { Flipper.disable(:new_permissions_system_aug_2020) }
 
   context "Page verification" do
     before(:each) do

@@ -1,7 +1,7 @@
 require "csv"
 
-module PatientsExporter
-  extend QuarterHelper
+class PatientsExporter
+  include QuarterHelper
 
   BATCH_SIZE = 20
   BLOOD_SUGAR_TYPES = {
@@ -11,7 +11,11 @@ module PatientsExporter
     hba1c: "HbA1c"
   }.with_indifferent_access.freeze
 
-  def self.csv(patients)
+  def self.csv(*args)
+    new.csv(*args)
+  end
+
+  def csv(patients)
     CSV.generate(headers: true) do |csv|
       csv << timestamp
       csv << csv_headers
@@ -31,14 +35,14 @@ module PatientsExporter
     end
   end
 
-  def self.timestamp
+  def timestamp
     [
       "Report generated at:",
       Time.current
     ]
   end
 
-  def self.csv_headers
+  def csv_headers
     [
       "Registration Date",
       "Registration Quarter",
@@ -92,7 +96,7 @@ module PatientsExporter
     ].compact
   end
 
-  def self.csv_fields(patient)
+  def csv_fields(patient)
     # We cannot rely on the ordered scopes on Patient (eg. latest_blood_pressures) to find most recent records because
     # the batching done here will invalidate any ordering on patients, as well as its associations.
     registration_facility = patient.registration_facility
@@ -150,17 +154,17 @@ module PatientsExporter
     csv_fields
   end
 
-  def self.medications_for(patient)
+  def medications_for(patient)
     patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
   end
 
   private_class_method
 
-  def self.zone_column
+  def zone_column
     "Patient #{Address.human_attribute_name :zone}"
   end
 
-  def self.blood_sugar_type(blood_sugar)
+  def blood_sugar_type(blood_sugar)
     return unless blood_sugar.present?
 
     BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]

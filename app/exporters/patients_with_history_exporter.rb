@@ -1,7 +1,7 @@
 require "csv"
 
-module PatientsWithHistoryExporter
-  extend QuarterHelper
+class PatientsWithHistoryExporter
+  include QuarterHelper
 
   BATCH_SIZE = 20
   BLOOD_SUGAR_TYPES = {
@@ -13,7 +13,11 @@ module PatientsWithHistoryExporter
   DISPLAY_BLOOD_PRESSURES = 3
   DISPLAY_MEDICATION_COLUMNS = 5
 
-  def self.csv(patients)
+  def self.csv(*args)
+    new.csv(*args)
+  end
+
+  def csv(patients)
     CSV.generate(headers: true) do |csv|
       csv << timestamp
       csv << csv_headers
@@ -32,14 +36,14 @@ module PatientsWithHistoryExporter
     end
   end
 
-  def self.timestamp
+  def timestamp
     [
       "Report generated at:",
       Time.current
     ]
   end
 
-  def self.csv_headers
+  def csv_headers
     ["Registration Date",
       "Registration Quarter",
       "Patient died?",
@@ -96,7 +100,7 @@ module PatientsWithHistoryExporter
       "Latest Blood Sugar Type"].flatten.compact
   end
 
-  def self.csv_fields(patient)
+  def csv_fields(patient)
     registration_facility = patient.registration_facility
     assigned_facility = patient.assigned_facility
     latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
@@ -160,53 +164,51 @@ module PatientsWithHistoryExporter
     csv_fields
   end
 
-  class << self
-    private
+  private
 
-    def zone_column
-      "Patient #{Address.human_attribute_name :zone}"
-    end
+  def zone_column
+    "Patient #{Address.human_attribute_name :zone}"
+  end
 
-    def appointment_created_on(patient, date)
-      patient.appointments
-        .where(device_created_at: date&.all_day)
-        .order(device_created_at: :asc)
-        .first
-    end
+  def appointment_created_on(patient, date)
+    patient.appointments
+      .where(device_created_at: date&.all_day)
+      .order(device_created_at: :asc)
+      .first
+  end
 
-    def fetch_medication_history(patient, dates)
-      @medications = dates.each_with_object({}) { |date, cache|
-        cache[date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
-      }
-    end
+  def fetch_medication_history(patient, dates)
+    @medications = dates.each_with_object({}) { |date, cache|
+      cache[date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
+    }
+  end
 
-    def medications(date)
-      date ? @medications[date] : PrescriptionDrug.none
-    end
+  def medications(date)
+    date ? @medications[date] : PrescriptionDrug.none
+  end
 
-    def medication_updated?(date, previous_date)
-      current_medications = medications(date)
-      previous_medications = medications(previous_date)
+  def medication_updated?(date, previous_date)
+    current_medications = medications(date)
+    previous_medications = medications(previous_date)
 
-      current_medications == previous_medications ? "No" : "Yes"
-    end
+    current_medications == previous_medications ? "No" : "Yes"
+  end
 
-    def formatted_medications(date)
-      medications = medications(date)
-      sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
-      other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+  def formatted_medications(date)
+    medications = medications(date)
+    sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
+    other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
                             &.join(", ")
 
-      (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
-        [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
-      } << other_medications
-    end
+    (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
+      [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
+    } << other_medications
+  end
 
-    def blood_sugar_type(blood_sugar)
-      return unless blood_sugar.present?
+  def blood_sugar_type(blood_sugar)
+    return unless blood_sugar.present?
 
-      BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]
-    end
+    BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]
   end
 end
