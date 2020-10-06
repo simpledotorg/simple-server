@@ -234,7 +234,7 @@
 </div>
 <%= render "visit_details_card" %>
 <% if @region.is_a?(Facility) %>
-  <%= render "analytics/facilities/analytics_table",
+  <%= render "new_registrations_table",
              dashboard_analytics: @dashboard_analytics,
              period: :month,
              row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
