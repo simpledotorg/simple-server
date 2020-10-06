@@ -5,8 +5,9 @@ blocks:
     task:
       jobs:
         - name: Deploy to Ethiopia Production
-          env:
-            SEMAPHORE_GIT_URL: https://github.com/simpledotorg/deployment
+          env_vars:
+            - name: SEMAPHORE_GIT_URL
+              value: https://github.com/simpledotorg/deployment
           commands:
             - checkout
             - cd deployment/standalone
