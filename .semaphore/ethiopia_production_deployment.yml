@@ -5,11 +5,13 @@ blocks:
     task:
       jobs:
         - name: Deploy to Ethiopia Production
-          env_vars:
-            - name: SEMAPHORE_GIT_URL
-              value: https://github.com/simpledotorg/deployment
           commands:
-            - checkout
+            - git clone https://github.com/simpledotorg/deployment
+            - ls
+            - echo $SEMAPHORE_GIT_URL
+            - echo $SEMAPHORE_GIT_BRANCH
+            - echo $SEMAPHORE_GIT_DIR
+            - echo $SEMAPHORE_GIT_SHA
             - cd deployment/standalone
             - make deploy hosts=ethiopia.production password_file=~/.ansible/password_file
       secrets:
