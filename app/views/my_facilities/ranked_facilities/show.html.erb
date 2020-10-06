@@ -67,22 +67,22 @@
               </td>
               <td class="type-percent" data-sort-column-key="controlled_patients_rate">
                 <em>
-                  <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
+                  <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last || 0, precision: 0) %>
                 </em>
               </td>
               <td class="type-number">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
+                <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last || 0) %>
               </td>
               <td class="type-percent" data-sort-column-key="missed_visits_rate">
                 <em>
-                  <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last, precision: 0) %>
+                  <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last || 0, precision: 0) %>
                 </em>
               </td>
               <td class="type-number">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last) %>
+                <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last || 0) %>
               </td>
               <td class="type-number" data-sort-column-key="monthly_registrations">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last || 0) %>
               </td>
               <td class="type-percent" data-sort-column-key="registration_rate">
                 <em>
