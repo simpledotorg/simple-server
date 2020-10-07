@@ -18,12 +18,12 @@ RSpec.feature "Verify Dashboard", type: :feature do
   after { disable_flag(:new_permissions_system_aug_2020, owner) }
 
   it "Verify organization is displayed in dashboard" do
-    visit organizations_path
+    visit reports_regions_path
     login_page.do_login(owner.email, owner.password)
 
     #
-    # two organizations + 1 user approvals card
-    expect(dashboard.all_elements(css: ".card").size).to eq(3)
+    # two organizations
+    expect(dashboard.all_elements(css: ".card").size).to eq(2)
     expect(page).to have_content("IHMI")
   end
 
@@ -32,8 +32,8 @@ RSpec.feature "Verify Dashboard", type: :feature do
     login_page.do_login(owner.email, owner.password)
 
     # total number of organization present in dashboard
-    visit organizations_path
-    original_org_count = dashboard.all_elements(css: ".card.organization").count
+    visit reports_regions_path
+    original_org_count = dashboard.all_elements(css: ".card.org-card").count
 
     dashboard_navigation.select_manage_option("Organizations")
 

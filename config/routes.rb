@@ -148,8 +148,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :organizations, only: [:index], path: "dashboard"
-
+  get "/dashboard", to: redirect("/reports/regions/")
   get "/dashboard/districts/", to: redirect("/reports/districts/")
   get "/dashboard/districts/:slug", to: redirect("/reports/districts/%{slug}")
   get "/reports/districts/", to: redirect("/reports/regions/")
