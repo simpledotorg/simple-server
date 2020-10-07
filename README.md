@@ -245,7 +245,7 @@ Run the following command from the project root to create a new dashboard admin:
 bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
-### Setting up Sandbox data
+### View Sandbox data in your local
 1. Create a new file in the [ansible/roles/common/files/ssh_keys/sandbox/<your-name>](https://github.com/simpledotorg/deployment/tree/master/ansible/roles/common/files/ssh_keys/sandbox) in the [deployment](https://github.com/simpledotorg/deployment) repo
 2. Run `pbcopy < ~/.ssh/id_rsa.pub` to copy your SSH key
 3. Paste the SSH key in the new file you created
