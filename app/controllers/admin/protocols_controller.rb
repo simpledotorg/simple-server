@@ -2,7 +2,7 @@ class Admin::ProtocolsController < AdminController
   before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 
   def index
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocols = current_admin.accessible_protocols(:manage).order(:name)
   end
 
@@ -11,7 +11,7 @@ class Admin::ProtocolsController < AdminController
   end
 
   def new
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol = Protocol.new
   end
 
@@ -19,7 +19,7 @@ class Admin::ProtocolsController < AdminController
   end
 
   def create
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol = Protocol.new(protocol_params)
 
     if @protocol.save
@@ -45,7 +45,7 @@ class Admin::ProtocolsController < AdminController
   private
 
   def set_protocol
-    @protocol = authorize_v2 { current_admin.accessible_protocols(:manage).find(params[:id]) }
+    @protocol = authorize { current_admin.accessible_protocols(:manage).find(params[:id]) }
   end
 
   def protocol_params

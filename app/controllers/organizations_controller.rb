@@ -3,7 +3,7 @@ class OrganizationsController < AdminController
 
   def index
     @accessible_facilities = current_admin.accessible_facilities(:view_reports)
-    authorize_v2 { @accessible_facilities.any? }
+    authorize { @accessible_facilities.any? }
 
     users = current_admin.accessible_users(:manage)
 

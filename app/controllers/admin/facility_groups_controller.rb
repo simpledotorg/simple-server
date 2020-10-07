@@ -11,7 +11,7 @@ class Admin::FacilityGroupsController < AdminController
   def new
     @facility_group = FacilityGroup.new
 
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
   end
 
   def edit
@@ -20,7 +20,7 @@ class Admin::FacilityGroupsController < AdminController
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
 
-    authorize_v2 { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
+    authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
     if @facility_group.save && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
@@ -58,7 +58,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_facility_group
-    @facility_group = authorize_v2 { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
+    @facility_group = authorize { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
   end
 
   def facility_group_params

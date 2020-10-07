@@ -115,6 +115,6 @@ class MyFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
   end
 end

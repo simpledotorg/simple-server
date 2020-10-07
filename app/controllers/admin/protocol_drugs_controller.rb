@@ -3,7 +3,7 @@ class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocol_drug, only: [:show, :edit, :update, :destroy]
 
   def index
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)
   end
 
@@ -11,7 +11,7 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def new
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol_drug = @protocol.protocol_drugs.new
   end
 
@@ -19,7 +19,7 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def create
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
 
     if @protocol_drug.save
@@ -49,7 +49,7 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def set_protocol_drug
-    @protocol_drug = authorize_v2 { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
+    @protocol_drug = authorize { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
   end
 
   def protocol_drug_params

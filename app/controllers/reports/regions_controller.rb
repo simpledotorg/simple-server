@@ -10,7 +10,7 @@ class Reports::RegionsController < AdminController
   around_action :set_time_zone
 
   def index
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
     @organizations = current_admin.accessible_facilities(:view_reports)
       .flat_map(&:organization)
       .uniq
@@ -19,7 +19,7 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
@@ -42,7 +42,7 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
@@ -52,14 +52,14 @@ class Reports::RegionsController < AdminController
   end
 
   def cohort
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
     periods = @period.downto(5)
 
     @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
   def download
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
     @period = Period.new(type: params[:period], value: Date.current)
     unless @period.valid?
       raise ArgumentError, "invalid Period #{@period} #{@period.inspect}"
@@ -81,7 +81,7 @@ class Reports::RegionsController < AdminController
   end
 
   def whatsapp_graphics
-    authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     previous_quarter = Quarter.current.previous_quarter
     @year, @quarter = previous_quarter.year, previous_quarter.number

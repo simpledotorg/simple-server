@@ -2,12 +2,12 @@ class Admin::OrganizationsController < AdminController
   before_action :set_organization, only: [:edit, :update, :destroy]
 
   def index
-    authorize_v2 { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @organizations = current_admin.accessible_organizations(:manage).order(:name)
   end
 
   def new
-    authorize_v2 { current_admin.power_user? }
+    authorize { current_admin.power_user? }
     @organization = Organization.new
   end
 
@@ -15,7 +15,7 @@ class Admin::OrganizationsController < AdminController
   end
 
   def create
-    authorize_v2 { current_admin.power_user? }
+    authorize { current_admin.power_user? }
     @organization = Organization.new(organization_params)
 
     if @organization.save
@@ -45,7 +45,7 @@ class Admin::OrganizationsController < AdminController
   private
 
   def set_organization
-    @organization = authorize_v2 { current_admin.accessible_organizations(:manage).friendly.find(params[:id]) }
+    @organization = authorize { current_admin.accessible_organizations(:manage).friendly.find(params[:id]) }
   end
 
   def organization_params

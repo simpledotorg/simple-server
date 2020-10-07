@@ -7,7 +7,7 @@ class Admin::UsersController < AdminController
   before_action :set_district, only: [:index, :teleconsult_search]
 
   def index
-    authorize_v2 { current_admin.accessible_users(:manage).any? }
+    authorize { current_admin.accessible_users(:manage).any? }
 
     facilities = if @district == "All"
       current_admin.accessible_facilities(:manage)
@@ -29,7 +29,7 @@ class Admin::UsersController < AdminController
   end
 
   def teleconsult_search
-    authorize_v2 { current_admin.accessible_users(:manage).any? }
+    authorize { current_admin.accessible_users(:manage).any? }
 
     facilities = if @district == "All"
       current_admin.accessible_facilities(:manage)
@@ -102,7 +102,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    @user = authorize_v2 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
+    @user = authorize { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
   end
 
   def set_time_zone

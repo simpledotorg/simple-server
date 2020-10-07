@@ -70,7 +70,7 @@ class AdminController < ApplicationController
     redirect_to(request.referrer || root_path)
   end
 
-  def authorize_v2(&blk)
+  def authorize(&blk)
     RequestStore.store[:authorization_attempted] = true
 
     begin
