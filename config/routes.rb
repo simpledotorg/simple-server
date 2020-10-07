@@ -148,8 +148,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :organizations, only: [:index], path: "dashboard"
-
+  get "/dashboard", to: redirect("/reports/regions/")
   get "/dashboard/districts/", to: redirect("/reports/districts/")
   get "/dashboard/districts/:slug", to: redirect("/reports/districts/%{slug}")
   get "/reports/districts/", to: redirect("/reports/regions/")
@@ -166,10 +165,10 @@ Rails.application.routes.draw do
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
-    get "ranked_facilities", to: "ranked_facilities"
     get "blood_pressure_control", to: "blood_pressure_control"
     get "registrations", to: "registrations"
     get "missed_visits", to: "missed_visits"
+    get "ranked_facilities", to: "ranked_facilities#show"
   end
 
   scope :resources do
