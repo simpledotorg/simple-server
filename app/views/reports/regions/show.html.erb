@@ -4,9 +4,9 @@
     <div id="bp-controlled" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
-          <p class="mb-0px fw-bold fs-20px c-black">
+          <h3 class="mb-0px">
             BP controlled
-          </p>
+          </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>">
@@ -83,9 +83,9 @@
     <div id="bp-uncontrolled" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
-          <p class="mb-9px fw-bold fs-20px c-black">
+          <h3 class="mb-9px">
             BP not controlled
-          </p>
+          </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:uncontrolled_patients_rate) %>c-red<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>">
@@ -162,9 +162,9 @@
     <div id="missed-visits" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
-          <p class="mb-0px fw-bold fs-20px c-black">
+          <h3 class="mb-0px">
             Missed visits
-          </p>
+          </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:missed_visits_rate) %>c-blue<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>">
@@ -232,13 +232,13 @@
     <div id="cumulative-registrations" class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
-          <p class="mb-0px fw-bold fs-20px c-black">
+          <h3 class="mb-0px">
             <% if @region.is_a?(Facility) %>
               Monthly and cumulative patients
             <% else %>
               Monthly and cumulative registrations
             <% end %>
-          </p>
+          </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:adjusted_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">

@@ -89,12 +89,14 @@ function initializeCharts() {
   controlledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
-      display: false,
+      display: true,
+      displayGridLines: false,
       drawBorder: true,
     })],
     [createAxisConfig({
       stacked: false,
       display: true,
+      displayGridLines: true,
       drawBorder: false,
       stepSize: 25,
       max: 100,
@@ -137,12 +139,14 @@ function initializeCharts() {
   missedVisitsConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
-      display: false,
+      display: true,
+      displayGridLines: false,
       drawBorder: true,
     })],
     [createAxisConfig({
       stacked: false,
       display: true,
+      displayGridLines: true,
       drawBorder: false,
       stepSize: 25,
       max: 100,
@@ -185,12 +189,14 @@ function initializeCharts() {
   uncontrolledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
-      display: false,
+      display: true,
+      displayGridLines: false,
       drawBorder: true,
     })],
     [createAxisConfig({
       stacked: false,
       display: true,
+      displayGridLines: true,
       drawBorder: false,
       stepSize: 25,
       max: 100,
@@ -248,13 +254,15 @@ function initializeCharts() {
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: true,
-      display: false,
+      display: true,
+      displayGridLines: false,
       drawBorder: false,
     })],
     [
       createAxisConfig({
         stacked: true,
-        display: false,
+        display: true,
+        displayGridLines: false,
         drawBorder: false,
         stepSize: cumulativeRegistrationsYAxis.stepSize,
         max: cumulativeRegistrationsYAxis.max,
@@ -264,6 +272,7 @@ function initializeCharts() {
       createAxisConfig({
         stacked: true,
         display: true,
+        displayGridLines: true,
         drawBorder: false,
         stepSize: monthlyRegistrationsYAxis.stepSize,
         max: monthlyRegistrationsYAxis.max,
@@ -328,15 +337,15 @@ function initializeCharts() {
   visitDetailsGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: true,
-      display: false,
+      display: true,
+      displayGridLines: false,
       drawBorder: false,
     })],
     [createAxisConfig({
       stacked: true,
       display: false,
+      displayGridLines: false,
       drawBorder: false,
-      stepSize: 25,
-      max: 100,
     })],
     formatRateTooltipText,
     [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
@@ -466,14 +475,14 @@ function formatTooltipLabelColor(tooltipItem, data) {
 }
 
 function createAxisConfig(config) {
-  const { stacked, display, drawBorder, stepSize, max, id, position } = config;
+  const { stacked, display, displayGridLines, drawBorder, stepSize, max, id, position } = config;
   let axisConfig = {
     id,
     position: position ? position : "left",
     stacked,
-    display: true,
+    display,
     gridLines: {
-      display,
+      display: displayGridLines,
       drawBorder,
     },
     ticks: {
