@@ -238,7 +238,7 @@ function initializeCharts() {
         id: "monthlyRegistrations",
         data: data.monthlyRegistrations,
         rgbaBackgroundColor: lightPurpleColor,
-        hoverBackgroundColor: lightPurpleColor,
+        hoverBackgroundColor: darkPurpleColor,
         label: "monthly registrations",
         graphType: "bar",
       },
