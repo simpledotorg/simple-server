@@ -19,4 +19,22 @@ class Api::V3::PayloadValidator
       errors.add(:schema, error_string)
     end
   end
+
+  def model_name
+    self.class.name.demodulize.gsub(/PayloadValidator/, "")
+  end
+
+  def check_invalid?
+    if invalid?
+      track_invalid
+      true
+    else
+      false
+    end
+  end
+
+  def track_invalid
+    Statsd.instance.increment("merge.#{model_name}.schema_invalid")
+    NewRelic::Agent.increment_metric("Merge/#{model_name}/schema_invalid")
+  end
 end
