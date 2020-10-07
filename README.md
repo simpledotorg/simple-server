@@ -245,6 +245,16 @@ Run the following command from the project root to create a new dashboard admin:
 bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
+### Setting up Sandbox data
+1. Create a new file in the [ansible/roles/common/files/ssh_keys/sandbox/<your-name>](https://github.com/simpledotorg/deployment/tree/master/ansible/roles/common/files/ssh_keys/sandbox) in the [deployment](https://github.com/simpledotorg/deployment) repo
+2. Run `pbcopy < ~/.ssh/id_rsa.pub` to copy your SSH key
+3. Paste the SSH key in the new file you created
+4. Create a new branch and submit a PR
+5. Wait for the PR to be reviewed, merged, and deployed to Sandbox
+6. Run `bundle exec cap sandbox db:pull` to sync the data with your local machine
+7. Request to be added as a Dashboard Admin to Sandbox
+8. Create a password for your Sandbox account and use that to log into the Dashboard on localhost:3000
+
 ### Profiling
 
 We use the [vegeta](https://github.com/tsenart/vegeta) utility to run performance benchmarks. The suite and additional instructions are [here](./profiling/README.md).
