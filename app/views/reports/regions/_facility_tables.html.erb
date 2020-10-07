@@ -178,6 +178,17 @@
             </tr>
           </thead>
           <tbody>
+            <tr class="row-total" data-sort-method="none">
+              <td class="type-title">
+                <%= @region.name %>
+              </td>
+              <td class="ta-left">
+                <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
+              </td>
+            </tr>
             <% @region.facilities.order(:name).each do |facility| %>
               <tr>
                 <td class="ta-left">
