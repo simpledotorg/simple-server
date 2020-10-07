@@ -3,9 +3,11 @@ require "rails_helper"
 RSpec.feature "Verify Dashboard", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:path) { create(:organization, name: "PATH") }
-  let!(:facility_group) { create(:facility_group, organization: ihmi) }
-  let!(:facility) { create(:facility, facility_group: facility_group) }
-  let!(:owner) { create(:admin, :power_user) }
+  let!(:facility_group_1) { create(:facility_group, organization: ihmi) }
+  let!(:facility_group_2) { create(:facility_group, organization: path) }
+  let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
+  let!(:facility_2) { create(:facility, facility_group: facility_group_2) }
+  let!(:owner) { create(:admin, :power_user, organization: ihmi) }
 
   login_page = AdminPage::Sessions::New.new
   dashboard = OrganizationsPage::Index.new
@@ -15,14 +17,14 @@ RSpec.feature "Verify Dashboard", type: :feature do
   before { enable_flag(:new_permissions_system_aug_2020, owner) }
   after { disable_flag(:new_permissions_system_aug_2020, owner) }
 
-  xit "Verify organization is displayed in dashboard" do
-    visit root_path
+  it "Verify organization is displayed in dashboard" do
+    visit organizations_path
     login_page.do_login(owner.email, owner.password)
 
-    # assertion
-    expect(dashboard.get_organization_count).to eq(2)
+    #
+    # two organizations + 1 user approvals card
+    expect(dashboard.all_elements(css: ".card").size).to eq(3)
     expect(page).to have_content("IHMI")
-    expect(page).to have_content("PATH")
   end
 
   it "Verify organisation name/count get updated in dashboard when new org is added via manage section" do
@@ -31,7 +33,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
 
     # total number of organization present in dashboard
     visit organizations_path
-    var_organization_count = dashboard.get_organization_count
+    original_org_count = dashboard.all_elements(css: ".card.organization").count
 
     dashboard_navigation.select_manage_option("Organizations")
 
@@ -46,11 +48,12 @@ RSpec.feature "Verify Dashboard", type: :feature do
     fg = create(:facility_group, organization: Organization.find_by_name("Test"))
     create(:facility, facility_group: fg)
 
-    dashboard_navigation.select_main_menu_tab("Old Reports")
+    dashboard_navigation.select_main_menu_tab("Reports")
 
     # assertion at dashboard screen
     expect(page).to have_content("Test")
-    expect(dashboard.get_organization_count).to eq(var_organization_count + 1)
+
+    expect(dashboard.get_organization_count).to eq(original_org_count + 1)
   end
 
   it "SignIn as Owner and verify approval request in dashboard" do

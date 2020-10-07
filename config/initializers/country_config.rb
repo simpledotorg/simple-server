@@ -55,6 +55,10 @@ class CountryConfig
   def self.for(abbreviation)
     CONFIGS[abbreviation]
   end
+
+  def self.current
+    Rails.application.config.country
+  end
 end
 
 Rails.application.config.country = CountryConfig.for(ENV.fetch("DEFAULT_COUNTRY"))

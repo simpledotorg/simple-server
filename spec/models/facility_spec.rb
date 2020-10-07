@@ -15,6 +15,15 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
     it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
+    it "does not change the slug when renamed" do
+      facility = create(:facility, name: "old_name")
+      original_slug = facility.slug
+      facility.name = "new name"
+      facility.valid?
+      facility.save!
+      expect(facility.slug).to eq(original_slug)
+    end
+
     context "patients" do
       it "has distinct patients" do
         facility = create(:facility)
@@ -292,6 +301,39 @@ RSpec.describe Facility, type: :model do
     it "defaults enable_diabetes_management to false if blank" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.second[:enable_diabetes_management]).to be false
+    end
+  end
+
+  describe "OPD load estimatation" do
+    let(:facility) { create(:facility) }
+
+    it "indicates if a user value for OPD is present" do
+      facility.monthly_estimated_opd_load = 999
+      expect(facility.opd_load_estimated?).to be true
+
+      facility.monthly_estimated_opd_load = nil
+      expect(facility.opd_load_estimated?).to be false
+    end
+
+    it "uses OPD loads from the user when present" do
+      facility.monthly_estimated_opd_load = 999
+      expect(facility.opd_load).to eq(999)
+    end
+
+    it "estimates OPD loads based on facility size when user value not present" do
+      facility.monthly_estimated_opd_load = nil
+
+      facility.facility_size = "community"
+      expect(facility.opd_load).to eq(100)
+
+      facility.facility_size = "small"
+      expect(facility.opd_load).to eq(300)
+
+      facility.facility_size = "medium"
+      expect(facility.opd_load).to eq(500)
+
+      facility.facility_size = "large"
+      expect(facility.opd_load).to eq(1000)
     end
   end
 
