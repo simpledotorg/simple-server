@@ -18,7 +18,7 @@ RSpec.feature "Home page", type: :feature do
     sign_in(admin.email_authentication)
     # Root path has moved to MyFacilities#Overview
     # visit root_path
-    visit organizations_path
+    visit reports_regions_path
   end
 
   after do
@@ -86,65 +86,6 @@ RSpec.feature "Home page", type: :feature do
         districts.each do |district|
           expect(page).to have_content(district)
         end
-      end
-    end
-  end
-
-  context "user has permission to approve health care workers" do
-    let!(:user1) { create(:user, :with_phone_number_authentication, sync_approval_status: :requested) }
-    let!(:user2) { create(:user, :with_phone_number_authentication, sync_approval_status: :requested) }
-
-    before do
-      user1.sync_approval_status = :requested
-      user1.save
-
-      user2.sync_approval_status = :requested
-      user2.save
-    end
-
-    context "for all organizations" do
-      let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :approve_health_workers, resource: nil)
-        ])
-      end
-
-      it "lists all users requesting approval" do
-        visit root_path
-        expect(page).to have_content(user1.full_name)
-        expect(page).to have_content(user2.full_name)
-      end
-    end
-
-    context "for a specific facility group" do
-      let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :approve_health_workers, resource: user1.registration_facility.facility_group)
-        ])
-      end
-
-      it "lists all users requesting approval in authorized facility group" do
-        expect(page).to have_content(user1.full_name)
-      end
-
-      it "does not list other users" do
-        expect(page).not_to have_content(user2.full_name)
-      end
-    end
-
-    context "for a specific organization" do
-      let(:admin) do
-        create(:admin, user_permissions: [
-          build(:user_permission, permission_slug: :approve_health_workers, resource: user1.organization)
-        ])
-      end
-
-      it "lists all users requesting approval in authorized organization" do
-        expect(page).to have_content(user1.full_name)
-      end
-
-      it "does not list other users" do
-        expect(page).not_to have_content(user2.full_name)
       end
     end
   end
