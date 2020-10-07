@@ -68,7 +68,7 @@
             <div>
               <% if @data.last_value(:visited_without_bp_taken) %>
                 <p class="m-0px c-black">
-                  <span data-visited-but-no-bp-measure-patients="<%= number_with_delimiter(@data.last_value(:visited_without_bp_taken_rate)) %>">
+                  <span data-visit-but-no-bp-measure-patients="<%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>">
                     <%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>
                   </span>
                   patients with a visit but no BP taken between

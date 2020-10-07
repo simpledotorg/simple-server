@@ -583,14 +583,14 @@ function stackedBarChartTooltip(config) {
   const { dataPoints } = tooltipModel;
 
   const cardNode = document.getElementById(elementId);
-  let missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
-  let visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
-  let uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
-  let controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
-  let missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
-  let visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visited-but-no-bp-measure-patients]");
-  let uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
-  let controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
+  const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
+  const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
+  const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
+  const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
+  const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
+  const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
+  const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
+  const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
   const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
   const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
   const cumulativeRegistrationsNodes = cardNode.querySelectorAll("[data-cumulative-registrations]");
@@ -601,9 +601,9 @@ function stackedBarChartTooltip(config) {
     uncontrolledRateNode.innerHTML = uncontrolledRateNode.getAttribute("data-uncontrolled-rate");
     controlledRateNode.innerHTML = controlledRateNode.getAttribute("data-controlled-rate");
     missedVisitsPatientsNode.innerHTML = missedVisitsPatientsNode.getAttribute("data-missed-visits-patients");
-    visitButNoBPMeasurePatientsNode = visitButNoBPMeasurePatientsNode.getAttribute("data-visited-but-no-bp-measure-patients");
-    uncontrolledPatientsNode = cardNode.getAttribute("data-uncontrolled-patients");
-    controlledPatientsNode = cardNode.getAttribute("data-controlled-patients");
+    visitButNoBPMeasurePatientsNode.innerHTML = visitButNoBPMeasurePatientsNode.getAttribute("data-visit-but-no-bp-measure-patients");
+    uncontrolledPatientsNode.innerHTML = uncontrolledPatientsNode.getAttribute("data-uncontrolled-patients");
+    controlledPatientsNode.innerHTML = controlledPatientsNode.getAttribute("data-controlled-patients");
     periodStartNodes.forEach(node => node.innerHTML = periodStartNodes[0].getAttribute("data-period-start"));
     periodEndNodes.forEach(node => node.innerHTML = periodEndNodes[0].getAttribute("data-period-end"));
     cumulativeRegistrationsNodes.forEach(node => node.innerHTML = cumulativeRegistrationsNodes[0].getAttribute("data-cumulative-registrations"));
