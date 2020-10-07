@@ -251,9 +251,10 @@ bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 3. Paste the SSH key in the new file you created
 4. Create a new branch and submit a PR
 5. Wait for the PR to be reviewed, merged, and deployed to Sandbox
-6. Run `bundle exec cap sandbox db:pull` to sync the data with your local machine
-7. Request to be added as a Dashboard Admin to Sandbox
-8. Create a password for your Sandbox account and use that to log into the Dashboard on localhost:3000
+6. Run `ssh deploy@ec2-13-235-33-14.ap-south-1.compute.amazonaws.com`
+7. Run `bundle exec cap sandbox db:pull` to sync the data with your local machine
+8. Request to be added as a Dashboard Admin to Sandbox
+9. Create a password for your Sandbox account and use that to log into the Dashboard on localhost:3000
 
 ### Profiling
 
