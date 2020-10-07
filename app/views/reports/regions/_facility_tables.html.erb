@@ -249,6 +249,17 @@
             </tr>
           </thead>
           <tbody>
+            <tr class="row-total" data-sort-method="none">
+              <td class="type-title">
+                <%= @region.name %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(@data.last_value(:registrations)) %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
+              </td>
+            </tr>
             <% @region.facilities.order(:name).each do |facility| %>
               <tr>
                 <td class="ta-left">
