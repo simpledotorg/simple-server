@@ -1,13 +1,15 @@
-const lightGreenColor = "rgba(242, 248, 245, 0.9)";
 const darkGreenColor = "rgba(0, 122, 49, 1)";
 const mediumGreenColor = "rgba(0, 184, 73, 1)";
+const lightGreenColor = "rgba(242, 248, 245, 0.9)";
+const darkRedColor = "rgba(184, 22, 49, 1)"
+const mediumRedColor = "rgba(255, 51, 85, 1)";
 const lightRedColor = "rgba(255, 235, 238, 0.9)";
-const darkRedColor = "rgba(255, 51, 85, 1)";
-const lightPurpleColor = "rgba(238, 229, 252, 0.9)";
 const darkPurpleColor = "rgba(83, 0, 224, 1)";
-const darkGreyColor = "rgba(108, 115, 122, 1)";
-const lightBlueColor = "rgba(233, 243, 255, 0.9)";
+const lightPurpleColor = "rgba(238, 229, 252, 0.9)";
+const darkBlueColor = "rgba(12, 57, 102, 1)";
 const mediumBlueColor = "rgba(0, 117, 235, 1)";
+const lightBlueColor = "rgba(233, 243, 255, 0.9)";
+const darkGreyColor = "rgba(108, 115, 122, 1)";
 const mediumGreyColor = "rgba(173, 178, 184, 1)";
 const lightGreyColor = "rgba(240, 242, 245, 0.9)";
 const whiteColor = "rgba(255, 255, 255, 1)";
@@ -76,8 +78,10 @@ function initializeCharts() {
       data: data.controlRate,
       borderWidth: 2,
       rgbaLineColor: mediumGreenColor,
-      rgbaPointColor: lightGreenColor,
+      rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightGreenColor,
+      pointBackgroundColor: whiteColor,
+      hoverBackgroundColor: whiteColor,
       label: "HTN controlled",
     }],
     graphType: "line",
@@ -124,6 +128,8 @@ function initializeCharts() {
       rgbaLineColor: mediumBlueColor,
       rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightBlueColor,
+      pointBackgroundColor: whiteColor,
+      hoverBackgroundColor: whiteColor,
       label: "Missed visits",
     }],
     graphType: "line",
@@ -167,9 +173,11 @@ function initializeCharts() {
     datasets: [{
       data: data.uncontrolledRate,
       borderWidth: 2,
-      rgbaLineColor: darkRedColor,
+      rgbaLineColor: mediumRedColor,
       rgbaPointColor: whiteColor,
       rgbaBackgroundColor: lightRedColor,
+      pointBackgroundColor: whiteColor,
+      hoverBackgroundColor: whiteColor,
       label: "HTN not under control",
     }],
     graphType: "line",
@@ -221,6 +229,8 @@ function initializeCharts() {
         rgbaLineColor: darkPurpleColor,
         rgbaPointColor: whiteColor,
         rgbaBackgroundColor: transparent,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
         label: "cumulative registrations",
         graphType: "line",
       },
@@ -286,20 +296,20 @@ function initializeCharts() {
       {
         data: data.controlRate,
         rgbaBackgroundColor: mediumGreenColor,
-        hoverBackgroundColor: mediumGreenColor,
+        hoverBackgroundColor: darkGreenColor,
         label: "HTN controlled",
         graphType: "bar",
       },
       {
         data: data.uncontrolledRate,
-        rgbaBackgroundColor: darkRedColor,
+        rgbaBackgroundColor: mediumRedColor,
         hoverBackgroundColor: darkRedColor,
         label: "HTN not under control",
         graphType: "bar",
       },
       {
         data: data.visitButNoBPMeasureRate,
-        rgbaBackgroundColor: darkGreyColor,
+        rgbaBackgroundColor: mediumGreyColor,
         hoverBackgroundColor: darkGreyColor,
         label: "Visited in the last 3 months",
         graphType: "bar",
@@ -307,7 +317,7 @@ function initializeCharts() {
       {
         data: data.missedVisitsRate,
         rgbaBackgroundColor: mediumBlueColor,
-        hoverBackgroundColor: mediumBlueColor,
+        hoverBackgroundColor: darkBlueColor,
         label: "No visit >3 months",
         graphType: "bar",
       }
@@ -377,6 +387,7 @@ function createGraphConfig(config) {
           borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           pointBackgroundColor: dataset.rgbaPointColor,
           hoverBackgroundColor: dataset.hoverBackgroundColor,
+          hoverBorderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
           data: Object.values(dataset.data).slice(totalMonths - numberOfMonths, totalMonths),
           type: dataset.graphType ? dataset.graphType : "line",
         };
@@ -385,7 +396,7 @@ function createGraphConfig(config) {
   }
 }
 
-function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerator, denominator, periodInfo) {
+function createGraphOptions(xAxes, yAxes) {
   return {
     animation: false,
     responsive: true,
@@ -411,8 +422,6 @@ function createGraphOptions(xAxes, yAxes, tooltipCallbackFunction, numerator, de
       xAxes,
       yAxes,
     },
-    // TODO Please delete
-    tooltips: { enabled: false },
   };
 }
 
@@ -603,9 +612,9 @@ function stackedBarChartTooltip(config) {
     visitButNoBPMeasureRateNode.innerHTML = dataPoints[2].value + "%";
     uncontrolledRateNode.innerHTML = dataPoints[1].value + "%";
     controlledRateNode.innerHTML = dataPoints[0].value + "%";
-    missedVisitsPatientsNode.innerHTML = missedVisitsPatients[dataPoints[3].index];
-    visitButNoBPMeasurePatientsNode.innerHTML = visitButNoBPMeasurePatients[dataPoints[2].index];
-    uncontrolledPatientsNode.innerHTML = uncontrolledPatients[dataPoints[1].index];
+    missedVisitsPatientsNode.innerHTML = missedVisitsPatients[dataPoints[0].index];
+    visitButNoBPMeasurePatientsNode.innerHTML = visitButNoBPMeasurePatients[dataPoints[0].index];
+    uncontrolledPatientsNode.innerHTML = uncontrolledPatients[dataPoints[0].index];
     controlledPatientsNode.innerHTML = controlledPatients[dataPoints[0].index];
     periodStartNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_start_date);
     periodEndNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_end_date);

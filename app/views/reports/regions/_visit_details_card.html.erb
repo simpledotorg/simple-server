@@ -58,7 +58,7 @@
             Visit but no BP taken
           </p>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:visited_without_bp_taken_rate) %>c-grey-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-visit-but-no-bp-measure-rate="<%= number_to_percentage(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>">
+            <p class="mb-0px fs-32px fw-bold c-grey-medium mr-lg-12px" data-visit-but-no-bp-measure-rate="<%= number_to_percentage(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>">
               <% if @data.last_value(:visited_without_bp_taken_rate) %>
                 <%= number_to_percentage(@data.last_value(:visited_without_bp_taken_rate), precision: 0) %>
               <% else %>
