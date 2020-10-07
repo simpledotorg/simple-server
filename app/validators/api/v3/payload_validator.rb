@@ -35,6 +35,5 @@ class Api::V3::PayloadValidator
 
   def track_invalid
     Statsd.instance.increment("merge.#{model_name}.schema_invalid")
-    NewRelic::Agent.increment_metric("Merge/#{model_name}/schema_invalid")
   end
 end
