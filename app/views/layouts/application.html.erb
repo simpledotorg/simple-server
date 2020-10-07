@@ -47,48 +47,66 @@
 
 <body>
 <% if email_authentication_signed_in? %>
-
-  <nav id="nav-main" class="<%= style_class_for_environment %>">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+  <div class="container">
+    <%= link_to root_path, class: "navbar-brand" do %>
+      <%= logo_for_environment %>
+    <% end %>
   
-      <%= link_to root_path, class: "navbar-brand" do %>
-        <%= logo_for_environment %>
-      <% end %>
-      
-      <div id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Reports</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Overdue</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              More...
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div  class="collapse navbar-collapse">
-        <form class="form-inline">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        </form>
-        <span class="nav-link">
-          <%= current_admin.email %>
-        </span>
-      </div>
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Reports</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Overdue</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            More
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            
+            <h6 class="dropdown-header">Settings</h6>
+            <a class="dropdown-item" href="#"><i class="fas fa-hospital"></i> Facilities</a>
+            <a class="dropdown-item" href="#"><i class="fas fa-network-wired"></i> Organizations</a>
+            <a class="dropdown-item" href="#"><i class="fas fa-pills"></i> Protocol medications</a>
+            <a class="dropdown-item" href="#"><i class="fas fa-user-tie"></i> Dashboard admins</a>
+            <a class="dropdown-item" href="#"><i class="fas fa-users"></i> App users</a>
+            
+            <h6 class="dropdown-header">Resources</h6>
+            <a class="dropdown-item" href="#"><i class="fas fa-chalkboard-teacher"></i> Training materials</a>
+            
+            <h6 class="dropdown-header">Legal</h6>
+            <a class="dropdown-item" href="#"><i class="far fa-file"></i> Privacy policy</a>
+            <a class="dropdown-item" href="#"><i class="far fa-file"></i> Terms</a>
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Account</h6>
+            <span class="dropdown-item disabled"><i class="fas fa-user-circle"></i> <%= current_admin.email %></span>
+            <a class="dropdown-item" href="#"><i class="fas fa-door-open"></i> Logout</a>
+          </div>
+        </li>
+      </ul>
+      <!--form class="form-inline my-2 my-lg-0 desktop">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+      </form-->
 
+  </div>
+</nav>
 
-      
-  </nav>
+<div style="border-bottom: 1px solid rgba(0,0,0,0.1); margin-top: -4px; position: relative; top: -8px; margin-bottom: 36px; white-space: nowrap; overflow-x: scroll;" class="container">
+  <a href="#" style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">Overview</a>
+  <a href="#" style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">Ranked facilities</a>
+  <a href="#" style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">BP control</a>
+  <a href="#" style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">Missed visits</a>
+  <a href="#" style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">Registrations</a>
+  <a href="#" style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">Drug stock</a>
+  <span style="display: inline-block; padding: 0 0 16px 18px; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+</div>
+
 <% end %>
 
 <main role="main" class="container pb-5">

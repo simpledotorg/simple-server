@@ -262,6 +262,14 @@ footer {
         .nav-link {
           padding: 6px 10px 6px 0;
         }
+        
+        .nav-item .dropdown-menu {
+          position: fixed;
+          top: 50px;
+          left: 0;
+          width: 96%;
+          left: 2%;
+        }
     }
     
     button.navbar-toggler {
@@ -273,6 +281,10 @@ footer {
     }
     h1 {
         font-size: 28px;
+    }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 18px;
     }
 }
 
@@ -287,10 +299,6 @@ footer {
     .navbar-nav li > a.active {
         color: #000;
     }
-    .navbar .nav-link,
-    .dropdown-item {
-        font-size: 15px;
-    }
     .table-compact .row-title a {
         width: 100% !important;
         overflow: auto;
@@ -299,6 +307,24 @@ footer {
     .col-lg-3 .dropdown .btn {
         width: 100%;
     }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 16px;
+        margin-right: 6px;
+    }
+}
+
+h6.dropdown-header {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 1em;
+    font-size: 75%;
+}
+
+.dropdown i {
+    min-width: 3em;
+    text-align: center;
+    color: $grey-dark;
 }
 
 .light {
@@ -519,10 +545,6 @@ Subnav
 }
 
 @include media-breakpoint-down(sm) {
-    body {
-      padding-top: 140px;
-    }
-    
     .navbar {
       display: block;
     }
