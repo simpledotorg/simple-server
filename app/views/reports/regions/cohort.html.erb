@@ -52,7 +52,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
-                    title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with HTN not under control"
+                    title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with BP not controlled"
                     style="width: <%= uncontrolled_percent %>;"
                   >
                     <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
@@ -62,7 +62,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
-                    title="<%= number_with_delimiter(cohort["controlled"]) %> patients visited with HTN controlled"
+                    title="<%= number_with_delimiter(cohort["controlled"]) %> patients visited with BP controlled"
                     style="width: <%= controlled_percent %>;"
                   >
                     <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>
