@@ -4,30 +4,25 @@ RSpec.feature "Overdue appointments", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
   let!(:facility) { create(:facility, facility_group: ihmi_group) }
-
-  let!(:supervisor) { create(:admin, role: "supervisor") }
-  let!(:view_overdue_permission) do
-    create(:user_permission, user: supervisor,
-                             permission_slug: :view_overdue_list,
-                             resource: ihmi_group)
-  end
-  let!(:download_overdue_permission) do
-    create(:user_permission, user: supervisor,
-                             permission_slug: :download_overdue_list,
-                             resource: ihmi_group)
-  end
+  let!(:call_center) { create(:admin, :call_center) }
 
   before do
+    call_center.accesses.create(resource: ihmi)
     ENV["IHCI_ORGANIZATION_UUID"] = ihmi.id
+    enable_flag(:new_permissions_system_aug_2020, call_center)
+  end
+
+  after do
+    disable_flag(:new_permissions_system_aug_2020, call_center)
   end
 
   describe "index" do
-    before { sign_in(supervisor.email_authentication) }
+    before { sign_in(call_center.email_authentication) }
 
     it "shows Overdue tab" do
       visit root_path
 
-      expect(page).to have_content("Overdue")
+      expect(page).to have_content("Overdue patients")
     end
 
     describe "Overdue patients tab" do

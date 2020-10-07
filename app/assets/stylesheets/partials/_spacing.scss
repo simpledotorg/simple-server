@@ -1,4 +1,4 @@
-$space-amounts: (3, 5, 8, 10, 12, 14, 15, 16);
+$space-amounts: (3, 5, 8, 10, 12, 14, 15, 16, 20);
 
 @each $space in $space-amounts {
   .m-#{$space}px {

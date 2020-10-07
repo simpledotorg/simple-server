@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.feature "Facility page functionality", type: :feature do
-  let(:admin) { create(:admin) }
+  let(:admin) { create(:admin, :power_user) }
 
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
@@ -18,10 +18,6 @@ RSpec.feature "Facility page functionality", type: :feature do
 
   context "facility group listing" do
     context "admin has permission to manage facility groups" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facility_groups)]
-      end
-
       before(:each) do
         visit root_path
         sign_in(admin.email_authentication)
@@ -80,10 +76,6 @@ RSpec.feature "Facility page functionality", type: :feature do
 
   context "facility listing" do
     context "admin has permission to manage facilities for a facility group" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: ihmi_group_bathinda)]
-      end
-
       before(:each) do
         visit root_path
         sign_in(admin.email_authentication)
@@ -95,10 +87,8 @@ RSpec.feature "Facility page functionality", type: :feature do
       end
     end
 
-    context "admin does not have permission to manage facilities a facility group" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: create(:facility_group))]
-      end
+    context "admin does not have permission to manage facilities at a facility group" do
+      let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: create(:facility_group))]) }
 
       before(:each) do
         visit root_path

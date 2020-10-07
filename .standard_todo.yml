@@ -4,6 +4,7 @@
 ignore:
 - bundle/bin/*
 - db/schema.rb
+- db/data_schema.rb
 - lib/bangladesh/import/to_patients.rb
 - app/controllers/admin/facilities_controller.rb
 - app/controllers/admins_controller.rb
