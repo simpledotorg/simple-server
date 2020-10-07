@@ -1,0 +1,75 @@
+<%= render "shared/old_reports_banner" %>
+
+<div class="dashboard">
+  <nav class="breadcrumb">
+    <%= link_to 'All districts', root_path %>
+
+    <i class="fas fa-chevron-right"></i>
+    <%= link_to @facility.district,
+                analytics_organization_district_path(@facility.organization.id, @facility.district, period: @period) %>
+
+    <i class="fas fa-chevron-right"></i>
+    <%= @facility.name %>
+  </nav>
+
+  <%= render "period_dropdown" %>
+
+  <h1><%= @facility.name %></h1>
+</div>
+
+<%= render 'shared/cohort_charts', cohort_analytics: @cohort_analytics %>
+<%= render 'analytics_table',
+           dashboard_analytics: @dashboard_analytics,
+           period: @period,
+           row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
+           row_resource_description: "Users",
+           row_resource_subtitle: "Patient registrations by users in #{@facility.name}",
+           row_resource_display_field: :full_name,
+           row_resource_link: :admin_user_path %>
+<% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
+  <%= render 'shared/recent_bp_log',
+             blood_pressures: @recent_blood_pressures,
+             display_model: :facility %>
+<% end %>
+
+<div class="downloads">
+  <h4>Downloads</h4>
+
+  <p>
+    <%= link_to(period: :quarter, format: :csv) do %>
+      <i class="far fa-file-excel mr-2"></i>
+      Quarterly cohort report
+    <% end %>
+  </p>
+  <p>
+    <%= link_to(period: :month, format: :csv) do %>
+      <i class="far fa-file-excel mr-2"></i>
+      Monthly cohort report
+    <% end %>
+  </p>
+
+  <% if current_admin.accessible_facilities(:view_pii).include?(@facility) %>
+    <p>
+      <%= link_to analytics_facility_patient_list_path(@facility) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list
+      <% end %>
+    </p>
+    <p>
+      <%= link_to analytics_facility_patient_list_with_history_path(@facility) do %>
+        <i class="far fa-file-excel mr-2"></i>
+        Patient line list (with medication history)
+      <% end %>
+    </p>
+  <% end %>
+
+  <% if FeatureToggle.enabled?('DASHBOARD_SNAPSHOT') %>
+    <% if current_admin.accessible_facilities(:view_reports).include?(@facility) %>
+      <%=
+        render "shared/graphics/graphics_download_links",
+               graphics_path: -> (options) { analytics_facility_graphics_path(options) },
+               options: { facility_id: @facility.id }
+      %>
+    <% end %>
+  <% end %>
+</div>

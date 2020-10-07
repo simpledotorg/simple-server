@@ -1,9 +1,9 @@
 module OrganizationsPage
   class Index < ApplicationPage
-    ORGANIZATIONS = {css: "div.card"}.freeze
+    CARDS = {css: "div.card"}.freeze
 
-    def get_organization_count
-      all_elements(ORGANIZATIONS).size
+    def get_card_count
+      all_elements(CARDS).size
     end
   end
 end

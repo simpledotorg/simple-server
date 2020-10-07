@@ -83,7 +83,7 @@
         </tr>
         <% @facilities.each do |facility| %>
           <tr>
-            <td class="type-title"><%= link_to facility.name, reports_region_path(facility, report_scope: "facility") %></td>
+            <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
             <% @display_periods.reverse.each do |period| %>
               <% unless @selected_period == :day %>
                 <td class="type-percent" data-sort-column-key="<%= period.join %>">

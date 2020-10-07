@@ -8,13 +8,13 @@
 <% end %>
 
 <% unless @region.is_a?(Facility) %>
-  <%= render "follow_ups_table",
+  <%= render "analytics/districts/follow_ups_table",
              dashboard_analytics: @dashboard_analytics,
              period: @period.type,
              row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
              row_resource_display_field: :name,
              row_resource_link: :reports_region_facility_path %>
-  <%= render "registrations_table",
+  <%= render "analytics/districts/registrations_table",
              dashboard_analytics: @dashboard_analytics,
              period: @period.type,
              row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
