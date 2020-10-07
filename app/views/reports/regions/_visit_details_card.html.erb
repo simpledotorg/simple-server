@@ -71,7 +71,7 @@
                   <span data-visit-but-no-bp-measure-patients="<%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>">
                     <%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>
                   </span>
-                  patients with a visit but no BP taken between
+                  patients with a visit but no BP taken seen between
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
                     <%= @data.last_value(:period_info)["bp_control_start_date"] %>
                   </span>
@@ -116,7 +116,7 @@
                   <span data-uncontrolled-patients="<%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>">
                     <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
                   </span>
-                  patients with not controlled BP between
+                  patients with not controlled BP seen between
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
                     <%= @data.last_value(:period_info)["bp_control_start_date"] %>
                   </span>
@@ -161,7 +161,7 @@
                   <span data-controlled-patients="<%= number_with_delimiter(@data.last_value(:controlled_patients)) %>">
                     <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
                   </span>
-                  patients with controlled BP between
+                  patients with controlled BP seen between
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
                     <%= @data.last_value(:period_info)["bp_control_start_date"] %>
                   </span>
