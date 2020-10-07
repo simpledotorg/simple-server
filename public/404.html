@@ -8,27 +8,42 @@
     background-color: #EFEFEF;
     color: #2E2F30;
     text-align: center;
-    font-family: arial, sans-serif;
+    font-family: Roboto, sans-serif;
     margin: 0;
+    padding: 20px;
+    line-height: 1.4;
+  }
+  
+  a:link,
+  a:hover,
+  a:visited {
+    font-weight: bold;
+    color: #0075EB;
+    letter-spacing: 2px;
+    text-decoration: none;
   }
 
   .dialog {
-    width: 95%;
     max-width: 33em;
     margin: 4em auto 0;
+    background: #fff;
+    padding: 40px;
+    border-radius: 7px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
   </style>
 </head>
 
 <body>
   <div class="dialog">
-    <div>
+    <div style="padding-bottom: 2em;">
+      <img src="http://simple.org/images/simple-wordmark-standard.svg" width="80" style="margin-bottom: 2em;">
       <h1>Page not found!</h1>
       <p>
-        The page you were looking for doesn't exist. You may have mistyped the address or the page may have moved.
+        The page you were looking for doesn't exist or may have moved.
       </p>
     </div>
-    <a href="/">Return to homepage</a>
+    <a href="/">RETURN TO HOME</a>
   </div>
 </body>
 </html>
