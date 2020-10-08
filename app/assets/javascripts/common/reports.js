@@ -74,46 +74,97 @@ function getReportingData() {
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlledGraphConfig = createGraphConfig({
-    datasets: [{
-      data: data.controlRate,
-      borderWidth: 2,
-      rgbaLineColor: mediumGreenColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: lightGreenColor,
-      pointBackgroundColor: whiteColor,
-      hoverBackgroundColor: whiteColor,
-      label: "HTN controlled",
-    }],
-    graphType: "line",
-  });
-  controlledGraphConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: false,
-      drawBorder: true,
-    })],
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: true,
-      drawBorder: false,
-      stepSize: 25,
-      max: 100,
-    })],
-  );
-  controlledGraphConfig.options.tooltips = {
-    enabled: false,
-    custom: function (tooltipModel) {
-      return onePlotTooltip({
-        tooltipModel,
-        elementId: "bp-controlled",
-        totalPatients: data.controlledPatients,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
-    }
+  const controlledGraphConfig = {
+    type: "line",
+    data: {
+      labels: Object.keys(data.controlRate),
+      datasets: [{
+        // yAxisID: ???,
+        label: "BP controlled",
+        backgroundColor: lightGreenColor,
+        borderColor: mediumGreenColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.controlRate),
+        type: "line",
+      }],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0
+        }
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          // id: ???,
+          // position: ???,
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [{
+          // id: ???,
+          // position: ???,
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        }],
+      },
+    },
+    tooltips: {
+      enabled: false,
+      custom: function (tooltipModel) {
+        return onePlotTooltip({
+          tooltipModel,
+          elementId: "bp-controlled",
+          totalPatients: data.controlledPatients,
+          adjustedRegistrations: data.adjustedRegistrations,
+          periodInfo: data.periodInfo,
+        });
+      },
+    },
   };
 
   const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
