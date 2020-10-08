@@ -22,11 +22,8 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
                               digits: patient.phone_numbers.first.number,
                               CallType: "call-attempt",
                               CallSid: SecureRandom.uuid}
-
         expect(response).to have_http_status(200)
       end
-
-      it { should use_after_action(:report_http_status) }
     end
 
     context ":forbidden" do
@@ -47,8 +44,6 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
 
         expect(response).to have_http_status(403)
       end
-
-      it { should use_after_action(:report_http_status) }
     end
 
     context ":bad_request" do
@@ -60,8 +55,6 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
 
         expect(response).to have_http_status(400)
       end
-
-      it { should use_after_action(:report_http_status) }
     end
   end
 
@@ -84,8 +77,6 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
 
         expect(response.body).to eq(patient.phone_numbers.first.number)
       end
-
-      it { should use_after_action(:report_http_status) }
     end
 
     context ":not_found" do
@@ -95,8 +86,6 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
 
         expect(response).to have_http_status(404)
       end
-
-      it { should use_after_action(:report_http_status) }
     end
   end
 
@@ -130,9 +119,8 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
       end
 
       it "should report metrics to new relic" do
-        expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/call_type/call_attempt")
-        expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/call_status/completed")
-        expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/terminate/200")
+        expect(Statsd.instance).to receive(:increment).with("exotel_call_sessions.call_type.call_attempt")
+        expect(Statsd.instance).to receive(:increment).with("exotel_call_sessions.call_status.completed")
 
         get :terminate, params: {From: user.phone_number,
                                  digits: patient.phone_numbers.first.number,
@@ -141,8 +129,6 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
                                  DialCallDuration: "10",
                                  CallStatus: "completed"}
       end
-
-      it { should use_after_action(:report_http_status) }
 
       context "call details job" do
         it "should schedule a job to log the call details" do
@@ -184,19 +170,6 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
 
         expect(response).to have_http_status(404)
       end
-
-      it { should use_after_action(:report_http_status) }
-    end
-  end
-
-  describe "callbacks" do
-    it "should report http response codes to new relic" do
-      expect(NewRelic::Agent).to receive(:increment_metric).with("exotel_call_sessions/create/200")
-
-      get :create, params: {From: user.phone_number,
-                            digits: patient.phone_numbers.first.number,
-                            CallType: "call-attempt",
-                            CallSid: SecureRandom.uuid}
     end
   end
 end

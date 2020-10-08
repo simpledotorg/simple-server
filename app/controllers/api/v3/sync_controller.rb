@@ -1,6 +1,5 @@
 class Api::V3::SyncController < APIController
   include Api::V3::SyncToUser
-  before_action :instrument_process_token
 
   def model_name
     controller_name.classify.constantize
@@ -82,9 +81,5 @@ class Api::V3::SyncController < APIController
     params_limit = params[:limit].to_i
 
     params_limit < max_limit ? params_limit : max_limit
-  end
-
-  def instrument_process_token
-    ::NewRelic::Agent.add_custom_attributes({process_token: process_token})
   end
 end
