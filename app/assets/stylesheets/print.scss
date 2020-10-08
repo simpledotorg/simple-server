@@ -66,6 +66,7 @@ Custom formatting for printable elements
 .h-print-12cm { height: 12cm !important; }
 /* Space */
 .mt-print-2cm { margin-top: 2cm !important; }
-/* Colors and borders */
+/* Fonts, colors, and borders */
+.fw-print-bold { font-weight: 700; }
 .c-print-black { color: #000; }
 .b-print-black { border: 2px solid #000; }
