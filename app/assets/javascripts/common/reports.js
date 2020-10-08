@@ -61,6 +61,7 @@ function getReportingData() {
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
     monthlyRegistrations: jsonData.registrations,
+    adjustedRegistrations: jsonData.adjusted_registrations,
     cumulativeRegistrations: jsonData.adjusted_registrations,
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
@@ -103,7 +104,7 @@ function initializeCharts() {
     })],
     formatRateTooltipText,
     [data.controlledPatients],
-    data.cumulativeRegistrations,
+    data.adjustedRegistrations,
   );
   controlledGraphConfig.options.tooltips = {
     enabled: false,
@@ -112,7 +113,7 @@ function initializeCharts() {
         tooltipModel,
         elementId: "bp-controlled",
         totalPatients: data.controlledPatients,
-        cumulativeRegistrations: data.cumulativeRegistrations,
+        adjustedRegistrations: data.adjustedRegistrations,
         periodInfo: data.periodInfo,
       });
     }
@@ -162,7 +163,7 @@ function initializeCharts() {
         tooltipModel,
         elementId: "missed-visits",
         totalPatients: data.missedVisits,
-        cumulativeRegistrations: data.cumulativeRegistrations,
+        adjustedRegistrations: data.adjustedRegistrations,
         periodInfo: data.periodInfo,
       });
     }
@@ -212,7 +213,7 @@ function initializeCharts() {
         tooltipModel,
         elementId: "bp-uncontrolled",
         totalPatients: data.uncontrolledPatients,
-        cumulativeRegistrations: data.cumulativeRegistrations,
+        adjustedRegistrations: data.adjustedRegistrations,
         periodInfo: data.periodInfo,
       });
     }
@@ -527,7 +528,7 @@ function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
 };
 
 function onePlotTooltip(config) {
-  const { tooltipModel, elementId, totalPatients, cumulativeRegistrations, periodInfo } = config;
+  const { tooltipModel, elementId, totalPatients, adjustedRegistrations, periodInfo } = config;
   const { dataPoints } = tooltipModel;
 
   const cardNode = document.getElementById(elementId);
@@ -550,7 +551,7 @@ function onePlotTooltip(config) {
     totalPatientsNode.innerHTML = Object.values(totalPatients)[dataPoints[0].index];
     periodStartNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
     periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    registrationsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
+    registrationsNode.innerHTML = Object.values(adjustedRegistrations)[dataPoints[0].index];
     registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
   }
 }
