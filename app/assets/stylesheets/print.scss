@@ -35,7 +35,7 @@ Custom formatting for printable elements
     border-color: #000 !important;
 }
 
-.card, .print-border { border: 2px solid black; }
+.card { border: 2px solid black; }
 
 .split-bars {
     border-collapse: separate;
@@ -60,6 +60,7 @@ Custom formatting for printable elements
 .d-print-none { display: none !important; }
 .d-print-block { display: block !important; }
 .pb-inside-avoid { page-break-inside: avoid; }
+.pb-after-always { page-break-after: always; }
 /* Size */
 .w-print-16cm { width: 16cm !important; }
 .h-print-12cm { height: 12cm !important; }
