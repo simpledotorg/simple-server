@@ -22,7 +22,7 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
                               digits: patient.phone_numbers.first.number,
                               CallType: "call-attempt",
                               CallSid: SecureRandom.uuid}
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(200)
       end
     end
 
