@@ -101,6 +101,8 @@
 .bg-grey-dark { background-color: $grey-dark; }
 // Shadows
 .bs-small { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
+// Other
+.c-pointer { cursor: pointer; }
 // Media queries
 // Large
 @media screen and (min-width: 992px) {
