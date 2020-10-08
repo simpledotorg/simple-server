@@ -251,7 +251,7 @@
           <div>
             <% if @data.last_value(:cumulative_registrations) %>
               <p class="m-0px c-black">
-                Patients registered till
+                patients registered till
                 <span data-registrations-period-end="<%= @data.last_value(:period_info)["bp_control_end_date"] %>">
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
