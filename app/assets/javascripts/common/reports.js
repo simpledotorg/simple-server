@@ -79,7 +79,6 @@ function initializeCharts() {
     data: {
       labels: Object.keys(data.controlRate),
       datasets: [{
-        // yAxisID: ???,
         label: "BP controlled",
         backgroundColor: lightGreenColor,
         borderColor: mediumGreenColor,
@@ -114,8 +113,6 @@ function initializeCharts() {
       },
       scales: {
         xAxes: [{
-          // id: ???,
-          // position: ???,
           stacked: false,
           display: true,
           gridLines: {
@@ -132,8 +129,6 @@ function initializeCharts() {
           },
         }],
         yAxes: [{
-          // id: ???,
-          // position: ???,
           stacked: false,
           display: true,
           gridLines: {
@@ -177,8 +172,7 @@ function initializeCharts() {
     data: {
       labels: Object.keys(data.missedVisitsRate),
       datasets: [{
-        // yAxisID: ???,
-        label: "BP controlled",
+        label: "Missed visits",
         backgroundColor: lightBlueColor,
         borderColor: mediumBlueColor,
         borderWidth: 2,
@@ -212,8 +206,6 @@ function initializeCharts() {
       },
       scales: {
         xAxes: [{
-          // id: ???,
-          // position: ???,
           stacked: false,
           display: true,
           gridLines: {
@@ -230,8 +222,6 @@ function initializeCharts() {
           },
         }],
         yAxes: [{
-          // id: ???,
-          // position: ???,
           stacked: false,
           display: true,
           gridLines: {
@@ -270,46 +260,92 @@ function initializeCharts() {
     new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
-  const uncontrolledGraphConfig = createGraphConfig({
-    datasets: [{
-      data: data.uncontrolledRate,
-      borderWidth: 2,
-      rgbaLineColor: mediumRedColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: lightRedColor,
-      pointBackgroundColor: whiteColor,
-      hoverBackgroundColor: whiteColor,
-      label: "HTN not under control",
-    }],
-    graphType: "line",
-  });
-  uncontrolledGraphConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: false,
-      drawBorder: true,
-    })],
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: true,
-      drawBorder: false,
-      stepSize: 25,
-      max: 100,
-    })],
-  );
-  uncontrolledGraphConfig.options.tooltips = {
-    enabled: false,
-    custom: function (tooltipModel) {
-      return onePlotTooltip({
-        tooltipModel,
-        elementId: "bp-uncontrolled",
-        totalPatients: data.uncontrolledPatients,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
-    }
+  const uncontrolledGraphConfig = {
+    type: "line",
+    data: {
+      labels: Object.keys(data.uncontrolledRate),
+      datasets: [{
+        label: "BP not controlled",
+        backgroundColor: lightRedColor,
+        borderColor: mediumRedColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.uncontrolledRate),
+        type: "line",
+      }],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0
+        }
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [{
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        }],
+      },
+    },
+    tooltips: {
+      enabled: false,
+      custom: function (tooltipModel) {
+        return onePlotTooltip({
+          tooltipModel,
+          elementId: "bp-uncontrolled",
+          totalPatients: data.uncontrolledPatients,
+          adjustedRegistrations: data.adjustedRegistrations,
+          periodInfo: data.periodInfo,
+        });
+      },
+    },
   };
 
   const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
@@ -320,72 +356,127 @@ function initializeCharts() {
   const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
   const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
-  const cumulativeRegistrationsGraphConfig = createGraphConfig({
-    datasets: [
-      {
-        id: "cumulativeRegistrations",
-        data: data.cumulativeRegistrations,
-        borderWidth: 2,
-        rgbaLineColor: darkPurpleColor,
-        rgbaPointColor: whiteColor,
-        rgbaBackgroundColor: transparent,
-        pointBackgroundColor: whiteColor,
-        hoverBackgroundColor: whiteColor,
-        label: "cumulative registrations",
-        graphType: "line",
+  const cumulativeRegistrationsGraphConfig = {
+    type: "bar",
+    data: {
+      labels: Object.keys(data.controlRate),
+      datasets: [
+        {
+          yAxisID: "cumulativeRegistrations",
+          label: "Cumulative registrations",
+          backgroundColor: transparent,
+          borderColor: darkPurpleColor,
+          borderWidth: 2,
+          pointBackgroundColor: whiteColor,
+          hoverBackgroundColor: whiteColor,
+          hoverBorderWidth: 2,
+          data: Object.values(data.cumulativeRegistrations),
+          type: "line",
+        },
+        {
+          yAxisID: "monthlyRegistrations",
+          label: "Monthly registrations",
+          backgroundColor: lightPurpleColor,
+          borderColor: darkPurpleColor,
+          data: Object.values(data.monthlyRegistrations),
+          type: "bar",
+        }
+      ],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0
+        }
       },
-      {
-        id: "monthlyRegistrations",
-        data: data.monthlyRegistrations,
-        rgbaBackgroundColor: lightPurpleColor,
-        hoverBackgroundColor: darkPurpleColor,
-        label: "monthly registrations",
-        graphType: "bar",
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
       },
-    ],
-    graphType: "bar",
-  });
-  cumulativeRegistrationsGraphConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: true,
-      display: true,
-      displayGridLines: false,
-      drawBorder: false,
-    })],
-    [
-      createAxisConfig({
-        stacked: true,
-        display: true,
-        displayGridLines: false,
-        drawBorder: false,
-        stepSize: cumulativeRegistrationsYAxis.stepSize,
-        max: cumulativeRegistrationsYAxis.max,
-        id: "cumulativeRegistrations",
-        position: "left",
-      }),
-      createAxisConfig({
-        stacked: true,
-        display: true,
-        displayGridLines: true,
-        drawBorder: false,
-        stepSize: monthlyRegistrationsYAxis.stepSize,
-        max: monthlyRegistrationsYAxis.max,
-        id: "monthlyRegistrations",
-        position: "right",
-      }),
-    ],
-  );
-  cumulativeRegistrationsGraphConfig.options.tooltips = {
-    enabled: false,
-    custom: function (tooltipModel) {
-      return twoPlotsTooltip({
-        tooltipModel,
-        elementId: "cumulative-registrations",
-        cumulativeRegistrations: data.cumulativeRegistrations,
-        monthlyRegistrations: data.monthlyRegistrations,
-        periodInfo: data.periodInfo,
-      });
-    }
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [
+          {
+            id: "cumulativeRegistrations",
+            position: "left",
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: darkGreyColor,
+              fontSize: 12,
+              fontFamily: "Roboto Condensed",
+              padding: 8,
+              beginAtZero: true,
+              stepSize: cumulativeRegistrationsYAxis.stepSize,
+              max: cumulativeRegistrationsYAxis.max,
+            },
+          },
+          {
+            id: "monthlyRegistrations",
+            position: "right",
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: darkGreyColor,
+              fontSize: 12,
+              fontFamily: "Roboto Condensed",
+              padding: 8,
+              beginAtZero: true,
+              stepSize: monthlyRegistrationsYAxis.stepSize,
+              max: monthlyRegistrationsYAxis.max,
+            },
+          }
+        ],
+      },
+    },
+    tooltips: {
+      enabled: false,
+      custom: function (tooltipModel) {
+        return twoPlotsTooltip({
+          tooltipModel,
+          elementId: "cumulative-registrations",
+          cumulativeRegistrations: data.cumulativeRegistrations,
+          monthlyRegistrations: data.monthlyRegistrations,
+          periodInfo: data.periodInfo,
+        });
+      },
+    },
   };
 
   const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
