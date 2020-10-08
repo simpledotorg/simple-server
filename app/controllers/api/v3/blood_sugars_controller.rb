@@ -24,8 +24,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
   def merge_if_valid(blood_sugar_params)
     validator = Api::V3::BloodSugarPayloadValidator.new(blood_sugar_params)
     logger.debug "Blood Sugar payload had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      Statsd.increment("merge.BloodSugar.invalid_schema")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       set_patient_recorded_at(blood_sugar_params)
