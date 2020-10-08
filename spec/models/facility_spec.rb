@@ -304,6 +304,39 @@ RSpec.describe Facility, type: :model do
     end
   end
 
+  describe "OPD load estimatation" do
+    let(:facility) { create(:facility) }
+
+    it "indicates if a user value for OPD is present" do
+      facility.monthly_estimated_opd_load = 999
+      expect(facility.opd_load_estimated?).to be true
+
+      facility.monthly_estimated_opd_load = nil
+      expect(facility.opd_load_estimated?).to be false
+    end
+
+    it "uses OPD loads from the user when present" do
+      facility.monthly_estimated_opd_load = 999
+      expect(facility.opd_load).to eq(999)
+    end
+
+    it "estimates OPD loads based on facility size when user value not present" do
+      facility.monthly_estimated_opd_load = nil
+
+      facility.facility_size = "community"
+      expect(facility.opd_load).to eq(100)
+
+      facility.facility_size = "small"
+      expect(facility.opd_load).to eq(300)
+
+      facility.facility_size = "medium"
+      expect(facility.opd_load).to eq(500)
+
+      facility.facility_size = "large"
+      expect(facility.opd_load).to eq(1000)
+    end
+  end
+
   describe "Attribute sanitization" do
     it "squishes and upcases the first letter of the name" do
       facility = FactoryBot.create(:facility, name: " cH name  1  ")

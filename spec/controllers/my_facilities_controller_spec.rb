@@ -24,16 +24,6 @@ RSpec.describe MyFacilitiesController, type: :controller do
     end
   end
 
-  describe "GET #ranked_facilities" do
-    it "returns a success response" do
-      create(:facility, facility_group: facility_group)
-
-      get :ranked_facilities, params: {}
-
-      expect(response).to be_successful
-    end
-  end
-
   describe "GET #blood_pressure_control" do
     it "returns a success response" do
       create(:facility, facility_group: facility_group)
