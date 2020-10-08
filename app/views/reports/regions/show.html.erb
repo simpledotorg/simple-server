@@ -241,15 +241,15 @@
           </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:adjusted_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
-            <% if @data.last_value(:adjusted_registrations).zero? %>
+          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>">
+            <% if @data.last_value(:cumulative_registrations).zero? %>
               No data
             <% else %>
-              <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
+              <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
             <% end %>
           </p>
           <div>
-            <% if @data.last_value(:adjusted_registrations) %>
+            <% if @data.last_value(:cumulative_registrations) %>
               <p class="m-0px c-black">
                 Patients registered till
                 <span data-registrations-period-end="<%= @data.last_value(:period_info)["bp_control_end_date"] %>">
