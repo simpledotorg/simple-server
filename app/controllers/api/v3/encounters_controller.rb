@@ -1,7 +1,6 @@
 class Api::V3::EncountersController < Api::V3::SyncController
   include Api::V3::PrioritisableByFacility
 
-  skip_before_action :instrument_process_token
   before_action :stub_syncing_from_user, only: [:sync_from_user]
   before_action :stub_syncing_to_user, only: [:sync_to_user]
 
