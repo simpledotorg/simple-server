@@ -35,7 +35,7 @@
                     <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                   </span>
                 </p>
-                <p class="m-0px c-grey-dark">
+                <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -46,7 +46,7 @@
                   </span>
                 </p>
               <% else %>
-                <p class="m-0px c-grey-medium">
+                <p class="m-0px c-grey-medium c-print-black">
                   No BP not controlled data available
                 </p>
               <% end %>
@@ -80,7 +80,7 @@
                     <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                   </span>
                 </p>
-                <p class="m-0px c-grey-dark">
+                <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -91,7 +91,7 @@
                   </span>
                 </p>
               <% else %>
-                <p class="m-0px c-grey-medium">
+                <p class="m-0px c-grey-medium c-print-black">
                   No BP not controlled data available
                 </p>
               <% end %>
@@ -103,7 +103,7 @@
             BP not controlled
           </p>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:uncontrolled_patients_rate) %>c-red<% else %>c-grey-medium<% end %> mr-lg-12px" data-uncontrolled-rate="<%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>">
+            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:uncontrolled_patients_rate) %>c-red<% else %>c-grey-medium<% end %> mr-lg-12px" data-uncontrolled-rate="<%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %> c-print-black">
               <% if @data.last_value(:uncontrolled_patients_rate) %>
                 <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
               <% else %>
@@ -125,7 +125,7 @@
                     <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                   </span>
                 </p>
-                <p class="m-0px c-grey-dark">
+                <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -136,7 +136,7 @@
                   </span>
                 </p>
               <% else %>
-                <p class="m-0px c-grey-medium">
+                <p class="m-0px c-grey-medium c-print-black">
                   No BP not controlled data available
                 </p>
               <% end %>
@@ -148,7 +148,7 @@
             BP controlled
           </p>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-controlled-rate="<%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>">
+            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-controlled-rate="<%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %> c-print-black">
               <% if @data.last_value(:controlled_patients_rate) %>
                 <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
               <% else %>
@@ -170,7 +170,7 @@
                     <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                   </span>
                 </p>
-                <p class="m-0px c-grey-dark">
+                <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -181,7 +181,7 @@
                   </span>
                 </p>
               <% else %>
-                <p class="m-0px c-grey-medium">
+                <p class="m-0px c-grey-medium c-print-black">
                   No BP controlled data available
                 </p>
               <% end %>
@@ -189,13 +189,13 @@
           </div>
         </div>
         <div class="d-flex fd-column align-baseline mb-8px mb-lg-16px">
-          <p class="mb-8px fs-14px c-grey-dark print-black">
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
             <strong>Visit but no BP taken numerator:</strong> Patients with a visit in the last 3 months but no BP taken
           </p>
-          <p class="mb-8px fs-14px c-grey-dark print-black">
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
             <strong>All other numerators:</strong> Same numerators as cards above
           </p>
-          <p class="mb-0px fs-14px c-grey-dark print-black">
+          <p class="mb-0px fs-14px c-grey-dark c-print-black">
             <% if @region.is_a?(Facility) %>
               <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
             <% else %>
@@ -207,7 +207,7 @@
     </div>
   <% else %>
     <div class="d-flex align-center justify-center w-100pt h-200px h-lg-380px bl-1px bb-1px bl-grey-medium bb-grey-medium">
-      <p class="c-grey-medium">
+      <p class="c-grey-medium c-print-black">
         No data available
       </p>
     </div>

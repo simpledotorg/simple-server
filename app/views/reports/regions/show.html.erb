@@ -31,7 +31,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 of
                 <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -42,7 +42,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No BP controlled data available
               </p>
             <% end %>
@@ -110,7 +110,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 of
                 <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
@@ -121,7 +121,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No BP not controlled data available
               </p>
             <% end %>
@@ -189,7 +189,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 of
                 <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -200,7 +200,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No missed visits data available
               </p>
             <% end %>
@@ -256,7 +256,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 <span data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:registrations)) %>
                 </span>
@@ -266,7 +266,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No registration data available
               </p>
             <% end %>
@@ -279,13 +279,13 @@
       <div class="px-20px pb-8px pb-lg-0">
         <div class="d-flex">
           <div class="h-12px w-12px mr-8px b-2px bc-purple br-6px"></div>
-          <p class="fs-14px lh-1 c-grey-dark">
+          <p class="fs-14px lh-1 c-grey-dark c-print-black">
             Cumulative registrations
           </p>
         </div>
         <div class="d-flex">
           <div class="h-12px w-12px mr-8px bg-purple-light br-2px"></div>
-          <p class="fs-14px lh-1 c-grey-dark">
+          <p class="fs-14px lh-1 c-grey-dark c-print-black">
             Monthly registrations
           </p>
         </div>
