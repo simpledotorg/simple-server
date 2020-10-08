@@ -172,46 +172,97 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const missedVisitsConfig = createGraphConfig({
-    datasets: [{
-      data: data.missedVisitsRate,
-      borderWidth: 2,
-      rgbaLineColor: mediumBlueColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: lightBlueColor,
-      pointBackgroundColor: whiteColor,
-      hoverBackgroundColor: whiteColor,
-      label: "Missed visits",
-    }],
-    graphType: "line",
-  });
-  missedVisitsConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: false,
-      drawBorder: true,
-    })],
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: true,
-      drawBorder: false,
-      stepSize: 25,
-      max: 100,
-    })],
-  );
-  missedVisitsConfig.options.tooltips = {
-    enabled: false,
-    custom: function (tooltipModel) {
-      return onePlotTooltip({
-        tooltipModel,
-        elementId: "missed-visits",
-        totalPatients: data.missedVisits,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
-    }
+  const missedVisitsConfig = {
+    type: "line",
+    data: {
+      labels: Object.keys(data.missedVisitsRate),
+      datasets: [{
+        // yAxisID: ???,
+        label: "BP controlled",
+        backgroundColor: lightBlueColor,
+        borderColor: mediumBlueColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.missedVisitsRate),
+        type: "line",
+      }],
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0
+        }
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          // id: ???,
+          // position: ???,
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [{
+          // id: ???,
+          // position: ???,
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        }],
+      },
+    },
+    tooltips: {
+      enabled: false,
+      custom: function (tooltipModel) {
+        return onePlotTooltip({
+          tooltipModel,
+          elementId: "missed-visits",
+          totalPatients: data.missedVisits,
+          adjustedRegistrations: data.adjustedRegistrations,
+          periodInfo: data.periodInfo,
+        });
+      },
+    },
   };
 
   const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
