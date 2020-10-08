@@ -18,14 +18,13 @@ RSpec.feature "Verify Dashboard", type: :feature do
   after { disable_flag(:new_permissions_system_aug_2020, owner) }
 
   it "Verify organization is displayed in dashboard" do
-    visit organizations_path
+    visit reports_regions_path
     login_page.do_login(owner.email, owner.password)
 
     #
-    # two organizations + 1 user approvals card
-    expect(dashboard.get_card_count).to eq(3)
+    # two organizations
+    expect(dashboard.all_elements(css: ".card").size).to eq(2)
     expect(page).to have_content("IHMI")
-    expect(page).to have_content("PATH")
   end
 
   it "Verify organisation name/count get updated in dashboard when new org is added via manage section" do
@@ -33,8 +32,8 @@ RSpec.feature "Verify Dashboard", type: :feature do
     login_page.do_login(owner.email, owner.password)
 
     # total number of organization present in dashboard
-    visit organizations_path
-    var_organization_count = dashboard.get_card_count
+    visit reports_regions_path
+    original_org_count = dashboard.all_elements(css: ".card.org-card").count
 
     dashboard_navigation.select_manage_option("Organizations")
 
@@ -49,11 +48,12 @@ RSpec.feature "Verify Dashboard", type: :feature do
     fg = create(:facility_group, organization: Organization.find_by_name("Test"))
     create(:facility, facility_group: fg)
 
-    dashboard_navigation.select_main_menu_tab("Old Reports")
+    dashboard_navigation.select_main_menu_tab("Reports")
 
     # assertion at dashboard screen
     expect(page).to have_content("Test")
-    expect(dashboard.get_card_count).to eq(var_organization_count + 1)
+
+    expect(dashboard.get_organization_count).to eq(original_org_count + 1)
   end
 
   it "SignIn as Owner and verify approval request in dashboard" do

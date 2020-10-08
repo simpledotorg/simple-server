@@ -121,7 +121,7 @@
                           overall_patients: @overall_patients_per_facility[facility.id].to_i,
                           overall_controlled_bps: @overall_controlled_bps_per_facility[facility.id].to_i } %>
           <tr>
-            <td class="type-title"><%= link_to facility.name, analytics_facility_path(facility) %></td>
+            <td class="type-title"><%= link_to facility.name, reports_region_facility_path(facility) %></td>
             <td class="type-percent" data-sort-column-key="controlled">
               <em><%= percentage(bp_stats[:controlled], bp_stats[:cohort_patients]) %></em>
             </td>
