@@ -62,7 +62,7 @@ function getReportingData() {
     missedVisitsRate: jsonData.missed_visits_rate,
     monthlyRegistrations: jsonData.registrations,
     adjustedRegistrations: jsonData.adjusted_registrations,
-    cumulativeRegistrations: jsonData.adjusted_registrations,
+    cumulativeRegistrations: jsonData.cumulative_registrations,
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
     visitButNoBPMeasure: jsonData.visited_without_bp_taken,
@@ -102,9 +102,6 @@ function initializeCharts() {
       stepSize: 25,
       max: 100,
     })],
-    formatRateTooltipText,
-    [data.controlledPatients],
-    data.adjustedRegistrations,
   );
   controlledGraphConfig.options.tooltips = {
     enabled: false,
@@ -152,9 +149,6 @@ function initializeCharts() {
       stepSize: 25,
       max: 100,
     })],
-    formatRateTooltipText,
-    [data.missedVisits],
-    data.cumulativeRegistrations,
   );
   missedVisitsConfig.options.tooltips = {
     enabled: false,
@@ -202,9 +196,6 @@ function initializeCharts() {
       stepSize: 25,
       max: 100,
     })],
-    formatRateTooltipText,
-    [data.uncontrolledPatients],
-    data.cumulativeRegistrations,
   );
   uncontrolledGraphConfig.options.tooltips = {
     enabled: false,
@@ -281,7 +272,6 @@ function initializeCharts() {
         position: "right",
       }),
     ],
-    formatSumTooltipText,
   );
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
@@ -348,9 +338,6 @@ function initializeCharts() {
       displayGridLines: false,
       drawBorder: false,
     })],
-    formatRateTooltipText,
-    [data.controlledPatients, data.uncontrolledPatients, data.visitButNoBPMeasure, data.missedVisits],
-    data.cumulativeRegistrations,
   );
   visitDetailsGraphConfig.options.tooltips = {
     mode: "x",
@@ -363,7 +350,7 @@ function initializeCharts() {
         visitButNoBPMeasurePatients: Object.values(data.visitButNoBPMeasure).slice(18, 24),
         uncontrolledPatients: Object.values(data.uncontrolledPatients).slice(18, 24),
         controlledPatients: Object.values(data.controlledPatients).slice(18, 24),
-        cumulativeRegistrations: Object.values(data.cumulativeRegistrations).slice(18, 24),
+        adjustedRegistrations: Object.values(data.adjustedRegistrations).slice(18, 24),
         periodInfo: Object.values(data.periodInfo).slice(18, 24),
       });
     }
@@ -435,46 +422,6 @@ function createGraphOptions(xAxes, yAxes) {
   };
 }
 
-function formatRateTooltipText(tooltipItem, data, numerators, denominators) {
-  const datasetIndex = tooltipItem.datasetIndex;
-  const numerator = formatNumberWithCommas(numerators[datasetIndex][tooltipItem.label]);
-  const denominator = formatNumberWithCommas(denominators[tooltipItem.label]);
-  const label = data.datasets[datasetIndex].label;
-  const percent = Math.round(tooltipItem.value);
-
-  return ` ${percent}% ${label} (${numerator} of ${denominator} patients)`;
-}
-
-function formatSumTooltipText(tooltipItem, data) {
-  return ` ${formatNumberWithCommas(tooltipItem.value)} ${data.datasets[tooltipItem.datasetIndex].label}`;
-}
-
-function formatValueAsPercent(value) {
-  return `${value}%`;
-}
-
-function formatNumberWithCommas(value) {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function formatTooltipLabelColor(tooltipItem, data) {
-  const pointBackgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].pointBackgroundColor;
-  const borderColor = data.config.data.datasets[tooltipItem.datasetIndex].borderColor;
-  const backgroundColor = data.config.data.datasets[tooltipItem.datasetIndex].backgroundColor;
-
-  let styles = {};
-
-  if (pointBackgroundColor === undefined) {
-    styles.borderColor = backgroundColor;
-    styles.backgroundColor = backgroundColor;
-  } else {
-    styles.borderColor = borderColor;
-    styles.backgroundColor = borderColor;
-  }
-
-  return styles;
-}
-
 function createAxisConfig(config) {
   const { stacked, display, displayGridLines, drawBorder, stepSize, max, id, position } = config;
   let axisConfig = {
@@ -487,6 +434,7 @@ function createAxisConfig(config) {
       drawBorder,
     },
     ticks: {
+      autoSkip: false,
       fontColor: darkGreyColor,
       fontSize: 12,
       fontFamily: "Roboto Condensed",
@@ -587,7 +535,7 @@ function stackedBarChartTooltip(config) {
     visitButNoBPMeasurePatients,
     uncontrolledPatients,
     controlledPatients,
-    cumulativeRegistrations,
+    adjustedRegistrations,
     periodInfo,
   } = config;
   const { dataPoints } = tooltipModel;
@@ -628,6 +576,6 @@ function stackedBarChartTooltip(config) {
     controlledPatientsNode.innerHTML = controlledPatients[dataPoints[0].index];
     periodStartNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_start_date);
     periodEndNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_end_date);
-    cumulativeRegistrationsNodes.forEach(node => node.innerHTML = cumulativeRegistrations[dataPoints[0].index]);
+    cumulativeRegistrationsNodes.forEach(node => node.innerHTML = adjustedRegistrations[dataPoints[0].index]);
   }
 }
