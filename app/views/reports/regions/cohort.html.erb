@@ -42,7 +42,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
-                    title="<%= number_with_delimiter(cohort["no_bp"]) %> patients didn't have a BP taken"
+                    title="<%= number_with_delimiter(cohort["no_bp"]) %> <%= "person".pluralize(cohort["no_bp"]) %> didn't have a BP taken"
                     style="width: <%= no_bp_percent %>;"
                   >
                     <%= (cohort["no_bp"] > 0 && no_bp_percent == 0) ? "< 1" : no_bp_percent %>
@@ -52,7 +52,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
-                    title="<%= number_with_delimiter(cohort["uncontrolled"]) %> patients visited with HTN not under control"
+                    title="<%= number_with_delimiter(cohort["uncontrolled"]) %> <%= "person".pluralize(cohort["uncontrolled"]) %> visited with BP not controlled"
                     style="width: <%= uncontrolled_percent %>;"
                   >
                     <%= (cohort["uncontrolled"] > 1 && uncontrolled_percent == 0) ? "< 1" : uncontrolled_percent %>
@@ -62,7 +62,7 @@
                     data-toggle="tooltip"
                     data-placement="top"
                     data-trigger="hover focus click"
-                    title="<%= number_with_delimiter(cohort["controlled"]) %> patients visited with HTN controlled"
+                    title="<%= number_with_delimiter(cohort["controlled"]) %> <%= "person".pluralize(cohort["controlled"]) %> visited with BP controlled"
                     style="width: <%= controlled_percent %>;"
                   >
                     <%= (cohort["controlled"] > 0 && controlled_percent == 0) ? "< 1" : controlled_percent %>
@@ -85,11 +85,11 @@
       </p>
       <p class="mb-8px c-black mr-lg-4 mb-lg-0">
         <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-red-medium"></span>
-        HTN not under control
+        BP not controlled
       </p>
       <p class="m-0px c-black mb-lg-0">
         <span class="p-relative t-1px d-inline-block w-12px h-12px mr-4px br-2px bg-green-dark"></span>
-        HTN controlled
+        BP controlled
       </p>
     </div>
   </div>
