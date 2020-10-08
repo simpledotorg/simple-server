@@ -23,39 +23,16 @@ class AdminController < ApplicationController
   end
 
   def root
-    if current_admin.permissions_v2_enabled?
-      redirect_to access_root_paths
-    else
-      redirect_to default_root_paths.find { |policy, _path|
-        DashboardPolicy.new(pundit_user, :dashboard).send(policy)
-      }.second
-    end
-  end
-
-  helper_method :current_admin
-
-  private
-
-  def default_root_paths
-    {
-      view_my_facilities?: my_facilities_overview_path,
-      show?: organizations_path,
-      overdue_list?: appointments_path,
-      manage_organizations?: admin_organizations_path,
-      manage_facilities?: admin_facilities_path,
-      manage_protocols?: admin_protocols_path,
-      manage_admins?: admins_path,
-      manage_users?: admin_users_path
-    }
-  end
-
-  def access_root_paths
     if current_admin.call_center_access?
       appointments_path
     else
       my_facilities_overview_path
     end
   end
+
+  helper_method :current_admin
+
+  private
 
   def current_admin
     current_email_authentication.user
