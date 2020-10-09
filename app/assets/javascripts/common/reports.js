@@ -496,10 +496,10 @@ function onePlotTooltip(config) {
     registrationsPeriodEndNode.innerHTML = periodStartNode.getAttribute("data-period-start");
   } else {
     rateNode.innerHTML = dataPoints[0].value + "%";
-    totalPatientsNode.innerHTML = Object.values(totalPatients)[dataPoints[0].index];
+    totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(totalPatients)[dataPoints[0].index]);
     periodStartNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
     periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    registrationsNode.innerHTML = Object.values(adjustedRegistrations)[dataPoints[0].index];
+    registrationsNode.innerHTML = formatNumberWithCommas(Object.values(adjustedRegistrations)[dataPoints[0].index]);
     registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
   }
 }
@@ -520,10 +520,10 @@ function twoPlotsTooltip(config) {
     monthlyRegistrationsNode.innerHTML = monthlyRegistrationsNode.getAttribute("data-monthly-registrations");
     registrationsMonthEndNode.innerHTML = registrationsMonthEndNode.getAttribute("data-registrations-month-end");
   } else {
-    totalPatientsNode.innerHTML = Object.values(cumulativeRegistrations)[dataPoints[0].index];
+    totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(cumulativeRegistrations)[dataPoints[0].index]);
     registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    monthlyRegistrationsNode.innerHTML = Object.values(monthlyRegistrations)[dataPoints[0].index];
-    registrationsMonthEndNode.innerHTML = Object.keys(monthlyRegistrations)[dataPoints[0].index];
+    monthlyRegistrationsNode.innerHTML = formatNumberWithCommas(Object.values(monthlyRegistrations)[dataPoints[0].index]);
+    registrationsMonthEndNode.innerHTML = formatNumberWithCommas(Object.keys(monthlyRegistrations)[dataPoints[0].index]);
   }
 }
 
@@ -570,12 +570,16 @@ function stackedBarChartTooltip(config) {
     visitButNoBPMeasureRateNode.innerHTML = dataPoints[2].value + "%";
     uncontrolledRateNode.innerHTML = dataPoints[1].value + "%";
     controlledRateNode.innerHTML = dataPoints[0].value + "%";
-    missedVisitsPatientsNode.innerHTML = missedVisitsPatients[dataPoints[0].index];
-    visitButNoBPMeasurePatientsNode.innerHTML = visitButNoBPMeasurePatients[dataPoints[0].index];
-    uncontrolledPatientsNode.innerHTML = uncontrolledPatients[dataPoints[0].index];
-    controlledPatientsNode.innerHTML = controlledPatients[dataPoints[0].index];
+    missedVisitsPatientsNode.innerHTML = formatNumberWithCommas(missedVisitsPatients[dataPoints[0].index]);
+    visitButNoBPMeasurePatientsNode.innerHTML = formatNumberWithCommas(visitButNoBPMeasurePatients[dataPoints[0].index]);
+    uncontrolledPatientsNode.innerHTML = formatNumberWithCommas(uncontrolledPatients[dataPoints[0].index]);
+    controlledPatientsNode.innerHTML = formatNumberWithCommas(controlledPatients[dataPoints[0].index]);
     periodStartNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_start_date);
     periodEndNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_end_date);
-    cumulativeRegistrationsNodes.forEach(node => node.innerHTML = adjustedRegistrations[dataPoints[0].index]);
+    cumulativeRegistrationsNodes.forEach(node => node.innerHTML = formatNumberWithCommas(adjustedRegistrations[dataPoints[0].index]));
   }
+}
+
+function formatNumberWithCommas(value) {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
