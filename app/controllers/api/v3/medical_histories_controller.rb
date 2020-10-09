@@ -27,8 +27,7 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
   def merge_if_valid(medical_history_params)
     validator = Api::V3::MedicalHistoryPayloadValidator.new(medical_history_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/MedicalHistory/schema_invalid")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::MedicalHistoryTransformer
