@@ -4,12 +4,14 @@ describe MarkPatientMobileNumbers, type: :model do
   it "marks non-mobile patient phone numbers as mobile" do
     mobile_number = create(:patient_phone_number, phone_type: "mobile")
     non_mobile_number = create(:patient_phone_number, phone_type: "landline")
+    nil_type_number = create(:patient_phone_number, phone_type: nil)
     Flipper.enable(:force_mark_patient_mobile_numbers)
 
     MarkPatientMobileNumbers.call
 
     expect(mobile_number.reload.phone_type).to eq("mobile")
     expect(non_mobile_number.reload.phone_type).to eq("mobile")
+    expect(nil_type_number.reload.phone_type).to eq("mobile")
 
     Flipper.disable(:force_mark_patient_mobile_numbers)
   end
@@ -25,7 +27,11 @@ describe MarkPatientMobileNumbers, type: :model do
 
   it "does nothing if feature flag is not set" do
     non_mobile_number = create(:patient_phone_number, phone_type: "landline")
+    nil_type_number = create(:patient_phone_number, phone_type: nil)
 
-    expect { MarkPatientMobileNumbers.call }.not_to change { non_mobile_number.reload.phone_type }
+    MarkPatientMobileNumbers.call
+
+    expect(non_mobile_number.reload.phone_type).to eq("landline")
+    expect(nil_type_number.reload.phone_type).to eq(nil)
   end
 end
