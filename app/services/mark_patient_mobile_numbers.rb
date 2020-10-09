@@ -4,7 +4,7 @@ class MarkPatientMobileNumbers
   end
 
   def call
-    return unless ENV["FORCE_MARK_PATIENT_MOBILE_NUMBERS"] == "true"
+    return unless Flipper.enabled?(:force_mark_patient_mobile_numbers)
 
     count = eligible_numbers.count
     notify("Force-marking #{count} as mobile numbers")
