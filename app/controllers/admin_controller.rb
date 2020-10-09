@@ -24,9 +24,9 @@ class AdminController < ApplicationController
 
   def root
     if current_admin.call_center_access?
-      appointments_path
+      redirect_to appointments_path
     else
-      my_facilities_overview_path
+      redirect_to my_facilities_overview_path
     end
   end
 
