@@ -2,11 +2,7 @@ require "rails_helper"
 
 RSpec.describe TopRegionService, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
-  let(:user) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:user) { create(:admin, :manager, :with_access, resource: organization) }
   let(:june_1) { Time.parse("June 1st, 2020") }
 
   def refresh_views

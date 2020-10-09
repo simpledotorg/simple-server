@@ -116,6 +116,6 @@ class MergePatientService
   end
 
   def log_update_discarded_patient
-    NewRelic::Agent.increment_metric("MergePatientService/update_discarded_patient")
+    Statsd.instance.increment("#{self.class}.update_discarded_patient")
   end
 end

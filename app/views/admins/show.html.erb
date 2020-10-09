@@ -2,8 +2,8 @@
 
 <div class="page-header">
   <nav class="breadcrumb">
-    <% if policy([:manage, :admin, User]).index? %><%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
-    <% end %> <i class="fas fa-chevron-right"></i> <%= admin.full_name %>
+    <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
+    <i class="fas fa-chevron-right"></i> <%= admin.full_name %>
   </nav>
 </div>
 

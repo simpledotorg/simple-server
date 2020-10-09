@@ -1,12 +1,9 @@
 class Reports::PatientListsController < AdminController
-  skip_after_action :verify_authorized
-  after_action :verify_authorization_attempted
-
   def show
     scope = if region_class == "facility_group"
-      authorize_v2 { current_admin.accessible_facility_groups(:view_pii) }
+      authorize { current_admin.accessible_facility_groups(:view_pii) }
     else
-      authorize_v2 { current_admin.accessible_facilities(:view_pii) }
+      authorize { current_admin.accessible_facilities(:view_pii) }
     end
 
     @region = scope.find_by!(slug: params[:id])

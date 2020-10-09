@@ -1,9 +1,9 @@
 require "swagger_helper"
 
 describe "Users v3 API", swagger_doc: "v3/swagger.json" do
-  let(:facility) { FactoryBot.create(:facility) }
-  let!(:supervisor) { FactoryBot.create(:admin, :supervisor, facility_group: facility.facility_group) }
-  let!(:organization_owner) { FactoryBot.create(:admin, :organization_owner, organization: facility.organization) }
+  let(:facility) { create(:facility) }
+  let!(:supervisor) { create(:admin, :manager, :with_access, resource: facility.facility_group) }
+  let!(:organization_owner) { create(:admin, :manager, :with_access, resource: facility.organization) }
 
   path "/users/find" do
     get "Find a existing user" do
@@ -12,7 +12,7 @@ describe "Users v3 API", swagger_doc: "v3/swagger.json" do
       parameter name: :id, in: :query, type: :string, description: "User UUID"
 
       let(:known_phone_number) { Faker::PhoneNumber.phone_number }
-      let!(:user) { FactoryBot.create(:user, phone_number: known_phone_number, registration_facility: facility) }
+      let!(:user) { create(:user, phone_number: known_phone_number, registration_facility: facility) }
       let(:id) { user.id }
 
       response "200", "user is found" do
@@ -51,7 +51,7 @@ describe "Users v3 API", swagger_doc: "v3/swagger.json" do
 
       response "400", "returns bad request if phone number already exists" do
         let(:used_phone_number) { Faker::PhoneNumber.phone_number }
-        let!(:existing_user) { FactoryBot.create(:user, phone_number: used_phone_number) }
+        let!(:existing_user) { create(:user, phone_number: used_phone_number) }
         let(:user) { {user: register_user_request_params(phone_number: used_phone_number, registration_facility_id: facility.id)} }
         run_test!
       end
@@ -68,7 +68,7 @@ describe "Users v3 API", swagger_doc: "v3/swagger.json" do
       tags "User"
       parameter name: :id, in: :path, description: "User UUID", type: :string
 
-      let!(:user) { FactoryBot.create(:user, registration_facility: facility) }
+      let!(:user) { create(:user, registration_facility: facility) }
 
       before :each do
         allow(RequestOtpSmsJob).to receive(:perform_later).with(instance_of(User))
@@ -94,7 +94,7 @@ describe "Users v3 API", swagger_doc: "v3/swagger.json" do
       tags "User"
       security [access_token: [], user_id: [], facility_id: []]
       parameter name: :password_digest, in: :body, schema: Api::V3::Schema.user_reset_password_request
-      let(:user) { FactoryBot.create(:user, registration_facility: facility) }
+      let(:user) { create(:user, registration_facility: facility) }
       let(:HTTP_X_USER_ID) { user.id }
       let(:HTTP_X_FACILITY_ID) { facility.id }
       let(:Authorization) { "Bearer #{user.access_token}" }
