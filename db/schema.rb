@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_09_131102) do
+ActiveRecord::Schema.define(version: 2020_10_09_131854) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -592,7 +592,6 @@ ActiveRecord::Schema.define(version: 2020_10_09_131102) do
   add_foreign_key "protocol_drugs", "protocols"
   add_foreign_key "regions", "region_types"
   add_foreign_key "teleconsultations", "facilities"
-  add_foreign_key "teleconsultations", "patients"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
