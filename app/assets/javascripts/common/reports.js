@@ -523,7 +523,7 @@ function twoPlotsTooltip(config) {
     totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(cumulativeRegistrations)[dataPoints[0].index]);
     registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
     monthlyRegistrationsNode.innerHTML = formatNumberWithCommas(Object.values(monthlyRegistrations)[dataPoints[0].index]);
-    registrationsMonthEndNode.innerHTML = formatNumberWithCommas(Object.keys(monthlyRegistrations)[dataPoints[0].index]);
+    registrationsMonthEndNode.innerHTML = Object.keys(monthlyRegistrations)[dataPoints[0].index];
   }
 }
 
