@@ -260,6 +260,9 @@ footer {
         font-size: 14px;
         padding: 6px 16px;
     }
+    .dropdown-header {
+        padding: 6px 16px;
+    }
     h1 {
         font-size: 28px;
     }
@@ -279,6 +282,9 @@ footer {
     .navbar .nav-link,
     .dropdown-item {
         font-size: 15px;
+        padding: 6px 16px;
+    }
+    .dropdown-header {
         padding: 6px 16px;
     }
     .table-compact .row-title a {

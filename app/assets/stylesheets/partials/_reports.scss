@@ -28,6 +28,7 @@
 .o-hidden { overflow: hidden; }
 // Width
 .w-12px { width: 12px; }
+.w-16px { width: 16px; }
 .w-32px { width: 32px; }
 .w-40px { width: 40px; }
 .w-48px { width: 48px; }
@@ -59,6 +60,7 @@
 .lh-1 { line-height: 1; }
 .ls-145 { letter-spacing: 1.45; }
 .ta-left { text-align: left; }
+.ta-center { text-align: center; }
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
 .c-grey-light { color: $grey-light; }
