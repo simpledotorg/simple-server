@@ -56,7 +56,8 @@ class AdminsController < AdminController
   end
 
   def destroy
-    @admin.destroy
+    authorize { current_admin.manage_organization? && current_admin.accessible_admins(:manage).find_by_id(@admin.id) }
+    @admin.discard
     redirect_to admins_url, notice: "Admin was successfully deleted."
   end
 
@@ -70,7 +71,7 @@ class AdminsController < AdminController
       return
     end
 
-    if access_level_changed? && !current_admin.modify_access_level?
+    if access_level_changed? && !current_admin.manage_organization?
       raise UserAccess::NotAuthorizedError
     end
 
