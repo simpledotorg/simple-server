@@ -5,12 +5,9 @@ class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :access_tree, :destroy]
   before_action :verify_params, only: [:update]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-
   def index
     admins = current_admin.accessible_admins(:manage)
-    authorize_v2 { admins.any? }
+    authorize { admins.any? }
 
     @admins =
       if searching?
@@ -86,7 +83,7 @@ class AdminsController < AdminController
   end
 
   def set_admin
-    @admin = authorize_v2 { current_admin.accessible_admins(:manage).find(params[:id]) }
+    @admin = authorize { current_admin.accessible_admins(:manage).find(params[:id]) }
   end
 
   def selected_facilities

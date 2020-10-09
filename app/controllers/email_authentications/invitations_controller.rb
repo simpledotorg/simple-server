@@ -2,7 +2,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   before_action :verify_params, only: [:create]
   helper_method :current_admin
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   def new
