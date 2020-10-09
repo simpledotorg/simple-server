@@ -9,12 +9,8 @@ class Admin::FacilitiesController < AdminController
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   def index
-    authorize_v2 do
+    authorize do
       current_admin.accessible_facilities(:manage).any? ||
         current_admin.accessible_facility_groups(:manage).any? ||
         current_admin.accessible_organizations(:manage).any?
@@ -59,7 +55,7 @@ class Admin::FacilitiesController < AdminController
   def new
     @facility = new_facility
 
-    authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
+    authorize { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
   end
 
   def edit
@@ -68,7 +64,7 @@ class Admin::FacilitiesController < AdminController
   def create
     @facility = new_facility(facility_params)
 
-    authorize_v2 { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
+    authorize { current_admin.accessible_facility_groups(:manage).find(@facility.facility_group.id) }
 
     if @facility.save
       redirect_to [:admin, @facility_group, @facility], notice: "Facility was successfully created."
@@ -95,7 +91,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def upload
-    authorize_v2 { current_admin.accessible_facility_groups(:manage).any? }
+    authorize { current_admin.accessible_facility_groups(:manage).any? }
 
     return render :upload, status: :bad_request if @errors.present?
 
@@ -115,7 +111,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_facility
-    @facility = authorize_v2 { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
+    @facility = authorize { current_admin.accessible_facilities(:manage).friendly.find(params[:id]) }
   end
 
   def set_facility_group
