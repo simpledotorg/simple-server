@@ -286,6 +286,11 @@ footer {
     .dropdown-item {
         font-size: 18px;
     }
+    .sub-nav {
+      margin: 0 -16px !important;
+      position: relative;
+      top: -24px;
+    }
 }
 
 @include media-breakpoint-up(md) {
@@ -295,9 +300,6 @@ footer {
     }
     .navbar {
         border-bottom: 1px solid rgba(0,0,0,0.07);
-    }
-    .navbar-nav li > a.active {
-        color: #000;
     }
     .table-compact .row-title a {
         width: 100% !important;
@@ -312,6 +314,35 @@ footer {
         font-size: 16px;
         margin-right: 6px;
     }
+}
+
+.sub-nav {
+  padding-bottom: 16px;
+  
+  .container {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 36px;
+    white-space: nowrap;
+    overflow-x: scroll;
+  }
+}
+
+.sub-nav-link {
+  display: inline-block;
+  padding: 18px 0;
+  margin-right: 16px;
+  font-size: 16px;
+  
+  &.active {
+    border-bottom: 2px solid black;
+    font-weight: bold;
+  }
+}
+
+.navbar .nav-item.active {
+  a {
+    font-weight: bold;
+  }
 }
 
 h6.dropdown-header {

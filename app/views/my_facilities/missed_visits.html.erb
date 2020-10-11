@@ -1,9 +1,14 @@
 <div class="row">
-  <div class="col-lg-12 pr-lg-0">
+  <div class="col-lg-12">
     <div class="card card-responsive">
-      <div class="row">
-        <div class="col-lg-9 pr-5 pr-md-0">
-          <h3>Missed visits</h3>
+        <div class="row">
+          <div class="col-7">
+            <h3>Missed visits</h3>
+          </div>
+          <div class="col-5 text-right text-sm">
+              Updated: <span><%= @last_updated_at %></span>
+          </div>
+        </div>
           <% case @selected_period %>
           <% when :quarter %>
             <% example_quarter = @display_periods.first %>
@@ -17,9 +22,8 @@
             <p>Patients who were registered during a month <%= "(eg: #{month_short_name_and_year(local_month_start(*example_month))})" %>,
               and had no BPs recorded in the following two months <%= "(#{following_months})" %> </p>
           <% end %>
-        </div>
 
-        <div class="mt-1 mb-3 col-lg-3">
+        
           <div class="dropdown show">
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
               <%= PeriodSelection::PERIODS[:missed_visits][@selected_period] %>
@@ -31,8 +35,6 @@
               <% end %>
             </div>
           </div>
-        </div>
-      </div>
 
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
         <colgroup>
@@ -68,7 +70,7 @@
             <% case @selected_period %>
               <% when :quarter %>
                 <% visited_in_year, visited_in_quarter = next_year_and_quarter(year, period) %>
-                <th class="row-label sort-label">No BP taken in <%= "Q#{visited_in_quarter}-#{visited_in_year}" %></th>
+                <th class="row-label sort-label">No BP taken<br>in <%= "Q#{visited_in_quarter}-#{visited_in_year}" %></th>
 
               <% when :month %>
                 <% visited_in_months =

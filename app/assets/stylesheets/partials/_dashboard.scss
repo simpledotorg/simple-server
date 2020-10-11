@@ -237,9 +237,15 @@ th sup {
 
 @include media-breakpoint-down(md) {
     .card-responsive {
-        padding: 1em 0 1em 1em;
-        margin: 0 -1em;
-        border-radius: 0;
+        
+        table {
+          margin-right: -20px !important;
+          width: auto;
+        }
+        
+        th {
+          white-space: nowrap;
+        }
     }
     .table-compact td a {
         max-width: 10em;

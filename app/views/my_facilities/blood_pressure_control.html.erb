@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-lg-12 pr-lg-0">
+  <div class="col-lg-12">
     <div class="card card-responsive">
       <% cohort_period = @selected_cohort_period[:cohort_period] %>
       <% registration_quarter =  @selected_cohort_period[:registration_quarter] %>
@@ -18,14 +18,21 @@
       <% when :quarter %>
         <%  "Q#{registration_quarter}-#{registration_year}" %>
       <% end %>
+      
+        
       <div class="row">
-        <div class="col-lg-9 pr-5 pr-md-0">
+        <div class="col-7">
           <h3>BP control</h3>
+        </div>
+        <div class="col-5 text-right text-sm">
+            Updated: <span><%= @last_updated_at %></span>
+        </div>
+      </div>
           <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:cohort_patients]) %> patients registered in <%= registration_period %>,
             at their last visit in <%= visited_in_period %>.
-        </div>
+        
 
-        <div class="mt-1 mb-3 col-lg-3">
+        
           <div class="dropdown show">
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
@@ -60,8 +67,8 @@
               <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
             </div>
           </div>
-        </div>
-      </div>
+        
+      
 
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
         <colgroup>
