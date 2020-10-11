@@ -25,7 +25,12 @@
 
         
           <div class="dropdown show">
-            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+            <!-- Filters -->
+            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="modal" data-target="#facility-filter-modal">
+              Filter facilities
+            </a>
+            
+            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <%= PeriodSelection::PERIODS[:missed_visits][@selected_period] %>
             </a>
 

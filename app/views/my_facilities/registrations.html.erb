@@ -14,8 +14,13 @@
         
         
           <div class="dropdown show">
+            <!-- Filters -->
+            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="modal" data-target="#facility-filter-modal">
+              Filter facilities
+            </a>
+            
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
-               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <%= PeriodSelection::PERIODS[:registrations][@selected_period] %>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
