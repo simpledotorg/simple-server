@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card card-responsive">
 	<div class="row">
 		<div class="col-6">
 			<h2>Drug stock</h2>
@@ -116,7 +116,15 @@
 		<p>Patients registered and stock position of protocol drugs</p>
 		
 		<div class="btn-group">
-		  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" style="min-width: 14em;" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Filter facilities
+		  </button>
+		  <div class="dropdown-menu">
+			  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Facility filters go here</button>
+		  </div>
+		</div>
+		<div class="btn-group">
+		  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Oct-2020
 		  </button>
 		  <div class="dropdown-menu">
@@ -155,8 +163,8 @@
 	<thead>
 	<tr>
 	  <th></th>
-	  <th colspan="3">ARB tablets</th>
-	  <th colspan="4">CCB tablets</th>
+	  <th colspan="3">CCB tablets</th>
+	  <th colspan="4">ARB tablets</th>
 	  <th colspan="3">Diuretic tablets</th>
 	</tr>
 	<tr data-sort-method="thead" class="sorts">
@@ -168,8 +176,8 @@
 	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>40 mg</th>
 	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Losartan<br>50 mg</th>
 	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Patient<br>days</th>
-	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">HCTZ<br>12.5 mg</th>
-	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">HCTZ<br>25 mg</th>
+	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Hydrochlor...<br>12.5 mg</th>
+	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Hydrochlor...<br>25 mg</th>
 	    <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">Patient<br>days</th>
 	</tr>
 	</thead>
