@@ -9,11 +9,15 @@ module RateLimit
 end
 
 class Rack::Attack
-  throttle('throttle_logins', RateLimit.auth_api_options) do |req|
-    req.ip if req.post? && req.path.start_with?("/email_authentications/sign_in")
+  throttle("throttle_logins", RateLimit.auth_api_options) do |req|
+    if req.post? && req.path.start_with?("/email_authentications/sign_in")
+      req.ip
+    end
   end
 
-  throttle('throttle_password_modifications', RateLimit.auth_api_options) do |req|
-    req.ip if req.path.start_with?("/email_authentications/password")
+  throttle("throttle_password_modifications", RateLimit.auth_api_options) do |req|
+    if req.path.start_with?("/email_authentications/password")
+      req.ip
+    end
   end
 end if Rails.env.production?
