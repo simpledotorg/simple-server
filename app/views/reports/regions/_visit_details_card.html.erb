@@ -103,7 +103,7 @@
             BP not controlled
           </p>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:uncontrolled_patients_rate) %>c-red<% else %>c-grey-medium<% end %> mr-lg-12px" data-uncontrolled-rate="<%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %> c-print-black">
+            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:uncontrolled_patients_rate) %>c-red<% else %>c-grey-medium<% end %> mr-lg-12px c-print-black" data-uncontrolled-rate="<%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>">
               <% if @data.last_value(:uncontrolled_patients_rate) %>
                 <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
               <% else %>
@@ -148,7 +148,7 @@
             BP controlled
           </p>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-controlled-rate="<%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %> c-print-black">
+            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px c-print-black" data-controlled-rate="<%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>">
               <% if @data.last_value(:controlled_patients_rate) %>
                 <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
               <% else %>
