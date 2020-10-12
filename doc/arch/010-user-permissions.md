@@ -1,4 +1,5 @@
 # User Permissions
+## **This permission model is deprecated** _(October 2020)_
 
 ## Context
 We are currently using a role based access control mechanism with the following roles

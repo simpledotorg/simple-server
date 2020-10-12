@@ -1,3 +1,5 @@
+## **This permission model is deprecated** _(October 2020)_
+
 All available permissions are listed in `app/policies/permissions.rb`. The file also describes a set of default access
 roles. These permissions are used in Pundit policies to authorize access and scope models accessible by the user. Each
 feature requires its own set of policies, for this we use Pundit's [namespaced policy
