@@ -235,8 +235,9 @@ th sup {
     }
 }
 
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(lg) {
     .card-responsive {
+        overflow: hidden;
         
         table {
           margin-right: -20px !important;

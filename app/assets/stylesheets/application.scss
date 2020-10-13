@@ -286,10 +286,13 @@ footer {
     .dropdown-item {
         font-size: 18px;
     }
-    .sub-nav {
-      margin: 0 -16px !important;
-      position: relative;
-      top: -24px;
+}
+
+@include media-breakpoint-down(md) {
+  .sub-nav {
+    margin: 0 -16px !important;
+    position: relative;
+    top: -24px;
     }
 }
 
