@@ -44,8 +44,10 @@ module Reports
 
     def notify(msg)
       data = {
-        "logger.name" => self.class.name,
-        :class => self.class.name
+        logger: {
+          name: self.class.name,
+        },
+        class: self.class.name
       }.merge(msg: msg)
       Rails.logger.info data
     end
