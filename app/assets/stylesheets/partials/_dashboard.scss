@@ -99,8 +99,7 @@ th sup {
             word-break: break-word;
             text-transform: none;
             letter-spacing: 0;
-            font-size: 13px;
-            white-space: nowrap;
+            font-size: 14px;
 
             i {
                 margin-left: 4px;
@@ -135,6 +134,13 @@ th sup {
         th.sort-label.sort-label-small {
           padding: 8px;
           min-width: 40px;
+        }
+        
+        .row-medicine {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 6em;
+          white-space: nowrap;
         }
 
         a {
@@ -210,29 +216,20 @@ th sup {
     td.type-percent {
       text-align: center;
     }
-    
-    td.type-title {
-      a {
-        display: block;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        max-width: 6em;
-      }
-    }
 
     td.type-percent em {
       font-style: normal;
+      background: #F1DBFF;
+      color: #BE72E3;
       border-radius: 100px;
       padding: 2px;
       width: 3.5em;
       display: block;
+    }
+
+    .row-total td.type-percent em {
       background: rgba(0,0,0,0.1);
       color: rgba(0,0,0,0.6);
-    }
-    
-    td.type-percent-warning em {
-      background: $red;
-      color: #fff;
     }
 
     td.type-rank i {
@@ -260,9 +257,15 @@ th sup {
 
 @include media-breakpoint-down(md) {
     .card-responsive {
-        padding: 1em 0 1em 1em;
-        margin: 0 -1em;
-        border-radius: 0;
+        
+        table {
+          margin-right: -20px !important;
+          width: auto;
+        }
+        
+        th {
+          white-space: nowrap;
+        }
     }
     .table-compact td a {
         max-width: 10em;
@@ -460,7 +463,7 @@ th[aria-sort]:not(.no-sort):hover:after {
 // Reverse the arrows since we default to descending
 th[role=columnheader]:not(.no-sort):after,
 th[aria-sort=descending]:not(.no-sort):after {
-	border-width: 4px 4px 0;
+  border-width: 4px 4px 0;
 }
 
 th[aria-sort=ascending]:not(.no-sort):after {
