@@ -4,10 +4,7 @@ module Reports
       new.call
     end
 
-    def self.create_slack_notifier
-      return if ENV["SLACK_ALERTS_WEBHOOK_URL"].blank?
-      Slack::Notifier.new(ENV["SLACK_ALERTS_WEBHOOK_URL"], channel: "#alerts", username: "simple-server")
-    end
+    BATCH_SIZE = 100
 
     def initialize(period: RegionService.default_period)
       @start_time = Time.current
@@ -54,14 +51,14 @@ module Reports
     end
 
     def cache_facility_groups
-      FacilityGroup.all.each do |region|
+      FacilityGroup.find_each(batch_size: BATCH_SIZE).each do |region|
         RegionService.new(region: region, period: period).call
         Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
       end
     end
 
     def cache_facilities
-      Facility.all.each do |region|
+      Facility.find_each(batch_size: BATCH_SIZE).each do |region|
         RegionService.new(region: region, period: period).call
         Statsd.instance.increment("region_cache_warmer.facilities.cache")
       end
