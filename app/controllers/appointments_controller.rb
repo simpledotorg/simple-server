@@ -4,14 +4,10 @@ class AppointmentsController < AdminController
 
   before_action :set_appointment, only: [:update]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-  after_action :verify_authorization_attempted
-
   DEFAULT_SEARCH_FILTERS = ["only_less_than_year_overdue"]
 
   def index
-    authorize_v2 { current_admin.accessible_facilities(:manage_overdue_list).any? }
+    authorize { current_admin.accessible_facilities(:manage_overdue_list).any? }
 
     @search_filters = index_params[:search_filters] || []
     # We have to check to see this is the first page load where we want to apply default search filters. This
@@ -59,7 +55,7 @@ class AppointmentsController < AdminController
 
   def set_appointment
     @appointment = Appointment.find(params[:id] || params[:appointment_id])
-    authorize_v2 { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
+    authorize { current_admin.accessible_facilities(:manage_overdue_list).include?(@appointment.facility) }
   end
 
   def appointment_params

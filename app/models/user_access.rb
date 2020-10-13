@@ -130,7 +130,7 @@ class UserAccess
     LEVELS[user.access_level.to_sym][:grant_access]
   end
 
-  def modify_access_level?
+  def manage_organization?
     power_user? || user.accessible_organizations(:manage).any?
   end
 

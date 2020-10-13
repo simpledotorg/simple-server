@@ -2,11 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::RegionCacheWarmer, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
-  let(:user) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:user) { create(:admin, :manager, :with_access, resource: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   let(:jan_2019) { Time.parse("January 1st, 2019") }
