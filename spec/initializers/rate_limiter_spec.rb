@@ -28,7 +28,7 @@ describe "RateLimiter", type: :controller do
       }
 
       before(:each, type: :controller) do
-        @request.remote_addr = '127.0.0.1'
+        @request.remote_addr = "127.0.0.1"
       end
 
       context "number of requests is lower than the limit" do
@@ -70,7 +70,7 @@ describe "RateLimiter", type: :controller do
       }
 
       before(:each, type: :controller) do
-        @request.remote_addr = '127.0.0.1'
+        @request.remote_addr = "127.0.0.1"
       end
 
       context "reset password" do
