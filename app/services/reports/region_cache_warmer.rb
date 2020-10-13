@@ -10,12 +10,11 @@ module Reports
     end
 
     def initialize(period: RegionService.default_period)
-      @notifier = self.class.create_slack_notifier
       @start_time = Time.current
       @period = period
       @original_force_cache = RequestStore.store[:force_cache]
       RequestStore.store[:force_cache] = true
-      notify "#{self.class.name} Starting ..."
+      notify "start"
     end
 
     attr_reader :original_force_cache, :period
@@ -47,18 +46,24 @@ module Reports
     private
 
     def notify(msg)
-      Rails.logger.info msg: msg, class: self.class.name
+      data = {
+        "logger.name" => self.class.name,
+        :class => self.class.name
+      }.merge(msg: msg)
+      Rails.logger.info data
     end
 
     def cache_facility_groups
       FacilityGroup.all.each do |region|
         RegionService.new(region: region, period: period).call
+        Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
       end
     end
 
     def cache_facilities
       Facility.all.each do |region|
         RegionService.new(region: region, period: period).call
+        Statsd.instance.increment("region_cache_warmer.facilities.cache")
       end
     end
   end
