@@ -17,7 +17,7 @@ Rails.application.configure do
   end
   config.lograge.formatter = Class.new do |fmt|
     def fmt.call(data)
-      {msg: nil}.merge(data)
+      {msg: "request"}.merge(data)
     end
   end
 end
