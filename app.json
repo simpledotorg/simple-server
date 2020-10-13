@@ -151,7 +151,7 @@
       "value": "Simple Server (Review)"
     },
     "OWNER_EMAILS": {
-      "value": "Govind <govind@simple.org>, Srihari <srihari@simple.org>, Tim <tcheadle@resolvetosavelives.org>, Daniel <dburka@resolvetosavelives.org>, Deepa <deepa@simple.org>, Akshay <akshay@uncommon.is>"
+      "value": "Test Owner <test.owner@example.com>"
     },
     "PROGRAM_INCEPTION_DATE": {
       "value": "2018-01-01"
@@ -208,7 +208,7 @@
       "value": "https"
     },
     "SUPERVISOR_EMAILS": {
-      "value": "Dr. Bidisha Sumu <bidishasumu@gmail.com>, Dr. Capt. Ruchi Mehrotra <cvhogurdaspur@ihmi.in>"
+      "value": "Test Supervisor <test.supervisor@example.com>"
     },
     "USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES": {
       "value": "360"
