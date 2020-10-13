@@ -1,7 +1,7 @@
 <%= render "header" %>
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="bp-controlled" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div id="bp-controlled" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
           <h3 class="mb-0px">
@@ -31,7 +31,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 of
                 <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -42,7 +42,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No BP controlled data available
               </p>
             <% end %>
@@ -64,10 +64,10 @@
         </div>
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
-            <p class="mb-8px fs-14px c-grey-dark">
+            <p class="mb-8px fs-14px c-grey-dark c-print-black">
               <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
             </p>
-            <p class="fs-14px c-grey-dark">
+            <p class="fs-14px c-grey-dark c-print-black">
               <% if @region.is_a?(Facility) %>
                 <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
               <% else %>
@@ -80,7 +80,7 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="bp-uncontrolled" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div id="bp-uncontrolled" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
           <h3 class="mb-9px">
@@ -110,7 +110,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 of
                 <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
@@ -121,7 +121,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No BP not controlled data available
               </p>
             <% end %>
@@ -143,10 +143,10 @@
         </div>
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
-            <p class="mb-8px fs-14px c-grey-dark">
+            <p class="mb-8px fs-14px c-grey-dark c-print-black">
               <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
             </p>
-            <p class="fs-14px c-grey-dark">
+            <p class="fs-14px c-grey-dark c-print-black">
               <% if @region.is_a?(Facility) %>
                 <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
               <% else %>
@@ -159,7 +159,7 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="missed-visits" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div id="missed-visits" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
           <h3 class="mb-0px">
@@ -189,7 +189,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 of
                 <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
@@ -200,7 +200,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No missed visits data available
               </p>
             <% end %>
@@ -213,10 +213,10 @@
         </div>
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
-            <p class="mb-8px fs-14px c-grey-dark">
+            <p class="mb-8px fs-14px c-grey-dark c-print-black">
               <strong>Numerator:</strong> Patients with no visit in >3 months
             </p>
-            <p class="fs-14px c-grey-dark">
+            <p class="fs-14px c-grey-dark c-print-black">
               <% if @region.is_a?(Facility) %>
                 <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
               <% else %>
@@ -229,7 +229,7 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="cumulative-registrations" class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+    <div id="cumulative-registrations" class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="mb-16px">
           <h3 class="mb-0px">
@@ -256,7 +256,7 @@
                   <%= @data.last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
-              <p class="m-0px c-grey-dark">
+              <p class="m-0px c-grey-dark c-print-black">
                 <span data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:registrations)) %>
                 </span>
@@ -266,7 +266,7 @@
                 </span>
               </p>
             <% else %>
-              <p class="m-0px c-grey-medium">
+              <p class="m-0px c-grey-medium c-print-black">
                 No registration data available
               </p>
             <% end %>
@@ -279,13 +279,13 @@
       <div class="px-20px pb-8px pb-lg-0">
         <div class="d-flex">
           <div class="h-12px w-12px mr-8px b-2px bc-purple br-6px"></div>
-          <p class="fs-14px lh-1 c-grey-dark">
+          <p class="fs-14px lh-1 c-grey-dark c-print-black">
             Cumulative registrations
           </p>
         </div>
         <div class="d-flex">
           <div class="h-12px w-12px mr-8px bg-purple-light br-2px"></div>
-          <p class="fs-14px lh-1 c-grey-dark">
+          <p class="fs-14px lh-1 c-grey-dark c-print-black">
             Monthly registrations
           </p>
         </div>
