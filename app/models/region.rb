@@ -28,6 +28,7 @@ class Region < ApplicationRecord
     attrs["id"] = id.presence
     attrs["region_type"] = type.name
     attrs["valid"] = valid?
+    attrs["errors"] = errors.full_messages.join(",") if errors.any?
     attrs.symbolize_keys
   end
 end
