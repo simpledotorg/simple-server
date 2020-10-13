@@ -44,7 +44,7 @@ module Reports
     def notify(msg, extra = {})
       data = {
         logger: {
-          name: self.class.name,
+          name: self.class.name
         },
         class: self.class.name
       }.merge(extra).merge(msg: msg)
