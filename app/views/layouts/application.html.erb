@@ -63,7 +63,7 @@
         
           <!-- REPORTS -->
           <li class="nav-item">
-              <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("regions")}") do %>
+              <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("reports/regions")}") do %>
                 Reports
               <% end %>
           </li>
@@ -99,13 +99,13 @@
               <% end %>
               
               <% if current_admin.accessible_facilities(:manage).any? || current_admin.power_user? %>
-                <%= link_to (admins_path), class: "dropdown-item #{active_controller?("email_authentications")}" do %>
+                <%= link_to (admins_path), class: "dropdown-item #{active_controller?("admins")}" do %>
                   <i class="fas fa-user-friends"></i> Dashboard admins
                 <% end %>
               <% end %>
               
               <% if current_admin.accessible_users(:manage).any? || current_admin.power_user? %>
-                <%= link_to (admin_users_path), class: "dropdown-item #{active_controller?("users")}" do %>
+                <%= link_to (admin_users_path), class: "dropdown-item #{active_controller?("admin/users")}" do %>
                   <i class="fas fa-user-md"></i> Mobile app users
                 <% end %> 
               <% end %>

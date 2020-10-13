@@ -342,10 +342,9 @@ footer {
   }
 }
 
-.navbar .nav-item.active {
-  a {
+.navbar .nav-item.active a,
+.navbar .nav-item a.active {
     font-weight: bold;
-  }
 }
 
 h6.dropdown-header {
