@@ -102,7 +102,7 @@ describe "RateLimiter", type: :controller do
 
           it "changes the request status to 429 for a PUT" do
             (limit * 2).times do |i|
-              post "/email_authentications/password"
+              put "/email_authentications/password"
 
               if i > limit
                 expect(last_response.status).to eq(429)
