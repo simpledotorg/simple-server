@@ -8,10 +8,6 @@ describe "RateLimiter", type: :controller do
     Rails.application
   end
 
-  before(:each) do
-    allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("production"))
-  end
-
   describe "throttle authentication APIs" do
     context "admin logins by IP address" do
       let(:limit) { 5 }

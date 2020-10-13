@@ -7,28 +7,26 @@ module RateLimit
   end
 end
 
-if Rails.env.production?
-  class Rack::Attack
-    self.throttled_response = lambda do |_request|
-      [429, {}, ["Too many requests. Please wait and try again later.\n"]]
-    end
+class Rack::Attack
+  self.throttled_response = lambda do |_request|
+    [429, {}, ["Too many requests. Please wait and try again later.\n"]]
+  end
 
-    throttle("throttle_logins", RateLimit.auth_api_options) do |req|
-      if req.post? && req.path.start_with?("/email_authentications/sign_in")
-        req.ip
-      end
+  throttle("throttle_logins", RateLimit.auth_api_options) do |req|
+    if req.post? && req.path.start_with?("/email_authentications/sign_in")
+      req.ip
     end
+  end
 
-    throttle("throttle_password_edit", RateLimit.auth_api_options) do |req|
-      if req.get? && req.path.start_with?("/email_authentications/password/edit")
-        req.ip
-      end
+  throttle("throttle_password_edit", RateLimit.auth_api_options) do |req|
+    if req.get? && req.path.start_with?("/email_authentications/password/edit")
+      req.ip
     end
+  end
 
-    throttle("throttle_password_reset", RateLimit.auth_api_options) do |req|
-      if (req.post? || req.put?) && req.path.start_with?("/email_authentications/password")
-        req.ip
-      end
+  throttle("throttle_password_reset", RateLimit.auth_api_options) do |req|
+    if (req.post? || req.put?) && req.path.start_with?("/email_authentications/password")
+      req.ip
     end
   end
 end
