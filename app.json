@@ -180,6 +180,9 @@
     "SENTRY_ENV": {
       "value": "review"
     },
+    "SENTRY_SECURITY_HEADER_ENDPOINT": {
+      "value": "review"
+    },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
     },
