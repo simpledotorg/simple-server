@@ -355,7 +355,11 @@ h6.dropdown-header {
 .dropdown i {
     min-width: 3em;
     text-align: center;
-    color: $grey-dark;
+    color: $blue;
+}
+
+.dropdown .active i {
+  color: #fff;
 }
 
 .light {
