@@ -2,18 +2,30 @@
 <div class="sub-nav">
   <div class="container">
     <div class="px-3 px-md-0">
+      
+        <!--OVERVIEW-->
         <%= link_to 'Overview', my_facilities_overview_path,
             class: "sub-nav-link #{active_action?("index")}" %>
+        
+        <!--RANKED FACILITIES-->    
+        <% if current_admin.feature_enabled?(:ranked_facilities) %>
+              <%= link_to "Ranked facilities", my_facilities_ranked_facilities_path(preserve_query_params(request.query_parameters, ["size"])),
+              class: "sub-nav-link #{active_action?("ranked_facilities")}" %>
+        <% end %>
+        
+        <!--BP CONTROL-->
         <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
             class: "sub-nav-link #{active_action?("blood_pressure_control")}" %>
+        
+        <!--MISSED VISITS-->
         <%= link_to 'Missed visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
             class: "sub-nav-link #{active_action?("missed_visits")}" %>
+        
+        <!--REGISTRATIONS-->
         <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
             class: "sub-nav-link #{active_action?("registrations")}" %>
-        <a href="#" class="sub-nav-link">Ranked facilities</a>
-        <a href="#" class="sub-nav-link">Treatment inertia</a>
-        <a href="#" class="sub-nav-link">Drug stock</a>
-        <span class="sub-nav-link">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            
+        <span class="sub-nav-link mobile">&nbsp;&nbsp;&nbsp;&nbsp;</span>
     </div>
   </div>
 </div>
