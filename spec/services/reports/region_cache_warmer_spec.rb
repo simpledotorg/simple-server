@@ -64,7 +64,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     end
 
     refresh_views
-    Timecop.freeze(june_1) do
+    Timecop.travel(june_1) do
       Reports::RegionCacheWarmer.call
     end
   end
