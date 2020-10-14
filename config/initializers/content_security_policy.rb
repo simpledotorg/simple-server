@@ -18,6 +18,6 @@ if Rails.env.production?
     policy.report_uri(report_uri.to_s)
   end
 
-  Rails.application.config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
+  Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
   Rails.application.config.content_security_policy_report_only = false
 end
