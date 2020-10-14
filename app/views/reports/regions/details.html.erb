@@ -5,24 +5,16 @@
                blood_pressures: @recent_blood_pressures,
                display_model: :facility %>
   <% end %>
+<% else %>
+  <%= render "facility_activity_table",
+              dashboard_analytics: @dashboard_analytics,
+              period: @period.type,
+              row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
+              row_resource_title: "Facility activity",
+              row_resource_description: "Registration and follow-up activity at facilities in #{@region.name}",
+              row_resource_display_field: :name,
+              row_resource_link: :reports_region_facility_path %>
 <% end %>
-
-<% unless @region.is_a?(Facility) %>
-  <%= render "follow_ups_table",
-             dashboard_analytics: @dashboard_analytics,
-             period: @period.type,
-             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-             row_resource_display_field: :name,
-             row_resource_link: :reports_region_facility_path %>
-  <%= render "registrations_table",
-             dashboard_analytics: @dashboard_analytics,
-             period: @period.type,
-             row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-             row_resource_display_field: :name,
-             row_resource_link: :reports_region_facility_path %>
-<% end %>
-
-
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
