@@ -78,6 +78,9 @@
     "ENABLE_EXOTEL_WHITELIST_API": {
       "value": "false"
     },
+    "ENABLE_FIXED_OTP_ON_REQUEST_FOR_QA" : {
+      "value": "true"
+    },
     "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
       "value": "true"
     },
