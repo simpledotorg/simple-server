@@ -6,15 +6,16 @@
 if Rails.env.production?
   Rails.application.config.content_security_policy do |policy|
     policy.default_src(:self, :https)
+    policy.base_uri(:self, :https)
     policy.font_src(:self, :https, :data)
     policy.img_src(:self, :https, :data)
     policy.object_src(:none)
-    policy.script_src(:self, :https)
+    policy.script_src(:self, :https, :unsafe-inline)
     policy.style_src(:self, :https, :unsafe_inline)
 
-    # report_uri = Addressable::URI.parse(ENV["SENTRY_SECURITY_HEADER_ENDPOINT"])
-    # report_uri.query_values = report_uri.query_values&.merge(sentry_environment: ENV["SENTRY_CURRENT_ENV"])
-    # policy.report_uri(report_uri.to_s)
+    report_uri = Addressable::URI.parse(ENV["SENTRY_SECURITY_HEADER_ENDPOINT"])
+    report_uri.query_values = report_uri.query_values&.merge(sentry_environment: ENV["SENTRY_CURRENT_ENV"])
+    policy.report_uri(report_uri.to_s)
   end
 
   Rails.application.config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
