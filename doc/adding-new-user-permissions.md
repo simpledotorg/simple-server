@@ -1,4 +1,7 @@
-## **This permission model is deprecated** _(October 2020)_
+## This permission model is deprecated (October 2020)
+replaced by [simplified permissions](https://docs.google.com/document/d/1r5Vq1UzRTj4nkpzUxkyM5dtKPMKkm7u8GfOvoYEsais/edit)
+
+---
 
 All available permissions are listed in `app/policies/permissions.rb`. The file also describes a set of default access
 roles. These permissions are used in Pundit policies to authorize access and scope models accessible by the user. Each

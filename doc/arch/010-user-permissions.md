@@ -1,5 +1,8 @@
 # User Permissions
-## **This permission model is deprecated** _(October 2020)_
+## This permission model is deprecated (October 2020)
+replaced by [simplified permissions](https://docs.google.com/document/d/1r5Vq1UzRTj4nkpzUxkyM5dtKPMKkm7u8GfOvoYEsais/edit)
+
+---
 
 ## Context
 We are currently using a role based access control mechanism with the following roles
