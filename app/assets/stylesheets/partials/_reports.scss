@@ -28,6 +28,7 @@
 .o-hidden { overflow: hidden; }
 // Width
 .w-12px { width: 12px; }
+.w-16px { width: 16px; }
 .w-32px { width: 32px; }
 .w-40px { width: 40px; }
 .w-48px { width: 48px; }
@@ -38,8 +39,10 @@
 .h-10pt { height: 10%; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
+.h-300px { height: 300px; } 
 .h-250px { height: 250px; }
 // Spacing
+.mb-20px { margin-bottom: 20px; }
 .mx-20px { margin-right: 20px; margin-left: 20px; }
 .mr-4px { margin-right: 4px; }
 .mr-8px { margin-right: 8px; }
@@ -51,11 +54,13 @@
 .fs-20px { font-size: 20px; }
 .fs-xlarge { font-size: 24px; }
 .fs-28px { font-size: 28px; }
+.fs-32px { font-size: 32px; }
 .fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
 .lh-1 { line-height: 1; }
 .ls-145 { letter-spacing: 1.45; }
 .ta-left { text-align: left; }
+.ta-center { text-align: center; }
 .c-grey-dark { color: $grey-dark; }
 .c-grey-medium { color: $grey-mid; }
 .c-grey-light { color: $grey-light; }
@@ -101,6 +106,8 @@
 .bg-grey-dark { background-color: $grey-dark; }
 // Shadows
 .bs-small { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
+// Other
+.c-pointer { cursor: pointer; }
 // Media queries
 // Large
 @media screen and (min-width: 992px) {
@@ -133,12 +140,14 @@
   .w-lg-50 { width: 50%; }
   .w-lg-full { width: 100%; }
   .w-lg-auto { width: auto; }
+  .h-lg-auto { height: auto; }
   .h-lg-34px { height: 34px; }
   .h-lg-380px { height: 380px; }
   .h-lg-full { width: 100%; }
   // Spacing
   .mt-lg-0px { margin-top: 0px; }
   .mt-lg-16px { margin-top: 16px; }
+  .mr-lg-12px { margin-right: 12px; }
   .mr-lg-24px { margin-right: 24px; }
   .mb-lg-0 { margin-bottom: 0; }
   .mb-lg-4px { margin-bottom: 4px; }
@@ -148,7 +157,12 @@
   .ml-lg-8px { margin-left: 8px; }
   .ml-lg-24px { margin-left: 24px; }
   .pt-lg-16px { padding-top: 16px; }
+  .pr-lg-20px { padding-right: 20px; }
+  .pl-lg-0px { padding-left: 0px; }
+  .pl-lg-12px { padding-left: 12px; }
+  .pl-lg-20px { padding-left: 20px; }
   .pb-lg-0 { padding-bottom: 0; }
+  .py-lg-20px { padding-top: 20px; padding-bottom: 20px; }
   // Typography
   .fw-lg-bold { font-weight: 700; }
   .tt-lg-uppercase { text-transform: uppercase; }

@@ -3,12 +3,10 @@ require "rails_helper"
 RSpec.describe Api::V3::UsersController, type: :controller do
   require "sidekiq/testing"
 
-  let(:supervisor) { create(:admin, :supervisor) }
-  let(:organization_owner) { create(:admin, :organization_owner) }
   let(:facility) { create(:facility) }
-  let!(:owner) { create(:admin, :owner) }
-  let!(:supervisor) { create(:admin, :supervisor, facility_group: facility.facility_group) }
-  let!(:organization_owner) { create(:admin, :organization_owner, organization: facility.organization) }
+  let!(:owner) { create(:admin, :power_user) }
+  let!(:supervisor) { create(:admin, :manager, :with_access, resource: facility.facility_group) }
+  let!(:organization_owner) { create(:admin, :manager, :with_access, resource: facility.organization) }
 
   describe "#register" do
     describe "registration payload is invalid" do

@@ -47,23 +47,28 @@ module Mergeable
       find(attributes["id"])
     end
 
+    def increment_metric(event)
+      Statsd.instance.increment("merge.#{self}.#{event}")
+    end
+
     def discarded_record(record)
       logger.debug "#{self} with id #{record.id} is already discarded"
-      NewRelic::Agent.increment_metric("Merge/#{self}/discarded")
+      increment_metric(:discarded)
       record.merge_status = :discarded
       record
     end
 
     def invalid_record(new_record)
       logger.debug "#{self} with id #{new_record.id} is invalid"
-      NewRelic::Agent.increment_metric("Merge/#{self}/invalid")
+      increment_metric(:invalid)
       new_record.merge_status = :invalid
       new_record
     end
 
     def create_new_record(attributes)
       logger.debug "#{self} with id #{attributes["id"]} is new, creating."
-      NewRelic::Agent.increment_metric("Merge/#{self}/new")
+      increment_metric(:new)
+
       record = create(attributes)
       record.merge_status = :new
       record
@@ -71,7 +76,7 @@ module Mergeable
 
     def update_existing_record(existing_record, attributes)
       logger.debug "#{self} with id #{existing_record.id} is existing, updating."
-      NewRelic::Agent.increment_metric("Merge/#{self}/updated")
+      increment_metric(:updated)
       existing_record.update(attributes)
       existing_record.merge_status = :updated
       existing_record
@@ -79,7 +84,7 @@ module Mergeable
 
     def return_old_record(existing_record)
       logger.debug "#{self} with id #{existing_record.id} is old, keeping existing."
-      NewRelic::Agent.increment_metric("Merge/#{self}/old")
+      increment_metric(:old)
       existing_record.touch
       existing_record.merge_status = :old
       existing_record

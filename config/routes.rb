@@ -142,14 +142,8 @@ Rails.application.routes.draw do
   end
 
   resources :appointments, only: [:index, :update]
-  resources :patients do
-    collection do
-      get :lookup
-    end
-  end
 
-  resources :organizations, only: [:index], path: "dashboard"
-
+  get "/dashboard", to: redirect("/reports/regions/")
   get "/dashboard/districts/", to: redirect("/reports/districts/")
   get "/dashboard/districts/:slug", to: redirect("/reports/districts/%{slug}")
   get "/reports/districts/", to: redirect("/reports/regions/")
@@ -207,24 +201,12 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :email_authentication, ->(a) {
-    if a.user.permissions_v2_enabled?
-      a.user.power_user?
-    else
-      a.user.has_permission?(:view_sidekiq_ui)
-    end
-  } do
+  authenticate :email_authentication, ->(a) { a.user.power_user? } do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
   end
 
-  authenticate :email_authentication, ->(a) {
-    if a.user.permissions_v2_enabled?
-      a.user.power_user?
-    else
-      a.user.has_permission?(:view_flipper_ui)
-    end
-  } do
+  authenticate :email_authentication, ->(a) { a.user.power_user? } do
     mount Flipper::UI.app(Flipper) => "/flipper"
   end
 end

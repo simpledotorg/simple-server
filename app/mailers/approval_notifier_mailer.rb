@@ -23,34 +23,24 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   private
 
-  # permissions_users are admins as per the old permissions system
-  # accesses_users are admins as per the new permissions system
-  # we need to send emails to the superset of the two till we flip everyone over to new permissions
-
   def supervisor_emails
-    permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.facility_group).map(&:user)
-    accesses_users = User.admins.manager_access
+    User.admins.manager_access
       .select { |admin| admin.accessible_facilities(:manage).include?(user.facility) }
       .reject { |admin| admin.accesses.map(&:resource).include?(user.organization) }
-
-    users = (permissions_users + accesses_users).uniq.compact
-    users.map(&:email).join(",")
+      .map(&:email)
+      .join(",")
   end
 
   def organization_owner_emails
-    permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: user.organization).map(&:user)
-    accesses_users = User.admins.manager_access
+    User.admins.manager_access
       .select { |admin| admin.accessible_organizations(:manage).where(id: user.organization).any? }
-
-    users = (permissions_users + accesses_users).uniq.compact
-    users.map(&:email).join(",")
+      .map(&:email)
+      .join(",")
   end
 
   def owner_emails
-    permissions_users = UserPermission.where(permission_slug: :approve_health_workers, resource: nil).map(&:user)
-    accesses_users = User.admins.power_user_access
-
-    users = (permissions_users + accesses_users).uniq.compact
-    users.map(&:email).join(",")
+    User.admins.power_user_access
+      .map(&:email)
+      .join(",")
   end
 end

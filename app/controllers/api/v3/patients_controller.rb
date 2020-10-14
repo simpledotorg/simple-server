@@ -48,9 +48,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
     validator_params = single_patient_params.merge(request_user_id: current_user.id)
     validator = Api::V3::PatientPayloadValidator.new(validator_params)
 
-    if validator.invalid?
+    if validator.check_invalid?
       logger.debug "Patient had errors: #{validator.errors_hash}"
-      NewRelic::Agent.increment_metric("Merge/Patient/schema_invalid")
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V3::PatientTransformer.from_nested_request(single_patient_params)

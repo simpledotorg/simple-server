@@ -21,7 +21,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
   context "Admin User landing page" do
     before(:each) do
-      visit organizations_path
+      visit reports_regions_path
       login_page.do_login(owner.email, owner.password)
       navigation.select_manage_option("Users")
     end

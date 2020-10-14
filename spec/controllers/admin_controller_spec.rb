@@ -2,12 +2,10 @@ require "rails_helper"
 
 RSpec.describe AdminController, type: :controller do
   controller do
-    skip_after_action :verify_authorized
-    skip_after_action :verify_policy_scoped
     after_action :verify_authorization_attempted, only: [:not_authorized, :authorized, :authorization_not_attempted]
 
     def not_authorized
-      authorize_v2 do
+      authorize do
         false
       end
 
@@ -15,7 +13,7 @@ RSpec.describe AdminController, type: :controller do
     end
 
     def record_not_found
-      authorize_v2 do
+      authorize do
         Facility.find(SecureRandom.uuid)
       end
 
@@ -23,7 +21,7 @@ RSpec.describe AdminController, type: :controller do
     end
 
     def authorized
-      authorize_v2 do
+      authorize do
         true
       end
 
@@ -41,7 +39,7 @@ RSpec.describe AdminController, type: :controller do
     sign_in(user.email_authentication)
   end
 
-  context "authorize_v2" do
+  context "authorize" do
     it "redirects to root_path when falsey is returned" do
       routes.draw { get "not_authorized" => "admin#not_authorized" }
 
@@ -73,7 +71,7 @@ RSpec.describe AdminController, type: :controller do
   end
 
   context "#verify_authorization_attempted" do
-    it "raises an error if authorize_v2 is not called but required" do
+    it "raises an error if authorize is not called but required" do
       routes.draw { get "authorization_not_attempted" => "admin#authorization_not_attempted" }
 
       expect {

@@ -53,7 +53,7 @@
       <%= access_level_select(form, current_admin.permitted_access_levels,
           {
               required: true,
-              disabled: !current_admin.modify_access_level?,
+              disabled: !current_admin.manage_organization?,
               current_access_level: admin.access_level
           }) %>
 
@@ -78,6 +78,10 @@
           <% end %>
         </div>
       </div>
+
+      <% if current_admin.manage_organization? && current_admin.accessible_admins(:manage).find_by_id(admin.id) %>
+        <%= link_to 'Delete Admin', admin_path(admin), method: :delete, data: {confirm: "Are you sure you want to delete #{@admin.full_name}?"}, class: "btn btn-danger" %>
+      <% end %>
 
       <%= form.submit "Send Invite", class: "btn btn-primary", id: "form-submit", hidden: :hidden %>
     <% end %>
