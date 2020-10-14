@@ -181,7 +181,7 @@
       "value": "review"
     },
     "SENTRY_SECURITY_HEADER_ENDPOINT": {
-      "value": "review"
+      "value": "https://o152587.ingest.sentry.io/api/1217715/security/?sentry_key=67a72e806c7a427db73a0342ddc3f965"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
