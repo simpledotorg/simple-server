@@ -10,7 +10,7 @@ if Rails.env.production?
     policy.font_src(:self, :https, :data)
     policy.img_src(:self, :https, :data)
     policy.object_src(:none)
-    policy.script_src(:self, :https, :unsafe-inline)
+    policy.script_src(:self, :https, :unsafe_inline)
     policy.style_src(:self, :https, :unsafe_inline)
 
     report_uri = Addressable::URI.parse(ENV["SENTRY_SECURITY_HEADER_ENDPOINT"])
