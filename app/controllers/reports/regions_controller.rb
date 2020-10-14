@@ -34,7 +34,7 @@ class Reports::RegionsController < AdminController
                                                         period: @period).call
       }
     else
-      @show_current_period = false
+      @show_current_period = true 
       @dashboard_analytics = @region.dashboard_analytics(period: :month,
                                                          prev_periods: 6,
                                                          include_current_period: false)
@@ -44,6 +44,7 @@ class Reports::RegionsController < AdminController
   def details
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
+    @show_current_period = true
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
     if @region.is_a?(Facility)
