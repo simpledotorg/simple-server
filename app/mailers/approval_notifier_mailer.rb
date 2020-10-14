@@ -2,7 +2,7 @@ class ApprovalNotifierMailer < ApplicationMailer
   attr_reader :user
 
   def registration_approval_email(user_id:)
-    if ENV["SIMPLE_SERVER_ENV"] == "production"
+    if SIMPLE_SERVER_ENV == "production"
       @user = User.find(user_id)
       subject = I18n.t("registration_approval_email.subject",
         full_name: @user.full_name,

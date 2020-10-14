@@ -34,7 +34,7 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
       end
 
       context "production env" do
-        before { stub_const("ENV", ENV.to_hash.merge("SIMPLE_SERVER_ENV" => "production")) }
+        before { stub_const("SIMPLE_SERVER_ENV", "production") }
 
         let(:mail) { described_class.registration_approval_email(user_id: user.id) }
 
