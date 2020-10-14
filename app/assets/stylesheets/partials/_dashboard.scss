@@ -219,6 +219,11 @@ th sup {
       width: 3.5em;
       display: block;
     }
+    
+    td.type-title a {
+      max-width: 8em;
+      text-overflow: ellipsis;
+    }
 
     .row-total td.type-percent em {
       background: rgba(0,0,0,0.1);

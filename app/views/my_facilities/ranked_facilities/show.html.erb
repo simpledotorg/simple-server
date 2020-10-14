@@ -17,6 +17,7 @@
         <colgroup>
           <col>
           <col>
+          <col>
           <col class="table-divider">
           <col>
           <col class="table-divider">
@@ -38,8 +39,8 @@
             <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
           </tr>
           <tr data-sort-method="thead" class="sorts">
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Rank</th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Score</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default>Rank</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score">Score</th>
             <th class="row-label sort-label">Facilities</th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
               Patients with BP<br>&lt;140/90 in <%= @period %>
@@ -56,8 +57,8 @@
         <tbody>
           <% @facilities.each_with_index do |facility, rank| %>
             <tr>
-              <td class="type-rank" data-sort-column-key="score"><%= rank + 1 %></td>
-              <td><%= number_with_precision(@scores_for_facility[facility.name].overall_score, precision: 2) %></td>
+              <td class="type-rank" data-sort-column-key="rank"><%= rank + 1 %></td>
+              <td data-sort-column-key="score"><%= number_with_precision(@scores_for_facility[facility.name].overall_score, precision: 2) %></td>
               <td class="type-title">
                 <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
                   <%= facility.name %>
