@@ -63,6 +63,9 @@
     "EMAIL_SUBJECT_PREFIX": {
       "value": "[REVIEW]"
     },
+    "ENABLE_AUTO_APPROVE_USER_FOR_QA=true" : {
+      "value": "true"
+    },
     "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
       "value": "true"
     },
