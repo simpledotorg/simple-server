@@ -1,7 +1,7 @@
 class Reports::RegionsController < AdminController
   include Pagination
   include GraphicsDownload
-  skip_after_action :verify_policy_scoped
+
   before_action :set_force_cache
   before_action :set_period, only: [:show, :details, :cohort]
   before_action :set_page, only: [:details]
@@ -9,29 +9,17 @@ class Reports::RegionsController < AdminController
   before_action :find_region, except: :index
   around_action :set_time_zone
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
-
   def index
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-      @organizations = current_admin.accessible_facilities(:view_reports)
-        .flat_map(&:organization)
-        .uniq
-        .compact
-        .sort_by(&:name)
-    else
-      authorize(:dashboard, :show?)
-      @organizations = policy_scope([:cohort_report, Organization]).order(:name)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
+    @organizations = current_admin.accessible_facilities(:view_reports)
+      .flat_map(&:organization)
+      .uniq
+      .compact
+      .sort_by(&:name)
   end
 
   def show
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :show?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @data = Reports::RegionService.new(region: @region,
                                        period: @period).call
@@ -46,19 +34,15 @@ class Reports::RegionsController < AdminController
                                                         period: @period).call
       }
     else
-      @show_current_period = true
+      @show_current_period = false
       @dashboard_analytics = @region.dashboard_analytics(period: :month,
                                                          prev_periods: 6,
-                                                         include_current_period: true)
+                                                         include_current_period: false)
     end
   end
 
   def details
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :show?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
@@ -68,22 +52,14 @@ class Reports::RegionsController < AdminController
   end
 
   def cohort
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :show?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
     periods = @period.downto(5)
 
     @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
   def download
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :show?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
     @period = Period.new(type: params[:period], value: Date.current)
     unless @period.valid?
       raise ArgumentError, "invalid Period #{@period} #{@period.inspect}"
@@ -105,11 +81,7 @@ class Reports::RegionsController < AdminController
   end
 
   def whatsapp_graphics
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :show?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     previous_quarter = Quarter.current.previous_quarter
     @year, @quarter = previous_quarter.year, previous_quarter.number

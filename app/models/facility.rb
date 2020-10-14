@@ -6,6 +6,7 @@ class Facility < ApplicationRecord
   include PgSearch::Model
   include LiberalEnum
   extend FriendlyId
+  extend RegionSource
 
   before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
 
@@ -93,7 +94,7 @@ class Facility < ApplicationRecord
   }
 
   delegate :protocol, to: :facility_group, allow_nil: true
-  delegate :organization, to: :facility_group, allow_nil: true
+  delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
   def hypertension_follow_ups_by_period(*args)
@@ -213,6 +214,24 @@ class Facility < ApplicationRecord
 
   def diabetes_enabled?
     enable_diabetes_management.present?
+  end
+
+  def opd_load_estimated?
+    monthly_estimated_opd_load.present?
+  end
+
+  def opd_load
+    monthly_estimated_opd_load || opd_load_for_facility_size
+  end
+
+  def opd_load_for_facility_size
+    case facility_size
+    when "community" then 100
+    when "small" then 300
+    when "medium" then 500
+    when "large" then 1000
+    else 1000
+    end
   end
 
   def teleconsultation_enabled?

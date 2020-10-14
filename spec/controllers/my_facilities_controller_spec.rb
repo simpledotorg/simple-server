@@ -6,11 +6,7 @@ end
 
 RSpec.describe MyFacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:supervisor) do
-    create(:admin, :supervisor, facility_group: facility_group).tap do |user|
-      user.user_permissions.create!(permission_slug: "view_my_facilities")
-    end
-  end
+  let(:supervisor) { create(:admin, :manager, :with_access, resource: facility_group) }
 
   render_views
 
@@ -20,15 +16,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
   describe "GET #index" do
     it "returns a success response" do
+      create(:facility, facility_group: facility_group)
+
       get :index, params: {}
-
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET #ranked_facilities" do
-    it "returns a success response" do
-      get :ranked_facilities, params: {}
 
       expect(response).to be_successful
     end
@@ -36,6 +26,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
   describe "GET #blood_pressure_control" do
     it "returns a success response" do
+      create(:facility, facility_group: facility_group)
+
       get :blood_pressure_control, params: {}
 
       expect(response).to be_successful

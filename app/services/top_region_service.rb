@@ -2,7 +2,11 @@
 class TopRegionService
   def self.call(region:, period:, current_user:)
     scope = region.class.to_s.underscore.to_sym
-    organizations = Pundit.policy_scope(current_user, [:cohort_report, Organization]).order(:name)
+    organizations = current_user.accessible_facilities(:view_reports)
+      .flat_map(&:organization)
+      .uniq
+      .compact
+      .sort_by(&:name)
     new(organizations, period, scope: scope).call
   end
 

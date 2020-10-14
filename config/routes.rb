@@ -141,33 +141,9 @@ Rails.application.routes.draw do
     get "access_tree/:page", to: "admins#access_tree", on: :member, as: :access_tree
   end
 
-  namespace :analytics do
-    resources :facilities, only: [:show] do
-      get "graphics", to: "facilities#whatsapp_graphics"
-      get "patient_list", to: "facilities#patient_list"
-      get "patient_list_with_history", to: "facilities#patient_list_with_history"
-      get "share", to: "facilities#share_anonymized_data"
-    end
-
-    resources :organizations do
-      resources :districts, only: [:show] do
-        get "graphics", to: "districts#whatsapp_graphics"
-        get "patient_list", to: "districts#patient_list"
-        get "patient_list_with_history", to: "districts#patient_list_with_history"
-        get "share", to: "districts#share_anonymized_data"
-      end
-    end
-  end
-
   resources :appointments, only: [:index, :update]
-  resources :patients do
-    collection do
-      get :lookup
-    end
-  end
 
-  resources :organizations, only: [:index], path: "dashboard"
-
+  get "/dashboard", to: redirect("/reports/regions/")
   get "/dashboard/districts/", to: redirect("/reports/districts/")
   get "/dashboard/districts/:slug", to: redirect("/reports/districts/%{slug}")
   get "/reports/districts/", to: redirect("/reports/regions/")
@@ -184,10 +160,10 @@ Rails.application.routes.draw do
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
-    get "ranked_facilities", to: "ranked_facilities"
     get "blood_pressure_control", to: "blood_pressure_control"
     get "registrations", to: "registrations"
     get "missed_visits", to: "missed_visits"
+    get "ranked_facilities", to: "ranked_facilities#show"
   end
 
   scope :resources do
@@ -225,24 +201,12 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :email_authentication, ->(a) {
-    if a.user.permissions_v2_enabled?
-      a.user.power_user?
-    else
-      a.user.has_permission?(:view_sidekiq_ui)
-    end
-  } do
+  authenticate :email_authentication, ->(a) { a.user.power_user? } do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
   end
 
-  authenticate :email_authentication, ->(a) {
-    if a.user.permissions_v2_enabled?
-      a.user.power_user?
-    else
-      a.user.has_permission?(:view_flipper_ui)
-    end
-  } do
+  authenticate :email_authentication, ->(a) { a.user.power_user? } do
     mount Flipper::UI.app(Flipper) => "/flipper"
   end
 end

@@ -5,12 +5,9 @@ class AdminsController < AdminController
   before_action :set_admin, only: [:show, :edit, :update, :access_tree, :destroy]
   before_action :verify_params, only: [:update]
 
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-
   def index
     admins = current_admin.accessible_admins(:manage)
-    authorize_v2 { admins.any? }
+    authorize { admins.any? }
 
     @admins =
       if searching?
@@ -59,7 +56,8 @@ class AdminsController < AdminController
   end
 
   def destroy
-    @admin.destroy
+    authorize { current_admin.manage_organization? && current_admin.accessible_admins(:manage).find_by_id(@admin.id) }
+    @admin.discard
     redirect_to admins_url, notice: "Admin was successfully deleted."
   end
 
@@ -73,7 +71,7 @@ class AdminsController < AdminController
       return
     end
 
-    if access_level_changed? && !current_admin.modify_access_level?
+    if access_level_changed? && !current_admin.manage_organization?
       raise UserAccess::NotAuthorizedError
     end
 
@@ -86,7 +84,7 @@ class AdminsController < AdminController
   end
 
   def set_admin
-    @admin = authorize_v2 { current_admin.accessible_admins(:manage).find(params[:id]) }
+    @admin = authorize { current_admin.accessible_admins(:manage).find(params[:id]) }
   end
 
   def selected_facilities

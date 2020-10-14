@@ -3,11 +3,7 @@ require "rails_helper"
 RSpec.describe Reports::RegionsController, type: :controller do
   let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
-  let(:cvho) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -18,6 +14,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "index" do
+    before do
+      @facility_group = create(:facility_group, organization: organization)
+      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+    end
+
     it "loads available districts" do
       sign_in(cvho.email_authentication)
       get :index
@@ -106,6 +107,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
         get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
       }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "returns period info for every month" do
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][dec_2019_period]).to eq({"bp_control_start_date" => "1-Oct-2019", "bp_control_end_date" => "31-Dec-2019"})
     end
 
     it "retrieves district data" do

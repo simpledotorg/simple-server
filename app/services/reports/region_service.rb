@@ -28,6 +28,7 @@ module Reports
       result.calculate_percentages(:visited_without_bp_taken)
       result.count_missed_visits
       result.calculate_missed_visits_percentages
+      result.calculate_period_info
 
       result
     end
