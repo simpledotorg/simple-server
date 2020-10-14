@@ -6,11 +6,17 @@ module Reports
       @range = range
       raise ArgumentError, "Beginning of range cannot be later than end of range" if range.begin > range.end
       @quarterly_report = @range.begin.quarter?
+      @current_period = if quarterly_report?
+        Period.quarter(Quarter.current)
+      else
+        Period.month(Date.current.beginning_of_month)
+      end
       @data = {
         adjusted_registrations: Hash.new(0),
         controlled_patients_rate: Hash.new(0),
         controlled_patients: Hash.new(0),
         cumulative_registrations: Hash.new(0),
+        earliest_registration_period: nil,
         missed_visits_rate: {},
         missed_visits: {},
         period_info: {},
@@ -21,6 +27,7 @@ module Reports
     end
 
     attr_reader :range
+    attr_reader :current_period
 
     def []=(key, values)
       @data[key] = values
@@ -28,6 +35,12 @@ module Reports
 
     def [](key)
       @data[key]
+    end
+
+    # Return all periods for the entire set of data for a Region - from the first registrations until
+    # the last period (for now - TODO)
+    def full_data_range
+      (earliest_registration_period..current_period)
     end
 
     def to_hash
@@ -57,6 +70,7 @@ module Reports
     end
 
     [:adjusted_registrations, :controlled_patients, :controlled_patients_rate, :cumulative_registrations,
+      :earliest_registration_period,
       :missed_visits, :missed_visits_rate, :period_info, :registrations, :uncontrolled_patients,
       :uncontrolled_patients_rate, :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
       define_method(key) do

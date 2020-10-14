@@ -30,12 +30,17 @@ class ControlRateService
   attr_reader :results
 
   def call
+    # TODO we need to know how far back to grab data...
+    # so there are two notions of "periods"
+    # 1. the periods that calling code is requesting
+    # 2. the periods that we have data going back to
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       results.registrations = registration_counts
+      results.earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
       results.cumulative_registrations = sum_cumulative_registrations
       results.count_adjusted_registrations
 
-      periods.each do |(period, count)|
+      results.full_data_range.each do |(period, count)|
         results.controlled_patients[period] = controlled_patients(period).count
         results.uncontrolled_patients[period] = uncontrolled_patients(period).count
       end
@@ -46,16 +51,6 @@ class ControlRateService
     end
   end
 
-  def sum_cumulative_registrations
-    earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
-    (earliest_registration_period..periods.end).each_with_object(Hash.new(0)) { |period, running_totals|
-      previous_registrations = running_totals[period.previous]
-      current_registrations = registration_counts[period]
-      total = current_registrations + previous_registrations
-      running_totals[period] = total
-    }
-  end
-
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
@@ -64,6 +59,15 @@ class ControlRateService
     # have a value for every month in the periods we are reporting on. So we set the default to 0 for results.
     result.default = 0
     @registration_counts = result
+  end
+
+  def sum_cumulative_registrations
+    results.full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+      previous_registrations = running_totals[period.previous]
+      current_registrations = registration_counts[period]
+      total = current_registrations + previous_registrations
+      running_totals[period] = total
+    }
   end
 
   def controlled_patients(period)
