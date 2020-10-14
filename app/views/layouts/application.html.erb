@@ -86,6 +86,10 @@
             
               <h6 class="dropdown-header">Settings</h6>
               
+              <%= link_to (admin_facilities_path), class: "dropdown-item #{active_controller?("admin/facilities")}" do %>
+                 <i class="fas fa-hospital"></i> Facilities
+              <% end %>
+              
               <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
                 <%= link_to (admin_organizations_path), class: "dropdown-item #{active_controller?("admin/organizations")}" do %>
                   <i class="fas fa-network-wired"></i> Organizations

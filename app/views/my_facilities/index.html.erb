@@ -1,9 +1,26 @@
 <div class="d-flex row">
-  <div class="col-lg-6 mb-lg-3 order-2 order-lg-1">
+  <div class="col-lg-6">
+    <%= render "shared/user_approvals" %>
+    <div class="card mt-4">
+      <h3>New on the dashboard</h3>
+      <ul>
+        <li>
+            <h6>Mobile friendly navigation</h6>
+            <p>We did a bunch of things to make the Dashboard better on mobile. Tables scroll sideways better, navigation is easier to use.</p>
+        </li>
+      </ul>
+      <h3>Upcoming improvements</h3>
+      <p>Our team is working to make the Simple Dashboard more useful for you:</p>
+      <ul>
+        <li>
+            <h6>Adding "Ranked Facilities" section</h6>
+            <p>Will...</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
     <%= render 'shared/my_facilities/facilities_by_size' %>
     <%= render 'shared/my_facilities/inactive_facilities' %>
-  </div>
-  <div class="col-lg-6 order-1 order-lg-2">
-    <%= render "shared/user_approvals" %>
   </div>
 </div>
