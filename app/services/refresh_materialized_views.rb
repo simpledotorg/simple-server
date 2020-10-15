@@ -28,7 +28,7 @@ class RefreshMaterializedViews
     Rails.application.config.country[:time_zone]
   end
 
-  delegate :tz, :set_last_update_time, to: self
+  delegate :tz, :set_last_updated_at, to: self
 
   def refresh
     # LatestBloodPressuresPerPatientPerMonth should be refreshed before
