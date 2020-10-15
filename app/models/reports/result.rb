@@ -2,11 +2,10 @@ module Reports
   class Result
     PERCENTAGE_PRECISION = 0
 
-    def initialize(region:, range:, data: nil)
+    def initialize(region:, period_type:, data: nil)
       @region = region
-      @range = range
-      raise ArgumentError, "Beginning of range cannot be later than end of range" if range.begin > range.end
-      @quarterly_report = @range.begin.quarter?
+      @period_type = period_type
+      @quarterly_report = @period_type == :quarter
       @current_period = if quarterly_report?
         Period.quarter(Quarter.current)
       else
@@ -30,7 +29,7 @@ module Reports
     end
 
     attr_reader :region
-    attr_reader :range
+    attr_reader :period_type
     attr_reader :current_period
 
     def []=(key, values)
@@ -52,11 +51,11 @@ module Reports
     end
 
     def to_s
-      "#{self.class} #{object_id} region=#{@region.name} range=#{range}"
+      "#{self.class} #{object_id} region=#{@region.name} period_type=#{period_type}"
     end
 
     # Return a new Result limited to just the Range requested
-    def report_data
+    def report_data_for(range)
       # pp caller
       p "in #{self} => report_data"
       limited_range_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
@@ -95,6 +94,10 @@ module Reports
       define_method("#{key}_for") do |period|
         self[key][period]
       end
+
+      define_method("#{key}_for!") do |period|
+        self[key].fetch(period) { raise ArgumentError, "no data found for #{period} for #{key}" }
+      end
     end
 
     # Adjusted registrations are the registrations as of three months ago - we use these for all the percentage
@@ -106,12 +109,12 @@ module Reports
     end
 
     # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
-    def count_missed_visits
-      self.missed_visits = full_data_range.each_with_object({}) { |(period, visit_count), hsh|
+    def calculate_missed_visits(range)
+      self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
         registrations = adjusted_registrations_for(period)
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
-        visited_without_bp_taken = visited_without_bp_taken_for(period)
+        visited_without_bp_taken = visited_without_bp_taken_for!(period)
         hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
       }
     end
@@ -119,16 +122,16 @@ module Reports
     # To determine the missed visits percentage, we sum the remaining percentages and subtract that from 100.
     # If we determined the percentage directly, we would have cases where the percentages do not add up to 100
     # due to rounding and losing precision.
-    def calculate_missed_visits_percentages
-      self.missed_visits_rate = full_data_range.each_with_object({}) do |period, hsh|
+    def calculate_missed_visits_percentages(range)
+      self.missed_visits_rate = range.each_with_object(Hash.new(0)) do |period, hsh|
         remaining_percentages = controlled_patients_rate_for(period) + uncontrolled_patients_rate_for(period) + visited_without_bp_taken_rate_for(period)
         hsh[period] = 100 - remaining_percentages
       end
     end
 
     DATE_FORMAT = "%-d-%b-%Y"
-    def calculate_period_info
-      self.period_info = full_data_range.each_with_object({}) do |period, hsh|
+    def calculate_period_info(range)
+      self.period_info = range.each_with_object({}) do |period, hsh|
         bp_control_range = period.blood_pressure_control_range
         hsh[period] = {
           bp_control_start_date: bp_control_range.begin.next_day.strftime(DATE_FORMAT),

@@ -10,39 +10,36 @@ class ControlRateService
     @region = region
     @facilities = region.facilities
     # Normalize between a single period and range of periods
-    @periods = if !periods.is_a?(Range)
+    @report_range = if !periods.is_a?(Range)
       # If calling code is asking for a single period,
       # we set the range to be the current period to the start of the next period.
       Range.new(periods, periods.succ)
     else
       periods
     end
-    @quarterly_report = @periods.begin.quarter?
-    @results = Reports::Result.new(region: @region, range: @periods)
-    p "#{self.class} #{@periods}"
+    @quarterly_report = @report_range.begin.quarter?
+    @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
+    p "#{self.class} #{@report_range}"
     logger.info class: self.class, msg: "created", region: region.id, region_name: region.name,
-                periods: periods.inspect, facilities: facilities.map(&:id)
+                report_range: report_range.inspect, facilities: facilities.map(&:id)
   end
 
   delegate :logger, to: Rails
   attr_reader :facilities
-  attr_reader :periods
+  attr_reader :report_range
   attr_reader :region
   attr_reader :results
 
   def call
-    # TODO we need to know how far back to grab data...
-    # so there are two notions of "periods"
-    # 1. the periods that calling code is requesting
-    # 2. the periods that we have data going back to
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
+    all_data = Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       uncached_fetch
     end
+    # all_data.report_data_for(periods)
   end
 
   def uncached_fetch
     results.registrations = registration_counts
-    results.earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
+    results.earliest_registration_period = [report_range.begin, registration_counts.keys.first].compact.min
     results.cumulative_registrations = sum_cumulative_registrations
     results.count_adjusted_registrations
 
@@ -59,9 +56,9 @@ class ControlRateService
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    result = region.assigned_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {format: formatter}).count
+    result = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type, :recorded_at, {format: formatter}).count
     # The group_by_period query will only return values for months where we had registrations, but we want to
-    # have a value for every month in the periods we are reporting on. So we set the default to 0 for results.
+    # have a value for every month in the report_range we are reporting on. So we set the default to 0 for results.
     result.default = 0
     @registration_counts = result
   end
@@ -128,14 +125,14 @@ class ControlRateService
     "#{self.class}/#{region.model_name}/#{region.id}"
   end
 
-  def periods_cache_key
-    value = if periods.is_a?(Range)
-      "#{periods.begin.value}/#{periods.end.value}"
-    else
-      period.value
-    end
-    "#{periods.begin.type}_periods/#{value}"
-  end
+  # def periods_cache_key
+  #   value = if periods.is_a?(Range)
+  #     "#{periods.begin.value}/#{periods.end.value}"
+  #   else
+  #     period.value
+  #   end
+  #   "#{periods.begin.type}_periods/#{value}"
+  # end
 
   def cache_version
     "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"

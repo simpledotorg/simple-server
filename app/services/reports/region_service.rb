@@ -25,9 +25,9 @@ module Reports
       result = ControlRateService.new(region, periods: range).call
       result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
       result.calculate_percentages(:visited_without_bp_taken)
-      result.count_missed_visits
-      result.calculate_missed_visits_percentages
-      result.calculate_period_info
+      result.calculate_missed_visits(range)
+      result.calculate_missed_visits_percentages(range)
+      result.calculate_period_info(range)
 
       result
     end
