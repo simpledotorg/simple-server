@@ -16,6 +16,8 @@ RSpec.describe RefreshMaterializedViews do
 
   it "updates all materialized views and sets update time" do
     time = Time.current
+    # Just adding enough data to smoke test this; we test these views
+    # more thoroughly via various reporting specs
     create_list(:blood_pressure, 2)
 
     expect {
