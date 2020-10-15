@@ -38,7 +38,7 @@ module Reports
     end
 
     # Return all periods for the entire set of data for a Region - from the first registrations until
-    # the last period (for now - TODO)
+    # the most recent period
     def full_data_range
       (earliest_registration_period..current_period)
     end

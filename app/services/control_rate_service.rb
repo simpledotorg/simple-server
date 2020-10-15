@@ -35,20 +35,24 @@ class ControlRateService
     # 1. the periods that calling code is requesting
     # 2. the periods that we have data going back to
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
-      results.registrations = registration_counts
-      results.earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
-      results.cumulative_registrations = sum_cumulative_registrations
-      results.count_adjusted_registrations
-
-      results.full_data_range.each do |(period, count)|
-        results.controlled_patients[period] = controlled_patients(period).count
-        results.uncontrolled_patients[period] = uncontrolled_patients(period).count
-      end
-
-      results.calculate_percentages(:controlled_patients)
-      results.calculate_percentages(:uncontrolled_patients)
-      results
+      uncached_fetch
     end
+  end
+
+  def uncached_fetch
+    results.registrations = registration_counts
+    results.earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
+    results.cumulative_registrations = sum_cumulative_registrations
+    results.count_adjusted_registrations
+
+    results.full_data_range.each do |(period, count)|
+      results.controlled_patients[period] = controlled_patients(period).count
+      results.uncontrolled_patients[period] = uncontrolled_patients(period).count
+    end
+
+    results.calculate_percentages(:controlled_patients)
+    results.calculate_percentages(:uncontrolled_patients)
+    results
   end
 
   def registration_counts
@@ -120,7 +124,7 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
+    "#{self.class}/#{region.model_name}/#{region.id}"
   end
 
   def periods_cache_key
