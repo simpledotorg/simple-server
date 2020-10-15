@@ -2,11 +2,11 @@ class RefreshMaterializedViews
   include ActiveSupport::Benchmarkable
   MATVIEW_REFRESH_TIME_KEY = "last_materialized_view_refresh_time".freeze
 
-  def self.last_update_time
+  def self.last_updated_at
     Rails.cache.fetch(MATVIEW_REFRESH_TIME_KEY)
   end
 
-  def self.set_last_update_time
+  def self.set_last_updated_at
     Rails.cache.write(MATVIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
   end
 
@@ -56,7 +56,7 @@ class RefreshMaterializedViews
         PatientRegistrationsPerDayPerFacility.refresh
       end
 
-      set_last_update_time
+      set_last_updated_at
     end
   end
 end

@@ -42,13 +42,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
   private
 
   def set_last_updated_at
-    last_updated_at =
-      begin
-        Time.parse(Rails.cache.fetch(Constants::MATVIEW_REFRESH_TIME_KEY))
-      rescue TypeError, ArgumentError
-        nil
-      end
-
+    last_updated_at = RefreshMaterializedView.last_updated_at
     @last_updated_at =
       if last_updated_at.nil?
         "unknown"

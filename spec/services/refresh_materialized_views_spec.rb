@@ -2,15 +2,15 @@ require "rails_helper"
 
 RSpec.describe RefreshMaterializedViews do
   it "returns nil if no time set" do
-    expect(RefreshMaterializedViews.last_update_time).to be_nil
+    expect(RefreshMaterializedViews.last_updated_at).to be_nil
   end
 
   it "returns Time if time has been set" do
     Timecop.freeze("January 1st 2020 01:30 AM") do
       time = Time.current
-      RefreshMaterializedViews.set_last_update_time
+      RefreshMaterializedViews.set_last_updated_at
 
-      expect(RefreshMaterializedViews.last_update_time).to eq(time)
+      expect(RefreshMaterializedViews.last_updated_at).to eq(time)
     end
   end
 
@@ -27,6 +27,6 @@ RSpec.describe RefreshMaterializedViews do
       .and change { LatestBloodPressuresPerPatientPerQuarter.count }.from(0).to(2)
       .and change { BloodPressuresPerFacilityPerDay.count }.from(0).to(2)
       .and change { PatientRegistrationsPerDayPerFacility.count }.from(0).to(2)
-      .and change { RefreshMaterializedViews.last_update_time }.from(nil).to(time)
+      .and change { RefreshMaterializedViews.last_updated_at }.from(nil).to(time)
   end
 end
