@@ -12,9 +12,7 @@ module Reports
       @region = region
       @period = period
       start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
-      @range = start_period..@period
-      p @range
-      @result = Result.new(@range)
+      @range = Range.new(start_period, @period)
     end
 
     attr_reader :current_user

@@ -2,7 +2,8 @@ module Reports
   class Result
     PERCENTAGE_PRECISION = 0
 
-    def initialize(range, data: nil)
+    def initialize(region:, range:, data: nil)
+      @region = region
       @range = range
       raise ArgumentError, "Beginning of range cannot be later than end of range" if range.begin > range.end
       @quarterly_report = @range.begin.quarter?
@@ -28,6 +29,7 @@ module Reports
       p "created Result #{self}"
     end
 
+    attr_reader :region
     attr_reader :range
     attr_reader :current_period
 
@@ -50,24 +52,23 @@ module Reports
     end
 
     def to_s
-      "#{self.class} #{object_id} #{range}"
+      "#{self.class} #{object_id} region=#{@region.name} range=#{range}"
     end
 
     # Return a new Result limited to just the Range requested
     def report_data
-      pp caller
-      p "wtf #{self}"
+      # pp caller
+      p "in #{self} => report_data"
       limited_range_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
-        p key
         hsh[key] = if !hsh_or_array.is_a?(Hash)
-          p "not slicing"
+          p "#{self} #{key} not slicing"
           hsh_or_array
         else
-          p "we be slicing #{range}"
+          p "#{self} #{key} slicing #{range}"
           hsh_or_array.slice(*range.entries)
         end
       }.with_indifferent_access
-      Result.new(@range, data: limited_range_data)
+      Result.new(region: region, range: @range, data: limited_range_data)
     end
 
     def last_value(key)

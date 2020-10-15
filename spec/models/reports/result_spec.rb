@@ -7,9 +7,10 @@ describe Reports::Result, type: :model do
   let(:sept_2020) { Period.month("September 1 2020") }
 
   let(:range) { (july_2018..june_2020) }
+  let(:region) { create(:facility) }
 
   it "has convenience methods" do
-    result = Reports::Result.new(range)
+    result = Reports::Result.new(region: region, range: range)
     result[:uncontrolled_patients][june_2020] = 30
     result[:controlled_patients][june_2020] = 100
     expect(result.uncontrolled_patients_for(june_2020)).to eq(30)
@@ -19,14 +20,14 @@ describe Reports::Result, type: :model do
   end
 
   it "has setters" do
-    result = Reports::Result.new(range)
+    result = Reports::Result.new(region: region, range: range)
     hsh = {june_2020 => 30}
     result.uncontrolled_patients = hsh
     expect(result.uncontrolled_patients).to eq(hsh)
   end
 
   it "can get last value for the data" do
-    result = Reports::Result.new(range)
+    result = Reports::Result.new(region: region, range: range)
     result[:uncontrolled_patients][may_2020] = 20
     result[:uncontrolled_patients][june_2020] = 30
     expect(result.last_value(:uncontrolled_patients)).to eq(30)
@@ -34,7 +35,7 @@ describe Reports::Result, type: :model do
 
   it "can return report data that limits results to the range requested" do
     june_2000 = Period.month("June 1 2000")
-    result = Reports::Result.new(range)
+    result = Reports::Result.new(region: region, range: range)
     result[:uncontrolled_patients][june_2000] = 50
     result[:uncontrolled_patients][june_2020] = 100
     result[:uncontrolled_patients][sept_2020] = 100
