@@ -125,15 +125,6 @@ class ControlRateService
     "#{self.class}/#{region.model_name}/#{region.id}"
   end
 
-  # def periods_cache_key
-  #   value = if periods.is_a?(Range)
-  #     "#{periods.begin.value}/#{periods.end.value}"
-  #   else
-  #     period.value
-  #   end
-  #   "#{periods.begin.type}_periods/#{value}"
-  # end
-
   def cache_version
     "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
   end
