@@ -1,8 +1,4 @@
 # User Permissions
-## This permission model is deprecated (October 2020)
-replaced by [simplified permissions](https://docs.google.com/document/d/1r5Vq1UzRTj4nkpzUxkyM5dtKPMKkm7u8GfOvoYEsais/edit)
-
----
 
 ## Context
 We are currently using a role based access control mechanism with the following roles
@@ -22,7 +18,7 @@ to dashboard features. Each feature on the dashboard is backed by its on permiss
 access can be granted and revoked accordingly.
 
 ## Status
-Accepted
+Superseded ([PRD](https://docs.google.com/document/d/1r5Vq1UzRTj4nkpzUxkyM5dtKPMKkm7u8GfOvoYEsais/edit))
 
 ## Consequences
 If each small feature on the dashboard has it's own permission, there would be an explosion in
