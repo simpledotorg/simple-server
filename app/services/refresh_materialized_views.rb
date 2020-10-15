@@ -1,5 +1,14 @@
 class RefreshMaterializedViews
   include ActiveSupport::Benchmarkable
+  MATVIEW_REFRESH_TIME_KEY = "last_materialized_view_refresh_time".freeze
+
+  def self.last_update_time
+    Rails.cache.fetch(MATVIEW_REFRESH_TIME_KEY)
+  end
+
+  def self.set_last_update_time
+    Rails.cache.write(MATVIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz))
+  end
 
   def self.call
     new.call
@@ -15,9 +24,11 @@ class RefreshMaterializedViews
     end
   end
 
-  def tz
+  def self.tz
     Rails.application.config.country[:time_zone]
   end
+
+  delegate :tz, :set_last_update_time, to: self
 
   def refresh
     # LatestBloodPressuresPerPatientPerMonth should be refreshed before
@@ -45,7 +56,7 @@ class RefreshMaterializedViews
         PatientRegistrationsPerDayPerFacility.refresh
       end
 
-      Rails.cache.write(Constants::MATVIEW_REFRESH_TIME_KEY, Time.current.in_time_zone(tz).iso8601)
+      set_last_update_time
     end
   end
 end
