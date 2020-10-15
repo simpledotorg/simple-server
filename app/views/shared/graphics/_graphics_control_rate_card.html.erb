@@ -3,7 +3,7 @@
     <%= t('dashboard.graphics.graphics_title_html',
           current_quarter_string: quarter_string(date),
           previous_quarter_string: quarter_string(date.prev_quarter),
-          patients_in_previous_quarter: current_cohort_analytics.dig(:registered, :total) || current_cohort_analytics[:registered]
+          patients_in_previous_quarter: current_cohort_analytics.dig(:cohort_patients, :total) || current_cohort_analytics[:registered]
         ) %>
   </div>
 

@@ -11,7 +11,25 @@ RSpec.describe User, type: :model do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"
 
-    pending { is_expected.to validate_presence_of(:access_level) }
+    context "if email_authentication is present" do
+      let!(:email_authentication) { Object.new }
+      it "validates presence of access_level" do
+        allow(subject).to receive(:email_authentication).and_return(email_authentication)
+        allow(email_authentication).to receive(:present?).and_return(true)
+
+        is_expected.to validate_presence_of(:access_level)
+      end
+    end
+
+    context "if email_authentication is not present" do
+      let!(:email_authentication) { Object.new }
+      it "does not validate presence of access_level" do
+        allow(subject).to receive(:email_authentication).and_return(email_authentication)
+        allow(email_authentication).to receive(:present?).and_return(false)
+
+        is_expected.not_to validate_presence_of(:access_level)
+      end
+    end
 
     it {
       is_expected.to(
