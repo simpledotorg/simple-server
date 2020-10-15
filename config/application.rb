@@ -28,7 +28,6 @@ module SimpleServer
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
 
-    # Don't generate system test files.
     config.generators do |g|
       g.system_tests false
       g.helper false

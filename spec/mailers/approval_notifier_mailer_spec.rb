@@ -22,19 +22,34 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
     let!(:other_user) { create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility) }
 
     describe "registration_approval_email" do
-      let(:mail) { described_class.registration_approval_email(user_id: user.id) }
+      context "non production env" do
+        it "skips sending registration_approval_email" do
+          allow(Rails.logger).to receive(:info)
+          mail = described_class.registration_approval_email(user_id: user.id)
 
-      it "renders the headers" do
-        expect(mail.subject).to eq("New Registration: User #{user.full_name} is requesting access to #{organization.name} facilities.")
-        expect(mail.from).to eq(["help@simple.org"])
-        expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email)
-        expect(mail.cc).to contain_exactly(org_manager.email)
-        expect(mail.bcc).to include(new_power_user.email)
+          expect(mail.subject).to be_nil
+          expect(mail.to).to be_nil
+          expect(Rails.logger).to have_received(:info).with("Non-production environment: skipped sending registration_approval_email")
+        end
       end
 
-      it "renders the body, and contains a link to the user's edit page" do
-        expect(mail.body).to include("New User Registered")
-        expect(mail.body).to include("/admin/users/#{user.id}")
+      context "production env" do
+        before { stub_const("SIMPLE_SERVER_ENV", "production") }
+
+        let(:mail) { described_class.registration_approval_email(user_id: user.id) }
+
+        it "renders the headers" do
+          expect(mail.subject).to eq("New Registration: User #{user.full_name} is requesting access to #{organization.name} facilities.")
+          expect(mail.from).to eq(["help@simple.org"])
+          expect(mail.to).to contain_exactly(facility_manager.email, fg_manager.email)
+          expect(mail.cc).to contain_exactly(org_manager.email)
+          expect(mail.bcc).to include(new_power_user.email)
+        end
+
+        it "renders the body, and contains a link to the user's edit page" do
+          expect(mail.body).to include("New User Registered")
+          expect(mail.body).to include("/admin/users/#{user.id}")
+        end
       end
     end
 
