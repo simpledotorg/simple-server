@@ -19,5 +19,5 @@ if Rails.env.production?
   end
 
   Rails.application.config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
-  Rails.application.config.content_security_policy_report_only = false
+  Rails.application.config.content_security_policy_report_only = true
 end
