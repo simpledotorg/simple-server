@@ -254,6 +254,14 @@ RSpec.describe ControlRateService, type: :model do
       expect(service.send(:cache_key)).to eq(expected_key)
     end
 
+    let(:memory_store) { ActiveSupport::Cache.lookup_store(:redis_store) }
+    let(:cache) { Rails.cache }
+
+    before do
+      allow(Rails).to receive(:cache).and_return(memory_store)
+      Rails.cache.clear
+    end
+
     it "caches ALL data, regardless of periods asked for" do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       Timecop.freeze("January 1st 2018") do
@@ -279,6 +287,18 @@ RSpec.describe ControlRateService, type: :model do
         refresh_views
         service = ControlRateService.new(facility_group_1, periods: periods)
         service.call
+      end
+      expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
+      expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(5)
+      expect(result[:controlled_patients]["September 1 2018".to_date.to_period]).to eq(1)
+      expect(result[:registrations]["August 1 2020".to_date.to_period]).to eq(1)
+      expect(result[:controlled_patients]["November 1 2020".to_date.to_period]).to eq(1)
+
+      result = Timecop.travel("November 1st 2020") do
+        periods = Period.month("March 1 2019")..Period.month("March 1 2020")
+        service = ControlRateService.new(facility_group_1, periods: periods)
+        expect(service).to_not receive(:uncached_fetch)
+        result = service.call
       end
       expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
       expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(5)
