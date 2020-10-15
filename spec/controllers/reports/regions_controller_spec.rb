@@ -118,7 +118,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:period_info][dec_2019_period]).to eq({"bp_control_start_date" => "1-Oct-2019", "bp_control_end_date" => "31-Dec-2019"})
     end
 
-    it "retrieves district data" do
+    fit "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)

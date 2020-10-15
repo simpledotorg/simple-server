@@ -21,9 +21,8 @@ class Reports::RegionsController < AdminController
   def show
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    @data = Reports::RegionService.new(region: @region,
-                                       period: @period).call
-    @controlled_patients = @data[:controlled_patients]
+    result = Reports::RegionService.new(region: @region, period: @period).call
+    @data = result.report_data
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
@@ -125,6 +124,8 @@ class Reports::RegionsController < AdminController
   def set_period
     period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
     @period = Period.new(period_params)
+    p @period
+    @period
   end
 
   def set_force_cache

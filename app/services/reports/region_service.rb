@@ -13,6 +13,7 @@ module Reports
       @period = period
       start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
       @range = start_period..@period
+      p @range
       @result = Result.new(@range)
     end
 
@@ -23,7 +24,7 @@ module Reports
     attr_reader :region
 
     def call
-      result.merge! ControlRateService.new(region, periods: range).call
+      result = ControlRateService.new(region, periods: range).call
       result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
       result.calculate_percentages(:visited_without_bp_taken)
       result.count_missed_visits
