@@ -70,39 +70,43 @@ RSpec.describe Api::V3::UsersController, type: :controller do
         expect(created_user.sync_approval_status).to eq(User.sync_approval_statuses[:allowed])
       end
 
-      it "sends an email to a list of owners and supervisors" do
-        Sidekiq::Testing.inline! do
-          post :register, params: {user: user_params}
-        end
-        approval_email = ActionMailer::Base.deliveries.last
-        expect(approval_email.to).to include(supervisor.email)
-        expect(approval_email.cc).to include(organization_owner.email)
-        expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
-      end
+      context "registration_approval_email in a production environment" do
+        before { stub_const("SIMPLE_SERVER_ENV", "production") }
 
-      it "sends an email with owners in the bcc list" do
-        Sidekiq::Testing.inline! do
-          post :register, params: {user: user_params}
-        end
-        approval_email = ActionMailer::Base.deliveries.last
-        expect(approval_email.bcc).to include(owner.email)
-      end
-
-      it "sends an approval email with list of accessible facilities" do
-        Sidekiq::Testing.inline! do
-          post :register, params: {user: user_params}
-        end
-        approval_email = ActionMailer::Base.deliveries.last
-        facility.facility_group.facilities.each do |facility|
-          expect(approval_email.body.to_s).to match(Regexp.quote(facility.name))
-        end
-      end
-
-      it "sends an email using sidekiq" do
-        Sidekiq::Testing.fake! do
-          expect {
+        it "sends an email to a list of owners and supervisors" do
+          Sidekiq::Testing.inline! do
             post :register, params: {user: user_params}
-          }.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
+          end
+          approval_email = ActionMailer::Base.deliveries.last
+          expect(approval_email.to).to include(supervisor.email)
+          expect(approval_email.cc).to include(organization_owner.email)
+          expect(approval_email.body.to_s).to match(Regexp.quote(user_params[:phone_number]))
+        end
+
+        it "sends an email with owners in the bcc list" do
+          Sidekiq::Testing.inline! do
+            post :register, params: {user: user_params}
+          end
+          approval_email = ActionMailer::Base.deliveries.last
+          expect(approval_email.bcc).to include(owner.email)
+        end
+
+        it "sends an approval email with list of accessible facilities" do
+          Sidekiq::Testing.inline! do
+            post :register, params: {user: user_params}
+          end
+          approval_email = ActionMailer::Base.deliveries.last
+          facility.facility_group.facilities.each do |facility|
+            expect(approval_email.body.to_s).to match(Regexp.quote(facility.name))
+          end
+        end
+
+        it "sends an email using sidekiq" do
+          Sidekiq::Testing.fake! do
+            expect {
+              post :register, params: {user: user_params}
+            }.to change(Sidekiq::Extensions::DelayedMailer.jobs, :size).by(1)
+          end
         end
       end
     end
