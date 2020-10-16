@@ -20,4 +20,5 @@ module SimpleServerExtensions
   end
 end
 
+# Add on to the top level application constant to make things easy
 SimpleServer.extend SimpleServerExtensions
