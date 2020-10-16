@@ -246,15 +246,11 @@ bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
 ### View Sandbox data in your local
-1. Create a new file in the [ansible/roles/common/files/ssh_keys/sandbox/<your-name>](https://github.com/simpledotorg/deployment/tree/master/ansible/roles/common/files/ssh_keys/sandbox) in the [deployment](https://github.com/simpledotorg/deployment) repo
-2. Run `pbcopy < ~/.ssh/id_rsa.pub` to copy your SSH key
-3. Paste the SSH key in the new file you created
-4. Create a new branch and submit a PR
-5. Wait for the PR to be reviewed, merged, and deployed to Sandbox
-6. Run `ssh deploy@ec2-13-235-33-14.ap-south-1.compute.amazonaws.com`
-7. Run `bundle exec cap sandbox db:pull` to sync the data with your local machine
-8. Request to be added as a Dashboard Admin to Sandbox
-9. Create a password for your Sandbox account and use that to log into the Dashboard on localhost:3000
+1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
+2. Ask someone from the Simple team to add you as an admin to sandbox
+3. Create a password for your Sandbox account and use that to log into the Dashboard on localhost:3000
+4. Run `ssh deploy@ec2-13-235-33-14.ap-south-1.compute.amazonaws.com`
+5. Run `bundle exec cap sandbox db:pull` to sync the data with your local machine
 
 ### Profiling
 
