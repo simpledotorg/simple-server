@@ -1,16 +1,20 @@
 <%= render "header"%>
 <% if @region.is_a?(Facility) %>
   <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
-    <%= render "user_activity_table",
+    <%= render "activity_table",
+              dashboard_analytics: @dashboard_analytics,
               period: @period.type,
+              row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
               row_resource_title: "User activity",
-              row_resource_description: "Registrations and follow-up activity by users at #{@region.name}" %>
+              row_resource_description: "Registrations and follow-up activity by users at #{@region.name}",
+              row_resource_display_field: :full_name,
+              row_resource_link: :admin_user_path %>
     <%= render "shared/recent_bp_log",
                blood_pressures: @recent_blood_pressures,
                display_model: :facility %>
   <% end %>
 <% else %>
-  <%= render "facility_activity_table",
+  <%= render "activity_table",
               dashboard_analytics: @dashboard_analytics,
               period: @period.type,
               row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
