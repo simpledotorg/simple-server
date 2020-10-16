@@ -1,4 +1,4 @@
-unless SimpleServer.env.review?
+unless SimpleServer.env.review? && Rake.application.top_level_tasks.include?("assets")
   Config.ensure_required_keys_are_present(required_keys: [
     "SENTRY_SECURITY_HEADER_ENDPOINT",
   ])
