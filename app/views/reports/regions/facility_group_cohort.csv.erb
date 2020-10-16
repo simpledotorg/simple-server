@@ -20,7 +20,7 @@ end) %>
 <% @facility_keys.each do |facility| %>
 <% csv << [facility[:name], facility[:type]].concat(@cohort_analytics.each_with_index.flat_map do |(report_dates, analytics), index|
   cohort_start, report_start = report_dates
-  registered = analytics.dig(:registered, facility[:id]) || 0
+  registered = analytics.dig(:cohort_patients, facility[:id]) || 0
   followed_up = analytics.dig(:followed_up, facility[:id]) || 0
   defaulted = analytics.dig(:defaulted, facility[:id]) || 0
   controlled = analytics.dig(:controlled, facility[:id]) || 0
@@ -81,7 +81,7 @@ end) %>
     *dates.map { |period| analytics_totals(@dashboard_analytics, :registered_patients_by_period, period) }
   ]
 %>
-<% policy_scope([:cohort_report, Facility.order(:name)]).each do |facility| %>
+<% current_admin.accessible_facilities(:view_reports).each do |facility| %>
   <% if @dashboard_analytics[facility.id].present? %>
     <% csv << [
         facility.name,

@@ -1,4 +1,4 @@
-<div class="card mt-0 pr-0 pr-md-3">
+<div class="card mt-0 pr-0 pr-md-3 pb-iniside-avoid">
   <h3 class="mb-8px c-black">
     <%= row_resource_description %>
   </h3>
@@ -42,7 +42,7 @@
       <tbody>
 
       <tr class="row-total" data-sort-method="none">
-        <td class="row-title row-total">All</td>
+        <td class="row-title row-total"><%= @region.name %></td>
 
         <!--Total assigned patients-->
         <td class="row-total" style="text-align: center;">

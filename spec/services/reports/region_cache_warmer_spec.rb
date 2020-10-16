@@ -2,11 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::RegionCacheWarmer, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
-  let(:user) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:user) { create(:admin, :manager, :with_access, resource: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   let(:jan_2019) { Time.parse("January 1st, 2019") }
@@ -21,12 +17,6 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
-  end
-
-  before do
-    notifier = object_double(Slack::Notifier.new("fake_url"))
-    allow(notifier).to receive(:ping)
-    allow(Reports::RegionCacheWarmer).to receive(:create_slack_notifier).and_return(notifier)
   end
 
   it "skips caching if disabled via Flipper" do
@@ -74,7 +64,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     end
 
     refresh_views
-    Timecop.freeze(june_1) do
+    Timecop.travel(june_1) do
       Reports::RegionCacheWarmer.call
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_01_194549) do
+ActiveRecord::Schema.define(version: 2020_10_12_091028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -543,17 +543,6 @@ ActiveRecord::Schema.define(version: 2020_10_01_194549) do
     t.index ["user_id"], name: "index_user_authentications_on_user_id"
   end
 
-  create_table "user_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.string "permission_slug"
-    t.string "resource_type"
-    t.uuid "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -589,11 +578,9 @@ ActiveRecord::Schema.define(version: 2020_10_01_194549) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
-  add_foreign_key "prescription_drugs", "teleconsultations"
   add_foreign_key "protocol_drugs", "protocols"
   add_foreign_key "regions", "region_types"
   add_foreign_key "teleconsultations", "facilities"
-  add_foreign_key "teleconsultations", "patients"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
