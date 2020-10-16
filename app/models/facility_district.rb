@@ -13,6 +13,12 @@ class FacilityDistrict
     scope.where(district: name)
   end
 
+  def organization
+    facility_group_ids = facilities.pluck(:facility_group_id).uniq
+    organization_ids = FacilityGroup.where(id: facility_group_ids).pluck(:organization_id).uniq
+    Organization.where(id: organization_ids).first
+  end
+
   def dashboard_analytics(period:, prev_periods:)
     query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: true)
     query.call
