@@ -4,7 +4,9 @@ on: pull_request
 
 jobs:
   build_app:
-    runs-on: [ubuntu-latest]
+    runs-on: [ ubuntu-latest ]
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
       - name: Checkout simple-android
         uses: actions/checkout@v2
@@ -18,10 +20,10 @@ jobs:
           java-version: 1.8
 
       - name: Build APK
-        run: simple-android/gradlew -p simple-android -PqaManifestEndpoint="https://simple-review-pr-${{github.event.pull_request.number}}.herokuapp.com/api/" app:assembleQaDebug
+        run: simple-android/gradlew -p simple-android -PqaManifestEndpoint="https://simple-review-pr-$PR_NUMBER.herokuapp.com/api/" app:assembleQaDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
-          name: review-mobile-app-${{github.event.pull_request.number}}
+          name: review-mobile-app-$PR_NUMBER
           path: simple-android/app/build/outputs/apk/qa/debug/app-qa-debug.apk

@@ -63,6 +63,9 @@
     "EMAIL_SUBJECT_PREFIX": {
       "value": "[REVIEW]"
     },
+    "ENABLE_AUTO_APPROVE_USER_FOR_QA" : {
+      "value": "true"
+    },
     "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
       "value": "true"
     },
@@ -74,6 +77,9 @@
     },
     "ENABLE_EXOTEL_WHITELIST_API": {
       "value": "false"
+    },
+    "ENABLE_FIXED_OTP_ON_REQUEST_FOR_QA" : {
+      "value": "true"
     },
     "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
       "value": "true"
@@ -179,6 +185,9 @@
     },
     "SENTRY_ENV": {
       "value": "review"
+    },
+    "SENTRY_SECURITY_HEADER_ENDPOINT": {
+      "value": "https://o152587.ingest.sentry.io/api/1217715/security/?sentry_key=67a72e806c7a427db73a0342ddc3f965"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
