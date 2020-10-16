@@ -81,6 +81,7 @@ class Facility < ApplicationRecord
   validates :district, presence: true
   validates :state, presence: true
   validates :country, presence: true
+  validates :zone, presence: true
   validates :pin, numericality: true, allow_blank: true
 
   validates :facility_size, inclusion: {in: facility_sizes.values,
@@ -137,7 +138,7 @@ class Facility < ApplicationRecord
      facility_type: "facility_type",
      street_address: "street_address (optional)",
      village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block (optional)",
+     zone: "zone_or_block",
      district: "district",
      state: "state",
      country: "country",
@@ -153,7 +154,7 @@ class Facility < ApplicationRecord
      facility_type: "facility_type",
      street_address: "street_address (optional)",
      village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block (optional)",
+     zone: "zone_or_block",
      district: "district",
      state: "state",
      country: "country",
