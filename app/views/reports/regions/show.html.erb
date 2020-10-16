@@ -260,7 +260,7 @@
                 <span data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>">
                   <%= number_with_delimiter(@data.last_value(:registrations)) %>
                 </span>
-                new patients registered in
+                new <%= "patient".pluralize(@data.last_value(:registrations)) %> registered in
                 <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
                   <%= @data.last_key(:registrations) %>
                 </span>
@@ -301,3 +301,4 @@
   <%= raw @data.to_json %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<%= @data[:registrations].keys.last %>
