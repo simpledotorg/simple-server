@@ -12,7 +12,7 @@ Rails.application.configure do
         version: correlation.version.to_s
       },
       ddsource: ["ruby"],
-      cache_stats: CacheStats,
+      cache_stats: RequestStore[:cache_stats],
       params: event.payload[:params].except(*exceptions)
     }
   end
@@ -23,10 +23,11 @@ Rails.application.configure do
   end
 end
 
-CacheStats = Hash.new(0)
 
 ActiveSupport::Notifications.subscribe(/cache_read.*\.active_support/) do |name, start, finish, arg1, arg2|
-  CacheStats[:cache_read] += 1
+  RequestStore[:cache_stats] ||= {}
+  RequestStore[:cache_stats][:read] ||= 0
+  RequestStore[:cache_stats][:read] += 1
 end
 
 ActiveSupport::Notifications.subscribe(/cache_.*\.active_support/) do |name, start, finish, arg1, arg2|
