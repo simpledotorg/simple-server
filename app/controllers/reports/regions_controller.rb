@@ -34,10 +34,9 @@ class Reports::RegionsController < AdminController
                                                         period: @period).call
       }
     else
-      @show_current_period = true
       @dashboard_analytics = @region.dashboard_analytics(period: :month,
                                                          prev_periods: 6,
-                                                         include_current_period: false)
+                                                         include_current_period: true)
     end
   end
 
