@@ -12,7 +12,7 @@ module SimpleServerExtensions
   GIT_REF = determine_git_ref
 
   def env
-    SIMPLE_SERVER_ENV
+    ActiveSupport::StringInquirer.new(SIMPLE_SERVER_ENV)
   end
 
   def git_ref(short: false)
