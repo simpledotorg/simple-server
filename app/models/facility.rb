@@ -64,6 +64,7 @@ class Facility < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   auto_strip_attributes :district, squish: true, upcase_first: true
+  auto_strip_attributes :zone, squish: true, titleize: true
 
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
