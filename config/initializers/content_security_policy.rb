@@ -4,7 +4,8 @@
 # For further information see the following documentation
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
 
-unless SimpleServer.env.review? && Rake.application.top_level_tasks.include?("assets:precompile")
+# See https://app.clubhouse.io/simpledotorg/story/1616/why-do-heroku-deployments-intermittently-fail
+unless SimpleServer.env.review? && Rake.application.top_level_tasks.any? { |task| task.include?("assets:precompile") }
   if Rails.env.production?
     Rails.application.config.content_security_policy do |policy|
       policy.default_src(:self, :https)
