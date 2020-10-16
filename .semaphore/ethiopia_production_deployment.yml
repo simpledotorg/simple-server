@@ -11,7 +11,7 @@ blocks:
             - make init
             - "make deploy hosts=ethiopia/production password_file=~/.ansible/password_file branch=$SEMAPHORE_GIT_BRANCH"
       secrets:
-        - name: ansible
+        - name: ansible ethiopia
         - name: semaphore-deploy-key
       prologue:
         commands:
