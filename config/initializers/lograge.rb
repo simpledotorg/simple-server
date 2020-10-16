@@ -12,6 +12,7 @@ Rails.application.configure do
         version: correlation.version.to_s
       },
       ddsource: ["ruby"],
+      cache_stats: CacheStats,
       params: event.payload[:params].except(*exceptions)
     }
   end
@@ -20,4 +21,14 @@ Rails.application.configure do
       {msg: "request"}.merge(data)
     end
   end
+end
+
+CacheStats = Hash.new(0)
+
+ActiveSupport::Notifications.subscribe(/cache_read.*\.active_support/) do |name, start, finish, arg1, arg2|
+  CacheStats[:cache_read] += 1
+end
+
+ActiveSupport::Notifications.subscribe(/cache_.*\.active_support/) do |name, start, finish, arg1, arg2|
+  Rails.logger.info name: name, start: start, finish: finish, arg1: arg1, arg2: arg2
 end
