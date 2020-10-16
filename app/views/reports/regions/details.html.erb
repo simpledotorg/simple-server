@@ -1,6 +1,10 @@
 <%= render "header"%>
 <% if @region.is_a?(Facility) %>
   <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
+    <%= render "user_activity_table",
+              period: @period.type,
+              row_resource_title: "User activity",
+              row_resource_description: "Registrations and follow-up activity by users at #{@region.name}" %>
     <%= render "shared/recent_bp_log",
                blood_pressures: @recent_blood_pressures,
                display_model: :facility %>
