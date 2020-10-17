@@ -23,7 +23,6 @@ Rails.application.configure do
   end
 end
 
-
 ActiveSupport::Notifications.subscribe(/cache_read.*\.active_support/) do |name, start, finish, arg1, arg2|
   RequestStore[:cache_stats] ||= {}
   RequestStore[:cache_stats][:read] ||= 0

@@ -17,14 +17,14 @@ class NoBPMeasureService
   delegate :cache, to: Rails
 
   def call
-    cache_keys_to_period = periods.each_with_object({}) do |period, hsh|
+    cache_keys_to_period = periods.each_with_object({}) { |period, hsh|
       key = cache_key(period)
       hsh[key] = period
-    end
-    cached_results = cache.fetch_multi(*cache_keys_to_period.keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do |key|
+    }
+    cached_results = cache.fetch_multi(*cache_keys_to_period.keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) { |key|
       period = cache_keys_to_period.fetch(key)
       execute_sql(period)
-    end
+    }
     cached_results.each_with_object(Hash.new(0)) do |(cache_key, result), hsh|
       period = cache_keys_to_period.fetch(cache_key)
       hsh[period] = result
