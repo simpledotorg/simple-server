@@ -15,14 +15,14 @@
     <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
         <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary", id: "Edit protocol" %>
-        <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New protocol drug" %>
+        <%= link_to 'New medication', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New medication" %>
       <% end %>
     <% else %>
       <% if policy([:manage, @protocol]).edit? %>
         <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary" ,id: "Edit protocol" %>
       <% end %>
       <% if policy([:manage, ProtocolDrug]).new? %>
-        <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New protocol drug" %>
+        <%= link_to 'New medication', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New medication" %>
       <% end %>
     <% end %>
   </nav>

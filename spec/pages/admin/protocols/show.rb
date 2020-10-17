@@ -5,7 +5,7 @@ module AdminPage
       MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
       FOLLOW_UP_DAYS = {id: "Follow up days"}.freeze
       EDIT_PROTOCOL_BUTTON = {id: "Edit protocol"}.freeze
-      NEW_PROTOCOL_DRUG_BUTTON = {id: "New protocol drug"}.freeze
+      NEW_PROTOCOL_DRUG_BUTTON = {id: "New medication"}.freeze
       PROTOCOL_DRUG_NAME = {id: "drug_name"}.freeze
 
       def verify_successful_message(message)
