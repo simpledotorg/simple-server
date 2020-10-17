@@ -109,7 +109,8 @@
               <% @facility_sizes.each do |size| %>
                 <div class="checkbox-row">
                   <label for=<%= "facility-#{size}-mobile" %>>
-                    <%= radio_button_tag("size[]", value = size, checked = @selected_sizes&.include?(size), {id: "facility-#{size}-mobile"}) %>
+                    <small class="form-text text-muted float-right">e.g. PHC, UPHC</small>
+                    <%= checkbox_button_tag("size[]", value = size, checked = @selected_sizes&.include?(size), {id: "facility-#{size}-mobile"}) %>
                     <%= size.capitalize %>
                   </label>
                 </div>
