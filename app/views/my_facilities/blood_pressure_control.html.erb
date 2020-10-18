@@ -35,45 +35,77 @@
         
           <div class="dropdown show">
             <!-- Filters -->
-            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="modal" data-target="#facility-filter-region-modal">
-              All blocks
+            <div class="btn-group">
+            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="facility-filter-region"
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             All blocks
             </a>
-            
-            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="modal" data-target="#facility-filter-size-modal">
-              All sizes
-            </a>
-            
-            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <%= registration_period %> cohort
-            </a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <h6 class="dropdown-header">Quarterly</h6>
-              <% last_n_quarters(n: 6).each do |year, quarter| %>
-                <% selected = (year == registration_year && quarter == registration_quarter && cohort_period == :quarter) %>
-                <button class="dropdown-item query-filter-quarter <%= 'active' if selected %>"
-                        type="submit" data-quarter="<%= quarter %>" data-year="<%= year %>" form="query-filters">
-                  <%= "Q#{quarter}-#{year}" %>
-                </button>
-              <% end %>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Monthly</h6>
-              <% last_n_months(n: 6).each do |month| %>
-                <% selected = (month.year == registration_year && month.month == registration_month && cohort_period == :month) %>
-                <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
-                        type="submit" data-month="<%= month.month %>" data-year="<%= month.year %>" form="query-filters">
-                  <%= month_short_name_and_year(month) %>
-                </button>
-              <% end %>
-
-              <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
-              <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
-              <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
-              <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters" hidden>
-              <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters-mobile" hidden>
-              <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters-mobile" hidden>
-              <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters-mobile" hidden>
-              <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
+                <div class="dropdown-menu" aria-labelledby="facility-filter-region">
+                  
+                    <button class="dropdown-item query-filter-quarter active"
+                            type="submit" form="query-filters">
+                      All blocks
+                    </button>
+                    <% @zones.each do |zone| %>
+                      <button class="dropdown-item query-filter-quarter"
+                              type="submit" form="query-filters">
+                              <%= zone.capitalize %>
+                      </button>
+                    <% end %>
+                </div>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="facility-filter-size"
+                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                     All sizes
+                    </a>
+                        <div class="dropdown-menu" aria-labelledby="facility-filter-size">
+                          
+                            <button class="dropdown-item query-filter-quarter active"
+                                    type="submit" form="query-filters">
+                              All sizes
+                            </button>
+                            <% (Array(@selected_sizes) + Array(params[:zone])).each do |size| %>
+                              <button class="dropdown-item query-filter-quarter"
+                                type="submit" form="query-filters">
+                                <%= size.capitalize %></span>
+                              </button>
+                            <% end %>
+                        </div>
+            </div>
+            <div class="btn-group">
+              <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <%= registration_period %> cohort
+              </a>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <h6 class="dropdown-header">Quarterly</h6>
+                <% last_n_quarters(n: 6).each do |year, quarter| %>
+                  <% selected = (year == registration_year && quarter == registration_quarter && cohort_period == :quarter) %>
+                  <button class="dropdown-item query-filter-quarter <%= 'active' if selected %>"
+                          type="submit" data-quarter="<%= quarter %>" data-year="<%= year %>" form="query-filters">
+                    <%= "Q#{quarter}-#{year}" %>
+                  </button>
+                <% end %>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Monthly</h6>
+                <% last_n_months(n: 6).each do |month| %>
+                  <% selected = (month.year == registration_year && month.month == registration_month && cohort_period == :month) %>
+                  <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
+                          type="submit" data-month="<%= month.month %>" data-year="<%= month.year %>" form="query-filters">
+                    <%= month_short_name_and_year(month) %>
+                  </button>
+                <% end %>
+  
+                <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
+                <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
+                <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
+                <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters" hidden>
+                <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters-mobile" hidden>
+                <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters-mobile" hidden>
+                <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters-mobile" hidden>
+                <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
+            </div>
             </div>
           </div>
         

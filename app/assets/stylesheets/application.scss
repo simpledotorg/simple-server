@@ -230,6 +230,40 @@ footer {
     color: $grey-light  ;
 }
 
+.navbar.fixed-top {
+  position: sticky;
+}
+
+.sub-nav {
+  padding-bottom: 16px;
+  line-height: 1;
+  
+  .container {
+    margin-bottom: 36px;
+    white-space: nowrap;
+    overflow-x: scroll;
+  }
+}
+
+.sub-nav-link {
+  display: inline-block;
+  padding: 18px 0;
+  margin-right: 16px;
+  font-size: 16px;
+  color: $grey-darkest;
+  
+  &.active {
+    border-bottom: 2px solid $red;
+    color: $red;
+    font-weight: bold;
+  }
+}
+
+.navbar .nav-item.active a,
+.navbar .nav-item a.active {
+    font-weight: bold;
+}
+
 @include media-breakpoint-down(md) {
     main.container {
         margin: 0 !important;
@@ -319,38 +353,10 @@ footer {
         font-size: 16px;
         margin-right: 6px;
     }
-}
-
-.navbar.fixed-top {
-  position: sticky;
-}
-
-.sub-nav {
-  padding-bottom: 16px;
-  line-height: 1;
-  
-  .container {
-    margin-bottom: 36px;
-    white-space: nowrap;
-    overflow-x: scroll;
-  }
-}
-
-.sub-nav-link {
-  display: inline-block;
-  padding: 18px 0;
-  margin-right: 16px;
-  font-size: 16px;
-  
-  &.active {
-    border-bottom: 2px solid black;
-    font-weight: bold;
-  }
-}
-
-.navbar .nav-item.active a,
-.navbar .nav-item a.active {
-    font-weight: bold;
+    .sub-nav-link {
+      padding: 18px 0 10px 0;
+      margin-bottom: 16px;
+    }
 }
 
 h6.dropdown-header {

@@ -239,6 +239,13 @@ th sup {
     .card-responsive {
         overflow: hidden;
         
+        .dropdown-menu {
+          max-height: 350px;
+          overflow:
+          hidden;
+          overflow: scroll;
+        }
+        
         table {
           margin-right: -20px !important;
           width: auto;
