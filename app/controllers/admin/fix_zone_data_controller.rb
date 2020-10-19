@@ -9,7 +9,7 @@ class Admin::FixZoneDataController < AdminController
     canonical_zones = CANONICAL_ZONES.uniq.compact.sort.join("\n")
     zones = Facility.all.pluck(:zone).uniq.compact.sort.reject(&:empty?).join("\n")
 
-    @diff = Diffy::Diff.new(zones, canonical_blocks)
+    @diff = Diffy::Diff.new(zones, canonical_zones)
     @facility_count = Facility.group(:zone).count
   end
 
