@@ -3,7 +3,12 @@
 </div>
 
 <script>
+  let facilityCount = <%= sanitize(@facility_count.to_json) %>
+
   $(".del").each((index, el) => {
+    let block = $(el).find("del").text();
+    console.log(facilityCount)
+    console.log(block)
     let row = `
     <div class="row">
       <div class="col-md-3" style="display: flex; margin: auto;">
@@ -17,7 +22,8 @@
             <button class="btn btn-primary">Update</button>
           </div>
         </div>
-        <input class="old_block_name" name="old_block" value="${ $(el).find("del").text() }" hidden>
+        <input class="old_block_name" name="old_block" value="${ block }" hidden>
+        <span class="ml-4">${ facilityCount[block] } facilities</span>
       </form>
     </div>
     `

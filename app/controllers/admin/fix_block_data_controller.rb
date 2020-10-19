@@ -7,10 +7,11 @@ class Admin::FixBlockDataController < AdminController
   def show
     authorize { current_admin.power_user? }
 
-    @canonical_blocks = CANONICAL_BLOCKS.uniq.sort.compact
-    @blocks = Facility.all.pluck(:zone).uniq.sort.reject(&:empty?)
+    canonical_blocks = CANONICAL_BLOCKS.uniq.sort.compact
+    blocks = Facility.all.pluck(:zone).uniq.sort.reject(&:empty?)
 
-    @diff = Diffy::Diff.new(PROD_BLOCKS.join("\n") || @blocks.join("\n"), @canonical_blocks.join("\n"))
+    @diff = Diffy::Diff.new(PROD_BLOCKS.join("\n") || blocks.join("\n"), canonical_blocks.join("\n"))
+    @facility_count = Facility.group(:zone).count
   end
 
   def update
