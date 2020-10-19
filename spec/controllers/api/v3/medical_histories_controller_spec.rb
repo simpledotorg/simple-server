@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_user) { create(:user) }
+  let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env["X_USER_ID"] = request_user.id
     request.env["X_FACILITY_ID"] = request_facility.id
@@ -18,15 +18,15 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    facility = create(:facility, facility_group: request_user.facility.facility_group)
     patient = FactoryBot.build(:patient, registration_facility: facility)
-    FactoryBot.create(:medical_history, options.merge(patient: patient))
+    create(:medical_history, options.merge(patient: patient))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group_id: request_user.facility.facility_group.id)
+    facility = create(:facility, facility_group_id: request_user.facility.facility_group.id)
     patient = FactoryBot.build(:patient, registration_facility_id: facility.id)
-    FactoryBot.create_list(:medical_history, n, options.merge(patient: patient))
+    create_list(:medical_history, n, options.merge(patient: patient))
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
@@ -42,8 +42,8 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   end
 
   describe "syncing within a facility group" do
-    let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
-    let(:facility_in_another_group) { FactoryBot.create(:facility) }
+    let(:facility_in_same_group) { create(:facility, facility_group: request_user.facility.facility_group) }
+    let(:facility_in_another_group) { create(:facility) }
 
     let(:patient_in_request_facility) { FactoryBot.build(:patient, registration_facility: request_facility) }
     let(:patient_in_same_group) { FactoryBot.build(:patient, registration_facility: facility_in_same_group) }
@@ -52,12 +52,12 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
     before :each do
       set_authentication_headers
 
-      FactoryBot.create_list(:medical_history, 2, patient: patient_in_request_facility, updated_at: 7.minutes.ago)
-      FactoryBot.create_list(:medical_history, 2, patient: patient_in_same_group, updated_at: 5.minutes.ago)
-      FactoryBot.create_list(:medical_history, 2, patient: patient_in_another_group, updated_at: 3.minutes.ago)
+      create_list(:medical_history, 2, patient: patient_in_request_facility, updated_at: 7.minutes.ago)
+      create_list(:medical_history, 2, patient: patient_in_same_group, updated_at: 5.minutes.ago)
+      create_list(:medical_history, 2, patient: patient_in_another_group, updated_at: 3.minutes.ago)
     end
 
-    it "only sends data for facilities belonging in the sync group of user's registration facility" do
+    it "only sends data belonging to patients in the sync group of user's facility" do
       get :sync_to_user, params: {limit: 15}
 
       response_medical_histories = JSON(response.body)["medical_histories"]

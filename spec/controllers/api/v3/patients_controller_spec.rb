@@ -1,9 +1,9 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::PatientsController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { create(:user) }
   let(:request_facility_group) { request_user.facility.facility_group }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_facility_group) }
+  let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { Patient }
   let(:patient_metadata) { {registration_facility_id: request_facility.id, assigned_facility_id: request_facility.id} }
   let(:build_payload) { ->(patient = build(:patient)) { build_patient_payload(patient).merge(patient_metadata) } }
@@ -13,13 +13,13 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 + invalid_record["phone_numbers"].count }
 
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_facility_group)
-    FactoryBot.create(:patient, options.merge(registration_facility: facility))
+    facility = create(:facility, facility_group: request_facility_group)
+    create(:patient, options.merge(registration_facility: facility))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_facility_group)
-    FactoryBot.create_list(:patient, n, options.merge(registration_facility: facility))
+    facility = create(:facility, facility_group: request_facility_group)
+    create_list(:patient, n, options.merge(registration_facility: facility))
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
@@ -95,7 +95,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         it "sets recorded_at to the earliest bp's recorded_at in case patient is synced later" do
           patient = FactoryBot.build(:patient)
           blood_pressure_recorded_at = 1.month.ago
-          FactoryBot.create(:blood_pressure,
+          create(:blood_pressure,
             patient_id: patient.id,
             recorded_at: blood_pressure_recorded_at)
 
@@ -143,7 +143,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
       end
 
-      let(:existing_patients) { FactoryBot.create_list(:patient, 3, patient_metadata) }
+      let(:existing_patients) { create_list(:patient, 3, patient_metadata) }
       let(:updated_patients_payload) { existing_patients.map { |patient| updated_patient_payload(patient) } }
 
       it "with only updated patient attributes" do
@@ -249,7 +249,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       context "patient business_identifier" do
         it "disallows missing identifier for bangladesh_national_id" do
-          patients_payload = build_payload.call(FactoryBot.create(:patient))
+          patients_payload = build_payload.call(create(:patient))
           business_identifier = build_business_identifier_payload
           business_identifier.delete("identifier")
           payload_without_biz_id = patients_payload.deep_merge("business_identifiers" => [business_identifier])
@@ -265,8 +265,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       it "does not change registration user or facility" do
-        current_user = FactoryBot.create(:user)
-        current_facility = FactoryBot.create(:facility, facility_group: current_user.facility.facility_group)
+        current_user = create(:user)
+        current_facility = create(:facility, facility_group: current_user.facility.facility_group)
         request.env["HTTP_X_USER_ID"] = current_user.id
         request.env["HTTP_X_FACILITY_ID"] = current_facility.id
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{current_user.access_token}"
@@ -294,7 +294,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
       end
 
-      let(:existing_patient) { FactoryBot.create(:patient) }
+      let(:existing_patient) { create(:patient) }
       let(:deleted_time) { Time.current }
       let(:delete_patient_payload) do
         build_payload.call(existing_patient)
@@ -341,11 +341,11 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
     describe "v3 facility prioritisation" do
       it "syncs request facility's records first" do
-        request_2_facility = FactoryBot.create(:facility, facility_group: request_facility_group)
-        FactoryBot.create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 3.minutes.ago)
-        FactoryBot.create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 5.minutes.ago)
-        FactoryBot.create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:patient, 2, registration_facility: request_facility, updated_at: 10.minutes.ago)
+        request_2_facility = create(:facility, facility_group: request_facility_group)
+        create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 3.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 5.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 10.minutes.ago)
 
         # GET request 1
         set_authentication_headers
@@ -369,22 +369,22 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
     end
 
     describe "syncing within a facility group" do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_facility_group) }
-      let(:facility_in_another_group) { FactoryBot.create(:facility) }
+      let(:facility_in_same_group) { create(:facility, facility_group: request_facility_group) }
+      let(:facility_in_another_group) { create(:facility) }
 
       let(:patients_in_another_group) {
-        FactoryBot.create_list(:patient, 2,
+        create_list(:patient, 2,
           registration_facility: facility_in_another_group,
           updated_at: 3.minutes.ago)
       }
 
       before :each do
         set_authentication_headers
-        FactoryBot.create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
-        FactoryBot.create_list(:patient, 2, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
+        create_list(:patient, 2, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
       end
 
-      it "only sends data for facilities belonging in the sync group of user's registration facility" do
+      it "only sends patients in the sync group of user's facility" do
         get :sync_to_user, params: {limit: 15}
 
         response_patients = JSON(response.body)["patients"]
