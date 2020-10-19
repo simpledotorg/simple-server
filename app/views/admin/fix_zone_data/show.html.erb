@@ -1,0 +1,48 @@
+<div class="card">
+  <%= sanitize(@diff.to_s(:html)) %>
+</div>
+
+<script>
+  let facilityCount = <%= sanitize(@facility_count.to_json) %>
+
+  $(".del").each((index, el) => {
+    let zone = $(el).find("del").text();
+    let row = `
+    <div class="row">
+      <div class="col-md-3" style="display: flex; margin: auto;">
+        ${$(el).html()}
+      </div>
+    <div class="col-md-9 text-right">
+      <form method="POST" action="/admin/update_zone" class="form-inline">
+        <div class="input-group">
+        <input class="new_zone_name" name="new_zone" placeholder="Update facilities with this zone">
+          <div class="input-group-append">
+            <button class="btn btn-primary">Update</button>
+          </div>
+        </div>
+        <input class="old_zone_name" name="old_zone" value="${ zone }" hidden>
+        <span class="ml-4">${ facilityCount[zone] } ${ facilityCount[zone] == 1 ? "facility" : "facilities" }</span>
+      </form>
+    </div>
+    `
+
+    $(el).html(row);
+  })
+</script>
+
+<style>
+  <%= Diffy::CSS %>
+
+  .diff ul {
+    font-size: 16px !important;
+  }
+
+  .del form {
+    padding: 5px;
+  }
+
+  .del form input {
+    min-width: 230px;
+    line-height: 30px;
+  }
+</style>

@@ -193,6 +193,10 @@ Rails.application.routes.draw do
       put "disable_access", to: "users#disable_access"
       put "enable_access", to: "users#enable_access"
     end
+
+    # This is a temporary page to assist in clean up
+    get "fix_zone_data", to: "fix_zone_data#show"
+    post "update_zone", to: "fix_zone_data#update"
   end
 
   if FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")
