@@ -82,6 +82,10 @@ class Patient < ApplicationRecord
       .merge(PatientPhoneNumber.phone_type_mobile)
   }
 
+  scope :syncable_to_region, ->(region) {
+    with_discarded.where(registration_facility: region.facilities)
+  }
+
   def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
