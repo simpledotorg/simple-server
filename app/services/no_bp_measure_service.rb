@@ -7,10 +7,8 @@ class NoBPMeasureService
     @periods = periods
     @facilities = region.facilities.to_a
     @facility_ids = @facilities.map(&:id)
-    @cache_keys_for_period = periods.each_with_object({}) { |period, hsh| hsh[cache_key(period)] = period }
   end
 
-  attr_reader :cache_keys_for_period
   attr_reader :facilities
   attr_reader :facility_ids
   attr_reader :periods
@@ -28,6 +26,10 @@ class NoBPMeasureService
       period = cache_keys_for_period.fetch(key)
       hsh[period] = result
     end
+  end
+
+  def cache_keys_for_period
+    @cache_keys_for_period ||= periods.each_with_object({}) { |period, hsh| hsh[cache_key(period)] = period }
   end
 
   def execute_sql(period)
