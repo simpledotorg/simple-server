@@ -14,7 +14,7 @@ class Api::V4::BloodSugarsController < Api::V4::SyncController
   private
 
   def facility_group_records
-    current_facility_group.blood_sugars.with_discarded
+    BloodSugar.syncable_to_region(current_facility_group)
   end
 
   def transform_to_response(blood_sugar)
