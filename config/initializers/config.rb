@@ -1,3 +1,10 @@
+# See https://app.clubhouse.io/simpledotorg/story/1616/why-do-heroku-deployments-intermittently-fail
+unless SimpleServer.env.review? && Rake.application.top_level_tasks.any? { |task| task.include?("assets") }
+  Config.ensure_required_keys_are_present(required_keys: [
+    "SENTRY_SECURITY_HEADER_ENDPOINT"
+  ])
+end
+
 Config.ensure_required_keys_are_present(required_keys: [
   "DEFAULT_NUMBER_OF_RECORDS",
   "DEFAULT_COUNTRY",
@@ -7,7 +14,6 @@ Config.ensure_required_keys_are_present(required_keys: [
   "SENDGRID_USERNAME",
   "SENDGRID_PASSWORD",
   "SENTRY_DSN",
-  "SENTRY_SECURITY_HEADER_ENDPOINT",
   "SENTRY_CURRENT_ENV",
   "TWILIO_ACCOUNT_SID",
   "TWILIO_AUTH_TOKEN",

@@ -46,6 +46,7 @@ RSpec.describe Admin::CSV::FacilityValidator do
        district: "district",
        state: "state",
        country: "country",
+       zone: "zone",
        import: true}
     end
 

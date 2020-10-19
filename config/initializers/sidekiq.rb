@@ -25,7 +25,7 @@ Sidekiq.configure_client do |config|
 end
 
 SIDEKIQ_STATS_KEY = "worker"
-SIDEKIQ_STATS_PREFIX = "#{SIMPLE_SERVER_ENV}.#{CountryConfig.current[:abbreviation]}"
+SIDEKIQ_STATS_PREFIX = "#{SimpleServer.env}.#{CountryConfig.current[:abbreviation]}"
 
 Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
