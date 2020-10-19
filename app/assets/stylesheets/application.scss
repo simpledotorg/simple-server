@@ -237,6 +237,7 @@ footer {
 .sub-nav {
   padding-bottom: 16px;
   line-height: 1;
+  margin-top: -32px !important;
   
   .container {
     margin-bottom: 36px;
@@ -251,6 +252,12 @@ footer {
   margin-right: 16px;
   font-size: 16px;
   color: $grey-darkest;
+  text-decoration: none !important;
+  
+  &:hover {
+    border-bottom: 2px solid black;
+    color: $grey-dark;
+  }
   
   &.active {
     border-bottom: 2px solid $red;
@@ -264,9 +271,9 @@ footer {
     font-weight: bold;
 }
 
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(lg) {
     main.container {
-        margin: 0 !important;
+        margin: 16px 0 0 0 !important;
     }
     div.container {
         margin: 0 !important;
@@ -301,7 +308,7 @@ footer {
           left: 0;
           width: 92%;
           left: 4%;
-          box-shadow: 0 0 0 10px rgba(0,0,0,0.2);
+          box-shadow: 0 0 0 10px rgba(0,0,0,0.5);
         }
     }
     
@@ -319,20 +326,22 @@ footer {
     .dropdown-item {
         font-size: 18px;
     }
-}
-
-@include media-breakpoint-down(md) {
-  .sub-nav {
-      margin: 0 -16px !important;
-      line-height: 1.4;
-      
-      .container {
-        border-bottom: 1px solid rgba(0,0,0,0.1);
+    
+    .sub-nav {
+        margin: -16px -16px 0 -16px !important;
+        line-height: 1.4;
+        
+        .container {
+          border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
       }
-    }
 }
 
-@include media-breakpoint-up(md) {
+@include media-breakpoint-up(lg) {
+    main.container {
+        margin-top: 32px !important;
+    }
+        
     .container div.container {
         margin: 0 !important;
         padding: 0 !important;
@@ -507,7 +516,7 @@ span.inactive {
   @extend .text-muted;
   @extend .small;
 
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(lg) {
     display: none;
   }
 }
@@ -578,19 +587,9 @@ span.inactive {
     }
 }
 
-/*****************
-Subnav
-*****************/
-
 .user-row .event,
 .user-row .event a {
     color: $grey-dark;
-}
-
-@include media-breakpoint-down(sm) {
-    .navbar {
-      display: block;
-    }
 }
 
 .filter-tags:not(:empty) {

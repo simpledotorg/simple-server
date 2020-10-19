@@ -4,26 +4,26 @@
   <div class="page-nav">
     <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.accessible_facility_groups(:manage).any? || current_admin.power_user? %>
-        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-primary btn-outline" %>
       <% end %>
     <% else %>
       <% if policy([:manage, :facility, Facility]).upload? %>
-        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-default" %>
+        <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-primary btn-outline" %>
       <% end %>
     <% end %>
 
     <% if current_admin.permissions_v2_enabled? %>
       <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-primary" do %>
           <i class="fas fa-plus mr-1"></i>
-          Add facility group
+          Facility group
         <% end %>
       <% end %>
     <% else %>
       <% if policy([:manage, FacilityGroup]).new? %>
-        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+        <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-primary" do %>
           <i class="fas fa-plus mr-1"></i>
-          Add facility group
+          Facility group
         <% end %>
       <% end %>
     <% end %>
@@ -35,13 +35,6 @@
 <% if searching? and @facilities.blank? %>
   <%= render "shared/no_search_results", message: "No results for '#{content_tag(:strong, search_query)}'" %>
 <% else %>
-  <div class="alert alert-info alert-dismissible fade show" role="alert">
-    <i class="far fa-question-circle mr-2"></i> A <span class="term">Facility Group</span> is usually a
-    <span class="term">District</span>. First, add a new facility group and then add facilities inside it.
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true"><i class="fas fa-times"></i></span>
-    </button>
-  </div>
 
   <% @organizations.sort_by(&:name).each do |organization| %>
     <% if @organizations.size > 1 %>
@@ -51,19 +44,19 @@
     <% @facility_groups.dig(organization)&.sort_by(&:name)&.each do |facility_group| %>
       <div class="card">
         <div class="row">
-          <div class="col-10">
+          <div class="col-8">
             <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
           </div>
 
           <% if current_admin.permissions_v2_enabled? %>
             <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
-              <div class="col-2 text-right">
+              <div class="col-4 text-right">
                 <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
               </div>
             <% end %>
           <% else %>
             <% if policy([:manage, facility_group]).edit? %>
-              <div class="col-2 text-right">
+              <div class="col-4 text-right">
                 <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
               </div>
             <% end %>
@@ -95,7 +88,7 @@
         <% @facilities.dig(facility_group)&.sort_by(&:name)&.each do |facility| %>
           <div class="row card-row">
             <div class="col-md-4">
-              <h5>
+              <h5 class="pb-md-0 pb-1">
                 <% if current_admin.permissions_v2_enabled? %>
                   <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
                 <% else %>
