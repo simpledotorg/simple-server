@@ -1,12 +1,12 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::FacilitiesController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
+  let(:request_user) { create(:user) }
 
   let(:model) { Facility }
 
   def create_record_list(n, _options = {})
-    FactoryBot.create_list(:facility, n, facility_group: request_user.facility.facility_group)
+    create_list(:facility, n, facility_group: request_user.facility.facility_group)
   end
 
   describe "a working Current sync controller sending records" do
@@ -31,7 +31,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
       end
 
       it "only sends facilities that belong to a facility group" do
-        facilities_without_group = FactoryBot.create_list(:facility, 2, facility_group: nil)
+        facilities_without_group = create_list(:facility, 2, facility_group: nil)
         get :sync_to_user
 
         response_body = JSON(response.body)
