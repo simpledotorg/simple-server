@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe Api::V3::UsersController, type: :controller do
   require "sidekiq/testing"
 
-  let(:facility) { FactoryBot.create(:facility) }
-  let!(:owner) { FactoryBot.create(:admin, :power_user) }
-  let!(:supervisor) { FactoryBot.create(:admin, :manager, :with_access, resource: facility.facility_group) }
-  let!(:organization_owner) { FactoryBot.create(:admin, :manager, :with_access, resource: facility.organization) }
+  let(:facility) { create(:facility) }
+  let!(:owner) { create(:admin, :power_user) }
+  let!(:supervisor) { create(:admin, :manager, :with_access, resource: facility.facility_group) }
+  let!(:organization_owner) { create(:admin, :manager, :with_access, resource: facility.organization) }
 
   describe "#register" do
     describe "registration payload is invalid" do
@@ -139,7 +139,7 @@ RSpec.describe Api::V3::UsersController, type: :controller do
   end
 
   describe "#request_otp" do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { create(:user) }
 
     it "returns 404 if the user with id doesn't exist" do
       post :request_otp, params: {id: SecureRandom.uuid}
@@ -171,9 +171,9 @@ RSpec.describe Api::V3::UsersController, type: :controller do
   end
 
   describe "#reset_password" do
-    let(:facility_group) { FactoryBot.create(:facility_group) }
-    let(:facility) { FactoryBot.create(:facility, facility_group: facility_group) }
-    let(:user) { FactoryBot.create(:user, registration_facility: facility, organization: facility.organization) }
+    let(:facility_group) { create(:facility_group) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:user) { create(:user, registration_facility: facility, organization: facility.organization) }
 
     before(:each) do
       request.env["HTTP_X_USER_ID"] = user.id

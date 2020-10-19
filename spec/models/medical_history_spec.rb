@@ -10,8 +10,29 @@ describe MedicalHistory, type: :model do
     it { should validate_presence_of(:device_updated_at) }
   end
 
-  describe "Behavior" do
-    it_behaves_like "a record that is deletable"
+  describe "Scopes" do
+    describe ".syncable_to_region" do
+      it "returns all patients registered in the region" do
+        facility_group = create(:facility_group)
+        patient = create(:patient)
+        other_patient = create(:patient)
+
+        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
+
+        MedicalHistory.destroy_all
+        medical_histories = [
+          create(:medical_history, patient: patient),
+          create(:medical_history, patient: patient).tap(&:discard)
+        ]
+
+        _other_medical_histories = [
+          create(:medical_history, patient: other_patient),
+          create(:medical_history, patient: other_patient).tap(&:discard)
+        ]
+
+        expect(MedicalHistory.syncable_to_region(facility_group)).to contain_exactly(*medical_histories)
+      end
+    end
   end
 
   describe "Behavior" do
