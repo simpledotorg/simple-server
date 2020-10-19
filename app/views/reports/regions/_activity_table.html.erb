@@ -27,13 +27,13 @@
         <tr>
           <th></th>
           <th>
-            Total reg.
+            Total reg.<sup>1</sup>
           </th>
           <th colspan="6">
-            New registrations
+            New registrations<sup>2</sup>
           </th>
           <th colspan="6">
-            Follow-ups
+            Follow-ups<sup>3</sup>
           </th>
         </tr>
         <tr class="sorts" data-sort-method="thead">
@@ -104,20 +104,19 @@
       </tbody>
     </table>
   </div>
+  <div class="mt-20px">
+    <p class="mb-8px fs-14px c-grey-dark c-print-black">
+      <% if @region.is_a?(Facility) %>
+        <strong>1. Total registrations:</strong> Total patients registered by users at <%= @region.name %> till <%= @period %>
+      <% else %>
+        <strong>1. Total registrations:</strong> Total patients registered at facilities in <%= @region.name %> till <%= @period %>
+      <% end %>
+    </p>
+    <p class="mb-8px fs-14px c-grey-dark c-print-black">
+      <strong>2. New registrations:</strong> New patients registered in a month
+    </p>
+    <p class="mb-0px fs-14px c-grey-dark c-print-black">
+      <strong>3. Follow-ups:</strong> Total patients with at least 1 BP recorded in a month. Doesn't include new patient registrations.
+    </p>
+  </div>
 </div>
-<!--
-
-  FACILITY ACTIVITY: DEFINITIONS
-  total_registrations = ALL registrations made at a facility (not the same as cumulative registrations)
-  // Hari, how is this calculated? Do Dashboard users _belong to_ a facility?
-  monthly_registrations = ALL registrations made at a facility during a month
-  monthly_follow_ups = Total number of patients with at least 1 BP during a month which was not their registration BP
-  cumulative_registrations = Total number of patients assigned to a facility at the end of a month
-  
-  FACILITY ACTIVITY: EQUATIONS
-  total_registrations !== cumulative_registrations
-  total_registrations = SUM of all registrations made by a user at a facility
-
-  USER ACTIVITY:
-
--->
