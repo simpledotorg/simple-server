@@ -230,7 +230,8 @@ class TelemedicineReports
             "",
             facility[:telemed_data][:teleconsultation_requests],
             facility[:telemed_data][:teleconsultation_records],
-            facility[:telemed_data][:teleconsultation_marked_completed]
+            facility[:telemed_data][:teleconsultation_marked_completed],
+            ""
           ]
         end
       end
