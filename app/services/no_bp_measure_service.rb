@@ -1,5 +1,5 @@
 class NoBPMeasureService
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
   CACHE_TTL = 7.days
 
   def initialize(region, periods:)
@@ -7,8 +7,10 @@ class NoBPMeasureService
     @periods = periods
     @facilities = region.facilities.to_a
     @facility_ids = @facilities.map(&:id)
+    @cache_keys_for_period = periods.each_with_object({}) { |period, hsh| hsh[cache_key(period)] = period }
   end
 
+  attr_reader :cache_keys_for_period
   attr_reader :facilities
   attr_reader :facility_ids
   attr_reader :periods
@@ -17,16 +19,13 @@ class NoBPMeasureService
   delegate :cache, to: Rails
 
   def call
-    cache_keys_to_period = periods.each_with_object({}) { |period, hsh|
-      key = cache_key(period)
-      hsh[key] = period
-    }
-    cached_results = cache.fetch_multi(*cache_keys_to_period.keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) { |key|
-      period = cache_keys_to_period.fetch(key)
+    cache_options = {version: cache_version, expires_in: CACHE_TTL, force: force_cache?}
+    cached_results = cache.fetch_multi(*cache_keys_for_period.keys, cache_options) { |key|
+      period = cache_keys_for_period.fetch(key)
       execute_sql(period)
     }
-    cached_results.each_with_object(Hash.new(0)) do |(cache_key, result), hsh|
-      period = cache_keys_to_period.fetch(cache_key)
+    cached_results.each_with_object(Hash.new(0)) do |(key, result), hsh|
+      period = cache_keys_for_period.fetch(key)
       hsh[period] = result
     end
   end
