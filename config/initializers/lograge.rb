@@ -22,13 +22,3 @@ Rails.application.configure do
     end
   end
 end
-
-ActiveSupport::Notifications.subscribe(/cache_read.*\.active_support/) do |name, start, finish, arg1, arg2|
-  RequestStore[:cache_stats] ||= {}
-  RequestStore[:cache_stats][:read] ||= 0
-  RequestStore[:cache_stats][:read] += 1
-end
-
-ActiveSupport::Notifications.subscribe(/cache_.*\.active_support/) do |name, start, finish, arg1, arg2|
-  Rails.logger.info name: name, start: start, finish: finish, arg1: arg1, arg2: arg2
-end

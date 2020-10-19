@@ -19,8 +19,8 @@ class NoBPMeasureService
   delegate :cache, to: Rails
 
   def call
-    cache_options = {version: cache_version, expires_in: CACHE_TTL, force: force_cache?}
-    cached_results = cache.fetch_multi(*cache_keys_for_period.keys, cache_options) { |key|
+    keys = cache_keys_for_period.keys
+    cached_results = cache.fetch_multi(*keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) { |key|
       period = cache_keys_for_period.fetch(key)
       execute_sql(period)
     }
