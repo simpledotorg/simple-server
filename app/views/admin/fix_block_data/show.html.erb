@@ -1,0 +1,44 @@
+<div class="card">
+  <%= sanitize(@diff.to_s(:html)) %>
+</div>
+
+<script>
+  $(".del").each((index, el) => {
+    let row = `
+    <div class="row">
+      <div class="col-md-3" style="display: flex; margin: auto;">
+        ${$(el).html()}
+      </div>
+    <div class="col-md-9 text-right">
+      <form method="POST" action="/admin/update_block" class="form-inline">
+        <div class="input-group">
+        <input class="new_block_name" name="new_block" placeholder="Update facilities with this block">
+          <div class="input-group-append">
+            <button class="btn btn-primary">Update</button>
+          </div>
+        </div>
+        <input class="old_block_name" name="old_block" value="${ $(el).find("del").text() }" hidden>
+      </form>
+    </div>
+    `
+
+    $(el).html(row);
+  })
+</script>
+
+<style>
+  <%= Diffy::CSS %>
+
+  .diff ul {
+    font-size: 16px !important;
+  }
+
+  .del form {
+    padding: 5px;
+  }
+
+  .del form input {
+    min-width: 230px;
+    line-height: 30px;
+  }
+</style>
