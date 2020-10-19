@@ -6,7 +6,7 @@
   let facilityCount = <%= sanitize(@facility_count.to_json) %>
 
   $(".del").each((index, el) => {
-    let block = $(el).find("del").text();
+    let zone = $(el).find("del").text();
     let row = `
     <div class="row">
       <div class="col-md-3" style="display: flex; margin: auto;">
@@ -15,13 +15,13 @@
     <div class="col-md-9 text-right">
       <form method="POST" action="/admin/update_block" class="form-inline">
         <div class="input-group">
-        <input class="new_block_name" name="new_block" placeholder="Update facilities with this block">
+        <input class="new_zone_name" name="new_zone placeholder="Update facilities with this zone">
           <div class="input-group-append">
             <button class="btn btn-primary">Update</button>
           </div>
         </div>
-        <input class="old_block_name" name="old_block" value="${ block }" hidden>
-        <span class="ml-4">${ facilityCount[block] } ${ facilityCount[block] == 1 ? "facility" : "facilities" }</span>
+        <input class="old_zone_name" name="old_zone" value="${ zone }" hidden>
+        <span class="ml-4">${ facilityCount[zone] } ${ facilityCount[zone] == 1 ? "facility" : "facilities" }</span>
       </form>
     </div>
     `

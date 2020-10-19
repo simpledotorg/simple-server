@@ -1,15 +1,15 @@
 class Admin::FixZoneDataController < AdminController
-  CANONICAL_BLOCKS = YAML.load_file("config/data/canonical_blocks_ihci.yml")
+  CANONICAL_ZONES = YAML.load_file("config/data/canonical_blocks_ihci.yml")
 
   skip_before_action :verify_authenticity_token
 
   def show
     authorize { current_admin.power_user? }
 
-    canonical_blocks = CANONICAL_BLOCKS.uniq.compact.sort.join("\n")
-    blocks = Facility.all.pluck(:zone).uniq.compact.sort.reject(&:empty?).join("\n")
+    canonical_blocks = CANONICAL_ZONES.uniq.compact.sort.join("\n")
+    zones = Facility.all.pluck(:zone).uniq.compact.sort.reject(&:empty?).join("\n")
 
-    @diff = Diffy::Diff.new(blocks, canonical_blocks)
+    @diff = Diffy::Diff.new(zones, canonical_blocks)
     @facility_count = Facility.group(:zone).count
   end
 
