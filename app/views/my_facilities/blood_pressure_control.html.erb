@@ -31,13 +31,13 @@
         at their last visit in <%= visited_in_period %>.
       </p>
       <div class="dropdown show">
-        <form id="query-filters-mobile">
+        <form id="query-filters">
           <div class="btn-group">
             <a
+              id="region-size-filter"
               class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
               href="#"
               role="button"
-              id="facility-filter-region"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
@@ -48,11 +48,11 @@
                 <%= @selected_zones.first.capitalize %>
               <% end %>
             </a>
-            <div class="dropdown-menu" aria-labelledby="facility-filter-region">
+            <div class="dropdown-menu" aria-labelledby="region-size-filter">
               <button
                 class="dropdown-item query-filter-quarter <%= "active" if @selected_zones.size == @zones.size %>"
                 type="submit"
-                form="query-filters-mobile"
+                form="query-filters"
                 name="zone"
                 value=""
               >
@@ -62,7 +62,7 @@
                 <button
                   class="dropdown-item query-filter-quarter <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>"
                   type="submit"
-                  form="query-filters-mobile"
+                  form="query-filters"
                   name="zone"
                   value="<%= zone %>"
                 >
@@ -73,10 +73,9 @@
           </div>
           <div class="btn-group">
             <a
+              id="size-filter"
               class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
-              href="#"
               role="button"
-              id="facility-filter-size"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
@@ -87,11 +86,11 @@
                 All sizes
               <% end %>
             </a>
-            <div class="dropdown-menu" aria-labelledby="facility-filter-size">
+            <div class="dropdown-menu" aria-labelledby="size-filter">
               <button
                 class="dropdown-item query-filter-quarter <%= "active" if @selected_sizes.size === 4 %>" 
                 type="submit"
-                form="query-filters-mobile"
+                form="query-filters"
                 name="size"
                 value=""
               >
@@ -102,7 +101,7 @@
                   id="<%= "facility-#{size}-mobile" %>"
                   class="dropdown-item query-filter-quarter <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %>"
                   type="submit"
-                  form="query-filters-mobile"
+                  form="query-filters"
                   name="size"
                   value="<%= size %>"
                 >
@@ -113,9 +112,8 @@
           </div>
           <div class="btn-group">
             <a
-              id="dropdownMenuLink"
+              id="period-dropdown"
               class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
-              href="#"
               role="button"
               data-toggle="dropdown"
               aria-haspopup="true"
@@ -123,7 +121,7 @@
             >
               <%= registration_period %> cohort
             </a>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <div class="dropdown-menu" aria-labelledby="period-dropdown">
               <h6 class="dropdown-header">
                 Quarterly
               </h6>
@@ -134,7 +132,7 @@
                   type="submit"
                   data-quarter="<%= quarter %>"
                   data-year="<%= year %>"
-                  form="query-filters-mobile"
+                  form="query-filters"
                 >
                   <%= "Q#{quarter}-#{year}" %>
                 </button>
@@ -150,7 +148,7 @@
                   type="submit"
                   data-month="<%= month.month %>"
                   data-year="<%= month.year %>"
-                  form="query-filters-mobile"
+                  form="query-filters"
                 >
                   <%= month_short_name_and_year(month) %>
                 </button>
