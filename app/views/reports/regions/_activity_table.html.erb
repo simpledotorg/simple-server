@@ -38,7 +38,7 @@
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
-            Facilities
+            <%= row_resource_column %>
           </th>
           <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
             <%= @period %>
@@ -105,3 +105,19 @@
     </table>
   </div>
 </div>
+<!--
+
+  FACILITY ACTIVITY: DEFINITIONS
+  total_registrations = ALL registrations made at a facility (not the same as cumulative registrations)
+  // Hari, how is this calculated? Do Dashboard users _belong to_ a facility?
+  monthly_registrations = ALL registrations made at a facility during a month
+  monthly_follow_ups = Total number of patients with at least 1 BP during a month which was not their registration BP
+  cumulative_registrations = Total number of patients assigned to a facility at the end of a month
+  
+  FACILITY ACTIVITY: EQUATIONS
+  total_registrations !== cumulative_registrations
+  total_registrations = SUM of all registrations made by a user at a facility
+
+  USER ACTIVITY:
+
+-->

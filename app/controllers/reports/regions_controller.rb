@@ -44,7 +44,9 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @show_current_period = true
-    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
+                                                        prev_periods: 6,
+                                                        include_current_period: true)
 
     if @region.is_a?(Facility)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)

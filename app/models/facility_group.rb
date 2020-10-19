@@ -50,8 +50,8 @@ class FacilityGroup < ApplicationRecord
     facilities.none? && patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
-  def dashboard_analytics(period:, prev_periods:)
-    query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: true)
+  def dashboard_analytics(period:, prev_periods:, include_current_period: true)
+    query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: include_current_period)
     query.call
   end
 
