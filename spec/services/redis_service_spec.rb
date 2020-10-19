@@ -5,7 +5,7 @@ RSpec.describe RedisService do
 
   let!(:key) { SecureRandom.base64 }
   let!(:expire_key_in_one_day) { 1.day.seconds.to_i }
-  let!(:connection) { Redis.new(host: "localhost") }
+  let!(:connection) { MockRedis.new }
 
   context "#hmset_with_expiry" do
     it "should store a hash in redis with an expiry" do
