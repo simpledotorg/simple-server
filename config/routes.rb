@@ -195,8 +195,8 @@ Rails.application.routes.draw do
     end
 
     # This is a temporary page to assist in clean up
-    get "fix_block_data", to: "fix_block_data#show"
-    post "update_block", to: "fix_block_data#update"
+    get "fix_zone_data", to: "fix_zone_data#show"
+    post "update_block", to: "fix_zone_data#update"
   end
 
   if FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")

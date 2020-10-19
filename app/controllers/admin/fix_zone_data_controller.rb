@@ -1,4 +1,4 @@
-class Admin::FixBlockDataController < AdminController
+class Admin::FixZoneDataController < AdminController
   CANONICAL_BLOCKS = YAML.load_file("config/data/canonical_blocks_ihci.yml")
 
   skip_before_action :verify_authenticity_token
@@ -18,6 +18,6 @@ class Admin::FixBlockDataController < AdminController
 
     Facility.where(zone: params[:old_block]).update(zone: params[:new_block])
 
-    redirect_to admin_fix_block_data_path
+    redirect_to admin_fix_zone_data_path
   end
 end
