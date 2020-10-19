@@ -192,9 +192,15 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
           patient: patient_in_same_facility,
           facility: request_facility,
           updated_at: 7.minutes.ago)
+
+        create_list(:encounter,
+          1,
+          patient: patient_in_different_facility,
+          facility: request_facility,
+          updated_at: 7.minutes.ago)
       end
 
-      it "only sends data for facilities belonging in the sync group of user's registration facility" do
+      it "only sends data belonging to patients in the sync group of user's facility" do
         get :sync_to_user, params: {limit: 6}
 
         response_encounters = JSON(response.body)["encounters"]
