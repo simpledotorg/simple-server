@@ -111,7 +111,6 @@ end
 
 group :test do
   gem "capybara"
-  gem "fakeredis", require: false
   gem "generator_spec"
   gem "launchy"
   gem "puma"
