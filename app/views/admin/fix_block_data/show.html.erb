@@ -23,7 +23,7 @@
           </div>
         </div>
         <input class="old_block_name" name="old_block" value="${ block }" hidden>
-        <span class="ml-4">${ facilityCount[block] } facilities</span>
+        <span class="ml-4">${ facilityCount[block] } ${ facilityCount[block] == 1 ? "facility" : "facilities" }</span>
       </form>
     </div>
     `
