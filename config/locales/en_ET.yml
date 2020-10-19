@@ -7,7 +7,7 @@ en_ET:
         size: "Size *"
         street_address: "House and road number"
         village_or_colony: "Kebele"
-        zone: "Zone"
+        zone: "Zone *"
         district: "Woreda *"
         state: "Region *"
         country: "Country *"
