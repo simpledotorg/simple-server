@@ -6,7 +6,7 @@ class Admin::FixZoneDataController < AdminController
   def show
     authorize { current_admin.power_user? }
 
-    canonical_blocks = CANONICAL_ZONES.uniq.compact.sort.join("\n")
+    canonical_zones = CANONICAL_ZONES.uniq.compact.sort.join("\n")
     zones = Facility.all.pluck(:zone).uniq.compact.sort.reject(&:empty?).join("\n")
 
     @diff = Diffy::Diff.new(zones, canonical_blocks)
@@ -16,7 +16,7 @@ class Admin::FixZoneDataController < AdminController
   def update
     authorize { current_admin.power_user? }
 
-    Facility.where(zone: params[:old_block]).update(zone: params[:new_block])
+    Facility.where(zone: params[:old_zone]).update(zone: params[:new_zone])
 
     redirect_to admin_fix_zone_data_path
   end
