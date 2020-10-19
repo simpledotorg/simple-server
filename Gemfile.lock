@@ -265,6 +265,7 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.14.2)
+    mock_redis (0.26.0)
     msgpack (1.3.3)
     multipart-post (2.1.1)
     nenv (0.3.0)
@@ -604,6 +605,7 @@ DEPENDENCIES
   lograge
   memery
   memory_profiler
+  mock_redis
   ougai
   parallel_tests
   passenger
