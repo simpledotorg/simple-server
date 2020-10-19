@@ -320,7 +320,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       grouped_by_date: {
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
-          controlled_visits: controlled_visits.to_hash,
+          controlled_visits: controlled_visits,
           registrations: sum_by_date(registrations)
         }
       }

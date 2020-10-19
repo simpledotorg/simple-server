@@ -46,6 +46,13 @@ module Reports
       (earliest_registration_period..current_period)
     end
 
+    def fill_in_nil_registrations
+      registrations.default = 0
+      full_data_range.each do |period|
+        registrations[period] ||= 0
+      end
+    end
+
     def to_json
       @data.to_json
     end
@@ -64,10 +71,12 @@ module Reports
           hsh_or_array
         else
           p "#{self} #{key} slicing #{range}"
-          hsh_or_array.slice(*range.entries)
+          sliced_hsh = hsh_or_array.slice(*range.entries)
+          sliced_hsh.default = hsh_or_array.default
+          sliced_hsh
         end
       }.with_indifferent_access
-      Result.new(region: region, range: @range, data: limited_range_data)
+      Result.new(region: region, period_type: period_type, data: limited_range_data)
     end
 
     def last_value(key)
@@ -106,6 +115,15 @@ module Reports
       self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) do |period, hsh|
         hsh[period] = cumulative_registrations_for(period.advance(months: -3))
       end
+    end
+
+    def count_cumulative_registrations
+      self.cumulative_registrations = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+        previous_registrations = running_totals[period.previous]
+        current_registrations = registrations[period]
+        total = current_registrations + previous_registrations
+        running_totals[period] = total
+      }
     end
 
     # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.

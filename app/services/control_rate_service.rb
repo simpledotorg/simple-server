@@ -34,13 +34,14 @@ class ControlRateService
     all_data = Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
       uncached_fetch
     end
-    # all_data.report_data_for(periods)
+    all_data.report_data_for(report_range)
   end
 
   def uncached_fetch
     results.registrations = registration_counts
     results.earliest_registration_period = [report_range.begin, registration_counts.keys.first].compact.min
-    results.cumulative_registrations = sum_cumulative_registrations
+    results.fill_in_nil_registrations
+    results.count_cumulative_registrations
     results.count_adjusted_registrations
 
     results.full_data_range.each do |(period, count)|
@@ -56,20 +57,7 @@ class ControlRateService
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    result = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type, :recorded_at, {format: formatter}).count
-    # The group_by_period query will only return values for months where we had registrations, but we want to
-    # have a value for every month in the report_range we are reporting on. So we set the default to 0 for results.
-    result.default = 0
-    @registration_counts = result
-  end
-
-  def sum_cumulative_registrations
-    results.full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-      previous_registrations = running_totals[period.previous]
-      current_registrations = registration_counts[period]
-      total = current_registrations + previous_registrations
-      running_totals[period] = total
-    }
+    @registration_counts = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type, :recorded_at, {format: formatter}).count
   end
 
   def controlled_patients(period)
