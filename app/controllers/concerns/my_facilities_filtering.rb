@@ -9,12 +9,7 @@ module MyFacilitiesFiltering
       :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
 
     def filter_facilities(scope_namespace = [])
-      facilities =
-        if current_admin.permissions_v2_enabled?
-          current_admin.accessible_facilities(:view_reports)
-        else
-          policy_scope(scope_namespace.concat([Facility]))
-        end
+      facilities = current_admin.accessible_facilities(:view_reports)
 
       filtered_facilities = facilities_by_size(facilities)
       facilities_by_zone(filtered_facilities)
@@ -27,12 +22,7 @@ module MyFacilitiesFiltering
     end
 
     def populate_zones
-      @zones =
-        if current_admin.permissions_v2_enabled?
-          current_admin.accessible_facilities(:view_reports).pluck(:zone).uniq.compact.sort
-        else
-          policy_scope([:manage, :facility, Facility]).pluck(:zone).uniq.compact.sort
-        end
+      @zones = current_admin.accessible_facilities(:view_reports).pluck(:zone).uniq.compact.sort
     end
 
     def set_selected_sizes

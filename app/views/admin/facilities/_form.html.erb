@@ -12,7 +12,7 @@
       <h3 class="mt-5">Address</h3>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <%= form.text_field :zone, id: :facility_zone %>
+      <%= form.text_field :zone, id: :facility_zone, required: true %>
       <%= form.text_field :district, id: :facility_district, required: true %>
       <%= form.text_field :state, id: :facility_state, required: true %>
       <%= form.text_field :country, id: :facility_country, required: true %>
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <%= form.number_field :monthly_estimated_opd_load, id: :facility_monthly_estimated_opd_load, label: "Estimated outpatient load (monthly)", help: "Estimate the TOTAL ADULT PATIENTS seen in the outpatient dept each month. Leave blank if unknown." %>
+      <%= form.number_field :monthly_estimated_opd_load, id: :facility_monthly_estimated_opd_load, label: "Estimated adult outpatient load (monthly)", help: "Estimate the TOTAL ADULT PATIENTS seen in the outpatient dept each month. Leave blank if unknown." %>
 
       <div class="mb-3">
         <h3 class="mt-5">Diabetes enabled?</h3>

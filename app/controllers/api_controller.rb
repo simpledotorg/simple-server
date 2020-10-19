@@ -62,6 +62,7 @@ class APIController < ApplicationController
 
   def authenticate
     return head :unauthorized unless access_token_authorized?
+    RequestStore.store[:current_user_id] = current_user.id
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
   end
 

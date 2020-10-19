@@ -4,76 +4,64 @@ module Reports
       new.call
     end
 
-    def self.create_slack_notifier
-      return if ENV["SLACK_ALERTS_WEBHOOK_URL"].blank?
-      Slack::Notifier.new(ENV["SLACK_ALERTS_WEBHOOK_URL"], channel: "#alerts", username: "simple-server")
-    end
+    BATCH_SIZE = 100
 
     def initialize(period: RegionService.default_period)
-      @notifier = self.class.create_slack_notifier
-      @start_time = Time.current
       @period = period
       @original_force_cache = RequestStore.store[:force_cache]
       RequestStore.store[:force_cache] = true
-      notify "#{self.class.name} Starting ..."
+      notify "start"
     end
 
-    attr_reader :original_force_cache, :period
-    attr_reader :start_time
+    attr_reader :original_force_cache
+    attr_reader :period
     attr_reader :notifier
 
-    delegate :logger, to: Rails
-
     def call
-      if Flipper.enabled?(:disable_region_cache_warmer)
-        notify "#{self.class.name} is disabled via Flipper! Bailing out early"
-        return
-      end
+      duration = Benchmark.ms {
+        if Flipper.enabled?(:disable_region_cache_warmer)
+          notify "disabled via flipper - exiting"
+          return
+        end
 
-      notify "Starting FacilityGroup caching"
-      time = Benchmark.realtime {
-        cache_facility_groups
-      }
-      notify "Finished FacilityGroups caching in #{time.round} seconds."
+        notify "starting facility_group caching"
+        Statsd.instance.time("region_cache_warmer.facility_groups") do
+          cache_facility_groups
+        end
 
-      notify "Starting Facility caching."
-      time = Benchmark.realtime {
-        cache_facilities
+        notify "starting facility caching"
+        Statsd.instance.time("region_cache_warmer.facilities") do
+          cache_facilities
+        end
       }
-      end_time = Time.current
-      total_time = end_time - start_time
-      notify "Finished Facility caching in #{time.round} seconds, total cache time was #{total_time.round} seconds."
-      notify "#{self.class.name} All done!"
+      notify "finished", duration: duration
     ensure
       RequestStore.store[:force_cache] = original_force_cache
     end
 
     private
 
-    def notify(msg)
-      return unless notifier
-      notifier.ping "[#{country_code}_#{environment}] #{msg}"
-    end
-
-    def country_code
-      Rails.application.config.country[:abbreviation]
-    end
-
-    def environment
-      ENV["SIMPLE_SERVER_ENV"]
+    def notify(msg, extra = {})
+      data = {
+        logger: {
+          name: self.class.name
+        },
+        class: self.class.name
+      }.merge(extra).merge(msg: msg)
+      Rails.logger.info data
     end
 
     def cache_facility_groups
-      FacilityGroup.all.each do |region|
-        logger.info { "class=#{self.class.name} region=#{region.name}" }
+      FacilityGroup.find_each(batch_size: BATCH_SIZE).each do |region|
         RegionService.new(region: region, period: period).call
+        Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
       end
     end
 
     def cache_facilities
-      Facility.all.each do |region|
-        logger.info { "class=#{self.class.name} region=#{region.name}" }
+      Facility.find_each(batch_size: BATCH_SIZE).each do |region|
         RegionService.new(region: region, period: period).call
+        Statsd.instance.increment("region_cache_warmer.facilities.cache")
       end
     end
   end

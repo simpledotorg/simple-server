@@ -7,8 +7,11 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem "dotenv-rails"
+
 gem "active_record_union"
 gem "activerecord-import"
+gem "amazing_print"
 gem "auto_strip_attributes"
 gem "bcrypt", "~> 3.1", ">= 3.1.11"
 gem "bootsnap", require: false
@@ -17,10 +20,11 @@ gem "bootstrap_form", ">= 4.5.0"
 gem "connection_pool"
 gem "data-anonymization", require: false
 gem "data_migrate"
+gem "ddtrace"
 gem "devise", ">= 4.7.1"
 gem "devise_invitable", "~> 1.7.0"
 gem "discard", "~> 1.0"
-gem "dotenv-rails"
+gem "dogstatsd-ruby"
 gem "factory_bot_rails", "~> 4.8", require: false
 gem "faker", require: false
 gem "flipper"
@@ -36,16 +40,16 @@ gem "jbuilder", "~> 2.5"
 gem "jquery-rails"
 gem "kaminari"
 gem "lodash-rails"
-gem "newrelic_rpm"
+gem "lograge"
+gem "ougai"
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"
 gem "pg_search"
+gem "pg_ltree", "1.1.8"
 gem "phonelib"
 gem "pry-rails"
-gem "pundit"
 gem "rack-mini-profiler"
-gem "rails", "5.2.4.3"
-gem "react-rails"
+gem "rails", "5.2.4.4"
 gem "redis"
 gem "redis-rails"
 gem "request_store"
@@ -57,8 +61,8 @@ gem "sassc-rails"
 gem "scenic"
 gem "sentry-raven"
 gem "sidekiq"
+gem "sidekiq-statsd"
 gem "sidekiq-throttled"
-gem "skylight"
 gem "slack-notifier"
 gem "strong_password", "~> 0.0.8"
 gem "timecop", "~> 0.9.0", require: false
@@ -71,6 +75,7 @@ gem "wkhtmltoimage-binary"
 gem "memery"
 gem "bootstrap-select-rails"
 gem "render_async"
+gem "rack-attack"
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]

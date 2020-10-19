@@ -12,6 +12,17 @@ RSpec.describe Facility, type: :model do
     it { should have_and_belong_to_many(:teleconsultation_medical_officers) }
 
     it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+    it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+    it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+
+    it "does not change the slug when renamed" do
+      facility = create(:facility, name: "old_name")
+      original_slug = facility.slug
+      facility.name = "new name"
+      facility.valid?
+      facility.save!
+      expect(facility.slug).to eq(original_slug)
+    end
 
     context "patients" do
       it "has distinct patients" do
@@ -30,6 +41,28 @@ RSpec.describe Facility, type: :model do
 
     it { should belong_to(:facility_group).optional }
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
+
+    describe ".assigned_hypertension_patients" do
+      let!(:assigned_facility) { create(:facility) }
+      let!(:registration_facility) { create(:facility) }
+      let!(:assigned_patients) do
+        [create(:patient,
+          assigned_facility: assigned_facility,
+          registration_facility: registration_facility),
+          create(:patient,
+            :without_hypertension,
+            assigned_facility: assigned_facility,
+            registration_facility: registration_facility)]
+      end
+
+      it "returns assigned hypertensive patients for facilities" do
+        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
+      end
+
+      it "ignores registration patients" do
+        expect(registration_facility.assigned_hypertension_patients).to be_empty
+      end
+    end
 
     describe "#teleconsultation_medical_officers" do
       let!(:facility) { create(:facility) }
@@ -158,13 +191,13 @@ RSpec.describe Facility, type: :model do
       facility = create(:facility)
 
       Timecop.freeze("June 15th 2019") do
-        _non_htn_patients = create_list(:patient, 2, :without_hypertension, registration_facility: facility, recorded_at: 3.months.ago)
-        _htn_patients = create_list(:patient, 2, registration_facility: facility, recorded_at: 3.months.ago)
+        _non_htn_patients = create_list(:patient, 2, :without_hypertension, assigned_facility: facility, recorded_at: 3.months.ago)
+        _htn_patients = create_list(:patient, 2, assigned_facility: facility, recorded_at: 3.months.ago)
 
         result = facility.cohort_analytics(period: :month, prev_periods: 3)
         april_key = [Date.parse("March 1st 2019"), Date.parse("April 1st 2019")]
         april_data = result[april_key]
-        expect(april_data["registered"]).to eq({facility.id => 2, "total" => 2})
+        expect(april_data["cohort_patients"]).to eq({facility.id => 2, "total" => 2})
       end
     end
   end
@@ -268,6 +301,39 @@ RSpec.describe Facility, type: :model do
     it "defaults enable_diabetes_management to false if blank" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.second[:enable_diabetes_management]).to be false
+    end
+  end
+
+  describe "OPD load estimatation" do
+    let(:facility) { create(:facility) }
+
+    it "indicates if a user value for OPD is present" do
+      facility.monthly_estimated_opd_load = 999
+      expect(facility.opd_load_estimated?).to be true
+
+      facility.monthly_estimated_opd_load = nil
+      expect(facility.opd_load_estimated?).to be false
+    end
+
+    it "uses OPD loads from the user when present" do
+      facility.monthly_estimated_opd_load = 999
+      expect(facility.opd_load).to eq(999)
+    end
+
+    it "estimates OPD loads based on facility size when user value not present" do
+      facility.monthly_estimated_opd_load = nil
+
+      facility.facility_size = "community"
+      expect(facility.opd_load).to eq(100)
+
+      facility.facility_size = "small"
+      expect(facility.opd_load).to eq(300)
+
+      facility.facility_size = "medium"
+      expect(facility.opd_load).to eq(500)
+
+      facility.facility_size = "large"
+      expect(facility.opd_load).to eq(1000)
     end
   end
 

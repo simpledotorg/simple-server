@@ -1,0 +1,75 @@
+<div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+  <h2>Patients registered</h2>
+
+  <p class="c-grey-dark c-print-black">
+    Patients registered at a facility this <%= period %>. Note: this could include patients registered at this facility
+    and re-assigned to another facility.
+  </p>
+
+  <div class="table-responsive">
+    <table id="registrations-table" class="analytics-table table-compact d-print-block">
+      <colgroup>
+        <col>
+        <col class="table-divider">
+        <col>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+      <tr>
+        <th></th>
+        <th class="row-label" colspan="6"><strong>Patients registered</strong></th>
+      </tr>
+
+      <tr class="sorts" data-sort-method="thead">
+        <th class="row-label sort-label" style="text-align: left;">Facilities</th>
+        <!--New registrations-->
+        <% dates = dates_for_periods(period, 6, include_current_period: @show_current_period)%>
+        <% dates.each do |date| %>
+          <th class="row-label sort-label" <%= "data-sort-default" if date == dates.last %> data-sort-method="number">
+            <%= format_period(period, date) %>
+          </th>
+        <% end %>
+      </tr>
+
+      </thead>
+      <tbody>
+
+      <tr class="row-total" data-sort-method="none">
+        <td class="row-title row-total"><%= @region.name %></td>
+
+        <!--New registrations-->
+        <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+          <td class="row-total" style="text-align: center;">
+            <%= dash_if_zero(analytics_totals(dashboard_analytics, :registered_patients_by_period, date)) %>
+          </td>
+        <% end %>
+      </tr>
+
+      <% row_resource.each do |resource| %>
+        <% if dashboard_analytics[resource.id].present? %>
+          <tr>
+            <td class="row-title">
+              <% if row_resource_link == :reports_region_facility_path %>
+                <%= link_to resource.send(row_resource_display_field),
+                            send(row_resource_link, resource, period: @period) %>
+              <% else %>
+                <%= link_to resource.send(row_resource_display_field), send(row_resource_link, resource) %>
+              <% end %>
+            </td>
+
+            <!--New registrations-->
+            <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>
+              <td style="text-align: center;">
+                <%= dash_if_zero(dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

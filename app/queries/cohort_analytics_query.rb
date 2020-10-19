@@ -1,13 +1,15 @@
 class CohortAnalyticsQuery
   include QuarterHelper
 
+  CACHE_VERSION = 1
+
   attr_reader :from_time
   attr_reader :period
   attr_reader :prev_periods
 
   def initialize(region, period: :month, prev_periods: nil, from_time: Time.current.beginning_of_month)
     @facilities = region.facilities
-    @patients = Patient.joins(:registration_facility).where(facilities: {id: @facilities}).with_hypertension
+    @patients = Patient.joins(:assigned_facility).where(facilities: {id: @facilities}).with_hypertension
     @from_time = from_time
     @period = period
 
@@ -20,7 +22,7 @@ class CohortAnalyticsQuery
   end
 
   def call
-    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL")) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
       results
     end
   end
@@ -52,26 +54,26 @@ class CohortAnalyticsQuery
   end
 
   def patient_counts(cohort_start, cohort_end, report_start, report_end)
-    registered_patients = registered(cohort_start, cohort_end)
-    followed_up_patients = followed_up(registered_patients, report_start, report_end)
+    cohort_patients = registered(cohort_start, cohort_end)
+    followed_up_patients = followed_up(cohort_patients, report_start, report_end)
     controlled_patients = controlled(followed_up_patients)
     uncontrolled_patients = followed_up_patients - controlled_patients
 
-    registered_counts = registered_patients.group(:registration_facility_id).size.symbolize_keys
-    followed_up_counts = followed_up_patients.group(:registration_facility_id).size.symbolize_keys
-    defaulted_counts = registered_counts.merge(followed_up_counts) { |_, registered, followed_up|
-      registered - followed_up
+    cohort_patient_counts = cohort_patients.group(:assigned_facility_id).size.symbolize_keys
+    followed_up_counts = followed_up_patients.group(:assigned_facility_id).size.symbolize_keys
+    defaulted_counts = cohort_patient_counts.merge(followed_up_counts) { |_, cohort_patients, followed_up|
+      cohort_patients - followed_up
     }
 
-    controlled_counts = controlled_patients.group(:registration_facility_id).size.symbolize_keys
+    controlled_counts = controlled_patients.group(:assigned_facility_id).size.symbolize_keys
     uncontrolled_counts = followed_up_counts.merge(controlled_counts) { |_, followed_up, controlled|
       followed_up - controlled
     }
 
     {
-      registered: {total: registered_patients.size, **registered_counts},
+      cohort_patients: {total: cohort_patients.size, **cohort_patient_counts},
       followed_up: {total: followed_up_patients.size, **followed_up_counts},
-      defaulted: {total: registered_patients.size - followed_up_patients.size, **defaulted_counts},
+      defaulted: {total: cohort_patients.size - followed_up_patients.size, **defaulted_counts},
       controlled: {total: controlled_patients.size, **controlled_counts},
       uncontrolled: {total: uncontrolled_patients.size, **uncontrolled_counts}
     }.with_indifferent_access
@@ -85,7 +87,8 @@ class CohortAnalyticsQuery
       @facilities.map(&:id).sort,
       period,
       prev_periods,
-      from_time.to_s(:mon_year)
+      from_time.to_s(:mon_year),
+      CACHE_VERSION
     ].join("/")
   end
 
@@ -93,8 +96,8 @@ class CohortAnalyticsQuery
     @patients.where(recorded_at: cohort_start..cohort_end)
   end
 
-  def followed_up(registered_patients, report_start, report_end)
-    registered_patients.select(%(
+  def followed_up(cohort_patients, report_start, report_end)
+    cohort_patients.select(%(
       patients.*,
       newest_bps.recorded_at as bp_recorded_at,
       newest_bps.systolic as bp_systolic,
@@ -114,5 +117,9 @@ class CohortAnalyticsQuery
 
   def controlled(patients)
     patients.where("newest_bps.systolic < 140 AND newest_bps.diastolic < 90")
+  end
+
+  def force_cache?
+    RequestStore.store[:force_cache]
   end
 end

@@ -1,0 +1,23 @@
+version: v1.0
+name: Ethiopia Production Deployment
+blocks:
+  - name: Deploy to Ethiopia Production
+    task:
+      jobs:
+        - name: Deploy to Ethiopia Production
+          commands:
+            - git clone https://github.com/simpledotorg/deployment
+            - cd deployment/standalone
+            - make init
+            - "make deploy hosts=ethiopia/production password_file=~/.ansible/vault_password_et branch=$SEMAPHORE_GIT_BRANCH"
+      secrets:
+        - name: ansible ethiopia
+        - name: semaphore-deploy-key
+      prologue:
+        commands:
+          - chmod 600 ~/.ssh/semaphore_id_rsa
+          - ssh-add ~/.ssh/semaphore_id_rsa
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804

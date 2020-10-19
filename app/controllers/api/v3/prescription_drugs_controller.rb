@@ -15,11 +15,14 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
 
   private
 
+  def facility_group_records
+    PrescriptionDrug.syncable_to_region(current_facility_group)
+  end
+
   def merge_if_valid(prescription_drug_params)
     validator = Api::V3::PrescriptionDrugPayloadValidator.new(prescription_drug_params)
     logger.debug "Prescription Drug had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/PrescriptionDrug/schema_invalid")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::PrescriptionDrugTransformer

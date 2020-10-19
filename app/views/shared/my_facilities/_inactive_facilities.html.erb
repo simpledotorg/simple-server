@@ -2,7 +2,7 @@
   <h2>Inactive facilities</h2>
   <p>Facilities where &lt;10 patients had any BPs recorded in the last 7 days.</p>
   <section id="facilities-inactive">
-    <table class="table table-compact table-hover table-responsive-md" id="analytics-table">
+    <table class="table table-compact table-hover table-responsive-md analytics-table">
       <colgroup>
         <col>
         <col style="width: 7em;" class="table-divider">
@@ -22,7 +22,7 @@
       <tbody>
       <% @inactive_facilities.sort_by(&:name).each do |facility| %>
         <tr>
-          <td><%= link_to facility.name, analytics_facility_path(facility) %></td>
+          <td><%= link_to facility.name, reports_region_facility_path(facility) %></td>
           <td class="text-right" data-sort-column-key="week">
             <%= @inactive_facilities_bp_counts[:last_week][facility.id].to_i %>
           </td>

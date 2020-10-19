@@ -1,10 +1,8 @@
 class AdminController < ApplicationController
   before_action :authenticate_email_authentication!
 
-  after_action :verify_authorized, except: [:root]
-  after_action :verify_policy_scoped, only: :index
+  after_action :verify_authorization_attempted, except: [:root]
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   rescue_from ActiveRecord::RecordInvalid do
@@ -25,39 +23,16 @@ class AdminController < ApplicationController
   end
 
   def root
-    if current_admin.permissions_v2_enabled?
-      redirect_to access_root_paths
+    if current_admin.call_center_access?
+      redirect_to appointments_path
     else
-      redirect_to default_root_paths.find { |policy, _path|
-        DashboardPolicy.new(pundit_user, :dashboard).send(policy)
-      }.second
+      redirect_to my_facilities_overview_path
     end
   end
 
   helper_method :current_admin
 
   private
-
-  def default_root_paths
-    {
-      view_my_facilities?: my_facilities_overview_path,
-      show?: organizations_path,
-      overdue_list?: appointments_path,
-      manage_organizations?: admin_organizations_path,
-      manage_facilities?: admin_facilities_path,
-      manage_protocols?: admin_protocols_path,
-      manage_admins?: admins_path,
-      manage_users?: admin_users_path
-    }
-  end
-
-  def access_root_paths
-    if current_admin.call_center_access?
-      appointments_path
-    else
-      my_facilities_overview_path
-    end
-  end
 
   def current_admin
     current_email_authentication.user
@@ -72,13 +47,13 @@ class AdminController < ApplicationController
     redirect_to(request.referrer || root_path)
   end
 
-  def authorize_v2(&blk)
+  def authorize(&blk)
     RequestStore.store[:authorization_attempted] = true
 
     begin
       capture = yield(blk)
 
-      unless capture
+      unless current_admin.power_user? || capture
         raise UserAccess::NotAuthorizedError
       end
 

@@ -40,5 +40,18 @@ RSpec.describe Api::V4::FacilityMedicalOfficersController, type: :controller do
       expect(medical_officers[facility_2.id].map { |m| m["id"] }).to match_array facility_2_teleconsultation_mos.map(&:id)
       expect(medical_officers[facility_without_any_mos.id]).to be_empty
     end
+
+    it "sets the appropriate timestamp fields" do
+      Timecop.freeze do
+        get :sync_to_user
+
+        response_body = JSON(response.body)
+        medical_officers = response_body["facility_medical_officers"]
+
+        expect(medical_officers.map { |medical_officer| Time.parse(medical_officer["created_at"]).to_i }).to all eq Time.current.to_i
+        expect(medical_officers.map { |medical_officer| Time.parse(medical_officer["updated_at"]).to_i }).to all eq Time.current.to_i
+        expect(medical_officers.map { |medical_officer| medical_officer["deleted_at"] }).to all be nil
+      end
+    end
   end
 end

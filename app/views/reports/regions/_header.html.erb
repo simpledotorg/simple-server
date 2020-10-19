@@ -20,18 +20,21 @@
   <p class="mb-12px fs-xxlarge fw-bold">
     <%= @region.name %>
   </p>
+  <p class="d-none fw-bold d-print-block">
+    <%= @period %> Report — <% if params[:action] == "show" %>Overview<% elsif params[:action] == "details" %>Details<% elsif params[:action] == "cohort" %>Cohort Reports<% end %>
+  </p>
   <%
     # We want to maintain the request params for Overview and Detail nav links, but _only_ in the
     # case where its _not_ a quarter (as those pages don't support quarters).
     url_params = (params.dig(:period, :type) == "quarter") ? {} : request.params
   %>
-  <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px">
+  <div class="d-flex fd-column fd-lg-row justify-lg-between mb-24px d-print-none">
     <div class="d-flex order-2 order-lg-1 jc-between">
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold td-none <%= params[:action] == "show" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Overview", url_params.merge(action: "show"), :class => "c-grey-dark td-none" %>
       </p>
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "details" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
-        <%= link_to_unless_current "Details trend", url_params.merge(action: "details"), :class => "c-grey-dark td-none" %>
+        <%= link_to_unless_current "Details", url_params.merge(action: "details"), :class => "c-grey-dark td-none" %>
       </p>
       <p class="mr-lg-24px mb-0px pb-8px fs-20px fw-bold <%= params[:action] == "cohort" ? "c-red bb-2px bb-red" : "c-grey-dark" %>">
         <%= link_to_unless_current "Cohort reports", reports_region_cohort_path(@region, report_scope: params[:report_scope]), :class => "c-grey-dark td-none" %>
@@ -51,6 +54,7 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
+          <i class="far fa-calendar mr-4px c-grey-medium"></i>
           <% if action_name == "cohort" %>
             <%= cohort_report_type(@period) %>
           <% else %>
@@ -58,7 +62,7 @@
           <% end %>
         </a>
         <% if action_name == "cohort" %>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-menu dropdown-menu-right w-100pt" aria-labelledby="dropdownMenuLink">
             <% [:month, :quarter].each do |period_type|
               period = Period.new(type: period_type, value: @period.to_date)
               selected = true if period == @period
@@ -73,7 +77,7 @@
             <% end %>
           </div>
         <% else %>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-menu dropdown-menu-right w-100pt" aria-labelledby="dropdownMenuLink">
             <%= form_for(@period, url: request.params, method: :get, enforce_utf8: false) do |f| %>
               <%= f.hidden_field :type, { id: "dropdown-period-type" } %>
 
