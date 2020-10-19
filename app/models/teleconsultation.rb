@@ -24,6 +24,11 @@ class Teleconsultation < ApplicationRecord
     message: "message"
   }.freeze
 
+  enum request_completed: {
+    yes: "yes",
+    no: "no",
+    waiting: "waiting"
+  }, _prefix: true
   enum patient_took_medicines: {
     yes: "yes",
     no: "no"

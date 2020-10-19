@@ -254,7 +254,8 @@ class Api::V4::Models
             properties: {
               requester_id: {"$ref" => "#/definitions/uuid"},
               facility_id: {"$ref" => "#/definitions/uuid"},
-              requested_at: {"$ref" => "#/definitions/timestamp"}
+              requested_at: {"$ref" => "#/definitions/timestamp"},
+              request_completed: {type: [:string, "null"], enum: Teleconsultation.request_completeds.keys << nil}
             }
           },
           record: {
