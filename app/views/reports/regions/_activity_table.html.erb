@@ -113,10 +113,18 @@
       <% end %>
     </p>
     <p class="mb-8px fs-14px c-grey-dark c-print-black">
-      <strong>2. New registrations:</strong> New patients registered in a month
+      <% if @region.is_a?(Facility) %>
+        <strong>2. New registrations:</strong> New patients registered during a month at <%= @region.name %>
+      <% else %>
+        <strong>2. New registrations:</strong> New patients registered during a month at facilities in <%= @region.name %>
+      <% end %>
     </p>
     <p class="mb-0px fs-14px c-grey-dark c-print-black">
-      <strong>3. Follow-ups:</strong> Total patients with at least 1 BP recorded in a month. Doesn't include new patient registrations.
+      <% if @region.is_a?(Facility) %>
+        <strong>3. Follow-ups:</strong> Patients who had 1 or more BPs recorded during a month at <%= @region.name %>. New registrations are excluded.
+      <% else %>
+        <strong>3. Follow-ups:</strong> Patients who had 1 or more BPs recorded during a month at facilities in <%= @region.name %>. New registrations are excluded.
+      <% end %>
     </p>
   </div>
 </div>
