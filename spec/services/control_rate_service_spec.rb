@@ -276,11 +276,11 @@ RSpec.describe ControlRateService, type: :model do
       end
 
       periods = Period.month("September 1 2018")..Period.month("September 1 2020")
-      result = Timecop.travel("November 1st 2020") do
+      result = Timecop.travel("November 1st 2020") {
         refresh_views
         service = ControlRateService.new(facility_group_1, periods: periods)
         service.call
-      end
+      }
       pending "this spec would now have to dig into the cache itself to verify things...not sure its worth it"
       expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
       expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(5)
@@ -288,12 +288,12 @@ RSpec.describe ControlRateService, type: :model do
       expect(result[:registrations]["August 1 2020".to_date.to_period]).to eq(1)
       expect(result[:controlled_patients]["November 1 2020".to_date.to_period]).to eq(1)
 
-      result = Timecop.travel("November 1st 2020") do
+      result = Timecop.travel("November 1st 2020") {
         periods = Period.month("March 1 2019")..Period.month("March 1 2020")
         service = ControlRateService.new(facility_group_1, periods: periods)
         expect(service).to_not receive(:uncached_fetch)
         result = service.call
-      end
+      }
       expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
       expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(5)
       expect(result[:controlled_patients]["September 1 2018".to_date.to_period]).to eq(1)
