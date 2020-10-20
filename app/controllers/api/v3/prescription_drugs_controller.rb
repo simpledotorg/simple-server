@@ -16,12 +16,10 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
   def merge_if_valid(prescription_drug_params)
     validator = Api::V3::PrescriptionDrugPayloadValidator.new(prescription_drug_params)
     logger.debug "Prescription Drug had errors: #{validator.errors_hash}" if validator.invalid?
-
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
-      record_params =
-        Api::V3::PrescriptionDrugTransformer
+      record_params = Api::V3::PrescriptionDrugTransformer
           .from_request(prescription_drug_params)
           .merge(metadata)
 

@@ -16,7 +16,6 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
   def merge_if_valid(appointment_params)
     validator = Api::V3::AppointmentPayloadValidator.new(appointment_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
-
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else

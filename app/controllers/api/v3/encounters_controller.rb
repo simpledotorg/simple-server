@@ -12,9 +12,11 @@ class Api::V3::EncountersController < Api::V3::SyncController
 
   def generate_id
     params.require([:facility_id, :patient_id, :encountered_on])
-    id = Encounter.generate_id(params[:facility_id].strip, params[:patient_id].strip, params[:encountered_on].strip)
 
-    render plain: id, status: :ok
+    render plain: Encounter.generate_id(params[:facility_id].strip,
+      params[:patient_id].strip,
+      params[:encountered_on].strip),
+           status: :ok
   end
 
   private
@@ -28,17 +30,15 @@ class Api::V3::EncountersController < Api::V3::SyncController
   def merge_if_valid(encounter_params)
     validator = Api::V3::EncounterPayloadValidator.new(encounter_params)
     logger.debug "Encounter had errors: #{validator.errors_hash}" if validator.invalid?
-
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
-      transformed_params =
-        Api::V3::EncounterTransformer
+      transformed_params = Api::V3::EncounterTransformer
           .from_nested_request(encounter_params)
           .merge(facility_id: encounter_facility_id(encounter_params))
-
-      record = MergeEncounterService.new(transformed_params, current_user, current_timezone_offset).merge
-      {record: record[:encounter]}
+      {record: MergeEncounterService.new(transformed_params,
+        current_user,
+        current_timezone_offset).merge[:encounter]}
     end
   end
 

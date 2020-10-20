@@ -15,7 +15,6 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
   def merge_if_valid(bp_params)
     validator = Api::V3::BloodPressurePayloadValidator.new(bp_params)
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
-
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
