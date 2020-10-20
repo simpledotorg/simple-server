@@ -40,6 +40,10 @@ module Reports
       @data[key]
     end
 
+    def to_hash
+      @data
+    end
+
     # Return all periods for the entire set of data for a Region - from the first registrations until
     # the most recent period
     def full_data_range
