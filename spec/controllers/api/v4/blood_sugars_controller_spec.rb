@@ -18,7 +18,7 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     record = create(:blood_sugar, {patient: patient}.merge(options))
     create(:encounter, :with_observables, observable: record)
@@ -26,7 +26,7 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
   end
 
   def create_record_list(n, options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     records = create_list(:blood_sugar, n, {patient: patient}.merge(options))
     records.each { |r| create(:encounter, :with_observables, observable: r) }
