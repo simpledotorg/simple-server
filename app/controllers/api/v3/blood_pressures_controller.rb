@@ -1,5 +1,4 @@
 class Api::V3::BloodPressuresController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry
 
@@ -13,13 +12,10 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
 
   private
 
-  def facility_group_records
-    BloodPressure.syncable_to_region(current_facility_group)
-  end
-
   def merge_if_valid(bp_params)
     validator = Api::V3::BloodPressurePayloadValidator.new(bp_params)
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
+
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else

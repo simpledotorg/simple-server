@@ -1,5 +1,4 @@
 class Api::V4::BloodSugarsController < Api::V4::SyncController
-  include Api::V3::PrioritisableByFacility
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry
 
@@ -13,10 +12,6 @@ class Api::V4::BloodSugarsController < Api::V4::SyncController
 
   private
 
-  def facility_group_records
-    BloodSugar.syncable_to_region(current_facility_group)
-  end
-
   def transform_to_response(blood_sugar)
     Api::V4::BloodSugarTransformer.to_response(blood_sugar)
   end
@@ -24,6 +19,7 @@ class Api::V4::BloodSugarsController < Api::V4::SyncController
   def merge_if_valid(blood_sugar_params)
     validator = Api::V4::BloodSugarPayloadValidator.new(blood_sugar_params)
     logger.debug "Blood Sugar payload had errors: #{validator.errors_hash}" if validator.invalid?
+
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else

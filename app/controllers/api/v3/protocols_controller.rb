@@ -15,6 +15,18 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
 
   private
 
+  def current_facility_records
+    []
+  end
+
+  def other_facility_records
+    other_facilities_limit = limit - current_facility_records.count
+
+    model_name
+      .with_discarded
+      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+  end
+
   def disable_audit_logs?
     true
   end
