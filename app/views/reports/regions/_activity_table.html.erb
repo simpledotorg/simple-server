@@ -121,9 +121,9 @@
     </p>
     <p class="mb-0px fs-14px c-grey-dark c-print-black">
       <% if @region.is_a?(Facility) %>
-        <strong>3. Follow-ups:</strong> Total BPs recorded for hypertensive patients during a month at <%= @region.name %>. New registrations are excluded.
+        <strong>3. Follow-ups:</strong> Total patient visits with a BP recorded during a month at <%= @region.name %>. New registrations aren't included.
       <% else %>
-        <strong>3. Follow-ups:</strong> Total BPs recorded for hypertensive patients during a month at facilities in <%= @region.name %>. New registrations are excluded.
+        <strong>3. Follow-ups:</strong> Total patient visits with a BP recorded during a month at facilities in <%= @region.name %>. New registrations aren't included.
       <% end %>
     </p>
   </div>

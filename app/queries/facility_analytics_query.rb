@@ -77,7 +77,7 @@ class FacilityAnalyticsQuery
         .group_by_period(@period, 'blood_pressures.recorded_at')
         .where("patients.recorded_at < #{date_truncate_string}")
         .order("users.id")
-        .distinct
+        .distinct("recorded_at")
         .count("patients.id")
 
     group_by_user_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
