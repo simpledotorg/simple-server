@@ -70,10 +70,6 @@ module Reports
       end
     end
 
-    def to_json
-      @data.to_json
-    end
-
     def to_s
       "#{self.class} #{object_id} region=#{@region.name} period_type=#{period_type}"
     end
