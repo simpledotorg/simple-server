@@ -247,13 +247,6 @@ RSpec.describe ControlRateService, type: :model do
   end
 
   context "caching" do
-    it "has a reasonable cache key" do
-      periods = Period.month(july_2018)..Period.month(july_2020)
-      service = ControlRateService.new(facility_group_1, periods: periods)
-      expected_key = "ControlRateService/FacilityGroup/#{facility_group_1.id}/month_periods/#{july_2018.to_date}/#{july_2020.to_date}"
-      expect(service.send(:cache_key)).to eq(expected_key)
-    end
-
     let(:memory_store) { ActiveSupport::Cache.lookup_store(:redis_store) }
     let(:cache) { Rails.cache }
 
