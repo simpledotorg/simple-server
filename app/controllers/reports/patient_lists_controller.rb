@@ -6,10 +6,10 @@ class Reports::PatientListsController < AdminController
       authorize { current_admin.accessible_facilities(:view_pii) }
     end
 
-    if region_class == "facility_district"
-      @region = FacilityDistrict.new(name: params[:id], scope: scope)
+    @region = if region_class == "facility_district"
+      FacilityDistrict.new(name: params[:id], scope: scope)
     else
-      @region = scope.find_by!(slug: params[:id])
+      scope.find_by!(slug: params[:id])
     end
 
     recipient_email = current_admin.email

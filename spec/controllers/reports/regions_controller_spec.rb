@@ -132,7 +132,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(24) # sanity check
-      binding.pry
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
