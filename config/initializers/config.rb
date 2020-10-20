@@ -9,8 +9,6 @@ Config.ensure_required_keys_are_present(required_keys: [
   "DEFAULT_NUMBER_OF_RECORDS",
   "DEFAULT_COUNTRY",
   "SIMPLE_APP_SIGNATURE",
-  "NEW_RELIC_LICENSE_KEY",
-  "NEW_RELIC_APP_NAME",
   "SENDGRID_USERNAME",
   "SENDGRID_PASSWORD",
   "SENTRY_DSN",
