@@ -81,7 +81,7 @@
               aria-expanded="false"
             >
               <% if @selected_sizes.size == 1 %>
-                <%= @selected_sizes %>
+                <%= @selected_sizes.first.capitalize %>
               <% else %>
                 All sizes
               <% end %>
