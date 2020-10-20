@@ -18,13 +18,13 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     create(:appointment, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
-    facility = facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     create_list(:appointment, n, {patient: patient}.merge(options))
   end
