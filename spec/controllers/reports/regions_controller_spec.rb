@@ -211,6 +211,23 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
       expect(response.headers["Content-Disposition"]).to include('filename="facility_group-quarterly-cohort-report_')
     end
+
+    it "retrieves cohort data for a facility district" do
+      jan_2020 = Time.parse("January 1 2020")
+      facility_group = @facility.facility_group
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :download, params: {id: @facility.district, report_scope: "facility_district", period: "quarter", format: "csv"}
+      end
+      expect(response).to be_successful
+      expect(response.body).to include("#{@facility.district} Quarterly Cohort Report")
+      expect(response.headers["Content-Disposition"]).to include('filename="facility_district-quarterly-cohort-report_')
+    end
   end
 
   describe "#whatsapp_graphics" do
