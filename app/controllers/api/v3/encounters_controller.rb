@@ -12,11 +12,9 @@ class Api::V3::EncountersController < Api::V3::SyncController
 
   def generate_id
     params.require([:facility_id, :patient_id, :encountered_on])
+    id = Encounter.generate_id(params[:facility_id].strip, params[:patient_id].strip, params[:encountered_on].strip)
 
-    render plain: Encounter.generate_id(params[:facility_id].strip,
-      params[:patient_id].strip,
-      params[:encountered_on].strip),
-      status: :ok
+    render plain: id, status: :ok
   end
 
   private
