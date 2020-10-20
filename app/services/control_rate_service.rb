@@ -31,9 +31,9 @@ class ControlRateService
   attr_reader :results
 
   def call
-    all_data = Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
+    all_data = Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
       uncached_fetch
-    end
+    }
     all_data.report_data_for(report_range)
   end
 
