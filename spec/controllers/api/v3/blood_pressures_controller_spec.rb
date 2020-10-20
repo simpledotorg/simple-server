@@ -18,7 +18,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def create_record(options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     blood_pressure = create(:blood_pressure, {patient: patient}.merge(options))
     create(:encounter, :with_observables, observable: blood_pressure)
@@ -26,7 +26,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
   end
 
   def create_record_list(n, options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     blood_pressures = create_list(:blood_pressure, n, {patient: patient}.merge(options))
     blood_pressures.each { |record| create(:encounter, :with_observables, observable: record) }
@@ -288,8 +288,8 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
 
-    describe "v3 facility prioritisation" do
-      it "syncs request facility's records first" do
+    describe "v3 patient prioritisation" do
+      it "syncs records for patients in the request facility first" do
         request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
 
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
