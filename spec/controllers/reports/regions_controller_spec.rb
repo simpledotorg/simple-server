@@ -132,6 +132,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(24) # sanity check
+      binding.pry
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
@@ -150,6 +151,23 @@ RSpec.describe Reports::RegionsController, type: :controller do
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
+    end
+
+    it "retrieves facility district data" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.district, report_scope: "facility_district"}
+      end
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients].size).to eq(24) # sanity check
+      expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
 
