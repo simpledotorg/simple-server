@@ -52,7 +52,7 @@ RSpec.describe FacilityDistrict, type: :model do
 
       expected_timestamp = [bathinda_facility, other_bathinda_facility].map(&:updated_at).max
 
-      expect(facility_district.updated_at).to eq(expected_timestamp)
+      expect(facility_district.updated_at).to be_within((0.001).seconds).of(expected_timestamp)
     end
 
     it "returns a generic timestamp if no facilities are present" do
