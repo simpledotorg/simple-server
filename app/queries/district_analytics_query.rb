@@ -92,41 +92,28 @@ class DistrictAnalyticsQuery
   end
 
   def follow_up_patients_by_period
+    #
+    # this is similar to what the group_by_period query already gives us,
+    # however, groupdate does not allow us to use these "groups" in a where clause
+    # hence, we've replicated its grouping behaviour in order to remove the patients
+    # that were registered prior to the period bucket
+    #
+    date_truncate_string =
+      "(DATE_TRUNC('#{@period}', blood_pressures.recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
+
     @follow_up_patients_by_period ||=
-      #
-      # The DISTINCT ON is for when a patient visits a facility twice in a period and is seen by different users.
-      # Without it, the visit is counted twice and the total increases in comparison to facility follow ups.
-      #
-      # The salient clause: we're DISTINCTing ON the BloodPressure.date_to_period_sql and the patient_id.
-      #
-      # However, we've turned this into a nested subquery using .from as a workaround for ActiveRecord's inability to
-      # compose a COUNT with a DISTINCT ON – it ends up with garble like COUNT DISTINCT DISTINCT ON which is a
-      # completely invalid query.
-      #
-      Patient
-        .from(Patient
-                .joins(:blood_pressures)
-                .hypertension_follow_ups_by_period(@period, last: @prev_periods)
-                .distinct(false) # this removes the distinct from hypertension_follow_ups so we can apply DISTINCT ON
-                .group("bp_facility_id",
-                  "blood_pressures.patient_id",
-                  BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period),
-                  "blood_pressures.recorded_at",
-                  "patients.deleted_at")
-                .where(blood_pressures: {facility: facilities})
-                .select(%(
-                    DISTINCT ON (blood_pressures.patient_id,
-                    #{BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period)})
-                    blood_pressures.facility_id AS bp_facility_id,
-                    patients.deleted_at))
-                .select("blood_pressures.recorded_at AS bp_recorded_at")
-                .order("blood_pressures.patient_id",
-                  Arel.sql(BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period)),
-                  "blood_pressures.recorded_at"),
-          "patients")
-        .group("bp_facility_id")
-        .group_by_period(:month, "bp_recorded_at")
-        .count
+      BloodPressure
+        .left_outer_joins(:user)
+        .left_outer_joins(:patient)
+        .joins(:facility)
+        .where(facilities: { id: facilities })
+        .where(deleted_at: nil)
+        .group('facilities.id')
+        .group_by_period(@period, 'blood_pressures.recorded_at')
+        .where("patients.recorded_at < #{date_truncate_string}")
+        .order('facilities.id')
+        .distinct
+        .count('patients.id')
 
     group_by_facility_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
