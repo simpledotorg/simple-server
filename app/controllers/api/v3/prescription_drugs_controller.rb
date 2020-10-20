@@ -20,8 +20,8 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
       {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::PrescriptionDrugTransformer
-          .from_request(prescription_drug_params)
-          .merge(metadata)
+        .from_request(prescription_drug_params)
+        .merge(metadata)
 
       prescription_drug = PrescriptionDrug.merge(record_params)
       {record: prescription_drug}

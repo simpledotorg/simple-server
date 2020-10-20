@@ -34,8 +34,8 @@ class Api::V3::EncountersController < Api::V3::SyncController
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V3::EncounterTransformer
-          .from_nested_request(encounter_params)
-          .merge(facility_id: encounter_facility_id(encounter_params))
+        .from_nested_request(encounter_params)
+        .merge(facility_id: encounter_facility_id(encounter_params))
       {record: MergeEncounterService.new(transformed_params,
         current_user,
         current_timezone_offset).merge[:encounter]}
