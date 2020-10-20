@@ -1,4 +1,5 @@
 require "rails_helper"
+require "mock_redis"
 
 RSpec.describe RedisService do
   include ActiveSupport::Testing::TimeHelpers

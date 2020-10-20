@@ -114,6 +114,7 @@ group :test do
   gem "capybara"
   gem "generator_spec"
   gem "launchy"
+  gem "mock_redis", require: false
   gem "puma"
   gem "rspec-sidekiq"
   gem "simplecov", require: false

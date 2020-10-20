@@ -1,10 +1,15 @@
 require "rails_helper"
+require "mock_redis"
 
 RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
   let!(:user) { create(:user, :with_sanitized_phone_number) }
   let!(:patient) { create(:patient, :with_sanitized_phone_number) }
   let!(:unknown_phone_number) { "1234567890" }
   let!(:invalid_patient_phone_number) { "1800-SIMPLE" }
+
+  before do
+    allow(CallSessionStore).to receive(:create_redis).with(anything).and_return(MockRedis.new)
+  end
 
   describe "#create" do
     context ":ok" do
