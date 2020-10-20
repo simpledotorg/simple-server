@@ -324,16 +324,16 @@ RSpec.describe Facility, type: :model do
       facility.monthly_estimated_opd_load = nil
 
       facility.facility_size = "community"
-      expect(facility.opd_load).to eq(100)
+      expect(facility.opd_load).to eq(450)
 
       facility.facility_size = "small"
-      expect(facility.opd_load).to eq(300)
+      expect(facility.opd_load).to eq(1800)
 
       facility.facility_size = "medium"
-      expect(facility.opd_load).to eq(500)
+      expect(facility.opd_load).to eq(3000)
 
       facility.facility_size = "large"
-      expect(facility.opd_load).to eq(1000)
+      expect(facility.opd_load).to eq(7500)
     end
   end
 

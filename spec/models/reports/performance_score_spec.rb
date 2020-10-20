@@ -102,6 +102,12 @@ describe Reports::PerformanceScore, type: :model do
       @opd_load = 0
       expect(perf_score.registrations_rate).to eq(0)
     end
+
+    it "maxes at 100 if registrations exceeds target" do
+      @registrations = 500
+      @opd_load = 100
+      expect(perf_score.registrations_rate).to eq(100)
+    end
   end
 
   describe "#target_registrations" do
