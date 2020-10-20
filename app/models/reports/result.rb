@@ -43,6 +43,20 @@ module Reports
       @data
     end
 
+    # Return a new Result limited to just the Range requested
+    def report_data_for(range)
+      limited_range_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
+        hsh[key] = if !hsh_or_array.is_a?(Hash)
+          hsh_or_array
+        else
+          sliced_hsh = hsh_or_array.slice(*range.entries)
+          sliced_hsh.default = hsh_or_array.default
+          sliced_hsh
+        end
+      }.with_indifferent_access
+      Result.new(region: region, period_type: period_type, data: limited_range_data)
+    end
+
     # Return all periods for the entire set of data for a Region - from the first registrations until
     # the most recent period
     def full_data_range
@@ -62,20 +76,6 @@ module Reports
 
     def to_s
       "#{self.class} #{object_id} region=#{@region.name} period_type=#{period_type}"
-    end
-
-    # Return a new Result limited to just the Range requested
-    def report_data_for(range)
-      limited_range_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
-        hsh[key] = if !hsh_or_array.is_a?(Hash)
-          hsh_or_array
-        else
-          sliced_hsh = hsh_or_array.slice(*range.entries)
-          sliced_hsh.default = hsh_or_array.default
-          sliced_hsh
-        end
-      }.with_indifferent_access
-      Result.new(region: region, period_type: period_type, data: limited_range_data)
     end
 
     def last_value(key)
