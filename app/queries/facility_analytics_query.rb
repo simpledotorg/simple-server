@@ -68,18 +68,34 @@ class FacilityAnalyticsQuery
     @follow_up_patients_by_period ||=
       BloodPressure
         .left_outer_joins(:user)
-        .left_outer_joins(:patient)
+        .left_outer_joins(patient: [:medical_history])
         .joins(:facility)
         .where(facility: @facility)
         .where(deleted_at: nil)
+        .where("medical_histories.hypertension = ?", "yes")
         .group('users.id')
         .group_by_period(@period, 'blood_pressures.recorded_at')
         .where("patients.recorded_at < #{date_truncate_string}")
-        .order('users.id')
+        .order("users.id")
         .distinct
-        .count('patients.id')
+        .count("patients.id")
 
     group_by_user_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
+  end
+
+  def total_calls_made_by_period
+    @total_calls_made_by_period ||=
+      CallLog
+        .result_completed
+        .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
+        .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
+        .joins('INNER JOIN user_authentications ON user_authentications.authenticatable_id = phone_number_authentications.id')
+        .where(phone_number_authentications: { registration_facility_id: @facility.id })
+        .group('user_authentications.user_id::uuid')
+        .group_by_period(@period, :end_time)
+        .count
+
+    group_by_user_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
   end
 
   private

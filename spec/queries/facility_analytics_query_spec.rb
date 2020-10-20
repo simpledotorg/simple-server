@@ -96,12 +96,18 @@ RSpec.describe FacilityAnalyticsQuery do
     end
 
     describe "#follow_up_patients_by_period" do
-      it "groups the follow up patients by facility and beginning of month" do
+      it "groups the follow up patients by users within a facility and by period" do
         expected_result =
-          {users.first.id =>
+          {
+            users[0].id =>
               {follow_up_patients_by_period: {four_months_back => 6,
                                               three_months_back => 12,
-                                              two_months_back => 6}}}
+                                              two_months_back => 6}},
+            users[1].id =>
+              {follow_up_patients_by_period: {four_months_back => 6,
+                                              three_months_back => 12,
+                                              two_months_back => 6}}
+            }
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
