@@ -157,8 +157,6 @@ GEM
       railties (>= 3.0.0)
     faker (2.11.0)
       i18n (>= 1.6, < 2)
-    fakeredis (0.8.0)
-      redis (~> 4.1)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.12.2)
@@ -267,6 +265,7 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.14.2)
+    mock_redis (0.26.0)
     msgpack (1.3.3)
     multipart-post (2.1.1)
     nenv (0.3.0)
@@ -585,7 +584,6 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails (~> 4.8)
   faker
-  fakeredis
   flamegraph
   flipper
   flipper-active_record
@@ -607,6 +605,7 @@ DEPENDENCIES
   lograge
   memery
   memory_profiler
+  mock_redis
   ougai
   parallel_tests
   passenger
