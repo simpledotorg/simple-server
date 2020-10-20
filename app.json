@@ -153,9 +153,6 @@
     "LANG": {
       "value": "en_US.UTF-8"
     },
-    "NEW_RELIC_APP_NAME": {
-      "value": "Simple Server (Review)"
-    },
     "OWNER_EMAILS": {
       "value": "Test Owner <test.owner@example.com>"
     },
