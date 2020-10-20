@@ -142,6 +142,28 @@ RSpec.describe FacilityAnalyticsQuery do
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
+
+      it "should count multiple BPs recorded in a single day for a patience as 1" do
+        patient = Timecop.travel(four_months_back) {
+          create(:patient, :hypertension, registration_facility: facility, registration_user: users.first)
+        }
+
+        first_bp = Timecop.travel(three_months_back) {
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+        }
+
+        second_bp = Timecop.travel(three_months_back) {
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+        }
+
+        expected_result =
+          {users.first.id =>
+            {follow_up_patients_by_period: {
+              three_months_back => 2
+            }}}
+        
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+      end
     end
 
     describe "#registered_patients_by_period" do
