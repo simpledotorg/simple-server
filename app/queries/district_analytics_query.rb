@@ -99,7 +99,7 @@ class DistrictAnalyticsQuery
     # that were registered prior to the period bucket
     #
     date_truncate_string =
-      '(DATE_TRUNC("#{@period}", blood_pressures.recorded_at::timestamptz AT TIME ZONE "#{Groupdate.time_zone || 'Etc/UTC'}"))'
+      "(DATE_TRUNC('#{@period}', blood_pressures.recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))" 
 
     @follow_up_patients_by_period ||=
       BloodPressure
