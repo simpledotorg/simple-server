@@ -18,7 +18,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
 
-    model_name
+    Facility
       .with_discarded
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end

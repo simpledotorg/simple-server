@@ -18,7 +18,7 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
 
-    model_name
+    Protocol
       .with_discarded
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
