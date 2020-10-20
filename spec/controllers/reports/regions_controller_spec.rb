@@ -213,7 +213,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "retrieves cohort data for a facility district" do
       jan_2020 = Time.parse("January 1 2020")
-      facility_group = @facility.facility_group
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
