@@ -15,14 +15,14 @@ RSpec.describe BloodPressure, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
-  context "utility methods" do
-    let(:bp_normal) { create(:blood_pressure, systolic: 120, diastolic: 80) }
-    let(:bp_high_systolic) { create(:blood_pressure, systolic: 140, diastolic: 80) }
-    let(:bp_high_diastolic) { create(:blood_pressure, systolic: 120, diastolic: 90) }
-    let(:bp_high_both) { create(:blood_pressure, systolic: 150, diastolic: 100) }
-
+  describe "Scopes" do
     describe ".hypertensive" do
       it "only includes hypertensive BPs" do
+        bp_normal = create(:blood_pressure, systolic: 120, diastolic: 80)
+        bp_high_systolic = create(:blood_pressure, systolic: 140, diastolic: 80)
+        bp_high_diastolic = create(:blood_pressure, systolic: 120, diastolic: 90)
+        bp_high_both = create(:blood_pressure, systolic: 150, diastolic: 100)
+
         expect(BloodPressure.hypertensive).to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
         expect(BloodPressure.hypertensive).not_to include(bp_normal)
       end
@@ -30,10 +30,47 @@ RSpec.describe BloodPressure, type: :model do
 
     describe ".under_control" do
       it "only includes BPs under control" do
+        bp_normal = create(:blood_pressure, systolic: 120, diastolic: 80)
+        bp_high_systolic = create(:blood_pressure, systolic: 140, diastolic: 80)
+        bp_high_diastolic = create(:blood_pressure, systolic: 120, diastolic: 90)
+        bp_high_both = create(:blood_pressure, systolic: 150, diastolic: 100)
+
         expect(BloodPressure.under_control).to include(bp_normal)
         expect(BloodPressure.under_control).not_to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
       end
     end
+
+    describe ".syncable_to_region" do
+      it "returns all patients registered in the region" do
+        facility_group = create(:facility_group)
+        facility = create(:facility, facility_group: facility_group)
+        patient = create(:patient)
+        other_patient = create(:patient)
+
+        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
+
+        blood_pressures = [
+          create(:blood_pressure, patient: patient, facility: facility),
+          create(:blood_pressure, patient: patient, facility: facility).tap(&:discard),
+          create(:blood_pressure, patient: patient)
+        ]
+
+        _other_blood_pressures = [
+          create(:blood_pressure, patient: other_patient, facility: facility),
+          create(:blood_pressure, patient: other_patient, facility: facility).tap(&:discard),
+          create(:blood_pressure, patient: other_patient)
+        ]
+
+        expect(BloodPressure.syncable_to_region(facility_group)).to contain_exactly(*blood_pressures)
+      end
+    end
+  end
+
+  context "utility methods" do
+    let(:bp_normal) { create(:blood_pressure, systolic: 120, diastolic: 80) }
+    let(:bp_high_systolic) { create(:blood_pressure, systolic: 140, diastolic: 80) }
+    let(:bp_high_diastolic) { create(:blood_pressure, systolic: 120, diastolic: 90) }
+    let(:bp_high_both) { create(:blood_pressure, systolic: 150, diastolic: 100) }
 
     describe "#under_control?" do
       it "returns true if both systolic and diastolic are under control" do
