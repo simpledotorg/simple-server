@@ -25,7 +25,6 @@ module Reports
           uncontrolled_patients: Hash.new(0),
           uncontrolled_patients_rate: Hash.new(0)
         }.with_indifferent_access
-      p "created Result #{self}"
     end
 
     attr_reader :region
@@ -67,14 +66,10 @@ module Reports
 
     # Return a new Result limited to just the Range requested
     def report_data_for(range)
-      # pp caller
-      p "in #{self} => report_data"
       limited_range_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
         hsh[key] = if !hsh_or_array.is_a?(Hash)
-          p "#{self} #{key} not slicing"
           hsh_or_array
         else
-          p "#{self} #{key} slicing #{range}"
           sliced_hsh = hsh_or_array.slice(*range.entries)
           sliced_hsh.default = hsh_or_array.default
           sliced_hsh

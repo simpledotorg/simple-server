@@ -300,7 +300,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call.to_hash
+    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
 
     registrations =
       current_facility
@@ -320,7 +320,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
       grouped_by_date: {
         hypertension: {
           follow_ups: sum_by_date(follow_ups),
-          controlled_visits: controlled_visits,
+          controlled_visits: controlled_visits.to_hash,
           registrations: sum_by_date(registrations)
         }
       }

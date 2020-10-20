@@ -19,7 +19,6 @@ class ControlRateService
     end
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
-    p "#{self.class} #{@report_range}"
     logger.info class: self.class, msg: "created", region: region.id, region_name: region.name,
                 report_range: report_range.inspect, facilities: facilities.map(&:id)
   end
