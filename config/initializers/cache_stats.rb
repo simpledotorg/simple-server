@@ -15,7 +15,11 @@ end
 ActiveSupport::Notifications.subscribe(/cache_read_multi\.active_support/) do |name, start, finish, _id, payload|
   RequestStore[:cache_stats] ||= {reads: 0, hits: 0, misses: 0}
   RequestStore[:cache_stats][:reads] += 1
-  hits = payload[:hits].size || 0
+  hits = if payload[:hits]
+    hits = payload[:hits].size
+  else
+    0
+  end
   RequestStore[:cache_stats][:hits] += hits
   RequestStore[:cache_stats][:misses] += payload[:key].size - hits
 end
