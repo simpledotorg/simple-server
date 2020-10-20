@@ -1,7 +1,6 @@
 require "simplecov" if ENV["CI"]
 require "utils"
 require "webmock/rspec"
-require "fakeredis/rspec"
 require "sidekiq/testing"
 require "capybara"
 require "webdrivers"
