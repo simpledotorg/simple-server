@@ -9,10 +9,6 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
     __sync_to_user__("protocols")
   end
 
-  def find_records_to_sync(since, limit)
-    super(since, limit).includes(:protocol_drugs)
-  end
-
   private
 
   def current_facility_records
