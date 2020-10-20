@@ -153,7 +153,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe "#follow_up_patients_by_period" do
-      it "counts follow up patients who had at least one BP recorded at the facility in the period" do
+      it "counts follow up BPs recorded at the facility in the period" do
         expected_result = {
           facility_1.id => {
             follow_up_patients_by_period: {
