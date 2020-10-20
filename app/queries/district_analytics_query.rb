@@ -104,10 +104,11 @@ class DistrictAnalyticsQuery
     @follow_up_patients_by_period ||=
       BloodPressure
         .left_outer_joins(:user)
-        .left_outer_joins(:patient)
+        .left_outer_joins(patient: [:medical_history])
         .joins(:facility)
         .where(facilities: { id: facilities })
         .where(deleted_at: nil)
+        .where("medical_histories.hypertension = ?", "yes")
         .group('facilities.id')
         .group_by_period(@period, 'blood_pressures.recorded_at')
         .where("patients.recorded_at < #{date_truncate_string}")
