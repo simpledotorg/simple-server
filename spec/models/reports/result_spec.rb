@@ -9,8 +9,12 @@ describe Reports::Result, type: :model do
   let(:range) { (july_2018..june_2020) }
   let(:region) { create(:facility) }
 
+  before do
+    Timecop.travel(june_2020.to_date)
+  end
+
   it "has convenience methods" do
-    result = Reports::Result.new(region: region, range: range)
+    result = Reports::Result.new(region: region, period_type: :month)
     result[:uncontrolled_patients][june_2020] = 30
     result[:controlled_patients][june_2020] = 100
     expect(result.uncontrolled_patients_for(june_2020)).to eq(30)
@@ -20,14 +24,14 @@ describe Reports::Result, type: :model do
   end
 
   it "has setters" do
-    result = Reports::Result.new(region: region, range: range)
+    result = Reports::Result.new(region: region, period_type: :month)
     hsh = {june_2020 => 30}
     result.uncontrolled_patients = hsh
     expect(result.uncontrolled_patients).to eq(hsh)
   end
 
   it "can get last value for the data" do
-    result = Reports::Result.new(region: region, range: range)
+    result = Reports::Result.new(region: region, period_type: :month)
     result[:uncontrolled_patients][may_2020] = 20
     result[:uncontrolled_patients][june_2020] = 30
     expect(result.last_value(:uncontrolled_patients)).to eq(30)
@@ -35,16 +39,17 @@ describe Reports::Result, type: :model do
 
   it "can return report data that limits results to the range requested" do
     june_2000 = Period.month("June 1 2000")
-    result = Reports::Result.new(region: region, range: range)
+    result = Reports::Result.new(region: region, period_type: :month)
     result[:uncontrolled_patients][june_2000] = 50
     result[:uncontrolled_patients][june_2020] = 100
     result[:uncontrolled_patients][sept_2020] = 100
-    data = result.report_data
+    data = result.report_data_for(range)
 
     expect(data[:uncontrolled_patients][june_2020]).to eq(100)
     expect(data[:uncontrolled_patients].key?(june_2000)).to be_falsey
     expect(data[:uncontrolled_patients][june_2020]).to eq(100)
     expect(data[:uncontrolled_patients].key?(sept_2020)).to be_falsey
-    expect(data[:uncontrolled_patients][sept_2020]).to be_nil
+    expect(data[:uncontrolled_patients][july_2018]).to eq(0)
+    expect(data[:uncontrolled_patients][sept_2020]).to eq(0)
   end
 end
