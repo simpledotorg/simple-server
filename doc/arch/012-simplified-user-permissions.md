@@ -34,7 +34,7 @@ Move to a [Role Based Access Control](https://en.wikipedia.org/wiki/Role-based_a
 | Call center (manage overdue lists) | can manage the overdue list within the resources where they have access                                                        |
 | Power user                         | have full access to data, and user and resource management options in a given  deployment of the application                   |
 
-![simplified-permissions](resources/simplified-permissions.png)
+![simplified-permissions](resources/user-permissions-2020.1.png)
 
 Currently, `resources` can be instances of [`Organization`, `FacilityGroup`, `Facility`], but might include 
 other regions like blocks, districts, states etc. in the future. Access on these resources cascades 
