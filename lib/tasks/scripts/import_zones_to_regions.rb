@@ -1,4 +1,4 @@
-class ImportZonesAsRegions
+class ImportZonesToRegions
   include Memery
 
   ORG_TO_CANONICAL_ZONES_FILES = {
