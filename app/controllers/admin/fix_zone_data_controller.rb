@@ -1,5 +1,5 @@
 class Admin::FixZoneDataController < AdminController
-  CANONICAL_ZONES = YAML.load_file("config/data/canonical_zones_ihci.yml")
+  CANONICAL_ZONES = YAML.load_file("config/data/canonical_zones_ihci.yml").values.flatten
 
   skip_before_action :verify_authenticity_token
 
