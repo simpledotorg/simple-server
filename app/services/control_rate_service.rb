@@ -109,7 +109,6 @@ class ControlRateService
       .order("patient_id, bp_recorded_at DESC, bp_id")
   end
 
-
   def quarterly_report?
     @quarterly_report
   end
