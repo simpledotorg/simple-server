@@ -1,9 +1,20 @@
 <div class="d-flex row">
-  <div class="col-lg-6 mb-lg-3 pl-lg-0 order-2 order-lg-1">
-    <%= render 'shared/my_facilities/facilities_by_size' %>
-    <%= render 'shared/my_facilities/inactive_facilities' %>
-  </div>
-  <div class="card mt-4">  
+  <div class="col-lg-6">
+    <%= render "shared/user_approvals" %>
+    <div class="card mt-4">
+      <h3>Recent updates</h3>
+      
+      <h5 class="font-weight-bold mt-3 mb-1">18-Oct-2020</h5>
+      <p>Mobile friendly navigation: tables scroll sideways better, navigation is easier to use.</p>
+      
+      <h5 class="font-weight-bold mt-3 mb-1">14-Oct-2020</h5>
+      <p>In reports, the line charts hover state doesn't obscure the title of the card.</p>
+      
+      <h5 class="font-weight-bold mt-3 mb-1">12-Oct-2020</h5>
+      <p>Cards in Reports have more clear labels thanks to CVHO feedback.</p>
+      
+    </div>
+    <div class="card mt-4">  
       <h3>Upcoming improvements</h3>
       <p>Our team is working to make the Simple Dashboard more useful for you:</p>
       <ul>
@@ -33,7 +44,9 @@
         </li>
       </ul>
     </div>
-  <div class="col-lg-6 pr-lg-0 order-1 order-lg-2">
-    <%= render "shared/user_approvals" %>
+  </div>
+  <div class="col-lg-6">
+    <%= render 'shared/my_facilities/facilities_by_size' %>
+    <%= render 'shared/my_facilities/inactive_facilities' %>
   </div>
 </div>
