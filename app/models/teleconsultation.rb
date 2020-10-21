@@ -9,7 +9,7 @@ class Teleconsultation < ApplicationRecord
 
   has_many :prescription_drugs
 
-  REQUEST_ATTRIBUTES = %w[requester_id facility_id requested_at request_completed].freeze
+  REQUEST_ATTRIBUTES = %w[requester_id facility_id requested_at requester_completion_status].freeze
   RECORD_ATTRIBUTES = %w[
     recorded_at
     teleconsultation_type
@@ -24,7 +24,7 @@ class Teleconsultation < ApplicationRecord
     message: "message"
   }.freeze
 
-  enum request_completed: {
+  enum requester_completion_status: {
     yes: "yes",
     no: "no",
     waiting: "waiting"

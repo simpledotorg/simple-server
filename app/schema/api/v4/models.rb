@@ -255,7 +255,7 @@ class Api::V4::Models
               requester_id: {"$ref" => "#/definitions/uuid"},
               facility_id: {"$ref" => "#/definitions/uuid"},
               requested_at: {"$ref" => "#/definitions/timestamp"},
-              request_completed: {type: [:string, "null"], enum: Teleconsultation.request_completeds.keys << nil}
+              requester_completion_status: {type: [:string, "null"], enum: Teleconsultation.requester_completion_statuses.keys << nil}
             }
           },
           record: {

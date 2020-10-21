@@ -1399,12 +1399,16 @@
             "requested_at": {
               "$ref": "#/definitions/timestamp"
             },
-            "request_completed": {
-              "type": "string",
+            "requester_completion_status": {
+              "type": [
+                "string",
+                "null"
+              ],
               "enum": [
                 "yes",
                 "no",
-                "waiting"
+                "waiting",
+                null
               ]
             }
           }
