@@ -44,8 +44,8 @@ class RegionBackfill
     end
     root_type = find_region_type("Root")
     org_type = find_region_type("Organization")
-    facility_group_type = find_region_type("FacilityGroup")
-    block_type = find_region_type("Block")
+    facility_group_type = find_region_type("District")
+    zone_type = find_region_type("Zone")
     facility_type = find_region_type("Facility")
 
     root_parent = NullRegion.new(name: "__root__")
@@ -57,15 +57,15 @@ class RegionBackfill
       org.facility_groups.each do |facility_group|
         facility_group_region = create_region_from(source: facility_group, region_type: facility_group_type, parent: org_region)
 
-        facility_group.facilities.group_by(&:zone).each do |block_name, facilities|
-          if block_name.blank?
-            count_invalid(block_type)
-            logger.info msg: "skip_block", error: "block_name is blank", block_name: block_name, facilities: facilities.map(&:name)
+        facility_group.facilities.group_by(&:zone).each do |zone_name, facilities|
+          if zone_name.blank?
+            count_invalid(zone_type)
+            logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone_name, facilities: facilities.map(&:name)
             next
           end
-          block_region = create_region_from(name: block_name, region_type: block_type, parent: facility_group_region)
+          zone_region = create_region_from(name: zone_name, region_type: zone_type, parent: facility_group_region)
           facilities.each do |facility|
-            create_region_from(source: facility, region_type: facility_type, parent: block_region)
+            create_region_from(source: facility, region_type: facility_type, parent: zone_region)
           end
         end
       end
@@ -85,9 +85,9 @@ class RegionBackfill
     unless dry_run?
       root = RegionType.create! name: "Root", path: "Root"
       org = RegionType.create! name: "Organization", parent: root
-      facility_group = RegionType.create! name: "FacilityGroup", parent: org
-      block = RegionType.create! name: "Block", parent: facility_group
-      _facility = RegionType.create! name: "Facility", parent: block
+      facility_group = RegionType.create! name: "District", parent: org
+      zone = RegionType.create! name: "Zone", parent: facility_group
+      _facility = RegionType.create! name: "Facility", parent: zone
     end
     root
   end
