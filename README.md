@@ -245,12 +245,14 @@ Run the following command from the project root to create a new dashboard admin:
 bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
-### View Sandbox data in your local
+### View Sandbox data in your local environment
+
 1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
-2. Ask someone from the Simple team to add you as an admin to sandbox
-3. Create a password for your Sandbox account and use that to log into the Dashboard on localhost:3000
-4. Run `ssh deploy@ec2-13-235-33-14.ap-south-1.compute.amazonaws.com`
-5. Run `bundle exec cap sandbox db:pull` to sync the data with your local machine
+2. Ask someone from the Simple team to add you as an admin to Sandbox
+3. Create a password for your Sandbox account and use that to log into the Sandbox dashboard on https://api-sandbox.simple.org
+4. Run `ssh deploy@ec2-13-235-33-14.ap-south-1.compute.amazonaws.com` to verify that your SSH access from step 1 was completed successfully.
+5. Run `bundle exec cap sandbox db:pull` to sync Sandbox data with your local machine.
+6. Use your Sandbox email and password to log into your local environment (http://localhost:3000).
 
 ### Profiling
 
