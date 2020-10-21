@@ -1,9 +1,9 @@
 module Navigations
   class DashboardPageNavigation < ApplicationPage
-    LOGOUT_BUTTON = {css: "a.logout"}.freeze
+    LOGOUT_BUTTON = "#nav-more-logout"
     MANAGE_OPTION = {xpath: "//li/div/a"}.freeze
     MAIN_MENU_TABS = {css: "ul.mr-auto>li>a"}.freeze
-    PROFILE_DROPDOWN = {id: "navbarDropdown2"}.freeze
+    PROFILE_DROPDOWN = "#nav-more-link"
 
     def click_main_menu_tab(option)
       find(MAIN_MENU_TABS[:css], text: option).click
@@ -20,8 +20,8 @@ module Navigations
     end
 
     def click_logout_button
-      click(PROFILE_DROPDOWN)
-      click(LOGOUT_BUTTON)
+      find(PROFILE_DROPDOWN).click
+      find(LOGOUT_BUTTON).click
     end
   end
 end

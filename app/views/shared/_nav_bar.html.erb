@@ -98,7 +98,7 @@
                         <span class="dropdown-item disabled">
                             <i class="fas fa-user-circle"></i> <%= current_admin.email %>
                         </span>
-                        <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "dropdown-item logout") do %>
+                        <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "dropdown-item", id: "nav-more-logout") do %>
                             <i class="fas fa-door-open"></i> Logout
                         <% end %>
                     </div>
