@@ -9,18 +9,14 @@ module Navigations
       find(MAIN_MENU_TABS[:css], text: option).click
     end
 
-    def select_main_menu_tab(option)
-      find(:xpath, "//a[contains(text(),'" + option + "')]").click
-    end
-
     def validate_owners_home_page
       main_menu_tabs = all_elements(MAIN_MENU_TABS)
       main_menu_tabs.each(&:visible?)
     end
 
     def select_manage_option(option)
-      select_main_menu_tab("More")
-      find(:xpath, "//a[text()='" + option + "']").click
+      find("#nav-more-link").click
+      find(option).click
     end
 
     def click_logout_button
