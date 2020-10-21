@@ -2,7 +2,7 @@
 
 ## Context
 We are currently using a permission based access control mechanism with a large 
-number of permissions, to emulate the following 'roles':
+number of permissions, to emulate the following _roles_:
 - Owner
 - Organization Owner
 - Supervisor
@@ -10,7 +10,7 @@ number of permissions, to emulate the following 'roles':
 - Counsellor
 
 We've found this permission based mechanism hard to maintain due to a few reasons:
-- The 'roles' are merely presets of permissions, and modifying the preset for a role also requires 
+- The _roles_ are basically presets of permissions, and modifying the preset for a role also requires 
 a corresponding data migration to update existing user's permissions
 - We've allowed the possibility of 'custom' roles, where a given user can have a list of permissions 
 that don't conform to any of the defined presets
@@ -28,17 +28,25 @@ Move to a [Role Based Access Control](https://en.wikipedia.org/wiki/Role-based_a
 
 | Role                               | Description                                                                                                                    |
 |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| Manager                            | have full access to data and have permissions to manage other users and resources within the  resources where they have access |
-| Viewer (all data)                  | have full access to data (including PII) within the resources where they have access                                           |
-| Viewer (reports only)              | have access to reports within the resources where they have access                                                             |
+| Manager                            | full access to data and have permissions to manage other users and resources within the  resources where they have access |
+| Viewer (all data)                  | full access to data (including PII) within the resources where they have access                                           |
+| Viewer (reports only)              | access to reports within the resources where they have access                                                             |
 | Call center (manage overdue lists) | can manage the overdue list within the resources where they have access                                                        |
-| Power user                         | have full access to data, and user and resource management options in a given  deployment of the application                   |
+| Power user                         | full access to data, and user and resource management options in a given  deployment of the application                   |
 
 ![simplified-permissions](resources/user-permissions-2020.1.png)
 
 Currently, `resources` can be instances of [`Organization`, `FacilityGroup`, `Facility`], but might include 
-other regions like blocks, districts, states etc. in the future. Access on these resources cascades 
-downwards (eg: access to an organization implies access to all facility groups and facilities within the organization)
+other regions like blocks, districts, states etc. in the future. 
+
+### Cascading access
+
+Access on these resources always cascades downwards. That is, access to an organization implies access to all facility groups and facilities within the organization; access to a facility group implies access to all facilities in that group, and so on.
+
+
+### Code
+
+All access-related APIs are encapsulated in the `UserAccess` model. It should ideally remain this way in the future, so that there's only 1 interface to use.
 
 ## Status
 Accepted
