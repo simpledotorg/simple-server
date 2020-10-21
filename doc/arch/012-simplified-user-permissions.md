@@ -24,15 +24,15 @@ We've also found that we don't actually need this level of flexibility in our ac
 since most of our users have very normalised usage patterns.
 
 ## Decision
-Move to a Role Based Access Control system with the following roles:
-- **Manager:** have full access to data and have permissions to manage other users and resources within the 
-resources where they have access
-- **Viewer (all data):** have full access to data (including PII) within the resources where they have access
-- **Viewer (reports only):** have access to reports within the resources where they have access
-- **Call center (manage overdue lists):** can manage the overdue list within the resources where
-they have access
-- **Power user:** have full access to data, and user and resource management options in a given 
-deployment of the application
+Move to a [Role Based Access Control](https://en.wikipedia.org/wiki/Role-based_access_control) system with the following roles to start with:
+
+| Role                               | Description                                                                                                                    |
+|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| Manager                            | have full access to data and have permissions to manage other users and resources within the  resources where they have access |
+| Viewer (all data)                  | have full access to data (including PII) within the resources where they have access                                           |
+| Viewer (reports only)              | have access to reports within the resources where they have access                                                             |
+| Call center (manage overdue lists) | can manage the overdue list within the resources where they have access                                                        |
+| Power user                         | have full access to data, and user and resource management options in a given  deployment of the application                   |
 
 ![simplified-permissions](resources/simplified-permissions.png)
 
