@@ -295,11 +295,9 @@ span.percent {
 }
 
 .updated-date {
-  text-align: center;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
-  padding: 16px 0;
-  clear: both;
+  float: right;
 
   span {
     letter-spacing: 1px;
