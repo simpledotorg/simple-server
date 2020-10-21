@@ -196,7 +196,7 @@ class Api::V3::Models
           pin: {type: :string},
           facility_type: {type: :string},
           facility_group_id: {"$ref" => "#/definitions/uuid"},
-          sync_group_id: {type: [:string, "null"]},
+          sync_region_id: {type: [:string, "null"]},
           protocol_id: {"$ref" => "#/definitions/uuid"},
           config: {
             type: :object,
