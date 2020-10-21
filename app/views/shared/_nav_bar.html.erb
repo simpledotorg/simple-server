@@ -26,6 +26,7 @@
                 <% end %>
                 <li class="nav-item dropdown">
                     <a
+                        id="nav-more-link"
                         class="nav-link dropdown-toggle" 
                         href="#"
                         data-toggle="dropdown"
@@ -43,7 +44,7 @@
                                 <i class="fas fa-hospital"></i> Facilities
                             <% end %>
                             <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-                                <%= link_to (admin_organizations_path), class: "dropdown-item #{active_controller?("admin/organizations")}" do %>
+                                <%= link_to (admin_organizations_path), class: "dropdown-item #{active_controller?("admin/organizations")}", id: "nav-organizations-link" do %>
                                     <i class="fas fa-network-wired"></i> Organizations
                                 <% end %>
                             <% end %>
