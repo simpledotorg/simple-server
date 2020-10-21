@@ -29,14 +29,21 @@ class ControlRateService
   attr_reader :report_range
   attr_reader :results
 
+  # We cache all the data for a region to improve performance and cache hits, but then return
+  # just the data the client requested
   def call
-    all_data = Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
-      uncached_fetch
-    }
-    all_data.report_data_for(report_range)
+    all_cached_data.report_data_for(report_range)
   end
 
-  def uncached_fetch
+  private
+
+  def all_cached_data
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
+      fetch_all_data
+    }
+  end
+
+  def fetch_all_data
     results.registrations = registration_counts
     results.earliest_registration_period = [report_range.begin, registration_counts.keys.first].compact.min
     results.fill_in_nil_registrations
@@ -102,7 +109,6 @@ class ControlRateService
       .order("patient_id, bp_recorded_at DESC, bp_id")
   end
 
-  private
 
   def quarterly_report?
     @quarterly_report
