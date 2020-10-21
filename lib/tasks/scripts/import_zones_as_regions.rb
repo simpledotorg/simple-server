@@ -60,4 +60,3 @@ class ImportZonesAsRegions
     region
   end
 end
-
