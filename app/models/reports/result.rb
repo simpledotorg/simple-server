@@ -43,9 +43,11 @@ module Reports
       @data
     end
 
-    # Return a new Result limited to just the Range requested
+    # Return a new Result limited to just the report data range requested
+    # We do this because we cache all the data, but clients may be expecting just the range of data that they
+    # care to expose to the view or API consumers.
     def report_data_for(range)
-      limited_range_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
+      report_data = @data.each_with_object({}) { |(key, hsh_or_array), hsh|
         hsh[key] = if !hsh_or_array.is_a?(Hash)
           hsh_or_array
         else
@@ -54,7 +56,7 @@ module Reports
           sliced_hsh
         end
       }.with_indifferent_access
-      Result.new(region: region, period_type: period_type, data: limited_range_data)
+      Result.new(region: region, period_type: period_type, data: report_data)
     end
 
     # Return all periods for the entire set of data for a Region - from the first registrations until

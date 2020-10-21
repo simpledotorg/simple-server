@@ -123,8 +123,6 @@ class Reports::RegionsController < AdminController
   def set_period
     period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
     @period = Period.new(period_params)
-    p @period
-    @period
   end
 
   def set_force_cache
