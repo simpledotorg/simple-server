@@ -1950,6 +1950,12 @@
         "facility_group_id": {
           "$ref": "#/definitions/uuid"
         },
+        "sync_region_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "protocol_id": {
           "$ref": "#/definitions/uuid"
         },
