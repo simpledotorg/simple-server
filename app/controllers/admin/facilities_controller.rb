@@ -5,6 +5,7 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_available_zones, only: [:new, :create, :edit, :update]
 
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
@@ -116,6 +117,10 @@ class Admin::FacilitiesController < AdminController
 
   def set_facility_group
     @facility_group = current_admin.accessible_facility_groups(:manage).friendly.find(params[:facility_group_id])
+  end
+
+  def set_available_zones
+    @available_zones = Region.where(type: RegionType.find_by_name("Zone")).pluck(:name)
   end
 
 
