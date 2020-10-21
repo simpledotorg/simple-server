@@ -6,16 +6,16 @@
     <div class="card card-responsive">
       <div>
         <h3>Ranked facilities</h3>
-          <p>
-            Facilities are ranked using their BP controlled, missed visits, and % of target registrations values.
-            <br>
-            The highest score is 100, where the score = (50% &times; BP controlled) + (30% &times; (100% - missed visits)) + (20% &times; % of target registrations)
-          </p>
-        </li>
+        <p>
+          Facilities are ranked using their BP controlled, missed visits, and % of target registrations values.
+          <br>
+          The highest score is 100, where the score = (50% &times; BP controlled) + (30% &times; (100% - missed visits)) + (20% &times; % of target registrations)
+        </p>
       </div>
 
-      <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover" id="ranked-facilities-table">
+      <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" id="ranked-facilities-table">
         <colgroup>
+          <col>
           <col>
           <col>
           <col class="table-divider">
@@ -31,6 +31,7 @@
           <tr>
             <th></th>
             <th></th>
+            <th></th>
             <th colspan="2">BP controlled<sup>1</sup></th>
             <th colspan="2">Missed visits<sup>2</sup></th>
             <th colspan="2">Registrations</th>
@@ -38,15 +39,16 @@
             <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
           </tr>
           <tr data-sort-method="thead" class="sorts">
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score" data-sort-default>Rank</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default>Rank</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="score">Score</th>
             <th class="row-label sort-label">Facilities</th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
-              Patients with BP &lt;140/90<br>in Aug-2020
+              Patients with BP<br>&lt;140/90 in <%= @period %>
             </th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
-              Patients with no visit<br>in >3 months
+              Patients with no<br>visit in &gt;3 months
             </th>
-            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">New registrations<br>in Aug-2020</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">New registrations<br>in <%= @period %></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of target<br>registrations <sup>4</sup></th>
             <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly</th>
             <th class="mobile"></th>
@@ -55,10 +57,11 @@
         <tbody>
           <% @facilities.each_with_index do |facility, rank| %>
             <tr>
-              <td class="type-rank" data-sort-column-key="score" data-toggle="tooltip"
-                  title="Overall score: <%= number_with_precision(@scores_for_facility[facility.name].overall_score, precision: 2) %>"
-              >
+              <td class="type-rank" data-sort-column-key="rank">
                 <%= rank + 1 %>
+              </td>
+              <td class="type-rank" data-sort-column-key="score" data-toggle="tooltip">
+                <%= number_with_precision(@scores_for_facility[facility.name].overall_score, precision: 2) %>
               </td>
               <td class="type-title">
                 <%= link_to(reports_region_path(facility, report_scope: "facility"))do %>
@@ -67,22 +70,22 @@
               </td>
               <td class="type-percent" data-sort-column-key="controlled_patients_rate">
                 <em>
-                  <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last, precision: 0) %>
+                  <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last || 0, precision: 0) %>
                 </em>
               </td>
               <td class="type-number">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last) %>
+                <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last || 0) %>
               </td>
               <td class="type-percent" data-sort-column-key="missed_visits_rate">
                 <em>
-                  <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last, precision: 0) %>
+                  <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last || 0, precision: 0) %>
                 </em>
               </td>
               <td class="type-number">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last) %>
+                <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last || 0) %>
               </td>
               <td class="type-number" data-sort-column-key="monthly_registrations">
-                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last) %>
+                <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last || 0) %>
               </td>
               <td class="type-percent" data-sort-column-key="registration_rate">
                 <em>

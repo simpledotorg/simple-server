@@ -64,6 +64,7 @@ class Facility < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   auto_strip_attributes :district, squish: true, upcase_first: true
+  auto_strip_attributes :zone, squish: true, upcase_first: true
 
   with_options if: :import do |facility|
     facility.validates :organization_name, presence: true
@@ -81,6 +82,7 @@ class Facility < ApplicationRecord
   validates :district, presence: true
   validates :state, presence: true
   validates :country, presence: true
+  validates :zone, presence: true
   validates :pin, numericality: true, allow_blank: true
 
   validates :facility_size, inclusion: {in: facility_sizes.values,
@@ -137,7 +139,7 @@ class Facility < ApplicationRecord
      facility_type: "facility_type",
      street_address: "street_address (optional)",
      village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block (optional)",
+     zone: "zone_or_block",
      district: "district",
      state: "state",
      country: "country",
@@ -153,7 +155,7 @@ class Facility < ApplicationRecord
      facility_type: "facility_type",
      street_address: "street_address (optional)",
      village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block (optional)",
+     zone: "zone_or_block",
      district: "district",
      state: "state",
      country: "country",
@@ -226,11 +228,11 @@ class Facility < ApplicationRecord
 
   def opd_load_for_facility_size
     case facility_size
-    when "community" then 100
-    when "small" then 300
-    when "medium" then 500
-    when "large" then 1000
-    else 1000
+    when "community" then 450
+    when "small" then 1800
+    when "medium" then 3000
+    when "large" then 7500
+    else 450
     end
   end
 

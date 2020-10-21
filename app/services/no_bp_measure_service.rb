@@ -1,5 +1,5 @@
 class NoBPMeasureService
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
   CACHE_TTL = 7.days
 
   def initialize(region, periods:)
@@ -14,20 +14,26 @@ class NoBPMeasureService
   attr_reader :periods
   attr_reader :region
 
+  delegate :cache, to: Rails
+
   def call
-    periods.each_with_object(Hash.new(0)) do |period, result|
-      result[period] = visited_without_bp_taken_count(period)
+    keys = cache_keys_for_period.keys
+    cached_results = cache.fetch_multi(*keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) { |key|
+      period = cache_keys_for_period.fetch(key)
+      execute_sql(period)
+    }
+    cached_results.each_with_object(Hash.new(0)) do |(key, result), hsh|
+      period = cache_keys_for_period.fetch(key)
+      hsh[period] = result
     end
   end
 
-  def visited_without_bp_taken_count(period)
-    return 0 if facilities.empty?
-    Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
-      execute_sql(period)
-    end
+  def cache_keys_for_period
+    @cache_keys_for_period ||= periods.each_with_object({}) { |period, hsh| hsh[cache_key(period)] = period }
   end
 
   def execute_sql(period)
+    return 0 if facility_ids.blank?
     attributes = {
       hypertension: "yes",
       facilities: facility_ids,

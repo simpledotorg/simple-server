@@ -13,8 +13,8 @@ module Reports
         cumulative_registrations: Hash.new(0),
         missed_visits_rate: {},
         missed_visits: {},
+        period_info: {},
         registrations: Hash.new(0),
-        top_region_benchmarks: {},
         uncontrolled_patients: Hash.new(0),
         uncontrolled_patients_rate: Hash.new(0)
       }.with_indifferent_access
@@ -52,8 +52,13 @@ module Reports
       self[key].values.last
     end
 
-    [:adjusted_registrations, :controlled_patients, :controlled_patients_rate, :cumulative_registrations, :missed_visits, :missed_visits_rate,
-      :registrations, :uncontrolled_patients, :uncontrolled_patients_rate, :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
+    def last_key(key)
+      self[key].keys.last
+    end
+
+    [:adjusted_registrations, :controlled_patients, :controlled_patients_rate, :cumulative_registrations,
+      :missed_visits, :missed_visits_rate, :period_info, :registrations, :uncontrolled_patients,
+      :uncontrolled_patients_rate, :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
       define_method(key) do
         self[key]
       end
@@ -94,6 +99,17 @@ module Reports
       self.missed_visits_rate = range.each_with_object({}) do |period, hsh|
         remaining_percentages = controlled_patients_rate_for(period) + uncontrolled_patients_rate_for(period) + visited_without_bp_taken_rate_for(period)
         hsh[period] = 100 - remaining_percentages
+      end
+    end
+
+    DATE_FORMAT = "%-d-%b-%Y"
+    def calculate_period_info
+      self.period_info = range.each_with_object({}) do |period, hsh|
+        range = period.blood_pressure_control_range
+        hsh[period] = {
+          bp_control_start_date: range.begin.next_day.strftime(DATE_FORMAT),
+          bp_control_end_date: range.end.strftime(DATE_FORMAT)
+        }
       end
     end
 

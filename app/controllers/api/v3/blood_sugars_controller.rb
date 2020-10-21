@@ -14,7 +14,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
   private
 
   def facility_group_records
-    current_facility_group.blood_sugars.with_discarded.for_v3
+    BloodSugar.syncable_to_region(current_facility_group).for_v3
   end
 
   def transform_to_response(blood_sugar)
@@ -24,8 +24,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
   def merge_if_valid(blood_sugar_params)
     validator = Api::V3::BloodSugarPayloadValidator.new(blood_sugar_params)
     logger.debug "Blood Sugar payload had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/BloodSugar/schema_invalid")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       set_patient_recorded_at(blood_sugar_params)

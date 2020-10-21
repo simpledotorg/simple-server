@@ -142,11 +142,6 @@ Rails.application.routes.draw do
   end
 
   resources :appointments, only: [:index, :update]
-  resources :patients do
-    collection do
-      get :lookup
-    end
-  end
 
   get "/dashboard", to: redirect("/reports/regions/")
   get "/dashboard/districts/", to: redirect("/reports/districts/")
@@ -198,6 +193,10 @@ Rails.application.routes.draw do
       put "disable_access", to: "users#disable_access"
       put "enable_access", to: "users#enable_access"
     end
+
+    # This is a temporary page to assist in clean up
+    get "fix_zone_data", to: "fix_zone_data#show"
+    post "update_zone", to: "fix_zone_data#update"
   end
 
   if FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")
@@ -206,24 +205,12 @@ Rails.application.routes.draw do
     end
   end
 
-  authenticate :email_authentication, ->(a) {
-    if a.user.permissions_v2_enabled?
-      a.user.power_user?
-    else
-      a.user.has_permission?(:view_sidekiq_ui)
-    end
-  } do
+  authenticate :email_authentication, ->(a) { a.user.power_user? } do
     require "sidekiq/web"
     mount Sidekiq::Web => "/sidekiq"
   end
 
-  authenticate :email_authentication, ->(a) {
-    if a.user.permissions_v2_enabled?
-      a.user.power_user?
-    else
-      a.user.has_permission?(:view_flipper_ui)
-    end
-  } do
+  authenticate :email_authentication, ->(a) { a.user.power_user? } do
     mount Flipper::UI.app(Flipper) => "/flipper"
   end
 end

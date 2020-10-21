@@ -13,6 +13,10 @@ class Api::V3::PatientsController < Api::V3::SyncController
     {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
+  def facility_group_records
+    Patient.syncable_to_region(current_facility_group)
+  end
+
   def current_facility_records
     facility_group_records
       .includes(:address, :phone_numbers, :business_identifiers)
@@ -44,9 +48,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
     validator_params = single_patient_params.merge(request_user_id: current_user.id)
     validator = Api::V3::PatientPayloadValidator.new(validator_params)
 
-    if validator.invalid?
+    if validator.check_invalid?
       logger.debug "Patient had errors: #{validator.errors_hash}"
-      NewRelic::Agent.increment_metric("Merge/Patient/schema_invalid")
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V3::PatientTransformer.from_nested_request(single_patient_params)

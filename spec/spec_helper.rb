@@ -1,7 +1,6 @@
-require "simplecov"
+require "simplecov" if ENV["CI"]
 require "utils"
 require "webmock/rspec"
-require "fakeredis/rspec"
 require "sidekiq/testing"
 require "capybara"
 require "webdrivers"
@@ -10,7 +9,7 @@ require "flipper_helper"
 WebMock.allow_net_connect!
 
 RSpec.configure do |config|
-  SimpleCov.start
+  SimpleCov.start if ENV["CI"]
 
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true

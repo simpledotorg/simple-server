@@ -109,6 +109,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "returns period info for every month" do
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][dec_2019_period]).to eq({"bp_control_start_date" => "1-Oct-2019", "bp_control_end_date" => "31-Dec-2019"})
+    end
+
     it "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
@@ -141,6 +150,23 @@ RSpec.describe Reports::RegionsController, type: :controller do
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(24) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
+    end
+
+    it "retrieves facility district data" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.district, report_scope: "facility_district"}
+      end
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients].size).to eq(24) # sanity check
+      expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
 
@@ -183,6 +209,22 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
       expect(response.headers["Content-Disposition"]).to include('filename="facility_group-quarterly-cohort-report_')
+    end
+
+    it "retrieves cohort data for a facility district" do
+      jan_2020 = Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :download, params: {id: @facility.district, report_scope: "facility_district", period: "quarter", format: "csv"}
+      end
+      expect(response).to be_successful
+      expect(response.body).to include("#{@facility.district} Quarterly Cohort Report")
+      expect(response.headers["Content-Disposition"]).to include('filename="facility_district-quarterly-cohort-report_')
     end
   end
 

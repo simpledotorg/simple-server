@@ -40,6 +40,10 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  scope :syncable_to_region, ->(region) {
+    with_discarded.where(patient: Patient.syncable_to_region(region))
+  }
+
   def self.all_overdue
     where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))

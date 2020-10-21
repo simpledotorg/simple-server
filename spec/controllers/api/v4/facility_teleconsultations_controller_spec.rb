@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller do
   describe "#phone_number" do
-    let(:user) { FactoryBot.create(:user) }
+    let(:user) { create(:user) }
     let(:isd_code) { Faker::PhoneNumber.country_code }
     let(:phone_number) { Faker::PhoneNumber.phone_number }
 

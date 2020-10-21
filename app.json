@@ -63,6 +63,9 @@
     "EMAIL_SUBJECT_PREFIX": {
       "value": "[REVIEW]"
     },
+    "ENABLE_AUTO_APPROVE_USER_FOR_QA" : {
+      "value": "true"
+    },
     "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
       "value": "true"
     },
@@ -74,6 +77,9 @@
     },
     "ENABLE_EXOTEL_WHITELIST_API": {
       "value": "false"
+    },
+    "ENABLE_FIXED_OTP_ON_REQUEST_FOR_QA" : {
+      "value": "true"
     },
     "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
       "value": "true"
@@ -147,11 +153,8 @@
     "LANG": {
       "value": "en_US.UTF-8"
     },
-    "NEW_RELIC_APP_NAME": {
-      "value": "Simple Server (Review)"
-    },
     "OWNER_EMAILS": {
-      "value": "Govind <govind@simple.org>, Srihari <srihari@simple.org>, Tim <tcheadle@resolvetosavelives.org>, Daniel <dburka@resolvetosavelives.org>, Deepa <deepa@simple.org>, Akshay <akshay@uncommon.is>"
+      "value": "Test Owner <test.owner@example.com>"
     },
     "PROGRAM_INCEPTION_DATE": {
       "value": "2018-01-01"
@@ -179,6 +182,9 @@
     },
     "SENTRY_ENV": {
       "value": "review"
+    },
+    "SENTRY_SECURITY_HEADER_ENDPOINT": {
+      "value": "https://o152587.ingest.sentry.io/api/1217715/security/?sentry_key=67a72e806c7a427db73a0342ddc3f965"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
@@ -208,7 +214,7 @@
       "value": "https"
     },
     "SUPERVISOR_EMAILS": {
-      "value": "Dr. Bidisha Sumu <bidishasumu@gmail.com>, Dr. Capt. Ruchi Mehrotra <cvhogurdaspur@ihmi.in>"
+      "value": "Test Supervisor <test.supervisor@example.com>"
     },
     "USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES": {
       "value": "360"

@@ -1,13 +1,13 @@
-<div class="card mt-0 pr-0 pr-md-3">
+<div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
   <h2>Patients registered</h2>
 
-  <p class="c-grey-dark">
+  <p class="c-grey-dark c-print-black">
     Patients registered at a facility this <%= period %>. Note: this could include patients registered at this facility
     and re-assigned to another facility.
   </p>
 
   <div class="table-responsive">
-    <table id="registrations-table" class="analytics-table table-compact">
+    <table id="registrations-table" class="analytics-table table-compact d-print-block">
       <colgroup>
         <col>
         <col class="table-divider">
@@ -38,7 +38,7 @@
       <tbody>
 
       <tr class="row-total" data-sort-method="none">
-        <td class="row-title row-total">All</td>
+        <td class="row-title row-total"><%= @region.name %></td>
 
         <!--New registrations-->
         <% dates_for_periods(period, 6, include_current_period: @show_current_period).each do |date| %>

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class MyFacilities::RankedFacilitiesController < AdminController
-  include DistrictFiltering
   include Pagination
   include MyFacilitiesFiltering
 
@@ -10,9 +9,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+  after_action :verify_authorization_attempted
 
   around_action :set_time_zone
   before_action :authorize_my_facilities
@@ -45,13 +42,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
   private
 
   def set_last_updated_at
-    last_updated_at =
-      begin
-        Time.parse(Rails.cache.fetch(Constants::MATVIEW_REFRESH_TIME_KEY))
-      rescue TypeError, ArgumentError
-        nil
-      end
-
+    last_updated_at = RefreshMaterializedViews.last_updated_at
     @last_updated_at =
       if last_updated_at.nil?
         "unknown"
@@ -67,11 +58,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
   end
 
   def authorize_my_facilities
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_facilities(:view_reports).any? }
-    else
-      authorize(:dashboard, :view_my_facilities?)
-    end
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
   end
 
   def set_period
