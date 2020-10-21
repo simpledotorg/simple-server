@@ -9,12 +9,13 @@ class ImportZonesToRegions
     new(*args).import
   end
 
-  def initialize(organization_name, dry_run: true)
+  def initialize(organization_name, dry_run: true, verbose: true)
     @organization_name = organization_name
     @dry_run = dry_run
+    @verbose = verbose
   end
 
-  attr_reader :organization_name, :dry_run
+  attr_reader :organization_name, :dry_run, :verbose
 
   def import
     canonical_zones = YAML.load_file(ORG_TO_CANONICAL_ZONES_FILES[organization_name])
@@ -46,11 +47,11 @@ class ImportZonesToRegions
   end
 
   def find_or_create_region(name:, type:, parent:)
-    Rails.logger.info "Create #{type.name} #{name} under #{parent.name}"
-    return Region.new(name: name, type: type) if dry_run
+    region = Region.find_by(name: name, type: type)
+    log "#{type.name} #{name} to be created under #{parent.name}" unless region
 
-    Region.find_by(name: name, type: type) ||
-      create_region_from(name: name, type: type, parent: parent)
+    return Region.new(name: name, type: type) if dry_run
+    region || create_region_from(name: name, type: type, parent: parent)
   end
 
   def create_region_from(name:, type:, parent:)
@@ -58,5 +59,9 @@ class ImportZonesToRegions
     region.path = [parent.path, region.name_to_path_label].compact.join(".")
     region.save!
     region
+  end
+
+  def log(message)
+    puts message if verbose
   end
 end

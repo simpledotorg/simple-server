@@ -15,7 +15,7 @@ RSpec.describe ImportZonesToRegions do
   end
 
   it "imports zones into the districts" do
-    described_class.import(org.name, dry_run: false)
+    described_class.import(org.name, dry_run: false, verbose: false)
 
     expect(Region.find_by_name("District 1")).to be_present
     expect(Region.find_by_name("Block 1").parent).to eq(Region.find_by_name("District 1"))
