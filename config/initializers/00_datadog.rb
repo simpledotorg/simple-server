@@ -1,3 +1,4 @@
+require "simple_server_extensions"
 require "ddtrace"
 require "datadog/statsd"
 
@@ -7,6 +8,7 @@ SEND_DATA_TO_DD_AGENT = !(Rails.env.development? || Rails.env.test?)
 
 Datadog.configure do |c|
   c.tracer.enabled = SEND_DATA_TO_DD_AGENT
+  c.version = SimpleServer.git_ref(short: true)
   c.use :rails, analytics_enabled: true
 end
 

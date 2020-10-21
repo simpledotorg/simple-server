@@ -12,6 +12,7 @@ Rails.application.configure do
         version: correlation.version.to_s
       },
       ddsource: ["ruby"],
+      cache_stats: RequestStore[:cache_stats],
       params: event.payload[:params].except(*exceptions)
     }
   end
