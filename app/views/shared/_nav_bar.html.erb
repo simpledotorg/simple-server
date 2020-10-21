@@ -59,7 +59,7 @@
                                 <% end %>
                             <% end %>
                             <% if current_admin.accessible_users(:manage).any? || current_admin.power_user? %>
-                                <%= link_to (admin_users_path), class: "dropdown-item #{active_controller?("admin/users")}" do %>
+                                <%= link_to (admin_users_path), class: "dropdown-item #{active_controller?("admin/users")}", id: "mobile-app-users" do %>
                                     <i class="fas fa-user-md"></i> Mobile app users
                                 <% end %> 
                             <% end %>
