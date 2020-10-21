@@ -255,6 +255,14 @@ RSpec.describe ControlRateService, type: :model do
       Rails.cache.clear
     end
 
+    it "has a cache key to keep data refreshed daily" do
+      periods = Period.month("September 1 2018")..Period.month("September 1 2020")
+      Timecop.freeze("October 1 2020") do
+        service = ControlRateService.new(facility_group_1, periods: periods)
+        expect(service.send(:cache_key)).to match(/month\/2020-10-01/)
+      end
+    end
+
     it "caches ALL data, regardless of periods asked for" do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       Timecop.freeze("January 1st 2018") do

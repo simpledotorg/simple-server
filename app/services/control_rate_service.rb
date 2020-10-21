@@ -25,8 +25,8 @@ class ControlRateService
 
   delegate :logger, to: Rails
   attr_reader :facilities
-  attr_reader :report_range
   attr_reader :region
+  attr_reader :report_range
   attr_reader :results
 
   def call
@@ -109,7 +109,7 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}"
+    "#{self.class}/#{region.model_name}/#{region.id}/#{report_range.begin.type}/#{Date.current}"
   end
 
   def cache_version
