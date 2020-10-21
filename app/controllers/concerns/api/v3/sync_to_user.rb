@@ -3,10 +3,10 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      controller_name
-        .classify
-        .constantize
-        .syncable_to_region(current_sync_region)
+      model_name = controller_name
+                     .classify
+                     .constantize
+      model_name.syncable_to_region(current_sync_region)
     end
 
     def current_facility_records
