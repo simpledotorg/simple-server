@@ -105,9 +105,9 @@ function initializeCharts() {
   );
   controlledGraphConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
+    custom: function (tooltip) {
       return onePlotTooltip({
-        tooltipModel,
+        tooltip,
         elementId: "bp-controlled",
         totalPatients: data.controlledPatients,
         adjustedRegistrations: data.adjustedRegistrations,
@@ -152,9 +152,9 @@ function initializeCharts() {
   );
   missedVisitsConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
+    custom: function (tooltip) {
       return onePlotTooltip({
-        tooltipModel,
+        tooltip,
         elementId: "missed-visits",
         totalPatients: data.missedVisits,
         adjustedRegistrations: data.adjustedRegistrations,
@@ -199,9 +199,9 @@ function initializeCharts() {
   );
   uncontrolledGraphConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
+    custom: function (tooltip) {
       return onePlotTooltip({
-        tooltipModel,
+        tooltip,
         elementId: "bp-uncontrolled",
         totalPatients: data.uncontrolledPatients,
         adjustedRegistrations: data.adjustedRegistrations,
@@ -356,9 +356,9 @@ function initializeCharts() {
   visitDetailsGraphConfig.options.tooltips = {
     mode: "x",
     enabled: false,
-    custom: function (tooltipModel) {
+    custom: function (tooltip) {
       return stackedBarChartTooltip({
-        tooltipModel,
+        tooltip,
         elementId: "visit-details",
         missedVisitsPatients: Object.values(data.missedVisits).slice(18, 24),
         visitButNoBPMeasurePatients: Object.values(data.visitButNoBPMeasure).slice(18, 24),
@@ -482,8 +482,8 @@ function createAxisMaxAndStepSize(data) {
   };
 };
 
-function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
-  const { dataPoints } = tooltipModel;
+function customTooltip(tooltip, numerator, denominator, periodInfo) {
+  const { dataPoints } = tooltip;
   const valueElement = document.getElementById("bp-controlled-value");
   const defaultValue = valueElement.textContent;
   const endDateElement = document.getElementById("bp-controlled-end-date");
@@ -499,8 +499,8 @@ function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
 };
 
 function onePlotTooltip(config) {
-  const { tooltipModel, elementId, totalPatients, adjustedRegistrations, periodInfo } = config;
-  const { dataPoints } = tooltipModel;
+  const { tooltip, elementId, totalPatients, adjustedRegistrations, periodInfo } = config;
+  const { dataPoints } = tooltip;
 
   const cardNode = document.getElementById(elementId);
   const rateNode = cardNode.querySelector("[data-rate]");
@@ -529,7 +529,7 @@ function onePlotTooltip(config) {
 
 function stackedBarChartTooltip(config) {
   const {
-    tooltipModel,
+    tooltip,
     elementId,
     missedVisitsPatients,
     visitButNoBPMeasurePatients,
@@ -538,7 +538,7 @@ function stackedBarChartTooltip(config) {
     adjustedRegistrations,
     periodInfo,
   } = config;
-  const { dataPoints } = tooltipModel;
+  const { dataPoints } = tooltip;
 
   const cardNode = document.getElementById(elementId);
   const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
