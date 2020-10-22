@@ -159,12 +159,12 @@
               </td>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
-                  ???
+                  <%= dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date)) %>
                 </td>
               <% end %>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
-                  ???
+                  <%= dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date)) %>
                 </td>
               <% end %>
             </tr>
