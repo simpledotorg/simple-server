@@ -45,7 +45,7 @@ class ControlRateService
 
   def fetch_all_data
     results.registrations = registration_counts
-    results.earliest_registration_period = [report_range.begin, registration_counts.keys.first].compact.min
+    results.earliest_registration_period = registration_counts.keys.first
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
     results.count_adjusted_registrations
