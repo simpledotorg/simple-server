@@ -1,30 +1,28 @@
 <% content_for(:content) do %>
-  <!---------------------
-  MOBILE NAV
-  --------------------->
-  <div class="mobile">
-    <div class="dropdown">
-      <% my_facilities_page_titles = {
-          my_facilities_overview_path => 'Overview',
-          my_facilities_blood_pressure_control_path => 'BP control',
-          my_facilities_missed_visits_path => 'Missed Visits',
-          my_facilities_registrations_path => 'Registrations'
-      } %>
-      <h1 class="btn btn-sm dropdown-toggle pl-0" role="button" id="dropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <%= my_facilities_page_titles[request.path] %>
-      </h1>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink2">
-        <%= link_to "Overview", my_facilities_overview_path(request.query_parameters), class: "dropdown-item" %>
-        <% if current_admin.feature_enabled?(:ranked_facilities) %>
-          <%= link_to "Ranked facilities", my_facilities_ranked_facilities_path(request.query_parameters), class: "dropdown-item" %>
+  <div class="sub-nav">
+    <div class="container">
+      <div class="px-3 px-lg-0">
+        <%= link_to(my_facilities_overview_path, class: "sub-nav-link #{active_action?("index")}") do %>
+          Overview
         <% end %>
-        <%= link_to "BP control", my_facilities_blood_pressure_control_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "Missed visits", my_facilities_missed_visits_path(request.query_parameters), class: "dropdown-item" %>
-        <%= link_to "Registrations", my_facilities_registrations_path(request.query_parameters), class: "dropdown-item" %>
+        <% if current_admin.feature_enabled?(:ranked_facilities) %>
+          <%= link_to(my_facilities_ranked_facilities_path(preserve_query_params(request.query_parameters, ["size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/ranked_facilities"}") do %>
+            Ranked facilities
+          <% end %>
+        <% end %>
+        <%= link_to(my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])), class: "sub-nav-link #{active_action?("blood_pressure_control")}") do %>
+          BP control
+        <% end %>
+        <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
+          Missed visits
+        <% end %>
+        <%= link_to(my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])), class: "sub-nav-link #{active_action?("registrations")}") do %>
+          Registrations
+        <% end %>
       </div>
-
-      <div class="updated-date pb-4">Date updated: <span><%= @last_updated_at %></span></div>
     </div>
+  </div>
+  <div class="mobile">
     <% unless request.path == my_facilities_overview_path %>
       <div class="mt-0 mb-4 active-filters-mobile">
         <a class="filters-modal-toggle" data-toggle="modal" data-target="#facility-filter-modal">
@@ -37,11 +35,8 @@
         </a>
       </div>
     <% end %>
-
-    <!-- Filter Modal -->
     <div class="modal fade" id="facility-filter-modal" tabindex="-1" role="dialog" aria-labelledby="facility-filter-modal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
-
         <div class="modal-content">
           <div class="modal-header">
             <h2 class="modal-title" id="exampleModalCenterTitle">Facility filters</h2>
@@ -95,35 +90,14 @@
             <a href="?" type="button" class="btn btn-secondary">Clear all</a>
             <button type="submit" form="query-filters-mobile" class="btn btn-primary">DONE</button>
           </div>
-
         </div>
       </div>
     </div>
   </div>
-
-  <!---------------------
-  DESKTOP NAV
-  --------------------->
   <div class="row">
-    <div class="col-lg-2 pl-lg-0 desktop">
-      <nav class="secondary-nav">
-        <h4 class="pl-2 mt-3">My Facilities</h4>
-        <%= link_to 'Overview', my_facilities_overview_path,
-            class: "nav-link #{active_action?("index")}" %>
-        <% if current_admin.feature_enabled?(:ranked_facilities) %>
-          <%= link_to 'Ranked facilities', my_facilities_ranked_facilities_path(preserve_query_params(request.query_parameters, ["size", "period"])),
-              class: "nav-link #{active_controller?("my_facilities/ranked_facilities")}" %>
-        <% end %>
-        <%= link_to 'BP control', my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["size"])),
-            class: "nav-link #{active_action?("blood_pressure_control")}" %>
-        <%= link_to 'Missed Visits', my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["size", "period"])),
-            class: "nav-link #{active_action?("missed_visits")}" %>
-        <%= link_to 'Registrations', my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["size", "period"])),
-            class: "nav-link #{active_action?("registrations")}" %>
-      </nav>
-
+    <div class="col-lg-2 desktop">
       <% unless request.path == my_facilities_overview_path %>
-        <section id="facility-filters" class="secondary-nav-filters mt-5">
+        <section id="facility-filters" class="secondary-nav-filters mb-5">
           <h4>Facility Filters</h4>
           <div class="dropdown show">
             <a class="btn btn-sm dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -156,12 +130,12 @@
           </form>
         </section>
       <% end %>
-      <div class="updated-date mt-5">
-          <h4>Data updated</h4>
-          <span><%= @last_updated_at %></span>
+      <div class="updated-date mt-8px">
+        <h4>Data updated</h4>
+        <span><%= @last_updated_at %></span>
       </div>
     </div>
-    <div class="col-lg-10 pr-lg-0">
+    <div class="col-lg-10">
       <%= yield %>
     </div>
   </div>

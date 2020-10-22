@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_12_091028) do
+ActiveRecord::Schema.define(version: 2020_10_21_062248) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -501,7 +501,7 @@ ActiveRecord::Schema.define(version: 2020_10_12_091028) do
     t.uuid "requested_medical_officer_id"
     t.uuid "requester_id"
     t.uuid "facility_id"
-    t.string "request_completed"
+    t.string "requester_completion_status"
     t.datetime "requested_at"
     t.datetime "recorded_at"
     t.string "teleconsultation_type"
