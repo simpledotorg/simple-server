@@ -276,12 +276,18 @@ function initializeCharts() {
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltipModel) {
+      let period = null;
+      if(tooltipModel.dataPoints) {
+        let label = tooltipModel.dataPoints[0].label;
+        period = data.periodInfo[label];
+      }
       return twoPlotsTooltip({
         tooltipModel,
         elementId: "cumulative-registrations",
         cumulativeRegistrations: data.cumulativeRegistrations,
         monthlyRegistrations: data.monthlyRegistrations,
         periodInfo: data.periodInfo,
+        period: period
       });
     }
   };
@@ -529,9 +535,9 @@ function twoPlotsTooltip(config) {
     registrationsMonthEndNode.innerHTML = registrationsMonthEndNode.getAttribute("data-registrations-month-end");
   } else {
     totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(cumulativeRegistrations)[dataPoints[0].index]);
-    registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
+    registrationsPeriodEndNode.innerHTML = config.period.bp_control_end_date;
     monthlyRegistrationsNode.innerHTML = formatNumberWithCommas(Object.values(monthlyRegistrations)[dataPoints[0].index]);
-    registrationsMonthEndNode.innerHTML = Object.keys(monthlyRegistrations)[dataPoints[0].index];
+    registrationsMonthEndNode.innerHTML = config.period.period;
   }
 }
 
@@ -589,5 +595,11 @@ function stackedBarChartTooltip(config) {
 }
 
 function formatNumberWithCommas(value) {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if(value == undefined) {
+    return 0;
+  }
+  else {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
 }
