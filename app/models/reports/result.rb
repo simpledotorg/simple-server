@@ -62,7 +62,11 @@ module Reports
     # Return all periods for the entire set of data for a Region - from the first registrations until
     # the most recent period
     def full_data_range
-      (earliest_registration_period..current_period)
+      if earliest_registration_period.nil?
+        (current_period..current_period)
+      else
+        (earliest_registration_period..current_period)
+      end
     end
 
     def fill_in_nil_registrations
@@ -77,7 +81,7 @@ module Reports
     end
 
     def last_value(key)
-      self[key].values.last
+      self[key].values.last || 0
     end
 
     def last_key(key)
@@ -129,7 +133,7 @@ module Reports
         registrations = adjusted_registrations_for(period)
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
-        visited_without_bp_taken = visited_without_bp_taken_for!(period)
+        visited_without_bp_taken = visited_without_bp_taken_for(period)
         hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
       }
     end
