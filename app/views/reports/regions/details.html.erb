@@ -68,12 +68,12 @@
               </td>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
-                  ???
+                  <%= @facility_progress.monthly_htn_stats_by_date(:registrations, date) %>
                 </td>
               <% end %>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
-                  ???
+                  <%= @facility_progress.monthly_htn_stats_by_date(:follow_ups, date) %>
                 </td>
               <% end %>
             </tr>
@@ -88,7 +88,7 @@
           <strong>2. Registered patients:</strong> Patients registered during a month by staff at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Follow-up patients:</strong> Patients with a BP measure recorded by staff at <%= @region.name %> during a month. The follow-up count is not affected by where the patient was registered or what the patient’s assigned facility is. Only one follow-up is counted if a patient’s BP was recorded more than once in a day.
+          <strong>3. Follow-up patients:</strong> Total patient visits recorded by staff at <%= @region.name %> during a month. A single count is added if a patient's BP measure was recorded more than once in a day.
         </p>
       </div>
     </div>
@@ -201,7 +201,7 @@
           <strong>2. Registered patients:</strong> Patients registered during a month by staff at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Patients attended:</strong> Total patient visits recorded by staff at <%= @region.name %> during a month. The count is not affected by where the patient was registered or what the patient’s assigned facility is.
+          <strong>3. Patients attended:</strong> All patient visits recorded by staff at <%= @region.name %> during a month.
         </p>
       </div>
     </div>
