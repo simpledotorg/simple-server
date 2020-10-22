@@ -18,7 +18,7 @@ RSpec.feature "Organization management", type: :feature do
       visit root_path
       login.do_login(owner.email, owner.password)
 
-      dashboard_navigation.select_manage_option("Organizations")
+      dashboard_navigation.click_manage_option("#nav-organizations-link")
       expect(page).to have_content("IHMI")
       expect(page).to have_content("PATH")
     end
@@ -27,7 +27,7 @@ RSpec.feature "Organization management", type: :feature do
       visit root_path
       login.do_login(owner.email, owner.password)
 
-      dashboard_navigation.select_manage_option("Organizations")
+      dashboard_navigation.click_manage_option("#nav-organizations-link")
       organization_page.click_on_add_organization_button
 
       AdminPage::Organizations::New.new.create_new_organization("test", "testDescription")
