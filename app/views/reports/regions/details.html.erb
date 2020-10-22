@@ -6,7 +6,7 @@
         Facility progress
       </h3>
       <p class="c-grey-dark">
-        Registration and follow-up progress by users at CHC FiDi. Data is the same as shown in Simple App “Progress” tab.
+        Registration and follow-up progress by users at <%= @region.name %>. Data matches data in Simple App “Progress” tab.
       </p>
       <div class="table-responsive">
         <table class="analytics-table table-compact">
@@ -64,7 +64,7 @@
                 <%= @region.name %>
               </td>
               <td class="row-total ta-center">
-                ???
+                <%= dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
               </td>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
@@ -92,15 +92,119 @@
         </p>
       </div>
     </div>
-    <%= render "activity_table",
-              dashboard_analytics: @dashboard_analytics,
-              period: @period.type,
-              row_resource: current_admin.accessible_users(:view_reports).order(:full_name),
-              row_resource_column: "Users",
-              row_resource_title: "User activity",
-              row_resource_description: "Registrations and follow-up activity by users at #{@region.name}",
-              row_resource_display_field: :full_name,
-              row_resource_link: :admin_user_path %>
+    <div class="card mt-0 pr-0 pr-md-3 pb-iniside-avoid">
+      <h3 class="mb-8px c-black">
+        User activity
+      </h3>
+      <p class="c-grey-dark">
+        All registration and follow-up activity by staff at <%= @region.name %>
+      </p>
+      <div class="table-responsive">
+        <table class="analytics-table table-compact">
+          <colgroup>
+              <col>
+              <col class="table-divider">
+              <col class="table-divider">
+              <col>
+              <col>
+              <col>
+              <col>
+              <col>
+              <col class="table-divider">
+              <col>
+              <col>
+              <col>
+              <col>
+              <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th></th>
+              <th>
+                Total reg.<sup>1</sup>
+              </th>
+              <th colspan="6">
+                Registered patients<sup>2</sup>
+              </th>
+              <th colspan="6">
+                Patients attended<sup>3</sup>
+              </th>
+            </tr>
+            <tr class="sorts" data-sort-method="thead">
+              <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+                Users
+              </th>
+              <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+                <%= @period %>
+              </th>
+              <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                  <%= format_period(@period.type, date) %>
+                </th>
+              <% end %>
+              <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                  <%= format_period(@period.type, date) %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-title row-total" data-sort-method="none">
+              <td class="row-title row-total"> 
+                <%= @region.name %>
+              </td>
+              <td class="row-total ta-center">
+                <%= dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+              </td>
+              <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <td class="row-total ta-center">
+                  ???
+                </td>
+              <% end %>
+              <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <td class="row-total ta-center">
+                  ???
+                </td>
+              <% end %>
+            </tr>
+            <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
+              <% if @dashboard_analytics[resource.id].present? %>
+                <tr>
+                  <td class="row-title">
+                    <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
+                  </td>
+                  <td class="ta-center">
+                    <%= dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+                  </td>
+                  <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                    <td class="ta-center">
+                      <%= dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                    </td>
+                  <% end %>
+                  <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                    <td class="ta-center">
+                      <%= dash_if_zero(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-20px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>1. Total reg:</strong> Total patients registered till <%= @region.name %> by staff at <%= @region.name %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>2. Registered patients:</strong> Patients registered during a month by staff at <%= @region.name %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black">
+          <strong>3. Patients attended:</strong> Total patient visits recorded by staff at <%= @region.name %> during a month. The count is not affected by where the patient was registered or what the patient’s assigned facility is.
+        </p>
+      </div>
+    </div>
     <%= render "shared/recent_bp_log",
                blood_pressures: @recent_blood_pressures,
                display_model: :facility %>
