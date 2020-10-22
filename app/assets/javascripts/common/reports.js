@@ -364,34 +364,42 @@ function initializeCharts() {
 
 function createGraphConfig(config) {
   let { datasets, graphType, numberOfMonths } = config;
-
-  const totalMonths = Object.keys(datasets[0].data).length;
-
-  if (numberOfMonths == undefined) {
-    numberOfMonths = 24;
+  let labels = {};
+  if(numberOfMonths){
+    labels = Object.keys(datasets[0].data).slice(-numberOfMonths);
   }
-
+  else {
+    labels = Object.keys(datasets[0].data);
+  }
+  const filteredDatasets = datasets.map((dataset, idx) => {
+    console.log(idx);
+    let data = null;
+    if(numberOfMonths){
+      data = Object.values(dataset.data).slice(-numberOfMonths);
+    } else {
+      data = Object.values(dataset.data);
+    }
+    return {
+      yAxisID: dataset.id,
+      label: dataset.label,
+      backgroundColor: dataset.rgbaBackgroundColor,
+      borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
+      borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
+      pointBackgroundColor: dataset.rgbaPointColor,
+      hoverBackgroundColor: dataset.hoverBackgroundColor,
+      hoverBorderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
+      data: data,
+      type: dataset.graphType ? dataset.graphType : "line",
+    }
+  });
   return {
     type: graphType,
     data: {
-      labels: Object.keys(datasets[0].data).slice(totalMonths - numberOfMonths, totalMonths),
-      datasets: datasets.map(dataset => {
-        return {
-          yAxisID: dataset.id,
-          label: dataset.label,
-          backgroundColor: dataset.rgbaBackgroundColor,
-          borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
-          borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-          pointBackgroundColor: dataset.rgbaPointColor,
-          hoverBackgroundColor: dataset.hoverBackgroundColor,
-          hoverBorderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-          data: Object.values(dataset.data).slice(totalMonths - numberOfMonths, totalMonths),
-          type: dataset.graphType ? dataset.graphType : "line",
-        };
-      }),
-    },
+      labels: labels,
+      datasets: filteredDatasets
+      }
+    }
   }
-}
 
 function createGraphOptions(xAxes, yAxes) {
   return {
@@ -485,7 +493,7 @@ function onePlotTooltip(config) {
   const periodStartNode = cardNode.querySelector("[data-period-start]");
   const periodEndNode = cardNode.querySelector("[data-period-end]");
   const registrationsNode = cardNode.querySelector("[data-registrations]");
-  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]") 
+  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
 
   if (dataPoints == undefined) {
     rateNode.innerHTML = rateNode.getAttribute("data-rate");
