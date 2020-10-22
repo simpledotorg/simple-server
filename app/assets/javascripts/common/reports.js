@@ -386,7 +386,6 @@ function createGraphConfig(config) {
     labels = Object.keys(datasets[0].data);
   }
   const filteredDatasets = datasets.map((dataset, idx) => {
-    console.log(idx);
     let data = null;
     if(numberOfMonths){
       data = Object.values(dataset.data).slice(-numberOfMonths);
