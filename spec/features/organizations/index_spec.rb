@@ -35,7 +35,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
     visit reports_regions_path
     original_org_count = dashboard.all_elements(css: ".card.org-card").count
 
-    dashboard_navigation.select_manage_option("Organizations")
+    dashboard_navigation.click_manage_option("#nav-organizations-link")
 
     org_page.click_on_add_organization_button
     AdminPage::Organizations::New.new.create_new_organization("test", "testDescription")
@@ -48,7 +48,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
     fg = create(:facility_group, organization: Organization.find_by_name("Test"))
     create(:facility, facility_group: fg)
 
-    dashboard_navigation.select_main_menu_tab("Reports")
+    dashboard_navigation.click_main_menu_tab("Reports")
 
     # assertion at dashboard screen
     expect(page).to have_content("Test")

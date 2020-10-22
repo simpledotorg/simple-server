@@ -3,7 +3,7 @@ module Navigations
     LOGOUT_BUTTON = "#nav-more-logout"
     MANAGE_OPTION = {xpath: "//li/div/a"}.freeze
     MAIN_MENU_TABS = {css: "ul.mr-auto>li>a"}.freeze
-    PROFILE_DROPDOWN = "#nav-more-link"
+    MORE_DROPDOWN = "#nav-more-link"
 
     def click_main_menu_tab(option)
       find(MAIN_MENU_TABS[:css], text: option).click
@@ -14,13 +14,17 @@ module Navigations
       main_menu_tabs.each(&:visible?)
     end
 
-    def select_manage_option(option)
+    def click_manage_option(option)
       find("#nav-more-link").click
       find(option).click
     end
 
+    def open_more
+      find(MORE_DROPDOWN).click
+    end
+
     def click_logout_button
-      find(PROFILE_DROPDOWN).click
+      open_more
       find(LOGOUT_BUTTON).click
     end
   end

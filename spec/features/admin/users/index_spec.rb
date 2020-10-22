@@ -23,7 +23,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
     before(:each) do
       visit reports_regions_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
     end
 
     it "Verify User landing page" do
@@ -60,7 +60,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district("All districts")
       expect(user_page.get_all_user_count).to eq(10)
@@ -79,7 +79,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district(facility_buchho.district)
       # assertion for chc buchoo facility
@@ -90,7 +90,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
       edit_page.edit_registration_facility(facility_hoshiarpur.name)
 
       # user should be displayed in hoshiarpur as we have edited its registration facility
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.select_district(facility_hoshiarpur.district)
       expect(user_page.get_all_user(facility_hoshiarpur.name)).to eq(1)
 
@@ -104,7 +104,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district(var_amir.district)
       user_page.is_facility_name_present(var_amir.name)
@@ -128,7 +128,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.deny_access(user.full_name)
     end
 
@@ -139,7 +139,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.allow_access(user.full_name)
     end
 
@@ -150,7 +150,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("#mobile-app-users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.allow_access(user.full_name)
     end
   end
