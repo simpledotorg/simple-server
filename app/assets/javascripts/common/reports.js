@@ -276,8 +276,6 @@ function initializeCharts() {
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
-      console.log(this);
-      console.log("tooltip", tooltip);
       const cardNode = document.getElementById("cumulative-registrations");
       const mostRecentPeriod = cardNode.getAttribute("data-period");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
@@ -294,12 +292,11 @@ function initializeCharts() {
       const period = data.periodInfo[label];
       const cumulativeRegistrations = data.cumulativeRegistrations[label];
       const monthlyRegistrations = data.monthlyRegistrations[label];
-      console.log(label, period)
 
       monthlyRegistrationsNode.innerHTML = formatNumberWithCommas(monthlyRegistrations);
       totalPatientsNode.innerHTML = formatNumberWithCommas(cumulativeRegistrations);
       registrationsPeriodEndNode.innerHTML = period.bp_control_end_date;
-      registrationsMonthEndNode.innerHTML = period.period;
+      registrationsMonthEndNode.innerHTML = label;
     }
   };
 

@@ -149,7 +149,7 @@ module Reports
       self.period_info = range.each_with_object({}) do |period, hsh|
         bp_control_range = period.blood_pressure_control_range
         hsh[period] = {
-          period: period.to_s,
+          name: period.to_s,
           bp_control_start_date: bp_control_range.begin.next_day.strftime(DATE_FORMAT),
           bp_control_end_date: bp_control_range.end.strftime(DATE_FORMAT)
         }
