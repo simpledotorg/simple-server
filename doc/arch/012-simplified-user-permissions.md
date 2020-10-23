@@ -60,14 +60,14 @@ As a part of the API, we will add a concept of `actions`, that allows to bunch t
 
 The most common API for checking if a user has access to a kind of resouce, will follow this pattern,
 
-```
+```ruby
 current_user.accessible_<pluralized_resource_name>(action)
 ```
 
 Some examples,
 
 
-```
+```ruby
 current_user.accessible_organizations(:manage)
 current_user.accessible_organizations(:view_pii)
 current_user.accessible_facility_groups(:manage)
@@ -89,8 +89,8 @@ Once [Regions](012-regions.md) have a more concrete presence in our app, we can 
 
 ### Non-goals
 
-* Authentication
-* Authorization for the Sync APIs
+- Authentication
+- Authorization for the Sync APIs
 
 
 ## Status
@@ -99,5 +99,5 @@ Accepted
 ## Consequences
 
 - We no longer support customized permissions outside these defined roles. 
-- Ther granularity of access in which our roles operate is a lot larger, for simplicity.
+- The granularity of access in which our roles operate is a lot larger, for simplicity.
 - We do not use the [pundit](https://github.com/varvet/pundit) gem for managing authorization anymore.
