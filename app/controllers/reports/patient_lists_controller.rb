@@ -26,7 +26,7 @@ class Reports::PatientListsController < AdminController
       recipient_email,
       region_class,
       download_params,
-      with_medication_history: params[:medication_history] ? true : false
+      with_medication_history: with_medication_history?
     )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
@@ -37,6 +37,10 @@ class Reports::PatientListsController < AdminController
   end
 
   private
+
+  def with_medication_history?
+    params[:medication_history] == "true"
+  end
 
   def filtered_params
     params.permit(:id, :report_scope, :medication_history)
