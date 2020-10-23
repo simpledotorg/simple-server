@@ -44,28 +44,37 @@ class RegionBackfill
     end
     root_type = find_region_type("Root")
     org_type = find_region_type("Organization")
-    facility_group_type = find_region_type("District")
+    state_type = find_region_type("State")
+    district_type = find_region_type("District")
     zone_type = find_region_type("Zone")
     facility_type = find_region_type("Facility")
 
     root_parent = NullRegion.new(name: "__root__")
-    instance = create_region_from name: current_country_name, region_type: root_type, parent: root_parent
+    root_region = create_region_from name: current_country_name, region_type: root_type, parent: root_parent
 
-    Organization.all.each do |org|
-      org_region = create_region_from(source: org, region_type: org_type, parent: instance)
+    Organization.all.map do |org|
+      hierarchical_facilities = org.facilities.each_with_object({}) { |facility, result|
+        result[facility.state] ||= {}
+        result[facility.state][facility.district] ||= {}
+        result[facility.state][facility.district][facility.zone] ||= []
+        result[facility.state][facility.district][facility.zone] << facility
+      }
 
-      org.facility_groups.each do |facility_group|
-        facility_group_region = create_region_from(source: facility_group, region_type: facility_group_type, parent: org_region)
-
-        facility_group.facilities.group_by(&:zone).each do |zone_name, facilities|
-          if zone_name.blank?
-            count_invalid(zone_type)
-            logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone_name, facilities: facilities.map(&:name)
-            next
-          end
-          zone_region = create_region_from(name: zone_name, region_type: zone_type, parent: facility_group_region)
-          facilities.each do |facility|
-            create_region_from(source: facility, region_type: facility_type, parent: zone_region)
+      org_region = create_region_from(source: org, region_type: org_type, parent: root_region)
+      hierarchical_facilities.map do |state, districts|
+        state_region = create_region_from(name: state, region_type: state_type, parent: org_region)
+        districts.map do |district, zones|
+          district_region = create_region_from(name: district, region_type: district_type, parent: state_region)
+          zones.map do |zone, facilities|
+            if zone.blank?
+              count_invalid(zone_type)
+              logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone, facilities: facilities.map(&:name)
+            else
+              zone_region = create_region_from(name: zone, region_type: zone_type, parent: district_region)
+              facilities.map do |facility|
+                create_region_from(source: facility, region_type: facility_type, parent: zone_region)
+              end
+            end
           end
         end
       end
@@ -83,13 +92,14 @@ class RegionBackfill
   def create_region_types
     logger.info msg: "create_region_types"
     unless dry_run?
-      root = RegionType.create! name: "Root", path: "Root"
-      org = RegionType.create! name: "Organization", parent: root
-      facility_group = RegionType.create! name: "District", parent: org
-      zone = RegionType.create! name: "Zone", parent: facility_group
-      _facility = RegionType.create! name: "Facility", parent: zone
+      RegionType::HIERARCHY.reduce(nil) do |parent_region_type, region_type|
+        if !parent_region_type
+          RegionType.create! name: region_type, path: region_type
+        else
+          RegionType.create! name: region_type, parent: parent_region_type
+        end
+      end
     end
-    root
   end
 
   def create_region_from(parent:, region_type:, name: nil, source: nil)
