@@ -55,6 +55,7 @@
                 <button
                   class="dropdown-item <%= "active" if @selected_zones.size != 1 %>"
                   type="submit"
+                  value=""
                   data-zone=""
                   form="query-filters"
                 >
@@ -66,6 +67,7 @@
                     class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>"
                     type="submit"
                     data-zone="<%= zone %>"
+                    value="<%= zone %>"
                     form="query-filters"
                   >
                     <%= zone.capitalize %>
@@ -96,7 +98,8 @@
                 <button
                   class="dropdown-item <%= "active" if @selected_zones.size != 1 %>"
                   type="submit"
-                  data-size=""
+                  data-size="[]"
+                  value="[]"
                   form="query-filters"
                 >
                   All sizes
@@ -107,6 +110,7 @@
                     class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %>"
                     type="submit"
                     data-size="<%= size %>"
+                    value="<%= size %>"
                     form="query-filters"
                   >
                     <%= size.capitalize %>
@@ -144,10 +148,6 @@
               <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
               <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
               <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters" hidden>
-              <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters-mobile" hidden>
-              <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters-mobile" hidden>
-              <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters-mobile" hidden>
-              <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
             </div>
           </div>
         </div>
