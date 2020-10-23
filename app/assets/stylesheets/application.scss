@@ -23,7 +23,6 @@
 @import "partials/admin/show";
 
 body {
-    padding-top: 5rem;
     font-size: 15px;
     font-family: $font-condensed;
     background: $grey-lightest;
@@ -116,7 +115,7 @@ nav.secondary-nav a.active {
         width: 100%;
         border-top: 1px solid $grey-light;
         text-align: left;
-        padding: 8px 16px 8px 16px;
+        padding: 8px 16px;
     }
 
     h4 {
@@ -231,12 +230,50 @@ footer {
     color: $grey-light  ;
 }
 
-@include media-breakpoint-down(md) {
-    body {
-        padding-top: 4.5rem;
-    }
+.navbar.fixed-top {
+  position: sticky;
+}
+
+.sub-nav {
+  padding-bottom: 16px;
+  line-height: 1;
+  margin-top: -32px !important;
+  
+  .container {
+    margin-bottom: 36px;
+    white-space: nowrap;
+    overflow-x: scroll;
+  }
+}
+
+.sub-nav-link {
+  display: inline-block;
+  padding: 18px 0;
+  margin-right: 16px;
+  font-size: 16px;
+  color: $grey-darkest;
+  text-decoration: none !important;
+  
+  &:hover {
+    border-bottom: 2px solid black;
+    color: $grey-dark;
+  }
+  
+  &.active {
+    border-bottom: 2px solid $red;
+    color: $red;
+    font-weight: bold;
+  }
+}
+
+.navbar .nav-item.active a,
+.navbar .nav-item a.active {
+    font-weight: bold;
+}
+
+@include media-breakpoint-down(lg) {
     main.container {
-        margin: 0 !important;
+        margin: 16px 0 0 0 !important;
     }
     div.container {
         margin: 0 !important;
@@ -249,43 +286,68 @@ footer {
         display: none;
     }
     .navbar {
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
         border-bottom: 1px solid rgba(0,0,0,0.07);
+        
+        #navbarNav, 
+        .navbar-nav {
+          display: inline;
+        }
+        
+        .nav-item,
+        .nav-link {
+          display: inline-block;
+        }
+        
+        .nav-link {
+          padding: 6px 10px 6px 0;
+        }
+        
+        .nav-item .dropdown-menu {
+          position: fixed;
+          top: 58px;
+          left: 0;
+          width: 92%;
+          left: 4%;
+          box-shadow: 0 0 0 10px rgba(0,0,0,0.5);
+        }
     }
+    
     button.navbar-toggler {
         font-size: 15px;
-        padding: 8px 20px;
+        padding: 8px 16px;
     }
     .dropdown-item {
         font-size: 14px;
-        padding: 6px 16px;
-    }
-    .dropdown-header {
-        padding: 6px 16px;
     }
     h1 {
         font-size: 28px;
     }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 18px;
+    }
+    
+    .sub-nav {
+        margin: -16px -16px 0 -16px !important;
+        line-height: 1.4;
+        
+        .container {
+          border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+      }
 }
 
-@include media-breakpoint-up(md) {
+@include media-breakpoint-up(lg) {
+    main.container {
+        margin-top: 32px !important;
+    }
+        
     .container div.container {
         margin: 0 !important;
         padding: 0 !important;
     }
     .navbar {
         border-bottom: 1px solid rgba(0,0,0,0.07);
-    }
-    .navbar-nav li > a.active {
-        color: #000;
-    }
-    .navbar .nav-link,
-    .dropdown-item {
-        font-size: 15px;
-        padding: 6px 16px;
-    }
-    .dropdown-header {
-        padding: 6px 16px;
     }
     .table-compact .row-title a {
         width: 100% !important;
@@ -295,6 +357,32 @@ footer {
     .col-lg-3 .dropdown .btn {
         width: 100%;
     }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 16px;
+        margin-right: 6px;
+    }
+    .sub-nav-link {
+      padding: 18px 0 10px 0;
+      margin-bottom: 16px;
+    }
+}
+
+h6.dropdown-header {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 1em;
+    font-size: 75%;
+}
+
+.dropdown i {
+    min-width: 3em;
+    text-align: center;
+    color: $blue;
+}
+
+.dropdown .active i {
+  color: #fff;
 }
 
 .light {
@@ -428,7 +516,7 @@ span.inactive {
   @extend .text-muted;
   @extend .small;
 
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(lg) {
     display: none;
   }
 }
@@ -499,30 +587,9 @@ span.inactive {
     }
 }
 
-/*****************
-Subnav
-*****************/
-
-.sub-nav {
-    margin: -24px 0 32px 0;
-    line-height: 1;
-    border-bottom: 1px solid $grey-lightest;
-}
-
 .user-row .event,
 .user-row .event a {
     color: $grey-dark;
-}
-
-@include media-breakpoint-down(sm) {
-    #navbars-menu {
-        margin-top: 8px;
-            .nav-link {
-                border-top: 1px solid $grey-lightest;
-                padding: 16px 0;
-                font-size: 16px;
-        }
-    }
 }
 
 .filter-tags:not(:empty) {
