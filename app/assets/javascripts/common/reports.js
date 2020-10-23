@@ -560,35 +560,6 @@ function customTooltip(tooltip, numerator, denominator, periodInfo) {
   }
 };
 
-function onePlotTooltip(config) {
-  const { tooltip, elementId, totalPatients, adjustedRegistrations, periodInfo } = config;
-  const { dataPoints } = tooltip;
-
-  const cardNode = document.getElementById(elementId);
-  const rateNode = cardNode.querySelector("[data-rate]");
-  const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-  const periodStartNode = cardNode.querySelector("[data-period-start]");
-  const periodEndNode = cardNode.querySelector("[data-period-end]");
-  const registrationsNode = cardNode.querySelector("[data-registrations]");
-  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
-
-  if (dataPoints == undefined) {
-    rateNode.innerHTML = rateNode.getAttribute("data-rate");
-    totalPatientsNode.innerHTML = totalPatientsNode.getAttribute("data-total-patients");
-    periodStartNode.innerHTML = periodStartNode.getAttribute("data-period-start");
-    periodEndNode.innerHTML = periodEndNode.getAttribute("data-period-end");
-    registrationsNode.innerHTML = registrationsNode.getAttribute("data-registrations");
-    registrationsPeriodEndNode.innerHTML = periodStartNode.getAttribute("data-period-start");
-  } else {
-    rateNode.innerHTML = dataPoints[0].value + "%";
-    totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(totalPatients)[dataPoints[0].index]);
-    periodStartNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
-    periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    registrationsNode.innerHTML = formatNumberWithCommas(Object.values(adjustedRegistrations)[dataPoints[0].index]);
-    registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
-  }
-}
-
 function stackedBarChartTooltip(config) {
   const {
     tooltip,
