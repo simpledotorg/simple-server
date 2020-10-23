@@ -24,7 +24,8 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       expect(PatientListDownloadJob).to receive(:perform_later).with(
         admin_with_pii.email,
         "facility_group",
-        {id: facility_group.id}
+        {id: facility_group.id},
+        with_medication_history: false
       )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
