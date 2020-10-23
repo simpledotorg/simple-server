@@ -77,6 +77,13 @@ current_user.accessible_facilities(:manage_overdue)
 
 This is just a peek into the basic API, it will grow and evolve naturally as necessary.
 
+### Interface
+
+The interface to edit or add new users will fundamentally be a tree-driven selection screen where you can adjust the granularity of access to the currently available resources. 
+
+![admin-interface](resources/permissions-admin-interface.gif)
+
+
 ### Cascading access
 
 Access on these resources will always cascade downwards. That is, access to an organization implies access to all facility groups and facilities within the organization; access to a facility group implies access to all facilities in that group, and so on.
