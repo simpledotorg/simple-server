@@ -106,13 +106,34 @@ function initializeCharts() {
   controlledGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
-      return onePlotTooltip({
-        tooltip,
-        elementId: "bp-controlled",
-        totalPatients: data.controlledPatients,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
+      const cardNode = document.getElementById("bp-controlled");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const periodEndNode = cardNode.querySelector("[data-period-end]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
+      let label = null;
+      let rate = null;
+      if (tooltip.dataPoints) {
+        rate = tooltip.dataPoints[0].value + "%";
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        rate = rateNode.getAttribute("data-rate");
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const adjustedRegistrations = data.adjustedRegistrations[label];
+      const totalPatients = data.controlledPatients[label];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = period.bp_control_start_date;
+      periodEndNode.innerHTML = period.bp_control_end_date;
+      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrations);
+      registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
     }
   };
 
