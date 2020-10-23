@@ -1,7 +1,7 @@
 require "rails_helper"
-require "tasks/scripts/import_zones_to_regions"
+require "tasks/scripts/import_blocks_to_regions"
 
-RSpec.describe ImportZonesToRegions do
+RSpec.describe ImportBlocksToRegions do
   let!(:org) { create(:organization, name: "Test Organization") }
 
   before do
@@ -10,7 +10,7 @@ RSpec.describe ImportZonesToRegions do
     allow(CountryConfig).to receive(:current).and_return({name: "India"})
     RegionBackfill.call(dry_run: false)
 
-    stub_const("ImportZonesToRegions::ORG_TO_CANONICAL_ZONES_FILES",
+    stub_const("ImportBlocksToRegions::ORG_TO_CANONICAL_ZONES_FILES",
       {org.name => "spec/fixtures/files/canonical_zones_test.yml"})
   end
 
