@@ -11,17 +11,18 @@
           </p>
         </div>
         <% case @selected_period %>
-        <% when :quarter %>
-          <% example_quarter = @display_periods.first %>
-          <% following_quarter = next_year_and_quarter(*example_quarter) %>
-          <p>Patients who were registered during a quarter <%= "(eg: Q#{example_quarter.second}-#{example_quarter.first})" %>,
-            and had no BPs recorded in the following quarter <%= "(Q#{following_quarter.second}-#{following_quarter.first})" %></p>
-        <% when :month %>
-          <% example_month = @display_periods.first %>
-          <% following_months = month_short_name_and_year(local_month_start(*example_month) + 1.months) +
-              ', ' + month_short_name_and_year(local_month_start(*example_month) + 2.months) %>
-          <p>Patients who were registered during a month <%= "(eg: #{month_short_name_and_year(local_month_start(*example_month))})" %>,
-            and had no BPs recorded in the following two months <%= "(#{following_months})" %> </p>
+          <% when :quarter %>
+            <% example_quarter = @display_periods.first %>
+            <% following_quarter = next_year_and_quarter(*example_quarter) %>
+            <p>
+              Patients who were registered during a quarter <%= "(eg: Q#{example_quarter.second}-#{example_quarter.first})" %>, and had no BPs recorded in the following quarter <%= "(Q#{following_quarter.second}-#{following_quarter.first})" %>
+            </p>
+          <% when :month %>
+            <% example_month = @display_periods.first %>
+            <% following_months = month_short_name_and_year(local_month_start(*example_month) + 1.months) + ', ' + month_short_name_and_year(local_month_start(*example_month) + 2.months) %>
+            <p>
+              Patients who were registered during a month <%= "(eg: #{month_short_name_and_year(local_month_start(*example_month))})" %>, and had no BPs recorded in the following two months <%= "(#{following_months})" %>
+            </p>
         <% end %>
       </header>
       <div>
