@@ -78,7 +78,7 @@ Thane:
   - Bhiwandi
   - Shahapur
   - Ulhasnagar
-  - Ambarnath
+  - Ambernath
 Palghar:
   - Palghar
   - Vasai
@@ -126,13 +126,14 @@ Gadchiroli:
   - Aheri
   - Bhamragad
   - Sironcha
+  - Etapalli
 Chandrapur:
   - Chandrapur
   - Saoli
   - Mul
   - Ballarpur
   - Pombhurna
-  - Gondpimpri
+  - Gondpipari
   - Warora
   - Chimur
   - Bhadravati
@@ -171,12 +172,12 @@ Satara:
   - Karad
 Sangli:
   - Miraj
-  - Kavathe-Mahankal
+  - Kavathe Mahankal
   - Tasgaon
   - Jat
   - Walwa (Islampur)
   - Shirala
-  - Khanapur-Vita
+  - Khanapur
   - Atpadi
   - Palus
   - Kadegaon
@@ -192,7 +193,7 @@ Kolhapur:
   - Bhudargad
   - Gadhinglaj
   - Chandgad
-  - Ajra
+  - Ajara
 Sindhudurg:
   - Devgad 
   - Dodamarg 
@@ -377,3 +378,30 @@ Purba Medinipur:
   - Sahid Matangini
   - Sutahata
   - Tamluk
+Ranchi:
+  - Angara
+  - Bero
+  - Bundu
+  - Burmu
+  - Chanho
+  - Dighia
+  - Kanke
+  - Lapung
+  - Mandar
+  - Namkum
+  - Notmapped
+  - Ormanjhi
+  - Ranchi
+  - Ratu
+  - Silli
+  - Sonahatu
+  - Tamar I
+Bokaro:
+  - Bermo
+  - Chandankiyari
+  - Chas
+  - Gomia
+  - Jaridih
+  - Kasmar
+  - Nawadih
+  - Peterwar
