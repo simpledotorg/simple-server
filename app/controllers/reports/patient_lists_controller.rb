@@ -22,7 +22,12 @@ class Reports::PatientListsController < AdminController
       {facility_id: @region.id}
     end
 
-    PatientListDownloadJob.perform_later(recipient_email, region_class, download_params)
+    PatientListDownloadJob.perform_later(
+      recipient_email,
+      region_class,
+      download_params,
+      with_medication_history: params[:medication_history] ? true : false
+    )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),
       notice: I18n.t("patient_list_email.notice",
@@ -34,7 +39,7 @@ class Reports::PatientListsController < AdminController
   private
 
   def filtered_params
-    params.permit(:id, :report_scope)
+    params.permit(:id, :report_scope, :medication_history)
   end
 
   def region_class

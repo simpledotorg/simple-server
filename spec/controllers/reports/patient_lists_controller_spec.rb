@@ -21,8 +21,11 @@ RSpec.describe Reports::PatientListsController, type: :controller do
 
   context "show" do
     it "works for facility groups the admin has access to" do
-      expect(PatientListDownloadJob).to receive(:perform_later).with(admin_with_pii.email,
-        "facility_group", {id: facility_group.id})
+      expect(PatientListDownloadJob).to receive(:perform_later).with(
+        admin_with_pii.email,
+        "facility_group",
+        {id: facility_group.id}
+      )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
@@ -45,6 +48,18 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       expect {
         get :show, params: {id: facility_group_2.slug, report_scope: "district"}
       }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should queue line list with medication history if medication_history is true" do
+      expect(PatientListDownloadJob).to receive(:perform_later).with(
+        admin_with_pii.email,
+        "facility_group",
+        {id: facility_group.id},
+        with_medication_history: true
+      )
+      admin_with_pii.accesses.create!(resource: facility_group)
+      sign_in(admin_with_pii.email_authentication)
+      get :show, params: {id: facility_group.slug, report_scope: "district", medication_history: true}
     end
   end
 end
