@@ -24,11 +24,11 @@ We will move to a [Role Based Access Control](https://en.wikipedia.org/wiki/Role
 
 | Role                               | Description                                                                                                                    |
 |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| Manager                            | full access to data and have permissions to manage other users and resources within the  resources where they have access |
-| Viewer (all data)                  | full access to data (including PII) within the resources where they have access                                           |
-| Viewer (reports only)              | access to reports within the resources where they have access                                                             |
+| Manager                            | full access to data and have permissions to manage other users and resources within the  resources where they have access      |
+| Viewer (all data)                  | full access to data (including PII) within the resources where they have access                                                |
+| Viewer (reports only)              | access to reports within the resources where they have access                                                                  |
 | Call Center (manage overdue lists) | can manage the overdue list within the resources where they have access                                                        |
-| Power User                         | full access to data, and user and resource management options in a given  deployment of the application                   |
+| Power User                         | full access to data, and user and resource management options in a given  deployment of the application                        |
 
 ### Model
 
@@ -52,7 +52,7 @@ All access-related APIs will be encapsulated in the `UserAccess` model. It shoul
 As a part of the API, we will add a concept of `actions`, that allows to bunch together roles into the kind of action they can perform. This allows us to grow our roles without needing to update the callsites easily throughout the codebase.
 
 | Action              | Role(s)                                           |
-|---------------------+---------------------------------------------------|
+|---------------------|---------------------------------------------------|
 | Manage              | Manager                                           |
 | View PII            | Manager, Viewer (all data)                        |
 | View Reports        | Manager, Viewer (all data), Viewer (reports only) |
