@@ -46,7 +46,7 @@ class RegionBackfill
     org_type = find_region_type("Organization")
     state_type = find_region_type("State")
     facility_group_type = find_region_type("District")
-    block_type = find_region_type("Zone")
+    block_type = find_region_type("Block")
     facility_type = find_region_type("Facility")
 
     root_parent = NullRegion.new(name: "__root__")
@@ -93,7 +93,7 @@ class RegionBackfill
       org = RegionType.create! name: "Organization", parent: root
       state = RegionType.create! name: "State", parent: org
       district = RegionType.create! name: "District", parent: state
-      block = RegionType.create! name: "Zone", parent: district
+      block = RegionType.create! name: "Block", parent: district
       _facility = RegionType.create! name: "Facility", parent: block
     end
     root
