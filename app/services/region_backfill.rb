@@ -61,12 +61,12 @@ class RegionBackfill
       }
 
       org.facilities.each do |facility|
-        state = states.fetch(facility.state) { |name| "Could not find state #{name}"}
+        state = states.fetch(facility.state) { |name| "Could not find state #{name}" }
         facility_group = facility.facility_group
         district = create_region_from(source: facility_group, region_type: facility_group_type, parent: state)
         if facility.block.blank?
           count_invalid(block_type)
-          logger.info msg: "Skipping creation of Facility #{facility.name} because the block field (ie zone) is blank", 
+          logger.info msg: "Skipping creation of Facility #{facility.name} because the block field (ie zone) is blank",
                       error: "block is blank",
                       block_name: block_name,
                       facilities: facilities.map(&:name)
