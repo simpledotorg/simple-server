@@ -46,7 +46,7 @@ class RegionBackfill
     org_type = find_region_type("Organization")
     state_type = find_region_type("State")
     district_type = find_region_type("District")
-    zone_type = find_region_type("Zone")
+    block_type = find_region_type("Block")
     facility_type = find_region_type("Facility")
 
     root_parent = NullRegion.new(name: "__root__")
@@ -67,12 +67,12 @@ class RegionBackfill
           district_region = create_region_from(name: district, region_type: district_type, parent: state_region)
           zones.map do |zone, facilities|
             if zone.blank?
-              count_invalid(zone_type)
+              count_invalid(block_type)
               logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone, facilities: facilities.map(&:name)
             else
-              zone_region = create_region_from(name: zone, region_type: zone_type, parent: district_region)
+              block_region = create_region_from(name: zone, region_type: block_type, parent: district_region)
               facilities.map do |facility|
-                create_region_from(source: facility, region_type: facility_type, parent: zone_region)
+                create_region_from(source: facility, region_type: facility_type, parent: block_region)
               end
             end
           end

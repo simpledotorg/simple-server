@@ -1,7 +1,7 @@
 class RegionType < ApplicationRecord
   ltree :path
 
-  HIERARCHY = %w[Root Organization State District Zone Facility]
+  HIERARCHY = %w[Root Organization State District Block Facility]
 
   validates :name, presence: true, uniqueness: true
   validates :path, presence: true
