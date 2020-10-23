@@ -13,17 +13,17 @@ RSpec.describe Region, type: :model do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org)
-      facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", zone: "Block22", facility_group: facility_group_1)
+      facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
       long_name = ("This is a long facility name" * 10)
       long_path = long_name.gsub(/\W/, "_").slice(0, Region::MAX_LABEL_LENGTH)
-      facility_2 = create(:facility, name: long_name, zone: "Block22", state: "Test State", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: long_name, block: "Block22", state: "Test State", facility_group: facility_group_1)
 
       RegionBackfill.call(dry_run: false)
 
       expect(org.region.path).to eq("India.Test_Organization")
       expect(facility_group_1.region.path).to eq("India.Test_Organization.Test_State.District_XYZ")
-      expect(facility_1.region.path).to eq("India.Test_Organization.Test_State.District_XYZ.#{facility_1.zone}.Facility_UHC__ZZZ_")
-      expect(facility_2.region.path).to eq("India.Test_Organization.Test_State.District_XYZ.#{facility_1.zone}.#{long_path}")
+      expect(facility_1.region.path).to eq("India.Test_Organization.Test_State.District_XYZ.#{facility_1.block}.Facility_UHC__ZZZ_")
+      expect(facility_2.region.path).to eq("India.Test_Organization.Test_State.District_XYZ.#{facility_1.block}.#{long_path}")
     end
 
     it "can soft delete nodes" do
