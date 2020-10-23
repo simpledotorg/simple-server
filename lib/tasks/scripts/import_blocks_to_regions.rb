@@ -39,7 +39,7 @@ class ImportBlocksToRegions
   end
 
   memoize def zone_region_type
-    RegionType.find_by!(name: "Zone")
+    RegionType.find_by!(name: "Block")
   end
 
   memoize def district_region_type
