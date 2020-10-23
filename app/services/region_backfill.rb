@@ -44,6 +44,7 @@ class RegionBackfill
     end
     root_type = find_region_type("Root")
     org_type = find_region_type("Organization")
+    state_type = find_region_type("State")
     facility_group_type = find_region_type("District")
     zone_type = find_region_type("Zone")
     facility_type = find_region_type("Facility")
@@ -54,20 +55,22 @@ class RegionBackfill
     Organization.all.each do |org|
       org_region = create_region_from(source: org, region_type: org_type, parent: instance)
 
-      org.facility_groups.each do |facility_group|
-        facility_group_region = create_region_from(source: facility_group, region_type: facility_group_type, parent: org_region)
+      state_names = org.facilities.distinct.pluck(:state)
+      states = state_names.each_with_object({}) do |name, hsh|
+        hsh[name] = create_region_from(name: name, region_type: state_type, parent: org_region)
+      end
 
-        facility_group.facilities.group_by(&:zone).each do |zone_name, facilities|
-          if zone_name.blank?
-            count_invalid(zone_type)
-            logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone_name, facilities: facilities.map(&:name)
-            next
-          end
-          zone_region = create_region_from(name: zone_name, region_type: zone_type, parent: facility_group_region)
-          facilities.each do |facility|
-            create_region_from(source: facility, region_type: facility_type, parent: zone_region)
-          end
+      org.facilities.each do |facility|
+        state = states.fetch(facility.state) { |name| "Could not find state #{name}"}
+        facility_group = facility.facility_group
+        district = create_region_from(source: facility_group, region_type: facility_group_type, parent: state)
+        if facility.zone.blank?
+          count_invalid(zone_type)
+          logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone_name, facilities: facilities.map(&:name)
+          next
         end
+        zone_region = create_region_from(name: facility.zone, region_type: zone_type, parent: district)
+        create_region_from(source: facility, region_type: facility_type, parent: zone_region)
       end
     end
   end
@@ -85,15 +88,16 @@ class RegionBackfill
     unless dry_run?
       root = RegionType.create! name: "Root", path: "Root"
       org = RegionType.create! name: "Organization", parent: root
-      facility_group = RegionType.create! name: "District", parent: org
-      zone = RegionType.create! name: "Zone", parent: facility_group
-      _facility = RegionType.create! name: "Facility", parent: zone
+      state = RegionType.create! name: "State", parent: org
+      district = RegionType.create! name: "District", parent: state
+      block = RegionType.create! name: "Zone", parent: district
+      _facility = RegionType.create! name: "Facility", parent: block
     end
     root
   end
 
   def create_region_from(parent:, region_type:, name: nil, source: nil)
-    logger.info msg: "create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
+    # logger.info msg: "create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
     region = DryRunRegion.new(Region.new(name: region_name, type: region_type), dry_run: dry_run?, logger: logger)
