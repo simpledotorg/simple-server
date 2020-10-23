@@ -46,7 +46,7 @@ class RegionBackfill
     org_type = find_region_type("Organization")
     state_type = find_region_type("State")
     facility_group_type = find_region_type("District")
-    zone_type = find_region_type("Zone")
+    block_type = find_region_type("Zone")
     facility_type = find_region_type("Facility")
 
     root_parent = NullRegion.new(name: "__root__")
@@ -56,21 +56,24 @@ class RegionBackfill
       org_region = create_region_from(source: org, region_type: org_type, parent: instance)
 
       state_names = org.facilities.distinct.pluck(:state)
-      states = state_names.each_with_object({}) do |name, hsh|
+      states = state_names.each_with_object({}) { |name, hsh|
         hsh[name] = create_region_from(name: name, region_type: state_type, parent: org_region)
-      end
+      }
 
       org.facilities.each do |facility|
         state = states.fetch(facility.state) { |name| "Could not find state #{name}"}
         facility_group = facility.facility_group
         district = create_region_from(source: facility_group, region_type: facility_group_type, parent: state)
-        if facility.zone.blank?
-          count_invalid(zone_type)
-          logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone_name, facilities: facilities.map(&:name)
+        if facility.block.blank?
+          count_invalid(block_type)
+          logger.info msg: "Skipping creation of Facility #{facility.name} because the block field (ie zone) is blank", 
+                      error: "block is blank",
+                      block_name: block_name,
+                      facilities: facilities.map(&:name)
           next
         end
-        zone_region = create_region_from(name: facility.zone, region_type: zone_type, parent: district)
-        create_region_from(source: facility, region_type: facility_type, parent: zone_region)
+        block_region = create_region_from(name: facility.block, region_type: block_type, parent: district)
+        create_region_from(source: facility, region_type: facility_type, parent: block_region)
       end
     end
   end
