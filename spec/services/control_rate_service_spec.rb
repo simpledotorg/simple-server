@@ -81,9 +81,9 @@ RSpec.describe ControlRateService, type: :model do
       service = ControlRateService.new(facility_group_1, periods: range)
       result = service.call
     end
-    expect(result[:cumulative_registrations].size).to eq(24)
+    expect(result[:cumulative_registrations].size).to eq(4)
     expect(result[:registrations].size).to eq(1)
-    expect(result[:controlled_patients].size).to eq(24)
+    expect(result[:controlled_patients].size).to eq(4)
   end
 
   it "correctly returns controlled patients for past months" do
