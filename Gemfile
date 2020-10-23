@@ -7,6 +7,8 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+gem "dotenv-rails"
+
 gem "active_record_union"
 gem "activerecord-import"
 gem "amazing_print"
@@ -21,9 +23,9 @@ gem "data_migrate"
 gem "ddtrace"
 gem "devise", ">= 4.7.1"
 gem "devise_invitable", "~> 1.7.0"
+gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby"
-gem "dotenv-rails"
 gem "factory_bot_rails", "~> 4.8", require: false
 gem "faker", require: false
 gem "flipper"
@@ -109,9 +111,9 @@ end
 
 group :test do
   gem "capybara"
-  gem "fakeredis", require: false
   gem "generator_spec"
   gem "launchy"
+  gem "mock_redis", require: false
   gem "puma"
   gem "rspec-sidekiq"
   gem "simplecov", require: false
