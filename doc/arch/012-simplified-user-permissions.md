@@ -91,7 +91,7 @@ Access on these resources will always cascade downwards. That is, access to an o
 
 ### Future
 
-Once [Regions](012-regions.md) have a more concrete presence in our app, we can link the `resource` to be a genuine `Region`.
+Once [Regions](013-regions.md) have a more concrete presence in our app, we can link the `resource` to be a genuine `Region`.
 
 
 ### Non-goals
