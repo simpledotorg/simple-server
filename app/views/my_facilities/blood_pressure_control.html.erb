@@ -32,7 +32,46 @@
             <%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:cohort_patients]) %> patients registered in <%= registration_period %>, at their last visit in <%= visited_in_period %>.
           </p>
         </div>
-        <div>
+        <div class="d-flex">
+          <div class="dropdown show">
+            <a
+              id="dropdownMenuLink"
+              class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+              href="#"
+              role="button"
+              data-toggle="dropdown"
+              data-display="static"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <% if @selected_zones.size == 1 %>
+                <%= @selected_zones.first.capitalize %>
+              <% else %>
+                All blocks
+              <% end %>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <button
+                class="dropdown-item <%= "active" if @selected_zones.size != 1 %>"
+                type="submit"
+                data-zone=""
+                form="query-filters"
+              >
+                All blocks
+              </button>
+              <div class="dropdown-divider"></div>
+              <% @zones.each do |zone| %>
+                <button
+                  class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>"
+                  type="submit"
+                  data-zone="<%= zone %>"
+                  form="query-filters"
+                >
+                  <%= zone.capitalize %>
+                </button>
+              <% end %>
+            </div>
+          </div>
           <div class="dropdown show">
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
@@ -56,7 +95,8 @@
                   <%= month_short_name_and_year(month) %>
                 </button>
               <% end %>
-
+              <input class="selected-size" name="size" value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>" form="query-filters" hidden>
+              <input class="selected-zone" name="zone" value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>" form="query-filters" hidden>
               <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
               <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
               <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
@@ -181,13 +221,29 @@
             $('.selected-quarter').remove();
         }
 
+        function setSelectedSize(size) {
+          $('.selected-size').val(size);
+        }
+
+        function setSelectedZone(zone) {
+          $('.selected-zone').val(zone);
+        }
+
         $('.query-filter-quarter').click(function() {
             setSelectedQuarter($(this).data('quarter'), $(this).data('year'))
         });
 
         $('.query-filter-month').click(function() {
             setSelectedMonth($(this).data('month'), $(this).data('year'))
-        })
+        });
+
+        $('.query-filter-size').click(function() {
+          setSelectedSize($(this).data('size'));
+        });
+
+        $('.query-filter-zone').click(function() {
+          setSelectedZone($(this).data('zone'));
+        });
     </script>
   </div>
 </div>
