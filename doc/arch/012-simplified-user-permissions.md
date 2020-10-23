@@ -49,7 +49,7 @@ The `resource` property on `Access` can be an instance of one of the following: 
 
 All access-related APIs will be encapsulated in the `UserAccess` model. It should ideally remain this way in the future, so that there's a single interface to use throughout the app.
 
-As a part of the API, we will add a concept of `actions`, that allows to bunch together roles into the kind of action they can perform. This allows us to grow our roles without needing to update the callsites easily throughout the codebase.
+As a part of the API, we will add a concept of `actions`, that allows to bunch together roles into the kind of action they can perform. This allows us to grow our roles easily without needing to update the call-sites throughout the codebase.
 
 | Action              | Role(s)                                           |
 |---------------------|---------------------------------------------------|
@@ -58,7 +58,7 @@ As a part of the API, we will add a concept of `actions`, that allows to bunch t
 | View Reports        | Manager, Viewer (all data), Viewer (reports only) |
 | Manage Overdue List | Manager, Viewer (all data), Call Center           |
 
-The most common API for checking if a user has access to a kind of resouce, will follow this pattern,
+The most common API for checking if a user has access to a kind of resource, will follow this pattern,
 
 ```ruby
 current_user.accessible_<pluralized_resource_name>(action)
