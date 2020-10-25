@@ -1,27 +1,56 @@
 # frozen_string_literal: true
 
 require "csv"
+require "net/http"
 
 class TelemedicineReports
-  attr_reader :mixpanel_csv_path, :period_start, :period_end, :mixpanel_data, :report_array
+  attr_reader :period_start, :period_end, :mixpanel_data, :report_array
 
-  def initialize(mixpanel_csv_path, period_start, period_end)
-    @mixpanel_csv_path = mixpanel_csv_path
+  def initialize(period_start, period_end)
     @period_start = period_start
     @period_end = period_end
     @mixpanel_data = {hydrated: [], formatted: []}
     @report_array = []
+    @query = <<~QUERY
+      function main() {
+        return Events({
+          from_date: "#{period_start}",
+          to_date: "#{period_end}"
+        }).filter(function(event) {
+          return event.name == "UserInteraction" && event.properties.name == "Patient Summary:Contact Doctor Clicked"
+        }).groupBy(
+          ["properties.$user_id",
+          function(event) {
+              return (new Date(event.time)).toDateString();
+            }],
+          mixpanel.reducer.count()
+        );
+      }
+    QUERY
+  end
+
+  def fetch_mixpanel_data
+    url = URI.parse("https://mixpanel.com/api/2.0/jql")
+
+    response = begin
+      HTTP.basic_auth(user: ENV["MIXPANEL_API_SECRET"], pass: nil)
+        .post(url, json: {format: "csv", script: @query})
+    rescue HTTP::Error => e
+      raise HTTP::Error
+    end
+
+    response.body.to_s
   end
 
   def parse_mixpanel
-    mixpanel_csv = File.read(@mixpanel_csv_path)
+    mixpanel_csv = fetch_mixpanel_data
     mixpanel_data = CSV.parse(mixpanel_csv, headers: false)
 
     @mixpanel_data[:hydrated] = mixpanel_data.drop(1).map { |row|
-      facility = User.find(row[1]).registration_facility
-      {user_id: row[1],
-       date: Date.parse(row[2]),
-       clicks: row[3].to_i,
+      facility = User.find(row[0]).registration_facility
+      {user_id: row[0],
+       date: Date.parse(row[1]),
+       clicks: row[2].to_i,
        facility_id: facility.id,
        district: facility.district,
        state: facility.state,
@@ -259,9 +288,11 @@ class TelemedicineReports
   end
 
   def generate
-    parse_mixpanel
-    assemble_report_data
-    write_csv
+    if FeatureToggle.enabled?("WEEKLY_TELEMED_REPORT") && ENV["MIXPANEL_API_SECRET"]
+      parse_mixpanel
+      assemble_report_data
+      write_csv
+    end
   end
 
   private

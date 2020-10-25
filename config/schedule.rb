@@ -43,3 +43,9 @@ every :month, at: local("04:00 am"), roles: [:seed_data] do
   rake "db:purge_users_data"
   rake "db:seed_users_data"
 end
+
+every :monday, at: local("11:00 am"), roles:[:cron] do
+  if FeatureToggle.enabled?("WEEKLY_TELEMED_REPORT")
+    rake "reports:telemedicine"
+  end
+end
