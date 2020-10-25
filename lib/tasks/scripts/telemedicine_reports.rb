@@ -83,10 +83,10 @@ class TelemedicineReports
       "Patients with High BP",
       "Patients with High Blood Sugar",
       "Patients with High BP or Sugar",
-      "Teleconsult Button Clicks",
-      "Teleconsultation MVP Requests",
-      "Teleconsultation MVP Records logged by MOs",
-      "Teleconsultation MVP Requests marked 'completed'",
+      "Teleconsult - Total Button Clicks",
+      "Teleconsult - Requests (new version)",
+      "Teleconsult - Records logged by MOs (new version)",
+      "Teleconsult - Requests marked 'completed' (new version)",
       "Teleconsult requests percentage"
     ]
 
@@ -108,7 +108,7 @@ class TelemedicineReports
         state[:telemed_data][:teleconsultation_requests],
         state[:telemed_data][:teleconsultation_records],
         state[:telemed_data][:teleconsultation_marked_completed],
-        percentage(telemed_clicks + state[:telemed_data][:teleconsultation_requests], state[:telemed_data][:high_bp_or_bs])
+        percentage(telemed_clicks, state[:telemed_data][:high_bp_or_bs])
       ]
 
       state[:districts].each do |district|
@@ -129,7 +129,7 @@ class TelemedicineReports
           district[:telemed_data][:teleconsultation_requests],
           district[:telemed_data][:teleconsultation_records],
           district[:telemed_data][:teleconsultation_marked_completed],
-          percentage(telemed_clicks + district[:telemed_data][:teleconsultation_requests], district[:telemed_data][:high_bp_or_bs])
+          percentage(telemed_clicks, district[:telemed_data][:high_bp_or_bs])
         ]
       end
     end
@@ -165,10 +165,10 @@ class TelemedicineReports
       "Patients with High BP",
       "Patients with High Blood Sugar",
       "Patients with High BP or Sugar",
-      "Teleconsult Button Clicks",
-      "Teleconsultation MVP Requests",
-      "Teleconsultation MVP Records logged by MOs",
-      "Teleconsultation MVP Requests marked 'completed'",
+      "Teleconsult - Total Button Clicks",
+      "Teleconsult - Requests (new version)",
+      "Teleconsult - Records logged by MOs (new version)",
+      "Teleconsult - Requests marked 'completed' (new version)",
       "Teleconsult requests percentage"
     ]
 
@@ -190,7 +190,7 @@ class TelemedicineReports
         state[:telemed_data][:teleconsultation_requests],
         state[:telemed_data][:teleconsultation_records],
         state[:telemed_data][:teleconsultation_marked_completed],
-        percentage(telemed_clicks + state[:telemed_data][:teleconsultation_requests], state[:telemed_data][:high_bp_or_bs])
+        percentage(telemed_clicks, state[:telemed_data][:high_bp_or_bs])
       ]
 
       state[:districts].each do |district|
@@ -211,7 +211,7 @@ class TelemedicineReports
           district[:telemed_data][:teleconsultation_requests],
           district[:telemed_data][:teleconsultation_records],
           district[:telemed_data][:teleconsultation_marked_completed],
-          percentage(telemed_clicks + district[:telemed_data][:teleconsultation_requests], district[:telemed_data][:high_bp_or_bs])
+          percentage(telemed_clicks, district[:telemed_data][:high_bp_or_bs])
         ]
 
         district[:facilities].each do |facility|
@@ -240,24 +240,12 @@ class TelemedicineReports
     @report_array << []
     @report_array << []
 
-    telemed_mvp_activity = Teleconsultation
-      .where("device_created_at >= ? AND device_created_at <= ?", period_start, period_end)
-      .group_by { |teleconsultation| teleconsultation.device_created_at.strftime("%d-%b-%Y") }
-
-    old_telemed_activity = @mixpanel_data[:hydrated].group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
+    daily_activity_data = @mixpanel_data[:hydrated].group_by { |row| row[:date] }.sort_by { |date, _rows| date }.map { |date, rows|
       [date.strftime("%d-%b-%Y"), rows.uniq { |row| row[:user_id] }.count, sum_values(rows, :clicks)]
     }
 
-    aggregate_telemed_activity = old_telemed_activity.map { |date, old_users, old_requests|
-      [date,
-        old_users,
-        old_requests,
-        telemed_mvp_activity.dig(date)&.map(&:requester_id)&.uniq&.count || 0,
-        telemed_mvp_activity.dig(date)&.count || 0]
-    }
-
-    @report_array << ["Date", "Unique users for old telemed system", "TC requests from old telemed system", "Unique users for Telemed MVP", "TC requests from Telemed MVP"]
-    aggregate_telemed_activity.each do |row|
+    @report_array << ["Date", "Unique users", "Total TC requests"]
+    daily_activity_data.each do |row|
       @report_array << row
     end
   end
@@ -331,7 +319,7 @@ class TelemedicineReports
       .where("device_created_at >= ? AND device_created_at <= ?", p_start, p_end)
       .select("DISTINCT(patient_id)")
     teleconsult_mvp_records = teleconsult_mvp_requests.where.not(recorded_at: nil)
-    teleconsult_mvp_marked_completed = teleconsult_mvp_requests.where(request_completed: "yes")
+    teleconsult_mvp_marked_completed = teleconsult_mvp_requests.where(requester_completion_status: "yes")
 
     {high_bp: high_bps.count,
      high_bs: high_sugars.count,
