@@ -10,60 +10,60 @@ class ControlRateService
     @region = region
     @facilities = region.facilities
     # Normalize between a single period and range of periods
-    @periods = if !periods.is_a?(Range)
+    @report_range = if !periods.is_a?(Range)
       # If calling code is asking for a single period,
       # we set the range to be the current period to the start of the next period.
       Range.new(periods, periods.succ)
     else
       periods
     end
-    @quarterly_report = @periods.begin.quarter?
-    @results = Reports::Result.new(@periods)
+    @quarterly_report = @report_range.begin.quarter?
+    @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     logger.info class: self.class, msg: "created", region: region.id, region_name: region.name,
-                periods: periods.inspect, facilities: facilities.map(&:id)
+                report_range: report_range.inspect, facilities: facilities.map(&:id)
   end
 
   delegate :logger, to: Rails
   attr_reader :facilities
-  attr_reader :periods
   attr_reader :region
+  attr_reader :report_range
   attr_reader :results
 
+  # We cache all the data for a region to improve performance and cache hits, but then return
+  # just the data the client requested
   def call
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) do
-      results.registrations = registration_counts
-      results.cumulative_registrations = sum_cumulative_registrations
-      results.count_adjusted_registrations
-
-      periods.each do |(period, count)|
-        results.controlled_patients[period] = controlled_patients(period).count
-        results.uncontrolled_patients[period] = uncontrolled_patients(period).count
-      end
-
-      results.calculate_percentages(:controlled_patients)
-      results.calculate_percentages(:uncontrolled_patients)
-      results
-    end
+    all_cached_data.report_data_for(report_range)
   end
 
-  def sum_cumulative_registrations
-    earliest_registration_period = [periods.begin, registration_counts.keys.first].compact.min
-    (earliest_registration_period..periods.end).each_with_object(Hash.new(0)) { |period, running_totals|
-      previous_registrations = running_totals[period.previous]
-      current_registrations = registration_counts[period]
-      total = current_registrations + previous_registrations
-      running_totals[period] = total
+  private
+
+  def all_cached_data
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
+      fetch_all_data
     }
+  end
+
+  def fetch_all_data
+    results.registrations = registration_counts
+    results.earliest_registration_period = registration_counts.keys.first
+    results.fill_in_nil_registrations
+    results.count_cumulative_registrations
+    results.count_adjusted_registrations
+
+    results.full_data_range.each do |(period, count)|
+      results.controlled_patients[period] = controlled_patients(period).count
+      results.uncontrolled_patients[period] = uncontrolled_patients(period).count
+    end
+
+    results.calculate_percentages(:controlled_patients)
+    results.calculate_percentages(:uncontrolled_patients)
+    results
   end
 
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    result = region.assigned_patients.with_hypertension.group_by_period(periods.begin.type, :recorded_at, {format: formatter}).count
-    # The group_by_period query will only return values for months where we had registrations, but we want to
-    # have a value for every month in the periods we are reporting on. So we set the default to 0 for results.
-    result.default = 0
-    @registration_counts = result
+    @registration_counts = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type, :recorded_at, {format: formatter}).count
   end
 
   def controlled_patients(period)
@@ -109,23 +109,12 @@ class ControlRateService
       .order("patient_id, bp_recorded_at DESC, bp_id")
   end
 
-  private
-
   def quarterly_report?
     @quarterly_report
   end
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{periods_cache_key}"
-  end
-
-  def periods_cache_key
-    value = if periods.is_a?(Range)
-      "#{periods.begin.value}/#{periods.end.value}"
-    else
-      period.value
-    end
-    "#{periods.begin.type}_periods/#{value}"
+    "#{self.class}/#{region.model_name}/#{region.id}/#{report_range.begin.type}/#{Date.current}"
   end
 
   def cache_version

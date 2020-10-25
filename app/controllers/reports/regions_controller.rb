@@ -21,14 +21,12 @@ class Reports::RegionsController < AdminController
   def show
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    @data = Reports::RegionService.new(region: @region,
-                                       period: @period).call
-    @controlled_patients = @data[:controlled_patients]
+    @data = Reports::RegionService.new(region: @region, period: @period).call
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
-    @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
+    @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.is_a?(FacilityGroup)
+    if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)
       @data_for_facility = @region.facilities.each_with_object({}) { |facility, hsh|
         hsh[facility.name] = Reports::RegionService.new(region: facility,
                                                         period: @period).call
@@ -132,9 +130,13 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    slug = report_params[:id]
-    klass = region_class.classify.constantize
-    @region = klass.find_by!(slug: slug)
+    if report_params[:report_scope] == "facility_district"
+      @region = FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
+    else
+      slug = report_params[:id]
+      klass = region_class.classify.constantize
+      @region = klass.find_by!(slug: slug)
+    end
   end
 
   def region_class
@@ -143,6 +145,8 @@ class Reports::RegionsController < AdminController
       "facility_group"
     when "facility"
       "facility"
+    when "facility_district"
+      "facility_district"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
     end

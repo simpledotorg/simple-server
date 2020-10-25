@@ -39,7 +39,7 @@ module Reports
         return registrations > 0 ? 100 : 0
       end
 
-      (registrations / target_registrations) * 100
+      [100, (registrations / target_registrations) * 100].min
     end
 
     def target_registrations
