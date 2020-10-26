@@ -1,0 +1,86 @@
+<div class="dropdown show mr-8px">
+  <a
+    id="dropdownMenuLink"
+    class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+    href="#"
+    role="button"
+    data-toggle="dropdown"
+    data-display="static"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <% if @selected_zones.size == 1 %>
+      <%= @selected_zones.first.capitalize %>
+    <% else %>
+      All blocks
+    <% end %>
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <form id="query-filters">
+      <button
+        class="dropdown-item <%= "active" unless @selected_zones.size == 1 %> filter-by-zone"
+        data-value=""
+      >
+        All blocks
+      </button>
+      <div class="dropdown-divider"></div>
+      <% @zones.each do |zone| %>
+        <button
+          class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %> filter-by-zone"
+          data-value="<%= zone %>"
+        >
+          <%= zone.capitalize %>
+        </button>
+      <% end %>
+    </form>
+  </div>
+</div>
+<div class="dropdown show mr-8px">
+  <a
+    id="dropdownMenuLink"
+    class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+    href="#"
+    role="button"
+    data-toggle="dropdown"
+    data-display="static"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <% if @selected_sizes.size == 1 %>
+      <%= @selected_sizes.first.capitalize %>
+    <% else %>
+      All facility sizes 
+    <% end %>
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <button
+      class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %> filter-by-size"
+      data-value=""
+    >
+      All facility sizes
+    </button>
+    <div class="dropdown-divider"></div>
+    <% @facility_sizes.each do |size| %>
+      <button
+        class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %> filter-by-size"
+        data-value="<%= size %>"
+      >
+        <%= size.capitalize %>
+      </button>
+    <% end %>
+  </div>
+</div>
+<input
+  id="selected-zone"
+  name="zone"
+  value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>"
+  form="query-filters"
+  hidden
+>
+<input
+  id="selected-size"
+  name="size"
+  value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>"
+  form="query-filters"
+  hidden
+>
