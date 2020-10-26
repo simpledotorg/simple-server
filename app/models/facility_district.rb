@@ -21,8 +21,7 @@ class FacilityDistrict
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
     query = DistrictAnalyticsQuery.new(
-      name,
-      facilities,
+      self,
       period,
       prev_periods,
       include_current_period: include_current_period

@@ -31,6 +31,10 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
 
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
   def hypertension_follow_ups_by_period(*args)
     encountered_patients
       .hypertension_follow_ups_by_period(*args)
@@ -64,7 +68,7 @@ class FacilityGroup < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: include_current_period)
+    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
     query.call
   end
 

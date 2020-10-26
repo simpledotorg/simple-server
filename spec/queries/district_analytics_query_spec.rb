@@ -2,12 +2,11 @@ require "rails_helper"
 
 RSpec.describe DistrictAnalyticsQuery do
   let!(:organization) { create(:organization) }
-  let!(:facility_group) { create(:facility_group, organization: organization) }
-  let!(:district_name) { "Bathinda" }
-  let!(:facility_1) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:facility_2) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:facility_3) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:analytics) { DistrictAnalyticsQuery.new(district_name, Facility.all, :month, 5) }
+  let!(:facility_group) { create(:facility_group, name: "Bathinda", organization: organization) }
+  let!(:facility_1) { create(:facility, facility_group: facility_group) }
+  let!(:facility_2) { create(:facility, facility_group: facility_group) }
+  let!(:facility_3) { create(:facility, facility_group: facility_group) }
+  let!(:analytics) { DistrictAnalyticsQuery.new(facility_group, :month, 5) }
   let!(:current_month) { Date.current.beginning_of_month }
 
   let(:four_months_back) { current_month - 4.months }

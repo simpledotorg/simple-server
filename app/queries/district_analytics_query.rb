@@ -3,15 +3,16 @@ class DistrictAnalyticsQuery
 
   CACHE_VERSION = 1
 
-  attr_reader :facilities
+  attr_reader :region, :facilities
 
-  def initialize(district_name, facilities, period = :month, prev_periods = 3, from_time = Time.current,
+  def initialize(region, period = :month, prev_periods = 3, from_time = Time.current,
     include_current_period: false)
 
     @period = period
     @prev_periods = prev_periods
-    @facilities = facilities
-    @district_name = district_name
+    @region = region
+    @facilities = @region.facilities
+    @district_name = @region.name
     @from_time = from_time
     @include_current_period = include_current_period
   end
@@ -68,6 +69,10 @@ class DistrictAnalyticsQuery
   end
 
   def registered_patients_by_period
+    result = ActivityService.new(region, last: nil, group: [:registration_facility_id]).registrations
+
+    return group_by_date_and_facility(result, :registered_patients_by_period)
+
     @registered_patients_by_period ||=
       Patient
         .with_hypertension
@@ -76,6 +81,7 @@ class DistrictAnalyticsQuery
         .group("facilities.id")
         .group_by_period(@period, :recorded_at)
         .count
+
 
     group_by_facility_and_date(@registered_patients_by_period, :registered_patients_by_period)
   end
@@ -130,6 +136,21 @@ class DistrictAnalyticsQuery
       @from_time.to_s(:mon_year),
       CACHE_VERSION
     ].join("/")
+  end
+
+  def group_by_date_and_facility(result, key)
+    valid_dates = dates_for_periods(@period,
+      @prev_periods,
+      from_time: @from_time,
+      include_current_period: @include_current_period)
+
+    transformed_result = result.each_with_object({}) { |((date, facility_id), count), hsh|
+      next unless date.in?(valid_dates)
+      hsh[facility_id] ||= {key => {}}
+      hsh[facility_id][key][date] = count
+    }
+
+    transformed_result.presence
   end
 
   def group_by_facility_and_date(query_results, key)
