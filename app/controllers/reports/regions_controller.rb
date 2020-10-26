@@ -21,11 +21,9 @@ class Reports::RegionsController < AdminController
   def show
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    @data = Reports::RegionService.new(region: @region,
-                                       period: @period).call
-    @controlled_patients = @data[:controlled_patients]
+    @data = Reports::RegionService.new(region: @region, period: @period).call
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
-    @new_registrations = @last_registration_value - @data[:cumulative_registrations].values[-2]
+    @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
     if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)

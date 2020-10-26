@@ -105,14 +105,35 @@ function initializeCharts() {
   );
   controlledGraphConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
-      return onePlotTooltip({
-        tooltipModel,
-        elementId: "bp-controlled",
-        totalPatients: data.controlledPatients,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
+    custom: function (tooltip) {
+      const cardNode = document.getElementById("bp-controlled");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const periodEndNode = cardNode.querySelector("[data-period-end]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
+      let label = null;
+      let rate = null;
+      if (tooltip.dataPoints) {
+        rate = tooltip.dataPoints[0].value + "%";
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        rate = rateNode.getAttribute("data-rate");
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const adjustedRegistrations = data.adjustedRegistrations[label];
+      const totalPatients = data.controlledPatients[label];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = period.bp_control_start_date;
+      periodEndNode.innerHTML = period.bp_control_end_date;
+      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrations);
+      registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
     }
   };
 
@@ -152,14 +173,35 @@ function initializeCharts() {
   );
   missedVisitsConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
-      return onePlotTooltip({
-        tooltipModel,
-        elementId: "missed-visits",
-        totalPatients: data.missedVisits,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
+    custom: function (tooltip) {
+      const cardNode = document.getElementById("missed-visits");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const periodEndNode = cardNode.querySelector("[data-period-end]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
+      let label = null;
+      let rate = null;
+      if (tooltip.dataPoints) {
+        rate = tooltip.dataPoints[0].value + "%";
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        rate = rateNode.getAttribute("data-rate");
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const adjustedRegistrations = data.adjustedRegistrations[label];
+      const totalPatients = data.missedVisits[label];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = period.bp_control_start_date;
+      periodEndNode.innerHTML = period.bp_control_end_date;
+      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrations);
+      registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
     }
   };
 
@@ -199,14 +241,35 @@ function initializeCharts() {
   );
   uncontrolledGraphConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
-      return onePlotTooltip({
-        tooltipModel,
-        elementId: "bp-uncontrolled",
-        totalPatients: data.uncontrolledPatients,
-        adjustedRegistrations: data.adjustedRegistrations,
-        periodInfo: data.periodInfo,
-      });
+    custom: function (tooltip) {
+      const cardNode = document.getElementById("bp-uncontrolled");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const periodEndNode = cardNode.querySelector("[data-period-end]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
+      let label = null;
+      let rate = null;
+      if (tooltip.dataPoints) {
+        rate = tooltip.dataPoints[0].value + "%";
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        rate = rateNode.getAttribute("data-rate");
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const adjustedRegistrations = data.adjustedRegistrations[label];
+      const totalPatients = data.uncontrolledPatients[label];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = period.bp_control_start_date;
+      periodEndNode.innerHTML = period.bp_control_end_date;
+      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrations);
+      registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
     }
   };
 
@@ -275,14 +338,28 @@ function initializeCharts() {
   );
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
-    custom: function (tooltipModel) {
-      return twoPlotsTooltip({
-        tooltipModel,
-        elementId: "cumulative-registrations",
-        cumulativeRegistrations: data.cumulativeRegistrations,
-        monthlyRegistrations: data.monthlyRegistrations,
-        periodInfo: data.periodInfo,
-      });
+    custom: function (tooltip) {
+      const cardNode = document.getElementById("cumulative-registrations");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
+      const monthlyRegistrationsNode = cardNode.querySelector("[data-monthly-registrations]");
+      const registrationsMonthEndNode = cardNode.querySelector("[data-registrations-month-end]");
+      let label = null;
+      if(tooltip.dataPoints) {
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const cumulativeRegistrations = data.cumulativeRegistrations[label];
+      const monthlyRegistrations = data.monthlyRegistrations[label];
+
+      monthlyRegistrationsNode.innerHTML = formatNumberWithCommas(monthlyRegistrations);
+      totalPatientsNode.innerHTML = formatNumberWithCommas(cumulativeRegistrations);
+      registrationsPeriodEndNode.innerHTML = period.bp_control_end_date;
+      registrationsMonthEndNode.innerHTML = label;
     }
   };
 
@@ -342,9 +419,9 @@ function initializeCharts() {
   visitDetailsGraphConfig.options.tooltips = {
     mode: "x",
     enabled: false,
-    custom: function (tooltipModel) {
+    custom: function (tooltip) {
       return stackedBarChartTooltip({
-        tooltipModel,
+        tooltip,
         elementId: "visit-details",
         missedVisitsPatients: Object.values(data.missedVisits).slice(18, 24),
         visitButNoBPMeasurePatients: Object.values(data.visitButNoBPMeasure).slice(18, 24),
@@ -364,34 +441,41 @@ function initializeCharts() {
 
 function createGraphConfig(config) {
   let { datasets, graphType, numberOfMonths } = config;
-
-  const totalMonths = Object.keys(datasets[0].data).length;
-
-  if (numberOfMonths == undefined) {
-    numberOfMonths = 24;
+  let labels = {};
+  if(numberOfMonths){
+    labels = Object.keys(datasets[0].data).slice(-numberOfMonths);
   }
-
+  else {
+    labels = Object.keys(datasets[0].data);
+  }
+  const filteredDatasets = datasets.map((dataset, idx) => {
+    let data = null;
+    if(numberOfMonths){
+      data = Object.values(dataset.data).slice(-numberOfMonths);
+    } else {
+      data = Object.values(dataset.data);
+    }
+    return {
+      yAxisID: dataset.id,
+      label: dataset.label,
+      backgroundColor: dataset.rgbaBackgroundColor,
+      borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
+      borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
+      pointBackgroundColor: dataset.rgbaPointColor,
+      hoverBackgroundColor: dataset.hoverBackgroundColor,
+      hoverBorderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
+      data: data,
+      type: dataset.graphType ? dataset.graphType : "line",
+    }
+  });
   return {
     type: graphType,
     data: {
-      labels: Object.keys(datasets[0].data).slice(totalMonths - numberOfMonths, totalMonths),
-      datasets: datasets.map(dataset => {
-        return {
-          yAxisID: dataset.id,
-          label: dataset.label,
-          backgroundColor: dataset.rgbaBackgroundColor,
-          borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
-          borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-          pointBackgroundColor: dataset.rgbaPointColor,
-          hoverBackgroundColor: dataset.hoverBackgroundColor,
-          hoverBorderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-          data: Object.values(dataset.data).slice(totalMonths - numberOfMonths, totalMonths),
-          type: dataset.graphType ? dataset.graphType : "line",
-        };
-      }),
-    },
+      labels: labels,
+      datasets: filteredDatasets
+      }
+    }
   }
-}
 
 function createGraphOptions(xAxes, yAxes) {
   return {
@@ -439,9 +523,10 @@ function createAxisConfig(config) {
       fontSize: 12,
       fontFamily: "Roboto Condensed",
       padding: 8,
+      min: 0,
       beginAtZero: true,
       stepSize,
-      max,
+      max
     },
   };
 
@@ -459,8 +544,8 @@ function createAxisMaxAndStepSize(data) {
   };
 };
 
-function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
-  const { dataPoints } = tooltipModel;
+function customTooltip(tooltip, numerator, denominator, periodInfo) {
+  const { dataPoints } = tooltip;
   const valueElement = document.getElementById("bp-controlled-value");
   const defaultValue = valueElement.textContent;
   const endDateElement = document.getElementById("bp-controlled-end-date");
@@ -475,61 +560,9 @@ function customTooltip(tooltipModel, numerator, denominator, periodInfo) {
   }
 };
 
-function onePlotTooltip(config) {
-  const { tooltipModel, elementId, totalPatients, adjustedRegistrations, periodInfo } = config;
-  const { dataPoints } = tooltipModel;
-
-  const cardNode = document.getElementById(elementId);
-  const rateNode = cardNode.querySelector("[data-rate]");
-  const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-  const periodStartNode = cardNode.querySelector("[data-period-start]");
-  const periodEndNode = cardNode.querySelector("[data-period-end]");
-  const registrationsNode = cardNode.querySelector("[data-registrations]");
-  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]") 
-
-  if (dataPoints == undefined) {
-    rateNode.innerHTML = rateNode.getAttribute("data-rate");
-    totalPatientsNode.innerHTML = totalPatientsNode.getAttribute("data-total-patients");
-    periodStartNode.innerHTML = periodStartNode.getAttribute("data-period-start");
-    periodEndNode.innerHTML = periodEndNode.getAttribute("data-period-end");
-    registrationsNode.innerHTML = registrationsNode.getAttribute("data-registrations");
-    registrationsPeriodEndNode.innerHTML = periodStartNode.getAttribute("data-period-start");
-  } else {
-    rateNode.innerHTML = dataPoints[0].value + "%";
-    totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(totalPatients)[dataPoints[0].index]);
-    periodStartNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
-    periodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    registrationsNode.innerHTML = formatNumberWithCommas(Object.values(adjustedRegistrations)[dataPoints[0].index]);
-    registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_start_date;
-  }
-}
-
-function twoPlotsTooltip(config) {
-  const { tooltipModel, elementId, cumulativeRegistrations, monthlyRegistrations, periodInfo } = config;
-  const { dataPoints } = tooltipModel;
-
-  const cardNode = document.getElementById(elementId);
-  const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-  const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
-  const monthlyRegistrationsNode = cardNode.querySelector("[data-monthly-registrations]");
-  const registrationsMonthEndNode = cardNode.querySelector("[data-registrations-month-end]");
-
-  if (dataPoints == undefined) {
-    totalPatientsNode.innerHTML = totalPatientsNode.getAttribute("data-total-patients");
-    registrationsPeriodEndNode.innerHTML = registrationsPeriodEndNode.getAttribute("data-registrations-period-end");
-    monthlyRegistrationsNode.innerHTML = monthlyRegistrationsNode.getAttribute("data-monthly-registrations");
-    registrationsMonthEndNode.innerHTML = registrationsMonthEndNode.getAttribute("data-registrations-month-end");
-  } else {
-    totalPatientsNode.innerHTML = formatNumberWithCommas(Object.values(cumulativeRegistrations)[dataPoints[0].index]);
-    registrationsPeriodEndNode.innerHTML = Object.values(periodInfo)[dataPoints[0].index].bp_control_end_date;
-    monthlyRegistrationsNode.innerHTML = formatNumberWithCommas(Object.values(monthlyRegistrations)[dataPoints[0].index]);
-    registrationsMonthEndNode.innerHTML = Object.keys(monthlyRegistrations)[dataPoints[0].index];
-  }
-}
-
 function stackedBarChartTooltip(config) {
   const {
-    tooltipModel,
+    tooltip,
     elementId,
     missedVisitsPatients,
     visitButNoBPMeasurePatients,
@@ -538,7 +571,7 @@ function stackedBarChartTooltip(config) {
     adjustedRegistrations,
     periodInfo,
   } = config;
-  const { dataPoints } = tooltipModel;
+  const { dataPoints } = tooltip;
 
   const cardNode = document.getElementById(elementId);
   const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
@@ -581,5 +614,11 @@ function stackedBarChartTooltip(config) {
 }
 
 function formatNumberWithCommas(value) {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if(value == undefined) {
+    return 0;
+  }
+  else {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
 }
