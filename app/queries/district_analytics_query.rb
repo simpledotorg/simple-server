@@ -98,6 +98,9 @@ class DistrictAnalyticsQuery
   end
 
   def follow_up_patients_by_period
+    result = ActivityService.new(region, last: nil, group: BloodPressure.arel_table[:facility_id]).follow_ups
+
+    return group_by_date_and_facility(result, :follow_up_patients_by_period)
     #
     # this is similar to what the group_by_period query already gives us,
     # however, groupdate does not allow us to use these "groups" in a where clause
