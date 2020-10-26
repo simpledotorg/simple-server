@@ -52,24 +52,12 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <form id="query-filters">
-                <button
-                  class="dropdown-item <%= "active" if @selected_zones.size != 1 %>"
-                  type="submit"
-                  value=""
-                  data-zone=""
-                  form="query-filters"
-                >
+                <button class="dropdown-item <%= "active" unless @selected_zones.size == 1 %>" onClick="filterByZone()">
                   All blocks
                 </button>
                 <div class="dropdown-divider"></div>
                 <% @zones.each do |zone| %>
-                  <button
-                    class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>"
-                    type="submit"
-                    data-zone="<%= zone %>"
-                    value="<%= zone %>"
-                    form="query-filters"
-                  >
+                  <button class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>" onClick="filterByZone('<%= zone %>')">
                     <%= zone.capitalize %>
                   </button>
                 <% end %>
@@ -94,29 +82,15 @@
               <% end %>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <form id="query-filters">
-                <button
-                  class="dropdown-item <%= "active" if @selected_zones.size != 1 %>"
-                  type="submit"
-                  data-size="[]"
-                  value="[]"
-                  form="query-filters"
-                >
-                  All sizes
+              <button class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %>" onClick="filterBySize()">
+                All sizes
+              </button>
+              <div class="dropdown-divider"></div>
+              <% @facility_sizes.each do |size| %>
+                <button class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %>" onClick="filterBySize('<%= size %>')">
+                  <%= size.capitalize %>
                 </button>
-                <div class="dropdown-divider"></div>
-                <% @facility_sizes.each do |size| %>
-                  <button
-                    class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %>"
-                    type="submit"
-                    data-size="<%= size %>"
-                    value="<%= size %>"
-                    form="query-filters"
-                  >
-                    <%= size.capitalize %>
-                  </button>
-                <% end %>
-              </form>
+              <% end %>
             </div>
           </div>
           <div class="dropdown show">
@@ -142,8 +116,8 @@
                   <%= month_short_name_and_year(month) %>
                 </button>
               <% end %>
-              <input class="selected-size" name="size" value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>" form="query-filters" hidden>
-              <input class="selected-zone" name="zone" value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>" form="query-filters" hidden>
+              <input class="selected-size" name="size" value="<%= @selected_sizes.first %>" form="query-filters" hidden>
+              <input class="selected-zone" name="zone" value="<%= @selected_zones.first %>" form="query-filters" hidden>
               <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
               <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
               <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
@@ -250,43 +224,45 @@
       </ol>
     </section>
     <script>
-        function setSelectedQuarter(quarter, year) {
-            $('.selected-quarter').val(quarter);
-            $('.selected-year').val(year);
-            $('.selected-cohort-period').val('quarter');
-            $('.selected-month').remove();
-        }
+      const $filtersForm = document.getElementById("query-filters");
 
-        function setSelectedMonth(month, year) {
-            $('.selected-month').val(month);
-            $('.selected-year').val(year);
-            $('.selected-cohort-period').val('month');
-            $('.selected-quarter').remove();
-        }
+      function filterBySize(size) {
+        const $selectedSize = document.getElementsByClassName("selected-size")[0];
+        $selectedSize.setAttribute("value", size == undefined ? "" : size);
+        $filtersForm.submit();
+      }
 
-        function setSelectedSize(size) {
-          $('.selected-size').val(size);
-        }
+      function filterByZone(zone) {
+        const $selectedZone = document.getElementsByClassName("selected-zone")[0];
+        $selectedZone.setAttribute("value", zone == undefined ? "" : zone);
+        $filtersForm.submit();
+      }
 
-        function setSelectedZone(zone) {
-          $('.selected-zone').val(zone);
-        }
+      function setSelectedQuarter(quarter, year) {
+          $('.selected-quarter').val(quarter);
+          $('.selected-year').val(year);
+          $('.selected-cohort-period').val('quarter');
+          $('.selected-month').remove();
+      }
 
-        $('.query-filter-quarter').click(function() {
-            setSelectedQuarter($(this).data('quarter'), $(this).data('year'))
-        });
+      function setSelectedMonth(month, year) {
+          $('.selected-month').val(month);
+          $('.selected-year').val(year);
+          $('.selected-cohort-period').val('month');
+          $('.selected-quarter').remove();
+      }
 
-        $('.query-filter-month').click(function() {
-            setSelectedMonth($(this).data('month'), $(this).data('year'))
-        });
+      function setSelectedZone(zone) {
+        $('.selected-zone').val(zone);
+      }
 
-        $('.query-filter-size').click(function() {
-          setSelectedSize($(this).data('size'));
-        });
+      $('.query-filter-quarter').click(function() {
+          setSelectedQuarter($(this).data('quarter'), $(this).data('year'))
+      });
 
-        $('.query-filter-zone').click(function() {
-          setSelectedZone($(this).data('zone'));
-        });
+      $('.query-filter-month').click(function() {
+          setSelectedMonth($(this).data('month'), $(this).data('year'))
+      });
     </script>
   </div>
 </div>
