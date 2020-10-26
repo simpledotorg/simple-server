@@ -14,8 +14,8 @@ class TelemedicineReports
     @query = <<~QUERY
       function main() {
         return Events({
-          from_date: "#{period_start}",
-          to_date: "#{period_end}"
+          from_date: "#{period_start.strftime("%Y-%m-%d")}",
+          to_date: "#{period_end.strftime("%Y-%m-%d")}"
         }).filter(function(event) {
           return event.name == "UserInteraction" && event.properties.name == "Patient Summary:Contact Doctor Clicked"
         }).groupBy(
