@@ -15,7 +15,7 @@ class ActivityService
 
   def follow_ups
     region.hypertension_follow_ups_by_period(:month, last: last)
-      .group(:gender)
+      .group(group)
       .count
   end
 

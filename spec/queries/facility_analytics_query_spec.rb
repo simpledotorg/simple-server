@@ -12,10 +12,6 @@ RSpec.describe FacilityAnalyticsQuery do
   let(:two_months_back) { current_month - 2.months }
   let(:one_month_back) { current_month - 1.months }
 
-  pending "how to handle getting a specific time range vs just data back to the creation of the region?"
-  # see groupdate docs on getting a specific time range for context
-  # https://github.com/ankane/groupdate#time-range
-
   context "when there is data available" do
     before do
       [five_months_back, four_months_back].each do |month|
@@ -41,6 +37,7 @@ RSpec.describe FacilityAnalyticsQuery do
           users.each do |u|
             registered_patients.each do |patient|
               create(:blood_pressure,
+                :with_encounter,
                 patient: patient,
                 facility: facility,
                 user: u)
@@ -55,6 +52,7 @@ RSpec.describe FacilityAnalyticsQuery do
           users.each do |u|
             registered_patients.each do |patient|
               create(:blood_pressure,
+                :with_encounter,
                 patient: patient,
                 facility: facility,
                 user: u)
@@ -113,8 +111,6 @@ RSpec.describe FacilityAnalyticsQuery do
                                               two_months_back => 6}}
             }
 
-        pp analytics.follow_up_patients_by_period
-
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
@@ -128,11 +124,11 @@ RSpec.describe FacilityAnalyticsQuery do
         }
 
         _mar_bp = Timecop.travel(three_months_back) {
-          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
         }
 
         apr_bp = Timecop.travel(two_months_back) {
-          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
         }
 
         # simulate soft-deleting a blood_pressure
@@ -155,11 +151,11 @@ RSpec.describe FacilityAnalyticsQuery do
         }
 
         first_bp = Timecop.travel(three_months_back) {
-          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
         }
 
         second_bp = Timecop.travel(three_months_back) {
-          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
         }
 
         expected_result =

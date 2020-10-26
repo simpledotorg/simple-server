@@ -47,45 +47,12 @@ class FacilityAnalyticsQuery
     result = ActivityService.new(@facility, last: nil, group: [:registration_user_id]).registrations
 
     group_by_date_and_user(result, :registered_patients_by_period)
-    # valid_dates = dates_for_periods(@period,
-    #   @prev_periods,
-    #   from_time: @from_time,
-    #   include_current_period: @include_current_period)
-    #
-    # transformed_result = result.each_with_object({}) { |((date, user_id), count), hsh|
-    #   next unless date.in?(valid_dates)
-    #   hsh[user_id] ||= {registered_patients_by_period: {}}
-    #   hsh[user_id][:registered_patients_by_period][date] = count
-    # }
-    # transformed_result.presence
   end
 
   def follow_up_patients_by_period
-    #
-    # this is similar to what the group_by_period query already gives us,
-    # however, groupdate does not allow us to use these "groups" in a where clause
-    # hence, we've replicated its grouping behaviour in order to remove the patients
-    # that were registered prior to the period bucket
-    #
-    date_truncate_string =
-      "(DATE_TRUNC('#{@period}', blood_pressures.recorded_at::timestamptz AT TIME ZONE '#{Groupdate.time_zone || 'Etc/UTC'}'))"
+    result = ActivityService.new(@facility, last: nil, group: [BloodPressure.arel_table[:user_id]]).follow_ups
 
-    @follow_up_patients_by_period ||=
-      BloodPressure
-        .left_outer_joins(:user)
-        .left_outer_joins(patient: [:medical_history])
-        .joins(:facility)
-        .where(facility: @facility)
-        .where(deleted_at: nil)
-        .where("medical_histories.hypertension = ?", "yes")
-        .group('users.id')
-        .group_by_period(@period, 'blood_pressures.recorded_at')
-        .where("patients.recorded_at < #{date_truncate_string}")
-        .order("users.id")
-        .distinct
-        .count("patients.id")
-
-    group_by_user_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
+    group_by_date_and_user(result, :follow_up_patients_by_period)
   end
 
   private
@@ -99,17 +66,6 @@ class FacilityAnalyticsQuery
       @from_time.to_s(:mon_year),
       CACHE_VERSION
     ].join("/")
-  end
-
-  def group_by_user_and_date(query_results, key)
-    valid_dates = dates_for_periods(@period,
-      @prev_periods,
-      from_time: @from_time,
-      include_current_period: @include_current_period)
-
-    query_results.map { |(user_id, date), value|
-      {user_id => {key => {date.to_date => value}.slice(*valid_dates)}}
-    }.inject(&:deep_merge)
   end
 
   def group_by_date_and_user(result, key)
