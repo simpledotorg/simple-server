@@ -79,6 +79,8 @@ class Facility < ApplicationRecord
     facility.validates :name, presence: true
   end
 
+  alias_attribute :block, :zone
+
   validates :district, presence: true
   validates :state, presence: true
   validates :country, presence: true

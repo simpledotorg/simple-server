@@ -13,17 +13,17 @@ RSpec.describe Region, type: :model do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org)
-      facility_1 = create(:facility, name: "facility UHC (ZZZ)", zone: "Block22", facility_group: facility_group_1)
+      facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
       long_name = ("This is a long facility name" * 10)
       long_path = long_name.gsub(/\W/, "_").slice(0, Region::MAX_LABEL_LENGTH)
-      facility_2 = create(:facility, name: long_name, zone: "Block22", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: long_name, block: "Block22", state: "Test State", facility_group: facility_group_1)
 
       RegionBackfill.call(dry_run: false)
 
       expect(org.region.path).to eq("India.Test_Organization")
-      expect(facility_group_1.region.path).to eq("India.Test_Organization.District_XYZ")
-      expect(facility_1.region.path).to eq("India.Test_Organization.District_XYZ.#{facility_1.zone}.Facility_UHC__ZZZ_")
-      expect(facility_2.region.path).to eq("India.Test_Organization.District_XYZ.#{facility_1.zone}.#{long_path}")
+      expect(facility_group_1.region.path).to eq("India.Test_Organization.Test_State.District_XYZ")
+      expect(facility_1.region.path).to eq("India.Test_Organization.Test_State.District_XYZ.#{facility_1.block}.Facility_UHC__ZZZ_")
+      expect(facility_2.region.path).to eq("India.Test_Organization.Test_State.District_XYZ.#{facility_1.block}.#{long_path}")
     end
 
     it "can soft delete nodes" do
@@ -31,14 +31,21 @@ RSpec.describe Region, type: :model do
       facility_group_1 = create(:facility_group, organization: org)
       facility_group_2 = create(:facility_group, organization: org)
 
-      _facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
-      _facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
+      _facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
+      _facility_2 = create(:facility, name: "facility2", state: "State 2", facility_group: facility_group_2)
 
       RegionBackfill.call(dry_run: false)
 
+      state_2 = Region.find_by!(name: "State 2")
+      expect(state_2.children).to_not be_empty
+      expect(facility_group_2.reload.region).to_not be_nil
+
       facility_group_2.discard
-      expect(facility_group_2.region.reload.path).to be_nil
-      expect(org.region.children.map(&:source)).to contain_exactly(facility_group_1)
+      # Ensure that facility group 2's region is discarded with it and no longer in the tree
+      expect(facility_group_2.region.path).to be_nil
+      expect(facility_group_2.region.parent).to be_nil
+      expect(org.region.children.map(&:name)).to contain_exactly("State 1", "State 2")
+      expect(state_2.children).to be_empty
     end
   end
 end
