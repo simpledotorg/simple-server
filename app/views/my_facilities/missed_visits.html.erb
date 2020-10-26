@@ -25,12 +25,71 @@
             </p>
         <% end %>
       </header>
-      <div>
+      <div class="d-flex">
+        <div class="dropdown show mr-8px">
+          <a
+            id="dropdownMenuLink"
+            class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+            href="#"
+            role="button"
+            data-toggle="dropdown"
+            data-display="static"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <% if @selected_zones.size == 1 %>
+              <%= @selected_zones.first.capitalize %>
+            <% else %>
+              All blocks
+            <% end %>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <form id="query-filters">
+              <button class="dropdown-item <%= "active" unless @selected_zones.size == 1 %>" onClick="filterByZone()">
+                All blocks
+              </button>
+              <div class="dropdown-divider"></div>
+              <% @zones.each do |zone| %>
+                <button class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>" onClick="filterByZone('<%= zone %>')">
+                  <%= zone.capitalize %>
+                </button>
+              <% end %>
+            </form>
+          </div>
+        </div>
+        <div class="dropdown show mr-8px">
+          <a
+            id="dropdownMenuLink"
+            class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+            href="#"
+            role="button"
+            data-toggle="dropdown"
+            data-display="static"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <% if @selected_sizes.size == 1 %>
+              <%= @selected_sizes.first.capitalize %>
+            <% else %>
+              All sizes 
+            <% end %>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <button class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %>" onClick="filterBySize()">
+              All sizes
+            </button>
+            <div class="dropdown-divider"></div>
+            <% @facility_sizes.each do |size| %>
+              <button class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %>" onClick="filterBySize('<%= size %>')">
+                <%= size.capitalize %>
+              </button>
+            <% end %>
+          </div>
+        </div>
         <div class="dropdown show">
           <a
             id="dropdownMenuLink"
             class="btn btn-sm btn-outline btn-secondary dropdown-toggle" 
-            style="min-width: 12em;"
             href="#"
             role="button"
             data-toggle="dropdown"
@@ -45,6 +104,8 @@
             <% end %>
           </div>
         </div>
+        <input class="selected-zone" name="zone" value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>" form="query-filters" hidden>
+        <input class="selected-size" name="size" value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>" form="query-filters" hidden>
       </div>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
           <colgroup>
@@ -151,5 +212,20 @@
         <li><strong>Total patients:</strong> Patients with this preferred facility.</li>
       </ol>
     </section>
+    <script>
+      const $filtersForm = document.getElementById("query-filters");
+
+      function filterBySize(size) {
+        const $selectedSize = document.getElementsByClassName("selected-size")[0];
+        $selectedSize.setAttribute("value", size == undefined ? "" : size);
+        $filtersForm.submit();
+      }
+
+      function filterByZone(zone) {
+        const $selectedZone = document.getElementsByClassName("selected-zone")[0];
+        $selectedZone.setAttribute("value", zone == undefined ? "" : zone);
+        $filtersForm.submit();
+      }
+    </script>
   </div>
 </div>
