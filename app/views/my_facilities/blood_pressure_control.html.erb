@@ -78,12 +78,12 @@
               <% if @selected_sizes.size == 1 %>
                 <%= @selected_sizes.first.capitalize %>
               <% else %>
-                All sizes 
+                All facility sizes 
               <% end %>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <button class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %>" onClick="filterBySize()">
-                All sizes
+                All facility sizes
               </button>
               <div class="dropdown-divider"></div>
               <% @facility_sizes.each do |size| %>
