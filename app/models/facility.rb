@@ -79,10 +79,12 @@ class Facility < ApplicationRecord
     facility.validates :name, presence: true
   end
 
+  alias_attribute :block, :zone
+
   validates :district, presence: true
   validates :state, presence: true
   validates :country, presence: true
-  validates :zone, presence: true
+  validates :zone, presence: true, on: :create
   validates :pin, numericality: true, allow_blank: true
 
   validates :facility_size, inclusion: {in: facility_sizes.values,

@@ -50,33 +50,30 @@ class RegionBackfill
     facility_type = find_region_type("Facility")
 
     root_parent = NullRegion.new(name: "__root__")
-    root_region = create_region_from name: current_country_name, region_type: root_type, parent: root_parent
+    instance = create_region_from name: current_country_name, region_type: root_type, parent: root_parent
 
-    Organization.all.map do |org|
-      hierarchical_facilities = org.facilities.each_with_object({}) { |facility, result|
-        result[facility.state] ||= {}
-        result[facility.state][facility.district] ||= {}
-        result[facility.state][facility.district][facility.zone] ||= []
-        result[facility.state][facility.district][facility.zone] << facility
+    Organization.all.each do |org|
+      org_region = create_region_from(source: org, region_type: org_type, parent: instance)
+
+      state_names = org.facilities.distinct.pluck(:state)
+      states = state_names.each_with_object({}) { |name, hsh|
+        hsh[name] = create_region_from(name: name, region_type: state_type, parent: org_region)
       }
 
-      org_region = create_region_from(source: org, region_type: org_type, parent: root_region)
-      hierarchical_facilities.map do |state, districts|
-        state_region = create_region_from(name: state, region_type: state_type, parent: org_region)
-        districts.map do |district, zones|
-          district_region = create_region_from(name: district, region_type: district_type, parent: state_region)
-          zones.map do |zone, facilities|
-            if zone.blank?
-              count_invalid(block_type)
-              logger.info msg: "skip_zone", error: "zone_name is blank", zone_name: zone, facilities: facilities.map(&:name)
-            else
-              block_region = create_region_from(name: zone, region_type: block_type, parent: district_region)
-              facilities.map do |facility|
-                create_region_from(source: facility, region_type: facility_type, parent: block_region)
-              end
-            end
-          end
+      org.facilities.find_each do |facility|
+        state = states.fetch(facility.state) { |name| "Could not find state #{name}" }
+        facility_group = facility.facility_group
+        district = create_region_from(source: facility_group, region_type: district_type, parent: state)
+        if facility.block.blank?
+          count_invalid(block_type)
+          logger.info msg: "Skipping creation of Facility #{facility.name} because the block field (ie zone) is blank",
+                      error: "block is blank",
+                      block_name: block_name,
+                      facilities: facilities.map(&:name)
+          next
         end
+        block_region = create_region_from(name: facility.block, region_type: block_type, parent: district)
+        create_region_from(source: facility, region_type: facility_type, parent: block_region)
       end
     end
   end
@@ -92,18 +89,17 @@ class RegionBackfill
   def create_region_types
     logger.info msg: "create_region_types"
     unless dry_run?
-      RegionType::HIERARCHY.reduce(nil) do |parent_region_type, region_type|
-        if !parent_region_type
-          RegionType.create! name: region_type, path: region_type
-        else
-          RegionType.create! name: region_type, parent: parent_region_type
-        end
-      end
+      root = RegionType.create! name: "Root", path: "Root"
+      org = RegionType.create! name: "Organization", parent: root
+      state = RegionType.create! name: "State", parent: org
+      district = RegionType.create! name: "District", parent: state
+      block = RegionType.create! name: "Block", parent: district
+      _facility = RegionType.create! name: "Facility", parent: block
     end
   end
 
   def create_region_from(parent:, region_type:, name: nil, source: nil)
-    logger.info msg: "create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
+    # logger.info msg: "create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
     region = DryRunRegion.new(Region.new(name: region_name, type: region_type), dry_run: dry_run?, logger: logger)
