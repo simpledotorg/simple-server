@@ -44,7 +44,7 @@ class FacilityAnalyticsQuery
   end
 
   def registered_patients_by_period
-    result = ActivityService.new(@facility, group: [:registration_user_id]).registrations
+    result = ActivityService.new(@facility, last: nil, group: [:registration_user_id]).registrations
 
     valid_dates = dates_for_periods(@period,
       @prev_periods,
