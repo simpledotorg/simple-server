@@ -116,8 +116,8 @@
                   <%= month_short_name_and_year(month) %>
                 </button>
               <% end %>
-              <input class="selected-size" name="size" value="<%= @selected_sizes.first %>" form="query-filters" hidden>
-              <input class="selected-zone" name="zone" value="<%= @selected_zones.first %>" form="query-filters" hidden>
+              <input class="selected-size" name="size" value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>" form="query-filters" hidden>
+              <input class="selected-zone" name="zone" value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>" form="query-filters" hidden>
               <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
               <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
               <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
