@@ -1,13 +1,27 @@
 class Admin::FixZoneDataController < AdminController
-  CANONICAL_ZONES = YAML.load_file("config/data/canonical_zones_ihci.yml")
+  # This cleanup is only being done for IHCI at the moment
+  CANONICAL_ZONES_FILES = {"IHCI" => "config/data/india/ihci/canonical_zones.yml"}
 
   skip_before_action :verify_authenticity_token
 
   def show
     authorize { current_admin.power_user? }
-
-    canonical_zones = CANONICAL_ZONES.uniq.compact.sort.join("\n")
-    zones = Facility.all.pluck(:zone).uniq.compact.sort.reject(&:empty?).join("\n")
+    canonical_zones =
+      YAML
+        .load_file(CANONICAL_ZONES_FILES["IHCI"])
+        .values
+        .flatten
+        .uniq
+        .sort
+        .join("\n")
+    zones =
+      Facility.all
+        .pluck(:zone)
+        .uniq
+        .compact
+        .sort
+        .reject(&:empty?)
+        .join("\n")
 
     @diff = Diffy::Diff.new(zones, canonical_zones)
     @facility_count = Facility.group(:zone).count
