@@ -292,6 +292,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_stats
+    result = ActivityService.new(current_facility, include_current_period: false).call
+    return result
     follow_ups =
       current_facility
         .hypertension_follow_ups_by_period(:month, last: MONTHS_AGO)
