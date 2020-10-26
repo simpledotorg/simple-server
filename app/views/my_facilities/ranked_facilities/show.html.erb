@@ -69,19 +69,31 @@
             <% end %>
           </a>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            <button class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %>" onClick="filterBySize()">
+            <button class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %> filter-by-size" data-value="">
               All facility sizes
             </button>
             <div class="dropdown-divider"></div>
             <% @facility_sizes.each do |size| %>
-              <button class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %>" onClick="filterBySize('<%= size %>')">
+              <button class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %> filter-by-size" data-value="<%= size %>">
                 <%= size.capitalize %>
               </button>
             <% end %>
           </div>
         </div>
-        <input id="selected-zone" name="zone" value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>" form="query-filters" hidden>
-        <input class="selected-size" name="size" value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>" form="query-filters" hidden>
+        <input
+          id="selected-zone"
+          name="zone"
+          value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>"
+          form="query-filters"
+          hidden
+        >
+        <input
+          id="selected-size"
+          name="size"
+          value="<%= @selected_sizes.size == 1 ? @selected_sizes.first : "" %>"
+          form="query-filters"
+          hidden
+        >
       </div>
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" id="ranked-facilities-table">
         <colgroup>
