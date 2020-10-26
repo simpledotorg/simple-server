@@ -44,15 +44,19 @@ class FacilityAnalyticsQuery
   end
 
   def registered_patients_by_period
-    @registered_patients_by_period ||=
-      @facility
-        .registered_hypertension_patients
-        .group("registration_user_id")
-        .group_by_period(@period, :recorded_at)
-        .distinct("patients.id")
-        .count
+    result = ActivityService.new(@facility, group: [:registration_user_id]).registrations
 
-    group_by_user_and_date(@registered_patients_by_period, :registered_patients_by_period)
+    valid_dates = dates_for_periods(@period,
+      @prev_periods,
+      from_time: @from_time,
+      include_current_period: @include_current_period)
+
+    transformed_result = result.each_with_object({}) { |((date, user_id), count), hsh|
+      next unless date.in?(valid_dates)
+      hsh[user_id] ||= {registered_patients_by_period: {}}
+      hsh[user_id][:registered_patients_by_period][date] = count
+    }
+    transformed_result.presence
   end
 
   def follow_up_patients_by_period

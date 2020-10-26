@@ -292,24 +292,10 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_stats
-    result = ActivityService.new(current_facility, include_current_period: false).call
-    return result
-    follow_ups =
-      current_facility
-        .hypertension_follow_ups_by_period(:month, last: MONTHS_AGO)
-        .group(:gender)
-        .count
-
-    control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
-    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
-
-    registrations =
-      current_facility
-        .registered_hypertension_patients
-        .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
-        .group(:gender)
-        .count
+    activity_service = ActivityService.new(current_facility, include_current_period: false)
+    follow_ups = activity_service.follow_ups
+    registrations = activity_service.registrations
+    controlled_visits = activity_service.controlled_visits
 
     {
       grouped_by_date_and_gender: {
