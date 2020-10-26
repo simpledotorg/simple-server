@@ -46,17 +46,18 @@ class FacilityAnalyticsQuery
   def registered_patients_by_period
     result = ActivityService.new(@facility, last: nil, group: [:registration_user_id]).registrations
 
-    valid_dates = dates_for_periods(@period,
-      @prev_periods,
-      from_time: @from_time,
-      include_current_period: @include_current_period)
-
-    transformed_result = result.each_with_object({}) { |((date, user_id), count), hsh|
-      next unless date.in?(valid_dates)
-      hsh[user_id] ||= {registered_patients_by_period: {}}
-      hsh[user_id][:registered_patients_by_period][date] = count
-    }
-    transformed_result.presence
+    group_by_date_and_user(result, :registered_patients_by_period)
+    # valid_dates = dates_for_periods(@period,
+    #   @prev_periods,
+    #   from_time: @from_time,
+    #   include_current_period: @include_current_period)
+    #
+    # transformed_result = result.each_with_object({}) { |((date, user_id), count), hsh|
+    #   next unless date.in?(valid_dates)
+    #   hsh[user_id] ||= {registered_patients_by_period: {}}
+    #   hsh[user_id][:registered_patients_by_period][date] = count
+    # }
+    # transformed_result.presence
   end
 
   def follow_up_patients_by_period
@@ -87,21 +88,6 @@ class FacilityAnalyticsQuery
     group_by_user_and_date(@follow_up_patients_by_period, :follow_up_patients_by_period)
   end
 
-  def total_calls_made_by_period
-    @total_calls_made_by_period ||=
-      CallLog
-        .result_completed
-        .joins('INNER JOIN phone_number_authentications ON phone_number_authentications.phone_number = call_logs.caller_phone_number')
-        .joins('INNER JOIN facilities ON facilities.id = phone_number_authentications.registration_facility_id')
-        .joins('INNER JOIN user_authentications ON user_authentications.authenticatable_id = phone_number_authentications.id')
-        .where(phone_number_authentications: { registration_facility_id: @facility.id })
-        .group('user_authentications.user_id::uuid')
-        .group_by_period(@period, :end_time)
-        .count
-
-    group_by_user_and_date(@total_calls_made_by_period, :total_calls_made_by_period)
-  end
-
   private
 
   def cache_key
@@ -124,6 +110,20 @@ class FacilityAnalyticsQuery
     query_results.map { |(user_id, date), value|
       {user_id => {key => {date.to_date => value}.slice(*valid_dates)}}
     }.inject(&:deep_merge)
+  end
+
+  def group_by_date_and_user(result, key)
+    valid_dates = dates_for_periods(@period,
+      @prev_periods,
+      from_time: @from_time,
+      include_current_period: @include_current_period)
+
+    transformed_result = result.each_with_object({}) { |((date, user_id), count), hsh|
+      next unless date.in?(valid_dates)
+      hsh[user_id] ||= {key => {}}
+      hsh[user_id][key][date] = count
+    }
+    transformed_result.presence
   end
 
   def force_cache?
