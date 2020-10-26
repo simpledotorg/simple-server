@@ -120,7 +120,14 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    @available_zones = Region.where(type: RegionType.find_by_name("Zone")).pluck(:name)
+    facility_region = Region.find_by(source_id: @facility.id)
+    zones = if facility_region
+              facility_region.district.zones
+            else
+              Region.where(type: RegionType.find_by_name("Block"))
+            end
+
+    @available_zones = zones.pluck(:name)
   end
 
 

@@ -31,4 +31,22 @@ class Region < ApplicationRecord
     attrs["errors"] = errors.full_messages.join(",") if errors.any?
     attrs.symbolize_keys
   end
+
+  RegionType.all.map do |region_type|
+    define_method(region_type.name.underscore) do
+      if region_type.self_and_descendants.include?(type)
+        self_and_ancestors.find_by(region_type_id: region_type)
+      else
+        raise NoMethodError, "undefined method #{region_type.name.underscore} for #{self} of type #{type.name}"
+      end
+    end
+
+    define_method(region_type.name.pluralize.underscore) do
+      if region_type.ancestors.include?(type)
+        descendants.where(type: region_type)
+      else
+        raise NoMethodError, "undefined method #{region_type.name.pluralize.underscore} for #{self} of type #{type.name}"
+      end
+    end
+  end
 end

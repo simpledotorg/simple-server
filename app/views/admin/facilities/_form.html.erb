@@ -12,7 +12,7 @@
       <h3 class="mt-5">Address</h3>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <%= form.select :zone, @available_zones.zip(@available_zones), id: :facility_zone, required: true, include_blank: true %>
+      <%= form.select :zone, @available_zones.zip(@available_zones), {id: :facility_zone, include_blank: true}, required: true %>
       <%= form.text_field :district, id: :facility_district, required: true %>
       <%= form.text_field :state, id: :facility_state, required: true %>
       <%= form.text_field :country, id: :facility_country, required: true %>
