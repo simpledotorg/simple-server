@@ -83,7 +83,10 @@ class TelemedicineReports
       "Patients with High BP",
       "Patients with High Blood Sugar",
       "Patients with High BP or Sugar",
-      "Teleconsult Button Clicks",
+      "Teleconsult - Total Button Clicks",
+      "Teleconsult - Requests (new version)",
+      "Teleconsult - Records logged by MOs (new version)",
+      "Teleconsult - Requests marked 'completed' (new version)",
       "Teleconsult requests percentage"
     ]
 
@@ -102,6 +105,9 @@ class TelemedicineReports
         state[:telemed_data][:high_bs],
         state[:telemed_data][:high_bp_or_bs],
         telemed_clicks,
+        state[:telemed_data][:teleconsultation_requests],
+        state[:telemed_data][:teleconsultation_records],
+        state[:telemed_data][:teleconsultation_marked_completed],
         percentage(telemed_clicks, state[:telemed_data][:high_bp_or_bs])
       ]
 
@@ -120,6 +126,9 @@ class TelemedicineReports
           district[:telemed_data][:high_bs],
           district[:telemed_data][:high_bp_or_bs],
           telemed_clicks,
+          district[:telemed_data][:teleconsultation_requests],
+          district[:telemed_data][:teleconsultation_records],
+          district[:telemed_data][:teleconsultation_marked_completed],
           percentage(telemed_clicks, district[:telemed_data][:high_bp_or_bs])
         ]
       end
@@ -156,7 +165,10 @@ class TelemedicineReports
       "Patients with High BP",
       "Patients with High Blood Sugar",
       "Patients with High BP or Sugar",
-      "Teleconsult Button Clicks",
+      "Teleconsult - Total Button Clicks",
+      "Teleconsult - Requests (new version)",
+      "Teleconsult - Records logged by MOs (new version)",
+      "Teleconsult - Requests marked 'completed' (new version)",
       "Teleconsult requests percentage"
     ]
 
@@ -175,6 +187,9 @@ class TelemedicineReports
         state[:telemed_data][:high_bs],
         state[:telemed_data][:high_bp_or_bs],
         telemed_clicks,
+        state[:telemed_data][:teleconsultation_requests],
+        state[:telemed_data][:teleconsultation_records],
+        state[:telemed_data][:teleconsultation_marked_completed],
         percentage(telemed_clicks, state[:telemed_data][:high_bp_or_bs])
       ]
 
@@ -193,6 +208,9 @@ class TelemedicineReports
           district[:telemed_data][:high_bs],
           district[:telemed_data][:high_bp_or_bs],
           telemed_clicks,
+          district[:telemed_data][:teleconsultation_requests],
+          district[:telemed_data][:teleconsultation_records],
+          district[:telemed_data][:teleconsultation_marked_completed],
           percentage(telemed_clicks, district[:telemed_data][:high_bp_or_bs])
         ]
 
@@ -210,6 +228,9 @@ class TelemedicineReports
             facility[:telemed_data][:high_bs],
             facility[:telemed_data][:high_bp_or_bs],
             "",
+            facility[:telemed_data][:teleconsultation_requests],
+            facility[:telemed_data][:teleconsultation_records],
+            facility[:telemed_data][:teleconsultation_marked_completed],
             ""
           ]
         end
@@ -293,11 +314,20 @@ class TelemedicineReports
     visits = (bps + sugars + appointments + drugs).uniq { |record| record[:patient_id] }
     high_bps = high_bps(bps)
     high_sugars = high_sugars(sugars)
+    teleconsult_mvp_requests = facility
+      .teleconsultations
+      .where("device_created_at >= ? AND device_created_at <= ?", p_start, p_end)
+      .select("DISTINCT(patient_id)")
+    teleconsult_mvp_records = teleconsult_mvp_requests.where.not(recorded_at: nil)
+    teleconsult_mvp_marked_completed = teleconsult_mvp_requests.where(requester_completion_status: "yes")
 
     {high_bp: high_bps.count,
      high_bs: high_sugars.count,
      high_bp_or_bs: (high_bps + high_sugars).uniq { |record| record[:patient_id] }.count,
-     visits: visits.count}
+     visits: visits.count,
+     teleconsultation_requests: teleconsult_mvp_requests.count,
+     teleconsultation_records: teleconsult_mvp_records.count,
+     teleconsultation_marked_completed: teleconsult_mvp_marked_completed.count}
   end
 
   def sum_values(facilities, key)
@@ -313,7 +343,10 @@ class TelemedicineReports
     {high_bp: sum_values(hwcs_and_scs, :high_bp),
      high_bs: sum_values(hwcs_and_scs, :high_bs),
      high_bp_or_bs: sum_values(hwcs_and_scs, :high_bp_or_bs),
-     visits: sum_values(hwcs_and_scs, :visits)}
+     visits: sum_values(hwcs_and_scs, :visits),
+     teleconsultation_requests: sum_values(hwcs_and_scs, :teleconsultation_requests),
+     teleconsultation_records: sum_values(hwcs_and_scs, :teleconsultation_records),
+     teleconsultation_marked_completed: sum_values(hwcs_and_scs, :teleconsultation_marked_completed)}
   end
 
   def fetch_clicks_for_region(formatted_data, region, region_type)
