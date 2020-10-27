@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "csv"
-require "net/http"
 
 class TelemedicineReports
   attr_reader :period_start, :period_end, :mixpanel_data, :report_array
@@ -44,10 +43,14 @@ class TelemedicineReports
     mixpanel_data = CSV.parse(mixpanel_csv, headers: false)
 
     @mixpanel_data[:hydrated] = mixpanel_data.drop(1).map { |row|
-      facility = User.find(row[0]).registration_facility
-      {user_id: row[0],
-       date: Date.parse(row[1]),
-       clicks: row[2].to_i,
+      user = User.find(row[0])
+      date = Date.parse(row[1])
+      clicks = row[2].to_i
+      facility = user.registration_facility
+
+      {user_id: user.id,
+       date: date,
+       clicks: clicks,
        facility_id: facility.id,
        district: facility.district,
        state: facility.state,
