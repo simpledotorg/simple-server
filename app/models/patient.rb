@@ -61,17 +61,17 @@ class Patient < ApplicationRecord
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
-  scope :follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(Encounter, period, time_column: "encountered_on", last: last)
+  scope :follow_ups_by_period, ->(period, region: nil, last: nil) {
+    follow_ups_with(Encounter, period, region: region, time_column: "encountered_on", last: last)
   }
 
-  scope :diabetes_follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(BloodSugar, period, last: last)
+  scope :diabetes_follow_ups_by_period, ->(period, region: nil, last: nil) {
+    follow_ups_with(BloodSugar, period, region: region, last: last)
       .with_diabetes
   }
 
-  scope :hypertension_follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(BloodPressure, period, last: last)
+  scope :hypertension_follow_ups_by_period, ->(period, region: nil, last: nil) {
+    follow_ups_with(BloodPressure, period, region: region, last: last)
       .with_hypertension
   }
 
@@ -86,14 +86,18 @@ class Patient < ApplicationRecord
     with_discarded.where(registration_facility: region.facilities)
   }
 
-  def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
+  def self.follow_ups_with(model_name, period, time_column: "recorded_at", region: nil, last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
 
-    joins(table_name)
+    relation = joins(table_name)
       .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
       .group_by_period(period, time_column_with_table_name, last: last)
       .distinct
+
+    relation = relation.where(table_name => { facility_id: region.facilities} ) if region.present?
+
+    relation
   end
 
   enum could_not_contact_reasons: {
