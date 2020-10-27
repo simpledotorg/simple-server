@@ -14,6 +14,21 @@
         <i class="fas fa-filter"></i> Search filters
       </a>
     </div>
+
+    <section class="mb-4">
+      <% if current_facility %>
+        <% if @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
+          <h4>Download</h4>
+          <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
+            Download Results
+          <% end %>
+        <% end %>
+      <% else %>
+        <h4>Download</h4>
+        <em>Select a facility to download patients list</em>
+      <% end %>
+    </section>
+
     <!-- Filter Modal -->
     <div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="filter-modal" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
@@ -43,6 +58,7 @@
               </div>
             </div>
           </div>
+
           <div class="modal-footer">
             <a href="?" type="button" class="btn btn-secondary">Clear all</a>
             <button type="submit" form="search-filters-mobile" class="btn btn-primary">DONE</button>
@@ -98,4 +114,5 @@
     </div>
   </div>
 <% end %>
+
 <%= render template: "layouts/application" %>
