@@ -30,7 +30,10 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
             <% PeriodSelection::PERIODS[:registrations].each do |period, period_name| %>
-              <button class="dropdown-item filter-by-period" data-value="<%= period %>">
+              <button
+                class="dropdown-item filter-by-period <%= "active" if period.to_s == @selected_period.to_s %>"
+                data-value="<%= period %>"
+              >
                 <%= period_name %>
               </button>
             <% end %>
