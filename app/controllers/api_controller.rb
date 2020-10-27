@@ -1,9 +1,9 @@
 class APIController < ApplicationController
-  before_action :current_user_present?,
-    :validate_sync_approval_status_allowed,
-    :authenticate,
-    :validate_facility,
-    :validate_current_facility_belongs_to_users_facility_group
+  before_action :current_user_present?
+  before_action :validate_sync_approval_status_allowed
+  before_action :authenticate
+  before_action :validate_facility
+  before_action :validate_current_facility_belongs_to_users_facility_group
 
   TIME_WITHOUT_TIMEZONE_FORMAT = "%FT%T.%3NZ".freeze
 
