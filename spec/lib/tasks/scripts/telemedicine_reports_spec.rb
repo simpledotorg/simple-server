@@ -15,20 +15,6 @@ RSpec.describe TelemedicineReports do
   let!(:teleconsultation_requests_only) { patients.take(3).each { |patient| create(:teleconsultation, facility: facility_1, patient: patient, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day, recorded_at: nil, requester_completion_status: "no")}}
   let!(:teleconsultation_requests_marked_complete) { patients.slice(3, 2).each { |patient| create(:teleconsultation, facility: facility_1, patient: patient, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day, requester_completion_status: "yes", recorded_at: nil) }}
   let!(:teleconsultation_mo_logged_record) { create(:teleconsultation, facility: facility_1, patient: patients.last, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day) }
-  context ".parse_mixpanel" do
-    it "should fail if you give it a invalid file path" do
-      invalid_file_path = "spec/fixtures/files/invalid_file_path.csv"
-
-      report = TelemedicineReports.new(invalid_file_path, period_start, period_end)
-      expect { report.generate }.to raise_error(/No such file or directory/)
-    end
-
-    it "should parse a valid mixpanel csv" do
-      report = TelemedicineReports.new(file_path, period_start, period_end)
-      report.generate
-      expect(report.mixpanel_data[:hydrated].size).to eq(6)
-    end
-  end
 
   context ".generate_report" do
     it "generates a report file" do

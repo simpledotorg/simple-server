@@ -11,6 +11,7 @@ class TelemedicineReports
     @period_end = period_end
     @mixpanel_data = {hydrated: [], formatted: []}
     @report_array = []
+    @filename = "telemedicine_report_#{@period_start.strftime("%d_%b")}_to_#{@period_end.strftime("%d_%b")}.csv"
     @query = <<~QUERY
       function main() {
         return Events({
@@ -32,12 +33,8 @@ class TelemedicineReports
   def fetch_mixpanel_data
     url = URI.parse("https://mixpanel.com/api/2.0/jql")
 
-    response = begin
-      HTTP.basic_auth(user: ENV["MIXPANEL_API_SECRET"], pass: nil)
-        .post(url, json: {format: "csv", script: @query})
-    rescue HTTP::Error => e
-      raise HTTP::Error
-    end
+    response = HTTP.basic_auth(user: ENV["MIXPANEL_API_SECRET"], pass: nil)
+      .post(url, json: {format: "csv", script: @query})
 
     response.body.to_s
   end
@@ -56,6 +53,25 @@ class TelemedicineReports
        state: facility.state,
        type: facility.facility_type}
     }
+  end
+
+  def generate
+    if Flipper.enabled?(:weekly_telemed_report) && ENV["MIXPANEL_API_SECRET"]
+      parse_mixpanel
+      assemble_report_data
+      email_report
+    end
+  end
+
+  private
+
+  def email_report
+    TelemedReportMailer
+      .email_report(period_start: @period_start.strftime("%d_%b"),
+                    period_end: @period_end.strftime("%d_%b"),
+                    report_filename: @filename,
+                    report_csv: make_csv)
+      .deliver_later
   end
 
   def assemble_report_data
@@ -279,23 +295,13 @@ class TelemedicineReports
     end
   end
 
-  def write_csv
-    CSV.open("telemedicine_report_#{@period_start.strftime("%d_%b")}_to_#{@period_end.strftime("%d_%b")}.csv", "w") do |csv|
+  def make_csv
+    CSV.generate do |csv|
       @report_array.each do |csv_row|
         csv << csv_row
       end
     end
   end
-
-  def generate
-    if FeatureToggle.enabled?("WEEKLY_TELEMED_REPORT") && ENV["MIXPANEL_API_SECRET"]
-      parse_mixpanel
-      assemble_report_data
-      write_csv
-    end
-  end
-
-  private
 
   def format_mixpanel_data(mixpanel_data)
     mixpanel_data.group_by { |row| row[:state] }.map { |state, districts|

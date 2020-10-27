@@ -45,7 +45,7 @@ every :month, at: local("04:00 am"), roles: [:seed_data] do
 end
 
 every :monday, at: local("11:00 am"), roles:[:cron] do
-  if FeatureToggle.enabled?("WEEKLY_TELEMED_REPORT")
+  if Flipper.enabled?(:weekly_telemed_report)
     rake "reports:telemedicine"
   end
 end
