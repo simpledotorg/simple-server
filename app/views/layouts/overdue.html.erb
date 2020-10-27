@@ -15,7 +15,7 @@
       </a>
     </div>
 
-    <section class="mt-5">
+    <section class="mb-4">
       <% if current_facility %>
         <% if @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
           <h4>Download</h4>
@@ -58,6 +58,7 @@
               </div>
             </div>
           </div>
+
           <div class="modal-footer">
             <a href="?" type="button" class="btn btn-secondary">Clear all</a>
             <button type="submit" form="search-filters-mobile" class="btn btn-primary">DONE</button>
@@ -113,4 +114,5 @@
     </div>
   </div>
 <% end %>
+
 <%= render template: "layouts/application" %>
