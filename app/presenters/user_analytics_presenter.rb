@@ -164,7 +164,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def daily_htn_stats
-    activity = ActivityService.new(current_facility, period: :day, include_current_period: false)
+    activity = ActivityService.new(current_facility, period: :day, include_current_period: false, last: DAYS_AGO)
 
     {
       grouped_by_date: {
@@ -175,23 +175,13 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def daily_htn_or_dm_stats
-    follow_ups =
-      current_facility
-        .patient_follow_ups_by_period(:day, last: DAYS_AGO)
-        .count
-
-    registrations =
-      current_facility
-        .registered_patients
-        .group_by_period(:day, :recorded_at, last: DAYS_AGO)
-        .count
+    activity = ActivityService.new(current_facility, diagnosis: :all, period: :day, include_current_period: false, last: DAYS_AGO)
 
     {
-      grouped_by_date:
-        {
-          follow_ups: follow_ups,
-          registrations: registrations
-        }
+      grouped_by_date: {
+        follow_ups: activity.follow_ups,
+        registrations: activity.registrations
+      }
     }
   end
 
@@ -260,30 +250,21 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_or_dm_stats
-    follow_ups =
-      current_facility
-        .patient_follow_ups_by_period(:month, last: MONTHS_AGO)
-        .count
-
-    registrations =
-      current_facility
-        .registered_patients
-        .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
-        .count
+    activity = ActivityService.new(current_facility, diagnosis: :all, include_current_period: false, last: MONTHS_AGO)
 
     {
       grouped_by_date: {
         htn_or_dm: {
-          follow_ups: follow_ups,
-          registrations: registrations
+          follow_ups: activity.follow_ups,
+          registrations: activity.registrations
         }
       }
     }
   end
 
   def monthly_htn_stats
-    activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false)
-    activity = ActivityService.new(current_facility, include_current_period: false)
+    activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false, last: MONTHS_AGO)
+    activity = ActivityService.new(current_facility, include_current_period: false, last: MONTHS_AGO)
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
@@ -308,48 +289,30 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_dm_stats
-    follow_ups =
-      current_facility
-        .diabetes_follow_ups_by_period(:month, last: MONTHS_AGO)
-        .group(:gender)
-        .count
-
-    registrations =
-      current_facility
-        .registered_diabetes_patients
-        .group_by_period(:month, :recorded_at, last: MONTHS_AGO)
-        .group(:gender)
-        .count
+    activity_by_gender = ActivityService.new(current_facility, diagnosis: :diabetes, group: :gender, include_current_period: false, last: MONTHS_AGO)
+    activity = ActivityService.new(current_facility, diagnosis: :diabetes, include_current_period: false, last: MONTHS_AGO)
 
     {
       grouped_by_date_and_gender: {
         diabetes: {
-          follow_ups: follow_ups,
-          registrations: registrations
+          follow_ups: activity_by_gender.follow_ups,
+          registrations: activity_by_gender.registrations
         }
       },
 
       grouped_by_date: {
         diabetes: {
-          follow_ups: sum_by_date(follow_ups),
-          registrations: sum_by_date(registrations)
+          follow_ups: activity.follow_ups,
+          registrations: activity.registrations
         }
       }
     }
   end
 
   def all_time_htn_or_dm_stats
-    follow_ups =
-      current_facility
-        .patient_follow_ups_by_period(:month)
-        .count
-        .values
-        .sum
-
-    registrations =
-      current_facility
-        .registered_patients
-        .count
+    activity_by_gender = ActivityService.new(current_facility, diagnosis: :all, group: :gender, include_current_period: false)
+    follow_ups = activity_by_gender.follow_ups.values.sum
+    registrations = activity_by_gender.registrations.values.sum
 
     {
       grouped_by_date: {
@@ -362,17 +325,9 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def all_time_htn_stats
-    follow_ups =
-      sum_by_gender(current_facility
-                      .hypertension_follow_ups_by_period(:month)
-                      .group(:gender)
-                      .count)
-
-    registrations =
-      current_facility
-        .registered_hypertension_patients
-        .group(:gender)
-        .count
+    activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false)
+    follow_ups = sum_by_gender(activity_by_gender.follow_ups)
+    registrations = sum_by_gender(activity_by_gender.registrations)
 
     {
       grouped_by_gender: {
@@ -385,17 +340,9 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def all_time_dm_stats
-    follow_ups =
-      sum_by_gender(current_facility
-                      .diabetes_follow_ups_by_period(:month)
-                      .group(:gender)
-                      .count)
-
-    registrations =
-      current_facility
-        .registered_diabetes_patients
-        .group(:gender)
-        .count
+    activity_by_gender = ActivityService.new(current_facility, diagnosis: :diabetes, group: :gender, include_current_period: false)
+    follow_ups = sum_by_gender(activity_by_gender.follow_ups)
+    registrations = sum_by_gender(activity_by_gender.registrations)
 
     {
       grouped_by_gender: {
@@ -409,13 +356,6 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
   def statistics_cache_key
     "user_analytics/#{current_facility.id}/#{CACHE_VERSION}"
-  end
-
-  def sum_by_date(data)
-    data.each_with_object({}) do |((date, _), count), by_date|
-      by_date[date] ||= 0
-      by_date[date] += count
-    end
   end
 
   def sum_by_gender(data)

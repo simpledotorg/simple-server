@@ -51,13 +51,13 @@ class DistrictAnalyticsQuery
   end
 
   def registered_patients_by_period
-    result = ActivityService.new(region, last: nil, group: [:registration_facility_id]).registrations
+    result = ActivityService.new(region, group: [:registration_facility_id]).registrations
 
     group_by_date_and_facility(result, :registered_patients_by_period)
   end
 
   def follow_up_patients_by_period
-    result = ActivityService.new(region, last: nil, group: BloodPressure.arel_table[:facility_id]).follow_ups
+    result = ActivityService.new(region, group: BloodPressure.arel_table[:facility_id]).follow_ups
 
     group_by_date_and_facility(result, :follow_up_patients_by_period)
   end

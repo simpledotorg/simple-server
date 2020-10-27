@@ -44,13 +44,13 @@ class FacilityAnalyticsQuery
   end
 
   def registered_patients_by_period
-    result = ActivityService.new(@facility, last: nil, group: [:registration_user_id]).registrations
+    result = ActivityService.new(@facility, group: [:registration_user_id]).registrations
 
     group_by_date_and_user(result, :registered_patients_by_period)
   end
 
   def follow_up_patients_by_period
-    result = ActivityService.new(@facility, last: nil, group: [BloodPressure.arel_table[:user_id]]).follow_ups
+    result = ActivityService.new(@facility, group: [BloodPressure.arel_table[:user_id]]).follow_ups
 
     group_by_date_and_user(result, :follow_up_patients_by_period)
   end
