@@ -14,6 +14,7 @@
 .d-flex { display: flex; }
 // Flex
 .flex-1 { flex: 1; }
+.fw-wrap { flex-wrap: wrap; }
 .fd-column { flex-direction: column; }
 .align-baseline { align-items: baseline; }
 .align-center { align-items: center; }
@@ -42,6 +43,7 @@
 .h-300px { height: 300px; } 
 .h-250px { height: 250px; }
 // Spacing
+.mb-8px { margin-bottom: 8px; }
 .mb-20px { margin-bottom: 20px; }
 .mx-20px { margin-right: 20px; margin-left: 20px; }
 .mr-4px { margin-right: 4px; }
