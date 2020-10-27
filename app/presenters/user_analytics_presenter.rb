@@ -164,23 +164,13 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def daily_htn_stats
-    follow_ups =
-      current_facility
-        .hypertension_follow_ups_by_period(:day, last: DAYS_AGO)
-        .count
-
-    registrations =
-      current_facility
-        .registered_hypertension_patients
-        .group_by_period(:day, :recorded_at, last: DAYS_AGO)
-        .count
+    activity = ActivityService.new(current_facility, period: :day, include_current_period: false)
 
     {
-      grouped_by_date:
-        {
-          follow_ups: follow_ups,
-          registrations: registrations
-        }
+      grouped_by_date: {
+        follow_ups: activity.follow_ups,
+        registrations: activity.registrations
+      }
     }
   end
 
@@ -295,19 +285,23 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
     activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false)
     activity = ActivityService.new(current_facility, include_current_period: false)
 
+    control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
+    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
+    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
+
     {
       grouped_by_date_and_gender: {
         hypertension: {
-          follow_ups: activity_by_gender.follow_ups,
-          registrations: activity_by_gender.registrations
+          registrations: activity_by_gender.registrations,
+          follow_ups: activity_by_gender.follow_ups
         }
       },
 
       grouped_by_date: {
         hypertension: {
+          registrations: activity.registrations,
           follow_ups: activity.follow_ups,
-          controlled_visits: activity.controlled_visits,
-          registrations: activity.registrations
+          controlled_visits: controlled_visits
         }
       }
     }

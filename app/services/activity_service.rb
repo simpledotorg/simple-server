@@ -1,5 +1,5 @@
 class ActivityService
-  def initialize(region, period: :month, include_current_period: true, last: MONTHS_AGO, group: nil)
+  def initialize(region, period: :month, include_current_period: true, group: nil, last: MONTHS_AGO)
     @region = region
     @period = period
     @group = group
@@ -8,7 +8,6 @@ class ActivityService
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
-  HTN_CONTROL_MONTHS_AGO = 12
 
   attr_reader :region
   attr_reader :period
@@ -30,11 +29,5 @@ class ActivityService
       relation = relation.group(group) if group
     end
     relation.count
-  end
-
-  def controlled_visits
-    control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
-    control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    ControlRateService.new(region, periods: control_rate_start..control_rate_end).call
   end
 end

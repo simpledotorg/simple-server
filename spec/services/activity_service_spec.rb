@@ -7,6 +7,5 @@ RSpec.describe ActivityService do
     activity_service = ActivityService.new(region)
     pp activity_service.registrations
     pp activity_service.follow_ups
-    pp activity_service.controlled_visits
   end
 end
