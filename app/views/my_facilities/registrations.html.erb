@@ -1,15 +1,26 @@
 <div class="row">
-  <div class="col-lg-12 pr-lg-0">
+  <div class="col-lg-12">
     <div class="card card-responsive">
-      <div class="row">
-        <div class="col-lg-9 pr-5 pr-md-0">
-          <h3>New patient registrations</h3>
-          <p>OPD % indicates the percentage of estimated OPD patients that are registered. Estimated monthly OPD load is updated annually by surveillance officers.</p>
-        </div>
-        <div class="mt-1 mb-3 col-lg-3">
+      
+          <div class="row">
+            <div class="col-7">
+              <h3>Patients registered at facilities</h3>
+            </div>
+            <div class="col-5 text-right text-sm">
+                Updated: <span><%= @last_updated_at %></span>
+            </div>
+          </div>
+          <p>OPD % indicates the percentage of estimated adult OPD patients that are registered. Estimated monthly OPD load is updated annually by surveillance officers.</p>
+        
+        
           <div class="dropdown show">
+            <!-- Filters -->
+            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="modal" data-target="#facility-filter-modal">
+              Filter facilities
+            </a>
+            
             <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
-               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+               role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <%= PeriodSelection::PERIODS[:registrations][@selected_period] %>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -18,10 +29,8 @@
               <% end %>
             </div>
           </div>
-        </div>
-      </div>
 
-      <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
+      <table class="mt-5 table table-compact table-responsive-md table-hover analytics-table">
         <colgroup>
           <col>
           <% @display_periods.each do %>

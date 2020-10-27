@@ -26,7 +26,7 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_sizes
-      @selected_sizes = params[:size].present? ? params[:size] : @facility_sizes
+      @selected_sizes = params[:size].present? ? [params[:size]] : @facility_sizes
     end
 
     def set_selected_zones
@@ -38,11 +38,7 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_size(facilities)
-      if (@facility_sizes - @selected_sizes).empty?
-        facilities
-      else
-        facilities.where(facility_size: @selected_sizes)
-      end
+      facilities.where(facility_size: @selected_sizes).or(facilities.where(facility_size: nil))
     end
 
     def facilities_by_zone(facilities)

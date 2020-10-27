@@ -1,51 +1,180 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <% if ENV["GOOGLE_ANALYTICS_ID"].present? %>
-      <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
-      </script>
+<head>
+  <% if ENV["GOOGLE_ANALYTICS_ID"].present? %>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["GOOGLE_ANALYTICS_ID"] %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+
+      gtag('js', new Date());
+
+      gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
+    </script>
+  <% end %>
+
+  <title><%= get_title_for_environment %></title>
+  <%= csrf_meta_tags %>
+
+  <meta charset="utf-8">
+
+  <%= stylesheet_link_tag "application", media: "all" %>
+  <%= stylesheet_link_tag "print", media: "print" %>
+
+  <%= javascript_include_tag "application" %>
+
+  <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
+  <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
+  <link rel="icon" sizes="512x512" href="<%= android_logo_for_environment(size: '512') %>">
+  <link rel="icon" type="image/png" href="<%= favicon_for_environment %>">
+
+  <!-- Roboto font -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
+
+  <!-- FontAwesome icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+  <!-- Mobile-friendly -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+</head>
+
+<body>
+<% if email_authentication_signed_in? %>
+<nav class="<%= style_class_for_environment %>">
+  <div class="container">
+    <%= link_to root_path, class: "navbar-brand navbar-right" do %>
+      <%= logo_for_environment %>
     <% end %>
-    <title>
-      <%= get_title_for_environment %>
-    </title>
-    <%= csrf_meta_tags %>
-    <meta charset="utf-8">
-    <%= stylesheet_link_tag "application", media: "all" %>
-    <%= stylesheet_link_tag "print", media: "print" %>
-    <%= javascript_include_tag "application" %>
-    <link rel="apple-touch-icon" sizes="180x180" href="<%= apple_logo_for_environment %>">
-    <link rel="icon" sizes="192x192" href="<%= android_logo_for_environment(size: '192') %>">
-    <link rel="icon" sizes="512x512" href="<%= android_logo_for_environment(size: '512') %>">
-    <link rel="icon" type="image/png" href="<%= favicon_for_environment %>">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, shrink-to-fit=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-  </head>
-  <body>
     <% if email_authentication_signed_in? %>
-      <%= render "shared/nav_bar" %>
-    <% end %>
-    <main role="main" class="container pb-5">
-      <% flash.each do |type, message| %>
-        <% next unless message.is_a? String %>
-        <div class="<% if !email_authentication_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
-          <%= message %>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
-          </button>
-        </div>
+      <ul class="navbar-nav mr-auto">
+        
+        <% if current_admin.accessible_facilities(:view_reports).any? || current_admin.power_user? %>
+          <!-- MY FACILITIES / HOME -->
+          <li class="nav-item">
+              <%= link_to "Home", my_facilities_overview_path, class: "nav-link #{active_controller?("my_facilities")}" %>
+          </li>
+        
+          <!-- REPORTS -->
+          <li class="nav-item">
+              <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("reports/regions")}") do %>
+                Reports
+              <% end %>
+          </li>
+        <% end %>
+        
+        <!-- OVERDUE -->
+        <% if current_admin.accessible_facilities(:manage_overdue_list).any? || current_admin.power_user? %>
+          <li class="nav-item">
+          <%= link_to "Overdue", appointments_path, class: "nav-link #{active_controller?("appointments")}" %>
+          </li>
+        <% end %>
+        
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            More
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            
+            <% if current_admin.accessible_facilities(:manage).any? || current_admin.power_user? %>
+            
+              <h6 class="dropdown-header">Settings</h6>
+              
+              <%= link_to (admin_facilities_path), class: "dropdown-item #{active_controller?("admin/facilities")}" do %>
+                 <i class="fas fa-hospital"></i> Facilities
+              <% end %>
+              
+              <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
+                <%= link_to (admin_organizations_path), class: "dropdown-item #{active_controller?("admin/organizations")}" do %>
+                  <i class="fas fa-network-wired"></i> Organizations
+                <% end %>
+              <% end %>
+              
+              <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
+                <%= link_to (admin_protocols_path), class: "dropdown-item #{active_controller?("admin/protocols")}" do %>
+                  <i class="fas fa-prescription-bottle-alt"></i> Protocol medications
+                <% end %>
+              <% end %>
+              
+              <% if current_admin.accessible_facilities(:manage).any? || current_admin.power_user? %>
+                <%= link_to (admins_path), class: "dropdown-item #{active_controller?("admins")}" do %>
+                  <i class="fas fa-user-friends"></i> Dashboard admins
+                <% end %>
+              <% end %>
+              
+              <% if current_admin.accessible_users(:manage).any? || current_admin.power_user? %>
+                <%= link_to (admin_users_path), class: "dropdown-item #{active_controller?("admin/users")}" do %>
+                  <i class="fas fa-user-md"></i> Mobile app users
+                <% end %> 
+              <% end %>
+              
+              <% if current_admin.power_user? %>
+                <%= link_to ("/sidekiq"), class: "dropdown-item #{active_controller?("sidekiq")}" do %>
+                  <i class="fas fa-running"></i> Sidekiq
+                <% end %>
+              <% end %>
+              
+              <% if current_admin.power_user? %>
+                <%= link_to ("/flipper"), class: "dropdown-item #{active_controller?("flipper")}" do %>
+                  <i class="fas fa-circle-notch"></i> Flipper
+                <% end %> 
+              <% end %>
+              
+            <% end %>
+            
+            <div class="dropdown-divider"></div>
+            
+            <h6 class="dropdown-header">Resources</h6>
+            <%= link_to (resources_path), class: "dropdown-item #{active_controller?("resources")}" do %>
+              <i class="fas fa-chalkboard-teacher"></i> Training materials
+            <% end %>
+            
+            <div class="dropdown-divider"></div>
+            
+            <h6 class="dropdown-header">Legal</h6>
+            <a href="https://www.simple.org/privacy/" class="dropdown-item"><i class="fas fa-external-link-alt"></i> Privacy Policy</a>
+            <a href="https://www.simple.org/license/" class="dropdown-item"><i class="fas fa-external-link-alt"></i> License</a>
+            
+            <div class="dropdown-divider"></div>
+            
+            <h6 class="dropdown-header">Account</h6>
+            <span class="dropdown-item disabled"><i class="fas fa-user-circle"></i> <%= current_admin.email %></span>
+            <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "dropdown-item logout") do %>
+              <i class="fas fa-door-open"></i> Logout
+            <% end %>
+            
+          </div>
+        </li>
+      </ul>
       <% end %>
-      <%= content_for?(:content) ? yield(:content) : yield %>
-      <%= content_for :render_async %>
-    </main>
-  </body>
+
+  </div>
+</nav>
+
+<% end %>
+
+<main role="main" class="container pb-5">
+  <% flash.each do |type, message| %>
+    <% next unless message.is_a? String %>
+
+    <div class="
+          <% if !email_authentication_signed_in? %>col-md-6 mx-auto
+          <% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+      <%= message %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
+      </button>
+    </div>
+  <% end %>
+
+  <%= content_for?(:content) ? yield(:content) : yield %>
+  <%= content_for :render_async %>
+</main>
+</body>
 </html>
