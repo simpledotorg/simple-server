@@ -17,16 +17,32 @@
       <div class="d-flex">
         <%= render "shared/size_and_zone_filters" %>
         <div class="dropdown show">
-          <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#"
-              role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a
+            id="dropdownMenuLink"
+            class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+            href="#"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
             <%= PeriodSelection::PERIODS[:registrations][@selected_period] %>
           </a>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
             <% PeriodSelection::PERIODS[:registrations].each do |period, period_name| %>
-              <button type="submit" name="period" value=<%= period %> class="dropdown-item" form="query-filters"><%= period_name %></button>
+              <button class="dropdown-item filter-by-period" data-value="<%= period %>">
+                <%= period_name %>
+              </button>
             <% end %>
           </div>
         </div>
+        <input
+          id="selected-period"
+          name="period"
+          value="<%= @selected_period %>"
+          form="query-filters"
+          hidden
+        >
       </div>
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
         <colgroup>
@@ -79,7 +95,6 @@
           <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
         </thead>
-
         <tbody>
         <tr class="row-total" data-sort-method="none">
           <td class="type-title">All</td>
@@ -110,4 +125,19 @@
       </table>
     </div>
   </div>
+  <script>
+    const $filtersForm = document.getElementById("query-filters");
+    const $filterByPeriodButtons = document.getElementsByClassName("filter-by-period");
+
+    Array.from($filterByPeriodButtons).forEach($button => {
+      const period = $button.getAttribute("data-value");
+
+      $button.addEventListener("click", function() {
+        const $selectedPeriod = document.getElementById("selected-period");
+
+        $selectedPeriod.setAttribute("value", period);
+        $filtersForm.submit();
+      });
+    });
+  </script>
 </div>
