@@ -1,6 +1,7 @@
 class ActivityService
-  def initialize(region, include_current_period: true, last: MONTHS_AGO, group: [:gender])
+  def initialize(region, period: :month, include_current_period: true, last: MONTHS_AGO, group: nil)
     @region = region
+    @period = period
     @group = group
     @last = last
   end
@@ -9,21 +10,26 @@ class ActivityService
   MONTHS_AGO = 6
   HTN_CONTROL_MONTHS_AGO = 12
 
-  attr_reader :group
   attr_reader :region
+  attr_reader :period
+  attr_reader :group
   attr_reader :last
 
   def follow_ups
-    region.hypertension_follow_ups_by_period(:month, last: last)
-      .group(group)
-      .count
+    relation = region.hypertension_follow_ups_by_period(period, last: last)
+    if group.present?
+      relation = relation.group(group)
+    end
+    relation.count
   end
 
   def registrations
-    region.registered_hypertension_patients
-      .group_by_period(:month, :recorded_at, last: last)
-      .group(group)
-      .count
+    relation = region.registered_hypertension_patients
+    relation = relation.group_by_period(period, :recorded_at, last: last)
+    if group.present?
+      relation = relation.group(group) if group
+    end
+    relation.count
   end
 
   def controlled_visits

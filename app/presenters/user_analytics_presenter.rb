@@ -292,24 +292,22 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_stats
-    activity_service = ActivityService.new(current_facility, include_current_period: false)
-    follow_ups = activity_service.follow_ups
-    registrations = activity_service.registrations
-    controlled_visits = activity_service.controlled_visits
+    activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false)
+    activity = ActivityService.new(current_facility, include_current_period: false)
 
     {
       grouped_by_date_and_gender: {
         hypertension: {
-          follow_ups: follow_ups,
-          registrations: registrations
+          follow_ups: activity_by_gender.follow_ups,
+          registrations: activity_by_gender.registrations
         }
       },
 
       grouped_by_date: {
         hypertension: {
-          follow_ups: sum_by_date(follow_ups),
-          controlled_visits: controlled_visits.to_hash,
-          registrations: sum_by_date(registrations)
+          follow_ups: activity.follow_ups,
+          controlled_visits: activity.controlled_visits,
+          registrations: activity.registrations
         }
       }
     }
