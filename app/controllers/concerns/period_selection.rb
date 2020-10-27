@@ -3,8 +3,8 @@
 module PeriodSelection
   extend ActiveSupport::Concern
 
-  PERIODS = {missed_visits: {quarter: "Quarterly", month: "Monthly"},
-             registrations: {quarter: "Quarterly", month: "Monthly", day: "Daily"}}
+  PERIODS = {missed_visits: {quarter: "Display quarters", month: "Display months"},
+             registrations: {quarter: "Display quarters", month: "Display months", day: "Display days"}}
     .with_indifferent_access
     .freeze
 
