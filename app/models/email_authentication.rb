@@ -11,7 +11,7 @@ class EmailAuthentication < ApplicationRecord
 
   delegate :full_name, :resources, :role, :organization, to: :user, allow_nil: true
 
-  validates :password, password_strength: {use_dictionary: true, min_entropy: 16}, allow_nil: true
+  validates :password, password_strength: {use_dictionary: true, min_entropy: 17}, allow_nil: true
 
   after_validation :strip_unnecessary_errors
 
