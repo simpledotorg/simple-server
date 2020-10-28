@@ -127,7 +127,7 @@ class Admin::FacilitiesController < AdminController
         Region.where(type: RegionType.find_by_name("Block"))
       end
 
-    @available_zones = zones.pluck(:name)
+    @available_zones = zones.order(:name).pluck(:name)
   end
 
   def facility_region
