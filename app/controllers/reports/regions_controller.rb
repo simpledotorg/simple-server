@@ -43,7 +43,6 @@ class Reports::RegionsController < AdminController
                                                        include_current_period: true)
 
     if @region.is_a?(Facility)
-      @facility_progress = UserAnalyticsPresenter.new(@region)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
     end
   end
