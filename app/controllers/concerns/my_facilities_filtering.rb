@@ -38,7 +38,7 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_size(facilities)
-      facilities.where(facility_size: @selected_sizes).or(facilities.where(facility_size: nil))
+      facilities.where(facility_size: @selected_sizes)
     end
 
     def facilities_by_zone(facilities)
