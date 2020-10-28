@@ -12,7 +12,6 @@ class FacilityGroup < ApplicationRecord
   has_many :patients, through: :facilities, source: :registered_patients
   alias_method :registered_patients, :patients
   has_many :assigned_patients, through: :facilities, source: :assigned_patients
-  has_many :encountered_patients, through: :facilities, source: :patients
   has_many :blood_pressures, through: :facilities
   has_many :blood_sugars, through: :facilities
   has_many :encounters, through: :facilities
@@ -30,22 +29,6 @@ class FacilityGroup < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
-
-  def registered_hypertension_patients
-    Patient.with_hypertension.where(registration_facility: facilities)
-  end
-
-  def hypertension_follow_ups_by_period(*args)
-    encountered_patients
-      .hypertension_follow_ups_by_period(*args)
-      .where(blood_pressures: {facility: facilities})
-  end
-
-  def diabetes_follow_ups_by_period(*args)
-    encountered_patients
-      .diabetes_follow_ups_by_period(*args)
-      .where(blood_sugars: {facility: facilities})
-  end
 
   def toggle_diabetes_management
     if enable_diabetes_management
