@@ -130,6 +130,14 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
+    if current_admin.feature_enabled?("region_reports")
+      find_region_v2
+    else
+      find_region_v1
+    end
+  end
+
+  def find_region_v1
     if report_params[:report_scope] == "facility_district"
       @region = FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
     else
@@ -137,6 +145,11 @@ class Reports::RegionsController < AdminController
       klass = region_class.classify.constantize
       @region = klass.find_by!(slug: slug)
     end
+  end
+
+  def find_region_v2
+    region_type = report_params[:report_scope].classify
+    Region.joins(:type).where(region_types: {name: region_type}).find_by!(slug: report_params[:id])
   end
 
   def region_class
