@@ -89,12 +89,12 @@ class RegionBackfill
   def create_region_types
     logger.info msg: "create_region_types"
     unless dry_run?
-      root = RegionType.create! name: "Root", path: "Root"
-      org = RegionType.create! name: "Organization", parent: root
-      state = RegionType.create! name: "State", parent: org
-      district = RegionType.create! name: "District", parent: state
-      block = RegionType.create! name: "Block", parent: district
-      _facility = RegionType.create! name: "Facility", parent: block
+      root = RegionType.find_by_name("Root") || RegionType.create!(name: "Root", path: "Root")
+      org = RegionType.find_by_name("Organization") || RegionType.create!(name: "Organization", parent: root)
+      state = RegionType.find_by_name("State") || RegionType.create!(name: "State", parent: org)
+      district = RegionType.find_by_name("District") || RegionType.create!(name: "District", parent: state)
+      block = RegionType.find_by_name("Block") || RegionType.create!(name: "Block", parent: district)
+      _facility = RegionType.find_by_name("Facility") || RegionType.create!(name: "Facility", parent: block)
     end
     root
   end
