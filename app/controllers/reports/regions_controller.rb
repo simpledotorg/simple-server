@@ -149,7 +149,7 @@ class Reports::RegionsController < AdminController
 
   def find_region_v2
     region_type = report_params[:report_scope].classify
-    Region.joins(:type).where(region_types: {name: region_type}).find_by!(slug: report_params[:id])
+    @region = Region.joins(:type).where(region_types: {name: region_type}).find_by!(slug: report_params[:id])
   end
 
   def region_class

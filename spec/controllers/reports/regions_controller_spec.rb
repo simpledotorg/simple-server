@@ -213,6 +213,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
+      pp @facility.region.path
       fg = @facility.facility_group
       pp fg.region
       expect(fg.region).to_not be_nil

@@ -16,6 +16,23 @@ class Region < ApplicationRecord
 
   MAX_LABEL_LENGTH = 255
 
+  def type_name
+    type.name
+  end
+
+  def facilities
+    case type_name
+    when "Facility"
+      [self]
+    when "District"
+      children.children.map(&:source)
+    when "Block"
+      children.map(&:source)
+    else
+      raise ArgumentError, "how to get facilities for #{self}"
+    end
+  end
+
   # A label is a sequence of alphanumeric characters and underscores.
   # (In C locale the characters A-Za-z0-9_ are allowed).
   # Labels must be less than 256 bytes long.
