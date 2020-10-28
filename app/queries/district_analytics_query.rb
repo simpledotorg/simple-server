@@ -35,7 +35,7 @@ class DistrictAnalyticsQuery
   end
 
   def total_registered_patients
-    @total_patients ||=
+    @total_registered_patients ||=
       Patient
         .with_hypertension
         .joins(:registration_facility)
@@ -43,9 +43,9 @@ class DistrictAnalyticsQuery
         .group("facilities.id")
         .count
 
-    return if @total_patients.blank?
+    return if @total_registered_patients.blank?
 
-    @total_patients
+    @total_registered_patients
       .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
       .to_h
   end

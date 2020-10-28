@@ -59,11 +59,11 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         Timecop.travel(month + 1.month) do
           patients_1.each do |patient|
-            create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1)
+            create(:blood_pressure, patient: patient, facility: facility_1)
           end
 
           patients_2.each do |patient|
-            create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2)
+            create(:blood_pressure, patient: patient, facility: facility_2)
           end
         end
 
@@ -72,11 +72,11 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         Timecop.travel(month + 2.months) do
           patients_1.each do |patient|
-            create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1)
+            create(:blood_pressure, patient: patient, facility: facility_1)
           end
 
           patients_2.each do |patient|
-            create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2)
+            create(:blood_pressure, patient: patient, facility: facility_2)
           end
         end
       end
@@ -152,40 +152,6 @@ RSpec.describe DistrictAnalyticsQuery do
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
-
-      xit "counts patients with multiple BPs in a single period as one patient" do
-        patient = create(
-          :patient,
-          :hypertension,
-          registration_facility: facility_1,
-          assigned_facility: facility_2,
-          recorded_at: three_months_back
-        )
-
-        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: two_months_back + 1.day)
-        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: two_months_back + 2.days)
-        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: two_months_back + 3.days)
-
-        expected_result = {
-          facility_1.id => {
-            follow_up_patients_by_period: {
-              three_months_back => 3,
-              two_months_back => 7,
-              one_month_back => 3
-            }
-          },
-
-          facility_2.id => {
-            follow_up_patients_by_period: {
-              three_months_back => 3,
-              two_months_back => 6,
-              one_month_back => 3
-            }
-          }
-        }
-
-        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
-      end
     end
 
     context "facilities in the same district but belonging to different organizations" do
@@ -222,8 +188,8 @@ RSpec.describe DistrictAnalyticsQuery do
 
     before do
       Timecop.travel(three_months_back) do
-        create(:blood_pressure, :with_encounter, patient: patients.first, facility: facility_2)
-        create(:blood_pressure, :with_encounter, patient: patients.second, facility: facility_2)
+        create(:blood_pressure, patient: patients.first, facility: facility_2)
+        create(:blood_pressure, patient: patients.second, facility: facility_2)
       end
 
       patients.first.discard_data

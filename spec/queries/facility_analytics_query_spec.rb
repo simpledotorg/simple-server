@@ -37,7 +37,6 @@ RSpec.describe FacilityAnalyticsQuery do
           users.each do |u|
             registered_patients.each do |patient|
               create(:blood_pressure,
-                :with_encounter,
                 patient: patient,
                 facility: facility,
                 user: u)
@@ -52,7 +51,6 @@ RSpec.describe FacilityAnalyticsQuery do
           users.each do |u|
             registered_patients.each do |patient|
               create(:blood_pressure,
-                :with_encounter,
                 patient: patient,
                 facility: facility,
                 user: u)
@@ -124,11 +122,11 @@ RSpec.describe FacilityAnalyticsQuery do
         }
 
         _mar_bp = Timecop.travel(three_months_back) {
-          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
         }
 
         apr_bp = Timecop.travel(two_months_back) {
-          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
         }
 
         # simulate soft-deleting a blood_pressure
@@ -139,30 +137,6 @@ RSpec.describe FacilityAnalyticsQuery do
               {follow_up_patients_by_period: {
                 three_months_back => 1
               }}}
-
-        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
-      end
-
-      it "should count multiple BPs recorded in a single day for a patient as 1" do
-        pending "doesnt handle this dupe case yet"
-
-        patient = Timecop.travel(four_months_back) {
-          create(:patient, :hypertension, registration_facility: facility, registration_user: users.first)
-        }
-
-        first_bp = Timecop.travel(three_months_back) {
-          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
-        }
-
-        second_bp = Timecop.travel(three_months_back) {
-          create(:blood_pressure, :with_encounter, patient: patient, facility: facility, user: users.first)
-        }
-
-        expected_result =
-          {users.first.id =>
-            {follow_up_patients_by_period: {
-              three_months_back => 2
-            }}}
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
@@ -206,8 +180,8 @@ RSpec.describe FacilityAnalyticsQuery do
 
     before do
       Timecop.travel(three_months_back) do
-        create(:blood_pressure, :with_encounter, patient: patients.first, facility: facility, user: users.first)
-        create(:blood_pressure, :with_encounter, patient: patients.second, facility: facility, user: users.first)
+        create(:blood_pressure, patient: patients.first, facility: facility, user: users.first)
+        create(:blood_pressure, patient: patients.second, facility: facility, user: users.first)
       end
       patients.first.discard_data
     end
