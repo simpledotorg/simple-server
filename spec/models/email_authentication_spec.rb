@@ -16,7 +16,7 @@ RSpec.describe EmailAuthentication, type: :model do
 
   it "requires a strong password" do
     auth = build(:email_authentication)
-    ["password", "passw0rd", "12345678", "1234abcd", "aaaaaaaa", "catsdogs"].each do |password|
+    ["password", "passw0rd", "12345678", "1234abcd", "aaaaaaaa", "catsdogs", "foobar"].each do |password|
       auth.password = password
       expect(auth).to_not be_valid, "password #{password} should not be valid"
       expect(auth.errors.messages[:password]).to eq [weak_password_error]
@@ -25,7 +25,7 @@ RSpec.describe EmailAuthentication, type: :model do
 
   it "allows strong passwords" do
     auth = build(:email_authentication)
-    ["three word passphrase", "speaker imac coverage flower", "@zadlfj4809574zk.vd", "long-pass-phrase-verklempt-basketball"].each do |password|
+    ["three word passphrase", "brown batter horse pumpkin", "speaker imac coverage flower", "@zadlfj4809574zk.vd", "long-pass-phrase-verklempt-basketball"].each do |password|
       auth.password = password
       expect(auth).to be_valid, "password #{password.inspect} should not be valid"
     end
@@ -39,7 +39,7 @@ RSpec.describe EmailAuthentication, type: :model do
     expect(auth).to be_valid
     auth.save!
     # make sure a weak password change is prevented
-    auth.password = "stillweak"
+    auth.password = "passw0rd"
     expect(auth).to_not be_valid
     expect(auth.errors.messages[:password]).to eq [weak_password_error]
   end
