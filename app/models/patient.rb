@@ -95,7 +95,10 @@ class Patient < ApplicationRecord
       .group_by_period(period, time_column_with_table_name, current: current, last: last)
       .distinct
 
-    relation = relation.where(table_name => { facility_id: at_region.facilities.pluck(:id)} ) if at_region.present?
+    if at_region.present?
+      facility_ids = at_region.facilities.map(&:id)
+      relation = relation.where(table_name => {facility_id: facility_ids})
+    end
 
     relation
   end

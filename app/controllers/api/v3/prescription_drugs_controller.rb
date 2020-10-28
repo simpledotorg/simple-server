@@ -1,6 +1,4 @@
 class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
-
   def sync_from_user
     __sync_from_user__(prescription_drugs_params)
   end
@@ -14,10 +12,6 @@ class Api::V3::PrescriptionDrugsController < Api::V3::SyncController
   end
 
   private
-
-  def facility_group_records
-    PrescriptionDrug.syncable_to_region(current_facility_group)
-  end
 
   def merge_if_valid(prescription_drug_params)
     validator = Api::V3::PrescriptionDrugPayloadValidator.new(prescription_drug_params)
