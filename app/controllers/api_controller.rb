@@ -35,6 +35,10 @@ class APIController < ApplicationController
     request.headers["HTTP_X_TIMEZONE_OFFSET"].to_i || 0
   end
 
+  def current_sync_region
+    current_facility_group
+  end
+
   def validate_facility
     return head :bad_request unless current_facility.present?
   end
