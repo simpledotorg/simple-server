@@ -268,7 +268,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
-    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call
+    controlled_visits = ControlRateService.new(current_facility, periods: control_rate_start..control_rate_end).call.to_hash
 
     {
       grouped_by_date_and_gender: {
