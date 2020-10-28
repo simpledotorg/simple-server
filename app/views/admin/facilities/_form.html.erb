@@ -12,7 +12,7 @@
       <h3 class="mt-5">Address</h3>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <% if Flipper.enabled?(:facility_zone_dropdown) %>
+      <% if Flipper.enabled?(:region_level_sync) %>
         <%= form.select :zone, @available_zones.zip(@available_zones), {id: :facility_zone, include_blank: true}, required: true %>
       <% else %>
         <%= form.text_field :zone, id: :facility_zone, required: true %>
