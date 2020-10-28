@@ -32,7 +32,11 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
+  # These methods are generated on class load and updates to RegionTypes
+  # will not be available until the class is reloaded.
   RegionType.all.map do |region_type|
+    # Generates belongs_to type of methods to fetch a region's ancestor
+    # e.g. facility.organization
     define_method(region_type.name.underscore) do
       if region_type.self_and_descendants.include?(type)
         self_and_ancestors.find_by(region_type_id: region_type)
@@ -41,6 +45,8 @@ class Region < ApplicationRecord
       end
     end
 
+    # Generates has_many type of methods to fetch a region's descendants
+    # e.g. organization.facilities
     define_method(region_type.name.pluralize.underscore) do
       if region_type.ancestors.include?(type)
         descendants.where(type: region_type)
