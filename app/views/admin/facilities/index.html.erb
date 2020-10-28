@@ -3,7 +3,7 @@
 
   <div class="page-nav">
     <% if current_admin.accessible_facility_groups(:manage).any? || current_admin.power_user? %>
-      <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-primary btn-outline" %>
+      <%= link_to 'Bulk add facilities', upload_admin_facilities_path, class: "btn btn-sm btn-outline-primary" %>
     <% end %>
 
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
