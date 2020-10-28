@@ -2,12 +2,9 @@
 <% if @region.is_a?(Facility) %>
   <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
     <div class="card mt-0 pr-0 pr-md-3 pb-iniside-avoid">
-      <h3 class="mb-8px c-black">
-        Facility progress
+      <h3 class="mb-16px c-black">
+        Patient registrations and follow-ups
       </h3>
-      <p class="c-grey-dark">
-        Registration and follow-up progress by users at <%= @region.name %>. The "Total" row shows the same data as the "Progress" tab in the Simple app with "Hypertension: All" selected.
-      </p>
       <div class="table-responsive">
         <table class="analytics-table table-compact">
           <colgroup>
@@ -30,20 +27,20 @@
             <tr>
               <th></th>
               <th>
-                Total reg.<sup>1</sup>
+                Cumulative registrations<sup>1</sup>
               </th>
               <th colspan="6">
-                Registered patients<sup>2</sup>
+                New registrations<sup>2</sup>
               </th>
               <th colspan="6">
-                Follow-ups<sup>3</sup>
+                Follow-up patients<sup>3</sup>
               </th>
             </tr>
             <tr class="sorts" data-sort-method="thead">
-              <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+              <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
                 Users
               </th>
-              <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+              <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
                 <%= @period %>
               </th>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -104,13 +101,16 @@
       </div>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Total reg:</strong> Total hypertensive patients registered by users at <%= @region.name %>
+          The "Total" row displays the same data as the "Progress" tab in the Simple app with "Hypertension: All" selected
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
+          <strong>1. Cumulative registrations:</strong> Total hypertensive patients registered by users at <%= @region.name %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>2. New registrations:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Follow-ups:</strong> Hypertensive patients with a BP measure recorded during a month by users at <%= @region.name %>
+          <strong>3. Follow-up patients:</strong> Hypertensive patients with a BP measure recorded during a month by users at <%= @region.name %>
         </p>
       </div>
     </div>
@@ -118,9 +118,6 @@
       <h3 class="mb-8px c-black">
         User activity
       </h3>
-      <p class="c-grey-dark">
-        Registration and follow-up activity for hypertensive patients by users at <%= @region.name %>
-      </p>
       <div class="table-responsive">
         <table class="analytics-table table-compact">
           <colgroup>
@@ -143,20 +140,20 @@
             <tr>
               <th></th>
               <th>
-                Total reg.<sup>1</sup>
+                Cumulative registrations<sup>1</sup>
               </th>
               <th colspan="6">
-                Registered patients<sup>2</sup>
+                New registrations<sup>2</sup>
               </th>
               <th colspan="6">
-                BP Measures<sup>3</sup>
+                BP measures recorded<sup>3</sup>
               </th>
             </tr>
             <tr class="sorts" data-sort-method="thead">
-              <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+              <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
                 Users
               </th>
-              <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+              <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
                 <%= @period %>
               </th>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -199,13 +196,13 @@
       </div>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Total reg:</strong> Total hypertensive patients registered by users at <%= @region.name %>
+          <strong>1. Cumulative registrations:</strong> Total hypertensive patients registered by users at <%= @region.name %>
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
+          <strong>2. New registrations:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. BP measures:</strong> All BP measures recorded during a month by users at <%= @region.name %>
+          <strong>3. BP measures recorded:</strong> All BP measures recorded during a month by users at <%= @region.name %>
         </p>
       </div>
     </div>
@@ -215,12 +212,9 @@
   <% end %>
 <% else %>
   <div class="card mt-0 pr-0 pr-md-3 pb-iniside-avoid">
-    <h3 class="mb-8px c-black">
-      Facility progress
+    <h3 class="mb-16px c-black">
+      Patient registrations and follow-ups
     </h3>
-    <p class="c-grey-dark">
-      Registration and follow-up progress by users at <%= @region.name %>. Each facility row shows the same data as the "Progress" tab in the Simple app with "Hypertension: All" selected.
-    </p>
     <div class="table-responsive">
       <table class="analytics-table table-compact">
         <colgroup>
@@ -243,20 +237,20 @@
           <tr>
             <th></th>
             <th>
-              Total reg.<sup>1</sup>
+              Cumulative registrations<sup>1</sup>
             </th>
             <th colspan="6">
               New registrations<sup>2</sup>
             </th>
             <th colspan="6">
-              Follow-ups<sup>3</sup>
+              Follow-up patients<sup>3</sup>
             </th>
           </tr>
           <tr class="sorts" data-sort-method="thead">
-            <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
               Facilities
             </th>
-            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               <%= @period %>
             </th>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -317,10 +311,13 @@
     </div>
     <div class="mt-20px">
       <p class="mb-8px fs-14px c-grey-dark c-print-black">
-        <strong>1. Total reg:</strong> Total hypertensive patients registered at facilities in <%= @region.name %>
+        Facility rows display the same data as the "Progress" tab in the Simple app with "Hypertension: All" selected
       </p>
       <p class="mb-8px fs-14px c-grey-dark c-print-black">
-        <strong>2. Registered patients:</strong> All hypertensive patients registered during a month at facilities in <%= @region.name %>
+        <strong>1. Cumulative registrations:</strong> Total hypertensive patients registered at facilities in <%= @region.name %>
+      </p>
+      <p class="mb-8px fs-14px c-grey-dark c-print-black">
+        <strong>2. New registrations:</strong> All hypertensive patients registered during a month at facilities in <%= @region.name %>
       </p>
       <p class="mb-0px fs-14px c-grey-dark c-print-black">
         <strong>3. Follow-up patients:</strong> Hypertensive patients with a BP measure recorded during a month at facilities in <%= @region.name %>
