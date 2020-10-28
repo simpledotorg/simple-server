@@ -122,7 +122,7 @@ class Admin::FacilitiesController < AdminController
   def set_available_zones
     zones =
       if facility_region
-        facility_region.district.zones
+        facility_region.district.blocks
       else
         Region.where(type: RegionType.find_by_name("Block"))
       end
