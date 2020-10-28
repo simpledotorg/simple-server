@@ -107,7 +107,7 @@ RSpec.describe FacilityAnalyticsQuery do
               {follow_up_patients_by_period: {four_months_back => 6,
                                               three_months_back => 12,
                                               two_months_back => 6}}
-            }
+          }
 
         expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end

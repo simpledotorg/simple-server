@@ -97,7 +97,7 @@ class Patient < ApplicationRecord
 
     if at_region.present?
       facility_ids = at_region.facilities.map(&:id)
-      relation = relation.where(table_name => { facility_id: facility_ids} )
+      relation = relation.where(table_name => {facility_id: facility_ids})
     end
 
     relation
