@@ -127,7 +127,7 @@ module Reports
       }
     end
 
-    # "Missed visits" is the remaining registerd patients when we subtract out the other three groups.
+    # "Missed visits" is the remaining registered patients when we subtract out the other three groups.
     def calculate_missed_visits(range)
       self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
         registrations = adjusted_registrations_for(period)
