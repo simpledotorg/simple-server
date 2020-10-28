@@ -32,7 +32,7 @@ class TelemedicineReports
   def fetch_mixpanel_data
     url = URI.parse("https://mixpanel.com/api/2.0/jql")
 
-    response = HTTP.basic_auth(user: ENV["MIXPANEL_API_SECRET"], pass: nil)
+    response = HTTP.basic_auth(user: ENV.fetch("MIXPANEL_API_SECRET"), pass: nil)
       .post(url, json: {format: "csv", script: @query})
 
     response.body.to_s
@@ -59,7 +59,7 @@ class TelemedicineReports
   end
 
   def generate
-    if Flipper.enabled?(:weekly_telemed_report) && ENV["MIXPANEL_API_SECRET"]
+    if Flipper.enabled?(:weekly_telemed_report) && ENV.fetch("MIXPANEL_API_SECRET")
       parse_mixpanel
       assemble_report_data
       email_report
