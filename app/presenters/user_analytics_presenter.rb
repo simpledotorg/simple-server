@@ -164,7 +164,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def daily_htn_stats
-    activity = ActivityService.new(current_facility, period: :day, include_current_period: false, last: DAYS_AGO)
+    activity = ActivityService.new(current_facility, period: :day, last: DAYS_AGO)
 
     {
       grouped_by_date: {
@@ -175,7 +175,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def daily_htn_or_dm_stats
-    activity = ActivityService.new(current_facility, diagnosis: :all, period: :day, include_current_period: false, last: DAYS_AGO)
+    activity = ActivityService.new(current_facility, diagnosis: :all, period: :day, last: DAYS_AGO)
 
     {
       grouped_by_date: {
@@ -250,7 +250,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_or_dm_stats
-    activity = ActivityService.new(current_facility, diagnosis: :all, include_current_period: false, last: MONTHS_AGO)
+    activity = ActivityService.new(current_facility, diagnosis: :all, last: MONTHS_AGO)
 
     {
       grouped_by_date: {
@@ -263,8 +263,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_htn_stats
-    activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false, last: MONTHS_AGO)
-    activity = ActivityService.new(current_facility, include_current_period: false, last: MONTHS_AGO)
+    activity_by_gender = ActivityService.new(current_facility, group: :gender, last: MONTHS_AGO)
+    activity = ActivityService.new(current_facility, last: MONTHS_AGO)
 
     control_rate_end = Period.month(Date.current.advance(months: -1).beginning_of_month)
     control_rate_start = control_rate_end.advance(months: -HTN_CONTROL_MONTHS_AGO)
@@ -289,8 +289,8 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def monthly_dm_stats
-    activity_by_gender = ActivityService.new(current_facility, diagnosis: :diabetes, group: :gender, include_current_period: false, last: MONTHS_AGO)
-    activity = ActivityService.new(current_facility, diagnosis: :diabetes, include_current_period: false, last: MONTHS_AGO)
+    activity_by_gender = ActivityService.new(current_facility, diagnosis: :diabetes, group: :gender, last: MONTHS_AGO)
+    activity = ActivityService.new(current_facility, diagnosis: :diabetes, last: MONTHS_AGO)
 
     {
       grouped_by_date_and_gender: {
@@ -310,7 +310,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def all_time_htn_or_dm_stats
-    activity_by_gender = ActivityService.new(current_facility, diagnosis: :all, group: :gender, include_current_period: false)
+    activity_by_gender = ActivityService.new(current_facility, diagnosis: :all, group: :gender)
     follow_ups = activity_by_gender.follow_ups.values.sum
     registrations = activity_by_gender.registrations.values.sum
 
@@ -325,7 +325,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def all_time_htn_stats
-    activity_by_gender = ActivityService.new(current_facility, group: :gender, include_current_period: false)
+    activity_by_gender = ActivityService.new(current_facility, group: :gender)
     follow_ups = sum_by_gender(activity_by_gender.follow_ups)
     registrations = sum_by_gender(activity_by_gender.registrations)
 
@@ -340,7 +340,7 @@ class UserAnalyticsPresenter < Struct.new(:current_facility)
   end
 
   def all_time_dm_stats
-    activity_by_gender = ActivityService.new(current_facility, diagnosis: :diabetes, group: :gender, include_current_period: false)
+    activity_by_gender = ActivityService.new(current_facility, diagnosis: :diabetes, group: :gender)
     follow_ups = sum_by_gender(activity_by_gender.follow_ups)
     registrations = sum_by_gender(activity_by_gender.registrations)
 
