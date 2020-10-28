@@ -104,7 +104,7 @@ class RegionBackfill
     region_name = name || source.name
 
     region = DryRunRegion.new(Region.new(name: region_name, type: region_type), dry_run: dry_run?, logger: logger)
-    region.set_slug
+    region.slug = source.slug if source
     region.source = source if source
     region.path = [parent.path, region.name_to_path_label].compact.join(".")
 
