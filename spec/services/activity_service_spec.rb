@@ -442,5 +442,55 @@ RSpec.describe ActivityService do
         expect(activity_service.follow_ups).to eq(june_1 => 4, july_1 => 3, aug_1 => 4)
       end
     end
+
+    it "counts multiple visits in a month as one monthly followup" do
+      multi_visit_patient = create(:patient, :hypertension, recorded_at: long_ago)
+
+      [
+        june_1, june_2, june_3,
+        july_1
+      ].each do |date|
+        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+      end
+
+      activity_service = ActivityService.new(facility_1)
+
+      Timecop.freeze(july_3) do
+        expect(activity_service.follow_ups).to eq(june_1 => 1, july_1 => 1)
+      end
+    end
+
+    it "counts multiple visits in a month as multiple daily followups" do
+      multi_visit_patient = create(:patient, :hypertension, recorded_at: long_ago)
+
+      [
+        june_1, june_2, june_3
+      ].each do |date|
+        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+      end
+
+      activity_service = ActivityService.new(facility_1, period: :day)
+
+      Timecop.freeze(june_3) do
+        expect(activity_service.follow_ups).to eq(june_1 => 1, june_2 => 1, june_3 => 1)
+      end
+    end
+
+    it "counts multiple visits in a day as one daily followup" do
+      multi_visit_patient = create(:patient, :hypertension, recorded_at: long_ago)
+
+      [
+        june_1, june_1, june_1,
+        june_2
+      ].each do |date|
+        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+      end
+
+      activity_service = ActivityService.new(facility_1, period: :day)
+
+      Timecop.freeze(june_3) do
+        expect(activity_service.follow_ups).to eq(june_1 => 1, june_2 => 1)
+      end
+    end
   end
 end
