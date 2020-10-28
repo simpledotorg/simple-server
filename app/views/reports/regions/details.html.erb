@@ -6,7 +6,7 @@
         Facility progress
       </h3>
       <p class="c-grey-dark">
-        Registration and follow-up progress for hypertensive patients recorded by users at <%= @region.name %>. Data is the same as shown in Simple App “Progress” tab.
+        Registration and follow-up progress by users at <%= @region.name %>. The "Total" row shows the same data as the "Progress" tab in the Simple app with "Hypertension: All" selected.
       </p>
       <div class="table-responsive">
         <table class="analytics-table table-compact">
@@ -104,13 +104,13 @@
       </div>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Total reg:</strong> Total hypertensive patients registered till Sep-2020 by staff at <%= @region.name %>
+          <strong>1. Total reg:</strong> Total hypertensive patients registered till Sep-2020 by users at <%= @region.name %>
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by staff at <%= @region.name %>
+          <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Follow-ups:</strong> All hypertensive patients with a BP measure recorded by staff at <%= @region.name %> during a month. The follow-up count is not affected by where the patient was registered or what the patient’s assigned facility is. Only one follow-up is counted if a patient’s BP was recorded more than once in a day.
+          <strong>3. Follow-ups:</strong> Unique hypertensive patients with a BP measure recorded by users at <%= @region.name %> during a month
         </p>
       </div>
     </div>
@@ -199,13 +199,13 @@
       </div>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Total reg:</strong> Total hypertensive patients registered till Sep-2020 by staff at <%= @region.name %>
+          <strong>1. Total reg:</strong> Total hypertensive patients registered till Sep-2020 by users at <%= @region.name %>
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by staff at <%= @region.name %>
+          <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. BP Measures:</strong> All BP measures recorded during a month by staff at <%= @region.name %>
+          <strong>3. BP measures:</strong> All BP measures recorded by users at <%= @region.name %> during a month
         </p>
       </div>
     </div>
@@ -219,7 +219,7 @@
       Facility progress
     </h3>
     <p class="c-grey-dark">
-      Registration and follow-up progress at facilities in <%= @region.name %>. Data is the same as shown in Simple App “Progress” tab.
+      Registration and follow-up progress by users at <%= @region.name %>. Each facility row shows the same data as the "Progress" tab in the Simple app with "Hypertension: All" selected.
     </p>
     <div class="table-responsive">
       <table class="analytics-table table-compact">
@@ -317,13 +317,13 @@
     </div>
     <div class="mt-20px">
       <p class="mb-8px fs-14px c-grey-dark c-print-black">
-        <strong>1. Total registrations:</strong> Total patients registered at facilities in <%= @region.name %> till <%= @period %>
+        <strong>1. Total reg:</strong> Total hypertensive patients registered till Sep-2020 by users at <%= @region.name %>
       </p>
       <p class="mb-8px fs-14px c-grey-dark c-print-black">
-        <strong>2. New registrations:</strong> New patients registered during a month at facilities in <%= @region.name %>
+        <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by users at <%= @region.name %>
       </p>
       <p class="mb-0px fs-14px c-grey-dark c-print-black">
-        <strong>3. Follow-ups:</strong> Total patient visits with a BP recorded during a month at facilities in <%= @region.name %>. New registrations aren't included and multiple patient visits in a single day are only counted once.
+        <strong>3. Follow-ups:</strong> Unique hypertensive patients with a BP measure recorded by users at <%= @region.name %> during a month
       </p>
     </div>
   </div>
