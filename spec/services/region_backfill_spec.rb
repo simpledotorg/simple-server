@@ -28,11 +28,18 @@ RSpec.describe RegionBackfill, type: :model do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "fg1", organization: org)
       facility_group_2 = create(:facility_group, name: "fg2", organization: org)
+      facility_group_3 = create(:facility_group, name: "fg3", organization: org)
+      facility_group_4 = create(:facility_group, name: "fg4", organization: org)
 
       facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
       facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
       facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
+      facility_4 = create(:facility, name: "facility4", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
+      facility_5 = create(:facility, name: "facility5", facility_group: facility_group_4, zone: "Block ABC", state: "State 1")
+      facility_6 = create(:facility, name: "facility6", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
+      facilities = [facility_1, facility_2, facility_3, facility_4, facility_5, facility_6]
 
+      RegionBackfill.call(dry_run: false)
       RegionBackfill.call(dry_run: false)
 
       root = Region.find_by(name: "India")
@@ -42,13 +49,18 @@ RSpec.describe RegionBackfill, type: :model do
 
       states = Region.where(type: RegionType.find_by(name: "State"))
       expect(states.count).to eq(2)
+      expect(states.pluck(:slug)).to contain_exactly("state-1", "state-2")
       expect(states.pluck(:name)).to contain_exactly("State 1", "State 2")
 
-      zone_regions = Region.where(type: RegionType.find_by!(name: "Block"))
-      expect(zone_regions.size).to eq(3)
-      expect(zone_regions.map(&:name)).to contain_exactly("Block XYZ", "Block 123", "Block ZZZ")
+      block_regions = Region.where(type: RegionType.find_by!(name: "Block"))
+      expect(block_regions.size).to eq(4)
+      expect(block_regions.map(&:name)).to contain_exactly("Block XYZ", "Block 123", "Block ZZZ", "Block ABC")
 
-      expect(org.leaves.map(&:source)).to contain_exactly(facility_1, facility_2, facility_3)
+      facility_regions = Region.where(type: RegionType.find_by!(name: "Facility"))
+      expect(facility_regions.size).to eq(6)
+      expect(facility_regions.map(&:slug)).to contain_exactly(*facilities.map(&:slug))
+
+      expect(org.leaves.map(&:source)).to contain_exactly(facility_1, facility_2, facility_3, facility_4, facility_5, facility_6)
       expect(org.leaves.map(&:type).uniq).to contain_exactly(RegionType.find_by!(name: "Facility"))
     end
 
