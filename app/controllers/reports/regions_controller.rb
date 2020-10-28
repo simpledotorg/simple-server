@@ -118,8 +118,12 @@ class Reports::RegionsController < AdminController
     @facility_keys = [district, *facilities]
   end
 
+  def default_period
+    Period.month(Date.current.last_month.beginning_of_month).attributes
+  end
+
   def set_period
-    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
+    period_params = report_params[:period].presence || default_period
     @period = Period.new(period_params)
   end
 
