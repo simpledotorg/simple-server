@@ -26,7 +26,7 @@ module Reports
       result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
       result.calculate_percentages(:visited_without_bp_taken)
 
-      start_period = result.earliest_registration_period || range.begin
+      start_period = [result.earliest_registration_period, range.begin].compact.max
       calc_range = (start_period..range.end)
       result.calculate_missed_visits(calc_range)
       result.calculate_missed_visits_percentages(calc_range)
