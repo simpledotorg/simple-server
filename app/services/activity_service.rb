@@ -31,6 +31,12 @@ class ActivityService
     relation.count
   end
 
+  def bp_measures
+    relation = bp_measures_relation
+    relation = relation.group(group) if group.present?
+    relation.count
+  end
+
   private
 
   def registrations_relation
@@ -54,6 +60,27 @@ class ActivityService
       Patient.diabetes_follow_ups_by_period(period, at_region: region, current: include_current_period, last: last)
     when :all
       Patient.follow_ups_by_period(period, at_region: region, current: include_current_period, last: last)
+    else
+      raise ArgumentError, "Unsupported diagnosis"
+    end
+  end
+
+  def bp_measures_relation
+    case diagnosis
+    when :hypertension
+      BloodPressure
+        .joins(:patient).merge(Patient.with_hypertension)
+        .group_by_period(period, :recorded_at, current: include_current_period, last: last)
+        .where(facility: region.facilities)
+    when :diabetes
+      BloodPressure
+        .joins(:patient).merge(Patient.with_diabetes)
+        .group_by_period(period, :recorded_at, current: include_current_period, last: last)
+        .where(facility: region.facilities)
+    when :all
+      BloodPressure
+        .group_by_period(period, :recorded_at, current: include_current_period, last: last)
+        .where(facility: region.facilities)
     else
       raise ArgumentError, "Unsupported diagnosis"
     end

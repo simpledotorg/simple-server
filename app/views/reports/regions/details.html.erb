@@ -149,7 +149,7 @@
                 Registered patients<sup>2</sup>
               </th>
               <th colspan="6">
-                Patient visits<sup>3</sup>
+                BP Measures<sup>3</sup>
               </th>
             </tr>
             <tr class="sorts" data-sort-method="thead">
@@ -188,7 +188,7 @@
                   <% end %>
                   <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                     <td class="ta-center">
-                      ???
+                      <%= dash_if_zero(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, date)) %>
                     </td>
                   <% end %>
                 </tr>
@@ -205,7 +205,7 @@
           <strong>2. Registered patients:</strong> All hypertensive patients registered during a month by staff at <%= @region.name %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Patients visits:</strong> All hypertensive patient visits recorded at <%= @region.name %> during a month. The count is not affected by where the patient was registered or what the patient’s assigned facility is.
+          <strong>3. BP Measures:</strong> All BP measures recorded during a month by staff at <%= @region.name %>
         </p>
       </div>
     </div>

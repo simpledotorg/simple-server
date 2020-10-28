@@ -21,7 +21,8 @@ class FacilityAnalyticsQuery
     results = [
       registered_patients_by_period,
       total_registered_patients,
-      follow_up_patients_by_period
+      follow_up_patients_by_period,
+      bp_measures_by_period
     ].compact
 
     return {} if results.blank?
@@ -53,6 +54,12 @@ class FacilityAnalyticsQuery
     result = ActivityService.new(@facility, group: [BloodPressure.arel_table[:user_id]]).follow_ups
 
     group_by_date_and_user(result, :follow_up_patients_by_period)
+  end
+
+  def bp_measures_by_period
+    result = ActivityService.new(@facility, group: [BloodPressure.arel_table[:user_id]]).bp_measures
+
+    group_by_date_and_user(result, :bp_measures_by_period)
   end
 
   private

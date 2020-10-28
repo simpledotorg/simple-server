@@ -25,8 +25,8 @@ class DistrictAnalyticsQuery
 
   def results
     results = [
-      registered_patients_by_period,
       total_registered_patients,
+      registered_patients_by_period,
       follow_up_patients_by_period
     ].compact
 
