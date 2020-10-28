@@ -49,11 +49,11 @@ class ActivityService
   def follow_ups_relation
     case diagnosis
     when :hypertension
-      Patient.hypertension_follow_ups_by_period(period, at_region: region, last: last)
+      Patient.hypertension_follow_ups_by_period(period, at_region: region, current: include_current_period, last: last)
     when :diabetes
-      Patient.diabetes_follow_ups_by_period(period, at_region: region, last: last)
+      Patient.diabetes_follow_ups_by_period(period, at_region: region, current: include_current_period, last: last)
     when :all
-      Patient.follow_ups_by_period(period, at_region: region, last: last)
+      Patient.follow_ups_by_period(period, at_region: region, current: include_current_period, last: last)
     else
       raise ArgumentError, "Unsupported diagnosis"
     end

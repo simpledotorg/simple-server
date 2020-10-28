@@ -62,16 +62,16 @@ class Patient < ApplicationRecord
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
   scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
-    follow_ups_with(Encounter, period, at_region: at_region, time_column: "encountered_on", last: last)
+    follow_ups_with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
   }
 
   scope :diabetes_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
-    follow_ups_with(BloodSugar, period, at_region: at_region, last: last)
+    follow_ups_with(BloodSugar, period, at_region: at_region, current: current, last: last)
       .with_diabetes
   }
 
   scope :hypertension_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
-    follow_ups_with(BloodPressure, period, at_region: at_region, last: last)
+    follow_ups_with(BloodPressure, period, at_region: at_region, current: current, last: last)
       .with_hypertension
   }
 
@@ -95,7 +95,7 @@ class Patient < ApplicationRecord
       .group_by_period(period, time_column_with_table_name, current: current, last: last)
       .distinct
 
-    relation = relation.where(table_name => { facility_id: at_region.facilities} ) if at_region.present?
+    relation = relation.where(table_name => { facility_id: at_region.facilities.pluck(:id)} ) if at_region.present?
 
     relation
   end
