@@ -231,7 +231,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1)
@@ -248,7 +248,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -257,7 +257,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_group)
@@ -274,7 +274,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -283,7 +283,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
       end
 
       activity_service = ActivityService.new(FacilityDistrict.new(name: "District 1"))
@@ -300,7 +300,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -309,7 +309,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_group, group: BloodPressure.arel_table[:facility_id])
@@ -335,7 +335,7 @@ RSpec.describe ActivityService do
         aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, period: :day)
@@ -362,7 +362,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, include_current_period: false)
@@ -379,7 +379,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, last: 2)
@@ -397,11 +397,11 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         htn_patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: htn_patient, facility: facility_1, recorded_at: date)
-        create(:blood_sugar, :with_encounter, patient: htn_patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: htn_patient, facility: facility_1, recorded_at: date)
+        create(:blood_sugar, patient: htn_patient, facility: facility_1, recorded_at: date)
 
         dm_patient_with_bp = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: dm_patient_with_bp, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: dm_patient_with_bp, facility: facility_1, recorded_at: date)
       end
 
       # Included patients
@@ -411,7 +411,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :diabetes, recorded_at: long_ago)
-        create(:blood_sugar, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_sugar, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, diagnosis: :diabetes)
@@ -428,6 +428,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
+        # We need encounters for these BPs since the generic follow up scope traverses Encounter records
         create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
       end
 
@@ -437,6 +438,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :diabetes, recorded_at: long_ago)
+        # We need encounters for these blood sugars since the generic follow up scope traverses Encounter records
         create(:blood_sugar, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
       end
 
@@ -454,7 +456,7 @@ RSpec.describe ActivityService do
         june_1, june_2, june_3,
         july_1
       ].each do |date|
-        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1)
@@ -470,7 +472,7 @@ RSpec.describe ActivityService do
       [
         june_1, june_2, june_3
       ].each do |date|
-        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, period: :day)
@@ -487,7 +489,7 @@ RSpec.describe ActivityService do
         june_1, june_1, june_1,
         june_2
       ].each do |date|
-        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, period: :day)
@@ -506,7 +508,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1)
@@ -523,7 +525,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -532,7 +534,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_group)
@@ -549,7 +551,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -558,7 +560,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
       end
 
       activity_service = ActivityService.new(FacilityDistrict.new(name: "District 1"))
@@ -575,7 +577,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -584,7 +586,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_2, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_2, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_group, group: BloodPressure.arel_table[:facility_id])
@@ -610,7 +612,7 @@ RSpec.describe ActivityService do
         aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, period: :day)
@@ -637,7 +639,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, include_current_period: false)
@@ -654,7 +656,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, last: 2)
@@ -672,11 +674,11 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         htn_patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: htn_patient, facility: facility_1, recorded_at: date)
-        create(:blood_sugar, :with_encounter, patient: htn_patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: htn_patient, facility: facility_1, recorded_at: date)
+        create(:blood_sugar, patient: htn_patient, facility: facility_1, recorded_at: date)
 
         dm_patient_with_blood_sugar = create(:patient, :diabetes, recorded_at: long_ago)
-        create(:blood_sugar, :with_encounter, patient: dm_patient_with_blood_sugar, facility: facility_1, recorded_at: date)
+        create(:blood_sugar, patient: dm_patient_with_blood_sugar, facility: facility_1, recorded_at: date)
       end
 
       # Included patients
@@ -686,7 +688,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         dm_patient_with_bp = create(:patient, :diabetes, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: dm_patient_with_bp, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: dm_patient_with_bp, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, diagnosis: :diabetes)
@@ -703,7 +705,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :hypertension, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       [
@@ -712,7 +714,7 @@ RSpec.describe ActivityService do
         aug_1, aug_2
       ].each do |date|
         patient = create(:patient, :diabetes, recorded_at: long_ago)
-        create(:blood_pressure, :with_encounter, patient: patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1, diagnosis: :all)
@@ -729,7 +731,7 @@ RSpec.describe ActivityService do
         june_1, june_2, june_3,
         july_1
       ].each do |date|
-        create(:blood_pressure, :with_encounter, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
+        create(:blood_pressure, patient: multi_visit_patient, facility: facility_1, recorded_at: date)
       end
 
       activity_service = ActivityService.new(facility_1)
