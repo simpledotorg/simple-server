@@ -132,7 +132,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def facility_region
-    @facility_region ||= Region.find_by(source_id: @facility.id) if @facility
+    @facility_region ||= Region.find_by(source_id: @facility.id) if @facility.id
   end
 
   def facility_params
