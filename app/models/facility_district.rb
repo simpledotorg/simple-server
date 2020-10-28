@@ -35,6 +35,18 @@ class FacilityDistrict
     query.call
   end
 
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
+  def registered_diabetes_patients
+    Patient.with_diabetes.where(registration_facility: facilities)
+  end
+
+  def registered_patients
+    Patient.where(registration_facility: facilities)
+  end
+
   def assigned_patients
     Patient.where(assigned_facility: facilities)
   end
