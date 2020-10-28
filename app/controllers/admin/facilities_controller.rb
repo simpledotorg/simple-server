@@ -120,7 +120,6 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    facility_region = Region.find_by(source_id: @facility.id)
     zones =
       if facility_region
         facility_region.district.zones
@@ -131,6 +130,9 @@ class Admin::FacilitiesController < AdminController
     @available_zones = zones.pluck(:name)
   end
 
+  def facility_region
+    @facility_region ||= Region.find_by(source_id: @facility.id) if @facility
+  end
 
   def facility_params
     params.require(:facility).permit(
