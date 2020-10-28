@@ -52,8 +52,6 @@ RSpec.describe TelemedicineReports do
       report.generate
 
       expect(report.report_array).to match_array(report_data)
-
-      File.delete(filename) if File.exist?(filename)
     end
   end
 end
