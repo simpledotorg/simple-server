@@ -58,7 +58,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               user: current_user,
               recorded_at: controlled_follow_up_date)
           end
-
+          # we need to refer to this constant before we try to stub_const on it below,
+          # otherwise things get weird
+          ActivityService
+          stub_const("ActivityService::MONTHS_AGO", 3)
           stub_const("UserAnalyticsPresenter::MONTHS_AGO", 3)
         end
 
@@ -67,6 +70,8 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
             travel_to(request_date) {
               described_class.new(current_facility).statistics
             }
+
+          expect(data[:monthly][:grouped_by_date_and_gender][:hypertension][:registrations].keys.size).to eq(6)
 
           expected_output = {
             hypertension: {
@@ -216,7 +221,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               user: current_user,
               recorded_at: follow_up_date)
           end
-
+          # we need to refer to this constant before we try to stub_const on it below,
+          # otherwise things get weird
+          ActivityService
+          stub_const("ActivityService::DAYS_AGO", 6)
           stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
         end
 
@@ -411,6 +419,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               recorded_at: controlled_follow_up_date)
           end
 
+          # we need to refer to this constant before we try to stub_const on it below,
+          # otherwise things get weird
+          ActivityService
+          stub_const("ActivityService::MONTHS_AGO", 3)
           stub_const("UserAnalyticsPresenter::MONTHS_AGO", 3)
         end
 
@@ -522,6 +534,10 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
               recorded_at: follow_up_date)
           end
 
+          # we need to refer to this constant before we try to stub_const on it below,
+          # otherwise things get weird
+          ActivityService
+          stub_const("ActivityService::DAYS_AGO", 6)
           stub_const("UserAnalyticsPresenter::DAYS_AGO", 6)
         end
 
