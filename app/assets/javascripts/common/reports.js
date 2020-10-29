@@ -464,44 +464,6 @@ function initializeCharts() {
   }
 }
 
-function createGraphConfig(config) {
-  let { datasets, graphType, numberOfMonths } = config;
-  let labels = {};
-  if(numberOfMonths){
-    labels = Object.keys(datasets[0].data).slice(-numberOfMonths);
-  }
-  else {
-    labels = Object.keys(datasets[0].data);
-  }
-  const filteredDatasets = datasets.map((dataset, idx) => {
-    let data = null;
-    if(numberOfMonths){
-      data = Object.values(dataset.data).slice(-numberOfMonths);
-    } else {
-      data = Object.values(dataset.data);
-    }
-    return {
-      yAxisID: dataset.id,
-      label: dataset.label,
-      backgroundColor: dataset.rgbaBackgroundColor,
-      borderColor: dataset.rgbaLineColor ? dataset.rgbaLineColor : undefined,
-      borderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-      pointBackgroundColor: dataset.rgbaPointColor,
-      hoverBackgroundColor: dataset.hoverBackgroundColor,
-      hoverBorderWidth: dataset.borderWidth ? dataset.borderWidth : undefined,
-      data: data,
-      type: dataset.graphType ? dataset.graphType : "line",
-    }
-  });
-  return {
-    type: graphType,
-    data: {
-      labels: labels,
-      datasets: filteredDatasets
-      }
-    }
-  }
-
 function createGraphOptions(xAxes, yAxes) {
   return {
     animation: false,
