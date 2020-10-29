@@ -1,6 +1,4 @@
 class Api::V3::AppointmentsController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
-
   def sync_from_user
     __sync_from_user__(appointments_params)
   end
@@ -14,10 +12,6 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
   end
 
   private
-
-  def facility_group_records
-    Appointment.syncable_to_region(current_facility_group)
-  end
 
   def merge_if_valid(appointment_params)
     validator = Api::V3::AppointmentPayloadValidator.new(appointment_params)

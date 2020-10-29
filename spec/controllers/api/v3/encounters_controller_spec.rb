@@ -24,9 +24,10 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
   def create_record_list(n, options = {})
     encounters = []
     facility = create(:facility, facility_group: request_facility.facility_group)
+    patient = create(:patient, registration_facility: facility)
 
     n.times.each do |_|
-      encounters << create_record({facility: facility}.merge(options))
+      encounters << create_record({facility: facility, patient: patient}.merge(options))
     end
 
     encounters
