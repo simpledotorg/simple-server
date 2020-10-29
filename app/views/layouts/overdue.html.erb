@@ -43,22 +43,22 @@
     <% end %>
   </section>
   <section class="mb-5">
-    <% if current_facility %>
-      <% if @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
+    <% if @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
+      <% if current_facility %>
         <h4>
           Download
         </h4>
         <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
           Download results
         <% end %>
+      <% else %>
+        <h4>
+          Download
+        </h4>
+        <p>
+          <em>Select a facility to download the patient list</em>
+        </p>
       <% end %>
-    <% else %>
-      <h4>
-        Download
-      </h4>
-      <p>
-        <em>Select a facility to download the patient list</em>
-      </p>
     <% end %>
   </section>
   <%= yield %>
