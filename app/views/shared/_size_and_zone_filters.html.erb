@@ -18,16 +18,24 @@
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
     <form id="query-filters">
       <button
-        class="dropdown-item <%= "active" unless @selected_zones.size == 1 %> filter-by-zone"
-        data-value=""
+        class="dropdown-item <%= "active" unless @selected_zones.size == 1 %>"
+        value=""
+        name="size"
+        type="submit"
+        form="query-filters"
+        onclick="$('#selected-zone').remove()"
       >
         All blocks
       </button>
       <div class="dropdown-divider"></div>
       <% @zones.each do |zone| %>
         <button
-          class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %> filter-by-zone"
-          data-value="<%= zone %>"
+          class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>"
+          value="<%= zone %>"
+          name="zone"
+          type="submit"
+          form="query-filters"
+          onclick="$('#selected-zone').remove()"
         >
           <%= zone.capitalize %>
         </button>
@@ -54,8 +62,12 @@
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
     <button
-      class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %> filter-by-size"
-      data-value=""
+      class="dropdown-item <%= "active" unless @selected_sizes.size == 1 %>"
+      value=""
+      name="size"
+      type="submit"
+      form="query-filters"
+      onclick="$('#selected-size').remove()"
     >
       All facility sizes
     </button>
@@ -63,7 +75,11 @@
     <% @facility_sizes.each do |size| %>
       <button
         class="dropdown-item query-filter-size <%= "active" if @selected_sizes.size == 1 && @selected_sizes.first == size %> filter-by-size"
-        data-value="<%= size %>"
+        value="<%= size %>"
+        name="size"
+        type="submit"
+        form="query-filters"
+        onclick="$('#selected-size').remove()"
       >
         <%= size.capitalize %>
       </button>
