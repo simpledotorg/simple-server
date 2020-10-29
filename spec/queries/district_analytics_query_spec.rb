@@ -2,12 +2,11 @@ require "rails_helper"
 
 RSpec.describe DistrictAnalyticsQuery do
   let!(:organization) { create(:organization) }
-  let!(:facility_group) { create(:facility_group, organization: organization) }
-  let!(:district_name) { "Bathinda" }
-  let!(:facility_1) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:facility_2) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:facility_3) { create(:facility, facility_group: facility_group, district: district_name) }
-  let!(:analytics) { DistrictAnalyticsQuery.new(district_name, Facility.all, :month, 5) }
+  let!(:facility_group) { create(:facility_group, name: "Bathinda", organization: organization) }
+  let!(:facility_1) { create(:facility, facility_group: facility_group) }
+  let!(:facility_2) { create(:facility, facility_group: facility_group) }
+  let!(:facility_3) { create(:facility, facility_group: facility_group) }
+  let!(:analytics) { DistrictAnalyticsQuery.new(facility_group, :month, 5) }
   let!(:current_month) { Date.current.beginning_of_month }
 
   let(:four_months_back) { current_month - 4.months }
@@ -110,57 +109,48 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
-    describe "#total_patients" do
+    describe "#total_registered_patients" do
       context "considers only htn diagnosed patients" do
-        it "groups the assigned patients by facility" do
+        it "groups patients by registration facility" do
           expected_result =
             {
-              facility_2.id =>
+              facility_1.id =>
                 {
-                  total_patients: 6
+                  total_registered_patients: 6
                 },
 
-              facility_3.id =>
+              facility_2.id =>
                 {
-                  total_patients: 6
+                  total_registered_patients: 6
                 }
             }
 
-          expect(analytics.total_patients).to eq(expected_result)
+          expect(analytics.total_registered_patients).to eq(expected_result)
         end
       end
     end
 
-    describe "#patients_with_bp_by_period" do
-      context "considers only htn diagnosed patients" do
-        it "groups the assigned patient visits by facility and beginning of month" do
-          expected_result =
-            {
-              facility_2.id =>
-                {
-                  patients_with_bp_by_period:
-                    {
-                      four_months_back => 0,
-                      three_months_back => 3,
-                      two_months_back => 6,
-                      one_month_back => 3
-                    }
-                },
-
-              facility_3.id =>
-                {
-                  patients_with_bp_by_period:
-                    {
-                      four_months_back => 0,
-                      three_months_back => 3,
-                      two_months_back => 6,
-                      one_month_back => 3
-                    }
-                }
+    describe "#follow_up_patients_by_period" do
+      it "counts follow up BPs recorded at the facility in the period" do
+        expected_result = {
+          facility_1.id => {
+            follow_up_patients_by_period: {
+              three_months_back => 3,
+              two_months_back => 6,
+              one_month_back => 3
             }
+          },
 
-          expect(analytics.patients_with_bp_by_period).to eq(expected_result)
-        end
+          facility_2.id => {
+            follow_up_patients_by_period: {
+              three_months_back => 3,
+              two_months_back => 6,
+              one_month_back => 3
+            }
+          }
+        }
+
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
 
@@ -170,17 +160,17 @@ RSpec.describe DistrictAnalyticsQuery do
 
       it "does not contain data from a different organization" do
         expect(analytics.registered_patients_by_period.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.total_patients.keys).not_to include(facility_in_another_org.id)
-        expect(analytics.patients_with_bp_by_period.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.total_registered_patients.keys).not_to include(facility_in_another_org.id)
+        expect(analytics.follow_up_patients_by_period.keys).not_to include(facility_in_another_org.id)
       end
     end
   end
 
   context "when there is no data available" do
     it "returns nil for all analytics queries" do
+      expect(analytics.total_registered_patients).to eq(nil)
       expect(analytics.registered_patients_by_period).to eq(nil)
-      expect(analytics.total_patients).to eq(nil)
-      expect(analytics.patients_with_bp_by_period).to eq(nil)
+      expect(analytics.follow_up_patients_by_period).to eq(nil)
     end
   end
 
@@ -221,36 +211,19 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
-    describe "#patients_with_bp_by_period" do
+    describe "#follow_up_patients_by_period" do
       it "excludes count discarded patients" do
         expected_result =
           {
             facility_2.id =>
               {
-                patients_with_bp_by_period: {
-                  four_months_back => 0,
-                  three_months_back => 1,
-                  two_months_back => 0,
-                  one_month_back => 0
+                follow_up_patients_by_period: {
+                  three_months_back => 1
                 }
               }
           }
 
-        expect(analytics.patients_with_bp_by_period).to eq(expected_result)
-      end
-    end
-
-    describe "#total_assigned_patients" do
-      it "excludes count discarded patients" do
-        expected_result =
-          {
-            facility_2.id =>
-              {
-                total_patients: 1
-              }
-          }
-
-        expect(analytics.total_patients).to eq(expected_result)
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
   end
