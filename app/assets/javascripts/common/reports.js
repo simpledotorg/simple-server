@@ -615,22 +615,65 @@ function initializeCharts() {
         },
       ],
     },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0
+        }
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [{
+          stacked: true,
+          display: false,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        }],
+      },
+    },
   };
-
-  visitDetailsGraphConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: true,
-      display: true,
-      displayGridLines: false,
-      drawBorder: false,
-    })],
-    [createAxisConfig({
-      stacked: true,
-      display: false,
-      displayGridLines: false,
-      drawBorder: false,
-    })],
-  );
 
   visitDetailsGraphConfig.options.tooltips = {
     mode: "x",
