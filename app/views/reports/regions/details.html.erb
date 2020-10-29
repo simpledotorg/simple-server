@@ -1,4 +1,4 @@
-<%= render "header"%>
+<%= render "header", period_selector: false %>
 <% if @region.is_a?(Facility) %>
   <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
     <div class="card mt-0 pr-0 pr-md-3 pb-iniside-avoid">
