@@ -1,6 +1,4 @@
 class Api::V3::EncountersController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
-
   before_action :stub_syncing_from_user, only: [:sync_from_user]
   before_action :stub_syncing_to_user, only: [:sync_to_user]
 
@@ -22,10 +20,6 @@ class Api::V3::EncountersController < Api::V3::SyncController
   end
 
   private
-
-  def facility_group_records
-    Encounter.syncable_to_region(current_facility_group)
-  end
 
   def encounter_facility_id(encounter_params)
     return current_facility.id if encounter_params["observations"].values.flatten.empty?

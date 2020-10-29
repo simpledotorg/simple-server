@@ -12,13 +12,13 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     create(:prescription_drug, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     create_list(:prescription_drug, n, {patient: patient}.merge(options))
   end
@@ -79,8 +79,8 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
 
-    describe "v3 facility prioritisation" do
-      it "syncs request facility's records first" do
+    describe "v3 patient prioritisation" do
+      it "syncs records for patients in the request facility first" do
         request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)

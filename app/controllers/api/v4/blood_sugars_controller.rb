@@ -1,5 +1,4 @@
 class Api::V4::BloodSugarsController < Api::V4::SyncController
-  include Api::V3::PrioritisableByFacility
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry
 
@@ -12,10 +11,6 @@ class Api::V4::BloodSugarsController < Api::V4::SyncController
   end
 
   private
-
-  def facility_group_records
-    BloodSugar.syncable_to_region(current_facility_group)
-  end
 
   def transform_to_response(blood_sugar)
     Api::V4::BloodSugarTransformer.to_response(blood_sugar)
