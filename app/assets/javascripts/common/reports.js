@@ -679,17 +679,57 @@ function initializeCharts() {
     mode: "x",
     enabled: false,
     custom: function (tooltip) {
-      return stackedBarChartTooltip({
-        tooltip,
-        elementId: "visit-details",
-        missedVisitsPatients: Object.values(data.missedVisits).slice(18, 24),
-        visitButNoBPMeasurePatients: Object.values(data.visitButNoBPMeasure).slice(18, 24),
-        uncontrolledPatients: Object.values(data.uncontrolledPatients).slice(18, 24),
-        controlledPatients: Object.values(data.controlledPatients).slice(18, 24),
-        adjustedRegistrations: Object.values(data.adjustedRegistrations).slice(18, 24),
-        periodInfo: Object.values(data.periodInfo).slice(18, 24),
-      });
-    }
+      const cardNode = document.getElementById("visit-details");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
+      const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
+      const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
+      const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
+      const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
+      const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
+      const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
+      const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
+      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
+      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
+      const adjustedRegistrationsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
+      let label = null;
+      let missedVisitsRate = null;
+      let visitButNoBPMeasureRate = null;
+      let uncontrolledRate = null;
+      let controlledRate = null;
+      if (tooltip.dataPoints) {
+        missedVisitsRate = tooltip.dataPoints[3].value + "%";
+        visitButNoBPMeasureRate = tooltip.dataPoints[2].value + "%";
+        uncontrolledRate = tooltip.dataPoints[1].value + "%";
+        controlledRate = tooltip.dataPoints[0].value + "%";
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        missedVisitsRate = missedVisitsRateNode.getAttribute("data-missed-visits-rate");
+        visitButNoBPMeasureRate = visitButNoBPMeasureRateNode.getAttribute("data-visit-but-no-bp-measure-rate");
+        uncontrolledRate = uncontrolledRateNode.getAttribute("data-uncontrolled-rate");
+        controlledRate = controlledRateNode.getAttribute("data-controlled-rate");
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const adjustedRegistrations = data.adjustedRegistrations[label];
+      const totalMissedVisits = data.missedVisits[label];
+      const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[label];
+      const totalUncontrolledPatients = data.uncontrolledPatients[label];
+      const totalControlledPatients = data.controlledPatients[label];
+
+      missedVisitsRateNode.innerHTML = missedVisitsRate;
+      visitButNoBPMeasureRateNode.innerHTML = visitButNoBPMeasureRate;
+      uncontrolledRateNode.innerHTML = uncontrolledRate;
+      controlledRateNode.innerHTML = controlledRate;
+      missedVisitsPatientsNode.innerHTML = formatNumberWithCommas(totalMissedVisits);
+      visitButNoBPMeasurePatientsNode.innerHTML = formatNumberWithCommas(totalVisitButNoBPMeasure);
+      uncontrolledPatientsNode.innerHTML = formatNumberWithCommas(totalUncontrolledPatients);
+      controlledPatientsNode.innerHTML = formatNumberWithCommas(totalControlledPatients);
+      periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
+      periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
+      adjustedRegistrationsNodes.forEach(node => node.innerHTML = adjustedRegistrations);
+    },
   };
 
   const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
@@ -708,59 +748,6 @@ function createAxisMaxAndStepSize(data) {
     stepSize: axisStepSize,
   };
 };
-
-function stackedBarChartTooltip(config) {
-  const {
-    tooltip,
-    elementId,
-    missedVisitsPatients,
-    visitButNoBPMeasurePatients,
-    uncontrolledPatients,
-    controlledPatients,
-    adjustedRegistrations,
-    periodInfo,
-  } = config;
-  const { dataPoints } = tooltip;
-
-  const cardNode = document.getElementById(elementId);
-  const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
-  const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
-  const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
-  const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
-  const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
-  const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
-  const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
-  const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
-  const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-  const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-  const cumulativeRegistrationsNodes = cardNode.querySelectorAll("[data-cumulative-registrations]");
-
-  if (dataPoints == undefined) {
-    missedVisitsRateNode.innerHTML = missedVisitsRateNode.getAttribute("data-missed-visits-rate");
-    visitButNoBPMeasureRateNode.innerHTML = visitButNoBPMeasureRateNode.getAttribute("data-visit-but-no-bp-measure-rate");
-    uncontrolledRateNode.innerHTML = uncontrolledRateNode.getAttribute("data-uncontrolled-rate");
-    controlledRateNode.innerHTML = controlledRateNode.getAttribute("data-controlled-rate");
-    missedVisitsPatientsNode.innerHTML = missedVisitsPatientsNode.getAttribute("data-missed-visits-patients");
-    visitButNoBPMeasurePatientsNode.innerHTML = visitButNoBPMeasurePatientsNode.getAttribute("data-visit-but-no-bp-measure-patients");
-    uncontrolledPatientsNode.innerHTML = uncontrolledPatientsNode.getAttribute("data-uncontrolled-patients");
-    controlledPatientsNode.innerHTML = controlledPatientsNode.getAttribute("data-controlled-patients");
-    periodStartNodes.forEach(node => node.innerHTML = periodStartNodes[0].getAttribute("data-period-start"));
-    periodEndNodes.forEach(node => node.innerHTML = periodEndNodes[0].getAttribute("data-period-end"));
-    cumulativeRegistrationsNodes.forEach(node => node.innerHTML = cumulativeRegistrationsNodes[0].getAttribute("data-cumulative-registrations"));
-  } else {
-    missedVisitsRateNode.innerHTML = dataPoints[3].value + "%";
-    visitButNoBPMeasureRateNode.innerHTML = dataPoints[2].value + "%";
-    uncontrolledRateNode.innerHTML = dataPoints[1].value + "%";
-    controlledRateNode.innerHTML = dataPoints[0].value + "%";
-    missedVisitsPatientsNode.innerHTML = formatNumberWithCommas(missedVisitsPatients[dataPoints[0].index]);
-    visitButNoBPMeasurePatientsNode.innerHTML = formatNumberWithCommas(visitButNoBPMeasurePatients[dataPoints[0].index]);
-    uncontrolledPatientsNode.innerHTML = formatNumberWithCommas(uncontrolledPatients[dataPoints[0].index]);
-    controlledPatientsNode.innerHTML = formatNumberWithCommas(controlledPatients[dataPoints[0].index]);
-    periodStartNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_start_date);
-    periodEndNodes.forEach(node => node.innerHTML = periodInfo[dataPoints[0].index].bp_control_end_date);
-    cumulativeRegistrationsNodes.forEach(node => node.innerHTML = formatNumberWithCommas(adjustedRegistrations[dataPoints[0].index]));
-  }
-}
 
 function formatNumberWithCommas(value) {
   if(value == undefined) {

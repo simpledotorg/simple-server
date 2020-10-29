@@ -1,4 +1,4 @@
-<div id="visit-details" class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid pb-after-always b-print-black w-print-16cm">
+<div id="visit-details" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid pb-after-always b-print-black w-print-16cm">
   <h3 class="mb-0px pl-20px">
     Visit details of all hypertensive patients
   </h3>
@@ -37,7 +37,7 @@
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
+                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
                   </span>
                   patients registered till
@@ -82,7 +82,7 @@
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
+                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
                   </span>
                   patients registered till
@@ -127,7 +127,7 @@
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
+                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
                   </span>
                   patients registered till
@@ -172,7 +172,7 @@
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-cumulative-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
+                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
                     <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
                   </span>
                   patients registered till
