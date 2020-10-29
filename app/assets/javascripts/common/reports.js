@@ -91,6 +91,7 @@ function initializeCharts() {
       }],
     },
   };
+
   controlledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
@@ -146,19 +147,24 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const missedVisitsConfig = createGraphConfig({
-    datasets: [{
-      data: data.missedVisitsRate,
-      borderWidth: 2,
-      rgbaLineColor: mediumBlueColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: lightBlueColor,
-      pointBackgroundColor: whiteColor,
-      hoverBackgroundColor: whiteColor,
-      label: "Missed visits",
-    }],
-    graphType: "line",
-  });
+  const missedVisitsConfig = {
+    type: "line",
+    data: {
+      labels: Object.keys(data.missedVisitsRate),
+      datasets: [{
+        label: "Missed visits",
+        backgroundColor: lightBlueColor,
+        borderColor: mediumBlueColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.missedVisitsRate),
+        type: "line",
+      }],
+    },
+  };
+
   missedVisitsConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
