@@ -33,6 +33,10 @@
               <button
                 class="dropdown-item filter-by-period <%= "active" if period.to_s == @selected_period.to_s %>"
                 data-value="<%= period %>"
+                name="period"
+                type="submit"
+                form="query-filters"
+                onclick="$('#selected-period').remove()"
               >
                 <%= period_name %>
               </button>
@@ -128,19 +132,4 @@
       </table>
     </div>
   </div>
-  <script>
-    const $filtersForm = document.getElementById("query-filters");
-    const $filterByPeriodButtons = document.getElementsByClassName("filter-by-period");
-
-    Array.from($filterByPeriodButtons).forEach($button => {
-      const period = $button.getAttribute("data-value");
-
-      $button.addEventListener("click", function() {
-        const $selectedPeriod = document.getElementById("selected-period");
-
-        $selectedPeriod.setAttribute("value", period);
-        $filtersForm.submit();
-      });
-    });
-  </script>
 </div>
