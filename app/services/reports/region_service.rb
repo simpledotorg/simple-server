@@ -2,9 +2,9 @@ module Reports
   class RegionService
     MAX_MONTHS_OF_DATA = 24
 
-    # THe default period we report on is the last month so we show the last full completed month of data.
+    # The default period we report on is the current month.
     def self.default_period
-      Period.month(Date.current.last_month.beginning_of_month)
+      Period.month(Date.current.beginning_of_month)
     end
 
     def initialize(region:, period:)

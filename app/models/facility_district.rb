@@ -21,8 +21,7 @@ class FacilityDistrict
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
     query = DistrictAnalyticsQuery.new(
-      name,
-      facilities,
+      self,
       period,
       prev_periods,
       include_current_period: include_current_period
@@ -34,6 +33,18 @@ class FacilityDistrict
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
 
     query.call
+  end
+
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
+  def registered_diabetes_patients
+    Patient.with_diabetes.where(registration_facility: facilities)
+  end
+
+  def registered_patients
+    Patient.where(registration_facility: facilities)
   end
 
   def assigned_patients
