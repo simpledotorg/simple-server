@@ -44,25 +44,21 @@
   </section>
   <section class="mb-5">
     <% if current_facility %>
-      <% if current_admin.permissions_v2_enabled? %>
-        <% if @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
-          <h4>
-            Download
-          </h4>
-          <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
-            Download results
-          <% end %>
-        <% end %>
-      <% else %>
-        <% if @patient_summaries.present? && policy([:overdue_list, @patient_summaries.first]).download? %>
-          <h4>
-            Download
-          </h4>
-          <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
-            Download results
-          <% end %>
+      <% if @patient_summaries.present? && current_admin.accessible_facilities(:manage_overdue_list).include?(current_facility) %>
+        <h4>
+          Download
+        </h4>
+        <%= link_to(@index_params.merge(format: "csv"), class: "", data: { confirm: I18n.t('admin.phi_download_alert') }) do %>
+          Download results
         <% end %>
       <% end %>
+    <% else %>
+      <h4>
+        Download
+      </h4>
+      <p>
+        <em>Select a facility to download the patient list</em>
+      </p>
     <% end %>
   </section>
   <%= yield %>
