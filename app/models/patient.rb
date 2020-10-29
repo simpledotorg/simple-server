@@ -61,17 +61,17 @@ class Patient < ApplicationRecord
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
 
-  scope :follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(Encounter, period, time_column: "encountered_on", last: last)
+  scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
+    follow_ups_with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
   }
 
-  scope :diabetes_follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(BloodSugar, period, last: last)
+  scope :diabetes_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
+    follow_ups_with(BloodSugar, period, at_region: at_region, current: current, last: last)
       .with_diabetes
   }
 
-  scope :hypertension_follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(BloodPressure, period, last: last)
+  scope :hypertension_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
+    follow_ups_with(BloodPressure, period, at_region: at_region, current: current, last: last)
       .with_hypertension
   }
 
@@ -86,14 +86,21 @@ class Patient < ApplicationRecord
     with_discarded.where(registration_facility: region.facilities)
   }
 
-  def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
+  def self.follow_ups_with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
 
-    joins(table_name)
+    relation = joins(table_name)
       .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
-      .group_by_period(period, time_column_with_table_name, last: last)
+      .group_by_period(period, time_column_with_table_name, current: current, last: last)
       .distinct
+
+    if at_region.present?
+      facility_ids = at_region.facilities.map(&:id)
+      relation = relation.where(table_name => {facility_id: facility_ids})
+    end
+
+    relation
   end
 
   enum could_not_contact_reasons: {
