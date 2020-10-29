@@ -18,8 +18,8 @@ RSpec.describe TelemedicineReports do
 
   before do
     allow(Flipper).to receive(:enabled?).with(:weekly_telemed_report).and_return(true)
-    allow(ENV).to receive(:[]).with("TELEMED_REPORT_EMAILS").and_return("test@example.com")
-    allow(ENV).to receive(:[]).with("MIXPANEL_API_SECRET").and_return("fake_api_secret")
+    allow(ENV).to receive(:fetch).with("TELEMED_REPORT_EMAILS").and_return("test@example.com")
+    allow(ENV).to receive(:fetch).with("MIXPANEL_API_SECRET").and_return("fake_api_secret")
     allow_any_instance_of(described_class).to receive(:fetch_mixpanel_data).and_return(File.read(file_path))
     allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later)
   end
