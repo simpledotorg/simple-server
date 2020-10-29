@@ -1,17 +1,18 @@
 class DistrictAnalyticsQuery
   include DashboardHelper
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
-  attr_reader :facilities
+  attr_reader :region, :facilities
 
-  def initialize(district_name, facilities, period = :month, prev_periods = 3, from_time = Time.current,
+  def initialize(region, period = :month, prev_periods = 3, from_time = Time.current,
     include_current_period: false)
 
     @period = period
     @prev_periods = prev_periods
-    @facilities = facilities
-    @district_name = district_name
+    @region = region
+    @facilities = @region.facilities
+    @district_name = @region.name
     @from_time = from_time
     @include_current_period = include_current_period
   end
@@ -24,53 +25,41 @@ class DistrictAnalyticsQuery
 
   def results
     results = [
+      total_registered_patients,
       registered_patients_by_period,
-      total_patients,
-      patients_with_bp_by_period
+      follow_up_patients_by_period
     ].compact
 
     return {} if results.blank?
     results.inject(&:deep_merge)
   end
 
-  def total_patients
-    @total_patients ||=
-      Patient
-        .with_hypertension
-        .joins(:assigned_facility)
-        .where(facilities: {id: facilities})
-        .group("facilities.id")
-        .count
-
-    return if @total_patients.blank?
-
-    @total_patients
-      .map { |facility_id, count| [facility_id, {total_patients: count}] }
-      .to_h
-  end
-
-  def registered_patients_by_period
-    @registered_patients_by_period ||=
+  def total_registered_patients
+    @total_registered_patients ||=
       Patient
         .with_hypertension
         .joins(:registration_facility)
         .where(facilities: {id: facilities})
         .group("facilities.id")
-        .group_by_period(@period, :recorded_at)
         .count
 
-    group_by_facility_and_date(@registered_patients_by_period, :registered_patients_by_period)
+    return if @total_registered_patients.blank?
+
+    @total_registered_patients
+      .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
+      .to_h
   end
 
-  def patients_with_bp_by_period
-    @patients_with_bp_by_period ||=
-      Patient
-        .group("assigned_facility_id")
-        .where(assigned_facility: facilities)
-        .hypertension_follow_ups_by_period(@period, last: @prev_periods)
-        .count
+  def registered_patients_by_period
+    result = ActivityService.new(region, group: [:registration_facility_id]).registrations
 
-    group_by_facility_and_date(@patients_with_bp_by_period, :patients_with_bp_by_period)
+    group_by_date_and_facility(result, :registered_patients_by_period)
+  end
+
+  def follow_up_patients_by_period
+    result = ActivityService.new(region, group: BloodPressure.arel_table[:facility_id]).follow_ups
+
+    group_by_date_and_facility(result, :follow_up_patients_by_period)
   end
 
   private
@@ -86,15 +75,19 @@ class DistrictAnalyticsQuery
     ].join("/")
   end
 
-  def group_by_facility_and_date(query_results, key)
+  def group_by_date_and_facility(result, key)
     valid_dates = dates_for_periods(@period,
       @prev_periods,
       from_time: @from_time,
       include_current_period: @include_current_period)
 
-    query_results.map { |(facility_id, date), value|
-      {facility_id => {key => {date => value}.slice(*valid_dates)}}
-    }.inject(&:deep_merge)
+    transformed_result = result.each_with_object({}) { |((date, facility_id), count), hsh|
+      next unless date.in?(valid_dates)
+      hsh[facility_id] ||= {key => {}}
+      hsh[facility_id][key][date] = count
+    }
+
+    transformed_result.presence
   end
 
   def force_cache?
