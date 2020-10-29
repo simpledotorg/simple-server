@@ -90,24 +90,68 @@ function initializeCharts() {
         type: "line",
       }],
     },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: true,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [{
+          stacked: false,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: 25,
+            max: 100,
+          },
+        }],
+      },
+    },
   };
 
-  controlledGraphConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: false,
-      drawBorder: true,
-    })],
-    [createAxisConfig({
-      stacked: false,
-      display: true,
-      displayGridLines: true,
-      drawBorder: false,
-      stepSize: 25,
-      max: 100,
-    })],
-  );
   controlledGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
