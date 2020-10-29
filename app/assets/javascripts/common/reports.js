@@ -74,19 +74,23 @@ function getReportingData() {
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlledGraphConfig = createGraphConfig({
-    datasets: [{
-      data: data.controlRate,
-      borderWidth: 2,
-      rgbaLineColor: mediumGreenColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: lightGreenColor,
-      pointBackgroundColor: whiteColor,
-      hoverBackgroundColor: whiteColor,
-      label: "HTN controlled",
-    }],
-    graphType: "line",
-  });
+  const controlledGraphConfig = {
+    type: "line",
+    data: {
+      labels: Object.keys(data.controlRate),
+      datasets: [{
+        label: "BP controlled",
+        backgroundColor: lightGreenColor,
+        borderColor: mediumGreenColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.controlRate),
+        type: "line",
+      }],
+    },
+  };
   controlledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
