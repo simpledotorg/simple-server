@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-lg-12 pr-lg-0">
+  <div class="col-lg-12">
     <div class="card card-responsive">
       <% cohort_period = @selected_cohort_period[:cohort_period] %>
       <% registration_quarter =  @selected_cohort_period[:registration_quarter] %>
@@ -18,52 +18,75 @@
       <% when :quarter %>
         <%  "Q#{registration_quarter}-#{registration_year}" %>
       <% end %>
-      <div class="row">
-        <div class="col-lg-9 pr-5 pr-md-0">
-          <h3>BP control</h3>
-          <p><%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:cohort_patients]) %> patients registered in <%= registration_period %>,
-            at their last visit in <%= visited_in_period %>.
+      <div>
+        <div>
+          <div class="d-flex align-baseline jc-between">
+            <h3>
+              BP control
+            </h3>
+            <p class="c-grey-dark">
+              Last updated: <%= @last_updated_at %>
+            </p>
+          </div>
+          <p>
+            <%= registration_period %> cohort is the outcome for <%= number_with_delimiter(@totals[:cohort_patients]) %> patients registered in <%= registration_period %>, at their last visit in <%= visited_in_period %>.
+          </p>
         </div>
-
-        <div class="mt-1 mb-3 col-lg-3">
+        <div class="d-flex fw-wrap">
+          <%= render "shared/size_and_zone_filters" %>
           <div class="dropdown show">
-            <a class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 12em;">
+            <a
+              class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+              href="#"
+              role="button"
+              id="dropdownMenuLink"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
               Patients registered in <%= registration_period %>
             </a>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <h6 class="dropdown-header">Quarterly</h6>
+              <h6 class="dropdown-header">
+                Quarterly
+              </h6>
               <% last_n_quarters(n: 6).each do |year, quarter| %>
                 <% selected = (year == registration_year && quarter == registration_quarter && cohort_period == :quarter) %>
-                <button class="dropdown-item query-filter-quarter <%= 'active' if selected %>"
-                        type="submit" data-quarter="<%= quarter %>" data-year="<%= year %>" form="query-filters">
+                <button
+                  class="dropdown-item query-filter-quarter <%= 'active' if selected %>"
+                  type="submit"
+                  data-quarter="<%= quarter %>"
+                  data-year="<%= year %>"
+                  form="query-filters"
+                >
                   <%= "Q#{quarter}-#{year}" %>
                 </button>
               <% end %>
               <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Monthly</h6>
+              <h6 class="dropdown-header">
+                Monthly
+              </h6>
               <% last_n_months(n: 6).each do |month| %>
                 <% selected = (month.year == registration_year && month.month == registration_month && cohort_period == :month) %>
-                <button class="dropdown-item query-filter-month <%= 'active' if selected %>"
-                        type="submit" data-month="<%= month.month %>" data-year="<%= month.year %>" form="query-filters">
+                <button
+                  class="dropdown-item query-filter-month <%= 'active' if selected %>"
+                  type="submit"
+                  data-month="<%= month.month %>"
+                  data-year="<%= month.year %>"
+                  form="query-filters"
+                >
                   <%= month_short_name_and_year(month) %>
                 </button>
               <% end %>
-
               <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters" hidden>
               <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters" hidden>
               <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters" hidden>
               <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters" hidden>
-              <input class="selected-quarter" name="registration_quarter" value="<%= registration_quarter %>" form="query-filters-mobile" hidden>
-              <input class="selected-month" name="registration_month" value="<%= registration_month %>" form="query-filters-mobile" hidden>
-              <input class="selected-year" name="registration_year" value="<%= registration_year %>" form="query-filters-mobile" hidden>
-              <input class="selected-cohort-period" name="cohort_period" value="<%= cohort_period %>" form="query-filters-mobile" hidden>
             </div>
           </div>
         </div>
       </div>
-
-      <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
+      <table class="mt-5 table table-compact table-responsive-md table-hover analytics-table">
         <colgroup>
           <col>
           <col class="table-divider">
@@ -160,27 +183,27 @@
       </ol>
     </section>
     <script>
-        function setSelectedQuarter(quarter, year) {
-            $('.selected-quarter').val(quarter);
-            $('.selected-year').val(year);
-            $('.selected-cohort-period').val('quarter');
-            $('.selected-month').remove();
-        }
+      function setSelectedQuarter(quarter, year) {
+          $('.selected-quarter').val(quarter);
+          $('.selected-year').val(year);
+          $('.selected-cohort-period').val('quarter');
+          $('.selected-month').remove();
+      }
 
-        function setSelectedMonth(month, year) {
-            $('.selected-month').val(month);
-            $('.selected-year').val(year);
-            $('.selected-cohort-period').val('month');
-            $('.selected-quarter').remove();
-        }
+      function setSelectedMonth(month, year) {
+          $('.selected-month').val(month);
+          $('.selected-year').val(year);
+          $('.selected-cohort-period').val('month');
+          $('.selected-quarter').remove();
+      }
 
-        $('.query-filter-quarter').click(function() {
-            setSelectedQuarter($(this).data('quarter'), $(this).data('year'))
-        });
+      $('.query-filter-quarter').click(function() {
+          setSelectedQuarter($(this).data('quarter'), $(this).data('year'))
+      });
 
-        $('.query-filter-month').click(function() {
-            setSelectedMonth($(this).data('month'), $(this).data('year'))
-        })
+      $('.query-filter-month').click(function() {
+          setSelectedMonth($(this).data('month'), $(this).data('year'))
+      });
     </script>
   </div>
 </div>
