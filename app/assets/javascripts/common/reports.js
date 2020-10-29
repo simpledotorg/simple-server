@@ -698,62 +698,6 @@ function initializeCharts() {
   }
 }
 
-function createGraphOptions(xAxes, yAxes) {
-  return {
-    animation: false,
-    responsive: true,
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        left: 0,
-        right: 0,
-        top: 20,
-        bottom: 0
-      }
-    },
-    elements: {
-      point: {
-        pointStyle: "circle",
-        hoverRadius: 5,
-      },
-    },
-    legend: {
-      display: false,
-    },
-    scales: {
-      xAxes,
-      yAxes,
-    },
-  };
-}
-
-function createAxisConfig(config) {
-  const { stacked, display, displayGridLines, drawBorder, stepSize, max, id, position } = config;
-  let axisConfig = {
-    id,
-    position: position ? position : "left",
-    stacked,
-    display,
-    gridLines: {
-      display: displayGridLines,
-      drawBorder,
-    },
-    ticks: {
-      autoSkip: false,
-      fontColor: darkGreyColor,
-      fontSize: 12,
-      fontFamily: "Roboto Condensed",
-      padding: 8,
-      min: 0,
-      beginAtZero: true,
-      stepSize,
-      max
-    },
-  };
-
-  return axisConfig;
-};
-
 function createAxisMaxAndStepSize(data) {
   const maxDataValue = Math.max(...Object.values(data));
   const maxAxisValue = Math.round(maxDataValue * 1.15);
@@ -763,22 +707,6 @@ function createAxisMaxAndStepSize(data) {
     max: maxAxisValue,
     stepSize: axisStepSize,
   };
-};
-
-function customTooltip(tooltip, numerator, denominator, periodInfo) {
-  const { dataPoints } = tooltip;
-  const valueElement = document.getElementById("bp-controlled-value");
-  const defaultValue = valueElement.textContent;
-  const endDateElement = document.getElementById("bp-controlled-end-date");
-  const defaultEndDate = endDateElement.textContent;
-
-  if (dataPoints == undefined) {
-    valueElement.innerHTML = defaultValue;
-    endDateElement.innerHTML = defaultEndDate;
-  } else {
-    valueElement.innerHTML = dataPoints[0].value;
-    endDateElement.innerHTML = dataPoints[0].label;
-  }
 };
 
 function stackedBarChartTooltip(config) {
