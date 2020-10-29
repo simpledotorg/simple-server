@@ -356,6 +356,7 @@ function initializeCharts() {
       }),
     ],
   );
+
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
@@ -388,40 +389,43 @@ function initializeCharts() {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
   }
 
-  const visitDetailsGraphConfig = createGraphConfig({
-    datasets: [
-      {
-        data: data.controlRate,
-        rgbaBackgroundColor: mediumGreenColor,
-        hoverBackgroundColor: darkGreenColor,
-        label: "HTN controlled",
-        graphType: "bar",
-      },
-      {
-        data: data.uncontrolledRate,
-        rgbaBackgroundColor: mediumRedColor,
-        hoverBackgroundColor: darkRedColor,
-        label: "HTN not under control",
-        graphType: "bar",
-      },
-      {
-        data: data.visitButNoBPMeasureRate,
-        rgbaBackgroundColor: mediumGreyColor,
-        hoverBackgroundColor: darkGreyColor,
-        label: "Visited in the last 3 months",
-        graphType: "bar",
-      },
-      {
-        data: data.missedVisitsRate,
-        rgbaBackgroundColor: mediumBlueColor,
-        hoverBackgroundColor: darkBlueColor,
-        label: "No visit >3 months",
-        graphType: "bar",
-      }
-    ],
-    graphType: "bar",
-    numberOfMonths: 6,
-  });
+  const visitDetailsGraphConfig = {
+    type: "bar",
+    data: {
+      labels: Object.keys(data.controlRate).slice(-6),
+      datasets: [
+        {
+          label: "BP controlled",
+          backgroundColor: mediumGreenColor,
+          hoverBackgroundColor: darkGreenColor,
+          data: Object.values(data.controlRate).slice(-6),
+          type: "bar",
+        },
+        {
+          label: "BP uncontrolled",
+          backgroundColor: mediumRedColor,
+          hoverBackgroundColor: darkRedColor,
+          data: Object.values(data.uncontrolledRate).slice(-6),
+          type: "bar",
+        },
+        {
+          label: "Visit but no BP measure",
+          backgroundColor: mediumGreyColor,
+          hoverBackgroundColor: darkGreyColor,
+          data: Object.values(data.visitButNoBPMeasureRate).slice(-6),
+          type: "bar",
+        },
+        {
+          label: "Missed visits",
+          backgroundColor: mediumBlueColor,
+          hoverBackgroundColor: darkBlueColor,
+          data: Object.values(data.missedVisitsRate).slice(-6),
+          type: "bar",
+        },
+      ],
+    },
+  };
+
   visitDetailsGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: true,
@@ -436,6 +440,7 @@ function initializeCharts() {
       drawBorder: false,
     })],
   );
+
   visitDetailsGraphConfig.options.tooltips = {
     mode: "x",
     enabled: false,
