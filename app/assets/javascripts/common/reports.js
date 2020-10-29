@@ -254,6 +254,7 @@ function initializeCharts() {
       max: 100,
     })],
   );
+
   uncontrolledGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
@@ -296,31 +297,35 @@ function initializeCharts() {
   const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
   const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
-  const cumulativeRegistrationsGraphConfig = createGraphConfig({
-    datasets: [
-      {
-        id: "cumulativeRegistrations",
-        data: data.cumulativeRegistrations,
-        borderWidth: 2,
-        rgbaLineColor: darkPurpleColor,
-        rgbaPointColor: whiteColor,
-        rgbaBackgroundColor: transparent,
-        pointBackgroundColor: whiteColor,
-        hoverBackgroundColor: whiteColor,
-        label: "cumulative registrations",
-        graphType: "line",
-      },
-      {
-        id: "monthlyRegistrations",
-        data: data.monthlyRegistrations,
-        rgbaBackgroundColor: lightPurpleColor,
-        hoverBackgroundColor: darkPurpleColor,
-        label: "monthly registrations",
-        graphType: "bar",
-      },
-    ],
-    graphType: "bar",
-  });
+  const cumulativeRegistrationsGraphConfig = {
+    type: "bar",
+    data: {
+      labels: Object.keys(data.cumulativeRegistrations),
+      datasets: [
+        {
+          yAxisID: "cumulativeRegistrations",
+          label: "cumulative registrations",
+          backgroundColor: transparent,
+          borderColor: darkPurpleColor,
+          borderWidth: 2,
+          pointBackgroundColor: whiteColor,
+          hoverBackgroundColor: whiteColor,
+          hoverBorderWidth: 2,
+          data: Object.values(data.cumulativeRegistrations),
+          type: "line",
+        },
+        {
+          yAxisID: "monthlyRegistrations",
+          label: "monthly registrations",
+          backgroundColor: lightPurpleColor,
+          hoverBackgroundColor: darkPurpleColor,
+          data: Object.values(data.monthlyRegistrations),
+          type: "bar",
+        },
+      ],
+    },
+  };
+
   cumulativeRegistrationsGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: true,
