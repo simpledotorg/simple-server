@@ -1,8 +1,8 @@
 <div class="card" id="recent-bps">
   <h3>Recent BPs</h3>
-  <p> A log of the BPs recorded
+  <p> A log of BP measures recorded
     <% if display_model == :facility %>
-      at this facility.
+      by users at <%= @region.name %>
     <% elsif display_model == :user %>
       by this user.
     <% end %></p>

@@ -30,6 +30,10 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
 
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
   def toggle_diabetes_management
     if enable_diabetes_management
       set_diabetes_management(true)
@@ -50,8 +54,8 @@ class FacilityGroup < ApplicationRecord
     facilities.none? && patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
-  def dashboard_analytics(period:, prev_periods:)
-    query = DistrictAnalyticsQuery.new(name, facilities, period, prev_periods, include_current_period: true)
+  def dashboard_analytics(period:, prev_periods:, include_current_period: true)
+    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
     query.call
   end
 
