@@ -220,19 +220,24 @@ function initializeCharts() {
     new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
-  const uncontrolledGraphConfig = createGraphConfig({
-    datasets: [{
-      data: data.uncontrolledRate,
-      borderWidth: 2,
-      rgbaLineColor: mediumRedColor,
-      rgbaPointColor: whiteColor,
-      rgbaBackgroundColor: lightRedColor,
-      pointBackgroundColor: whiteColor,
-      hoverBackgroundColor: whiteColor,
-      label: "HTN not under control",
-    }],
-    graphType: "line",
-  });
+  const uncontrolledGraphConfig = {
+    type: "line",
+    data: {
+      labels: Object.keys(data.uncontrolledRate),
+      datasets: [{
+        label: "BP uncontrolled",
+        backgroundColor: lightRedColor,
+        borderColor: mediumRedColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.uncontrolledRate),
+        type: "line",
+      }],
+    },
+  };
+
   uncontrolledGraphConfig.options = createGraphOptions(
     [createAxisConfig({
       stacked: false,
