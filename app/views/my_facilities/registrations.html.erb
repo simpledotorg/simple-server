@@ -32,7 +32,7 @@
             <% PeriodSelection::PERIODS[:registrations].each do |period, period_name| %>
               <button
                 class="dropdown-item filter-by-period <%= "active" if period.to_s == @selected_period.to_s %>"
-                data-value="<%= period %>"
+                value="<%= period %>"
                 name="period"
                 type="submit"
                 form="query-filters"
