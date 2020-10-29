@@ -455,38 +455,98 @@ function initializeCharts() {
         },
       ],
     },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0
+        }
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          hoverRadius: 5,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+          },
+        }],
+        yAxes: [
+          {
+            id: "cumulativeRegistrations",
+            position: "left",
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: darkGreyColor,
+              fontSize: 12,
+              fontFamily: "Roboto Condensed",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: cumulativeRegistrationsYAxis.stepSize,
+              max: cumulativeRegistrationsYAxis.max,
+              callback: function(label) {
+                return formatNumberWithCommas(label);
+              },
+            },
+          },
+          {
+            id: "monthlyRegistrations",
+            position: "right",
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: true,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: darkGreyColor,
+              fontSize: 12,
+              fontFamily: "Roboto Condensed",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+              stepSize: monthlyRegistrationsYAxis.stepSize,
+              max: monthlyRegistrationsYAxis.max,
+              callback: function(label) {
+                return formatNumberWithCommas(label);
+              },
+            },
+          },
+        ],
+      },
+    },
   };
-
-  cumulativeRegistrationsGraphConfig.options = createGraphOptions(
-    [createAxisConfig({
-      stacked: true,
-      display: true,
-      displayGridLines: false,
-      drawBorder: false,
-    })],
-    [
-      createAxisConfig({
-        stacked: true,
-        display: true,
-        displayGridLines: false,
-        drawBorder: false,
-        stepSize: cumulativeRegistrationsYAxis.stepSize,
-        max: cumulativeRegistrationsYAxis.max,
-        id: "cumulativeRegistrations",
-        position: "left",
-      }),
-      createAxisConfig({
-        stacked: true,
-        display: true,
-        displayGridLines: true,
-        drawBorder: false,
-        stepSize: monthlyRegistrationsYAxis.stepSize,
-        max: monthlyRegistrationsYAxis.max,
-        id: "monthlyRegistrations",
-        position: "right",
-      }),
-    ],
-  );
 
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
