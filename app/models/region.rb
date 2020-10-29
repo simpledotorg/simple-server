@@ -25,7 +25,10 @@ class Region < ApplicationRecord
     when "Facility"
       [self]
     when "District"
-      children.children.map(&:source)
+      blocks = children
+      facilities = blocks.map(&:children)
+      pp facilities
+      facilities.to_a.map(&:source)
     when "Block"
       children.map(&:source)
     else
