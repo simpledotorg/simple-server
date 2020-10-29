@@ -2,17 +2,26 @@
   <div class="alert alert-primary mx-3 mr-lg-0 ml-lg-3">
     <span class="fw-bold">Experimental page:</span> The ranking algorithm is a first experiment. Let us know how you would rank facilities in the WhatsApp group or send Claudio a WhatsApp directly at <a href="https://wa.me/16467446707">+1 (646) 744 - 6707</a>. Thanks!
   </div>
-  <div class="col-lg-12 pr-lg-0">
+  <div class="col-lg-12">
     <div class="card card-responsive">
       <div>
-        <h3>Ranked facilities</h3>
+        <div class="d-flex align-baseline jc-between">
+          <h3>
+            Ranked facilities
+          </h3>
+          <p class="c-grey-dark">
+            Last updated: <%= @last_updated_at.capitalize %>
+          </p>
+        </div>
         <p>
           Facilities are ranked using their BP controlled, missed visits, and % of target registrations values.
           <br>
           The highest score is 100, where the score = (50% &times; BP controlled) + (30% &times; (100% - missed visits)) + (20% &times; % of target registrations)
         </p>
       </div>
-
+      <div class="d-flex fw-wrap">
+        <%= render "shared/size_and_zone_filters" %>
+      </div>
       <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" id="ranked-facilities-table">
         <colgroup>
           <col>
