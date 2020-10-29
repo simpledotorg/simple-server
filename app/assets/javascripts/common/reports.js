@@ -618,7 +618,6 @@ function formatNumberWithCommas(value) {
     return 0;
   }
   else {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return numeral(value).format('0,0');
   }
-
 }
