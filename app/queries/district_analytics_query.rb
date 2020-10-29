@@ -1,7 +1,7 @@
 class DistrictAnalyticsQuery
   include DashboardHelper
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   attr_reader :region, :facilities
 

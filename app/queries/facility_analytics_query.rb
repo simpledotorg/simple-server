@@ -1,7 +1,7 @@
 class FacilityAnalyticsQuery
   include DashboardHelper
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def initialize(facility, period = :month, prev_periods = 3, from_time = Time.current, include_current_period: false)
     @facility = facility
