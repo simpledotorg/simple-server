@@ -23,53 +23,8 @@ window.addEventListener("DOMContentLoaded", function() {
 });
 
 function getChartDataNode() {
-  return document.getElementById("data-json")
+  return document.getElementById("data-json");
 }
-
-function initializeTables() {
-  const tableSortAscending = { descending: false };
-  const tableSortDescending = { descending: true };
-
-  const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
-  const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
-  const noBPMeasureTable = document.getElementById("no-bp-measure-table");
-  const htnControlledTable = document.getElementById("htn-controlled-table");
-
-  if (htnControlledTable) {
-    new Tablesort(htnControlledTable, tableSortAscending);
-  }
-
-  if (noBPMeasureTable) {
-    new Tablesort(noBPMeasureTable, tableSortDescending);
-  }
-
-  if (htnNotUnderControlTable) {
-    new Tablesort(htnNotUnderControlTable, tableSortDescending);
-  }
-
-  if (cumulativeRegistrationsTable) {
-    new Tablesort(cumulativeRegistrationsTable, tableSortAscending);
-  }
-};
-
-function getReportingData() {
-  const jsonData = JSON.parse(getChartDataNode().textContent);
-
-  return {
-    controlRate: jsonData.controlled_patients_rate,
-    controlledPatients: jsonData.controlled_patients,
-    missedVisits: jsonData.missed_visits,
-    missedVisitsRate: jsonData.missed_visits_rate,
-    monthlyRegistrations: jsonData.registrations,
-    adjustedRegistrations: jsonData.adjusted_registrations,
-    cumulativeRegistrations: jsonData.cumulative_registrations,
-    uncontrolledRate: jsonData.uncontrolled_patients_rate,
-    uncontrolledPatients: jsonData.uncontrolled_patients,
-    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
-    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate,
-    periodInfo: jsonData.period_info
-  };
-};
 
 function initializeCharts() {
   const data = getReportingData();
@@ -738,6 +693,51 @@ function initializeCharts() {
   }
 }
 
+function initializeTables() {
+  const tableSortAscending = { descending: false };
+  const tableSortDescending = { descending: true };
+
+  const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
+  const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
+  const noBPMeasureTable = document.getElementById("no-bp-measure-table");
+  const htnControlledTable = document.getElementById("htn-controlled-table");
+
+  if (htnControlledTable) {
+    new Tablesort(htnControlledTable, tableSortAscending);
+  }
+
+  if (noBPMeasureTable) {
+    new Tablesort(noBPMeasureTable, tableSortDescending);
+  }
+
+  if (htnNotUnderControlTable) {
+    new Tablesort(htnNotUnderControlTable, tableSortDescending);
+  }
+
+  if (cumulativeRegistrationsTable) {
+    new Tablesort(cumulativeRegistrationsTable, tableSortAscending);
+  }
+};
+
+function getReportingData() {
+  const jsonData = JSON.parse(getChartDataNode().textContent);
+
+  return {
+    controlRate: jsonData.controlled_patients_rate,
+    controlledPatients: jsonData.controlled_patients,
+    missedVisits: jsonData.missed_visits,
+    missedVisitsRate: jsonData.missed_visits_rate,
+    monthlyRegistrations: jsonData.registrations,
+    adjustedRegistrations: jsonData.adjusted_registrations,
+    cumulativeRegistrations: jsonData.cumulative_registrations,
+    uncontrolledRate: jsonData.uncontrolled_patients_rate,
+    uncontrolledPatients: jsonData.uncontrolled_patients,
+    visitButNoBPMeasure: jsonData.visited_without_bp_taken,
+    visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate,
+    periodInfo: jsonData.period_info
+  };
+};
+
 function createAxisMaxAndStepSize(data) {
   const maxDataValue = Math.max(...Object.values(data));
   const maxAxisValue = Math.round(maxDataValue * 1.15);
@@ -756,5 +756,4 @@ function formatNumberWithCommas(value) {
   else {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
-
 }
