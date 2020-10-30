@@ -34,28 +34,28 @@ class Facility < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_save :create_region, on: :create
-  after_save :update_region, on: :update
-
-  def create_region
-    parent_region_type = RegionType.find_by_name("Block")
-    new_block = Region.find_by(name: block, type: parent_region_type)
-
-    region.type = RegionType.find_by_name("Facility")
-    region.source = self
-    region.parent = new_block
-    region.name = name
-    region.save!
-  end
-
-  def update_region
-    parent_region_type = RegionType.find_by_name("Block")
-    new_block = Region.find_by(name: block, type: parent_region_type)
-
-    region.parent = new_block
-    region.name = name
-    region.save!
-  end
+  # after_save :create_region, on: :create
+  # after_save :update_region, on: :update
+  #
+  # def create_region
+  #   parent_region_type = RegionType.find_by_name("Block")
+  #   new_block = Region.find_by(name: block, type: parent_region_type)
+  #
+  #   region.type = RegionType.find_by_name("Facility")
+  #   region.source = self
+  #   region.parent = new_block
+  #   region.name = name
+  #   region.save!
+  # end
+  #
+  # def update_region
+  #   parent_region_type = RegionType.find_by_name("Block")
+  #   new_block = Region.find_by(name: block, type: parent_region_type)
+  #
+  #   region.parent = new_block
+  #   region.name = name
+  #   region.save!
+  # end
   # ----------------
 
   has_many :registered_patients,

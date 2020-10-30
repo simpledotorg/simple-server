@@ -1,4 +1,6 @@
 class Region < ApplicationRecord
+  MAX_LABEL_LENGTH = 255
+
   ltree :path
   extend FriendlyId
   friendly_id :name, use: :slugged
@@ -10,12 +12,15 @@ class Region < ApplicationRecord
   belongs_to :type, class_name: "RegionType", foreign_key: "region_type_id"
   belongs_to :source, polymorphic: true, optional: true
 
-  attr_accessor :parent
+  attr_writer :set_parent
 
-  before_validation :set_path, if: :parent
+  before_validation :set_path, if: :set_parent
+  after_save :update_children, if: :saved_change_to_name?
   before_discard :remove_path
 
-  MAX_LABEL_LENGTH = 255
+  def update_children
+    children.update(set_parent: self)
+  end
 
   # A label is a sequence of alphanumeric characters and underscores.
   # (In C locale the characters A-Za-z0-9_ are allowed).
@@ -34,7 +39,7 @@ class Region < ApplicationRecord
   end
 
   def set_path
-    self.path = "#{parent.path}.#{name_to_path_label}"
+    self.path = "#{set_parent.path}.#{name_to_path_label}"
   end
 
   def remove_path

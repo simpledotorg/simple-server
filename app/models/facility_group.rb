@@ -29,36 +29,40 @@ class FacilityGroup < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
-  attribute :state, :text
 
   # ----------------
   # Region callbacks
-  after_save :create_region, on: :create
-  after_save :update_region, on: :update
-
-  def create_region
-    return unless state
-
-    parent_region_type = RegionType.find_by_name("State")
-    new_parent = Region.find_by(name: state, type: parent_region_type)
-
-    region.type = RegionType.find_by_name("FacilityGroup")
-    region.source = self
-    region.parent = new_parent
-    region.name = name
-    region.save!
-  end
-
-  def update_region
-    return unless state
-
-    parent_region_type = RegionType.find_by_name("State")
-    new_parent = Region.find_by(name: state, type: parent_region_type)
-
-    region.parent = new_parent
-    region.name = name
-    region.save!
-  end
+  #   # Org Region callbacks
+  #   # State UI
+  #   # State dropdown
+  #   #
+  #   # Fg Region callbacks
+  #   # Block UI
+  #   # Block dropdown
+  #   #
+  #   # F Region callbacks
+  # after_save :create_region, on: :create
+  # after_save :update_region, on: :update
+  #
+  # def create_region
+  #   return unless state
+  #
+  #   parent_region_type = RegionType.find_by_name("State")
+  #   new_parent = Region.create!(name: state, type: parent_region_type, parent: organization.region)
+  #   region = Region.new(source: self, parent: new_parent, name: name, type: RegionType.find_by_name("District"))
+  #   region.save!
+  # end
+  #
+  # def update_region
+  #   return unless state
+  #
+  #   parent_region_type = RegionType.find_by_name("State")
+  #   new_parent = Region.find_by(name: state, type: parent_region_type)
+  #
+  #   region.parent = new_parent
+  #   region.name = name
+  #   region.save!
+  # end
   # ----------------
 
   def toggle_diabetes_management

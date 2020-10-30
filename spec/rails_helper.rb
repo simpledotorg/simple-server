@@ -40,4 +40,15 @@ RSpec.configure do |config|
   config.after :each do
     Warden.test_reset!
   end
+
+  config.before :all do
+    root = RegionType.find_by_name("Root") || RegionType.create!(name: "Root", path: "Root")
+    Region.create!(name: "Root", type: root, path: "Root")
+
+    org = RegionType.find_by_name("Organization") || RegionType.create!(name: "Organization", parent: root)
+    state = RegionType.find_by_name("State") || RegionType.create!(name: "State", parent: org)
+    district = RegionType.find_by_name("District") || RegionType.create!(name: "District", parent: state)
+    block = RegionType.find_by_name("Block") || RegionType.create!(name: "Block", parent: district)
+    _facility = RegionType.find_by_name("Facility") || RegionType.create!(name: "Facility", parent: block)
+  end
 end

@@ -32,6 +32,15 @@ RSpec.describe Organization, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
+  describe "Callbacks" do
+    context "after_create" do
+      it "creates a region" do
+        organization = create(:organization)
+        expect(organization.region).to be_present
+      end
+    end
+  end
+
   describe "Attribute sanitization" do
     it "squishes and upcases the first letter of the name" do
       org = FactoryBot.create(:organization, name: " org name  1  ")

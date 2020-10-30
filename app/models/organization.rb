@@ -16,22 +16,24 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_save :create_region, on: :create
-  after_save :update_region, on: :update
+  after_create :create_region
+  after_update :update_region
 
   def create_region
     parent_region_type = RegionType.find_by_name("Root")
-    new_parent = Region.find_by(type: parent_region_type)
+    parent = Region.find_by(type: parent_region_type)
 
+    region = Region.new
     region.type = RegionType.find_by_name("Organization")
     region.source = self
-    region.parent = new_parent
+    region.parent = parent
     region.name = name
     region.save!
   end
 
   def update_region
     region.name = name
+    region.description = description
     region.save!
   end
   # ----------------
