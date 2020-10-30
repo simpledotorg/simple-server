@@ -10,9 +10,10 @@ class Region < ApplicationRecord
   belongs_to :type, class_name: "RegionType", foreign_key: "region_type_id"
   belongs_to :source, polymorphic: true, optional: true
 
-  before_discard do
-    self.path = nil
-  end
+  attr_accessor :parent
+
+  before_validation :set_path, if: :parent
+  before_discard :remove_path
 
   MAX_LABEL_LENGTH = 255
 
@@ -30,5 +31,13 @@ class Region < ApplicationRecord
     attrs["valid"] = valid?
     attrs["errors"] = errors.full_messages.join(",") if errors.any?
     attrs.symbolize_keys
+  end
+
+  def set_path
+    self.path = "#{parent.path}.#{name_to_path_label}"
+  end
+
+  def remove_path
+    self.path = nil
   end
 end
