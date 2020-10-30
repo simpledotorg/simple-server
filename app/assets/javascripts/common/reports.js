@@ -213,84 +213,59 @@ function initializeCharts() {
     new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
-  const uncontrolledGraphConfig = {
-    type: "line",
-    data: {
-      labels: Object.keys(data.uncontrolledRate),
-      datasets: [{
-        label: "BP uncontrolled",
-        backgroundColor: lightRedColor,
-        borderColor: mediumRedColor,
-        borderWidth: 2,
-        pointBackgroundColor: whiteColor,
-        hoverBackgroundColor: whiteColor,
-        hoverBorderWidth: 2,
-        data: Object.values(data.uncontrolledRate),
-        type: "line",
-      }],
-    },
-    options: {
-      animation: false,
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 20,
-          bottom: 0
-        }
-      },
-      elements: {
-        point: {
-          pointStyle: "circle",
-          hoverRadius: 5,
-        },
-      },
-      legend: {
-        display: false,
-      },
-      scales: {
-        xAxes: [{
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        }],
-        yAxes: [{
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        }],
-      },
-    },
+  const uncontrolledGraphConfig = setBaseGraphConfig();
+  uncontrolledGraphConfig.data = {
+    labels: Object.keys(data.uncontrolledRate),
+    datasets: [{
+      label: "BP uncontrolled",
+      backgroundColor: lightRedColor,
+      borderColor: mediumRedColor,
+      borderWidth: 2,
+      pointBackgroundColor: whiteColor,
+      hoverBackgroundColor: whiteColor,
+      hoverBorderWidth: 2,
+      data: Object.values(data.uncontrolledRate),
+      type: "line",
+    }],
   };
-
+  uncontrolledGraphConfig.options.scales = {
+    xAxes: [{
+      stacked: false,
+      display: true,
+      gridLines: {
+        display: false,
+        drawBorder: true,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+      },
+    }],
+    yAxes: [{
+      stacked: false,
+      display: true,
+      gridLines: {
+        display: true,
+        drawBorder: false,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+        stepSize: 25,
+        max: 100,
+      },
+    }],
+  };
   uncontrolledGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
@@ -333,126 +308,102 @@ function initializeCharts() {
   const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
   const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
-  const cumulativeRegistrationsGraphConfig = {
-    type: "bar",
-    data: {
-      labels: Object.keys(data.cumulativeRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeRegistrations",
-          label: "cumulative registrations",
-          backgroundColor: transparent,
-          borderColor: darkPurpleColor,
-          borderWidth: 2,
-          pointBackgroundColor: whiteColor,
-          hoverBackgroundColor: whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyRegistrations",
-          label: "monthly registrations",
-          backgroundColor: lightPurpleColor,
-          hoverBackgroundColor: darkPurpleColor,
-          data: Object.values(data.monthlyRegistrations),
-          type: "bar",
-        },
-      ],
-    },
-    options: {
-      animation: false,
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 20,
-          bottom: 0
-        }
+  const cumulativeRegistrationsGraphConfig = setBaseGraphConfig();
+  cumulativeRegistrationsGraphConfig.type = "bar";
+  cumulativeRegistrationsGraphConfig.data = {
+    labels: Object.keys(data.cumulativeRegistrations),
+    datasets: [
+      {
+        yAxisID: "cumulativeRegistrations",
+        label: "cumulative registrations",
+        backgroundColor: transparent,
+        borderColor: darkPurpleColor,
+        borderWidth: 2,
+        pointBackgroundColor: whiteColor,
+        hoverBackgroundColor: whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(data.cumulativeRegistrations),
+        type: "line",
       },
-      elements: {
-        point: {
-          pointStyle: "circle",
-          hoverRadius: 5,
-        },
+      {
+        yAxisID: "monthlyRegistrations",
+        label: "monthly registrations",
+        backgroundColor: lightPurpleColor,
+        hoverBackgroundColor: darkPurpleColor,
+        data: Object.values(data.monthlyRegistrations),
+        type: "bar",
       },
-      legend: {
-        display: false,
-      },
-      scales: {
-        xAxes: [{
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        }],
-        yAxes: [
-          {
-            id: "cumulativeRegistrations",
-            position: "left",
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: darkGreyColor,
-              fontSize: 12,
-              fontFamily: "Roboto Condensed",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: cumulativeRegistrationsYAxis.stepSize,
-              max: cumulativeRegistrationsYAxis.max,
-              callback: function(label) {
-                return formatNumberWithCommas(label);
-              },
-            },
-          },
-          {
-            id: "monthlyRegistrations",
-            position: "right",
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: darkGreyColor,
-              fontSize: 12,
-              fontFamily: "Roboto Condensed",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: monthlyRegistrationsYAxis.stepSize,
-              max: monthlyRegistrationsYAxis.max,
-              callback: function(label) {
-                return formatNumberWithCommas(label);
-              },
-            },
-          },
-        ],
-      },
-    },
+    ],
   };
-
+  cumulativeRegistrationsGraphConfig.options.scales = {
+    xAxes: [{
+      stacked: true,
+      display: true,
+      gridLines: {
+        display: false,
+        drawBorder: false,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+      },
+    }],
+    yAxes: [
+      {
+        id: "cumulativeRegistrations",
+        position: "left",
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: cumulativeRegistrationsYAxis.stepSize,
+          max: cumulativeRegistrationsYAxis.max,
+          callback: function(label) {
+            return formatNumberWithCommas(label);
+          },
+        },
+      },
+      {
+        id: "monthlyRegistrations",
+        position: "right",
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: true,
+          drawBorder: false,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: monthlyRegistrationsYAxis.stepSize,
+          max: monthlyRegistrationsYAxis.max,
+          callback: function(label) {
+            return formatNumberWithCommas(label);
+          },
+        },
+      },
+    ],
+  };
   cumulativeRegistrationsGraphConfig.options.tooltips = {
     enabled: false,
     custom: function (tooltip) {
@@ -485,101 +436,77 @@ function initializeCharts() {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
   }
 
-  const visitDetailsGraphConfig = {
-    type: "bar",
-    data: {
-      labels: Object.keys(data.controlRate).slice(-6),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: mediumGreenColor,
-          hoverBackgroundColor: darkGreenColor,
-          data: Object.values(data.controlRate).slice(-6),
-          type: "bar",
-        },
-        {
-          label: "BP uncontrolled",
-          backgroundColor: mediumRedColor,
-          hoverBackgroundColor: darkRedColor,
-          data: Object.values(data.uncontrolledRate).slice(-6),
-          type: "bar",
-        },
-        {
-          label: "Visit but no BP measure",
-          backgroundColor: mediumGreyColor,
-          hoverBackgroundColor: darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(-6),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: mediumBlueColor,
-          hoverBackgroundColor: darkBlueColor,
-          data: Object.values(data.missedVisitsRate).slice(-6),
-          type: "bar",
-        },
-      ],
-    },
-    options: {
-      animation: false,
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 20,
-          bottom: 0
-        }
+  const visitDetailsGraphConfig = setBaseGraphConfig();
+  visitDetailsGraphConfig.type = "bar";
+  visitDetailsGraphConfig.data = {
+    labels: Object.keys(data.controlRate).slice(-6),
+    datasets: [
+      {
+        label: "BP controlled",
+        backgroundColor: mediumGreenColor,
+        hoverBackgroundColor: darkGreenColor,
+        data: Object.values(data.controlRate).slice(-6),
+        type: "bar",
       },
-      elements: {
-        point: {
-          pointStyle: "circle",
-          hoverRadius: 5,
-        },
+      {
+        label: "BP uncontrolled",
+        backgroundColor: mediumRedColor,
+        hoverBackgroundColor: darkRedColor,
+        data: Object.values(data.uncontrolledRate).slice(-6),
+        type: "bar",
       },
-      legend: {
-        display: false,
+      {
+        label: "Visit but no BP measure",
+        backgroundColor: mediumGreyColor,
+        hoverBackgroundColor: darkGreyColor,
+        data: Object.values(data.visitButNoBPMeasureRate).slice(-6),
+        type: "bar",
       },
-      scales: {
-        xAxes: [{
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        }],
-        yAxes: [{
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        }],
+      {
+        label: "Missed visits",
+        backgroundColor: mediumBlueColor,
+        hoverBackgroundColor: darkBlueColor,
+        data: Object.values(data.missedVisitsRate).slice(-6),
+        type: "bar",
       },
-    },
+    ],
   };
-
+  visitDetailsGraphConfig.options.scales = {
+    xAxes: [{
+      stacked: true,
+      display: true,
+      gridLines: {
+        display: false,
+        drawBorder: false,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+      },
+    }],
+    yAxes: [{
+      stacked: true,
+      display: false,
+      gridLines: {
+        display: false,
+        drawBorder: false,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+      },
+    }],
+  };
   visitDetailsGraphConfig.options.tooltips = {
     mode: "x",
     enabled: false,
