@@ -43,7 +43,7 @@ RSpec.configure do |config|
 
   config.before :all do
     root = RegionType.find_by_name("Root") || RegionType.create!(name: "Root", path: "Root")
-    Region.create!(name: "Root", type: root, path: "Root")
+    Region.find_by_name("Root") || Region.create!(name: "Root", type: root, path: "Root")
 
     org = RegionType.find_by_name("Organization") || RegionType.create!(name: "Organization", parent: root)
     state = RegionType.find_by_name("State") || RegionType.create!(name: "State", parent: org)

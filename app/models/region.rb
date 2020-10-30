@@ -6,15 +6,13 @@ class Region < ApplicationRecord
   friendly_id :name, use: :slugged
 
   validates :name, presence: true
-  validates :slug, presence: true, uniqueness: true
-  validates :path, presence: true
+  validates :slug, presence: true
+  validates :path, presence: true, uniqueness: true
 
   belongs_to :type, class_name: "RegionType", foreign_key: "region_type_id"
   belongs_to :source, polymorphic: true, optional: true
 
-  attr_writer :parent
-
-  before_validation :set_path
+  before_validation :set_path, if: :parent
   after_save :update_children, if: :saved_change_to_name?
   before_discard :remove_path
 
@@ -39,14 +37,18 @@ class Region < ApplicationRecord
   end
 
   def set_path
-    if @parent
-      self.path = "#{@parent.path}.#{name_to_path_label}"
-    elsif parent
-      self.path ="#{parent.path}.#{name_to_path_label}"
-    end
+    self.path = "#{parent.path}.#{name_to_path_label}"
   end
 
   def remove_path
     self.path = nil
+  end
+
+  def parent=(parent)
+    @parent = parent
+  end
+
+  def parent
+    @parent || super
   end
 end
