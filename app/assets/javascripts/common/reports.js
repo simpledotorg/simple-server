@@ -614,10 +614,13 @@ function stackedBarChartTooltip(config) {
 }
 
 function formatNumberWithCommas(value) {
-  if(value == undefined) {
+  if (value == undefined) {
     return 0;
   }
-  else {
+
+  if (numeral(value)) {
     return numeral(value).format('0,0');
   }
+
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
