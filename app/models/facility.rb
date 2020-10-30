@@ -114,8 +114,8 @@ class Facility < ApplicationRecord
   validates :pin, numericality: true, allow_blank: true
 
   validates :facility_size, inclusion: {in: facility_sizes.values,
-    message: "not in #{facility_sizes.values.join(", ")}",
-    allow_blank: true}
+                                        message: "not in #{facility_sizes.values.join(", ")}",
+                                        allow_blank: true}
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
 
@@ -161,41 +161,41 @@ class Facility < ApplicationRecord
   end
 
   CSV_IMPORT_COLUMNS = if Flipper.enabled?(:teleconsult_facility_mo_search)
-                         {organization_name: "organization",
-                           facility_group_name: "facility_group",
-                           name: "facility_name",
-                           facility_type: "facility_type",
-                           street_address: "street_address (optional)",
-                           village_or_colony: "village_or_colony (optional)",
-                           zone: "zone_or_block",
-                           district: "district",
-                           state: "state",
-                           country: "country",
-                           pin: "pin (optional)",
-                           latitude: "latitude (optional)",
-                           longitude: "longitude (optional)",
-                           facility_size: "size (optional)",
-                           enable_diabetes_management: "enable_diabetes_management (true/false)"}
-                       else
-                         {organization_name: "organization",
-                           facility_group_name: "facility_group",
-                           name: "facility_name",
-                           facility_type: "facility_type",
-                           street_address: "street_address (optional)",
-                           village_or_colony: "village_or_colony (optional)",
-                           zone: "zone_or_block",
-                           district: "district",
-                           state: "state",
-                           country: "country",
-                           pin: "pin (optional)",
-                           latitude: "latitude (optional)",
-                           longitude: "longitude (optional)",
-                           facility_size: "size (optional)",
-                           enable_diabetes_management: "enable_diabetes_management (true/false)",
-                           enable_teleconsultation: "enable_teleconsultation (true/false)",
-                           teleconsultation_phone_number: "teleconsultation_phone_number",
-                           teleconsultation_isd_code: "teleconsultation_isd_code"}
-                       end
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block",
+     district: "district",
+     state: "state",
+     country: "country",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+  else
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block",
+     district: "district",
+     state: "state",
+     country: "country",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)",
+     enable_teleconsultation: "enable_teleconsultation (true/false)",
+     teleconsultation_phone_number: "teleconsultation_phone_number",
+     teleconsultation_isd_code: "teleconsultation_isd_code"}
+  end
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -204,8 +204,8 @@ class Facility < ApplicationRecord
       next if facility.values.all?(&:blank?)
 
       facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes_management] || false,
-        enable_teleconsultation: facility[:enable_teleconsultation] || false,
-        import: true)
+                                   enable_teleconsultation: facility[:enable_teleconsultation] || false,
+                                   import: true)
     end
     facilities
   end
@@ -219,7 +219,7 @@ class Facility < ApplicationRecord
     organization = Organization.find_by(name: organization_name)
     if organization.present?
       facility_group = FacilityGroup.find_by(name: facility_group_name,
-        organization_id: organization.id)
+                                             organization_id: organization.id)
     end
     if organization.present? && facility_group_name.present? && facility_group.blank?
       errors.add(:facility_group, "doesn't exist for the organization")
@@ -230,7 +230,7 @@ class Facility < ApplicationRecord
     organization = Organization.find_by(name: organization_name)
     if organization.present?
       facility_group = FacilityGroup.find_by(name: facility_group_name,
-        organization_id: organization.id)
+                                             organization_id: organization.id)
     end
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
     errors.add(:facility, "already exists") if organization.present? && facility_group.present? && facility.present?
@@ -256,13 +256,13 @@ class Facility < ApplicationRecord
 
   def opd_load_for_facility_size
     case facility_size
-      when "community" then
+      when "community"
         450
-      when "small" then
+      when "small"
         1800
-      when "medium" then
+      when "medium"
         3000
-      when "large" then
+      when "large"
         7500
       else
         450
