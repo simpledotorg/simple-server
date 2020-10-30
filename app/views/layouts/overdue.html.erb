@@ -3,7 +3,7 @@
     Overdue patients
   </h1>
   <p>
-    Patients that are overdue for a follow-up visit. If you select a facility, you can download a patient list.
+    Patients that are overdue for a follow-up visit<% if current_admin.accessible_facilities(:manage_overdue_list) %>. If you select a facility, you can download a patient list.<% end %>
   </p>
   <% if current_admin.accessible_facilities(:manage_overdue_list) %>
     <%= render('shared/paginate_and_filter_by_facility',
