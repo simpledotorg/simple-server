@@ -39,10 +39,10 @@ class Region < ApplicationRecord
   end
 
   def set_path
-    self.path = if @parent
-      "#{@parent.path}.#{name_to_path_label}"
+    if @parent
+      self.path = "#{@parent.path}.#{name_to_path_label}"
     elsif parent
-      "#{parent.path}.#{name_to_path_label}"
+      self.path ="#{parent.path}.#{name_to_path_label}"
     end
   end
 
