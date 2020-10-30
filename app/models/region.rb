@@ -12,14 +12,14 @@ class Region < ApplicationRecord
   belongs_to :type, class_name: "RegionType", foreign_key: "region_type_id"
   belongs_to :source, polymorphic: true, optional: true
 
-  attr_writer :set_parent
+  attr_writer :parent
 
-  before_validation :set_path, if: :set_parent
+  before_validation :set_path
   after_save :update_children, if: :saved_change_to_name?
   before_discard :remove_path
 
   def update_children
-    children.update(set_parent: self)
+    children.update(parent: self)
   end
 
   # A label is a sequence of alphanumeric characters and underscores.
@@ -39,7 +39,11 @@ class Region < ApplicationRecord
   end
 
   def set_path
-    self.path = "#{set_parent.path}.#{name_to_path_label}"
+    self.path = if @parent
+      "#{@parent.path}.#{name_to_path_label}"
+    elsif parent
+      "#{parent.path}.#{name_to_path_label}"
+    end
   end
 
   def remove_path

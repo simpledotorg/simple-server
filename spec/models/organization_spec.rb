@@ -39,6 +39,15 @@ RSpec.describe Organization, type: :model do
         expect(organization.region).to be_present
       end
     end
+
+    context "after_update" do
+      it "updates the associated region" do
+        organization = create(:organization)
+        organization.update(name: "New Org Name")
+        expect(organization.region.name).to eq "New Org Name"
+        expect(organization.region.path).to eq "Root.New_Org_Name"
+      end
+    end
   end
 
   describe "Attribute sanitization" do
