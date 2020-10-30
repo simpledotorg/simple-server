@@ -68,8 +68,8 @@ class RegionBackfill
           count_invalid(block_type)
           logger.info msg: "Skipping creation of Facility #{facility.name} because the block field (ie zone) is blank",
                       error: "block is blank",
-                      block_name: block_name,
-                      facilities: facilities.map(&:name)
+                      block_name: facility.block,
+                      facility: facility.name
           next
         end
         block_region = find_or_create_region_from(name: facility.block, region_type: block_type, parent: district)
@@ -96,7 +96,6 @@ class RegionBackfill
       block = RegionType.find_by_name("Block") || RegionType.create!(name: "Block", parent: district)
       _facility = RegionType.find_by_name("Facility") || RegionType.create!(name: "Facility", parent: block)
     end
-    root
   end
 
   def find_or_create_region_from(parent:, region_type:, name: nil, source: nil)
