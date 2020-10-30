@@ -5,6 +5,8 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_available_zones, only: [:new, :create, :edit, :update],
+                if: -> { Flipper.enabled?(:region_level_sync) }
 
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
@@ -118,6 +120,20 @@ class Admin::FacilitiesController < AdminController
     @facility_group = current_admin.accessible_facility_groups(:manage).friendly.find(params[:facility_group_id])
   end
 
+  def set_available_zones
+    zones =
+      if facility_region
+        facility_region.district.blocks
+      else
+        Region.find_by(source: @facility_group).blocks
+      end
+
+    @available_zones = zones.order(:name).pluck(:name)
+  end
+
+  def facility_region
+    @facility_region ||= Region.find_by(source_id: @facility.id) if @facility.id
+  end
 
   def facility_params
     params.require(:facility).permit(
