@@ -29,7 +29,7 @@ function getChartDataNode() {
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlledGraphConfig = setBaseGraphConfig();
+  const controlledGraphConfig = createBaseGraphConfig();
   controlledGraphConfig.data = {
     labels: Object.keys(data.controlRate),
     datasets: [{
@@ -121,7 +121,7 @@ function initializeCharts() {
     new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
   }
 
-  const missedVisitsConfig = setBaseGraphConfig();
+  const missedVisitsConfig = createBaseGraphConfig();
   missedVisitsConfig.data = {
     labels: Object.keys(data.missedVisitsRate),
     datasets: [{
@@ -213,7 +213,7 @@ function initializeCharts() {
     new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
   }
 
-  const uncontrolledGraphConfig = setBaseGraphConfig();
+  const uncontrolledGraphConfig = createBaseGraphConfig();
   uncontrolledGraphConfig.data = {
     labels: Object.keys(data.uncontrolledRate),
     datasets: [{
@@ -308,7 +308,7 @@ function initializeCharts() {
   const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
   const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
-  const cumulativeRegistrationsGraphConfig = setBaseGraphConfig();
+  const cumulativeRegistrationsGraphConfig = createBaseGraphConfig();
   cumulativeRegistrationsGraphConfig.type = "bar";
   cumulativeRegistrationsGraphConfig.data = {
     labels: Object.keys(data.cumulativeRegistrations),
@@ -436,7 +436,7 @@ function initializeCharts() {
     new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
   }
 
-  const visitDetailsGraphConfig = setBaseGraphConfig();
+  const visitDetailsGraphConfig = createBaseGraphConfig();
   visitDetailsGraphConfig.type = "bar";
   visitDetailsGraphConfig.data = {
     labels: Object.keys(data.controlRate).slice(-6),
@@ -615,7 +615,7 @@ function getReportingData() {
   };
 };
 
-function setBaseGraphConfig() {
+function createBaseGraphConfig() {
   return {
     type: "line",
     options: {
@@ -655,10 +655,9 @@ function createAxisMaxAndStepSize(data) {
 };
 
 function formatNumberWithCommas(value) {
-  if(value == undefined) {
+  if (value == undefined) {
     return 0;
   }
-  else {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
+
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
