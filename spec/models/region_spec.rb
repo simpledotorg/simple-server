@@ -5,7 +5,6 @@ RSpec.describe Region, type: :model do
     it "requires a region type" do
       region = Region.new(name: "foo", path: "foo")
       expect(region).to_not be_valid
-      expect(region.errors[:type]).to eq(["must exist"])
     end
   end
 
@@ -55,15 +54,12 @@ RSpec.describe Region, type: :model do
       create(:facility, facility_group: facility_group_1)
 
       RegionBackfill.call(dry_run: false)
-      Object.send(:remove_const, "Region")
-      load "region.rb"
-
-      root_region = Region.find_by(type: RegionType.find_by(name: "Root"))
-      org_region = Region.find_by(type: RegionType.find_by(name: "Organization"))
-      state_region = Region.find_by(type: RegionType.find_by(name: "State"))
-      district_region = Region.find_by(type: RegionType.find_by(name: "District"))
-      block_region = Region.find_by(type: RegionType.find_by(name: "Block"))
-      facility_region = Region.find_by(type: RegionType.find_by(name: "Facility"))
+      root_region = Region.root.first
+      org_region = Region.organization.first
+      state_region = Region.state.first
+      district_region = Region.district.first
+      block_region = Region.block.first
+      facility_region = Region.facility.first
 
       expect(root_region.root).to eq root_region
       expect(root_region.organizations).to contain_exactly org_region
