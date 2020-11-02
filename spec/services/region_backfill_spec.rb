@@ -28,7 +28,7 @@ RSpec.describe RegionBackfill, type: :model do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "fg1", organization: org)
       facility_group_2 = create(:facility_group, name: "fg2", organization: org)
-      facility_group_3 = create(:facility_group, name: "fg3", organization: org)
+      _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
       facility_group_4 = create(:facility_group, name: "fg4", organization: org)
 
       facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
@@ -84,6 +84,28 @@ RSpec.describe RegionBackfill, type: :model do
       expect(region_f1.parent.region_type).to eq("block")
 
       expect(region_f1.parent.parent).to eq(facility_1.facility_group.region)
+    end
+
+    it "is idempotent and does not create same data multiple times" do
+      org = create(:organization, name: "Test Organization")
+      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
+      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
+      _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
+      facility_group_4 = create(:facility_group, name: "fg4", organization: org)
+
+      create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
+      create(:facility, name: "facility2", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
+      create(:facility, name: "facility3", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
+      create(:facility, name: "facility4", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
+      create(:facility, name: "facility5", facility_group: facility_group_4, zone: "Block ABC", state: "State 1")
+      create(:facility, name: "facility6", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
+
+      3.times do
+        RegionBackfill.call(dry_run: false)
+      end
+
+      # 1 org, 2 states, 4 districts, 4 blocks, 6 facilities
+      expect(Region.count).to eq(17)
     end
   end
 end

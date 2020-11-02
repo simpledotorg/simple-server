@@ -48,7 +48,7 @@ class ImportBlocksToRegions
 
   def create_region_from(name:, region_type:, parent:)
     region = Region.new(name: name, region_type: region_type)
-    region.path = [parent.path, region.name_to_path_label].compact.join(".")
+    region.path = [parent.path, region.path_label].compact.join(".")
     region.save!
     region
   end
