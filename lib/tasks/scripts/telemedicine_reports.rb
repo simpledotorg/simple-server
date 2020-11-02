@@ -3,30 +3,78 @@
 require "csv"
 
 class TelemedicineReports
-  attr_reader :mixpanel_csv_path, :period_start, :period_end, :mixpanel_data, :report_array
+  attr_reader :period_start, :period_end, :mixpanel_data, :report_array
 
-  def initialize(mixpanel_csv_path, period_start, period_end)
-    @mixpanel_csv_path = mixpanel_csv_path
+  def initialize(period_start, period_end)
     @period_start = period_start
     @period_end = period_end
     @mixpanel_data = {hydrated: [], formatted: []}
     @report_array = []
+    @filename = "telemedicine_report_#{@period_start.strftime("%d_%b")}_to_#{@period_end.strftime("%d_%b")}.csv"
+    @query = <<~QUERY
+      function main() {
+        return Events({
+          from_date: "#{period_start.strftime("%Y-%m-%d")}",
+          to_date: "#{period_end.strftime("%Y-%m-%d")}"
+        }).filter(function(event) {
+          return event.name == "UserInteraction" && event.properties.name == "Patient Summary:Contact Doctor Clicked"
+        }).groupBy(
+          ["properties.$user_id",
+          function(event) {
+              return (new Date(event.time)).toDateString();
+            }],
+          mixpanel.reducer.count()
+        );
+      }
+    QUERY
+  end
+
+  def fetch_mixpanel_data
+    url = URI.parse("https://mixpanel.com/api/2.0/jql")
+
+    response = HTTP.basic_auth(user: ENV.fetch("MIXPANEL_API_SECRET"), pass: nil)
+      .post(url, json: {format: "csv", script: @query})
+
+    response.body.to_s
   end
 
   def parse_mixpanel
-    mixpanel_csv = File.read(@mixpanel_csv_path)
+    mixpanel_csv = fetch_mixpanel_data
     mixpanel_data = CSV.parse(mixpanel_csv, headers: false)
 
     @mixpanel_data[:hydrated] = mixpanel_data.drop(1).map { |row|
-      facility = User.find(row[1]).registration_facility
-      {user_id: row[1],
-       date: Date.parse(row[2]),
-       clicks: row[3].to_i,
+      user = User.find(row[0])
+      date = Date.parse(row[1])
+      clicks = row[2].to_i
+      facility = user.registration_facility
+
+      {user_id: user.id,
+       date: date,
+       clicks: clicks,
        facility_id: facility.id,
        district: facility.district,
        state: facility.state,
        type: facility.facility_type}
     }
+  end
+
+  def generate
+    if Flipper.enabled?(:weekly_telemed_report) && ENV.fetch("MIXPANEL_API_SECRET")
+      parse_mixpanel
+      assemble_report_data
+      email_report
+    end
+  end
+
+  private
+
+  def email_report
+    TelemedReportMailer
+      .email_report(period_start: @period_start.strftime("%d_%b"),
+                    period_end: @period_end.strftime("%d_%b"),
+                    report_filename: @filename,
+                    report_csv: make_csv)
+      .deliver_later
   end
 
   def assemble_report_data
@@ -250,21 +298,13 @@ class TelemedicineReports
     end
   end
 
-  def write_csv
-    CSV.open("telemedicine_report_#{@period_start.strftime("%d_%b")}_to_#{@period_end.strftime("%d_%b")}.csv", "w") do |csv|
+  def make_csv
+    CSV.generate do |csv|
       @report_array.each do |csv_row|
         csv << csv_row
       end
     end
   end
-
-  def generate
-    parse_mixpanel
-    assemble_report_data
-    write_csv
-  end
-
-  private
 
   def format_mixpanel_data(mixpanel_data)
     mixpanel_data.group_by { |row| row[:state] }.map { |state, districts|
