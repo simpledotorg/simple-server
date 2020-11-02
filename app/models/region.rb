@@ -75,8 +75,4 @@ class Region < ApplicationRecord
   def self_and_descendant_types(region_type)
     [region_type] + descendant_types(region_type)
   end
-
-  def set_slug
-    super.send(:set_slug)
-  end
 end
