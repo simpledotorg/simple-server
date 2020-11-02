@@ -479,7 +479,8 @@ ActiveRecord::Schema.define(version: 2020_11_02_150828) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "region_type", null: false
-    t.index ["path"], name: "index_regions_on_path", unique: true
+    t.index ["path"], name: "index_regions_on_path", using: :gist
+    t.index ["path"], name: "index_regions_on_unique_path", unique: true
     t.index ["region_type"], name: "index_regions_on_region_type"
     t.index ["slug"], name: "index_regions_on_slug", unique: true
     t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"
