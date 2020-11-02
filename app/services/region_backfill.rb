@@ -34,6 +34,7 @@ class RegionBackfill
     def path
       nil
     end
+
     def children
       Region.root || Region.none
     end
