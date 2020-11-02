@@ -67,11 +67,11 @@ class Region < ApplicationRecord
     REGION_TYPES.split(region_type).second
   end
 
-  def self_and_descendant_types(region_type)
-    [region_type] + descendant_types(region_type)
-  end
-
   def self_and_ancestor_types(region_type)
     ancestor_types(region_type) + [region_type]
+  end
+
+  def self_and_descendant_types(region_type)
+    [region_type] + descendant_types(region_type)
   end
 end
