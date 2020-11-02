@@ -23,6 +23,7 @@ class Region < ApplicationRecord
   # (In C locale the characters A-Za-z0-9_ are allowed).
   # Labels must be less than 256 bytes long.
   def path_label
+    set_slug unless slug
     slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 
@@ -73,5 +74,9 @@ class Region < ApplicationRecord
 
   def self_and_descendant_types(region_type)
     [region_type] + descendant_types(region_type)
+  end
+
+  def set_slug
+    super.send(:set_slug)
   end
 end

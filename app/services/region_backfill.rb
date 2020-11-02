@@ -92,8 +92,6 @@ class RegionBackfill
     if source
       region.slug = source.slug
       region.source = source
-    else
-      region.set_slug
     end
     region.path = [parent.path, region.path_label].compact.join(".")
 
