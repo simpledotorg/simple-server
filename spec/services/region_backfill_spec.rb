@@ -40,7 +40,6 @@ RSpec.describe RegionBackfill, type: :model do
       facilities = [facility_1, facility_2, facility_3, facility_4, facility_5, facility_6]
 
       RegionBackfill.call(dry_run: false)
-      RegionBackfill.call(dry_run: false)
 
       root = Region.find_by(name: "India")
       expect(root.root?).to be true
