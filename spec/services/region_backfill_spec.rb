@@ -102,17 +102,10 @@ RSpec.describe RegionBackfill, type: :model do
 
       3.times do
         RegionBackfill.call(dry_run: false)
-        conn = ActiveRecord::Base.connection
-        conn.commit_transaction if conn.transaction_open?
       end
 
+      # 1 org, 2 states, 4 districts, 4 blocks, 6 facilities
       expect(Region.count).to eq(17)
-
-      ProtocolDrug.delete_all
-      Facility.delete_all
-      FacilityGroup.delete_all
-      Organization.delete_all
-      Region.delete_all
     end
   end
 end
