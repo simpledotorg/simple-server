@@ -18,6 +18,7 @@ RSpec.describe Region, type: :model do
       long_path = long_name.gsub(/\W/, "_").slice(0, Region::MAX_LABEL_LENGTH)
       facility_2 = create(:facility, name: long_name, block: "Block22", state: "Test State", facility_group: facility_group_1)
 
+      # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
 
       expect(org.region.path).to eq("India.Test_Organization")
@@ -34,6 +35,7 @@ RSpec.describe Region, type: :model do
       _facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
       _facility_2 = create(:facility, name: "facility2", state: "State 2", facility_group: facility_group_2)
 
+      # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
 
       state_2 = Region.find_by!(name: "State 2")
@@ -54,6 +56,7 @@ RSpec.describe Region, type: :model do
       facility_group_1 = create(:facility_group, organization: create(:organization))
       create(:facility, facility_group: facility_group_1)
 
+      # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
       root_region = Region.root.first
       org_region = Region.organization.first
