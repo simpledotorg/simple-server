@@ -15,26 +15,17 @@ RSpec.describe TelemedicineReports do
   let!(:teleconsultation_requests_only) { patients.take(3).each { |patient| create(:teleconsultation, facility: facility_1, patient: patient, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day, recorded_at: nil, requester_completion_status: "no") } }
   let!(:teleconsultation_requests_marked_complete) { patients.slice(3, 2).each { |patient| create(:teleconsultation, facility: facility_1, patient: patient, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day, requester_completion_status: "yes", recorded_at: nil) } }
   let!(:teleconsultation_mo_logged_record) { create(:teleconsultation, facility: facility_1, patient: patients.last, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day) }
-  context ".parse_mixpanel" do
-    it "should fail if you give it a invalid file path" do
-      invalid_file_path = "spec/fixtures/files/invalid_file_path.csv"
 
-      report = TelemedicineReports.new(invalid_file_path, period_start, period_end)
-      expect { report.generate }.to raise_error(/No such file or directory/)
-    end
-
-    it "should parse a valid mixpanel csv" do
-      report = TelemedicineReports.new(file_path, period_start, period_end)
-      report.generate
-      expect(report.mixpanel_data[:hydrated].size).to eq(6)
-    end
+  before do
+    allow(Flipper).to receive(:enabled?).with(:weekly_telemed_report).and_return(true)
+    allow(ENV).to receive(:fetch).with("TELEMED_REPORT_EMAILS").and_return("test@example.com")
+    allow(ENV).to receive(:fetch).with("MIXPANEL_API_SECRET").and_return("fake_api_secret")
+    allow_any_instance_of(described_class).to receive(:fetch_mixpanel_data).and_return(File.read(file_path))
+    allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later)
   end
 
-  context ".generate_report" do
-    it "generates a report file" do
-      filename = "telemedicine_report_03_Aug_to_09_Aug.csv"
-      # This result is dependent on the factories, could become flaky if the factories change significantly.
-      # We should drop these specs once we switch over to the Telemed MVP
+  context ".generate" do
+    it "emails a report file" do
       report_data = [["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", ""],
         ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests (new version)", "Teleconsult - Records logged by MOs (new version)", "Teleconsult - Requests marked 'completed' (new version)", "Teleconsult requests percentage"],
         [facility_1.state, "", "", 10, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
@@ -54,14 +45,13 @@ RSpec.describe TelemedicineReports do
         ["07-Aug-2020", 1, 2],
         ["08-Aug-2020", 1, 1]]
 
-      expect(CSV).to receive(:open).with(filename, "w")
+      expect(CSV).to receive(:generate).and_call_original
+      expect(TelemedReportMailer).to receive(:email_report).and_call_original
 
-      report = TelemedicineReports.new(file_path, period_start, period_end)
+      report = TelemedicineReports.new(period_start, period_end)
       report.generate
 
       expect(report.report_array).to match_array(report_data)
-
-      File.delete(filename) if File.exist?(filename)
     end
   end
 end
