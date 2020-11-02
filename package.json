@@ -2,6 +2,7 @@
   "name": "simple-server",
   "private": true,
   "dependencies": {
+    "numeral": "^2.0.6",
     "tablesort": "^5.2.0"
   }
 }

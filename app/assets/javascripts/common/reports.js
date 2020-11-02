@@ -659,7 +659,7 @@ function formatNumberWithCommas(value) {
     return 0;
   }
 
-  if (numeral(value)) {
+  if (numeral(value) !== undefined) {
     return numeral(value).format('0,0');
   }
 
