@@ -50,7 +50,7 @@ RSpec.describe Region, type: :model do
   end
 
   context "association helper methods" do
-    it "generates the appropriate has_one or has_many type methods based on the available RegionTypes" do
+    it "generates the appropriate has_one or has_many type methods based on the available region types" do
       facility_group_1 = create(:facility_group, organization: create(:organization))
       create(:facility, facility_group: facility_group_1)
 
