@@ -55,7 +55,7 @@ class RegionBackfill
     Organization.all.each do |org|
       org_region = find_or_create_region_from(source: org, region_type: org_type, parent: instance)
 
-      state_names = org.facilities.distinct.pluck(:state).uniq
+      state_names = org.facilities.distinct.pluck(:state)
       states = state_names.each_with_object({}) { |name, hsh|
         hsh[name] = find_or_create_region_from(name: name, region_type: state_type, parent: org_region)
       }
