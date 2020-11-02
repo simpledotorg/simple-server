@@ -93,10 +93,6 @@ class Facility < ApplicationRecord
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
 
-  validate :teleconsultation_phone_numbers_valid?, if: -> {
-    teleconsultation_enabled? && !Flipper.enabled?(:teleconsult_facility_mo_search)
-  }
-
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
@@ -134,42 +130,23 @@ class Facility < ApplicationRecord
     query.call
   end
 
-  CSV_IMPORT_COLUMNS = if Flipper.enabled?(:teleconsult_facility_mo_search)
-    {organization_name: "organization",
-     facility_group_name: "facility_group",
-     name: "facility_name",
-     facility_type: "facility_type",
-     street_address: "street_address (optional)",
-     village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block",
-     district: "district",
-     state: "state",
-     country: "country",
-     pin: "pin (optional)",
-     latitude: "latitude (optional)",
-     longitude: "longitude (optional)",
-     facility_size: "size (optional)",
-     enable_diabetes_management: "enable_diabetes_management (true/false)"}
-  else
-    {organization_name: "organization",
-     facility_group_name: "facility_group",
-     name: "facility_name",
-     facility_type: "facility_type",
-     street_address: "street_address (optional)",
-     village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block",
-     district: "district",
-     state: "state",
-     country: "country",
-     pin: "pin (optional)",
-     latitude: "latitude (optional)",
-     longitude: "longitude (optional)",
-     facility_size: "size (optional)",
-     enable_diabetes_management: "enable_diabetes_management (true/false)",
-     enable_teleconsultation: "enable_teleconsultation (true/false)",
-     teleconsultation_phone_number: "teleconsultation_phone_number",
-     teleconsultation_isd_code: "teleconsultation_isd_code"}
-  end
+  CSV_IMPORT_COLUMNS = {
+    organization_name: "organization",
+    facility_group_name: "facility_group",
+    name: "facility_name",
+    facility_type: "facility_type",
+    street_address: "street_address (optional)",
+    village_or_colony: "village_or_colony (optional)",
+    zone: "zone_or_block",
+    district: "district",
+    state: "state",
+    country: "country",
+    pin: "pin (optional)",
+    latitude: "latitude (optional)",
+    longitude: "longitude (optional)",
+    facility_size: "size (optional)",
+    enable_diabetes_management: "enable_diabetes_management (true/false)"
+  }
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -315,21 +292,5 @@ class Facility < ApplicationRecord
 
   def clear_isd_code
     self.teleconsultation_isd_code = ""
-  end
-
-  def teleconsultation_phone_numbers_valid?
-    message = "At least one medical officer must be added to enable teleconsultation, all teleconsultation numbers"\
-      " must have a country code and a phone number"
-    if teleconsultation_phone_numbers.blank?
-      errors.add("teleconsultation_phone_numbers_attributes", message)
-      return
-    end
-
-    teleconsultation_phone_numbers.each do |mo|
-      if mo.isd_code.blank? || mo.phone_number.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", message)
-        break
-      end
-    end
   end
 end
