@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_30_091557) do
+ActiveRecord::Schema.define(version: 2020_11_02_150828) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -480,6 +480,7 @@ ActiveRecord::Schema.define(version: 2020_10_30_091557) do
     t.datetime "updated_at", null: false
     t.string "region_type", null: false
     t.index ["path"], name: "index_regions_on_path", using: :gist
+    t.index ["path"], name: "index_regions_on_unique_path", unique: true
     t.index ["region_type"], name: "index_regions_on_region_type"
     t.index ["slug"], name: "index_regions_on_slug", unique: true
     t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"

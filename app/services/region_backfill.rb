@@ -34,6 +34,10 @@ class RegionBackfill
     def path
       nil
     end
+
+    def children
+      Region.root || Region.none
+    end
   }
 
   def create_regions
@@ -82,13 +86,15 @@ class RegionBackfill
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
 
-    region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type), dry_run: dry_run?, logger: logger)
-    region.slug = source.slug if source
-    region.source = source if source
-    region.path = [parent.path, region.name_to_path_label].compact.join(".")
-
-    existing_region = Region.find_by(name: region_name, region_type: region_type, path: region.path)
+    existing_region = parent.children.find_by(name: region_name, region_type: region_type)
     return existing_region if existing_region
+
+    region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type), dry_run: dry_run?, logger: logger)
+    if source
+      region.slug = source.slug
+      region.source = source
+    end
+    region.path = [parent.path, region.path_label].compact.join(".")
 
     if region.save_or_check_validity
       count_success(region_type)

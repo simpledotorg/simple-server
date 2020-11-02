@@ -5,7 +5,7 @@ class Region < ApplicationRecord
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :path, presence: true
+  validates :path, presence: true, uniqueness: true
   validates :region_type, presence: true
 
   belongs_to :source, polymorphic: true, optional: true
@@ -22,8 +22,9 @@ class Region < ApplicationRecord
   # A label is a sequence of alphanumeric characters and underscores.
   # (In C locale the characters A-Za-z0-9_ are allowed).
   # Labels must be less than 256 bytes long.
-  def name_to_path_label
-    name.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
+  def path_label
+    set_slug unless slug
+    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 
   def log_payload
