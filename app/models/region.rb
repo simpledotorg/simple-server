@@ -16,7 +16,7 @@ class Region < ApplicationRecord
 
   MAX_LABEL_LENGTH = 255
 
-  REGION_TYPES = %w[root organization state district block facility]
+  REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h
 
   # A label is a sequence of alphanumeric characters and underscores.
