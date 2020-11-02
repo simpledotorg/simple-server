@@ -21,7 +21,7 @@ RSpec.describe Region, type: :model do
 
       expect(org.region.path).to eq("india.test_organization")
       expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.slug}")
-      expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.facility_uhc_zzz_1")
+      expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.slug}")
       expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_2.slug[0..254]}")
     end
 
