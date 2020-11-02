@@ -46,8 +46,8 @@ class ImportBlocksToRegions
     region || create_region_from(name: name, region_type: region_type, parent: parent)
   end
 
-  def create_region_from(name:, type:, parent:)
-    region = Region.new(name: name, type: type)
+  def create_region_from(name:, region_type:, parent:)
+    region = Region.new(name: name, region_type: region_type)
     region.send(:set_slug) unless region.slug
     region.path = [parent.path, region.path_label].compact.join(".")
     region.save!
