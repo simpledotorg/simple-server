@@ -42,7 +42,7 @@ class Region < ApplicationRecord
       if self_and_descendant_types(region_type).include?(self.region_type)
         self_and_ancestors.find_by(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type.underscore} for #{self} of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type} for #{self} of type #{self.region_type}"
       end
     end
 
@@ -52,7 +52,7 @@ class Region < ApplicationRecord
       if ancestor_types(region_type).include?(self.region_type)
         descendants.where(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type.pluralize.underscore} for #{self} of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type.pluralize} for #{self} of type #{self.region_type}"
       end
     end
   end
