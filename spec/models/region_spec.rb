@@ -5,6 +5,7 @@ RSpec.describe Region, type: :model do
     it "requires a region type" do
       region = Region.new(name: "foo", path: "foo")
       expect(region).to_not be_valid
+      expect(region.errors[:region_type]).to eq(["can't be blank"])
     end
   end
 
