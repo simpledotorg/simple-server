@@ -35,7 +35,7 @@ class RegionBackfill
       nil
     end
     def children
-      Region.none
+      Region.root || Region.none
     end
   }
 

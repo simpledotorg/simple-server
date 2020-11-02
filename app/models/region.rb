@@ -5,7 +5,7 @@ class Region < ApplicationRecord
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :path, presence: true
+  validates :path, presence: true, uniqueness: true
   validates :region_type, presence: true
 
   belongs_to :source, polymorphic: true, optional: true
