@@ -28,7 +28,7 @@ RSpec.describe RegionBackfill, type: :model do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "fg1", organization: org)
       facility_group_2 = create(:facility_group, name: "fg2", organization: org)
-      facility_group_3 = create(:facility_group, name: "fg3", organization: org)
+      _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
       facility_group_4 = create(:facility_group, name: "fg4", organization: org)
 
       facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
