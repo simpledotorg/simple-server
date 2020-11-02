@@ -13,12 +13,7 @@ class Region < ApplicationRecord
   belongs_to :source, polymorphic: true, optional: true
 
   before_validation :set_path, if: :parent
-  after_save :update_children, if: :saved_change_to_name?
   before_discard :remove_path
-
-  def update_children
-    children.update(parent: self)
-  end
 
   # A label is a sequence of alphanumeric characters and underscores.
   # (In C locale the characters A-Za-z0-9_ are allowed).
