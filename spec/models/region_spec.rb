@@ -21,9 +21,9 @@ RSpec.describe Region, type: :model do
       RegionBackfill.call(dry_run: false)
 
       expect(org.region.path).to eq("india.test_organization")
-      expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.slug}")
-      expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.slug}")
-      expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_2.slug[0..254]}")
+      expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.region.slug.underscore}")
+      expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.region.slug.underscore}")
+      expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
     end
 
     it "can soft delete nodes" do

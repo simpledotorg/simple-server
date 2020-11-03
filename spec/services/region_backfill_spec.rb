@@ -58,7 +58,6 @@ RSpec.describe RegionBackfill, type: :model do
 
       facility_regions = Region.facility
       expect(facility_regions.size).to eq(6)
-      expect(facility_regions.map(&:slug)).to contain_exactly(*facilities.map(&:slug))
 
       expect(org.leaves.map(&:source)).to contain_exactly(facility_1, facility_2, facility_3, facility_4, facility_5, facility_6)
       expect(org.leaves.map(&:region_type).uniq).to contain_exactly("facility")
