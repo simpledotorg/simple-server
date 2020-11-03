@@ -35,17 +35,21 @@ RSpec.describe Organization, type: :model do
   describe "Callbacks" do
     context "after_create" do
       it "creates a region" do
-        organization = create(:organization)
+        organization = create(:organization, name: "IHCI", description: "IHCI org")
         expect(organization.region).to be_present
+        expect(organization.region.name).to eq "IHCI"
+        expect(organization.region.description).to eq "IHCI org"
+        expect(organization.region.path).to eq "Root.ihci"
       end
     end
 
     context "after_update" do
       it "updates the associated region" do
-        organization = create(:organization)
-        organization.update(name: "New Org Name")
+        organization = create(:organization, name: "IHCI")
+        organization.update(name: "New Org Name", description: "New Description")
         expect(organization.region.name).to eq "New Org Name"
-        expect(organization.region.path).to eq "Root.New_Org_Name"
+        expect(organization.region.description).to eq "New Description"
+        expect(organization.region.path).to eq "Root.ihci"
       end
     end
   end

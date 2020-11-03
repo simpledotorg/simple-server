@@ -47,8 +47,10 @@ RSpec.configure do |config|
   Capybara.default_driver = :headless_chrome
   Capybara.javascript_driver = :headless_chrome
 
-  # Capybara.default_driver = :chrome
-  # Capybara.javascript_driver = :chrome
-
   config.include FlipperHelpers
+
+  config.before :all do
+    # create a Root region and persist across all tests (the Root region is effectively a singleton)
+    Region.find_by_name("Root") || Region.create!(name: "Root", region_type: "root", path: "Root")
+  end
 end

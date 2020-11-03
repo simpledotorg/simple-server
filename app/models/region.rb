@@ -82,7 +82,7 @@ class Region < ApplicationRecord
   end
 
   def set_path
-    self.path = "#{parent.path}.#{name_to_path_label}"
+    self.path = "#{parent.path}.#{path_label}"
   end
 
   def remove_path

@@ -20,14 +20,13 @@ class Organization < ApplicationRecord
   after_update :update_region
 
   def create_region
-    parent_region_type = RegionType.find_by_name("Root")
-    parent = Region.find_by(type: parent_region_type)
-
+    parent = Region.find_by(region_type: Region.region_types[:root])
     region = Region.new
-    region.type = RegionType.find_by_name("Organization")
+    region.region_type = Region.region_types[:organization]
     region.source = self
     region.parent = parent
     region.name = name
+    region.description = description
     region.save!
   end
 
