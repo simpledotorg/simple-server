@@ -130,11 +130,11 @@
                 %></em>
               </td>
               <td class="type-number">
-                <%= @totals_by_period.dig(period, :missed).to_i %>
+                <%= number_with_delimiter(@totals_by_period.dig(period, :missed).to_i) %>
               </td>
             <% end %>
-            <td class="type-number"><%= @calls_made.values.sum %></td>
-            <td class="type-number"><%= @total_patients_per_facility.values.sum %></td>
+            <td class="type-number"><%= number_with_delimiter(@calls_made.values.sum) %></td>
+            <td class="type-number"><%= number_with_delimiter(@total_patients_per_facility.values.sum) %></td>
           </tr>
           <% @facilities.each do |facility| %>
             <tr>
@@ -147,11 +147,11 @@
                   %></em>
                 </td>
                 <td class="type-number">
-                  <%= @missed_visits_by_facility.dig([facility.id, *period], :missed).to_i %>
+                  <%= number_with_delimiter(@missed_visits_by_facility.dig([facility.id, *period], :missed).to_i) %>
                 </td>
               <% end %>
-              <td class="type-number"><%= @calls_made.dig(facility.id) || 0 %></td>
-              <td class="type-number"><%= @total_patients_per_facility[facility.id].to_i %></td>
+              <td class="type-number"><%= number_with_delimiter(@calls_made.dig(facility.id) || 0) %></td>
+              <td class="type-number"><%= number_with_delimiter(@total_patients_per_facility[facility.id].to_i) %></td>
             </tr>
           <% end %>
         </tbody>
