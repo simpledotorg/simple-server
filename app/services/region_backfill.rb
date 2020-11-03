@@ -90,12 +90,8 @@ class RegionBackfill
     return existing_region if existing_region
 
     region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type), dry_run: dry_run?, logger: logger)
-    if source
-      region.slug = source.slug
-      region.source = source
-    end
+    region.source = source if source
     region.path = [parent.path, region.path_label].compact.join(".")
-
     if region.save_or_check_validity
       count_success(region_type)
     else
