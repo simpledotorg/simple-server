@@ -26,7 +26,6 @@ class RegionBackfill
   end
 
   def call
-    create_region_types
     create_regions
     logger.info msg: "complete", success_counts: success_counts, invalid_counts: invalid_counts
   end
@@ -35,6 +34,10 @@ class RegionBackfill
     def path
       nil
     end
+
+    def children
+      Region.root || Region.none
+    end
   }
 
   def create_regions
@@ -42,12 +45,12 @@ class RegionBackfill
     if current_country_name != "India" && !dry_run?
       raise UnsupportedCountry, "#{self.class.name} not yet ready to run in write mode in #{current_country_name}"
     end
-    root_type = find_region_type("Root")
-    org_type = find_region_type("Organization")
-    state_type = find_region_type("State")
-    district_type = find_region_type("District")
-    block_type = find_region_type("Block")
-    facility_type = find_region_type("Facility")
+    root_type = "root"
+    org_type = "organization"
+    state_type = "state"
+    district_type = "district"
+    block_type = "block"
+    facility_type = "facility"
 
     root_parent = NullRegion.new(name: "__root__")
     instance = find_or_create_region_from name: current_country_name, region_type: root_type, parent: root_parent
@@ -78,38 +81,20 @@ class RegionBackfill
     end
   end
 
-  def find_region_type(name)
-    if dry_run?
-      RegionType.new name: name
-    else
-      RegionType.find_by! name: name
-    end
-  end
-
-  def create_region_types
-    logger.info msg: "create_region_types"
-    unless dry_run?
-      root = RegionType.find_by_name("Root") || RegionType.create!(name: "Root", path: "Root")
-      org = RegionType.find_by_name("Organization") || RegionType.create!(name: "Organization", parent: root)
-      state = RegionType.find_by_name("State") || RegionType.create!(name: "State", parent: org)
-      district = RegionType.find_by_name("District") || RegionType.create!(name: "District", parent: state)
-      block = RegionType.find_by_name("Block") || RegionType.create!(name: "Block", parent: district)
-      _facility = RegionType.find_by_name("Facility") || RegionType.create!(name: "Facility", parent: block)
-    end
-  end
-
   def find_or_create_region_from(parent:, region_type:, name: nil, source: nil)
-    # logger.info msg: "find_or_create_region_from", parent: parent.name, type: region_type.name, name: name, source: source
+    # logger.info msg: "find_or_create_region_from", parent: parent.name, type: region_type, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
 
-    region = DryRunRegion.new(Region.new(name: region_name, type: region_type), dry_run: dry_run?, logger: logger)
-    region.slug = source.slug if source
-    region.source = source if source
-    region.path = [parent.path, region.name_to_path_label].compact.join(".")
-
-    existing_region = Region.find_by(name: region_name, type: region_type, path: region.path)
+    existing_region = parent.children.find_by(name: region_name, region_type: region_type)
     return existing_region if existing_region
+
+    region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type), dry_run: dry_run?, logger: logger)
+    if source
+      region.slug = source.slug
+      region.source = source
+    end
+    region.path = [parent.path, region.path_label].compact.join(".")
 
     if region.save_or_check_validity
       count_success(region_type)
@@ -120,12 +105,12 @@ class RegionBackfill
   end
 
   def count_success(region_type)
-    success_counts[region_type.name] ||= 0
-    success_counts[region_type.name] += 1
+    success_counts[region_type] ||= 0
+    success_counts[region_type] += 1
   end
 
   def count_invalid(region_type)
-    invalid_counts[region_type.name] ||= 0
-    invalid_counts[region_type.name] += 1
+    invalid_counts[region_type] ||= 0
+    invalid_counts[region_type] += 1
   end
 end
