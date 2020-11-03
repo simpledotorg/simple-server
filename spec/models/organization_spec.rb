@@ -39,7 +39,7 @@ RSpec.describe Organization, type: :model do
         expect(organization.region).to be_present
         expect(organization.region.name).to eq "IHCI"
         expect(organization.region.description).to eq "IHCI org"
-        expect(organization.region.path).to eq "Root.ihci"
+        expect(organization.region.path).to eq "india.ihci"
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe Organization, type: :model do
         organization.update(name: "New Org Name", description: "New Description")
         expect(organization.region.name).to eq "New Org Name"
         expect(organization.region.description).to eq "New Description"
-        expect(organization.region.path).to eq "Root.ihci"
+        expect(organization.region.path).to eq "india.ihci"
       end
     end
   end
