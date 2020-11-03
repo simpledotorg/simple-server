@@ -1,10 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Region, type: :model do
-  before do
-    Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-  end
-
   context "validations" do
     it "requires a region type" do
       region = Region.new(name: "foo", path: "foo")

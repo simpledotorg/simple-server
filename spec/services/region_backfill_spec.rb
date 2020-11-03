@@ -1,10 +1,6 @@
 require "rails_helper"
 
 RSpec.describe RegionBackfill, type: :model do
-  before do
-    Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-  end
-
   context "dry run mode" do
     before do
       org = create(:organization, name: "Test Organization")
