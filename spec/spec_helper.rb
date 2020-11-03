@@ -51,6 +51,6 @@ RSpec.configure do |config|
 
   config.before :all do
     # create a Root region and persist across all tests (the Root region is effectively a singleton)
-    Region.find_by_name("Root") || Region.create!(name: "Root", region_type: "root", path: "Root")
+    Region.find_by_name("Root") || Region.create!(name: "Root", region_type: Region.region_types[:root], path: "Root")
   end
 end
