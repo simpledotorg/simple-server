@@ -16,14 +16,15 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  before_create :create_region
+  after_create :create_region
   before_update :update_region
 
   def create_region
+    return if region && region.persisted?
     parent = Region.find_by!(region_type: Region.region_types[:root])
-    region = build_region(name: name, description: description, parent: parent)
+    region = build_region(name: name, description: description, reparent_to: parent)
     region.region_type = Region.region_types[:organization]
-    region
+    region.save!
   end
 
   def update_region

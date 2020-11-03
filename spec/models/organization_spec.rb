@@ -37,6 +37,7 @@ RSpec.describe Organization, type: :model do
       it "creates a region" do
         organization = create(:organization, name: "IHCI", description: "IHCI org")
         expect(organization.region).to be_present
+        expect(organization.region).to be_persisted
         expect(organization.region.name).to eq "IHCI"
         expect(organization.region.description).to eq "IHCI org"
         expect(organization.region.path).to eq "india.ihci"

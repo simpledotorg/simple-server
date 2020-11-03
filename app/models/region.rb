@@ -5,12 +5,6 @@ class Region < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
-  attr_writer :parent
-
-  def parent
-    @parent || super
-  end
-
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :path, presence: true, uniqueness: true
@@ -18,7 +12,8 @@ class Region < ApplicationRecord
 
   belongs_to :source, polymorphic: true, optional: true
 
-  before_validation :set_path
+  attr_accessor :reparent_to
+  before_validation :initialize_path, if: :reparent_to
   before_discard :remove_path
 
   REGION_TYPES = %w[root organization state district block facility].freeze
@@ -65,12 +60,14 @@ class Region < ApplicationRecord
 
   private
 
-  def set_path
-    if parent
-      self.path = "#{parent.path}.#{path_label}"
-    elsif path.blank?
-      errors.add(:parent, "must be supplied if path is not supplied")
-    end
+  def initialize_path?
+    @initialize_path
+  end
+
+  def initialize_path
+    errors.add(:reparent_to, "must assign new parent to initialize path") unless reparent_to
+    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to}, going to initialize new path")
+    self.path = "#{reparent_to.path}.#{path_label}"
   end
 
   def remove_path
