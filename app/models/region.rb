@@ -12,6 +12,8 @@ class Region < ApplicationRecord
 
   belongs_to :source, polymorphic: true, optional: true
 
+  # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
+  # callback will assign the new path.
   attr_accessor :reparent_to
   before_validation :initialize_path, if: :reparent_to
   before_discard :remove_path
@@ -68,6 +70,7 @@ class Region < ApplicationRecord
     errors.add(:reparent_to, "must assign new parent to initialize path") unless reparent_to
     logger.info(class: self.class, msg: "got reparent_to: #{reparent_to}, going to initialize new path")
     self.path = "#{reparent_to.path}.#{path_label}"
+    self.reparent_to = nil
   end
 
   def remove_path
