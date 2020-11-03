@@ -77,7 +77,7 @@ protocol_drugs_data = [
 #
 # create organizations, protocols and protocol_drugs
 #
-Region.roots.first || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
+Region.root.first || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
 organization = Organization.find_by(org) || FactoryBot.create(:organization, org)
 protocol = Protocol.find_or_create_by!(protocol_data)
 protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
