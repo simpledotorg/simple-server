@@ -26,7 +26,7 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_sizes
-      @selected_sizes = params[:size].present? ? params[:size] : @facility_sizes
+      @selected_sizes = params[:size].present? ? [params[:size]] : @facility_sizes
     end
 
     def set_selected_zones

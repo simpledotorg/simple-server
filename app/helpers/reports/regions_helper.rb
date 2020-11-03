@@ -1,4 +1,9 @@
 module Reports::RegionsHelper
+  def reports_region_facility_details_path(facility, options = {})
+    options.with_defaults! report_scope: "facility"
+    reports_region_details_path(facility, options)
+  end
+
   def reports_region_facility_path(facility, options = {})
     options.with_defaults! report_scope: "facility"
     reports_region_path(facility, options)

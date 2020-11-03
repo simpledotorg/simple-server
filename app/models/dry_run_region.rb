@@ -25,11 +25,6 @@ class DryRunRegion < SimpleDelegator
     result
   end
 
-  # bypass method visibility for this annoying method
-  def set_slug
-    @region.send(:set_slug)
-  end
-
   def save
     raise ArgumentError, "call save_or_check_validity instead"
   end

@@ -170,6 +170,14 @@ describe Patient, type: :model do
                                     [second_follow_up_date, current_facility.id] => 1,
                                     [second_follow_up_date, follow_up_facility.id] => 0})
           end
+
+          it "can be filtered by region" do
+            expect(Patient
+                     .follow_ups_by_period(:day, at_region: current_facility)
+                     .group("encounters.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 2,
+                                    [second_follow_up_date, current_facility.id] => 1})
+          end
         end
 
         context "by month" do
@@ -185,6 +193,13 @@ describe Patient, type: :model do
                      .group("encounters.facility_id")
                      .count).to eq({[first_follow_up_date, current_facility.id] => 2,
                                     [first_follow_up_date, follow_up_facility.id] => 1})
+          end
+
+          it "can be filtered by facility" do
+            expect(Patient
+                     .follow_ups_by_period(:month, at_region: current_facility)
+                     .group("encounters.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 2})
           end
         end
       end
@@ -239,6 +254,14 @@ describe Patient, type: :model do
                                     [second_follow_up_date, current_facility.id] => 1,
                                     [second_follow_up_date, follow_up_facility.id] => 0})
           end
+
+          it "can be filtered by region" do
+            expect(Patient
+                     .hypertension_follow_ups_by_period(:day, at_region: current_facility)
+                     .group("blood_pressures.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 1,
+                                    [second_follow_up_date, current_facility.id] => 1})
+          end
         end
 
         context "by month" do
@@ -254,6 +277,13 @@ describe Patient, type: :model do
                      .group("blood_pressures.facility_id")
                      .count).to eq({[first_follow_up_date, current_facility.id] => 1,
                                     [first_follow_up_date, follow_up_facility.id] => 1})
+          end
+
+          it "can be filtered by region" do
+            expect(Patient
+                     .hypertension_follow_ups_by_period(:month, at_region: current_facility)
+                     .group("blood_pressures.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 1})
           end
         end
       end
