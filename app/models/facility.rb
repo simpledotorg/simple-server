@@ -218,7 +218,7 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_number_with_isd
-    phone_number = teleconsultation_phone_numbers_with_isd.first&.dig(:phone_number)
+    teleconsultation_phone_numbers_with_isd.first&.dig(:phone_number)
   end
 
   def teleconsultation_phone_numbers_with_isd
