@@ -16,8 +16,8 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_create :create_region, if: -> { Region.root }
-  after_update :update_region, if: -> { Region.root }
+  after_create :create_region, if: -> { Region.root.present? }
+  after_update :update_region, if: -> { Region.root.present? }
 
   def create_region
     parent = Region.find_by(region_type: Region.region_types[:root])
