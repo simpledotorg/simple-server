@@ -18,7 +18,7 @@ class Region < ApplicationRecord
 
   belongs_to :source, polymorphic: true, optional: true
 
-  before_validation :set_path, if: :parent
+  before_validation :set_path
   before_discard :remove_path
 
   REGION_TYPES = %w[root organization state district block facility].freeze
@@ -66,7 +66,11 @@ class Region < ApplicationRecord
   private
 
   def set_path
-    self.path = "#{parent.path}.#{path_label}"
+    self.path = if parent.nil?
+      path_label
+    else
+      "#{parent.path}.#{path_label}"
+    end
   end
 
   def remove_path
