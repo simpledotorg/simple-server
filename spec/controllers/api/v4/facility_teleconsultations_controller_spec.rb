@@ -69,9 +69,12 @@ RSpec.describe Api::V4::FacilityTeleconsultationsController, type: :controller d
 
       context "Requested facility is not in the user's Facility Group" do
         it "fails authorization" do
+          medical_officer = create(:user, teleconsultation_phone_number: phone_number, teleconsultation_isd_code: isd_code)
           facility = create(:facility)
-          facility.update!(enable_teleconsultation: true,
-                           teleconsultation_phone_numbers: [{isd_code: isd_code, phone_number: phone_number}])
+
+          facility.enable_teleconsultation = false
+          facility.teleconsultation_medical_officers = [medical_officer]
+          facility.save!
 
           get :show, params: {facility_id: facility.id}
           expect(response).to have_http_status(401)

@@ -79,9 +79,7 @@ RSpec.describe Admin::CSV::FacilityValidator do
         build(:facility, state: nil, enable_teleconsultation: false),
         build(:facility, country: nil, enable_teleconsultation: false),
         build(:facility, facility_size: "invalid size", enable_teleconsultation: false),
-        build(:facility, enable_diabetes_management: nil, enable_teleconsultation: false),
-        build(:facility, enable_teleconsultation: nil),
-        build(:facility, enable_teleconsultation: true, teleconsultation_phone_numbers: [{isd_code: "+91"}])].map(&:attributes)
+        build(:facility, enable_diabetes_management: nil, enable_teleconsultation: false)].map(&:attributes)
       validator = described_class.new(facilities)
       validator.facilities
 
@@ -89,8 +87,7 @@ RSpec.describe Admin::CSV::FacilityValidator do
         "Row(s) 3: State can't be blank",
         "Row(s) 4: Country can't be blank",
         "Row(s) 5: Facility size not in #{Facility.facility_sizes.values.join(", ")}",
-        "Row(s) 6: Enable diabetes management is not included in the list",
-        "Row(s) 7: Enable teleconsultation is not included in the list"]
+        "Row(s) 6: Enable diabetes management is not included in the list"]
     end
   end
 end
