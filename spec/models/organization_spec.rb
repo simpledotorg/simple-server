@@ -51,6 +51,12 @@ RSpec.describe Organization, type: :model do
         expect(organization.region.description).to eq "New Description"
         expect(organization.region.path).to eq "india.ihci"
       end
+
+      it "does nothing if the org name / description hasn't changed" do
+        organization = create(:organization, name: "IHCI")
+        expect_any_instance_of(Region).to receive(:save!).never
+        organization.touch
+      end
     end
   end
 
