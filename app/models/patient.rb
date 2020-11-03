@@ -30,6 +30,7 @@ class Patient < ApplicationRecord
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :appointments
   has_one :medical_history
+  has_many :teleconsultations
 
   has_many :encounters
   has_many :observations, through: :encounters

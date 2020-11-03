@@ -20,6 +20,7 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:facilities).through(:blood_pressures) }
     it { is_expected.to have_many(:users).through(:blood_pressures) }
     it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_many(:teleconsultations) }
 
     it { is_expected.to have_many(:encounters) }
     it { is_expected.to have_many(:observations).through(:encounters) }
