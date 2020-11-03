@@ -5,6 +5,12 @@ class Region < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
+  attr_writer :parent
+
+  def parent
+    @parent || super
+  end
+
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :path, presence: true, uniqueness: true
@@ -35,12 +41,6 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
-  attr_writer :parent
-
-  def parent
-    @parent || super
-  end
-
   REGION_TYPES.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization
@@ -65,6 +65,14 @@ class Region < ApplicationRecord
 
   private
 
+  def set_path
+    self.path = "#{parent.path}.#{path_label}"
+  end
+
+  def remove_path
+    self.path = nil
+  end
+
   def ancestor_types(region_type)
     REGION_TYPES.split(region_type).first
   end
@@ -79,13 +87,5 @@ class Region < ApplicationRecord
 
   def self_and_descendant_types(region_type)
     [region_type] + descendant_types(region_type)
-  end
-
-  def set_path
-    self.path = "#{parent.path}.#{path_label}"
-  end
-
-  def remove_path
-    self.path = nil
   end
 end
