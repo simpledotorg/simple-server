@@ -66,10 +66,10 @@ class Region < ApplicationRecord
   private
 
   def set_path
-    self.path = if parent.nil?
-      path_label
-    else
-      "#{parent.path}.#{path_label}"
+    if parent
+      self.path = "#{parent.path}.#{path_label}"
+    elsif path.blank?
+      errors.add(:parent, "must be supplied if path is not supplied")
     end
   end
 
