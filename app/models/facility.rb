@@ -8,8 +8,6 @@ class Facility < ApplicationRecord
   extend FriendlyId
   extend RegionSource
 
-  before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
-
   attribute :import, :boolean, default: false
   attribute :organization_name, :string
   attribute :facility_group_name, :string
@@ -220,15 +218,12 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_number_with_isd
-    teleconsultation_phone_number = teleconsultation_phone_numbers.first
-    return if teleconsultation_phone_number.blank?
-
-    Phonelib.parse(teleconsultation_phone_number.isd_code + teleconsultation_phone_number.phone_number).full_e164
+    phone_number = teleconsultation_phone_numbers_with_isd.first&.dig(:phone_number)
   end
 
   def teleconsultation_phone_numbers_with_isd
-    teleconsultation_phone_numbers.map do |phone_number|
-      {phone_number: Phonelib.parse(phone_number.isd_code + phone_number.phone_number).full_e164}
+    teleconsultation_medical_officers.map do |medical_officer|
+      {phone_number: medical_officer.full_teleconsultation_phone_number}
     end
   end
 
@@ -240,57 +235,7 @@ class Facility < ApplicationRecord
     end
   }
 
-  def teleconsultation_phone_numbers
-    read_attribute(:teleconsultation_phone_numbers).map do |phone_number|
-      TeleconsultationPhoneNumber.new(phone_number["isd_code"], phone_number["phone_number"])
-    end
-  end
-
-  def teleconsultation_phone_numbers_attributes=(numbers)
-    phone_numbers = []
-    numbers.each do |_index, number|
-      number = number.with_indifferent_access
-      next if number[:_destroy] == "true" || number[:isd_code].blank? || number[:phone_number].blank?
-
-      phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
-    end
-    write_attribute(:teleconsultation_phone_numbers, phone_numbers)
-  end
-
-  def teleconsultation_phone_numbers=(numbers)
-    phone_numbers = []
-    numbers.each do |number|
-      number = number.with_indifferent_access
-      next if number[:isd_code].blank? || number[:phone_number].blank?
-
-      phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
-    end
-    write_attribute(:teleconsultation_phone_numbers, phone_numbers)
-  end
-
-  def build_teleconsultation_phone_number
-    numbers = teleconsultation_phone_numbers.dup
-    numbers << TeleconsultationPhoneNumber.new(Rails.application.config.country["sms_country_code"])
-    self[:teleconsultation_phone_numbers] = numbers
-  end
-
-  TeleconsultationPhoneNumber = Struct.new(:isd_code, :phone_number) {
-    def persisted?
-      false
-    end
-
-    def _destroy
-      false
-    end
-  }
-
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
-  end
-
-  private
-
-  def clear_isd_code
-    self.teleconsultation_isd_code = ""
   end
 end
