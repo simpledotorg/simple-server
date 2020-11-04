@@ -45,7 +45,7 @@ $ cd simple-server
 $ bin/setup
 ```
 
-### Docker Compose
+#### Docker Compose
 
 For quick development and testing, the server can be run locally using Docker Compose and the command: 
 
