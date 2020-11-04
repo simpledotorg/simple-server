@@ -82,7 +82,6 @@ class RegionBackfill
   end
 
   def find_or_create_region_from(parent:, region_type:, name: nil, source: nil)
-    # logger.info msg: "find_or_create_region_from", parent: parent.name, type: region_type, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
 

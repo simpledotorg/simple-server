@@ -33,7 +33,6 @@ class Region < ApplicationRecord
     attrs = attributes.slice("name", "slug", "path")
     attrs["id"] = id.presence
     attrs["region_type"] = region_type
-    attrs["valid"] = valid?
     attrs["errors"] = errors.full_messages.join(",") if errors.any?
     attrs.symbolize_keys
   end
