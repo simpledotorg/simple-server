@@ -31,16 +31,12 @@ class APIController < ApplicationController
     current_user.facility.facility_group
   end
 
-  def current_zone
-    Zone.new(current_user.facility)
+  def current_sync_region
+    current_facility_group
   end
 
   def current_timezone_offset
     request.headers["HTTP_X_TIMEZONE_OFFSET"].to_i || 0
-  end
-
-  def current_sync_region
-    current_facility_group
   end
 
   def validate_facility
