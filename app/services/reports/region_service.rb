@@ -2,9 +2,9 @@ module Reports
   class RegionService
     MAX_MONTHS_OF_DATA = 24
 
-    # THe default period we report on is the last month so we show the last full completed month of data.
+    # The default period we report on is the current month.
     def self.default_period
-      Period.month(Date.current.last_month.beginning_of_month)
+      Period.month(Date.current.beginning_of_month)
     end
 
     def initialize(region:, period:)
@@ -26,7 +26,7 @@ module Reports
       result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
       result.calculate_percentages(:visited_without_bp_taken)
 
-      start_period = result.earliest_registration_period || range.begin
+      start_period = [result.earliest_registration_period, range.begin].compact.max
       calc_range = (start_period..range.end)
       result.calculate_missed_visits(calc_range)
       result.calculate_missed_visits_percentages(calc_range)

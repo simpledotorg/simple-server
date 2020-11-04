@@ -111,6 +111,8 @@ nav.secondary-nav a.active {
 }
 
 .secondary-nav-filters {
+    margin-bottom: 32px;
+
     .dropdown-toggle {
         width: 100%;
         border-top: 1px solid $grey-light;
@@ -242,7 +244,7 @@ footer {
   .container {
     margin-bottom: 36px;
     white-space: nowrap;
-    overflow-x: scroll;
+    overflow-x: auto;
   }
 }
 
@@ -375,7 +377,7 @@ h6.dropdown-header {
     font-size: 75%;
 }
 
-.dropdown i {
+.main-menu-icon {
     min-width: 3em;
     text-align: center;
     color: $blue;

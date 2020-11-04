@@ -22,11 +22,11 @@ class ImportBlocksToRegions
 
     canonical_zones.map do |district, zones|
       district_region = find_or_create_region(name: district,
-                                              type: district_region_type,
+                                              region_type: "district",
                                               parent: organization_region)
       zones.map do |zone|
         find_or_create_region(name: zone,
-                              type: zone_region_type,
+                              region_type: "block",
                               parent: district_region)
       end
     end
@@ -35,28 +35,20 @@ class ImportBlocksToRegions
   private
 
   memoize def organization_region
-    Region.find_by!(name: organization_name, type: RegionType.find_by!(name: "Organization"))
+    Region.find_by!(name: organization_name, region_type: "organization")
   end
 
-  memoize def zone_region_type
-    RegionType.find_by!(name: "Block")
+  def find_or_create_region(name:, region_type:, parent:)
+    region = Region.find_by(name: name, region_type: region_type)
+    log "#{region_type} #{name} to be created under #{parent.name}" unless region
+
+    return Region.new(name: name, region_type: region_type) if dry_run
+    region || create_region_from(name: name, region_type: region_type, parent: parent)
   end
 
-  memoize def district_region_type
-    RegionType.find_by!(name: "District")
-  end
-
-  def find_or_create_region(name:, type:, parent:)
-    region = Region.find_by(name: name, type: type)
-    log "#{type.name} #{name} to be created under #{parent.name}" unless region
-
-    return Region.new(name: name, type: type) if dry_run
-    region || create_region_from(name: name, type: type, parent: parent)
-  end
-
-  def create_region_from(name:, type:, parent:)
-    region = Region.new(name: name, type: type)
-    region.path = [parent.path, region.name_to_path_label].compact.join(".")
+  def create_region_from(name:, region_type:, parent:)
+    region = Region.new(name: name, region_type: region_type)
+    region.path = [parent.path, region.path_label].compact.join(".")
     region.save!
     region
   end

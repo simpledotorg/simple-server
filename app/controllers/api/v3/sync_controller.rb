@@ -1,10 +1,6 @@
 class Api::V3::SyncController < APIController
   include Api::V3::SyncToUser
 
-  def model_name
-    controller_name.classify.constantize
-  end
-
   def __sync_from_user__(params)
     results = merge_records(params)
 

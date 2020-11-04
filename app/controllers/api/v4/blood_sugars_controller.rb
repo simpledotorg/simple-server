@@ -1,5 +1,4 @@
 class Api::V4::BloodSugarsController < Api::V4::SyncController
-  include Api::V3::PrioritisableByFacility
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry
 

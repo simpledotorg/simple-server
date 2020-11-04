@@ -3,33 +3,21 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      if zone_level_sync?
-        zone_records
-      else
-        facility_group_records
-      end
-    end
-
-    def facility_group_records
-      current_facility_group
-        .send(model_name.name.underscore.pluralize.to_sym)
-        .with_discarded
-    end
-
-    def zone_records
-      current_zone
-        .public_send(model_name.name.underscore.pluralize.to_sym)
-        .with_discarded
+      model_name = controller_name.classify.constantize
+      model_name.syncable_to_region(current_sync_region)
     end
 
     def current_facility_records
-      []
+      region_records
+        .where(patient: Patient.syncable_to_region(current_facility))
+        .updated_on_server_since(current_facility_processed_since, limit)
     end
 
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.count
-      model_name
-        .with_discarded
+
+      region_records
+        .where.not(patient: Patient.syncable_to_region(current_facility))
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 

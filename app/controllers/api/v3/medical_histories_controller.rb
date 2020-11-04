@@ -13,10 +13,6 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
 
   private
 
-  def facility_group_records
-    MedicalHistory.syncable_to_region(current_facility_group)
-  end
-
   def current_facility_records
     region_records.where(patient: Patient.syncable_to_region(current_facility))
       .updated_on_server_since(current_facility_processed_since, limit)
