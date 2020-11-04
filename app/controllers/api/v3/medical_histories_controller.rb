@@ -20,6 +20,7 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
+
     region_records.where.not(patient: Patient.syncable_to_region(current_facility))
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
