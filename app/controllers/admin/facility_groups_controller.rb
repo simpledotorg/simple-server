@@ -66,7 +66,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_available_states
-    @available_states = COUNTRYWISE_STATES[[Rails.application.config.country[:name]]]
+    @available_states = COUNTRYWISE_STATES[CountryConfig.current[:name]]
   end
 
   def facility_group_params
