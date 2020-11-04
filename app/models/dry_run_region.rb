@@ -21,7 +21,7 @@ class DryRunRegion < SimpleDelegator
     else
       @region.save
     end
-    logger.info msg: "save", result: result, region: log_payload
+    logger.info msg: "save", result: result, region: log_payload, valid: result, errors: errors.full_messages.join(",")
     result
   end
 
