@@ -52,7 +52,7 @@ class RegionBackfill
     block_type = "block"
     facility_type = "facility"
 
-    root_parent = NullRegion.new(name: "__root__")
+    root_parent = NullRegion.new(name: "__null_region__")
     instance = find_or_create_region_from name: current_country_name, region_type: root_type, parent: root_parent
 
     Organization.all.each do |org|
@@ -82,19 +82,17 @@ class RegionBackfill
   end
 
   def find_or_create_region_from(parent:, region_type:, name: nil, source: nil)
-    # logger.info msg: "find_or_create_region_from", parent: parent.name, type: region_type, name: name, source: source
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
 
     existing_region = parent.children.find_by(name: region_name, region_type: region_type)
     return existing_region if existing_region
 
-    region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type), dry_run: dry_run?, logger: logger)
+    region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type, reparent_to: parent), dry_run: dry_run?, logger: logger)
     if source
-      region.slug = source.slug
       region.source = source
+      region.slug = source.slug
     end
-    region.path = [parent.path, region.path_label].compact.join(".")
 
     if region.save_or_check_validity
       count_success(region_type)

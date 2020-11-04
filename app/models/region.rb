@@ -1,4 +1,6 @@
 class Region < ApplicationRecord
+  MAX_LABEL_LENGTH = 255
+
   ltree :path
   extend FriendlyId
   friendly_id :name, use: :slugged
@@ -10,11 +12,11 @@ class Region < ApplicationRecord
 
   belongs_to :source, polymorphic: true, optional: true
 
-  before_discard do
-    self.path = nil
-  end
-
-  MAX_LABEL_LENGTH = 255
+  # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
+  # callback will assign the new path.
+  attr_accessor :reparent_to
+  before_validation :initialize_path, if: :reparent_to
+  before_discard :remove_path
 
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h
@@ -31,7 +33,6 @@ class Region < ApplicationRecord
     attrs = attributes.slice("name", "slug", "path")
     attrs["id"] = id.presence
     attrs["region_type"] = region_type
-    attrs["valid"] = valid?
     attrs["errors"] = errors.full_messages.join(",") if errors.any?
     attrs.symbolize_keys
   end
@@ -59,6 +60,21 @@ class Region < ApplicationRecord
   end
 
   private
+
+  def initialize_path?
+    @initialize_path
+  end
+
+  def initialize_path
+    errors.add(:reparent_to, "must assign new parent to initialize path") unless reparent_to
+    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to}, going to initialize new path")
+    self.path = "#{reparent_to.path}.#{path_label}"
+    self.reparent_to = nil
+  end
+
+  def remove_path
+    self.path = nil
+  end
 
   def ancestor_types(region_type)
     REGION_TYPES.split(region_type).first
