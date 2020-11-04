@@ -40,16 +40,16 @@ class APIController < ApplicationController
   end
 
   def validate_facility
-    return head :bad_request unless current_facility.present?
+    head :bad_request unless current_facility.present?
   end
 
   def validate_current_facility_belongs_to_users_facility_group
-    return head :unauthorized unless current_user.present? &&
+    head :unauthorized unless current_user.present? &&
       current_facility_group.facilities.where(id: current_facility.id).present?
   end
 
   def current_user_present?
-    return head :unauthorized unless current_user.present?
+    head :unauthorized unless current_user.present?
   end
 
   def validate_sync_approval_status_allowed
