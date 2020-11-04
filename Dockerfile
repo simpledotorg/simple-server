@@ -12,12 +12,9 @@ RUN bundle config --global frozen 1
 WORKDIR /usr/src/app
 
 COPY Gemfile Gemfile.lock ./
-# RUN bundle install
 
 COPY . .
 
 RUN gem install bundler -v 1.17.3
 RUN bundle _1.17.3_ install
 RUN rake yarn:install
-
-#CMD bin/setup
