@@ -39,6 +39,8 @@ class FacilityGroup < ApplicationRecord
       set_diabetes_management(true)
     elsif diabetes_enabled?
       set_diabetes_management(false)
+    else
+      true
     end
   end
 
