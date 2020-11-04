@@ -339,10 +339,7 @@ RSpec.describe Facility, type: :model do
       facility.teleconsultation_medical_officers = [medical_officer_1, medical_officer_2]
       facility.save!
 
-      expect(facility.teleconsultation_phone_numbers_with_isd).to match_array([
-        {phone_number: "+911111111111"},
-        {phone_number: "+912222222222"}
-      ])
+      expect(facility.teleconsultation_phone_numbers_with_isd).to match_array(["+911111111111", "+912222222222"])
     end
   end
 

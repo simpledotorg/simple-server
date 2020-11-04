@@ -218,13 +218,11 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_number_with_isd
-    teleconsultation_phone_numbers_with_isd.first&.dig(:phone_number)
+    teleconsultation_phone_numbers_with_isd.first
   end
 
   def teleconsultation_phone_numbers_with_isd
-    teleconsultation_medical_officers.map do |medical_officer|
-      {phone_number: medical_officer.full_teleconsultation_phone_number}
-    end
+    teleconsultation_medical_officers.map(&:full_teleconsultation_phone_number)
   end
 
   CSV::Converters[:strip_whitespace] = ->(value) {
