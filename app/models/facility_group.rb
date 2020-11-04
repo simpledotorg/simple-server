@@ -24,6 +24,7 @@ class FacilityGroup < ApplicationRecord
 
   validates :name, presence: true
   validates :organization, presence: true
+  validates :state, presence: true
 
   friendly_id :name, use: :slugged
 
@@ -80,12 +81,6 @@ class FacilityGroup < ApplicationRecord
     facilities.update(enable_diabetes_management: value).map(&:valid?).all?
   end
 
-  def state_region
-    Region.state.find_by_name(state) || Region.create(name: state,
-                                                      region_type: Region.region_types[:state],
-                                                      reparent_to: organization.region)
-  end
-
   def create_region
     Region.create!(name: name, source: self, reparent_to: state_region, region_type: Region.region_types[:district])
   end
@@ -94,5 +89,11 @@ class FacilityGroup < ApplicationRecord
     region.reparent_to = state_region
     region.name = name
     region.save!
+  end
+
+  def state_region
+    Region.state.find_by_name(state) || Region.create(name: state,
+                                                      region_type: Region.region_types[:state],
+                                                      reparent_to: organization.region)
   end
 end
