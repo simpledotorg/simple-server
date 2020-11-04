@@ -39,7 +39,7 @@
         <h3 class="mt-5">Teleconsultation enabled?</h3>
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "new FacilityTeleconsultFields().toggleTeleconsultationFields()" %>
 
-        <span class="new-teleconsultation-fields">
+        <span class="teleconsultation-fields">
           <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %>>
             <h3>Medical officers available for teleconsultation</h3>
             <div class="alert alert-primary mt-1 p-12px" role="alert">
