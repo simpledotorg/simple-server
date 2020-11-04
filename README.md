@@ -45,6 +45,19 @@ $ cd simple-server
 $ bin/setup
 ```
 
+### Docker Compose
+
+For quick development and testing, the server can be run locally using Docker Compose and the command: 
+
+```
+docker-compose up
+``` 
+
+The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development. 
+
+Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below. 
+
+
 #### Manual Setup
 
 If the included `bin/setup` script fails for some reason, you can also manually
