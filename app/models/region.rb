@@ -62,7 +62,6 @@ class Region < ApplicationRecord
   private
 
   def initialize_path
-    errors.add(:reparent_to, "must assign new parent to initialize path") unless reparent_to
     logger.info(class: self.class, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
     self.path = if reparent_to.path.present?
       "#{reparent_to.path}.#{path_label}"
