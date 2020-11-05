@@ -26,10 +26,10 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "backfills" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
-      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
-      _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
-      facility_group_4 = create(:facility_group, name: "fg4", organization: org)
+      facility_group_1 = create(:facility_group, name: "fg1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, name: "fg2", organization: org, state: "State 2")
+      _facility_group_3 = create(:facility_group, name: "fg3", organization: org, state: "State 1")
+      facility_group_4 = create(:facility_group, name: "fg4", organization: org, state: "State 1")
 
       facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
       facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
@@ -59,8 +59,8 @@ RSpec.describe RegionBackfill, type: :model do
       facility_regions = Region.facility
       expect(facility_regions.size).to eq(6)
 
-      expect(org.leaves.map(&:source)).to contain_exactly(*facilities)
-      expect(org.leaves.map(&:region_type).uniq).to contain_exactly("facility")
+      expect(org.facilities.map(&:source)).to contain_exactly(*facilities)
+      expect(org.facilities.pluck(:region_type).uniq).to contain_exactly("facility")
     end
 
     it "establishes associations from facility / facility group back to regions" do

@@ -52,8 +52,8 @@ RSpec.describe Region, type: :model do
 
   context "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
-      facility_group_1 = create(:facility_group, organization: create(:organization))
-      create(:facility, facility_group: facility_group_1)
+      facility_group_1 = create(:facility_group, organization: create(:organization), state: "State 1")
+      create(:facility, facility_group: facility_group_1, state: "State 1")
 
       # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
