@@ -110,7 +110,6 @@ RSpec.feature "Facility page functionality", type: :feature do
         end
       end
 
-
       it "admin should be able to delete facility group without facility " do
         facility_page.click_edit_button_present_for_facilitygroup(ihmi_group_bathinda.name)
         expect(page).to have_content("Edit facility group")
