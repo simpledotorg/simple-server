@@ -35,7 +35,12 @@ RSpec.feature "Facility page functionality", type: :feature do
           facility_page.click_add_facility_group_button
 
           expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group_without_assigningfacility("IHMI", "testfacilitygroup", "testDescription", nil, protocol_01.name)
+          facility_group.add_new_facility_group_without_assigning_facility(
+            org_name: "IHMI",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            protocol_name: protocol_01.name
+          )
 
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
@@ -45,7 +50,13 @@ RSpec.feature "Facility page functionality", type: :feature do
           facility_page.click_add_facility_group_button
 
           expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group("IHMI", "testfacilitygroup", "testDescription", nil, unassociated_facility.name, protocol_01.name)
+          facility_group.add_new_facility_group(
+            org_name: "IHMI",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            unassociated_facility: unassociated_facility.name,
+            protocol_name: protocol_01.name
+          )
 
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
@@ -54,7 +65,13 @@ RSpec.feature "Facility page functionality", type: :feature do
 
         it "admin should be able to edit facility group info " do
           facility_page.click_add_facility_group_button
-          facility_group.add_new_facility_group("IHMI", "testfacilitygroup", "testDescription", nil, unassociated_facility.name, protocol_01.name)
+          facility_group.add_new_facility_group(
+            org_name: "IHMI",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            unassociated_facility: unassociated_facility.name,
+            protocol_name: protocol_01.name
+          )
           facility_page.click_edit_button_present_for_facilitygroup("Testfacilitygroup")
 
           # deselecting previously selected facility
@@ -77,7 +94,13 @@ RSpec.feature "Facility page functionality", type: :feature do
           facility_page.click_add_facility_group_button
 
           expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group_without_assigningfacility("IHMI", "testfacilitygroup", "testDescription", "Punjab", protocol_01.name)
+          facility_group.add_new_facility_group_without_assigning_facility(
+            org_name: "IHMI",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            protocol_name: protocol_01.name,
+            state: "Punjab"
+          )
 
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
@@ -87,7 +110,14 @@ RSpec.feature "Facility page functionality", type: :feature do
           facility_page.click_add_facility_group_button
 
           expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group("IHMI", "testfacilitygroup", "testDescription", "Punjab", unassociated_facility.name, protocol_01.name)
+          facility_group.add_new_facility_group(
+            org_name: "IHMI",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            unassociated_facility: unassociated_facility.name,
+            protocol_name: protocol_01.name,
+            state: "Punjab"
+          )
 
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
@@ -96,7 +126,14 @@ RSpec.feature "Facility page functionality", type: :feature do
 
         it "admin should be able to edit facility group info " do
           facility_page.click_add_facility_group_button
-          facility_group.add_new_facility_group("IHMI", "testfacilitygroup", "testDescription", "Punjab", unassociated_facility.name, protocol_01.name)
+          facility_group.add_new_facility_group(
+            org_name: "IHMI",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            unassociated_facility: unassociated_facility.name,
+            protocol_name: protocol_01.name,
+            state: "Punjab"
+          )
           facility_page.click_edit_button_present_for_facilitygroup("Testfacilitygroup")
 
           # deselecting previously selected facility
