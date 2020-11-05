@@ -57,7 +57,7 @@ RSpec.describe Region, type: :model do
 
       # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
-      root_region = Region.root.first
+      root_region = Region.root
       org_region = Region.organization.first
       state_region = Region.state.first
       district_region = Region.district.first

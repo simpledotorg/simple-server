@@ -31,12 +31,12 @@ RSpec.describe RegionBackfill, type: :model do
       _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
       facility_group_4 = create(:facility_group, name: "fg4", organization: org)
 
-      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
-      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
-      facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
-      facility_4 = create(:facility, name: "facility4", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
-      facility_5 = create(:facility, name: "facility5", facility_group: facility_group_4, zone: "Block ABC", state: "State 1")
-      facility_6 = create(:facility, name: "facility6", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
+      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
+      facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      facility_4 = create(:facility, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      facility_5 = create(:facility, name: "facility5", facility_group: facility_group_4, block: "Block ABC", state: "State 1")
+      facility_6 = create(:facility, name: "facility6", facility_group: facility_group_1, block: "Block 123", state: "State 1")
       facilities = [facility_1, facility_2, facility_3, facility_4, facility_5, facility_6]
 
       RegionBackfill.call(dry_run: false)
@@ -73,11 +73,11 @@ RSpec.describe RegionBackfill, type: :model do
       facility_group_1 = create(:facility_group, name: "fg1", organization: org)
       facility_group_2 = create(:facility_group, name: "fg2", organization: org)
 
-      queens = create(:facility, name: "Queens", facility_group: facility_group_1, zone: "New York", state: "State 1")
-      new_york = create(:facility, name: "New York", facility_group: facility_group_1, zone: "Other Block", state: "State 1")
-      manhatten = create(:facility, name: "Manhatten", facility_group: facility_group_1, zone: "New York", state: "State 1")
-      east_village = create(:facility, name: "East Village", facility_group: facility_group_2, zone: "New York", state: "State 2")
-      other_new_york = create(:facility, name: "New York", facility_group: facility_group_2, zone: "New York", state: "State 2")
+      queens = create(:facility, name: "Queens", facility_group: facility_group_1, block: "New York", state: "State 1")
+      new_york = create(:facility, name: "New York", facility_group: facility_group_1, block: "Other Block", state: "State 1")
+      manhatten = create(:facility, name: "Manhatten", facility_group: facility_group_1, block: "New York", state: "State 1")
+      east_village = create(:facility, name: "East Village", facility_group: facility_group_2, block: "New York", state: "State 2")
+      other_new_york = create(:facility, name: "New York", facility_group: facility_group_2, block: "New York", state: "State 2")
 
       RegionBackfill.call(dry_run: false)
 
@@ -119,12 +119,12 @@ RSpec.describe RegionBackfill, type: :model do
       _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
       facility_group_4 = create(:facility_group, name: "fg4", organization: org)
 
-      create(:facility, name: "facility1", facility_group: facility_group_1, zone: "Block XYZ", state: "State 1")
-      create(:facility, name: "facility2", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
-      create(:facility, name: "facility3", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
-      create(:facility, name: "facility4", facility_group: facility_group_2, zone: "Block ZZZ", state: "State 2")
-      create(:facility, name: "facility5", facility_group: facility_group_4, zone: "Block ABC", state: "State 1")
-      create(:facility, name: "facility6", facility_group: facility_group_1, zone: "Block 123", state: "State 1")
+      create(:facility, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
+      create(:facility, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
+      create(:facility, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      create(:facility, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      create(:facility, name: "facility5", facility_group: facility_group_4, block: "Block ABC", state: "State 1")
+      create(:facility, name: "facility6", facility_group: facility_group_1, block: "Block 123", state: "State 1")
 
       3.times do
         RegionBackfill.call(dry_run: false)
