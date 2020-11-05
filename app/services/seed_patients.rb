@@ -9,7 +9,7 @@ class SeedPatients
   attr_reader :logger
   attr_reader :patients_to_create
 
-  def initialize(patients_to_create: (25..500), bps_to_create: (0..25))
+  def initialize(patients_to_create: (25..50), bps_to_create: (0..25))
     @counts = {}
     @bps_to_create = Array(bps_to_create)
     @patients_to_create = Array(patients_to_create)
@@ -19,11 +19,14 @@ class SeedPatients
   def call
     user_roles = [ENV["SEED_GENERATED_ACTIVE_USER_ROLE"], ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]]
     User.includes(phone_number_authentications: :facility).where(role: user_roles).each do |user|
-      slug = user.facility.slug
+      facility = user.facility
+      slug = facility.slug
       counts[slug] = {patient: 0, blood_pressure: 0}
       benchmark("Seeding records for facility #{slug}") do
+        # Set a "birth date" for the Facility that patient records will be based from
+        facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 3.months.ago)
         patients_to_create.sample.times do |num|
-          create_patient(user)
+          create_patient(user, oldest_registration: facility_birth_date)
         end
       end
       puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
@@ -31,8 +34,8 @@ class SeedPatients
     pp @counts
   end
 
-  def create_patient(user)
-    recorded_at = Faker::Time.between(from: 3.years.ago, to: 1.months.ago)
+  def create_patient(user, oldest_registration:)
+    recorded_at = Faker::Time.between(from: oldest_registration, to: 1.months.ago)
     patient = FactoryBot.create(:patient,
       recorded_at: recorded_at,
       registration_user: user,

@@ -1,5 +1,19 @@
 namespace :db do
-  desc 'Generate some fake data for a seed user roles;Example: rake "db:seed_users_data'
+  desc "Refresh materialized views for dashboards"
+  task refresh_materialized_views: :environment do
+    RefreshMaterializedViews.call
+  end
+
+  desc "Generate fake Patient data"
+  task seed_patients: :environment do
+    abort "Can't run this task in env:#{ENV["SIMPLE_SERVER_ENV"]}!" if ENV["SIMPLE_SERVER_ENV"] == "production"
+    SeedPatients.new.call
+  end
+
+  desc "Clear patient data, regenerate patient seed data, and refresh materialized views"
+  task purge_and_refresh: [:purge_users_data, :seed_patients, :refresh_materialized_views]
+
+  desc "Generate some fake data for a seed user roles"
   task seed_users_data: :environment do
     abort "Can't run this task in env:#{ENV["SIMPLE_SERVER_ENV"]}!" if ENV["SIMPLE_SERVER_ENV"] == "production"
 
@@ -20,7 +34,7 @@ namespace :db do
     end
   end
 
-  desc 'Purge all user data; Example: rake "db:purge_users_data'
+  desc "Purge all Patient data"
   task purge_users_data: :environment do
     abort "Can't run this task in #{ENV["SIMPLE_SERVER_ENV"]}!'" if ENV["SIMPLE_SERVER_ENV"] == "production"
 
