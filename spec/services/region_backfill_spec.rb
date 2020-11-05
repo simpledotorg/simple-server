@@ -44,8 +44,13 @@ RSpec.describe RegionBackfill, type: :model do
 
       root = Region.find_by(name: "India")
       expect(root.root?).to be true
+      expect(root.parent).to be_nil
+      expect(root.region_type).to eq("root")
+      expect(Region.root).to eq(root)
+
       org = root.children.first
       expect(org.children.map(&:name)).to contain_exactly("State 1", "State 2")
+      expect(org.root).to eq(root)
 
       states = Region.state
       expect(states.count).to eq(2)
@@ -61,6 +66,28 @@ RSpec.describe RegionBackfill, type: :model do
 
       expect(org.leaves.map(&:source)).to contain_exactly(*facilities)
       expect(org.leaves.map(&:region_type).uniq).to contain_exactly("facility")
+    end
+
+    it "works when there is are blocks and facilities that have the same name and slug" do
+      org = create(:organization, name: "Test Organization")
+      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
+      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
+
+      queens = create(:facility, name: "Queens", facility_group: facility_group_1, zone: "New York", state: "State 1")
+      new_york = create(:facility, name: "New York", facility_group: facility_group_1, zone: "Other Block", state: "State 1")
+      manhatten = create(:facility, name: "Manhatten", facility_group: facility_group_1, zone: "New York", state: "State 1")
+      east_village = create(:facility, name: "East Village", facility_group: facility_group_2, zone: "New York", state: "State 2")
+      other_new_york = create(:facility, name: "New York", facility_group: facility_group_2, zone: "New York", state: "State 2")
+
+      RegionBackfill.call(dry_run: false)
+
+      expect(Region.root.facilities.map(&:source)).to contain_exactly(queens, new_york, manhatten, east_village, other_new_york)
+      blocks = Region.root.blocks
+      expect(blocks.size).to eq(3)
+      expect(blocks.map(&:name)).to contain_exactly("New York", "Other Block", "New York")
+
+      expect(queens.region.block).to eq(manhatten.region.block)
+      expect(queens.region.block).to_not eq(east_village.region.block)
     end
 
     it "establishes associations from facility / facility group back to regions" do
