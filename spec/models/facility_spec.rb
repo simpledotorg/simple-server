@@ -15,13 +15,23 @@ RSpec.describe Facility, type: :model do
     it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
     it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
-    it "does not change the slug when renamed" do
-      facility = create(:facility, name: "old_name")
-      original_slug = facility.slug
-      facility.name = "new name"
-      facility.valid?
-      facility.save!
-      expect(facility.slug).to eq(original_slug)
+    context "slugs" do
+      it "generates slug on creation and avoids conflicts via appending a UUID" do
+        facility_1 = create(:facility, name: "New York General")
+        expect(facility_1.slug).to eq("new-york-general")
+        facility_2 = create(:facility, name: "New York General")
+        uuid_regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
+        expect(facility_2.slug).to match(/^new-york-general-#{uuid_regex}$/)
+      end
+
+      it "does not change the slug when renamed" do
+        facility = create(:facility, name: "old_name")
+        original_slug = facility.slug
+        facility.name = "new name"
+        facility.valid?
+        facility.save!
+        expect(facility.slug).to eq(original_slug)
+      end
     end
 
     context "patients" do
