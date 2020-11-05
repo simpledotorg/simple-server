@@ -22,18 +22,18 @@ FactoryBot.define do
     end
 
     trait :critical do
-      systolic { 181 }
-      diastolic { 111 }
+      systolic { rand(181..200) }
+      diastolic { rand(111..130) }
     end
 
     trait :hypertensive do
-      systolic { 140 }
-      diastolic { 90 }
+      systolic { rand(140..160) }
+      diastolic { rand(90..110) }
     end
 
     trait :under_control do
-      systolic { 80 }
-      diastolic { 60 }
+      systolic { rand(100..130) }
+      diastolic { rand(60..80) }
     end
   end
 end
