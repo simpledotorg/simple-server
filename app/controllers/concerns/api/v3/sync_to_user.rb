@@ -61,11 +61,23 @@ module Api::V3::SyncToUser
     end
 
     def force_resync?
+      resync_token_modified? || sync_region_modified?
+    end
+
+    def resync_token_modified?
       process_token[:resync_token] != resync_token
+    end
+
+    def sync_region_modified?
+      process_token[:sync_region_id] != sync_region_id
     end
 
     def resync_token
       request.headers["HTTP_X_RESYNC_TOKEN"]
+    end
+
+    def sync_region_id
+      request.headers["HTTP_X_SYNC_REGION_ID"]
     end
   end
 end
