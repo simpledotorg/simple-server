@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_02_150828) do
+ActiveRecord::Schema.define(version: 2020_11_03_092409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -236,9 +236,6 @@ ActiveRecord::Schema.define(version: 2020_11_02_150828) do
     t.string "facility_size"
     t.integer "monthly_estimated_opd_load"
     t.boolean "enable_teleconsultation", default: false, null: false
-    t.string "teleconsultation_phone_number"
-    t.string "teleconsultation_isd_code"
-    t.jsonb "teleconsultation_phone_numbers", default: [], null: false
     t.index "to_tsvector('simple'::regconfig, COALESCE((name)::text, ''::text))", name: "index_gin_facilities_on_name", using: :gin
     t.index "to_tsvector('simple'::regconfig, COALESCE((slug)::text, ''::text))", name: "index_gin_facilities_on_slug", using: :gin
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
