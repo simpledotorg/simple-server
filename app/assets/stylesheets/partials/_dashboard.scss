@@ -448,6 +448,15 @@ h3 .heading-label {
   margin-bottom: 0.5em;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#block-list {
+  overflow-y: auto;
+  max-height: 250px;
+}
+
 .medical-officer-card {
   .whatsapp-icon {
     font-size: 15px;

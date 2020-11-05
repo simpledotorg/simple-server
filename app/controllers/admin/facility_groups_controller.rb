@@ -6,6 +6,8 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_protocols, only: [:new, :edit, :update, :create]
   before_action :set_available_states, only: [:new, :create, :edit, :update],
                                        if: -> { Flipper.enabled?(:region_level_sync) }
+  before_action :set_blocks, only: [:edit, :update],
+                             if: -> { Flipper.enabled?(:region_level_sync) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -69,6 +71,11 @@ class Admin::FacilityGroupsController < AdminController
     @available_states = COUNTRYWISE_STATES[CountryConfig.current[:name]]
   end
 
+  def set_blocks
+    district_region = Region.find_by(source: @facility_group)
+    @blocks = district_region&.blocks&.order(:name) || []
+  end
+
   def facility_group_params
     params.require(:facility_group).permit(
       :organization_id,
@@ -77,7 +84,9 @@ class Admin::FacilityGroupsController < AdminController
       :description,
       :protocol_id,
       :enable_diabetes_management,
-      facility_ids: []
+      facility_ids: [],
+      blocks_added: [],
+      blocks_deleted: []
     )
   end
 
