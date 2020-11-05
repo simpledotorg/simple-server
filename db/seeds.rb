@@ -10,10 +10,9 @@ require_relative "../lib/tasks/scripts/create_admin_user"
 require "factory_bot_rails"
 require "faker"
 
-NUM_OF_FACILITY_GROUPS = 1
-NUM_OF_FACILITIES = 4
+NUM_OF_FACILITY_GROUPS = 4
+MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 8
 MAX_NUM_OF_USERS_PER_FACILITY = 2
-NUM_OF_USERS_PER_FACILITY_FN = -> { rand(1..MAX_NUM_OF_USERS_PER_FACILITY) }
 ADMIN_USER_NAME = "Admin User"
 ADMIN_USER_EMAIL = "admin@simple.org"
 
@@ -82,44 +81,28 @@ organization = Organization.find_by(org) || FactoryBot.create(:organization, org
 protocol = Protocol.find_or_create_by!(protocol_data)
 protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
 
-facility_groups = (1..NUM_OF_FACILITY_GROUPS).to_a.map {
-  facility_group_params = {
-    organization: organization, protocol: protocol
-  }
+NUM_OF_FACILITY_GROUPS.times do
+  facility_group_params = {organization: organization, protocol: protocol}
+  facility_group = FactoryBot.create(:facility_group, facility_group_params)
 
-  FactoryBot.create(:facility_group, facility_group_params)
-}
+  (1..MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP).to_a.sample.times do
+    type = facility_size_map.keys.sample
+    size = facility_size_map[type]
 
-#
-# create facility and facility_groups
-#
-facilities =
-  facility_groups.map { |fg|
-    (1..NUM_OF_FACILITIES).to_a.map do
-      type = facility_size_map.keys.sample
-      size = facility_size_map[type]
-
-      FactoryBot.create(:facility,
-        :seed,
-        facility_group_id: fg.id,
-        district: fg.name,
-        facility_type: type,
-        facility_size: size)
+    facility_attrs = {
+      district: facility_group.name,
+      facility_group_id: facility_group.id,
+      facility_size: size,
+      facility_type: type
+    }
+    facility = FactoryBot.create(:facility, :seed, facility_attrs)
+    if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
+      role = rand > 0.1 ? ENV["SEED_GENERATED_ACTIVE_USER_ROLE"] : ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]
+      FactoryBot.create_list(:user, rand(1..MAX_NUM_OF_USERS_PER_FACILITY), :with_phone_number_authentication,
+        registration_facility: facility,
+        organization: organization,
+        role: role)
     end
-  }.flatten
-
-#
-# create users
-#
-facilities.each do |facility|
-  if facility.users.size < MAX_NUM_OF_USERS_PER_FACILITY
-    role = rand > 0.1 ? ENV["SEED_GENERATED_ACTIVE_USER_ROLE"] : ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]
-    FactoryBot.create_list(:user,
-      NUM_OF_USERS_PER_FACILITY_FN.call,
-      :with_phone_number_authentication,
-      registration_facility: facility,
-      organization: organization,
-      role: role)
   end
 end
 
