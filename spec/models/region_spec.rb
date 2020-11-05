@@ -12,7 +12,7 @@ RSpec.describe Region, type: :model do
   context "behavior" do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "District XYZ", organization: org)
+      facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
       long_name = ("This is a long facility name" * 10)
       facility_2 = create(:facility, name: long_name, block: "Block22", state: "Test State", facility_group: facility_group_1)
@@ -28,8 +28,8 @@ RSpec.describe Region, type: :model do
 
     it "can soft delete nodes" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, organization: org)
-      facility_group_2 = create(:facility_group, organization: org)
+      facility_group_1 = create(:facility_group, organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, organization: org, state: "State 2")
 
       _facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
       _facility_2 = create(:facility, name: "facility2", state: "State 2", facility_group: facility_group_2)
