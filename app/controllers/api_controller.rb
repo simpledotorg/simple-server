@@ -32,7 +32,8 @@ class APIController < ApplicationController
   end
 
   def current_sync_region
-    current_facility_group
+    return current_facility_group unless Flipper.enabled?(:region_level_sync)
+    current_user.facility.block
   end
 
   def current_timezone_offset

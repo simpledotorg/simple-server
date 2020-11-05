@@ -7,6 +7,7 @@ class Organization < ApplicationRecord
   has_many :appointments, through: :facilities
   has_many :users
   has_many :protocols, through: :facility_groups
+  has_many :registered_patients, through: :facility_groups
 
   validates :name, presence: true
 
@@ -43,5 +44,9 @@ class Organization < ApplicationRecord
 
   def discardable?
     facility_groups.none? && users.none? && appointments.none?
+  end
+
+  def syncable_patients
+    registered_patients.with_discarded
   end
 end

@@ -10,7 +10,6 @@ class FacilityGroup < ApplicationRecord
   has_many :users, through: :facilities
 
   has_many :patients, through: :facilities, source: :registered_patients
-  alias_method :registered_patients, :patients
   has_many :assigned_patients, through: :facilities, source: :assigned_patients
   has_many :blood_pressures, through: :facilities
   has_many :blood_sugars, through: :facilities
@@ -24,6 +23,8 @@ class FacilityGroup < ApplicationRecord
 
   validates :name, presence: true
   validates :organization, presence: true
+
+  alias_method :registered_patients, :patients
 
   friendly_id :name, use: :slugged
 
@@ -62,6 +63,10 @@ class FacilityGroup < ApplicationRecord
   def cohort_analytics(period:, prev_periods:)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.call
+  end
+
+  def syncable_patients
+    registered_patients.with_discarded
   end
 
   private

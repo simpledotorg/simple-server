@@ -37,6 +37,23 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
+  def self.sources
+    includes(:source).map(&:source)
+  end
+
+  def syncable_patients
+    Patient
+      .with_discarded
+      .where(registration_facility: facilities.sources)
+      .or(Patient
+            .with_discarded
+            .where(assigned_facility: facilities.sources))
+      .or(Patient
+            .with_discarded
+            .includes(:appointments)
+            .where(appointment: {facility: facilities.sources}))
+  end
+
   REGION_TYPES.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization

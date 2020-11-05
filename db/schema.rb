@@ -245,7 +245,6 @@ ActiveRecord::Schema.define(version: 2020_11_02_150828) do
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
-    t.index ["zone"], name: "index_facilities_on_zone"
   end
 
   create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|

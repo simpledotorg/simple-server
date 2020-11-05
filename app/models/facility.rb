@@ -311,6 +311,10 @@ class Facility < ApplicationRecord
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
+  def syncable_patients
+    registered_patients.with_discarded
+  end
+
   private
 
   def clear_isd_code
