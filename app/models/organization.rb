@@ -14,6 +14,27 @@ class Organization < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
 
+  # ----------------
+  # Region callbacks
+  after_create :create_region
+  before_update :update_region
+
+  def create_region
+    return if region&.persisted?
+    parent = Region.find_by!(region_type: Region.region_types[:root])
+    region = build_region(name: name, description: description, reparent_to: parent)
+    region.region_type = Region.region_types[:organization]
+    region.save!
+  end
+
+  def update_region
+    return unless name_changed? || description_changed?
+    region.name = name
+    region.description = description
+    region.save!
+  end
+  # ----------------
+
   def districts
     facilities.select(:district).distinct.pluck(:district)
   end
