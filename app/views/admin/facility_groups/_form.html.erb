@@ -18,7 +18,9 @@
 
       <%= form.select(:organization_id, organizations.map { |organization| [organization.name, organization.id] }) %>
       <%= form.text_field :name, id: :facility_name, required: true, help: "Usually the name of a District", autocomplete: "off" %>
-      <%= form.select :state, @available_states.zip(@available_states), {include_blank: true}, required: true %>
+      <% if Flipper.enabled?(:region_level_sync) %>
+        <%= form.select :state, @available_states.zip(@available_states), {include_blank: true}, required: true %>
+      <% end %>
 
       <% if facility_group.facilities.present? %>
         <%= form.collection_check_boxes :facility_ids, facility_group.facilities, :id, :name, label: "Associated facilities", checked_value: 1 %>
