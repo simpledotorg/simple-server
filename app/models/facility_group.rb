@@ -24,7 +24,7 @@ class FacilityGroup < ApplicationRecord
 
   validates :name, presence: true
   validates :organization, presence: true
-  validates :state, presence: true, if: -> { Flipper.enabled?(:region_level_sync) }
+  validates :state, presence: true
 
   friendly_id :name, use: :slugged
 
@@ -36,8 +36,8 @@ class FacilityGroup < ApplicationRecord
     @state || region&.state&.name
   end
 
-  after_create :create_region, if: -> { Flipper.enabled?(:region_level_sync) }
-  after_update :update_region, if: -> { Flipper.enabled?(:region_level_sync) }
+  after_create :create_region
+  after_update :update_region
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
