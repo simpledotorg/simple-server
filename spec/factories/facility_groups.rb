@@ -9,9 +9,5 @@ FactoryBot.define do
     description { Faker::Company.catch_phrase }
     organization { org }
     protocol
-
-    sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}"
-    end
   end
 end
