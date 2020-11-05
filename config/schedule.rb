@@ -35,10 +35,6 @@ every :day, at: local("02:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
-every :day, at: local("03:00 am"), roles: [:cron] do
-  rake "link_teleconsultation_medical_officers"
-end
-
 every :month, at: local("04:00 am"), roles: [:seed_data] do
   rake "db:purge_users_data"
   rake "db:seed_users_data"

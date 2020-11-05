@@ -5,8 +5,12 @@ class Api::V4::FacilityTeleconsultationsController < APIController
   attr_reader :facility
 
   def show
-    render json: {teleconsultation_phone_number: facility.teleconsultation_phone_number_with_isd,
-                  teleconsultation_phone_numbers: facility.teleconsultation_phone_numbers_with_isd}
+    render json: {
+      teleconsultation_phone_number: facility.teleconsultation_phone_number_with_isd,
+      teleconsultation_phone_numbers: facility.teleconsultation_phone_numbers_with_isd.map { |number|
+        {phone_number: number}
+      }
+    }
   end
 
   private

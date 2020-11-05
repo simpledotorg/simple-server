@@ -266,38 +266,6 @@ RSpec.describe Facility, type: :model do
                                            import: true)
     end
 
-    context "with old teleconsultation fields" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_test_old.csv", "text/csv") }
-
-      it "parses the facilities" do
-        disable_flag(:teleconsult_facility_mo_search)
-
-        facilities = described_class.parse_facilities(upload_file)
-        expect(facilities.first).to include(organization_name: "OrgOne",
-                                            facility_group_name: "FGTwo",
-                                            name: "Test Facility",
-                                            facility_type: "CHC",
-                                            district: "Bhatinda",
-                                            state: "Punjab",
-                                            country: "India",
-                                            enable_diabetes_management: "true",
-                                            teleconsultation_phone_number: nil,
-                                            teleconsultation_isd_code: nil,
-                                            import: true)
-        expect(facilities.second).to include(organization_name: "OrgOne",
-                                             facility_group_name: "FGTwo",
-                                             name: "Test Facility 2",
-                                             facility_type: "CHC",
-                                             district: "Bhatinda",
-                                             state: "Punjab",
-                                             country: "India",
-                                             enable_teleconsultation: "true",
-                                             teleconsultation_phone_number: "9999999999",
-                                             teleconsultation_isd_code: "91",
-                                             import: true)
-      end
-    end
-
     it "defaults enable_diabetes_management to false if blank" do
       facilities = described_class.parse_facilities(upload_file)
       expect(facilities.second[:enable_diabetes_management]).to be false
@@ -349,21 +317,29 @@ RSpec.describe Facility, type: :model do
     end
   end
 
-  describe "Teleconsultation methods" do
+  describe "#teleconsultation_phone_number_with_isd" do
     it "returns the first teleconsultation phone number with isd code" do
-      facility = FactoryBot.create(:facility,
-        enable_teleconsultation: true,
-        teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
-          {isd_code: "+91", phone_number: "11111111"}])
-      expect(facility.teleconsultation_phone_number_with_isd).to eq("+9100000000")
-    end
+      facility = create(:facility, enable_teleconsultation: true)
+      medical_officer_1 = create(:user, teleconsultation_phone_number: "1111111111", teleconsultation_isd_code: "+91")
+      medical_officer_2 = create(:user, teleconsultation_phone_number: "2222222222", teleconsultation_isd_code: "+91")
 
+      facility.teleconsultation_medical_officers = [medical_officer_1, medical_officer_2]
+      facility.save!
+
+      expect(facility.teleconsultation_phone_number_with_isd).to be_in(["+911111111111", "+912222222222"])
+    end
+  end
+
+  describe "#teleconsultation_phone_numbers_with_isd" do
     it "returns all the teleconsultation phone numbers with isd code" do
-      facility = FactoryBot.create(:facility,
-        enable_teleconsultation: true,
-        teleconsultation_phone_numbers: [{isd_code: "+91", phone_number: "00000000"},
-          {isd_code: "+91", phone_number: "11111111"}])
-      expect(facility.teleconsultation_phone_numbers_with_isd).to eq([{phone_number: "+9100000000"}, {phone_number: "+9111111111"}])
+      facility = create(:facility, enable_teleconsultation: true)
+      medical_officer_1 = create(:user, teleconsultation_phone_number: "1111111111", teleconsultation_isd_code: "+91")
+      medical_officer_2 = create(:user, teleconsultation_phone_number: "2222222222", teleconsultation_isd_code: "+91")
+
+      facility.teleconsultation_medical_officers = [medical_officer_1, medical_officer_2]
+      facility.save!
+
+      expect(facility.teleconsultation_phone_numbers_with_isd).to match_array(["+911111111111", "+912222222222"])
     end
   end
 
