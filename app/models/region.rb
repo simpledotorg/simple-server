@@ -21,6 +21,11 @@ class Region < ApplicationRecord
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h
 
+  # Override the auto-generated root method (via enum) to return the one, single root Region
+  def self.root
+    Region.find_by(region_type: :root)
+  end
+
   # A label is a sequence of alphanumeric characters and underscores.
   # (In C locale the characters A-Za-z0-9_ are allowed).
   # Labels must be less than 256 bytes long.
@@ -54,7 +59,7 @@ class Region < ApplicationRecord
             .where(appointment: {facility: facilities.sources}))
   end
 
-  REGION_TYPES.map do |region_type|
+  REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization
     define_method(region_type) do
