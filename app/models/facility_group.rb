@@ -41,7 +41,7 @@ class FacilityGroup < ApplicationRecord
 
   after_create :create_region, if: -> { Flipper.enabled?(:region_level_sync) }
   after_update :update_region, if: -> { Flipper.enabled?(:region_level_sync) }
-  after_save :update_blocks
+  after_save :update_blocks, if: -> { Flipper.enabled?(:region_level_sync) }
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)

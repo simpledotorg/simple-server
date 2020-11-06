@@ -121,4 +121,45 @@ RSpec.describe FacilityGroup, type: :model do
       end
     end
   end
+
+  describe "Callbacks" do
+    context "when region_level_sync is enabled" do
+      before do
+        enable_flag(:region_level_sync)
+      end
+
+      context "after_create" do
+        let!(:org) { create(:organization, name: "IHCI") }
+        let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org) }
+
+        it "creates a region" do
+          expect(facility_group.region).to be_present
+          expect(facility_group.region).to be_persisted
+          expect(facility_group.region.name).to eq "FG"
+          expect(facility_group.region.path).to eq "india.ihci.punjab.fg"
+        end
+
+        it "creates the state region if it doesn't exist" do
+          expect(facility_group.region.state.name).to eq "Punjab"
+        end
+      end
+
+      context "after_update" do
+        let!(:org) { create(:organization, name: "IHCI") }
+        let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org) }
+
+        it "updates the associated region" do
+          facility_group.update(name: "New FG name")
+          expect(facility_group.region.name).to eq "New FG name"
+          expect(facility_group.region.path).to eq "india.ihci.punjab.fg"
+        end
+
+        it "updates the state region" do
+          facility_group.update(state: "Maharashtra")
+          expect(facility_group.region.state.name).to eq "Maharashtra"
+          expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
+        end
+      end
+    end
+  end
 end
