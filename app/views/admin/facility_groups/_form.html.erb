@@ -40,7 +40,7 @@
         <h3>Blocks</h3>
         <ul class="list-group list-group-flush" id="block-list">
           <% @blocks&.each do |block| %>
-            <li class="list-group-item align-middle <%= 'deletable-block' if block.children.present? %>" data-block-identifier="<%= block.id %>">
+            <li class="list-group-item align-middle" data-block-identifier="<%= block.id %>">
               <div class="row">
                 <div class="col-10 block-name">
                   <%= block.name %>
@@ -158,7 +158,7 @@
       }).appendTo("#facility-group-form");
     }
 
-    $(`.list-group-item[data-block-identifier=${identifier}]`).remove();
+    $(`.list-group-item[data-block-identifier='${identifier}']`).remove();
   }
 
   function scrollBlockListToBottom() {
