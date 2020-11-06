@@ -47,7 +47,10 @@
                 </div>
                 <div class="col-2 text-right">
                   <% if block.children.present? %>
-                    <i class="fas fa-trash-alt text-grey"></i>
+                    <i class="fas fa-trash-alt text-grey"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="Contains <%= block.facilities.count %> facility(s)"></i>
                   <% else %>
                     <i class="fas fa-trash-alt remove-block text-danger cursor-pointer"
                        data-block-identifier="<%= block.id %>"
