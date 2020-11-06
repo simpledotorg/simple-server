@@ -47,7 +47,7 @@
               Edit the user’s profile to update the number.
             </div>
             <div class="mo-search">
-              <%= render "shared/user_teleconsult_search" %>
+              <%= render "shared/user_teleconsult_search", facility_group_id: facility_group.id %>
             </div>
             <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
               <h5>No medical officers</h5>

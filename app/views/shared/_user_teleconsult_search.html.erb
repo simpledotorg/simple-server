@@ -12,7 +12,8 @@
                          hide_label: true,
                          placeholder: "Find medical officers by name or phone number",
                          onkeyup: "debouncedUserSearch(this)",
-                         autocomplete: "off" %>
+                         autocomplete: "off",
+                         data: { facility_group_id: facility_group_id }%>
     <div class="typeahead-dropdown"></div>
   </div>
   <div class="typeahead-spinner">
