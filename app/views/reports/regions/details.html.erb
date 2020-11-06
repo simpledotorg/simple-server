@@ -59,16 +59,16 @@
                 Total
               </td>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+                <%= number_with_delimiter(dash_if_zero(@dashboard_analyticb.sum { |_, row| row[:total_registered_patients] || 0 })) %>
               </td>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
-                  <%= number_with_delimiter(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date)) %>
+                  <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date)))) %>
                 </td>
               <% end %>
               <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                 <td class="row-total ta-center">
-                  <%= number_with_delimiter(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date)) %>
+                  <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date))) %>
                 </td>
               <% end %>
             </tr>
@@ -79,16 +79,16 @@
                     <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
                   </td>
                   <td class="ta-center">
-                    <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
                   </td>
                   <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                     <td class="ta-center">
-                      <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                      <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
                     </td>
                   <% end %>
                   <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                     <td class="ta-center">
-                      <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                      <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date))) %>
                     </td>
                   <% end %>
                 </tr>
@@ -169,16 +169,16 @@
                     <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
                   </td>
                   <td class="ta-center">
-                    <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
                   </td>
                   <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                     <td class="ta-center">
-                      <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                      <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
                     </td>
                   <% end %>
                   <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                     <td class="ta-center">
-                      <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, date)) %>
+                      <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, date))) %>
                     </td>
                   <% end %>
                 </tr>
@@ -262,16 +262,16 @@
               <%= @region.name %>
             </td>
             <td class="row-total ta-center">
-              <%= number_with_delimiter(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
+              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
             </td>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date)) %>
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date))) %>
               </td>
             <% end %>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date)) %>
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date))) %>
               </td>
             <% end %>
           </tr>
@@ -282,16 +282,16 @@
                   <%= link_to resource.send(:name), send(:reports_region_facility_details_path, resource) %>
                 </td>
                 <td class="ta-center">
-                  <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
                 </td>
                 <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                   <td class="ta-center">
-                    <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
                   </td>
                 <% end %>
                 <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
                   <td class="ta-center">
-                    <%= number_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date))) %>
                   </td>
                 <% end %>
               </tr>
