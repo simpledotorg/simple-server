@@ -130,7 +130,7 @@ RSpec.describe RegionBackfill, type: :model do
         RegionBackfill.call(dry_run: false)
       end
 
-      expect(Region.root.count).to eq 1
+      expect(Region.where(region_type: "root").count).to eq 1
       expect(Region.organization.count).to eq 1
       expect(Region.state.count).to eq 2
       expect(Region.district.count).to eq 4
