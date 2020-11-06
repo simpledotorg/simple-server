@@ -127,7 +127,8 @@
     let $template = $(template);
     $template.find(".block-name").html(name);
     $template.attr("data-block-identifier", name);
-    $template.attr("onclick", "removeBlock(this.getAttribute('data-block-identifier'))");
+    $template.find(".remove-block").attr("data-block-identifier", name);
+    $template.find(".remove-block").attr("onclick", "removeBlock(this.getAttribute('data-block-identifier'))");
 
     return $template;
   }
