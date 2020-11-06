@@ -93,12 +93,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:valid_facility) { create(:facility, facility_group_id: facility_group.id) }
       let(:invalid_facility) { create(:facility) }
       let(:valid_medical_officer) { create(:user, registration_facility: valid_facility) }
+      let(:another_valid_medical_officer) { create(:user, registration_facility: valid_facility) }
       let(:invalid_medical_officer) { create(:user, registration_facility: invalid_facility) }
 
-      it "does stuff" do
+      it "rejects unauthorized medical officers" do
         post :create, params: {
-          facility: invalid_attributes,
-          teleconsultation_medical_officer_ids: [valid_medical_officer.id, invalid_medical_officer.id],
+          facility: valid_attributes.merge(
+            teleconsultation_medical_officer_ids: [valid_medical_officer.id, invalid_medical_officer.id]
+          ),
           facility_group_id: facility_group.id
         }
 
@@ -148,12 +150,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:valid_facility) { create(:facility, facility_group_id: facility_group.id) }
       let(:invalid_facility) { create(:facility) }
       let(:valid_medical_officer) { create(:user, registration_facility: valid_facility) }
+      let(:another_valid_medical_officer) { create(:user, registration_facility: valid_facility) }
       let(:invalid_medical_officer) { create(:user, registration_facility: invalid_facility) }
 
-      it "does stuff" do
+      it "rejects unauthorized medical officers" do
         post :create, params: {
-          facility: invalid_attributes,
-          teleconsultation_medical_officer_ids: [valid_medical_officer.id, invalid_medical_officer.id],
+          facility: valid_attributes.merge(
+            teleconsultation_medical_officer_ids: [valid_medical_officer.id, invalid_medical_officer.id]
+          ),
           facility_group_id: facility_group.id
         }
 

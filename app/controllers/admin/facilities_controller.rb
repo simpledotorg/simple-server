@@ -162,11 +162,12 @@ class Admin::FacilitiesController < AdminController
   end
 
   def valid_teleconsultation_medical_officer_ids
-    medical_officers =
+    ids = params[:facility][:teleconsultation_medical_officer_ids]
     facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
+
     users = current_admin.accessible_users(:manage)
       .joins(phone_number_authentications: :facility)
-      .where(phone_number_authentications: {registration_facility_id: facilities})
+      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
 
     users.map(&:id)
   end
