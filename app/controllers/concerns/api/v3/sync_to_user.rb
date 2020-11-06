@@ -3,10 +3,7 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      model = controller_name
-                     .classify
-                     .constantize
-
+      model = controller_name.classify.constantize
       model.syncable_to_region(current_sync_region)
     end
 
@@ -35,10 +32,12 @@ module Api::V3::SyncToUser
     end
 
     def response_process_token
-      {current_facility_id: current_facility.id,
-       current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
-       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-       resync_token: resync_token}
+      {
+        current_facility_id: current_facility.id,
+        current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
+        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+        resync_token: resync_token
+      }
     end
 
     def encode_process_token(process_token)

@@ -53,10 +53,6 @@ class Region < ApplicationRecord
       .or(Patient
             .with_discarded
             .where(assigned_facility: facilities.sources))
-      .or(Patient
-            .with_discarded
-            .includes(:appointments)
-            .where(appointment: {facility: facilities.sources}))
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|

@@ -390,9 +390,75 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         response_patients = JSON(response.body)["patients"]
         response_ids = response_patients.map { |patient| patient["id"] }.to_set
 
-        expect(response_ids.count).to eq 4
+        expect(response_ids.count).to eq(4)
+
         patients_in_another_group.map(&:id).each do |patient_in_another_group_id|
           expect(response_ids).not_to include(patient_in_another_group_id)
+        end
+      end
+    end
+
+    describe "syncing within a block" do
+      let!(:facility_in_same_block) {
+        create(:facility,
+          state: request_facility.state,
+          block: request_facility.block,
+          facility_group: request_facility_group)
+      }
+
+      let!(:facility_in_another_block) {
+        create(:facility, block: "Another Block", facility_group: request_facility_group)
+      }
+
+      let!(:patients_in_another_block) {
+        create_list(:patient, 2,
+          registration_facility: facility_in_another_block,
+          updated_at: 7.minutes.ago)
+      }
+
+      before :each do
+        RegionBackfill.call(dry_run: false)
+
+        set_authentication_headers
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
+        create_list(:patient, 2, registration_facility: facility_in_same_block, updated_at: 5.minutes.ago)
+      end
+
+      after :each do
+        disable_flag(:region_level_sync)
+      end
+
+      context "region-level sync is turned on" do
+        before :each do
+          enable_flag(:region_level_sync)
+        end
+
+        it "only sends patients in the block of user's facility" do
+          get :sync_to_user, params: {limit: 15}
+
+          response_patients = JSON(response.body)["patients"]
+          response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
+
+          expect(response_patient_ids.count).to eq(4)
+
+          patients_in_another_block.map(&:id).each do |id|
+            expect(response_patient_ids).not_to include(id)
+          end
+        end
+      end
+
+      context "region-level sync is turned off" do
+        it "defaults to sending patients in the user's facility group" do
+          get :sync_to_user, params: {limit: 15}
+
+          response_patients = JSON(response.body)["patients"]
+          response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
+
+          expect(response_patient_ids.count).to eq(6)
+
+          patients_in_another_block.map(&:id).each do |id|
+            expect(response_patient_ids).to include(id)
+          end
         end
       end
     end

@@ -32,9 +32,10 @@ class APIController < ApplicationController
   end
 
   def current_sync_region
+    # TODO: revisit this conditional; we may want 2 different flags for actual sync and pre-sync prep work
     return current_facility_group unless Flipper.enabled?(:region_level_sync)
 
-    current_user.facility.block
+    current_user.facility.region.block
   end
 
   def current_timezone_offset
