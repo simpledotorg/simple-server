@@ -9,7 +9,7 @@ class SeedPatients
   attr_reader :logger
   attr_reader :patients_to_create
 
-  def initialize(patients_to_create: (25..50), bps_to_create: (0..25))
+  def initialize(patients_to_create: (25..750), bps_to_create: (0..25))
     @counts = {}
     @bps_to_create = Array(bps_to_create)
     @patients_to_create = Array(patients_to_create)
