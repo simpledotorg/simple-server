@@ -10,16 +10,24 @@ require_relative "../lib/tasks/scripts/create_admin_user"
 require "factory_bot_rails"
 require "faker"
 
+# TODO make a range from 4 to 30
+# TODO allow toggling between small 'dev' set and real-world data set
 NUM_OF_FACILITY_GROUPS = 4
-MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 8
-MAX_NUM_OF_USERS_PER_FACILITY = 2
+MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 200
+MAX_NUM_OF_USERS_PER_FACILITY = 8
 ADMIN_USER_NAME = "Admin User"
 ADMIN_USER_EMAIL = "admin@simple.org"
 
 org = {
+  # TODO change away from IHCI
   name: "IHCI"
 }
 
+# DH is one per facility group
+# all other larges are 5% per FG
+# medium is 15% per FG
+# small is 30% per FG
+# community is 50%
 facility_size_map = {
   "CH" => :large,
   "DH" => :large,

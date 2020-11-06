@@ -9,6 +9,7 @@ FactoryBot.define do
     end
 
     id { SecureRandom.uuid }
+    # TODO change gender sampling to much lower percentage of trans
     gender { Patient::GENDERS.sample }
     full_name { common_names[gender].sample + " " + common_names[gender].sample }
     status { Patient::STATUSES[0] }

@@ -32,8 +32,8 @@ FactoryBot.define do
     end
 
     trait :under_control do
-      systolic { rand(100..130) }
-      diastolic { rand(60..80) }
+      systolic { rand(100..139) }
+      diastolic { rand(60..89) }
     end
   end
 end
