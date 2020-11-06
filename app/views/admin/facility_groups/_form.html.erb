@@ -19,7 +19,11 @@
       <%= form.select(:organization_id, organizations.map { |organization| [organization.name, organization.id] }) %>
       <%= form.text_field :name, id: :facility_name, required: true, help: "Usually the name of a District", autocomplete: "off" %>
       <% if Flipper.enabled?(:region_level_sync) %>
-        <%= form.select :state, @available_states.zip(@available_states), {include_blank: true}, required: true %>
+        <%= form.select :state,
+                        @available_states.zip(@available_states),
+                        {include_blank: true},
+                        required: true,
+                        disabled: true if action_name == "edit" %>
       <% end %>
 
       <% if facility_group.facilities.present? %>
