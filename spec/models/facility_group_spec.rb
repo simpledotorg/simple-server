@@ -160,6 +160,28 @@ RSpec.describe FacilityGroup, type: :model do
           expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
         end
       end
+
+      context "after_save" do
+        let!(:org) { create(:organization, name: "IHCI") }
+        let!(:new_blocks) { ["Block 1", "Block 2"] }
+        let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org, add_blocks: new_blocks) }
+
+        it "creates new blocks from add_blocks" do
+          expect(facility_group.region.blocks.pluck(:name)).to match_array new_blocks
+          expect(facility_group.region.blocks.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
+        end
+
+        it "creates new blocks from add_blocks on update" do
+          facility_group.update(add_blocks: ["New Block"])
+          expect(facility_group.region.blocks.pluck(:name)).to include "New Block"
+        end
+
+        it "deletes blocks from remove_blocks" do
+          block = facility_group.region.blocks.first
+          facility_group.update(remove_blocks: [block.id])
+          expect(facility_group.region.blocks).not_to include block
+        end
+      end
     end
   end
 end

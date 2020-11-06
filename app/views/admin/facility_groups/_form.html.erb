@@ -139,7 +139,7 @@
   function addBlock(name) {
     if(name !== "") {
       $('<input>').attr({
-        "name": "facility_group[blocks_added][]",
+        "name": "facility_group[add_blocks][]",
         "value": name,
         "data-block-identifier": name,
         "type": "hidden"
@@ -151,7 +151,7 @@
   function removeBlock(identifier) {
     if(existingBlocks.includes(identifier)) {
       $('<input>').attr({
-        "name": "facility_group[blocks_deleted][]",
+        "name": "facility_group[remove_blocks][]",
         "value": identifier,
         "data-block-identifier": identifier,
         "type": "hidden"

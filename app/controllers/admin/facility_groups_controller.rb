@@ -85,8 +85,8 @@ class Admin::FacilityGroupsController < AdminController
       :protocol_id,
       :enable_diabetes_management,
       facility_ids: [],
-      blocks_added: [],
-      blocks_deleted: []
+      add_blocks: [],
+      remove_blocks: []
     )
   end
 
