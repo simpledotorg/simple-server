@@ -21,8 +21,12 @@ class DryRunRegion < SimpleDelegator
     else
       @region.save
     end
-    logger.info msg: "save", result: result, region: log_payload
+    logger.info msg: "save", result: result, region: log_payload, valid: result, errors: errors.full_messages.join(",")
     result
+  end
+
+  def set_slug(normalized_slug = nil)
+    @region.send(:set_slug, normalized_slug)
   end
 
   def save

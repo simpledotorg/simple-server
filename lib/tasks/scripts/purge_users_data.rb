@@ -17,7 +17,8 @@ module PurgeUsersData
       PatientBusinessIdentifier,
       PatientPhoneNumber,
       Patient,
-      Address]
+      Address,
+      Teleconsultation]
 
     ActiveRecord::Base.transaction do
       models.each do |model|
