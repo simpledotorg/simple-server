@@ -10,9 +10,5 @@ FactoryBot.define do
     organization { org }
     state { Faker::Address.state }
     protocol
-
-    sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}"
-    end
   end
 end
