@@ -40,7 +40,7 @@
         <h3>Blocks</h3>
         <ul class="list-group list-group-flush" id="block-list">
           <% @blocks&.each do |block| %>
-            <li class="list-group-item align-middle block-list <%= 'deletable-block' if block.children.present? %>" data-block-identifier="<%= block.id %>">
+            <li class="list-group-item align-middle <%= 'deletable-block' if block.children.present? %>" data-block-identifier="<%= block.id %>">
               <div class="row">
                 <div class="col-10 block-name">
                   <%= block.name %>
@@ -93,12 +93,12 @@
 </div>
 
 <template id="block-row">
-  <li class="list-group-item align-middle" data-block-identifier="">
+  <li class="list-group-item align-middle">
     <div class="row">
       <div class="col-10 block-name">
       </div>
       <div class="col-2 text-right">
-        <i class="fas fa-trash-alt remove-block text-danger cursor-pointer" onclick="removeBlock(this.getAttribute('data-block-identifier'))"></i>
+        <i class="fas fa-trash-alt remove-block text-danger cursor-pointer"></i>
       </div>
     </div>
   </li>
@@ -122,8 +122,9 @@
   function newBlockRow(name) {
     let template = $("template#block-row").html()
     let $template = $(template);
-    $template.find(".block-name").html(name)
-    $template.attr("data-block-identifier", name)
+    $template.find(".block-name").html(name);
+    $template.attr("data-block-identifier", name);
+    $template.attr("onclick", "removeBlock(this.getAttribute('data-block-identifier'))");
 
     return $template;
   }
@@ -142,7 +143,7 @@
         "value": name,
         "data-block-identifier": name,
         "type": "hidden"
-      }).appendTo("#facility-group-form")
+      }).appendTo("#facility-group-form");
       newBlockRow(name).appendTo("#block-list");
     }
   }
@@ -154,7 +155,7 @@
         "value": identifier,
         "data-block-identifier": identifier,
         "type": "hidden"
-      }).appendTo("#facility-group-form")
+      }).appendTo("#facility-group-form");
     }
 
     $(`.list-group-item[data-block-identifier=${identifier}]`).remove();
