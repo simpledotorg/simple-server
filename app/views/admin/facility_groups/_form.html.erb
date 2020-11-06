@@ -23,7 +23,7 @@
                         @available_states.zip(@available_states),
                         {include_blank: true},
                         required: true,
-                        disabled: true if action_name == "edit" %>
+                        disabled: action_name == "edit" ? true : false %>
       <% end %>
 
       <% if facility_group.facilities.present? %>
