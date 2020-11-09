@@ -63,7 +63,7 @@ class RegionBackfill
         hsh[name] = find_or_create_region_from(name: name, region_type: state_type, parent: org_region)
       }
 
-      org.facilities.order(:slug).find_each do |facility|
+      org.facilities.find_each do |facility|
         state = states.fetch(facility.state) { |name| "Could not find state #{name}" }
         facility_group = facility.facility_group
         district = find_or_create_region_from(source: facility_group, region_type: district_type, parent: state)
