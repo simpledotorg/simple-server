@@ -337,129 +337,98 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
   end
 
   describe "GET sync: send data from server to device;" do
-    describe "v3" do
-      it_behaves_like "a working V3 sync controller sending records"
+    it_behaves_like "a working V3 sync controller sending records"
 
-      describe "facility prioritisation" do
-        it "syncs request facility's records first" do
-          request_2_facility = create(:facility, facility_group: request_facility_group)
-          create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 3.minutes.ago)
-          create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 5.minutes.ago)
-          create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
-          create_list(:patient, 2, registration_facility: request_facility, updated_at: 10.minutes.ago)
+    context "facility prioritisation" do
+      it "syncs request facility's records first" do
+        request_2_facility = create(:facility, facility_group: request_facility_group)
+        create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 3.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_2_facility, updated_at: 5.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 10.minutes.ago)
 
-          # GET request 1
-          set_authentication_headers
-          get :sync_to_user, params: {limit: 4}
-          response_1_body = JSON(response.body)
+        # GET request 1
+        set_authentication_headers
+        get :sync_to_user, params: {limit: 4}
+        response_1_body = JSON(response.body)
 
-          record_ids = response_1_body["patients"].map { |r| r["id"] }
-          records = model.where(id: record_ids)
-          expect(records.count).to eq 4
-          expect(records.map(&:registration_facility).to_set).to eq Set[request_facility]
+        record_ids = response_1_body["patients"].map { |r| r["id"] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 4
+        expect(records.map(&:registration_facility).to_set).to eq Set[request_facility]
 
-          # GET request 2
-          get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
-          response_2_body = JSON(response.body)
+        # GET request 2
+        get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
+        response_2_body = JSON(response.body)
 
-          record_ids = response_2_body["patients"].map { |r| r["id"] }
-          records = model.where(id: record_ids)
-          expect(records.count).to eq 4
-          expect(records.map(&:registration_facility).to_set).to eq Set[request_facility, request_2_facility]
-        end
+        record_ids = response_2_body["patients"].map { |r| r["id"] }
+        records = model.where(id: record_ids)
+        expect(records.count).to eq 4
+        expect(records.map(&:registration_facility).to_set).to eq Set[request_facility, request_2_facility]
+      end
+    end
+
+    context "region-level sync" do
+      let!(:facility_in_same_block) {
+        create(:facility,
+          state: request_facility.state,
+          block: request_facility.block,
+          facility_group: request_facility_group)
+      }
+
+      let!(:facility_in_another_block) {
+        create(:facility, block: "Another Block", facility_group: request_facility_group)
+      }
+
+      let!(:patients_in_another_block) {
+        create_list(:patient, 2,
+          registration_facility: facility_in_another_block,
+          updated_at: 7.minutes.ago)
+      }
+
+      before :each do
+        # TODO: replace with proper factory data
+        RegionBackfill.call(dry_run: false)
+
+        set_authentication_headers
+        create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
+        create_list(:patient, 2, registration_facility: facility_in_same_block, updated_at: 5.minutes.ago)
       end
 
-      describe "syncing within a facility group" do
-        let(:facility_in_same_group) { create(:facility, facility_group: request_facility_group) }
-        let(:facility_in_another_group) { create(:facility) }
+      after :each do
+        disable_flag(:region_level_sync)
+      end
 
-        let(:patients_in_another_group) {
-          create_list(:patient, 2,
-            registration_facility: facility_in_another_group,
-            updated_at: 3.minutes.ago)
-        }
-
+      context "region-level sync is turned on" do
         before :each do
-          set_authentication_headers
-          create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
-          create_list(:patient, 2, registration_facility: facility_in_same_group, updated_at: 5.minutes.ago)
+          enable_flag(:region_level_sync)
         end
 
-        it "only sends patients in the sync group of user's facility" do
-          get :sync_to_user, params: {limit: 15}
+        it "only sends patients in the block of user's facility" do
+          get :sync_to_user
 
           response_patients = JSON(response.body)["patients"]
-          response_ids = response_patients.map { |patient| patient["id"] }.to_set
+          response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
 
-          expect(response_ids.count).to eq(4)
+          expect(response_patient_ids.count).to eq(4)
 
-          patients_in_another_group.map(&:id).each do |patient_in_another_group_id|
-            expect(response_ids).not_to include(patient_in_another_group_id)
+          patients_in_another_block.map(&:id).each do |id|
+            expect(response_patient_ids).not_to include(id)
           end
         end
       end
 
-      describe "syncing within a block" do
-        let!(:facility_in_same_block) {
-          create(:facility,
-            state: request_facility.state,
-            block: request_facility.block,
-            facility_group: request_facility_group)
-        }
+      context "region-level sync is turned off" do
+        it "defaults to sending patients in the user's facility group" do
+          get :sync_to_user
 
-        let!(:facility_in_another_block) {
-          create(:facility, block: "Another Block", facility_group: request_facility_group)
-        }
+          response_patients = JSON(response.body)["patients"]
+          response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
 
-        let!(:patients_in_another_block) {
-          create_list(:patient, 2,
-            registration_facility: facility_in_another_block,
-            updated_at: 7.minutes.ago)
-        }
+          expect(response_patient_ids.count).to eq(6)
 
-        before :each do
-          RegionBackfill.call(dry_run: false)
-
-          set_authentication_headers
-          create_list(:patient, 2, registration_facility: request_facility, updated_at: 7.minutes.ago)
-          create_list(:patient, 2, registration_facility: facility_in_same_block, updated_at: 5.minutes.ago)
-        end
-
-        after :each do
-          disable_flag(:region_level_sync)
-        end
-
-        context "region-level sync is turned on" do
-          before :each do
-            enable_flag(:region_level_sync)
-          end
-
-          it "only sends patients in the block of user's facility" do
-            get :sync_to_user
-
-            response_patients = JSON(response.body)["patients"]
-            response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
-
-            expect(response_patient_ids.count).to eq(4)
-
-            patients_in_another_block.map(&:id).each do |id|
-              expect(response_patient_ids).not_to include(id)
-            end
-          end
-        end
-
-        context "region-level sync is turned off" do
-          it "defaults to sending patients in the user's facility group" do
-            get :sync_to_user
-
-            response_patients = JSON(response.body)["patients"]
-            response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
-
-            expect(response_patient_ids.count).to eq(6)
-
-            patients_in_another_block.map(&:id).each do |id|
-              expect(response_patient_ids).to include(id)
-            end
+          patients_in_another_block.map(&:id).each do |id|
+            expect(response_patient_ids).to include(id)
           end
         end
       end
