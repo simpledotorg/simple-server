@@ -14,6 +14,18 @@ class SeedPatients
     @logger = Rails.logger.child(class: self.class.name)
   end
 
+  def self.random_gender
+    return Patient::GENDERS.sample if Patient::GENDERS.size == 2
+    num = rand(100)
+    if num <= 1
+      :transgender
+    elsif num > 1 && num < 50
+      :male
+    else
+      :female
+    end
+  end
+
   SIZES = Facility.facility_sizes
   MAX_BPS_TO_CREATE = 100
   MAX_PATIENTS_TO_CREATE = {
