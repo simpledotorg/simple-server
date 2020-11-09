@@ -434,7 +434,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         end
 
         it "only sends patients in the block of user's facility" do
-          get :sync_to_user, params: {limit: 15}
+          get :sync_to_user
 
           response_patients = JSON(response.body)["patients"]
           response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set
@@ -449,7 +449,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
 
       context "region-level sync is turned off" do
         it "defaults to sending patients in the user's facility group" do
-          get :sync_to_user, params: {limit: 15}
+          get :sync_to_user
 
           response_patients = JSON(response.body)["patients"]
           response_patient_ids = response_patients.map { |patient| patient["id"] }.to_set

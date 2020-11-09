@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   let(:request_user) { create(:user) }
-  let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_facility_group) { request_user.facility.facility_group }
+  let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   before :each do
     request.env["X_USER_ID"] = request_user.id
     request.env["X_FACILITY_ID"] = request_facility.id
@@ -18,13 +19,13 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   def create_record(options = {})
-    facility = create(:facility, facility_group: request_user.facility.facility_group)
+    facility = create(:facility, facility_group: request_facility_group)
     patient = build(:patient, registration_facility: facility)
     create(:medical_history, options.merge(patient: patient))
   end
 
   def create_record_list(n, options = {})
-    facility = create(:facility, facility_group_id: request_user.facility.facility_group.id)
+    facility = create(:facility, facility_group_id: request_facility_group.id)
     patient = build(:patient, registration_facility_id: facility.id)
     create_list(:medical_history, n, options.merge(patient: patient))
   end
@@ -41,7 +42,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
     it_behaves_like "a working V3 sync controller sending records"
 
     describe "v3 patient prioritisation" do
-      let(:facility_in_same_group) { create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility_in_same_group) { create(:facility, facility_group: request_facility_group) }
       let(:patient_in_request_facility) { build(:patient, registration_facility: request_facility) }
       let(:patient_in_same_group) { build(:patient, registration_facility: facility_in_same_group) }
 
@@ -73,7 +74,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
     end
 
     describe "syncing within a facility group" do
-      let(:facility_in_same_group) { create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility_in_same_group) { create(:facility, facility_group: request_facility_group) }
       let(:facility_in_another_group) { create(:facility) }
 
       let(:patient_in_request_facility) { FactoryBot.build(:patient, registration_facility: request_facility) }
@@ -96,6 +97,62 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
 
         expect(response_medical_histories.count).to eq 4
         expect(response_patients).not_to include(patient_in_another_group.id)
+      end
+    end
+
+    describe "syncing within a block" do
+      let!(:facility_in_same_block) {
+        create(:facility,
+          state: request_facility.state,
+          block: request_facility.block,
+          facility_group: request_facility_group)
+      }
+
+      let!(:facility_in_another_block) {
+        create(:facility, block: "Another Block", facility_group: request_facility_group)
+      }
+
+      let(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
+      let(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
+      let(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
+
+      before :each do
+        RegionBackfill.call(dry_run: false)
+
+        set_authentication_headers
+        create_list(:medical_history, 2, patient: patient_in_request_facility, updated_at: 7.minutes.ago)
+        create_list(:medical_history, 2, patient: patient_in_same_block, updated_at: 5.minutes.ago)
+        create_list(:medical_history, 2, patient: patient_in_another_block, updated_at: 3.minutes.ago)
+      end
+
+      after :each do
+        disable_flag(:region_level_sync)
+      end
+
+      context "region-level sync is turned on" do
+        before :each do
+          enable_flag(:region_level_sync)
+        end
+
+        it "only sends data belonging to the patients in the block of user's facility" do
+          get :sync_to_user
+
+          response_medical_histories = JSON(response.body)["medical_histories"]
+          response_patients = response_medical_histories.map { |medical_history| medical_history["patient_id"] }.to_set
+          expect(response_medical_histories.count).to eq(4)
+          expect(response_patients).not_to include(patient_in_another_block.id)
+        end
+      end
+
+      context "region-level sync is turned off" do
+        it "defaults to sending patients in the user's facility group" do
+          get :sync_to_user
+
+          response_medical_histories = JSON(response.body)["medical_histories"]
+          response_patients = response_medical_histories.map { |medical_history| medical_history["patient_id"] }.to_set
+          expect(response_medical_histories.count).to eq(6)
+          expect(response_patients).to include(patient_in_another_block.id)
+        end
       end
     end
   end
