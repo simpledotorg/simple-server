@@ -85,7 +85,7 @@ class Admin::FacilityGroupsController < AdminController
       :protocol_id,
       :enable_diabetes_management,
       facility_ids: [],
-      add_blocks: [],
+      new_blocks: [],
       remove_blocks: []
     )
   end
@@ -95,23 +95,9 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update_blocks
-    create_blocks if facility_group_params[:add_blocks].present?
-    destroy_blocks if facility_group_params[:remove_blocks].present?
-  end
-
-  def create_blocks
-    facility_group_params[:add_blocks].map do |block|
-      Region.create(
-        name: block,
-        region_type: Region.region_types[:block],
-        reparent_to: @facility_group.region
-      )
-    end.all?
-  end
-
-  def destroy_blocks
-    facility_group_params[:remove_blocks].map do |id|
-      Region.destroy(id) if Region.find(id) && Region.find(id).children.empty?
-    end.all?
+    return true if Flipper.enabled?(:region_level_sync)
+    ManageDistrictRegionService.update_blocks(district_region: @facility_group.region,
+                                              new_blocks: facility_group_params[:new_blocks],
+                                              remove_blocks: facility_group_params[:remove_blocks])
   end
 end
