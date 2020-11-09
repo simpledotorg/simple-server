@@ -17,8 +17,14 @@ RSpec.describe ManageDistrictRegionService, type: :model do
   end
 
   it "deletes blocks from remove_blocks" do
+    org = create(:organization, name: "IHCI")
+    new_blocks = ["Block 1", "Block 2"]
+    facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
+
+    described_class.update_blocks(district_region: facility_group.region, new_blocks: new_blocks)
+
     block = facility_group.region.blocks.first
-    facility_group.update(remove_blocks: [block.id])
+    described_class.update_blocks(district_region: facility_group.region, remove_blocks: [block.id])
     expect(facility_group.region.blocks).not_to include block
   end
 end

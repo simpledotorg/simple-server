@@ -1,5 +1,5 @@
 class ManageDistrictRegionService
-  def self.update_blocks(district_region:, new_blocks:, remove_blocks:)
+  def self.update_blocks(district_region:, new_blocks: [], remove_blocks: [])
     create_blocks(district_region, new_blocks) && destroy_blocks(remove_blocks)
   end
 
