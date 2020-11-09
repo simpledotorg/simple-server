@@ -50,7 +50,7 @@ class Admin::FacilitiesController < AdminController
 
   def show
     @facility_users = current_admin
-        .accessible_users(:manage)      
+        .accessible_users(:manage)
         .where(phone_number_authentications: {registration_facility_id: @facility})
   end
 
@@ -156,7 +156,20 @@ class Admin::FacilitiesController < AdminController
       :teleconsultation_isd_code,
       teleconsultation_medical_officer_ids: [],
       teleconsultation_phone_numbers_attributes: [:isd_code, :phone_number, :_destroy]
-    )
+    ).tap { |transformed_params|
+      transformed_params[:teleconsultation_medical_officer_ids] = valid_teleconsultation_medical_officer_ids
+    }
+  end
+
+  def valid_teleconsultation_medical_officer_ids
+    ids = params[:facility][:teleconsultation_medical_officer_ids]
+    facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
+
+    users = current_admin.accessible_users(:manage)
+      .joins(phone_number_authentications: :facility)
+      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
+
+    users.pluck(:id)
   end
 
   def initialize_upload
