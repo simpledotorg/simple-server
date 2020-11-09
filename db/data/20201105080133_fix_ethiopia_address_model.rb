@@ -1,7 +1,7 @@
 class FixEthiopiaAddressModel < ActiveRecord::Migration[5.2]
   def up
     # This migration should only run in Ethiopia environments
-    unless ENV[DEFAULT_COUNTRY] == "ET"
+    unless ENV["DEFAULT_COUNTRY"] == "ET"
       return
     end
 
@@ -26,7 +26,7 @@ class FixEthiopiaAddressModel < ActiveRecord::Migration[5.2]
 
   def down
     # This migration should only run in Ethiopia environments
-    unless ENV[DEFAULT_COUNTRY] == "ET"
+    unless ENV["DEFAULT_COUNTRY"] == "ET"
       return
     end
 
