@@ -25,7 +25,7 @@ RSpec.describe EmailAuthentication, type: :model do
 
   it "allows strong passwords" do
     auth = build(:email_authentication)
-    ["three word passphrase", "stubborn kosher rehire", "brown batter horse pumpkin", 
+    ["three word passphrase", "stubborn kosher rehire", "brown batter horse pumpkin",
       "speaker imac coverage flower", "@zadlfj4809574zk.vd", "long-pass-phrase-verklempt-basketball"].each do |password|
       auth.password = password
       expect(auth).to be_valid, "password #{password.inspect} should not be valid"
