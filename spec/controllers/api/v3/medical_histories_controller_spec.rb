@@ -122,8 +122,8 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
           get :sync_to_user
 
           response_records = JSON(response.body)["medical_histories"]
-          response_records.each { |a| expect(a["id"]).to be_in(expected_records.map(&:id)) }
-          response_records.each { |a| expect(a["id"]).to_not be_in(not_expected_records.map(&:id)) }
+          response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
+          response_records.each { |r| expect(r["id"]).to_not be_in(not_expected_records.map(&:id)) }
         end
       end
 
@@ -141,8 +141,8 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
           get :sync_to_user
 
           response_records = JSON(response.body)["medical_histories"]
-          response_records.each { |a| expect(a["id"]).to be_in(expected_records.map(&:id)) }
-          response_records.each { |a| expect(a["id"]).to_not be_in(not_expected_records.map(&:id)) }
+          response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
+          response_records.each { |r| expect(r["id"]).to_not be_in(not_expected_records.map(&:id)) }
         end
       end
     end
