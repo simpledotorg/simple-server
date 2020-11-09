@@ -17,8 +17,8 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_create :create_region, if: -> { Flipper.enabled?(:region_level_sync) }
-  before_update :update_region, if: -> { Flipper.enabled?(:region_level_sync) }
+  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
+  before_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
   def create_region
     return if region&.persisted?
