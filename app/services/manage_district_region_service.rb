@@ -1,6 +1,7 @@
 class ManageDistrictRegionService
   def self.update_blocks(district_region:, new_blocks: [], remove_blocks: [])
-    create_blocks(district_region, new_blocks) && destroy_blocks(remove_blocks)
+    create_blocks(district_region, new_blocks)
+    destroy_blocks(remove_blocks)
   end
 
   private
@@ -10,12 +11,12 @@ class ManageDistrictRegionService
       return true if block_names.blank?
 
       block_names.map { |name|
-        Region.create(
+        Region.create!(
           name: name,
           region_type: Region.region_types[:block],
           reparent_to: district_region
         )
-      }.all?
+      }
     end
 
     def destroy_blocks(block_ids)
@@ -23,7 +24,7 @@ class ManageDistrictRegionService
 
       block_ids.map { |id|
         Region.destroy(id) if Region.find(id) && Region.find(id).children.empty?
-      }.all?
+      }
     end
   end
 end

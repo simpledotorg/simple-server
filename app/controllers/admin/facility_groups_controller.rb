@@ -28,7 +28,8 @@ class Admin::FacilityGroupsController < AdminController
 
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    if @facility_group.save && update_blocks && @facility_group.toggle_diabetes_management
+    if @facility_group.save && @facility_group.toggle_diabetes_management
+      update_block_regions if Flipper.enabled?(:regions_prep)
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
@@ -36,7 +37,8 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    if @facility_group.update(facility_group_params) && update_blocks && @facility_group.toggle_diabetes_management
+    if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
+      update_block_regions if Flipper.enabled?(:regions_prep)
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
@@ -99,8 +101,7 @@ class Admin::FacilityGroupsController < AdminController
     params[:enable_diabetes_management]
   end
 
-  def update_blocks
-    return true unless Flipper.enabled?(:regions_prep)
+  def update_block_regions
     ManageDistrictRegionService.update_blocks(district_region: @facility_group.region,
                                               new_blocks: blocks_params[:new_blocks],
                                               remove_blocks: blocks_params[:remove_blocks])
