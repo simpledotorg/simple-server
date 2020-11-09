@@ -4,14 +4,12 @@ require "faker"
 class SeedPatients
   include ActiveSupport::Benchmarkable
 
-  attr_reader :bps_to_create
   attr_accessor :counts
   attr_reader :logger
   attr_reader :scale_factor
 
-  def initialize(bps_to_create: (0..25), scale_factor: 1.0)
+  def initialize(scale_factor: 1.0)
     @counts = {}
-    @bps_to_create = Array(bps_to_create)
     @scale_factor = scale_factor
     @logger = Rails.logger.child(class: self.class.name)
   end
@@ -59,8 +57,7 @@ class SeedPatients
 
   # TODO add some backdated BPs before the facility bday
   def create_patient(user, oldest_registration:)
-    # to: should change to 1 day ago to match above
-    recorded_at = Faker::Time.between(from: oldest_registration, to: 1.months.ago)
+    recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
     patient = FactoryBot.create(:patient,
       recorded_at: recorded_at,
       registration_user: user,
