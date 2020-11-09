@@ -95,7 +95,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update_blocks
-    return true if Flipper.enabled?(:region_level_sync)
+    return true if Flipper.enabled?(:regions_prep)
     ManageDistrictRegionService.update_blocks(district_region: @facility_group.region,
                                               new_blocks: facility_group_params[:new_blocks],
                                               remove_blocks: facility_group_params[:remove_blocks])
