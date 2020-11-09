@@ -100,12 +100,12 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       end
 
       after :each do
-        disable_flag(:region_level_sync)
+        disable_flag(:region_level_sync, request_user)
       end
 
       context "region-level sync is turned on" do
         before :each do
-          enable_flag(:region_level_sync)
+          enable_flag(:region_level_sync, request_user)
         end
 
         it "only sends data belonging to the patients in the block of user's facility" do
