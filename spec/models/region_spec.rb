@@ -9,6 +9,21 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "slugs" do
+    it "handles duplicate names nicely when creating a slug" do
+      region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
+      region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
+      region_3 = Region.create!(name: "New York", region_type: "block", reparent_to: region_2)
+      region_4 = Region.create!(name: "New York", region_type: "facility", reparent_to: region_3)
+      region_5 = Region.create!(name: "New York", region_type: "facility", reparent_to: region_3)
+      expect(region_1.slug).to eq("new-york")
+      expect(region_2.slug).to eq("new-york-district")
+      expect(region_3.slug).to eq("new-york-block")
+      expect(region_4.slug).to eq("new-york-facility")
+      expect(region_5.slug).to match(/new-york-facility-[[:alnum:]]{8}$/)
+    end
+  end
+
   context "behavior" do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
