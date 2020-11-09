@@ -33,9 +33,9 @@ RSpec.describe Organization, type: :model do
   end
 
   describe "Callbacks" do
-    context "when region_level_sync is enabled" do
+    context "when regions_prep is enabled" do
       before do
-        enable_flag(:region_level_sync)
+        enable_flag(:regions_prep)
       end
 
       context "after_create" do
