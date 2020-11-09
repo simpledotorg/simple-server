@@ -8,7 +8,7 @@ class ManageDistrictRegionService
 
   class << self
     def create_blocks(district_region, block_names)
-      return true if block_names.blank?
+      return if block_names.blank?
 
       block_names.map { |name|
         Region.create!(
@@ -20,7 +20,7 @@ class ManageDistrictRegionService
     end
 
     def destroy_blocks(block_ids)
-      return true if block_ids.blank?
+      return if block_ids.blank?
 
       block_ids.map { |id|
         Region.destroy(id) if Region.find(id) && Region.find(id).children.empty?
