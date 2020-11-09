@@ -10,7 +10,7 @@ FactoryBot.define do
 
     id { SecureRandom.uuid }
     gender { SeedPatients.random_gender }
-    full_name { common_names[gender].sample + " " + common_names[gender].sample }
+    full_name { common_names[gender.to_sym].sample + " " + common_names[gender.to_sym].sample }
     status { Patient::STATUSES[0] }
     date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
     age { rand(18..100) unless has_date_of_birth? }
