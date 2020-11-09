@@ -28,7 +28,7 @@ class Admin::FacilityGroupsController < AdminController
 
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    if @facility_group.save && @facility_group.toggle_diabetes_management
+    if @facility_group.save && update_blocks && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
@@ -36,7 +36,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
+    if @facility_group.update(facility_group_params) && update_blocks && @facility_group.toggle_diabetes_management
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
@@ -92,5 +92,26 @@ class Admin::FacilityGroupsController < AdminController
 
   def enable_diabetes_management
     params[:enable_diabetes_management]
+  end
+
+  def update_blocks
+    create_blocks if facility_group_params[:add_blocks].present?
+    destroy_blocks if facility_group_params[:remove_blocks].present?
+  end
+
+  def create_blocks
+    facility_group_params[:add_blocks].map do |block|
+      Region.create(
+        name: block,
+        region_type: Region.region_types[:block],
+        reparent_to: @facility_group.region
+      )
+    end.all?
+  end
+
+  def destroy_blocks
+    facility_group_params[:remove_blocks].map do |id|
+      Region.destroy(id) if Region.find(id) && Region.find(id).children.empty?
+    end.all?
   end
 end

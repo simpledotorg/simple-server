@@ -36,12 +36,8 @@ class FacilityGroup < ApplicationRecord
     @state || region&.state&.name
   end
 
-  attr_accessor :add_blocks
-  attr_accessor :remove_blocks
-
   after_create :create_region, if: -> { Flipper.enabled?(:region_level_sync) }
   after_update :update_region, if: -> { Flipper.enabled?(:region_level_sync) }
-  after_save :update_blocks, if: -> { Flipper.enabled?(:region_level_sync) }
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
@@ -104,26 +100,5 @@ class FacilityGroup < ApplicationRecord
     Region.state.find_by_name(state) || Region.create(name: state,
                                                       region_type: Region.region_types[:state],
                                                       reparent_to: organization.region)
-  end
-
-  def update_blocks
-    create_blocks if add_blocks.present?
-    destroy_blocks if remove_blocks.present?
-  end
-
-  def create_blocks
-    add_blocks.map do |block|
-      Region.create(
-        name: block,
-        region_type: Region.region_types[:block],
-        reparent_to: region
-      )
-    end
-  end
-
-  def destroy_blocks
-    remove_blocks.map do |id|
-      Region.destroy(id) if Region.find(id) && Region.find(id).children.empty?
-    end
   end
 end
