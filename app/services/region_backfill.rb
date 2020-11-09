@@ -36,7 +36,7 @@ class RegionBackfill
     end
 
     def children
-      Region.root || Region.none
+      Region.all
     end
   }
 
@@ -91,7 +91,9 @@ class RegionBackfill
     region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type, reparent_to: parent), dry_run: dry_run?, logger: logger)
     if source
       region.source = source
-      region.slug = source.slug
+      # Attempt to set the slug on the region the same as the source -- we are using FriendlyId's set_slug
+      # so that the built-in uniqueness logic will work for duplicates.
+      region.set_slug(source.slug)
     end
 
     if region.save_or_check_validity

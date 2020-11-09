@@ -30,7 +30,7 @@ RSpec.feature "Facility page functionality", type: :feature do
         expect(page).to have_content("Bathinda")
       end
 
-      context "when region_level_sync is disabled" do
+      context "when regions_prep is disabled" do
         it "create new facility group without assigning any facility" do
           facility_page.click_add_facility_group_button
 
@@ -85,9 +85,9 @@ RSpec.feature "Facility page functionality", type: :feature do
         end
       end
 
-      context "when region_level_sync is enabled" do
+      context "when regions_prep is enabled" do
         before do
-          enable_flag(:region_level_sync)
+          enable_flag(:regions_prep)
         end
 
         it "create new facility group without assigning any facility" do

@@ -16,10 +16,6 @@ FactoryBot.define do
     enable_teleconsultation { true }
     monthly_estimated_opd_load { 300 }
 
-    sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}"
-    end
-
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
