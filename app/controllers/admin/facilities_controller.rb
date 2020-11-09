@@ -169,7 +169,7 @@ class Admin::FacilitiesController < AdminController
       .joins(phone_number_authentications: :facility)
       .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
 
-    users.map(&:id)
+    users.pluck(:id)
   end
 
   def initialize_upload
