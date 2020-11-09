@@ -5,7 +5,7 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
   before_action :set_available_states, only: [:new, :create, :edit, :update],
-                                       if: -> { Flipper.enabled?(:region_level_sync) }
+                                       if: -> { Flipper.enabled?(:regions_prep) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
