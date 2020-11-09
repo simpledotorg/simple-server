@@ -84,7 +84,12 @@ class Admin::FacilityGroupsController < AdminController
       :description,
       :protocol_id,
       :enable_diabetes_management,
-      facility_ids: [],
+      facility_ids: []
+    )
+  end
+
+  def blocks_params
+    params.require(:facility_group).permit(
       new_blocks: [],
       remove_blocks: []
     )
@@ -97,7 +102,7 @@ class Admin::FacilityGroupsController < AdminController
   def update_blocks
     return true unless Flipper.enabled?(:regions_prep)
     ManageDistrictRegionService.update_blocks(district_region: @facility_group.region,
-                                              new_blocks: facility_group_params[:new_blocks],
-                                              remove_blocks: facility_group_params[:remove_blocks])
+                                              new_blocks: blocks_params[:new_blocks],
+                                              remove_blocks: blocks_params[:remove_blocks])
   end
 end
