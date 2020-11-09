@@ -17,6 +17,7 @@
 //= require bootstrap-select
 //= require lodash
 //= require tablesort
+//= require numeral
 //= require tablesort/dist/sorts/tablesort.number.min
 //= require bs-custom-file-input
 //= require_tree ./common

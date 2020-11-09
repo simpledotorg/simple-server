@@ -12,13 +12,9 @@
 <% end %>
 <h3>Instructions:</h3>
 <ol>
-  <li>Download and fill in
-    <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
-      <%= link_to 'this template', '/documents/upload_facilities.csv' %>
-    <% else %>
-      <%= link_to 'this template', '/documents/upload_facilities_with_teleconsult.csv' %>
-    <% end %>
-    to create multiple facilities via file upload.
+  <li>
+    Download and fill in <%= link_to 'this template', '/documents/upload_facilities.csv' %> to create multiple
+    facilities via file upload.
   </li>
   <li>Organizations for the facilities must already exist.
     <% if current_admin.power_user? %>
@@ -34,13 +30,7 @@
   </li>
   <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
   <li class="mt-1">
-    The enable_diabetes_management
-    <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
-      field
-    <% else %>
-      and enable_teleconsultation fields
-    <% end %>
-    will be treated as "not enabled" if blank.
+    The enable_diabetes_management field will be treated as "not enabled" if blank.
   </li>
 </ol>
 <%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>

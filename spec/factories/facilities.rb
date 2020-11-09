@@ -14,14 +14,7 @@ FactoryBot.define do
     facility_group { create(:facility_group) }
     enable_diabetes_management { [true, false].sample }
     enable_teleconsultation { true }
-    teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
-    teleconsultation_isd_code { Faker::PhoneNumber.country_code }
-    teleconsultation_phone_numbers { [{isd_code: Faker::PhoneNumber.country_code, phone_number: Faker::PhoneNumber.phone_number}] }
     monthly_estimated_opd_load { 300 }
-
-    sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}"
-    end
 
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
