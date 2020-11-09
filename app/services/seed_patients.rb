@@ -7,17 +7,32 @@ class SeedPatients
   attr_reader :bps_to_create
   attr_accessor :counts
   attr_reader :logger
-  attr_reader :patients_to_create
+  attr_reader :scale_factor
 
-  # 4000 -> large / DH, SDH
-  # 2000 -> medium / CHC
-  # 800 -> small / PHC or UPHC
-  # 200 -> community / SC or HWC
-  def initialize(patients_to_create: (25..4000), bps_to_create: (0..25))
+  def initialize(bps_to_create: (0..25), scale_factor: 1.0)
     @counts = {}
     @bps_to_create = Array(bps_to_create)
-    @patients_to_create = Array(patients_to_create)
+    @scale_factor = scale_factor
     @logger = Rails.logger.child(class: self.class.name)
+  end
+
+  SIZES = Facility.facility_sizes
+  MAX_BPS_TO_CREATE = 100
+  MAX_PATIENTS_TO_CREATE = {
+    SIZES[:community] => 200,
+    SIZES[:small] => 800,
+    SIZES[:medium] => 2000,
+    SIZES[:large] => 4000
+  }
+
+  def patients_to_create(facility)
+    scaled_max_patients = (MAX_PATIENTS_TO_CREATE.fetch(facility.facility_size) * scale_factor).to_int
+    Random.new.rand(0..scaled_max_patients)
+  end
+
+  def blood_pressures_to_create
+    scaled_max_bps = (MAX_BPS_TO_CREATE * scale_factor).to_int
+    Random.new.rand(0..scaled_max_bps)
   end
 
   def call
@@ -32,8 +47,8 @@ class SeedPatients
       benchmark("Seeding records for facility #{slug}") do
         # Set a "birth date" for the Facility that patient records will be based from
         # TODO set to 1.day.ago for the most recent possible bday
-        facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 3.months.ago)
-        patients_to_create.sample.times do |num|
+        facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
+        patients_to_create(facility).times do |num|
           create_patient(user, oldest_registration: facility_birth_date)
         end
       end
@@ -52,7 +67,7 @@ class SeedPatients
       registration_facility: user.facility)
     counts[user.facility.slug][:patient] += 1
     BloodPressure.transaction do
-      create_bps(patient, user, bps_to_create.sample)
+      create_bps(patient, user, blood_pressures_to_create)
     end
   end
 
