@@ -12,7 +12,7 @@
       <h3 class="mt-5">Address</h3>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <% if Flipper.enabled?(:region_level_sync) %>
+      <% if Flipper.enabled?(:regions_prep) %>
         <%= form.select :zone, @available_zones.zip(@available_zones), {id: :facility_zone, include_blank: true}, required: true %>
       <% else %>
         <%= form.text_field :zone, id: :facility_zone, required: true %>
@@ -47,7 +47,7 @@
               Edit the user’s profile to update the number.
             </div>
             <div class="mo-search">
-              <%= render "shared/user_teleconsult_search" %>
+              <%= render "shared/user_teleconsult_search", facility_group_id: facility_group.id %>
             </div>
             <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
               <h5>No medical officers</h5>
