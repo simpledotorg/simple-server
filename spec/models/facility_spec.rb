@@ -2,18 +2,18 @@ require "rails_helper"
 
 RSpec.describe Facility, type: :model do
   describe "Associations" do
-    it { should have_many(:users) }
-    it { should have_many(:blood_pressures).through(:encounters).source(:blood_pressures) }
-    it { should have_many(:blood_sugars).through(:encounters).source(:blood_sugars) }
-    it { should have_many(:prescription_drugs) }
-    it { should have_many(:patients).through(:encounters) }
-    it { should have_many(:appointments) }
-    it { should have_many(:teleconsultations) }
-    it { should have_and_belong_to_many(:teleconsultation_medical_officers) }
+    it { is_expected.to have_many(:users) }
+    it { is_expected.to have_many(:blood_pressures).through(:encounters).source(:blood_pressures) }
+    it { is_expected.to have_many(:blood_sugars).through(:encounters).source(:blood_sugars) }
+    it { is_expected.to have_many(:prescription_drugs) }
+    it { is_expected.to have_many(:patients).through(:encounters) }
+    it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_many(:teleconsultations) }
+    it { is_expected.to have_and_belong_to_many(:teleconsultation_medical_officers) }
 
-    it { should have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
-    it { should have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
-    it { should have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+    it { is_expected.to have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
+    it { is_expected.to have_many(:assigned_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
+    it { is_expected.to have_many(:assigned_hypertension_patients).class_name("Patient").with_foreign_key("assigned_facility_id") }
 
     context "slugs" do
       it "generates slug on creation and avoids conflicts via appending a UUID" do
@@ -185,11 +185,28 @@ RSpec.describe Facility, type: :model do
   end
 
   describe "Validations" do
-    it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:district) }
-    it { should validate_presence_of(:state) }
-    it { should validate_presence_of(:country) }
-    it { should validate_numericality_of(:pin) }
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:district) }
+    it { is_expected.to validate_presence_of(:state) }
+    it { is_expected.to validate_presence_of(:country) }
+    it { is_expected.to validate_numericality_of(:pin) }
+
+    describe "teleconsultation medical officers" do
+      context "when teleconsultation is enabled" do
+        subject { Facility.new(enable_teleconsultation: true) }
+
+        specify do
+          is_expected.to validate_presence_of(:teleconsultation_medical_officers)
+                           .with_message("must be added to enable teleconsultation")
+        end
+      end
+
+      context "when teleconsultation is disabled" do
+        subject { Facility.new(enable_teleconsultation: false) }
+
+        it { is_expected.not_to validate_presence_of(:teleconsultation_medical_officers) }
+      end
+    end
   end
 
   describe "Behavior" do
