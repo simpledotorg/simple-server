@@ -346,10 +346,11 @@ RSpec.describe Facility, type: :model do
 
   describe "#teleconsultation_phone_number_with_isd" do
     it "returns the first teleconsultation phone number with isd code" do
-      facility = create(:facility, enable_teleconsultation: true)
+      facility = create(:facility)
       medical_officer_1 = create(:user, teleconsultation_phone_number: "1111111111", teleconsultation_isd_code: "+91")
       medical_officer_2 = create(:user, teleconsultation_phone_number: "2222222222", teleconsultation_isd_code: "+91")
 
+      facility.enable_teleconsultation = true
       facility.teleconsultation_medical_officers = [medical_officer_1, medical_officer_2]
       facility.save!
 
@@ -359,10 +360,11 @@ RSpec.describe Facility, type: :model do
 
   describe "#teleconsultation_phone_numbers_with_isd" do
     it "returns all the teleconsultation phone numbers with isd code" do
-      facility = create(:facility, enable_teleconsultation: true)
+      facility = create(:facility)
       medical_officer_1 = create(:user, teleconsultation_phone_number: "1111111111", teleconsultation_isd_code: "+91")
       medical_officer_2 = create(:user, teleconsultation_phone_number: "2222222222", teleconsultation_isd_code: "+91")
 
+      facility.enable_teleconsultation = true
       facility.teleconsultation_medical_officers = [medical_officer_1, medical_officer_2]
       facility.save!
 

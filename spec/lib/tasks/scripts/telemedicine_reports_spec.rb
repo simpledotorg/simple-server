@@ -5,8 +5,15 @@ RSpec.describe TelemedicineReports do
   let!(:file_path) { "spec/fixtures/files/telemed_report_input.csv" }
   let!(:period_start) { Date.parse("2020-08-03").beginning_of_day }
   let!(:period_end) { Date.parse("2020-08-09").end_of_day }
-  let!(:facility_1) { create(:facility, enable_teleconsultation: true, facility_type: "HWC") }
-  let!(:facility_2) { create(:facility, enable_teleconsultation: true, facility_type: "DH") }
+
+  let!(:facility_1) do
+    create(:facility, :with_teleconsultation, facility_type: "HWC")
+  end
+
+  let!(:facility_2) do
+    create(:facility, :with_teleconsultation, facility_type: "DH")
+  end
+
   let!(:user_1) { create(:user, id: "31f4b6c4-6172-499a-95e1-aaaaaaaaaaaa", registration_facility: facility_1) }
   let!(:user_2) { create(:user, id: "31f4b6c4-6172-499a-95e1-bbbbbbbbbbbb", registration_facility: facility_2) }
   let!(:high_bps) { create_list(:blood_pressure, 2, :hypertensive, :with_encounter, facility: facility_1, user: user_1, recorded_at: period_start + 1.day) }
