@@ -17,6 +17,6 @@ class ImportFacilityBlockNames
       end
     end
 
-    Rails.logger.info "Updated #{facilities_updated} facilities, #{facilities_updated} facilities not found"
+    Rails.logger.info "Updated #{facilities_updated} facilities, #{facilities_not_found} facilities not found"
   end
 end
