@@ -1,13 +1,13 @@
 require "rails_helper"
 
-RSpec.describe SeedPatients do
+RSpec.describe Seed::Runner do
   it "works" do
     facilities = create_list(:facility, 2, facility_size: "community")
     facilities.each do |f|
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
 
-    seeder = SeedPatients.new(scale_factor: 0.01)
+    seeder = Seed::Runner.new(scale_factor: 0.01)
     expect(seeder).to receive(:patients_to_create).and_return(3).twice
     expect(seeder).to receive(:blood_pressures_to_create).and_return(3).at_least(1).times
     expect {
@@ -25,7 +25,7 @@ RSpec.describe SeedPatients do
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
 
-    seeder = SeedPatients.new(scale_factor: 0.01)
+    seeder = Seed::Runner.new(scale_factor: 0.01)
     expect(seeder).to receive(:patients_to_create).and_return(3).twice
     expect(seeder).to receive(:blood_pressures_to_create).and_return(3).at_least(1).times
     result = seeder.call
@@ -41,7 +41,7 @@ RSpec.describe SeedPatients do
     end
 
     time = Benchmark.ms {
-      seeder = SeedPatients.new(scale_factor: 0.01)
+      seeder = Seed::Runner.new(scale_factor: 0.01)
       expect(seeder).to receive(:patients_to_create).and_return(25).at_least(2).times
       expect(seeder).to receive(:blood_pressures_to_create).and_return(25).at_least(1).times
       seeder.call

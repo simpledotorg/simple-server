@@ -7,7 +7,7 @@ namespace :db do
   desc "Generate fake Patient data"
   task seed_patients: :environment do
     abort "Can't run this task in env:#{ENV["SIMPLE_SERVER_ENV"]}!" if ENV["SIMPLE_SERVER_ENV"] == "production"
-    SeedPatients.new.call
+    Seed::Runner.new.call
   end
 
   desc "Clear patient data, regenerate patient seed data, and refresh materialized views"
