@@ -18,7 +18,7 @@ FactoryBot.define do
 
     trait :with_teleconsultation do
       enable_teleconsultation { true }
-      teleconsultation_medical_officers { create(:user) }
+      teleconsultation_medical_officers { [create(:user)] }
     end
 
     trait :seed do
