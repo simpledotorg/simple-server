@@ -197,7 +197,7 @@ RSpec.describe Facility, type: :model do
 
         specify do
           is_expected.to validate_presence_of(:teleconsultation_medical_officers)
-                           .with_message("must be added to enable teleconsultation")
+            .with_message("must be added to enable teleconsultation")
         end
       end
 
