@@ -5,7 +5,7 @@ class ImportFacilityBlockNames
 
     CSV.foreach(file, headers: true) do |row|
       district = row["district"]
-      facility_name = row["facility_name"]
+      facility_name = row["facility"]
       block = row["block"]
 
       facility = Facility.where(name: facility_name, district: district)
