@@ -16,6 +16,10 @@ FactoryBot.define do
     enable_teleconsultation { true }
     monthly_estimated_opd_load { 300 }
 
+    after(:build) do |facility|
+      facility.teleconsultation_medical_officers << create(:user, registration_facility: facility)
+    end
+
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
