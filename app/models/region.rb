@@ -3,7 +3,7 @@ class Region < ApplicationRecord
 
   ltree :path
   extend FriendlyId
-  friendly_id :name, use: :slugged
+  friendly_id :slug_candidates, use: :slugged
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
@@ -25,6 +25,18 @@ class Region < ApplicationRecord
   # Override the auto-generated root method (via enum) to return the one, single root Region
   def self.root
     Region.find_by(region_type: :root)
+  end
+
+  def slug_candidates
+    [
+      :name,
+      [:name, :region_type],
+      [:name, :region_type, :short_uuid]
+    ]
+  end
+
+  def short_uuid
+    SecureRandom.uuid[0..7]
   end
 
   # A label is a sequence of alphanumeric characters and underscores.

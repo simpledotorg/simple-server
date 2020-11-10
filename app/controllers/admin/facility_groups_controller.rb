@@ -70,7 +70,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_available_states
-    @available_states = COUNTRYWISE_STATES[CountryConfig.current[:name]]
+    @available_states = CountryConfig.current[:states]
   end
 
   def set_blocks
