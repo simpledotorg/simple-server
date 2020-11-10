@@ -53,6 +53,10 @@ class Region < ApplicationRecord
       .or(Patient
             .with_discarded
             .where(assigned_facility: facilities.sources))
+      .union(Patient
+               .with_discarded
+               .joins(:appointments)
+               .where(appointments: {facility: facilities.sources}))
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
@@ -69,8 +73,8 @@ class Region < ApplicationRecord
     # Generates has_many type of methods to fetch a region's descendants
     # e.g. organization.facilities
     define_method(region_type.pluralize) do
-      if ancestor_types(region_type).include?(self.region_type)
-        descendants.where(region_type: region_type)
+      if self_and_ancestor_types(region_type).include?(self.region_type)
+        self_and_descendants.where(region_type: region_type)
       else
         raise NoMethodError, "undefined method #{region_type.pluralize} for #{self} of type #{self.region_type}"
       end
