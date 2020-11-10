@@ -23,6 +23,7 @@ class FacilityGroup < ApplicationRecord
 
   validates :name, presence: true
   validates :organization, presence: true
+  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
 
   alias_method :registered_patients, :patients
 
@@ -30,6 +31,14 @@ class FacilityGroup < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
+  attr_writer :state
+
+  def state
+    @state || region&.state&.name
+  end
+
+  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
@@ -40,6 +49,8 @@ class FacilityGroup < ApplicationRecord
       set_diabetes_management(true)
     elsif diabetes_enabled?
       set_diabetes_management(false)
+    else
+      true
     end
   end
 
@@ -73,5 +84,26 @@ class FacilityGroup < ApplicationRecord
 
   def set_diabetes_management(value)
     facilities.update(enable_diabetes_management: value).map(&:valid?).all?
+  end
+
+  def create_region
+    Region.create!(
+      name: name,
+      source: self,
+      reparent_to: state_region,
+      region_type: Region.region_types[:district]
+    )
+  end
+
+  def update_region
+    region.reparent_to = state_region
+    region.name = name
+    region.save!
+  end
+
+  def state_region
+    Region.state.find_by_name(state) || Region.create(name: state,
+                                                      region_type: Region.region_types[:state],
+                                                      reparent_to: organization.region)
   end
 end
