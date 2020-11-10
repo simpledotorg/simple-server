@@ -62,7 +62,7 @@ module Seed
     }
 
     def performance_rank
-      PERFORMANCE_WEIGHTS.max_by { |_, weight| rand ** (1.0 / weight) }.first
+      PERFORMANCE_WEIGHTS.max_by { |_, weight| rand**(1.0 / weight) }.first
     end
 
     def call
@@ -83,7 +83,13 @@ module Seed
         end
         puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
       end
+      counts[:total] = sum_facility_totals
       pp @counts
+      counts
+    end
+
+    def sum_facility_totals
+      counts.each_with_object(Hash.new(0)) { |(_slug, counts), hsh| counts.each { |type, count| hsh[type] += count } }
     end
 
     # TODO add some backdated BPs before the facility bday
