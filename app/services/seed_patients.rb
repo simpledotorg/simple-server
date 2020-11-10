@@ -8,7 +8,7 @@ class SeedPatients
   attr_reader :logger
   attr_reader :scale_factor
 
-  def initialize(scale_factor: 1.0)
+  def initialize(scale_factor: ENV["SEED_FACTOR"]&.to_f || 1.0)
     @counts = {}
     @scale_factor = scale_factor
     @logger = Rails.logger.child(class: self.class.name)
