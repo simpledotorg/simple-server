@@ -13,7 +13,7 @@ class ImportFacilityBlockNames
         facilities_updated += 1 if facility.update(block: block)
       else
         facilities_not_found += 1
-        Rails.logger.info "Facility #{facility_name} in #{block}, district #{district} not found"
+        Rails.logger.info "Facility #{facility_name} in district #{district} not found"
       end
     end
 
