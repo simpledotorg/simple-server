@@ -93,8 +93,9 @@ RSpec.describe Region, type: :model do
       expect(org_region.districts).to contain_exactly district_region
       expect(org_region.blocks).to contain_exactly block_region
       expect(org_region.facilities).to contain_exactly facility_region
+      expect(org_region.organizations).to contain_exactly org_region
       expect { org_region.roots }.to raise_error NoMethodError
-      expect { org_region.organizations }.to raise_error NoMethodError
+
 
       expect(state_region.root).to eq root_region
       expect(state_region.organization).to eq org_region
@@ -102,9 +103,9 @@ RSpec.describe Region, type: :model do
       expect(state_region.districts).to contain_exactly district_region
       expect(state_region.blocks).to contain_exactly block_region
       expect(state_region.facilities).to contain_exactly facility_region
+      expect(state_region.states).to contain_exactly state_region
       expect { state_region.roots }.to raise_error NoMethodError
       expect { state_region.organizations }.to raise_error NoMethodError
-      expect { state_region.states }.to raise_error NoMethodError
 
       expect(district_region.root).to eq root_region
       expect(district_region.organization).to eq org_region
@@ -112,10 +113,10 @@ RSpec.describe Region, type: :model do
       expect(district_region.district).to eq district_region
       expect(district_region.blocks).to contain_exactly block_region
       expect(district_region.facilities).to contain_exactly facility_region
+      expect(district_region.districts).to contain_exactly district_region
       expect { district_region.roots }.to raise_error NoMethodError
       expect { district_region.organizations }.to raise_error NoMethodError
       expect { district_region.states }.to raise_error NoMethodError
-      expect { district_region.districts }.to raise_error NoMethodError
 
       expect(block_region.root).to eq root_region
       expect(block_region.organization).to eq org_region
@@ -123,11 +124,11 @@ RSpec.describe Region, type: :model do
       expect(block_region.district).to eq district_region
       expect(block_region.block).to eq block_region
       expect(block_region.facilities).to contain_exactly facility_region
+      expect(block_region.blocks).to contain_exactly block_region
       expect { block_region.roots }.to raise_error NoMethodError
       expect { block_region.organizations }.to raise_error NoMethodError
       expect { block_region.states }.to raise_error NoMethodError
       expect { block_region.districts }.to raise_error NoMethodError
-      expect { block_region.blocks }.to raise_error NoMethodError
 
       expect(facility_region.root).to eq root_region
       expect(facility_region.organization).to eq org_region
@@ -135,12 +136,70 @@ RSpec.describe Region, type: :model do
       expect(facility_region.district).to eq district_region
       expect(facility_region.block).to eq block_region
       expect(facility_region.facility).to eq facility_region
+      expect(facility_region.facilities).to contain_exactly facility_region
       expect { facility_region.roots }.to raise_error NoMethodError
       expect { facility_region.organizations }.to raise_error NoMethodError
       expect { facility_region.states }.to raise_error NoMethodError
       expect { facility_region.districts }.to raise_error NoMethodError
       expect { facility_region.blocks }.to raise_error NoMethodError
-      expect { facility_region.facilities }.to raise_error NoMethodError
+    end
+  end
+
+  context "#syncable_patients" do
+    let(:organization) { create(:organization) }
+    let(:user) { create(:user, organization: organization) }
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:facility_1) { create(:facility, state: "Maharashtra", block: "M1", facility_group: facility_group) }
+    let(:facility_2) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
+    let(:facility_3) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
+    let(:facility_4) { create(:facility, state: "Punjab", block: "P1", facility_group: facility_group) }
+
+    it "accounts for patients registered in the facility of the region" do
+      patients_from_f1 = create_list(:patient, 2, registration_facility: facility_1, registration_user: user)
+      patients_from_f2 = create_list(:patient, 2, registration_facility: facility_2, registration_user: user)
+      patients_from_f3 = create_list(:patient, 2, registration_facility: facility_3, registration_user: user)
+      patients_from_f4 = create_list(:patient, 2, registration_facility: facility_4, registration_user: user)
+
+      # TODO: Stop using backfill script to generate test data
+      RegionBackfill.call(dry_run: false)
+
+      expect(Region.root.syncable_patients)
+        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+
+      expect(Region.organization.find_by(source: organization).syncable_patients)
+        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+
+      expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
+        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3])
+      expect(Region.state.find_by(name: "Punjab").syncable_patients)
+        .to match_array([*patients_from_f4])
+
+      # expect(Region.district.find_by(source: facility_group).syncable_patients)
+      #   .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+
+      expect(Region.block.find_by(name: "M1").syncable_patients)
+        .to match_array([*patients_from_f1])
+      expect(Region.block.find_by(name: "M2").syncable_patients)
+        .to match_array([*patients_from_f2, *patients_from_f3])
+      expect(Region.block.find_by(name: "P1").syncable_patients)
+        .to match_array([*patients_from_f4])
+
+      expect(Region.facility.find_by(source: facility_1).syncable_patients)
+        .to match_array([*patients_from_f1])
+      expect(Region.facility.find_by(source: facility_2).syncable_patients)
+        .to match_array([*patients_from_f2])
+      expect(Region.facility.find_by(source: facility_3).syncable_patients)
+        .to match_array([*patients_from_f3])
+      expect(Region.facility.find_by(source: facility_4).syncable_patients)
+        .to match_array([*patients_from_f4])
+    end
+
+    xit "accounts for patients assigned in the facility of the region" do
+
+    end
+
+    xit "accounts for patients who have an appointment in the facility of the region" do
+
     end
   end
 end
