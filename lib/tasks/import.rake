@@ -33,7 +33,7 @@ namespace :import do
 
   desc "Import IHCI facility block names"
   task ihci_facility_block_names: :environment do
-    return "Cannot run task in this env" if CountryConfig.current[:name] != "India" && ENV["SIMPLE_SERVER_ENV"] != "production"
+    return "Cannot run task in this env" if CountryConfig.current[:name] != "India"
     ImportFacilityBlockNames.import("lib/ihci/data/facility_blocks_list.csv")
   end
 end
