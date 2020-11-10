@@ -26,10 +26,10 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "backfills" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
-      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
-      _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
-      facility_group_4 = create(:facility_group, name: "fg4", organization: org)
+      facility_group_1 = create(:facility_group, name: "fg1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, name: "fg2", organization: org, state: "State 2")
+      _facility_group_3 = create(:facility_group, name: "fg3", organization: org, state: "State 1")
+      facility_group_4 = create(:facility_group, name: "fg4", organization: org, state: "State 1")
 
       facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
       facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
@@ -64,8 +64,8 @@ RSpec.describe RegionBackfill, type: :model do
       facility_regions = Region.facility
       expect(facility_regions.size).to eq(6)
 
-      expect(org.leaves.map(&:source)).to contain_exactly(*facilities)
-      expect(org.leaves.map(&:region_type).uniq).to contain_exactly("facility")
+      expect(org.facilities.map(&:source)).to contain_exactly(*facilities)
+      expect(org.facilities.pluck(:region_type).uniq).to contain_exactly("facility")
     end
 
     it "works when there is are blocks and facilities that have the same name and slug" do
@@ -95,12 +95,12 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "establishes associations from facility / facility group back to regions" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, organization: org)
-      facility_group_2 = create(:facility_group, organization: org)
+      facility_group_1 = create(:facility_group, name: "FG 1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, name: "FG 2", organization: org, state: "State 2")
 
-      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1)
-      _facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
-      _facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2)
+      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, state: "State 1")
+      _facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, state: "State 1")
+      _facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, state: "State 2")
 
       RegionBackfill.call(dry_run: false)
 
@@ -117,24 +117,29 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "is idempotent and does not create same data multiple times" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
-      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
-      _facility_group_3 = create(:facility_group, name: "fg3", organization: org)
-      facility_group_4 = create(:facility_group, name: "fg4", organization: org)
+      facility_group_1 = create(:facility_group, name: "fg1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, name: "fg2", organization: org, state: "State 2")
+      facility_group_3 = create(:facility_group, name: "fg3", organization: org, state: "State 1")
+      facility_group_4 = create(:facility_group, name: "fg4", organization: org, state: "State 1")
 
       create(:facility, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
       create(:facility, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
       create(:facility, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
       create(:facility, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
-      create(:facility, name: "facility5", facility_group: facility_group_4, block: "Block ABC", state: "State 1")
-      create(:facility, name: "facility6", facility_group: facility_group_1, block: "Block 123", state: "State 1")
+      create(:facility, name: "facility5", facility_group: facility_group_3, block: "Block ABC", state: "State 1")
+      create(:facility, name: "facility6", facility_group: facility_group_4, block: "Block 123", state: "State 1")
 
       3.times do
         RegionBackfill.call(dry_run: false)
       end
 
-      # 1 org, 2 states, 4 districts, 4 blocks, 6 facilities
-      expect(Region.count).to eq(17)
+      expect(Region.where(region_type: "root").count).to eq 1
+      expect(Region.organization.count).to eq 1
+      expect(Region.state.count).to eq 2
+      expect(Region.district.count).to eq 4
+      expect(Region.block.count).to eq 5
+      expect(Region.facility.count).to eq 6
+      expect(Region.count).to eq 19
     end
   end
 end

@@ -8,6 +8,7 @@ FactoryBot.define do
     name { Faker::Address.district }
     description { Faker::Company.catch_phrase }
     organization { org }
+    state { Faker::Address.state }
     protocol
   end
 end
