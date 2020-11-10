@@ -79,6 +79,7 @@ module Seed
           end
           patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
           create_bps(patient_info, user, performance_rank)
+          create_appts(patient_info, user)
         end
         puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
       end
@@ -96,16 +97,33 @@ module Seed
       patient
     end
 
+    def create_appts(patient_info, user)
+      facility = user.facility
+      attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), attrs|
+        scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
+        hsh = {
+          creation_facility_id: facility.id,
+          facility_id: facility.id,
+          patient_id: patient_id,
+          scheduled_date: scheduled_date,
+          user_id: user.id
+        }
+        attrs << FactoryBot.attributes_for(:appointment, hsh)
+      }
+      appt_result = Appointment.import(attrs)
+      counts[facility.slug][:appointment] = appt_result.ids.size
+    end
+
     def create_bps(patient_info, user, performance_rank)
       facility = user.facility
+      slug = facility.slug
       controlled_percentage = case performance_rank
         when :low then 10
         when :medium then 20
         when :high then 35
       end
       bps = []
-      appointments = []
-      patient_info.each_with_object([]) { |(patient_id, recorded_at)|
+      patient_info.each_with_object([]) do |(patient_id, recorded_at)|
         blood_pressures_to_create(performance_rank).times do
           bp_time = Faker::Time.between(from: recorded_at, to: 1.day.ago)
           bp_attributes = {
@@ -119,16 +137,9 @@ module Seed
           control_trait = rand(100) < controlled_percentage ? :under_control : :hypertensive
           bps << FactoryBot.attributes_for(:blood_pressure, control_trait, bp_attributes)
         end
-
-        scheduled_date = Faker::Time.between(from: 2.weeks.ago, to: 45.days.from_now)
-        appointments << FactoryBot.attributes_for(:appointment, facility_id: facility.id, patient_id: patient_id,
-                                                                creation_facility_id: facility.id, scheduled_date: scheduled_date)
-      }
+      end
       result = BloodPressure.import(bps, returning: [:id, :recorded_at, :patient_id])
-      counts[user.facility.slug][:blood_pressure] = result.ids.size
-
-      appt_result = Appointment.import(appointments)
-      counts[facility.slug][:appointment] = result.ids.size
+      counts[slug][:blood_pressure] = result.ids.size
 
       encounters = []
       result.results.each do |row|
@@ -155,9 +166,10 @@ module Seed
         }
       }
 
-      Encounter.import(encounters)
-      Observation.import(observations)
-
+      encounter_result = Encounter.import(encounters)
+      observation_result = Observation.import(observations)
+      counts[slug][:encounter] = encounter_result.ids.size
+      counts[slug][:observation] = observation_result.ids.size
     end
   end
 end
