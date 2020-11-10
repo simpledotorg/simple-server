@@ -1,6 +1,4 @@
 class Admin::FacilityGroupsController < AdminController
-  COUNTRYWISE_STATES = YAML.load_file("config/data/canonical_states.yml")
-
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
@@ -66,7 +64,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def set_available_states
-    @available_states = COUNTRYWISE_STATES[CountryConfig.current[:name]]
+    @available_states = CountryConfig.current[:states]
   end
 
   def facility_group_params
