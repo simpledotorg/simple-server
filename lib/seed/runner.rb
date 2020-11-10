@@ -52,7 +52,7 @@ module Seed
       User.includes(phone_number_authentications: :facility).where(role: user_roles).each do |user|
         # TODO high performing means more returning for care in last three months
         # low - lots of patients who havent visited in past 3 months + w/i 12 months
-        performance_rank = [:low, :medium, :high]
+        _performance_rank = [:low, :medium, :high]
         facility = user.facility
         slug = facility.slug
         counts[slug] = {patient: 0, blood_pressure: 0}
