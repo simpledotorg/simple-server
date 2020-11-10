@@ -42,29 +42,43 @@ module Seed
       Random.new.rand(0..scaled_max_patients)
     end
 
-    def blood_pressures_to_create
-      scaled_max_bps = (MAX_BPS_TO_CREATE * scale_factor).to_int
-      Random.new.rand(0..scaled_max_bps)
+    # We adjust the max number of BPs to create by a 'visit perctange' derived from the performance rank.
+    # This is to adjust for the fact the lower performing facilities tend to have less visits overall from a patient.
+    # We then further adjust it by the overall scaling factor for the entire data set.
+    def blood_pressures_to_create(performance_rank)
+      visit_percentage = case perfromance_rank
+        when :low then 0.30
+        when :medium then 0.75
+        when :high then 1.0
+      end
+      adjusted_max_bps = (MAX_BPS_TO_CREATE * visit_percentage * scale_factor).to_int
+      Random.new.rand(0..adjusted_max_bps)
+    end
+
+    PERFORMANCE_WEIGHTS = {
+      low: 0.4,
+      medium: 0.4,
+      high: 0.2
+    }
+
+    def performance_rank
+      PERFORMANCE_WEIGHTS.max_by { |_, weight| rand ** (1.0 / weight) }.first
     end
 
     def call
       user_roles = [ENV["SEED_GENERATED_ACTIVE_USER_ROLE"], ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]]
       User.includes(phone_number_authentications: :facility).where(role: user_roles).each do |user|
-        # TODO high performing means more returning for care in last three months
-        # low - lots of patients who havent visited in past 3 months + w/i 12 months
-        _performance_rank = [:low, :medium, :high]
         facility = user.facility
         slug = facility.slug
         counts[slug] = {patient: 0, blood_pressure: 0}
         benchmark("Seeding records for facility #{slug}") do
           # Set a "birth date" for the Facility that patient records will be based from
-          # TODO set to 1.day.ago for the most recent possible bday
           facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
           patients_to_create(facility).times do |num|
             create_patient(user, oldest_registration: facility_birth_date)
           end
           patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
-          create_bps(patient_info, user)
+          create_bps(patient_info, user, performance_rank)
         end
         puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
       end
@@ -82,11 +96,17 @@ module Seed
       patient
     end
 
-    def create_bps(patient_info, user)
+    def create_bps(patient_info, user, performance_rank)
       facility = user.facility
-      bp_attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), arry|
-        patient_control_ratio = rand(100)
-        blood_pressures_to_create.times do
+      controlled_percentage = case performance_rank
+        when :low then 10
+        when :medium then 20
+        when :high then 35
+      end
+      bps = []
+      appointments = []
+      patient_info.each_with_object([]) { |(patient_id, recorded_at)|
+        blood_pressures_to_create(performance_rank).times do
           bp_time = Faker::Time.between(from: recorded_at, to: 1.day.ago)
           bp_attributes = {
             device_created_at: bp_time,
@@ -96,11 +116,19 @@ module Seed
             recorded_at: bp_time,
             user_id: user.id
           }
-          control_trait = rand(100) > patient_control_ratio ? :under_control : :hypertensive
-          arry << FactoryBot.attributes_for(:blood_pressure, control_trait, bp_attributes)
+          control_trait = rand(100) < controlled_percentage ? :under_control : :hypertensive
+          bps << FactoryBot.attributes_for(:blood_pressure, control_trait, bp_attributes)
         end
+
+        scheduled_date = Faker::Time.between(from: 2.weeks.ago, to: 45.days.from_now)
+        appointments << FactoryBot.attributes_for(:appointment, facility_id: facility.id, patient_id: patient_id,
+                                                                creation_facility_id: facility.id, scheduled_date: scheduled_date)
       }
-      result = BloodPressure.import(bp_attrs, returning: [:id, :recorded_at, :patient_id])
+      result = BloodPressure.import(bps, returning: [:id, :recorded_at, :patient_id])
+      counts[user.facility.slug][:blood_pressure] = result.ids.size
+
+      appt_result = Appointment.import(appointments)
+      counts[facility.slug][:appointment] = result.ids.size
 
       encounters = []
       result.results.each do |row|
@@ -126,9 +154,10 @@ module Seed
           user_id: user.id
         }
       }
+
       Encounter.import(encounters)
       Observation.import(observations)
-      counts[user.facility.slug][:blood_pressure] = result.ids.size
+
     end
   end
 end

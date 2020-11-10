@@ -19,7 +19,7 @@ RSpec.describe Seed::Runner do
     expect(facilities.first.blood_pressures.count).to eq(9)
   end
 
-  it "returns how many records are created" do
+  fit "returns how many records are created" do
     facilities = create_list(:facility, 2, facility_size: "community")
     facilities.each do |f|
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
@@ -29,8 +29,10 @@ RSpec.describe Seed::Runner do
     expect(seeder).to receive(:patients_to_create).and_return(3).twice
     expect(seeder).to receive(:blood_pressures_to_create).and_return(3).at_least(1).times
     result = seeder.call
+    facilities.each { |f| expect(f.patients.size).to eq(3) }
     facilities.pluck(:slug).each do |slug|
       expect(result[slug][:blood_pressure]).to eq(9)
+      expect(result[slug][:appointment]).to eq(9)
     end
   end
 
