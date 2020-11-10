@@ -82,7 +82,7 @@ class SeedPatients
 
   def create_bps(patient_info, user)
     facility = user.facility
-    bp_attrs = patient_info.each_with_object([]) do |(patient_id, recorded_at), arry|
+    bp_attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), arry|
       patient_control_ratio = rand(100)
       blood_pressures_to_create.times do
         bp_time = Faker::Time.between(from: recorded_at, to: 1.day.ago)
@@ -97,7 +97,7 @@ class SeedPatients
         control_trait = rand(100) > patient_control_ratio ? :under_control : :hypertensive
         arry << FactoryBot.attributes_for(:blood_pressure, control_trait, bp_attributes)
       end
-    end
+    }
     result = BloodPressure.import(bp_attrs, returning: [:id, :recorded_at, :patient_id])
 
     encounters = []
@@ -114,16 +114,16 @@ class SeedPatients
         timezone_offset: 0
       }
     end
-    observations = encounters.each_with_object([]) do |encounter, arry|
+    observations = encounters.each_with_object([]) { |encounter, arry|
       arry << {
         created_at: encounter[:encountered_on],
         encounter_id: encounter[:id],
         observable_id: encounter.delete(:blood_pressure_id),
         observable_type: "BloodPressure",
         updated_at: encounter[:encountered_on],
-        user_id: user.id,
+        user_id: user.id
       }
-    end
+    }
     Encounter.import(encounters)
     Observation.import(observations)
     counts[user.facility.slug][:blood_pressure] = result.ids.size
