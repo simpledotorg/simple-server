@@ -1,4 +1,6 @@
 require "csv"
+require "tasks/scripts/import_facility_block_names"
+
 namespace :import do
   desc 'Import facilites from CSV; Example: rake "bulk_upload:facilities_from_csv[path/to/file]"'
   task :facilities_from_csv, [:facilities_file] => :environment do |_t, args|
@@ -27,5 +29,11 @@ namespace :import do
       end
     end
     puts "Created #{created_facilities} facilities"
+  end
+
+  desc "Import IHCI facility block names"
+  task ihci_facility_block_names: :environment do
+    return "Cannot run task in this env" if CountryConfig.current[:name] != "India" && ENV["SIMPLE_SERVER_ENV"] != "production"
+    ImportFacilityBlockNames.import("lib/ihci/data/facility_blocks_list.csv")
   end
 end
