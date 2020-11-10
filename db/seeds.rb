@@ -10,9 +10,8 @@ require_relative "../lib/tasks/scripts/create_admin_user"
 require "factory_bot_rails"
 require "faker"
 
-# TODO make a range from 4 to 30
 # TODO allow toggling between small 'dev' set and real-world data set
-NUM_OF_FACILITY_GROUPS = 4
+MAX_NUM_OF_FACILITY_GROUPS = 30
 MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 200
 MAX_NUM_OF_USERS_PER_FACILITY = 8
 ADMIN_USER_NAME = "Admin User"
@@ -89,7 +88,7 @@ organization = Organization.find_by(org) || FactoryBot.create(:organization, org
 protocol = Protocol.find_or_create_by!(protocol_data)
 protocol_drugs_data.each { |drug_data| ProtocolDrug.find_or_create_by!(drug_data.merge(protocol_id: protocol.id)) }
 
-NUM_OF_FACILITY_GROUPS.times do
+Random.new.rand(1..MAX_NUM_OF_FACILITY_GROUPS).times do
   facility_group_params = {organization: organization, protocol: protocol}
   facility_group = FactoryBot.create(:facility_group, facility_group_params)
 
