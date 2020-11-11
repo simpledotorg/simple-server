@@ -108,7 +108,8 @@ class Admin::FacilitiesController < AdminController
 
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
-      facility.country ||= Rails.application.config.country[:name]
+      facility.country ||= Region.root.name
+      facility.state ||= @facility_group.region.state.name
     end
   end
 
@@ -121,18 +122,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    zones =
-      if facility_region
-        facility_region.district.blocks
-      else
-        Region.find_by(source: @facility_group).blocks
-      end
-
-    @available_zones = zones.order(:name).pluck(:name)
-  end
-
-  def facility_region
-    @facility_region ||= Region.find_by(source_id: @facility.id) if @facility.id
+    @available_zones = @facility_group.region&.blocks&.order(:name)&.pluck(:name) || []
   end
 
   def facility_params

@@ -18,8 +18,12 @@
         <%= form.text_field :zone, id: :facility_zone, required: true %>
       <% end %>
       <%= form.text_field :district, id: :facility_district, required: true %>
-      <%= form.text_field :state, id: :facility_state, required: true %>
-      <%= form.text_field :country, id: :facility_country, required: true %>
+      <% if Flipper.enabled?(:regions_prep) %>
+        <%= form.text_field :state, id: :facility_state, required: true, disabled: true %>
+      <% else %>
+        <%= form.text_field :state, id: :facility_state, required: true %>
+      <% end %>
+      <%= form.text_field :country, id: :facility_country, required: true, disabled: true %>
       <%= form.text_field :pin, id: :facility_pin %>
 
       <div class="row">
