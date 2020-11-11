@@ -30,7 +30,9 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   end
 
   def response_process_token
-    {other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-     resync_token: resync_token}
+    {
+      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      resync_token: resync_token
+    }
   end
 end
