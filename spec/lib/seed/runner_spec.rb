@@ -25,28 +25,26 @@ RSpec.describe Seed::Runner do
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
 
+    expected_bps = config.max_bps_to_create * config.max_patients_to_create.fetch(:community)
     seeder = Seed::Runner.new
-    expect(seeder).to receive(:patients_to_create).and_return(3).twice
-    expect(seeder).to receive(:blood_pressures_to_create).and_return(3).at_least(1).times
     result = seeder.call
     facilities.each { |f| expect(f.patients.size).to eq(3) }
     facilities.pluck(:slug).each do |slug|
-      expect(result[slug][:blood_pressure]).to eq(9)
-      expect(result[slug][:observation]).to eq(9)
-      expect(result[slug][:encounter]).to eq(9)
+      expect(result[slug][:patient]).to eq(3)
+      expect(result[slug][:blood_pressure]).to eq(expected_bps)
+      expect(result[slug][:observation]).to eq(expected_bps)
+      expect(result[slug][:encounter]).to eq(expected_bps)
       expect(result[slug][:appointment]).to eq(3)
     end
     expect(result[:total][:patient]).to eq(6)
-    expect(result[:total][:blood_pressure]).to eq(18)
-    expect(result[:total][:observation]).to eq(18)
-    expect(result[:total][:encounter]).to eq(18)
+    expect(result[:total][:blood_pressure]).to eq(90)
+    expect(result[:total][:observation]).to eq(90)
+    expect(result[:total][:encounter]).to eq(90)
   end
 
   it "can create a fast data set in under 10 seconds" do
     time = Benchmark.ms {
       seeder = Seed::Runner.new
-      # expect(seeder).to receive(:patients_to_create).and_return(25).at_least(2).times
-      # expect(seeder).to receive(:blood_pressures_to_create).and_return(25).at_least(1).times
       seeder.call
     }
     time_in_seconds = time / 1000
