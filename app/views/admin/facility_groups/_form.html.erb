@@ -152,7 +152,8 @@
         "name": "facility_group[new_blocks][]",
         "value": name,
         "data-block-identifier": name,
-        "type": "hidden"
+        "type": "hidden",
+        "class": "block-input"
       }).appendTo("#facility-group-form");
       newBlockRow(name).appendTo("#block-list");
     }
@@ -164,7 +165,8 @@
         "name": "facility_group[remove_blocks][]",
         "value": identifier,
         "data-block-identifier": identifier,
-        "type": "hidden"
+        "type": "hidden",
+        "class": "block-input"
       }).appendTo("#facility-group-form");
     }
 
@@ -173,5 +175,9 @@
 
   function scrollBlockListToBottom() {
     $("#block-list").scrollTop($("#block-list")[0].scrollHeight)
+  }
+
+  window.onbeforeunload = () => {
+    return $(".block-input").length > 0;
   }
 </script>
