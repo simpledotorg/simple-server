@@ -2,6 +2,8 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
+  before_action :set_available_states, only: [:new, :create, :edit, :update],
+                                       if: -> { Flipper.enabled?(:regions_prep) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -61,10 +63,15 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = authorize { current_admin.accessible_facility_groups(:manage).friendly.find(params[:id]) }
   end
 
+  def set_available_states
+    @available_states = CountryConfig.current[:states]
+  end
+
   def facility_group_params
     params.require(:facility_group).permit(
       :organization_id,
       :name,
+      :state,
       :description,
       :protocol_id,
       :enable_diabetes_management,

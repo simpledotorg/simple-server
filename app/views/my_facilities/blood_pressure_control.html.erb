@@ -126,15 +126,15 @@
         <tr class="row-total" data-sort-method="none">
           <td class="type-title">All</td>
           <td class="type-percent"><em><%= percentage(@totals[:controlled], @totals[:cohort_patients]) %></em></td>
-          <td class="type-number"><%= @totals[:controlled] %></td>
+          <td class="type-number"><%= number_or_dash_with_delimiter(@totals[:controlled]) %></td>
           <td class="type-percent"><em><%= percentage(@totals[:uncontrolled], @totals[:cohort_patients]) %></em></td>
-          <td class="type-number"><%= @totals[:uncontrolled] %></td>
+          <td class="type-number"><%= number_or_dash_with_delimiter(@totals[:uncontrolled]) %></td>
           <td class="type-percent"><em><%= percentage(@totals[:missed], @totals[:cohort_patients]) %></em></td>
-          <td class="type-number"><%= @totals[:missed] %></td>
+          <td class="type-number"><%= number_or_dash_with_delimiter(@totals[:missed]) %></td>
           <td class="type-percent">
             <em><%= percentage(@totals[:overall_controlled_bps], @totals[:overall_patients]) %></em></td>
-          <td class="type-number"><%= @totals[:overall_controlled_bps] %></td>
-          <td class="type-number"><%= @totals[:overall_patients] %></td>
+          <td class="type-number"><%= number_or_dash_with_delimiter(@totals[:overall_controlled_bps]) %></td>
+          <td class="type-number"><%= number_or_dash_with_delimiter(@totals[:overall_patients]) %></td>
         </tr>
         <% @facilities.each do |facility| %>
           <% bp_stats = { cohort_patients: @cohort_patients_per_facility[facility.id].to_i,
@@ -148,23 +148,23 @@
             <td class="type-percent" data-sort-column-key="controlled">
               <em><%= percentage(bp_stats[:controlled], bp_stats[:cohort_patients]) %></em>
             </td>
-            <td class="type-number"><%= bp_stats[:controlled] %></td>
+            <td class="type-number"><%= number_or_dash_with_delimiter(bp_stats[:controlled]) %></td>
             <td class="type-percent" data-sort-column-key="uncontrolled">
               <em><%= percentage(bp_stats[:uncontrolled], bp_stats[:cohort_patients]) %></em>
             </td>
-            <td class="type-number"><%= bp_stats[:uncontrolled] %></td>
+            <td class="type-number"><%= number_or_dash_with_delimiter(bp_stats[:uncontrolled]) %></td>
             <td class="type-percent" data-sort-column-key="missed">
               <em><%= percentage(bp_stats[:missed], bp_stats[:cohort_patients]) %></em>
             </td>
-            <td class="type-number"><%= bp_stats[:missed] %></td>
+            <td class="type-number"><%= number_or_dash_with_delimiter(bp_stats[:missed]) %></td>
             <td class="type-percent" data-sort-column-key="overall-percent">
               <em><%= percentage(bp_stats[:overall_controlled_bps], bp_stats[:overall_patients]) %></em>
             </td>
             <td class="type-number" data-sort-column-key="overall-controlled">
-              <%= bp_stats[:overall_controlled_bps] %>
+              <%= number_or_dash_with_delimiter(bp_stats[:overall_controlled_bps]) %>
             </td>
             <td class="type-number" data-sort-column-key="overall-patients">
-              <%= bp_stats[:overall_patients] %>
+              <%= number_or_dash_with_delimiter(bp_stats[:overall_patients]) %>
             </td>
           </tr>
         <% end %>

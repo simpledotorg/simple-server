@@ -55,6 +55,15 @@ RSpec.describe User, type: :model do
       expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
     end
 
+    it "respects ISD code when different from default" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = "+12345"
+      user = create(:user, teleconsultation_phone_number: phone_number, teleconsultation_isd_code: isd_code)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+
     it "defaults to phone number if its not present" do
       phone_number = Faker::PhoneNumber.phone_number
       isd_code = Rails.application.config.country["sms_country_code"]

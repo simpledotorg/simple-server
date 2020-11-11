@@ -12,7 +12,7 @@
       <h3 class="mt-5">Address</h3>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <% if Flipper.enabled?(:region_level_sync) %>
+      <% if Flipper.enabled?(:regions_prep) %>
         <%= form.select :zone, @available_zones.zip(@available_zones), {id: :facility_zone, include_blank: true}, required: true %>
       <% else %>
         <%= form.text_field :zone, id: :facility_zone, required: true %>
@@ -39,8 +39,7 @@
         <h3 class="mt-5">Teleconsultation enabled?</h3>
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "new FacilityTeleconsultFields().toggleTeleconsultationFields()" %>
 
-        <% if Flipper.enabled?(:teleconsult_facility_mo_search) %>
-        <span class="new-teleconsultation-fields">
+        <span class="teleconsultation-fields">
           <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %>>
             <h3>Medical officers available for teleconsultation</h3>
             <div class="alert alert-primary mt-1 p-12px" role="alert">
@@ -48,8 +47,13 @@
               Edit the user’s profile to update the number.
             </div>
             <div class="mo-search">
-              <%= render "shared/user_teleconsult_search" %>
+              <%= render "shared/user_teleconsult_search", facility_group_id: facility_group.id %>
             </div>
+
+            <% @facility.errors.full_messages_for(:teleconsultation_medical_officers).each do |error| %>
+              <p class="mt-3 mb-3 text-danger"><strong><%= error %></strong></p>
+            <% end %>
+
             <div class="no-medical-officers mt-3 mb-3" style=<%= "#{'display:none' if @facility.teleconsultation_medical_officers.any?}" %>>
               <h5>No medical officers</h5>
               <input type="hidden" name="facility[teleconsultation_medical_officer_ids][]" value="">
@@ -61,45 +65,6 @@
             </div>
           </div>
         </span>
-        <% else %>
-        <span class="old-teleconsultation-fields">
-          <div id="teleconsultation-fields" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %>>
-            <div class="alert alert-primary mt-3" role="alert">
-              <strong>How does the teleconsultation pilot work?</strong>
-              <br>Healthcare workers at this facility can make a teleconsult request to a medical officer at a higher level facility by searching for a patient in Simple and tapping a new "WhatsApp Doctor" button. Enter the MO's WhatsApp number below.
-              <br>You can enter multiple MOs for this facility by clicking on the "Add a Medical Officer" button.
-            </div>
-            <% if @facility.errors["teleconsultation_phone_numbers_attributes"].present? %>
-              <div id="teleconsultation-errors" class="col col-md-12 pl-0">
-                <%= form.label @facility.errors["teleconsultation_phone_numbers_attributes"].first, class: "text-danger" %>
-              </div>
-            <% end %>
-            <div id="mo_rows">
-             <div id="header_row" class="row mt-2">
-             <div class="col col-md-4">
-               <%= label_tag 'Country code' %>
-             </div>
-             <div class="col col-md-7">
-               <%= label_tag 'Medical officer\'s WhatsApp number' %>
-             </div>
-             <div class="col col-md-1">
-               <%= label_tag "delete" %>
-             </div>
-           </div>
-              <% if @facility[:teleconsultation_phone_numbers].empty? %>
-               <% @facility.build_teleconsultation_phone_number %>
-             <% end %>
-              <%= form.fields_for :teleconsultation_phone_numbers do |phone_number_form| %>
-               <%= render 'phone_number_fields', f: phone_number_form %>
-             <% end %>
-           </div>
-            <%= button_tag type: "button", class: "btn btn-sm btn-outline-success", onclick: "addPhoneNumberFields()" do %>
-              <i class="fas fa-plus mr-1"></i>
-              Add a Medical Officer
-            <% end %>
-          </div>
-        </span>
-        <% end %>
       </div>
 
       <%= form.primary %>

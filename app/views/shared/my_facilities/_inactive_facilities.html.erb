@@ -38,10 +38,10 @@
               <%= link_to facility.name, reports_region_facility_path(facility) %>
             </td>
             <td class="text-right" data-sort-column-key="week">
-              <%= @inactive_facilities_bp_counts[:last_week][facility.id].to_i %>
+              <%= number_with_delimiter(@inactive_facilities_bp_counts[:last_week][facility.id].to_i) %>
             </td>
             <td class="text-right" data-sort-column-key="month">
-              <%= @inactive_facilities_bp_counts[:last_month][facility.id].to_i %>
+              <%= number_with_delimiter(@inactive_facilities_bp_counts[:last_month][facility.id].to_i) %>
             </td>
           </tr>
         <% end %>

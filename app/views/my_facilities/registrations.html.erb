@@ -108,7 +108,7 @@
           <% @display_periods.reverse.each do |period| %>
             <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= @total_registrations_by_period[period].to_i %></td>
           <% end %>
-          <td class="type-number"><%= @total_registrations.values.sum %></td>
+          <td class="type-number"><%= number_or_dash_with_delimiter(@total_registrations.values.sum) %></td>
         </tr>
         <% @facilities.each do |facility| %>
           <tr>
@@ -120,11 +120,11 @@
                 </td>
               <% end %>
               <td class="type-number" <% if @selected_period == :day %>data-sort-column-key="<%= period.join %>"<% end %>>
-                <%= @registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i %>
+                <%= number_or_dash_with_delimiter(@registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i) %>
               </td>
             <% end %>
             <td class="type-number" data-sort-column-key="all-time">
-              <%= @total_registrations[facility.id].to_i %>
+              <%= number_or_dash_with_delimiter(@total_registrations[facility.id].to_i) %>
             </td>
           </tr>
         <% end %>

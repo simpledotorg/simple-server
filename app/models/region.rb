@@ -3,7 +3,7 @@ class Region < ApplicationRecord
 
   ltree :path
   extend FriendlyId
-  friendly_id :name, use: :slugged
+  friendly_id :slug_candidates, use: :slugged
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true
@@ -21,6 +21,23 @@ class Region < ApplicationRecord
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h
 
+  # Override the auto-generated root method (via enum) to return the one, single root Region
+  def self.root
+    Region.find_by(region_type: :root)
+  end
+
+  def slug_candidates
+    [
+      :name,
+      [:name, :region_type],
+      [:name, :region_type, :short_uuid]
+    ]
+  end
+
+  def short_uuid
+    SecureRandom.uuid[0..7]
+  end
+
   # A label is a sequence of alphanumeric characters and underscores.
   # (In C locale the characters A-Za-z0-9_ are allowed).
   # Labels must be less than 256 bytes long.
@@ -37,7 +54,7 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
-  REGION_TYPES.map do |region_type|
+  REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization
     define_method(region_type) do
@@ -61,14 +78,13 @@ class Region < ApplicationRecord
 
   private
 
-  def initialize_path?
-    @initialize_path
-  end
-
   def initialize_path
-    errors.add(:reparent_to, "must assign new parent to initialize path") unless reparent_to
-    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to}, going to initialize new path")
-    self.path = "#{reparent_to.path}.#{path_label}"
+    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
+    self.path = if reparent_to.path.present?
+      "#{reparent_to.path}.#{path_label}"
+    else
+      path_label
+    end
     self.reparent_to = nil
   end
 

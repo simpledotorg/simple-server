@@ -25,6 +25,10 @@ class DryRunRegion < SimpleDelegator
     result
   end
 
+  def set_slug(normalized_slug = nil)
+    @region.send(:set_slug, normalized_slug)
+  end
+
   def save
     raise ArgumentError, "call save_or_check_validity instead"
   end
