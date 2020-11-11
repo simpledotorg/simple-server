@@ -144,7 +144,6 @@ class Facility < ApplicationRecord
     zone: "zone_or_block",
     district: "district",
     state: "state",
-    country: "country",
     pin: "pin (optional)",
     latitude: "latitude (optional)",
     longitude: "longitude (optional)",
@@ -158,7 +157,8 @@ class Facility < ApplicationRecord
       facility = CSV_IMPORT_COLUMNS.map { |attribute, column_name| [attribute, row[column_name]] }.to_h
       next if facility.values.all?(&:blank?)
 
-      facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes_management] || false,
+      facilities << facility.merge(country: Region.root.name,
+                                   enable_diabetes_management: facility[:enable_diabetes_management] || false,
                                    enable_teleconsultation: facility[:enable_teleconsultation] || false,
                                    import: true)
     end
