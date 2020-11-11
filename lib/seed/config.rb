@@ -3,16 +3,18 @@ module Seed
     MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 200
     MAX_NUM_OF_USERS_PER_FACILITY = 2
 
-    # There are two seed configs: fast and large
+    # There are two seed configs: fast and large. By default the fast seed config will be used
+    # for dev and test. You can override this via the ENV var SEED_TYPE
     def initialize
-      @type = case SimpleServer.env
-      when "development", "test"
-        then "fast"
-      when "sandbox", "staging"
-        then "large"
-      else
-        raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
-      end
+      @type = ENV["SEED_TYPE"] ||
+        case SimpleServer.env
+        when "development", "test"
+          then "fast"
+        when "sandbox", "staging"
+          then "large"
+        else
+          raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
+        end
       Dotenv.load!(".env.seed.#{type}")
     end
 
