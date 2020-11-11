@@ -35,17 +35,8 @@ en:
   cohort_report_footnote_2: "All HTN patients assigned to this facility, registered in the quarter."
   cohort_report_footnote_3: "If a patient has multiple visits, their last BP is used to calculate BP control."
   all_hypertension_and_diabetes: "All hypertension and diabetes"
-
   hypertension_controlled_numerator: "Patients with at least one BP measure recorded in the last 3 months at <em>any facility</em>. At the most recent visit the patient had BP&nbsp;&lt;140 and &lt;90."
   hypertension_controlled_denominator: "All patients diagnosed with hypertension who have this facility as their \"Preferred Facility.\" Patients registered in the most recent 3 months are excluded, so the facility has the opportunity to get their BP controlled."
   hypertension: "Hypertension"
   diabetes: "Diabetes"
-  genders: ["all", "male", "female", "transgender"]
   all_time: "All-time"
-
-  hypertension_control: "Hypertension control"
-  hypertension_control_desc: "How many patients with hypertension had BP below 140/90 at their last follow-up visit in the month?"
-  footer_note_2: "A follow-up patient is only counted for one visit each month. If a patient follows up multiple times in a month, he or she is only counted once."
-
-
-  ratio_string: "%{value_1} of %{value_2}"

@@ -23,22 +23,6 @@ bn-BD:
     patients_enrolled: "কতজন নতুন রোগী %{facility_name} এ নথিভুক্ত রয়েছেন?"
     all_time_patients: "সব সময়: %{count} জন রোগী"
     updated_at: "%{time}টার সময় আপডেট করা হয়েছে"
-  user_analytics:
-    hypertension: "হাইপারটেনশন"
-    diabetes: "ডায়াবেটিস"
-    genders: ["সমস্ত", "পুরুষ", "মহিলা", "ট্রান্সজেন্ডার"]
-    all_time: "সব সময়"
-    follow_up_patients: "উচ্চ রক্তচাপ জনিত রোগীদের পর্যালোচনা"
-    registered_patients: "নিবন্ধিত রোগীসমূহ"
-    hypertension_control: "উচ্চ রক্তচাপ নিয়ন্ত্রণ"
-    hypertension_control_desc: "কতজন উচ্চ রক্তচাপ জনিত রোগীর বিপি 140/90 এর কম ছিল তাদের এই মাসের সাম্প্রতিক পর্যালোচনায়?"
-    notes: "দ্রষ্টব্য"
-    footer_note_1: "%{facility_name}তে হওয়া সমস্ত কার্যকলাপের জন্য ডেটা । যদি ডেটার সময় উত্তীর্ণ হয়ে যায়, হোম স্ক্রিনের \"সিঙ্ক পেন্ডিং\" লিঙ্কে ট্যাপ করুন।"
-    footer_note_2: "একজন পর্যালোচিত রোগীকে প্রতি মাসে একবার দেখানোর জন্য বিবেচনা করা হবে। যদি একজন রোগী একমাসের মধ্যে বহুবার দেখাতে আসেন, তাঁকে একবার মাত্র গণনা করা হবে।"
-    thank_you: "ধন্যবাদ"
-    thank_you_note: "উচ্চ রক্তচাপ জনিত রোগীদের চিকিৎসা করতে আপনাদের কঠোর শ্রমের জন্য ধন্যবাদ। আপনাদের শ্রম হৃদরোগ এবং স্ট্রোক থেকে যবন রক্ষা করেছে।"
-    updated: "আপডেট করা হয়েছে: %{time}"
-    ratio_string: "%{value_2} এর %{value_1}"
   dashboard:
     graphics:
       graphics_title_html: "<b>%{current_quarter_string}</b> এর সময়ে নিবন্ধীত %{patients_in_previous_quarter} জন রোগীর মধ্যে <b>%{previous_quarter_string}</b> জন রোগীর কী হয়েছিল?"
