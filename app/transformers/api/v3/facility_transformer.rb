@@ -15,7 +15,7 @@ class Api::V3::FacilityTransformer
     end
 
     def sync_region_id(facility)
-      if current_user.feature_enabled?(:region_level_sync)
+      if Flipper.enabled?(:region_level_sync)
         facility.region.block.id
       else
         facility.facility_group.id
