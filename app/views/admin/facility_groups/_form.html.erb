@@ -53,9 +53,7 @@
             <% @blocks&.each do |block| %>
               <li class="list-group-item align-middle" data-block-identifier="<%= block.id %>">
                 <div class="row">
-                  <div class="col-10 block-name">
-                    <%= block.name %>
-                  </div>
+                  <div class="col-10 block-name"><%= block.name %></div>
                   <div class="col-2 text-right">
                     <% if block.children.present? %>
                       <i class="fas fa-trash-alt text-grey"
@@ -146,14 +144,21 @@
     scrollBlockListToBottom();
   }
 
+  function addedBlocks() {
+    return $(".block-name").map((i, el) => $(el).text()).get()
+  }
+
+  function isBlockAdded(name) {
+    return addedBlocks().map(block => block.toLowerCase()).includes(name.toLowerCase())
+  }
+
   function addBlock(name) {
-    if(name !== "") {
+    if(name !== "" && !isBlockAdded(name)) {
       $('<input>').attr({
         "name": "facility_group[new_blocks][]",
         "value": name,
         "data-block-identifier": name,
-        "type": "hidden",
-        "class": "block-input"
+        "type": "hidden"
       }).appendTo("#facility-group-form");
       newBlockRow(name).appendTo("#block-list");
     }
@@ -165,8 +170,7 @@
         "name": "facility_group[remove_blocks][]",
         "value": identifier,
         "data-block-identifier": identifier,
-        "type": "hidden",
-        "class": "block-input"
+        "type": "hidden"
       }).appendTo("#facility-group-form");
     }
 
