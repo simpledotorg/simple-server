@@ -180,7 +180,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
           not_expected_records = [
             *create_list(:appointment, 2, patient: patient_in_another_block, facility: facility_in_another_block),
-            *create_list(:medical_history, 2, patient: patient_in_another_facility_group)
+            *create_list(:appointment, 2, patient: patient_in_another_facility_group)
           ]
 
           get :sync_to_user
