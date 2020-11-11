@@ -133,13 +133,13 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
               patient: patient,
               device_created_at: two_months_ago)
           )
-                                         .except("recorded_at")
+            .except("recorded_at")
           bp_recorded_three_months_ago = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
               patient: patient,
               device_created_at: three_months_ago)
           )
-                                           .except("recorded_at")
+            .except("recorded_at")
 
           post(:sync_from_user, params: {blood_pressures: [bp_recorded_three_months_ago]}, as: :json)
           post(:sync_from_user, params: {blood_pressures: [bp_recorded_two_months_ago]}, as: :json)
@@ -333,9 +333,11 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       let(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
       let(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
       let(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-      let(:patient_with_appointment_in_block) { create(:patient, :without_medical_history)
-                                                  .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-                                                  .yield_self { |appointment| appointment.patient } }
+      let(:patient_with_appointment_in_block) {
+        create(:patient, :without_medical_history)
+          .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
+          .yield_self { |appointment| appointment.patient }
+      }
       let(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
       let(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
       let(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block}.to_json) }
