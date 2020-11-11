@@ -96,7 +96,6 @@ RSpec.describe Region, type: :model do
       expect(org_region.organizations).to contain_exactly org_region
       expect { org_region.roots }.to raise_error NoMethodError
 
-
       expect(state_region.root).to eq root_region
       expect(state_region.organization).to eq org_region
       expect(state_region.state).to eq state_region
@@ -146,19 +145,18 @@ RSpec.describe Region, type: :model do
   end
 
   context "#syncable_patients" do
-    let(:organization) { create(:organization) }
-    let(:user) { create(:user, organization: organization) }
-    let(:facility_group) { create(:facility_group, organization: organization) }
-    let(:facility_1) { create(:facility, state: "Maharashtra", block: "M1", facility_group: facility_group) }
-    let(:facility_2) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
-    let(:facility_3) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
-    let(:facility_4) { create(:facility, state: "Punjab", block: "P1", facility_group: facility_group) }
+    let!(:organization) { create(:organization) }
+    let!(:facility_group) { create(:facility_group, organization: organization) }
+    let!(:facility_1) { create(:facility, state: "Maharashtra", block: "M1", facility_group: facility_group) }
+    let!(:facility_2) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
+    let!(:facility_3) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
+    let!(:facility_4) { create(:facility, state: "Maharashtra", block: "P1", facility_group: facility_group) }
 
     it "accounts for patients registered in the facility of the region" do
-      patients_from_f1 = create_list(:patient, 2, registration_facility: facility_1, registration_user: user)
-      patients_from_f2 = create_list(:patient, 2, registration_facility: facility_2, registration_user: user)
-      patients_from_f3 = create_list(:patient, 2, registration_facility: facility_3, registration_user: user)
-      patients_from_f4 = create_list(:patient, 2, registration_facility: facility_4, registration_user: user)
+      patients_from_f1 = create_list(:patient, 2, registration_facility: facility_1)
+      patients_from_f2 = create_list(:patient, 2, registration_facility: facility_2)
+      patients_from_f3 = create_list(:patient, 2, registration_facility: facility_3)
+      patients_from_f4 = create_list(:patient, 2, registration_facility: facility_4)
 
       # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
@@ -170,12 +168,10 @@ RSpec.describe Region, type: :model do
         .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
 
       expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
-        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3])
-      expect(Region.state.find_by(name: "Punjab").syncable_patients)
-        .to match_array([*patients_from_f4])
+        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
 
-      # expect(Region.district.find_by(source: facility_group).syncable_patients)
-      #   .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+      expect(Region.district.find_by(source: facility_group).syncable_patients)
+        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
 
       expect(Region.block.find_by(name: "M1").syncable_patients)
         .to match_array([*patients_from_f1])
@@ -195,11 +191,9 @@ RSpec.describe Region, type: :model do
     end
 
     xit "accounts for patients assigned in the facility of the region" do
-
     end
 
     xit "accounts for patients who have an appointment in the facility of the region" do
-
     end
   end
 end
