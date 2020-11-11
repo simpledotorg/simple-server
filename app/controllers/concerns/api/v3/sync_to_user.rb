@@ -36,7 +36,7 @@ module Api::V3::SyncToUser
         current_facility_id: current_facility.id,
         current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
         other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-        resync_token: resync_token
+        resync_token: current_resync_token
       }
     end
 
@@ -67,19 +67,23 @@ module Api::V3::SyncToUser
     end
 
     def resync_token_modified?
-      process_token[:resync_token] != resync_token
+      process_token[:resync_token] != current_resync_token
     end
 
     def sync_region_modified?
-      process_token[:sync_region_id] != sync_region_id
+      process_token[:sync_region_id] != current_sync_region_id
     end
 
-    def resync_token
-      request.headers["HTTP_X_RESYNC_TOKEN"]
+    def current_sync_region
+      if block_level_sync?
+        current_user.facility.region.block
+      else
+        current_facility_group
+      end
     end
 
-    def sync_region_id
-      request.headers["HTTP_X_SYNC_REGION_ID"]
+    def block_level_sync?
+      current_user.feature_enabled?(:region_level_sync) && process_token[:sync_region_id].present?
     end
   end
 end

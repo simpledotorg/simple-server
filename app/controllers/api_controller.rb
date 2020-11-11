@@ -31,16 +31,16 @@ class APIController < ApplicationController
     current_user.facility.facility_group
   end
 
-  def current_sync_region
-    if current_user.feature_enabled?(:region_level_sync)
-      current_user.facility.region.block
-    else
-      current_facility_group
-    end
-  end
-
   def current_timezone_offset
     request.headers["HTTP_X_TIMEZONE_OFFSET"].to_i || 0
+  end
+
+  def current_resync_token
+    request.headers["HTTP_X_RESYNC_TOKEN"]
+  end
+
+  def current_sync_region_id
+    request.headers["HTTP_X_SYNC_REGION_ID"]
   end
 
   def validate_facility
