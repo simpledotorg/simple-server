@@ -106,8 +106,8 @@ verify_postgres (){
   }
 
   pg_running || {
-    echo 'Please ensure postgresql is running'
-    exit 1
+   echo 'Please ensure postgresql is running'
+   exit 1
   }
 }
 

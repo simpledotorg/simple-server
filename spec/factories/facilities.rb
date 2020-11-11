@@ -13,8 +13,13 @@ FactoryBot.define do
     facility_size { Facility.facility_sizes[:small] }
     facility_group { create(:facility_group) }
     enable_diabetes_management { [true, false].sample }
-    enable_teleconsultation { true }
+    enable_teleconsultation { false }
     monthly_estimated_opd_load { 300 }
+
+    trait :with_teleconsultation do
+      enable_teleconsultation { true }
+      teleconsultation_medical_officers { [create(:user)] }
+    end
 
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
