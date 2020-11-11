@@ -25,11 +25,11 @@ module Seed
     end
 
     def number_of_facilities_per_facility_group
-      rand(1..config.max_number_of_facilities_per_facility_group)
+      config.rand_or_max(1..config.max_number_of_facilities_per_facility_group)
     end
 
     def number_of_users
-      rand(1..config.max_number_of_users_per_facility)
+      config.rand_or_mau(1..config.max_number_of_users_per_facility)
     end
 
     def call
@@ -46,7 +46,7 @@ module Seed
       facility_groups = number_of_facility_groups.times.map {
         FactoryBot.build(:facility_group, organization_id: organization.id, state: nil)
       }
-      fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name])
+      fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
 
       facility_attrs = []
       fg_result.results.each do |row|
@@ -65,15 +65,20 @@ module Seed
         }
       end
 
-      result = Facility.import!(facility_attrs)
-      users = result.ids.map { |facility_id|
-        FactoryBot.build_list(:user, number_of_users,
-          :with_phone_number_authentication,
-          registration_facility: facility_id,
-          organization: organization,
-          role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
-      }.flatten
-      User.import!(users)
+      result = Facility.import(facility_attrs)
+      users, auths = [], []
+      result.ids.each { |facility_id|
+        auths << FactoryBot.build(:phone_number_authentication, :without_facility, registration_facility_id: facility_id)
+        users << FactoryBot.build(:user, registration_facility: facility_id, organization: organization, role: config.seed_generated_active_user_role)
+      }
+
+      user_results = User.import(users)
+      phone_results = PhoneNumberAuthentication.import(auths)
+      user_ids_phone_ids = user_results.ids.zip(phone_results.ids)
+      auths = user_ids_phone_ids.map do |(user_id, phone_id)|
+        {user_id: user_id, authenticatable_type: PhoneNumberAuthentication.name, authenticatable_id: phone_id}
+      end
+      UserAuthentication.import(auths)
     end
 
     # DH is one per facility group

@@ -32,6 +32,14 @@ module Seed
     end
     alias_method :test_mode?, :test_mode
 
+    def rand_or_max(range)
+      test_mode? ? range.end : rand(range)
+    end
+
+    def seed_generated_active_user_role
+      ENV["SEED_GENERATED_ACTIVE_USER_ROLE"]
+    end
+
     def number_of_facility_groups
       Integer(ENV["NUMBER_OF_FACILITY_GROUPS"])
     end

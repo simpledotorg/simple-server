@@ -9,6 +9,7 @@ module Seed
     attr_reader :facility
     attr_reader :patient_info
     attr_reader :user
+    delegate :scale_factor, to: :config
 
     # TODO add some backdated BPs before the facility bday
     def initialize(config:, facility:, user:)

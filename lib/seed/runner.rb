@@ -26,12 +26,11 @@ module Seed
     def call
       FacilitySeeder.call(config: config)
 
-      active_user_role = ENV["SEED_GENERATED_ACTIVE_USER_ROLE"]
       Facility.includes(phone_number_authentications: :user).find_each do |facility|
         slug = facility.slug
         benchmark("Seeding records for facility #{slug}") do
           counts[slug] = {patient: 0, blood_pressure: 0}
-          user = facility.users.find_by(role: active_user_role)
+          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
           # Set a "birth date" for the Facility that patient records will be based from
           facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
           patients_to_create(facility).times do |num|
