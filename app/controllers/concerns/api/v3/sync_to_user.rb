@@ -4,7 +4,7 @@ module Api::V3::SyncToUser
   included do
     def region_records
       model = controller_name.classify.constantize
-      model.syncable_to_region(current_sync_region)
+      model.syncable_to_region(sync_region)
     end
 
     def current_facility_records
@@ -37,7 +37,7 @@ module Api::V3::SyncToUser
         current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
         other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
         resync_token: current_resync_token,
-        sync_region_id: current_sync_region
+        sync_region_id: current_sync_region_id
       }
     end
 
@@ -75,7 +75,7 @@ module Api::V3::SyncToUser
       process_token[:sync_region_id] != current_sync_region_id
     end
 
-    def current_sync_region
+    def sync_region
       if block_level_sync?
         current_block
       else
