@@ -176,8 +176,4 @@
   function scrollBlockListToBottom() {
     $("#block-list").scrollTop($("#block-list")[0].scrollHeight)
   }
-
-  window.onbeforeunload = () => {
-    return $(".block-input").length > 0;
-  }
 </script>
