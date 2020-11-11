@@ -4,16 +4,49 @@ require "faker"
 module Seed
   class Runner
     include ActiveSupport::Benchmarkable
+    SIZES = Facility.facility_sizes
 
-    attr_accessor :counts
+    attr_reader :config
     attr_reader :logger
-    attr_reader :scale_factor
+    attr_accessor :counts
 
-    def initialize(scale_factor: ENV["SEED_FACTOR"]&.to_f || 1.0)
+    def self.call(*args)
+      new(*args).call
+    end
+
+    delegate :scale_factor, to: :config
+
+    def initialize(config: Seed::Config.new)
       @counts = {}
-      @scale_factor = scale_factor
+      @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      puts "Starting seed process with scale factor of #{scale_factor}"
+      puts "Starting #{self.class} with #{config.type} configuration"
+    end
+
+    def call
+      FacilitySeeder.call(config: config)
+
+      active_user_role = ENV["SEED_GENERATED_ACTIVE_USER_ROLE"]
+      # user_roles = [ENV["SEED_GENERATED_ACTIVE_USER_ROLE"], ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]]
+      Facility.includes(phone_number_authentications: :user).find_each do |facility|
+        slug = facility.slug
+        benchmark("Seeding records for facility #{slug}") do
+          counts[slug] = {patient: 0, blood_pressure: 0}
+          user = facility.users.find_by(role: active_user_role)
+          # Set a "birth date" for the Facility that patient records will be based from
+          facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
+          patients_to_create(facility).times do |num|
+            create_patient(user, oldest_registration: facility_birth_date)
+          end
+          patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
+          create_bps(patient_info, user, performance_rank)
+          create_appts(patient_info, user)
+        end
+        puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
+      end
+      counts[:total] = sum_facility_totals
+      logger.info msg: "Seed complete", counts: counts
+      counts
     end
 
     def self.random_gender
@@ -28,31 +61,31 @@ module Seed
       end
     end
 
-    SIZES = Facility.facility_sizes
-    MAX_BPS_TO_CREATE = 100
-    MAX_PATIENTS_TO_CREATE = {
-      SIZES[:community] => 200,
-      SIZES[:small] => 800,
-      SIZES[:medium] => 2000,
-      SIZES[:large] => 4000
-    }
-
     def patients_to_create(facility)
-      scaled_max_patients = (MAX_PATIENTS_TO_CREATE.fetch(facility.facility_size) * scale_factor).to_int
-      Random.new.rand(0..scaled_max_patients)
+      facility_size = facility.facility_size.to_sym
+      if config.test_mode?
+        config.max_patients_to_create.fetch(facility_size)
+      else
+        scaled_max_patients = (config.max_patients_to_create.fetch(facility_size) * scale_factor).to_int
+        Random.new.rand(0..scaled_max_patients)
+      end
     end
 
     # We adjust the max number of BPs to create by a 'visit perctange' derived from the performance rank.
     # This is to adjust for the fact the lower performing facilities tend to have less visits overall from a patient.
     # We then further adjust it by the overall scaling factor for the entire data set.
     def blood_pressures_to_create(performance_rank)
-      visit_percentage = case perfromance_rank
-        when :low then 0.30
-        when :medium then 0.75
-        when :high then 1.0
+      if config.test_mode?
+        config.max_bps_to_create
+      else
+        visit_percentage = case performance_rank
+          when :low then 0.30
+          when :medium then 0.75
+          when :high then 1.0
+        end
+        adjusted_max_bps = (config.max_bps_to_create * visit_percentage * scale_factor).to_int
+        Random.new.rand(0..adjusted_max_bps)
       end
-      adjusted_max_bps = (MAX_BPS_TO_CREATE * visit_percentage * scale_factor).to_int
-      Random.new.rand(0..adjusted_max_bps)
     end
 
     PERFORMANCE_WEIGHTS = {
@@ -63,29 +96,6 @@ module Seed
 
     def performance_rank
       PERFORMANCE_WEIGHTS.max_by { |_, weight| rand**(1.0 / weight) }.first
-    end
-
-    def call
-      user_roles = [ENV["SEED_GENERATED_ACTIVE_USER_ROLE"], ENV["SEED_GENERATED_INACTIVE_USER_ROLE"]]
-      User.includes(phone_number_authentications: :facility).where(role: user_roles).each do |user|
-        facility = user.facility
-        slug = facility.slug
-        counts[slug] = {patient: 0, blood_pressure: 0}
-        benchmark("Seeding records for facility #{slug}") do
-          # Set a "birth date" for the Facility that patient records will be based from
-          facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
-          patients_to_create(facility).times do |num|
-            create_patient(user, oldest_registration: facility_birth_date)
-          end
-          patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
-          create_bps(patient_info, user, performance_rank)
-          create_appts(patient_info, user)
-        end
-        puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
-      end
-      counts[:total] = sum_facility_totals
-      pp @counts
-      counts
     end
 
     def sum_facility_totals

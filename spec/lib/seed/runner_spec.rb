@@ -1,22 +1,22 @@
 require "rails_helper"
 
 RSpec.describe Seed::Runner do
-  it "works" do
+  let(:config) { Seed::Config.new }
+
+  it "creates expected number of records from fast seed config" do
     facilities = create_list(:facility, 2, facility_size: "community")
     facilities.each do |f|
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
 
-    seeder = Seed::Runner.new(scale_factor: 0.01)
-    expect(seeder).to receive(:patients_to_create).and_return(3).twice
-    expect(seeder).to receive(:blood_pressures_to_create).and_return(3).at_least(1).times
+    expected_bps = config.max_bps_to_create * config.max_patients_to_create.fetch(:community) * facilities.size
+    seeder = Seed::Runner.new
     expect {
       seeder.call
     }.to change { Patient.count }.by(6)
-      .and change { BloodPressure.count }.by(18)
-      .and change { Encounter.count }.by(18)
-      .and change { Observation.count }.by(18)
-    expect(facilities.first.blood_pressures.count).to eq(9)
+      .and change { BloodPressure.count }.by(expected_bps)
+      .and change { Encounter.count }.by(expected_bps)
+      .and change { Observation.count }.by(expected_bps)
   end
 
   it "returns how many records are created per facility and total" do
@@ -25,7 +25,7 @@ RSpec.describe Seed::Runner do
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
     end
 
-    seeder = Seed::Runner.new(scale_factor: 0.01)
+    seeder = Seed::Runner.new
     expect(seeder).to receive(:patients_to_create).and_return(3).twice
     expect(seeder).to receive(:blood_pressures_to_create).and_return(3).at_least(1).times
     result = seeder.call
@@ -42,20 +42,15 @@ RSpec.describe Seed::Runner do
     expect(result[:total][:encounter]).to eq(18)
   end
 
-  it "can create a reasonable data set in under 20 seconds" do
-    facilities = create_list(:facility, 5, facility_size: "community")
-    facilities.each do |f|
-      create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
-    end
-
+  it "can create a fast data set in under 10 seconds" do
     time = Benchmark.ms {
-      seeder = Seed::Runner.new(scale_factor: 0.01)
-      expect(seeder).to receive(:patients_to_create).and_return(25).at_least(2).times
-      expect(seeder).to receive(:blood_pressures_to_create).and_return(25).at_least(1).times
+      seeder = Seed::Runner.new
+      # expect(seeder).to receive(:patients_to_create).and_return(25).at_least(2).times
+      # expect(seeder).to receive(:blood_pressures_to_create).and_return(25).at_least(1).times
       seeder.call
     }
     time_in_seconds = time / 1000
     puts "#{time_in_seconds} seconds"
-    expect(time_in_seconds).to be < 20
+    expect(time_in_seconds).to be < 10
   end
 end
