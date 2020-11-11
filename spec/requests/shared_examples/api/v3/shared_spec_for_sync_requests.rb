@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.shared_examples "v3 API sync requests" do
   let(:auth_headers) do
     {"HTTP_X_USER_ID" => request_user.id,
-      "HTTP_X_FACILITY_ID" => request_user.facility.id,
-      "HTTP_AUTHORIZATION" => "Bearer #{request_user.access_token}"}
+     "HTTP_X_FACILITY_ID" => request_user.facility.id,
+     "HTTP_AUTHORIZATION" => "Bearer #{request_user.access_token}"}
   end
   let(:headers) do
     {"ACCEPT" => "application/json", "CONTENT_TYPE" => "application/json"}.merge(auth_headers)
@@ -41,8 +41,8 @@ RSpec.shared_examples "v3 API sync requests" do
 
     expect(received_records.to_set)
       .to include model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time)
-                    .map { |record| to_response(record) }
-                    .to_set
+        .map { |record| to_response(record) }
+      .to_set
   end
 
   it "pushes nothing, pulls nothing" do
@@ -91,7 +91,7 @@ RSpec.shared_examples "v3 API sync requests" do
       let(:headers_with_resync_token) { headers.merge("HTTP_X_RESYNC_TOKEN" => resync_token) }
       let(:process_token_without_resync) do
         make_process_token(current_facility_processed_since: Time.current,
-          other_facilities_processed_since: Time.current)
+                           other_facilities_processed_since: Time.current)
       end
 
       before do
@@ -109,8 +109,8 @@ RSpec.shared_examples "v3 API sync requests" do
       it "syncs all records from beginning if resync_token in headers is different from the one in process_token" do
         get sync_route,
           params: {process_token: make_process_token(current_facility_processed_since: Time.current,
-            other_facilities_processed_since: Time.current,
-            resync_token: "2")},
+                                                     other_facilities_processed_since: Time.current,
+                                                     resync_token: "2")},
           headers: headers_with_resync_token
         response_body = JSON(response.body)
 
@@ -141,7 +141,7 @@ RSpec.shared_examples "v3 API sync requests" do
     context "resync_token in request headers is not present" do
       let(:process_token_without_resync) do
         make_process_token(current_facility_processed_since: 1.year.ago,
-          other_facilities_processed_since: 1.year.ago)
+                           other_facilities_processed_since: 1.year.ago)
       end
 
       before do
