@@ -43,6 +43,12 @@
       <% if Flipper.enabled?(:regions_prep) %>
         <div class="mt-3">
           <h3>Blocks</h3>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="new-block-name" placeholder="Add new block">
+            <div class="input-group-append">
+              <a class="btn btn-primary text-white add-block" onclick="submitAddBlock()">Add</a>
+            </div>
+          </div>
           <ul class="list-group list-group-flush" id="block-list">
             <% @blocks&.each do |block| %>
               <li class="list-group-item align-middle" data-block-identifier="<%= block.id %>">
@@ -66,12 +72,6 @@
               </li>
             <% end %>
           </ul>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" id="new-block-name" placeholder="Add new block">
-            <div class="input-group-append">
-              <a class="btn btn-primary text-white add-block" onclick="submitAddBlock()">Add</a>
-            </div>
-          </div>
         </div>
       <% end %>
 
