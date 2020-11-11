@@ -229,8 +229,13 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
 
       let(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
       let(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
+      let(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
+      let(:patient_with_appointment_in_block) { create(:patient, :without_medical_history)
+                                                  .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
+                                                  .yield_self { |appointment| appointment.patient } }
       let(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
       let(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
+      let(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block}.to_json) }
 
       before :each do
         # TODO: replace with proper factory data
@@ -250,7 +255,9 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
         it "only sends data belonging to the patients in the block of user's facility" do
           expected_records = [
             *create_list(:encounter, 2, :with_observables, patient: patient_in_request_facility, facility: request_facility),
-            *create_list(:encounter, 2, :with_observables, patient: patient_in_same_block, facility: facility_in_same_block)
+            *create_list(:encounter, 2, :with_observables, patient: patient_in_same_block, facility: facility_in_same_block),
+            *create_list(:encounter, 2, :with_observables, patient: patient_assigned_to_block, facility: facility_in_same_block),
+            *create_list(:encounter, 2, :with_observables, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
           ]
 
           not_expected_records = [
@@ -258,7 +265,7 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
             *create_list(:encounter, 2, :with_observables, patient: patient_in_another_facility_group)
           ]
 
-          get :sync_to_user
+          get :sync_to_user, params: {process_token: process_token}
 
           response_records = JSON(response.body)["encounters"]
           response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
@@ -277,7 +284,7 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
           not_expected_records =
             create_list(:encounter, 2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
 
-          get :sync_to_user
+          get :sync_to_user, params: {process_token: process_token}
 
           response_records = JSON(response.body)["encounters"]
           response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
