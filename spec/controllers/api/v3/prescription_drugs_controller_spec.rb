@@ -5,7 +5,6 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { PrescriptionDrug }
-
   let(:build_payload) { -> { build_prescription_drug_payload } }
   let(:build_invalid_payload) { -> { build_invalid_prescription_drug_payload } }
   let(:invalid_record) { build_invalid_payload.call }

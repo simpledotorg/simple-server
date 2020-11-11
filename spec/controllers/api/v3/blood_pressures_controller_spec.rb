@@ -4,19 +4,18 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
   let(:request_user) { create(:user) }
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
-  before :each do
-    request.env["X_USER_ID"] = request_user.id
-    request.env["X_FACILITY_ID"] = request_facility.id
-    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-  end
-
   let(:model) { BloodPressure }
-
   let(:build_payload) { -> { build_blood_pressure_payload } }
   let(:build_invalid_payload) { -> { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { ->(blood_pressure) { updated_blood_pressure_payload(blood_pressure) } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
+
+  before :each do
+    request.env["X_USER_ID"] = request_user.id
+    request.env["X_FACILITY_ID"] = request_facility.id
+    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+  end
 
   def create_record(options = {})
     facility = options[:facility] || create(:facility, facility_group: request_facility_group)
