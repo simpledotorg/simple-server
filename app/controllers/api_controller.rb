@@ -31,6 +31,10 @@ class APIController < ApplicationController
     current_user.facility.facility_group
   end
 
+  def current_block
+    current_user.facility.region.block
+  end
+
   def current_timezone_offset
     request.headers["HTTP_X_TIMEZONE_OFFSET"].to_i || 0
   end

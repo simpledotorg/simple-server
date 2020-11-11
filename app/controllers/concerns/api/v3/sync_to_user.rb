@@ -36,7 +36,8 @@ module Api::V3::SyncToUser
         current_facility_id: current_facility.id,
         current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
         other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-        resync_token: current_resync_token
+        resync_token: current_resync_token,
+        sync_region_id: current_sync_region
       }
     end
 
@@ -76,7 +77,7 @@ module Api::V3::SyncToUser
 
     def current_sync_region
       if block_level_sync?
-        current_user.facility.region.block
+        current_block
       else
         current_facility_group
       end
