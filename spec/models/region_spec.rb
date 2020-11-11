@@ -152,48 +152,116 @@ RSpec.describe Region, type: :model do
     let!(:facility_3) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
     let!(:facility_4) { create(:facility, state: "Maharashtra", block: "P1", facility_group: facility_group) }
 
-    it "accounts for patients registered in the facility of the region" do
-      patients_from_f1 = create_list(:patient, 2, registration_facility: facility_1)
-      patients_from_f2 = create_list(:patient, 2, registration_facility: facility_2)
-      patients_from_f3 = create_list(:patient, 2, registration_facility: facility_3)
-      patients_from_f4 = create_list(:patient, 2, registration_facility: facility_4)
-
+    before :each do
       # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
+    end
+
+    it "accounts for patients registered in the facility of the region" do
+      patient_from_f1 = create(:patient, registration_facility: facility_1)
+      patient_from_f2 = create(:patient, registration_facility: facility_2)
+      patient_from_f3 = create(:patient, registration_facility: facility_3)
+      patient_from_f4 = create(:patient, registration_facility: facility_4)
 
       expect(Region.root.syncable_patients)
-        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
 
       expect(Region.organization.find_by(source: organization).syncable_patients)
-        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
 
       expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
-        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
 
       expect(Region.district.find_by(source: facility_group).syncable_patients)
-        .to match_array([*patients_from_f1, *patients_from_f2, *patients_from_f3, *patients_from_f4])
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
 
       expect(Region.block.find_by(name: "M1").syncable_patients)
-        .to match_array([*patients_from_f1])
+        .to contain_exactly(patient_from_f1)
       expect(Region.block.find_by(name: "M2").syncable_patients)
-        .to match_array([*patients_from_f2, *patients_from_f3])
+        .to contain_exactly(patient_from_f2, patient_from_f3)
       expect(Region.block.find_by(name: "P1").syncable_patients)
-        .to match_array([*patients_from_f4])
+        .to contain_exactly(patient_from_f4)
 
       expect(Region.facility.find_by(source: facility_1).syncable_patients)
-        .to match_array([*patients_from_f1])
+        .to contain_exactly(patient_from_f1)
       expect(Region.facility.find_by(source: facility_2).syncable_patients)
-        .to match_array([*patients_from_f2])
+        .to contain_exactly(patient_from_f2)
       expect(Region.facility.find_by(source: facility_3).syncable_patients)
-        .to match_array([*patients_from_f3])
+        .to contain_exactly(patient_from_f3)
       expect(Region.facility.find_by(source: facility_4).syncable_patients)
-        .to match_array([*patients_from_f4])
+        .to contain_exactly(patient_from_f4)
     end
 
-    xit "accounts for patients assigned in the facility of the region" do
+    it "accounts for patients assigned in the facility of the region" do
+      patient_from_f1 = create(:patient, registration_facility: facility_1)
+      patient_from_f2 = create(:patient, assigned_facility: facility_2)
+      patient_from_f3 = create(:patient, assigned_facility: facility_3)
+      _patient_elsewhere = create(:patient)
+
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.organization.find_by(source: organization).syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.district.find_by(source: facility_group).syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.block.find_by(name: "M1").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(Region.block.find_by(name: "M2").syncable_patients)
+        .to contain_exactly(patient_from_f2, patient_from_f3)
+      expect(Region.block.find_by(name: "P1").syncable_patients)
+        .to be_empty
+
+      expect(Region.facility.find_by(source: facility_1).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(Region.facility.find_by(source: facility_2).syncable_patients)
+        .to contain_exactly(patient_from_f2)
+      expect(Region.facility.find_by(source: facility_3).syncable_patients)
+        .to contain_exactly(patient_from_f3)
+      expect(Region.facility.find_by(source: facility_4).syncable_patients)
+        .to be_empty
     end
 
-    xit "accounts for patients who have an appointment in the facility of the region" do
+    it "accounts for patients who have an appointment in the facility of the region" do
+      patient_from_f1 = create(:patient, registration_facility: facility_1)
+      patient_from_f2 = create(:patient)
+      create(:appointment, patient: patient_from_f2, facility: facility_2)
+      patient_from_f3 = create(:patient)
+      create(:appointment, patient: patient_from_f3, facility: facility_3)
+      _patient_elsewhere = create(:patient)
+
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.organization.find_by(source: organization).syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.district.find_by(source: facility_group).syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+
+      expect(Region.block.find_by(name: "M1").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(Region.block.find_by(name: "M2").syncable_patients)
+        .to contain_exactly(patient_from_f2, patient_from_f3)
+      expect(Region.block.find_by(name: "P1").syncable_patients)
+        .to be_empty
+
+      expect(Region.facility.find_by(source: facility_1).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(Region.facility.find_by(source: facility_2).syncable_patients)
+        .to contain_exactly(patient_from_f2)
+      expect(Region.facility.find_by(source: facility_3).syncable_patients)
+        .to contain_exactly(patient_from_f3)
+      expect(Region.facility.find_by(source: facility_4).syncable_patients)
+        .to be_empty
     end
   end
 end
