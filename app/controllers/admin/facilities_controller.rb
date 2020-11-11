@@ -109,7 +109,7 @@ class Admin::FacilitiesController < AdminController
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.country ||= Region.root.name
-      facility.state ||= @facility_group.region.state.name
+      facility.state ||= @facility_group.region.state.name if Flipper.enabled?(:regions_prep)
     end
   end
 
