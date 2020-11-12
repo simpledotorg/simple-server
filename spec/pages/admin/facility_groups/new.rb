@@ -30,11 +30,10 @@ module AdminPage
         click(CREATE_FACILITY_GROUP_BUTTON)
       end
 
-      def add_new_facility_group(org_name:, name:, description:, unassociated_facility:, protocol_name:, state: nil)
+      def add_new_facility_group(org_name:, name:, description:, protocol_name:, state: nil)
         select_organisation_name_dropdown(org_name)
         type(FACILITY_NAME, name)
         select_state_dropdown(state) if state
-        select_unassociated_facility(unassociated_facility)
         select_protocol_name_dropdown(protocol_name)
         click(CREATE_FACILITY_GROUP_BUTTON)
       end
