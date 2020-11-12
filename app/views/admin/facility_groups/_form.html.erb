@@ -26,28 +26,20 @@
                         disabled: action_name == "edit" ? true : false %>
       <% end %>
 
-      <label>Associated Facilities</label>
-      <% if facility_group.facilities.present? %>
-        <ul class="pl-3">
-          <% facility_group.facilities.each do |facility| %>
-            <li>
-              <%= link_to facility.name, admin_facility_group_facility_path(facility_group, facility), target: :_blank %>
-            </li>
-          <% end %>
-        </ul>
-      <% end %>
+      <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
 
-      <div class="mt-5 mb-5">
-        <h3>Diabetes enabled?</h3>
-        <div class="alert alert-primary mt-3" role="alert">
+      <div class="form-group">
+        <label class="mb-0">Diabetes enabled?</label>
+        <small class="form-text text-muted mt-0 mb-3">
           <% is_diabetes_enabled = facility_group.diabetes_enabled? %>
 
           <% if is_diabetes_enabled && facility_group.facilities.present? %>
             Diabetes management is already enabled for all facilities in this group.
           <% else %>
-            This will enable Diabetes management for all associated facilities in this group.
+            This will enable diabetes management for all associated facilities in this group.
           <% end %>
-        </div>
+        </small>
+
         <%= form.check_box :enable_diabetes_management,
             {id: :facility_group_enable_diabetes_management,
                 checked: is_diabetes_enabled,
@@ -55,8 +47,6 @@
                 onclick: "confirmDisableDM(this)"},
             true, false %>
       </div>
-
-      <%= form.select(:protocol_id, protocols.order(:name).map { |protocol| [protocol.name, protocol.id] }) %>
 
       <%= form.primary("Save facility group") %>
     <% end %>
