@@ -14,6 +14,8 @@ RSpec.describe Seed::Runner do
     expect {
       seeder.call
     }.to change { Patient.count }.by(6)
+      .and change { PatientBusinessIdentifier.count }.by(6)
+      .and change { MedicalHistory.count }.by(6)
       .and change { BloodPressure.count }.by(expected_bps)
       .and change { Encounter.count }.by(expected_bps)
       .and change { Observation.count }.by(expected_bps)

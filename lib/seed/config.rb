@@ -32,8 +32,14 @@ module Seed
     end
     alias_method :test_mode?, :test_mode
 
-    def rand_or_max(range)
-      test_mode? ? range.end : rand(range)
+    def rand_or_max(range, scale: false)
+      return range.end if test_mode?
+      if scale
+        scaled_range = Range.new(range.begin..(range.end * scale_factor))
+        rand(scaled_range)
+      else
+        rand(range)
+      end
     end
 
     def seed_generated_active_user_role

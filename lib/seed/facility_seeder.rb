@@ -5,6 +5,13 @@ module Seed
     ADMIN_USER_NAME = "Admin User"
     ADMIN_USER_EMAIL = "admin@simple.org"
 
+    FACILITY_SIZE_WEIGHTS = {
+      community: 0.50,
+      small: 0.30,
+      medium: 0.15,
+      large: 0.05
+    }.freeze
+
     def self.call(*args)
       new(*args).call
     end

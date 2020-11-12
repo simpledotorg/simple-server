@@ -33,8 +33,11 @@ module Seed
           user = facility.users.find_by!(role: config.seed_generated_active_user_role)
           # Set a "birth date" for the Facility that patient records will be based from
           facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
-          patients_to_create(facility).times do |num|
-            create_patient(user, oldest_registration: facility_birth_date)
+          benchmark("[#{slug} Seeding patients for a #{facility.facility_size} facility") do
+            patients = patients_to_create(facility).times.map { |num|
+              create_patient(user, oldest_registration: facility_birth_date)
+            }
+            Patient.import(patients, recursive: true)
           end
           patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
           result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
@@ -62,12 +65,8 @@ module Seed
 
     def patients_to_create(facility)
       facility_size = facility.facility_size.to_sym
-      if config.test_mode?
-        config.max_patients_to_create.fetch(facility_size)
-      else
-        scaled_max_patients = (config.max_patients_to_create.fetch(facility_size) * scale_factor).to_int
-        Random.new.rand(0..scaled_max_patients)
-      end
+      max = config.max_patients_to_create.fetch(facility_size)
+      config.rand_or_max(0..max, scale: true)
     end
 
     def sum_facility_totals
@@ -76,7 +75,8 @@ module Seed
 
     def create_patient(user, oldest_registration:)
       recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
-      patient = FactoryBot.create(:patient,
+      patient = FactoryBot.build(:patient,
+        address: nil,
         recorded_at: recorded_at,
         registration_user: user,
         registration_facility: user.facility)
@@ -87,6 +87,7 @@ module Seed
     def create_appts(patient_info, user)
       facility = user.facility
       attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), attrs|
+        next if rand <= 0.5 # some patients dont get appointments
         scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
         hsh = {
           creation_facility_id: facility.id,
