@@ -7,6 +7,6 @@ class RemoveUnassociatedFacilitiesFromProduction < ActiveRecord::Migration[5.2]
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration
+    Rails.logger.info "This data migration cannot be reversed. Skipping."
   end
 end
