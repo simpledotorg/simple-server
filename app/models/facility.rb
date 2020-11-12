@@ -136,34 +136,34 @@ class Facility < ApplicationRecord
 
   CSV_IMPORT_COLUMNS =
     if Flipper.enabled?(:regions_prep)
-    {organization_name: "organization",
-     facility_group_name: "facility_group",
-     name: "facility_name",
-     facility_type: "facility_type",
-     street_address: "street_address (optional)",
-     village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block",
-     district: "district",
-     pin: "pin (optional)",
-     latitude: "latitude (optional)",
-     longitude: "longitude (optional)",
-     facility_size: "size (optional)",
-     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+      {organization_name: "organization",
+       facility_group_name: "facility_group",
+       name: "facility_name",
+       facility_type: "facility_type",
+       street_address: "street_address (optional)",
+       village_or_colony: "village_or_colony (optional)",
+       zone: "zone_or_block",
+       district: "district",
+       pin: "pin (optional)",
+       latitude: "latitude (optional)",
+       longitude: "longitude (optional)",
+       facility_size: "size (optional)",
+       enable_diabetes_management: "enable_diabetes_management (true/false)"}
     else
-    {organization_name: "organization",
-     facility_group_name: "facility_group",
-     name: "facility_name",
-     facility_type: "facility_type",
-     street_address: "street_address (optional)",
-     village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block",
-     district: "district",
-     state: "state",
-     pin: "pin (optional)",
-     latitude: "latitude (optional)",
-     longitude: "longitude (optional)",
-     facility_size: "size (optional)",
-     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+      {organization_name: "organization",
+       facility_group_name: "facility_group",
+       name: "facility_name",
+       facility_type: "facility_type",
+       street_address: "street_address (optional)",
+       village_or_colony: "village_or_colony (optional)",
+       zone: "zone_or_block",
+       district: "district",
+       state: "state",
+       pin: "pin (optional)",
+       latitude: "latitude (optional)",
+       longitude: "longitude (optional)",
+       facility_size: "size (optional)",
+       enable_diabetes_management: "enable_diabetes_management (true/false)"}
     end
 
   def self.parse_facilities(file_contents)
