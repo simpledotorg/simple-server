@@ -26,6 +26,6 @@ module PurgeUsersData
         ActiveRecord::Base.connection.execute("truncate #{tables}")
       end
     end
-    puts "Truncated all tables in #{time.round} ms"
+    puts "Truncated Patient related tables in #{time.round} ms"
   end
 end

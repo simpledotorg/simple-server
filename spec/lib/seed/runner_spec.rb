@@ -38,6 +38,7 @@ RSpec.describe Seed::Runner do
       expect(result[slug][:encounter]).to eq(expected_bps)
       expect(result[slug][:appointment]).to eq(3)
     end
+    expect(result[:total][:facility]).to eq(0)
     expect(result[:total][:patient]).to eq(6)
     expect(result[:total][:blood_pressure]).to eq(90)
     expect(result[:total][:observation]).to eq(90)

@@ -21,9 +21,9 @@ module Seed
     attr_reader :type
 
     # This is the overall percentage to scale the dataset size by - a factor of 1.0
-    # will product a dataset roughly the size of IHCI
+    # will use the values in the configured dataset as is.
     def scale_factor
-      Float(ENV["SCALE_FACTOR"] || 0.1)
+      Float(ENV["SCALE_FACTOR"] || 1.0)
     end
 
     # In test mode, randomness is turned off so that tests can make deterministic assertions on results.
@@ -35,7 +35,7 @@ module Seed
     def rand_or_max(range, scale: false)
       return range.end if test_mode?
       if scale
-        scaled_range = Range.new(range.begin..(range.end * scale_factor))
+        scaled_range = Range.new(range.begin, (range.end * scale_factor))
         rand(scaled_range)
       else
         rand(range)

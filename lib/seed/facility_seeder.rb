@@ -35,10 +35,6 @@ module Seed
       config.rand_or_max(1..config.max_number_of_facilities_per_facility_group)
     end
 
-    def number_of_users
-      config.rand_or_mau(1..config.max_number_of_users_per_facility)
-    end
-
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
       org_name = "IHCI"
@@ -72,20 +68,7 @@ module Seed
         }
       end
 
-      result = Facility.import(facility_attrs)
-      users, auths = [], []
-      result.ids.each { |facility_id|
-        auths << FactoryBot.build(:phone_number_authentication, :without_facility, registration_facility_id: facility_id)
-        users << FactoryBot.build(:user, registration_facility: facility_id, organization: organization, role: config.seed_generated_active_user_role)
-      }
-
-      user_results = User.import(users)
-      phone_results = PhoneNumberAuthentication.import(auths)
-      user_ids_phone_ids = user_results.ids.zip(phone_results.ids)
-      auths = user_ids_phone_ids.map do |(user_id, phone_id)|
-        {user_id: user_id, authenticatable_type: PhoneNumberAuthentication.name, authenticatable_id: phone_id}
-      end
-      UserAuthentication.import(auths)
+      Facility.import(facility_attrs)
     end
 
     # DH is one per facility group

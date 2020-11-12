@@ -9,6 +9,7 @@ module Seed
     attr_reader :config
     attr_reader :logger
     attr_accessor :counts
+    attr_accessor :total_counts
 
     def self.call(*args)
       new(*args).call
@@ -18,13 +19,16 @@ module Seed
 
     def initialize(config: Seed::Config.new)
       @counts = {}
+      @total_counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
       puts "Starting #{self.class} with #{config.type} configuration"
     end
 
     def call
-      FacilitySeeder.call(config: config)
+      result = FacilitySeeder.call(config: config)
+      total_counts[:facility] = result&.ids&.size || 0
+      UserSeeder.call(config: config)
 
       Facility.includes(phone_number_authentications: :user).find_each do |facility|
         slug = facility.slug
@@ -46,8 +50,11 @@ module Seed
         end
         puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
       end
-      counts[:total] = sum_facility_totals
+      hsh = sum_facility_totals
+      total_counts.merge!(hsh)
       logger.info msg: "Seed complete", counts: counts
+      pp total_counts
+      counts[:total] = total_counts
       counts
     end
 
@@ -66,7 +73,7 @@ module Seed
     def patients_to_create(facility)
       facility_size = facility.facility_size.to_sym
       max = config.max_patients_to_create.fetch(facility_size)
-      config.rand_or_max(0..max, scale: true)
+      config.rand_or_max((0..max), scale: true).to_i
     end
 
     def sum_facility_totals
