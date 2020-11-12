@@ -68,7 +68,7 @@ module Seed
         }
       end
 
-      Facility.import(facility_attrs)
+      Facility.import(facility_attrs, on_duplicate_key_ignore: true)
     end
 
     # DH is one per facility group
