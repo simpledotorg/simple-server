@@ -8,22 +8,22 @@ Punjab,UPHC Phul,Bathinda,Bhagta
 Punjab,UPHC Beant Nagar,Bathinda,Bathinda
 Punjab,USAD Ganesha Basti,Bathinda,Bathinda
 Punjab,UPHC Janta Nagar,Bathinda,Bathinda
-Punjab,HWC Mehma Swai,Bathinda,CHC Goniana 
-Punjab,HWC Tungwali,Bathinda,CHC Nathana 
+Punjab,HWC Mehma Swai,Bathinda,Goniana
+Punjab,HWC Tungwali,Bathinda,Nathana
 Punjab,SAD Rampura Town,Bathinda,Balianwali
 Punjab,SAD Rampura Village,Bathinda,Balianwali
 Punjab,HWC Jaisinghwala,Bathinda,Sangat
 Punjab,HWC Nandgarh,Bathinda,Sangat
 Punjab,HWC Pathrala,Bathinda,Sangat
 Punjab,HWC Jangi Rana,Bathinda,Sangat
-Punjab,HWC Jiwan Singh wala,Bathinda,Talwandi
-Punjab,HWC Singo,Bathinda,Talwandi
-Punjab,HWC Burj Sema,Bathinda,CHC Nathana 
-Punjab,HWC Burj Mehma,Bathinda,CHC Goniana 
-Punjab,SAD Kot Fatta Village,Bathinda,Talwandi
+Punjab,HWC Jiwan Singh wala,Bathinda,Talwandi Sabo
+Punjab,HWC Singo,Bathinda,Talwandi Sabo
+Punjab,HWC Burj Sema,Bathinda,Nathana
+Punjab,HWC Burj Mehma,Bathinda,Goniana
+Punjab,SAD Kot Fatta Village,Bathinda,Talwandi Sabo
 Punjab,SAD Namdev Nagar,Bathinda,Bathinda
 Punjab,HWC Kotra Kotian Wala,Bathinda,Balianwali
-Punjab,HWC Killi Nihalsinghwala,Bathinda,CHC Goniana 
+Punjab,HWC Killi Nihalsinghwala,Bathinda,Goniana
 Punjab,HWC Dhingar,Bathinda,Bhagta
 Punjab,HWC Pitho,Bathinda,Balianwali
 Punjab,HWC Govindpura,Bathinda,Nathana
@@ -32,7 +32,7 @@ Punjab,HWC Nahian Wala,Bathinda,Goniana
 Punjab,HWC Bir Behman,Bathinda,Goniana
 Punjab,HWC Dialpura Bhai Ka,Bathinda,Bhagta
 Punjab,HWC Selbrah,Bathinda,Bhagta
-Punjab,HWC Lehera Sondha,Bathinda,CHC Nathana 
+Punjab,HWC Lehera Sondha,Bathinda,Nathana
 Punjab,HWC Gumti Klan,Bathinda,Bhagta
 Punjab,HWC Ganga,Bathinda,Goniana
 Punjab,HWC Lehera Khana,Bathinda,Goniana
@@ -54,13 +54,13 @@ Punjab,HWC Chughe kalan,Bathinda,Goniana
 Punjab,HWC Naruana,Bathinda,Goniana
 Punjab,HWC Bagha,Bathinda,Sangat
 Punjab,HWC Shekhu,Bathinda,Sangat
-Punjab,HWC Giana,Bathinda,Talwandi
+Punjab,HWC Giana,Bathinda,Talwandi Sabo
 Punjab,HWC Balloh,Bathinda,Balianwali
 Punjab,District Hospital Bathinda,Bathinda,Bathinda
 Punjab,RH Chak Atarsinghwala,Bathinda,Sangat
 Punjab,HWC Ablu,Bathinda,Goniana
 Punjab,HWC Rampura Village,Bathinda,Balianwali
-Punjab,HWC Jaga Ram Tirath,Bathinda,Talwandi
+Punjab,HWC Jaga Ram Tirath,Bathinda,Talwandi Sabo
 Punjab,HWC Poohla,Bathinda,Nathana
 Punjab,HWC Jethuke,Bathinda,Balianwali
 Punjab,UPHC Lal Singh Basti,Bathinda,Bathinda
@@ -68,10 +68,10 @@ Punjab,HWC Bhucho Kalan,Bathinda,Nathana
 Punjab,HWC Bhokra,Bathinda,Goniana
 Punjab,HWC Chak Ruldusinghwala,Bathinda,Sangat
 Punjab,HWC Bibiwala,Bathinda,Nathana
-Punjab,HWC Shekhpura,Bathinda,Talwandi
+Punjab,HWC Shekhpura,Bathinda,Talwandi Sabo
 Punjab,HWC Deon,Bathinda,Goniana
-Punjab,HWC Bhagi Wander,Bathinda,Talwandi
-Punjab,HWC Ghuman Klan,Bathinda,Talwandi
+Punjab,HWC Bhagi Wander,Bathinda,Talwandi Sabo
+Punjab,HWC Ghuman Klan,Bathinda,Talwandi Sabo
 Punjab,HWC Jeond,Bathinda,Balianwali
 Punjab,HWC Dikh,Bathinda,Balianwali
 Maharashtra,PHC Kesalwada HWC Garada,Bhandara,Lakhani
@@ -174,10 +174,10 @@ Maharashtra,PHC Mahagaon HWC Nagepalli,Gadchiroli,Aheri
 Maharashtra,PHC Kamlapur HWC Repanpalli,Gadchiroli,Aheri
 Maharashtra,PHC Ankisa HWC Asaralli,Gadchiroli,Sironcha 
 Maharashtra,PHC Bhendala,Gadchiroli,Chamorshi 
-Maharashtra,PHC Burgi HWC Gurupalli,Gadchiroli,Etappalli 
+Maharashtra,PHC Burgi HWC Gurupalli,Gadchiroli,Etapalli
 Maharashtra,PHC Sundernagar HWC Koparalli,Gadchiroli,Mulchera 
 Maharashtra,PHC Lagam HWC Bori,Gadchiroli,Mulchera 
-Maharashtra,PHC Todsa HWC Maweli,Gadchiroli,Etappalli 
+Maharashtra,PHC Todsa HWC Maweli,Gadchiroli,Etapalli
 Maharashtra,PHC Malewada HWC Angara,Gadchiroli,Kurkheda 
 Maharashtra,PHC Arewada HWC Kothi,Gadchiroli,Bhamragad 
 Punjab,SDH Batala,Gurdaspur,Batala
@@ -188,7 +188,7 @@ Punjab,CHC Singhowal,Gurdaspur,Behrampur
 Punjab,CHC Qadian,Gurdaspur,Bham
 Punjab,CHC Bham,Gurdaspur,Bham
 Punjab,CHC Dhariwal,Gurdaspur,Naushehra Majha Singh
-Punjab,CHC Kalanaur,Gurdaspur,Kalanur
+Punjab,CHC Kalanaur,Gurdaspur,Kalanaur
 Punjab,MPHC Marara,Gurdaspur,Behrampur
 Punjab,MPHC Wadala Granthian,Gurdaspur,Bhullar
 Punjab,PHC Gunopur,Gurdaspur,Kahnuwan
@@ -196,7 +196,7 @@ Punjab,PHC Jaura Chhattra,Gurdaspur,Dorangla
 Punjab,PHC Kala Afhgana,Gurdaspur,Fatehgarh Churian
 Punjab,PHC Police Hospital,Gurdaspur,Gurdaspur
 Punjab,PHC DHARM KOT RANDHAWA,Gurdaspur,Dhianpur
-Punjab,HWC Bhikhariwal,Gurdaspur,Kalanur
+Punjab,HWC Bhikhariwal,Gurdaspur,Kalanaur
 Punjab,UPHC Gurdaspur,Gurdaspur,Gurdaspur
 Punjab,MPHC Gill Manjh,Gurdaspur,Kahnuwan
 Punjab,RH Rangar Nangal,Gurdaspur,Bhullar
@@ -209,16 +209,16 @@ Punjab,PHC Ranjit Bag,Gurdaspur,Ranjit Bag
 Punjab,HWC Langah Jattan,Gurdaspur,Naushehra Majha Singh
 Punjab,PHC Behrampur,Gurdaspur,Behrampur
 Punjab,HWC Aulakh Kalana,Gurdaspur,Bham
-Punjab,HWC Dhapai,Gurdaspur,BHam
+Punjab,HWC Dhapai,Gurdaspur,Bham
 Punjab,HWC Pakhowal kullian,Gurdaspur,Ranjit Bag
 Punjab,HWC Bhagowal,Gurdaspur,Bhullar
 Punjab,MPHC Jharoli,Gurdaspur,Behrampur
 Punjab,HWC Dodwan,Gurdaspur,Behrampur
-Punjab,HWC Bhandal,Gurdaspur,Kalanur
+Punjab,HWC Bhandal,Gurdaspur,Kalanaur
 Punjab,HWC Zafarwal,Gurdaspur,Naushehra Majha Singh
 Punjab,CHC Naushera majja Singh(NMS),Gurdaspur,Naushehra Majha Singh
-Punjab,HWC Aujla,Gurdaspur,Kalanur
-Punjab,HWC Hardocchania,Gurdaspur,Kalanur
+Punjab,HWC Aujla,Gurdaspur,Kalanaur
+Punjab,HWC Hardocchania,Gurdaspur,Kalanaur
 Punjab,HWC Talibpur,Gurdaspur,Ranjit Bag
 Punjab,HWC Kastiwal,Gurdaspur,Fatehgarh Churian
 Punjab,HWC Bal,Gurdaspur,Naushehra Majha Singh
@@ -319,12 +319,12 @@ Punjab,HWC Nainokot,Gurdaspur,Kahnuwan
 Punjab,PHC Panjgaraiyan,Gurdaspur,Bhullar
 Punjab,HWC Hemrajpur,Gurdaspur,Dorangla
 Punjab,HWC Kala Bala,Gurdaspur,Kahnuwan
-Punjab,HWC Bhoper Saidan,Gurdaspur,Kalanur
-Punjab,HWC Naranwali,Gurdaspur,Kalanur
-Punjab,HWC Mour,Gurdaspur,Kalanur
-Punjab,HWC Hakimpur,Gurdaspur,Kalanur
-Punjab,PHC Wadala Wangar,Gurdaspur,Kalanur
-Punjab,HWC Rudiana,Gurdaspur,Kalanur
+Punjab,HWC Bhoper Saidan,Gurdaspur,Kalanaur
+Punjab,HWC Naranwali,Gurdaspur,Kalanaur
+Punjab,HWC Mour,Gurdaspur,Kalanaur
+Punjab,HWC Hakimpur,Gurdaspur,Kalanaur
+Punjab,PHC Wadala Wangar,Gurdaspur,Kalanaur
+Punjab,HWC Rudiana,Gurdaspur,Kalanaur
 Punjab,HWC Sidhwan,Gurdaspur,Kahnuwan
 Punjab,HWC Thikriwal,Gurdaspur,Kahnuwan
 Punjab,HWC Nava Pind Hundal,Gurdaspur,Kahnuwan
@@ -336,11 +336,11 @@ Punjab,HWC Shahpur Jajan,Gurdaspur,Dhianpur
 Punjab,HWC Fazlabad,Gurdaspur,Dhianpur
 Punjab,HWC Manesh,Gurdaspur,Bham
 Punjab,UPHC Mansa,Mansa,Mansa
-Punjab,RH Phapre Bhai ke,Mansa,Khiala kalan
+Punjab,RH Phapre Bhai ke,Mansa,Khiala Kalan
 Punjab,HWC Rarh,Mansa,Khiala Kalan
 Punjab,HWC Sangha,Mansa,Sardulgarh
 Punjab,HWC Tahlian,Mansa,Budhlada
-Punjab,HWC Aklia,Mansa,Khiala kalan
+Punjab,HWC Aklia,Mansa,Khiala Kalan
 Punjab,HWC Bareh,Mansa,Budhlada
 Punjab,HWC Alampur Mandran,Mansa,Budhlada
 Punjab,HWC Burj Hari,Mansa,Khiala Kalan
@@ -352,7 +352,7 @@ Punjab,HWC Kotli Kalan,Mansa,Khiala Kalan
 Punjab,HWC Daliewali,Mansa,Sardulgarh
 Punjab,HWC Jwahar ke,Mansa,Khiala Kalan
 Punjab,HWC Khaira Kalan,Mansa,Sardulgarh
-Punjab,HWC Dhalewan,Mansa,Khiala kalan
+Punjab,HWC Dhalewan,Mansa,Khiala Kalan
 Punjab,HWC Jhanda Kalan,Mansa,Sardulgarh
 Punjab,HWC Jherian wali,Mansa,Sardulgarh
 Punjab,HWC Raipur,Mansa,Sardulgarh
@@ -407,14 +407,14 @@ Punjab,HWC Kanpur,Pathankot,Bungal Badhani
 Punjab,HWC Dung,Pathankot,Bungal Badhani
 Punjab,HWC Bhamlada,Pathankot,Bungal Badhani
 Maharashtra,HWC Tetali,Satara,Jaoli
-Maharashtra,HWC Chitali,Satara,Khatav
-Maharashtra,HWC Gursale,Satara,Khatav
-Maharashtra,HWC Mhasurne,Satara,Khatav
-Maharashtra,HWC Pedgaon,Satara,Khatav
-Maharashtra,HWC Chorade,Satara,Khatav
-Maharashtra,HWC Visapur,Satara,Khatav
-Maharashtra,HWC Nidhal,Satara,Khatav
-Maharashtra,HWC Kalambi,Satara,Khatav
+Maharashtra,HWC Chitali,Satara,Khatav (Vaduj)
+Maharashtra,HWC Gursale,Satara,Khatav (Vaduj)
+Maharashtra,HWC Mhasurne,Satara,Khatav (Vaduj)
+Maharashtra,HWC Pedgaon,Satara,Khatav (Vaduj)
+Maharashtra,HWC Chorade,Satara,Khatav (Vaduj)
+Maharashtra,HWC Visapur,Satara,Khatav (Vaduj)
+Maharashtra,HWC Nidhal,Satara,Khatav (Vaduj)
+Maharashtra,HWC Kalambi,Satara,Khatav (Vaduj)
 Maharashtra,HWC Mograle,Satara,Man
 Maharashtra,HWC Bidal,Satara,Man
 Maharashtra,HWC Pawarwadi,Satara,Phaltan
@@ -428,8 +428,8 @@ Maharashtra,HWC Kalaj,Satara,Phaltan
 Maharashtra,HWC Hatageghar,Satara,Jaoli
 Maharashtra,HWC Songaon,Satara,Jaoli
 Maharashtra,HWC Injbav,Satara,Man
-Maharashtra,HWC Budh,Satara,Khatav
-Maharashtra,HWC Bhilar,Satara,Mahableshwar
+Maharashtra,HWC Budh,Satara,Khatav (Vaduj)
+Maharashtra,HWC Bhilar,Satara,Mahabaleshwar
 Maharashtra,HWC Divad,Satara,Man
 Maharashtra,HWC Narawane,Satara,Man
 Maharashtra,HWC Mahimangarh,Satara,Man
@@ -447,8 +447,8 @@ Maharashtra,HWC Gunaware,Satara,Phaltan
 Maharashtra,HWC Hingangaon,Satara,Phaltan
 Maharashtra,HWC Shendurjane,Satara,Wai
 Maharashtra,CH Satara,Satara,Satara
-Maharashtra,HWC Lalgun,Satara,Khatav
-Maharashtra,HWC Katgun,Satara,Khatav
+Maharashtra,HWC Lalgun,Satara,Khatav (Vaduj)
+Maharashtra,HWC Katgun,Satara,Khatav (Vaduj)
 Maharashtra,HWC Shingnapur,Satara,Man
 Maharashtra,HWC Vavarhire,Satara,Man
 Maharashtra,HWC Algudewadi,Satara,Phaltan
@@ -502,7 +502,7 @@ Maharashtra,HWC Baparde (PHC Mond),Sindhudurg,Devgad
 Maharashtra,HWC Sherle (PHC Banda),Sindhudurg,Sawantwadi
 Maharashtra,HWC Vijayadurg (PHC Padel),Sindhudurg,Devgad
 Maharashtra,PHC Allipur HWC Arvi Lahan,Wardha,Hinganghat
-Maharashtra,PHC Kannamwar Gram HWC Sawali Khrud,Wardha,Karanja
+Maharashtra,HWC Sawali Khrud,Wardha,Karanja
 Maharashtra,PHC Zadshi HWC Akoli,Wardha,Seloo
 Maharashtra,RH Ashti,Wardha,Ashti
 Maharashtra,PHC Burkoni HWC Chincholi,Wardha,Hinganghat
@@ -520,7 +520,7 @@ Maharashtra,PHC Kharangana Mo HWC Dahegaon,Wardha,Arvi
 Maharashtra,PHC Deoli HWC Dighi,Wardha,Deoli
 Maharashtra,PHC Kharangana Gode HWC Madani,Wardha,Wardha
 Maharashtra,PHC Anji HWC Nalwadi,Wardha,Wardha
-Maharashtra,PHC Sarwadi HWC Nandpur,Wardha,Karanja
+Maharashtra,HWC Nandpur,Wardha,Karanja
 Maharashtra,PHC Rohana HWC Saldhara,Wardha,Arvi
 Maharashtra,PHC Hamadapur HWC Palsgaon Bai,Wardha,Seloo
 Maharashtra,PHC Rohana HWC Rasulabad,Wardha,Arvi
@@ -605,7 +605,7 @@ Punjab,HWC Shergarh,Hoshiarpur,Harta Badla
 Punjab,HWC Rajwal,Hoshiarpur,Hajipur
 Punjab,HWC Patti,Hoshiarpur,Harta Badla
 Punjab,SDH Dasuya,Hoshiarpur,Dasuya
-Punjab,SDH GarhShankar,Hoshiarpur,GarhShankar
+Punjab,SDH GarhShankar,Hoshiarpur,Garhshankar
 Punjab,SHC Bhatha,Hoshiarpur,Chakowal
 Punjab,SHC Chohal,Hoshiarpur,Chakowal
 Punjab,SHC Lambra,Hoshiarpur,Chakowal
@@ -757,4 +757,4 @@ Punjab,SHC Simbli,Hoshiarpur,Budhabar
 Punjab,SHC  Jhajji,Hoshiarpur,Tanda
 Punjab,SHC Rara,Hoshiarpur,Tanda
 Punjab,SHC Nathupur,Hoshiarpur,Tanda
-Punjab,SHC Dhamai,Hoshiarpur,GarhShankar
+Punjab,SHC Dhamai,Hoshiarpur,Garhshankar
