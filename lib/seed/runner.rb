@@ -87,7 +87,8 @@ module Seed
     def create_appts(patient_info, user)
       facility = user.facility
       attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), attrs|
-        next if rand <= 0.5 # some patients dont get appointments
+        number_appointments = config.rand_or_max(0..1) # some patients dont get appointments
+        next if number_appointments == 0
         scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
         hsh = {
           creation_facility_id: facility.id,
