@@ -21,7 +21,7 @@ RSpec.describe Seed::Config do
 
   it "uses ENV var values from fast config for test" do
     config = Seed::Config.new
-    expect(config.scale_factor).to eq(0.1)
+    expect(config.scale_factor).to eq(1.0)
     expect(config.number_of_facility_groups).to eq(2)
     expect(config.max_number_of_facilities_per_facility_group).to eq(4)
     expect(config.max_patients_to_create[:community]).to eq(3)
