@@ -242,4 +242,12 @@ class Facility < ApplicationRecord
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
+
+  def discard_data
+    registered_patients.each do |patient|
+      patient.discard_data
+    end
+
+    discard
+  end
 end

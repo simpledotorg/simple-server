@@ -42,4 +42,12 @@ class Organization < ApplicationRecord
   def discardable?
     facility_groups.none? && users.none? && appointments.none?
   end
+
+  def discard_data
+    facility_groups.each do |facility_group|
+      facility_group.discard_data
+    end
+
+    discard
+  end
 end

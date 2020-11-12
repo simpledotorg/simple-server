@@ -101,4 +101,12 @@ class FacilityGroup < ApplicationRecord
                                                       region_type: Region.region_types[:state],
                                                       reparent_to: organization.region)
   end
+
+  def discard_data
+    facilities.each do |facility|
+      facility.discard_data
+    end
+
+    discard
+  end
 end

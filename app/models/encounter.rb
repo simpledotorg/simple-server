@@ -5,7 +5,7 @@ class Encounter < ApplicationRecord
   belongs_to :patient, optional: true
   belongs_to :facility
 
-  has_many :observations
+  has_many :observations, dependent: :destroy
   has_many :blood_pressures, through: :observations, source: :observable, source_type: "BloodPressure"
   has_many :blood_sugars, through: :observations, source: :observable, source_type: "BloodSugar"
 
