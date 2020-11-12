@@ -35,13 +35,17 @@ module Seed
       config.rand_or_max(1..config.max_number_of_facilities_per_facility_group)
     end
 
+    def weighted_facility_size_sample
+      FACILITY_SIZE_WEIGHTS.max_by { |_, weight| rand**(1.0 / weight) }.first
+    end
+
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
       org_name = "IHCI"
       organization = Organization.find_by(name: org_name) || FactoryBot.create(:organization, name: org_name)
 
       if number_of_facility_groups <= FacilityGroup.count
-        puts "bailing, already have enough facility groups"
+        puts "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"
         return
       end
       puts "Creating #{number_of_facility_groups} FacilityGroups..."
@@ -55,8 +59,8 @@ module Seed
       fg_result.results.each do |row|
         facility_group_id, facility_group_name = *row
         number_of_facilities_per_facility_group.times {
-          type = facility_size_map.keys.sample
-          size = facility_size_map[type]
+          size = weighted_facility_size_sample
+          type = SIZES_TO_TYPE.fetch(size)
 
           attrs = {
             district: facility_group_name,
@@ -70,6 +74,13 @@ module Seed
 
       Facility.import(facility_attrs, on_duplicate_key_ignore: true)
     end
+
+    SIZES_TO_TYPE = {
+      large: ["CH", "DH", "Hospital", "RH", "SDH"],
+      medium: ["CHC"],
+      small: ["MPHC", "PHC", "SAD", "Standalone", "UHC", "UPHC", "USAD"],
+      community: ["HWC", "Village"]
+    }
 
     # DH is one per facility group
     # all other larges are 5% per FG
