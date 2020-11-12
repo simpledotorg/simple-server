@@ -35,4 +35,9 @@ class PatientBusinessIdentifier < ApplicationRecord
       identifier
     end
   end
+
+  def discard_data
+    passport_authentication.discard
+    discard
+  end
 end

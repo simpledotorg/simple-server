@@ -233,12 +233,11 @@ class Patient < ApplicationRecord
     appointments.discard_all
     blood_pressures.discard_all
     blood_sugars.discard_all
-    business_identifiers.discard_all
+    business_identifiers.each { |bid| bid.discard_data }
     encounters.discard_all
     medical_history&.discard
     observations.discard_all
     phone_numbers.discard_all
-    passport_authentications.discard_all
     prescription_drugs.discard_all
     teleconsultations.discard_all
 
