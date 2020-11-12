@@ -101,6 +101,7 @@ RSpec.describe Facility, type: :model do
           expect(facility.region).to be_present
           expect(facility.region).to be_persisted
           expect(facility.region.name).to eq "An Facility"
+          expect(facility.region.region_type).to eq "facility"
           expect(facility.region.parent).to eq block_region
           expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
         end
@@ -116,6 +117,7 @@ RSpec.describe Facility, type: :model do
 
           facility.update(name: "A Facility")
           expect(facility.region.name).to eq "A Facility"
+          expect(facility.region.region_type).to eq "facility"
           expect(facility.region.parent).to eq block_region
           expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
         end
