@@ -19,7 +19,7 @@ module Seed
       @facility = facility
       @user = user
       @patient_info = @facility.assigned_patients.pluck(:id, :recorded_at)
-      puts "Starting #{self.class} with #{config.type} configuration"
+      @logger.debug "Starting #{self.class} with #{config.type} configuration"
     end
 
     PERFORMANCE_WEIGHTS = {
@@ -58,7 +58,6 @@ module Seed
     end
 
     def call
-      slug = facility.slug
       controlled_percentage = case performance_rank
         when :low then 10
         when :medium then 20

@@ -90,6 +90,7 @@ group :development, :test do
   gem "capistrano-template", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
+  gem "ruby-progressbar", require: false
   gem "rb-readline"
   gem "shoulda-matchers", "~> 4.1.2"
   gem "standard"

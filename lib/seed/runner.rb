@@ -31,6 +31,8 @@ module Seed
       UserSeeder.call(config: config)
 
       puts "Starting to seed patient data for #{Facility.count} facilities..."
+      progress = ProgressBar.create(title: "Facilities completed", total: Facility.count)
+
       Facility.includes(phone_number_authentications: :user).find_each do |facility|
         slug = facility.slug
         benchmark("Seeding records for facility #{slug}") do
@@ -50,7 +52,8 @@ module Seed
           counts[slug].merge! result
           create_appts(patient_info, user)
         end
-        puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
+        progress.log "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
+        progress.increment
       end
       hsh = sum_facility_totals
       total_counts.merge!(hsh)

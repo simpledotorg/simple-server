@@ -630,6 +630,7 @@ DEPENDENCIES
   rspec-rails (~> 3.7)
   rspec-sidekiq
   rswag (~> 1.6.0)
+  ruby-progressbar
   sassc-rails
   scenic
   sentry-raven
