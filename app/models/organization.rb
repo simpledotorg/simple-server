@@ -48,6 +48,8 @@ class Organization < ApplicationRecord
       facility_group.discard_data
     end
 
+    protocols&.discard_all
+
     discard
   end
 end
