@@ -36,8 +36,32 @@ class FacilityGroup < ApplicationRecord
     @state || region&.state&.name
   end
 
+  # ----------------
+  # Region callbacks
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+
+  def create_region
+    Region.create!(
+      name: name,
+      source: self,
+      reparent_to: state_region,
+      region_type: Region.region_types[:district]
+    )
+  end
+
+  def update_region
+    region.reparent_to = state_region
+    region.name = name
+    region.save!
+  end
+
+  def state_region
+    Region.state.find_by_name(state) || Region.create(name: state,
+      region_type: Region.region_types[:state],
+      reparent_to: organization.region)
+  end
+  # ----------------
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
@@ -79,26 +103,5 @@ class FacilityGroup < ApplicationRecord
 
   def set_diabetes_management(value)
     facilities.update(enable_diabetes_management: value).map(&:valid?).all?
-  end
-
-  def create_region
-    Region.create!(
-      name: name,
-      source: self,
-      reparent_to: state_region,
-      region_type: Region.region_types[:district]
-    )
-  end
-
-  def update_region
-    region.reparent_to = state_region
-    region.name = name
-    region.save!
-  end
-
-  def state_region
-    Region.state.find_by_name(state) || Region.create(name: state,
-                                                      region_type: Region.region_types[:state],
-                                                      reparent_to: organization.region)
   end
 end

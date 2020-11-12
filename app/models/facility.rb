@@ -101,6 +101,33 @@ class Facility < ApplicationRecord
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
+  # ----------------
+  # Region callbacks
+  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+
+  def create_region
+    Region.create!(
+      name: name,
+      source: self,
+      reparent_to: block_region,
+      region_type: Region.region_types[:facility]
+    )
+  end
+
+  def update_region
+    region.reparent_to = block_region
+    region.name = name
+    region.save!
+  end
+
+  def block_region
+    Region.state.find_by_name(block) || Region.create(name: block,
+      region_type: Region.region_types[:block],
+      reparent_to: facility_group.region)
+  end
+  # ----------------
+
   def hypertension_follow_ups_by_period(*args)
     patients
       .hypertension_follow_ups_by_period(*args)
