@@ -27,7 +27,6 @@ class User < ApplicationRecord
     {can_teleconsult: CAPABILITY_VALUES[can_teleconsult?]}
   end
 
-  belongs_to :organization, optional: true
   has_many :user_authentications
   has_many :blood_pressures
   has_many :patients, -> { distinct }, through: :blood_pressures
