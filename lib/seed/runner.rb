@@ -30,6 +30,7 @@ module Seed
       total_counts[:facility] = result&.ids&.size || 0
       UserSeeder.call(config: config)
 
+      puts "Starting to seed patient data for #{Facility.count} facilities..."
       Facility.includes(phone_number_authentications: :user).find_each do |facility|
         slug = facility.slug
         benchmark("Seeding records for facility #{slug}") do
@@ -39,9 +40,10 @@ module Seed
           facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
           benchmark("[#{slug} Seeding patients for a #{facility.facility_size} facility") do
             patients = patients_to_create(facility).times.map { |num|
-              create_patient(user, oldest_registration: facility_birth_date)
+              build_patient(user, oldest_registration: facility_birth_date)
             }
-            Patient.import(patients, recursive: true)
+            result = Patient.import(patients, recursive: true)
+            counts[slug][:patient] = result.ids.size
           end
           patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
           result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
@@ -80,15 +82,13 @@ module Seed
       counts.each_with_object(Hash.new(0)) { |(_slug, counts), hsh| counts.each { |type, count| hsh[type] += count } }
     end
 
-    def create_patient(user, oldest_registration:)
+    def build_patient(user, oldest_registration:)
       recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
-      patient = FactoryBot.build(:patient,
+      FactoryBot.build(:patient,
         address: nil,
         recorded_at: recorded_at,
         registration_user: user,
         registration_facility: user.facility)
-      counts[user.facility.slug][:patient] += 1
-      patient
     end
 
     def create_appts(patient_info, user)
