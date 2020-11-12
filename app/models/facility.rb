@@ -134,22 +134,37 @@ class Facility < ApplicationRecord
     query.call
   end
 
-  CSV_IMPORT_COLUMNS = {
-    organization_name: "organization",
-    facility_group_name: "facility_group",
-    name: "facility_name",
-    facility_type: "facility_type",
-    street_address: "street_address (optional)",
-    village_or_colony: "village_or_colony (optional)",
-    zone: "zone_or_block",
-    district: "district",
-    state: "state",
-    pin: "pin (optional)",
-    latitude: "latitude (optional)",
-    longitude: "longitude (optional)",
-    facility_size: "size (optional)",
-    enable_diabetes_management: "enable_diabetes_management (true/false)"
-  }
+  CSV_IMPORT_COLUMNS =
+    if Flipper.enabled?(:regions_prep)
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block",
+     district: "district",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+    else
+    {organization_name: "organization",
+     facility_group_name: "facility_group",
+     name: "facility_name",
+     facility_type: "facility_type",
+     street_address: "street_address (optional)",
+     village_or_colony: "village_or_colony (optional)",
+     zone: "zone_or_block",
+     district: "district",
+     state: "state",
+     pin: "pin (optional)",
+     latitude: "latitude (optional)",
+     longitude: "longitude (optional)",
+     facility_size: "size (optional)",
+     enable_diabetes_management: "enable_diabetes_management (true/false)"}
+    end
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -160,7 +175,7 @@ class Facility < ApplicationRecord
       facilities << facility.merge(country: Region.root.name,
                                    enable_diabetes_management: facility[:enable_diabetes_management] || false,
                                    enable_teleconsultation: facility[:enable_teleconsultation] || false,
-                                   import: true)
+                                   import: true).merge(state_region_name(facility))
     end
     facilities
   end
@@ -241,5 +256,13 @@ class Facility < ApplicationRecord
 
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
+  def self.state_region_name(facility_attributes)
+    organization = Organization.find_by(name: facility_attributes[:organization_name])
+    facility_group = FacilityGroup.find_by(name: facility_attributes[:facility_group_name],
+                                           organization_id: organization&.id)
+
+    Flipper.enabled?(:regions_prep) ? {state: facility_group&.region&.state&.name} : {}
   end
 end
