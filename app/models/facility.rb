@@ -122,9 +122,7 @@ class Facility < ApplicationRecord
   end
 
   def block_region
-    Region.state.find_by_name(block) || Region.create(name: block,
-      region_type: Region.region_types[:block],
-      reparent_to: facility_group.region)
+    Region.block.find_by_name(block)
   end
   # ----------------
 
