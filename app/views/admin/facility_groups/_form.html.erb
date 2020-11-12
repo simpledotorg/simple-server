@@ -27,19 +27,13 @@
       <% end %>
 
       <label>Associated Facilities</label>
-      <%= content_tag(:ul, class: "") do %>
+      <%= content_tag(:ul, class: "pl-3") do %>
         <% facility_group.facilities.each do |facility| %>
           <li>
             <%= link_to facility.name, admin_facility_group_facility_path(facility_group, facility), target: :_blank %>
           </li>
         <% end %>
       <% end if facility_group.facilities.present? %>
-
-      <% if facility_group.new_record? %>
-        <div class="row">
-          <div class="col-md-9 mb-3 text-warning">All existing facilities belong to a facility group.</div>
-        </div>
-      <% end %>
 
       <div class="mt-5 mb-5">
         <h3>Diabetes enabled?</h3>
