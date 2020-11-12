@@ -77,8 +77,4 @@ class Admin::FacilityGroupsController < AdminController
       :enable_diabetes_management
     )
   end
-
-  def enable_diabetes_management
-    params[:enable_diabetes_management]
-  end
 end

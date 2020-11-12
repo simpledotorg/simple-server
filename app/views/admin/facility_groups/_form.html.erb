@@ -43,9 +43,9 @@
         <%= form.check_box :enable_diabetes_management,
             {id: :facility_group_enable_diabetes_management,
                 checked: is_diabetes_enabled,
-                disabled: is_diabetes_enabled && facility_group.facilities.present?,
                 onclick: "confirmDisableDM(this)"},
-            true, false %>
+            true,
+            false %>
       </div>
 
       <%= form.primary("Save facility group") %>
