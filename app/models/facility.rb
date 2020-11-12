@@ -89,6 +89,12 @@ class Facility < ApplicationRecord
                                         message: "not in #{facility_sizes.values.join(", ")}",
                                         allow_blank: true}
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
+  validates :teleconsultation_medical_officers,
+    presence: {
+      if: :enable_teleconsultation,
+      message: "must be added to enable teleconsultation"
+    }
+
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
 
   delegate :protocol, to: :facility_group, allow_nil: true

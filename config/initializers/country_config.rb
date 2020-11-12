@@ -1,8 +1,11 @@
 class CountryConfig
+  COUNTRYWISE_STATES = YAML.load_file("config/data/canonical_states.yml")
+
   CONFIGS = {
     IN: {
       abbreviation: "IN",
       name: "India",
+      states: COUNTRYWISE_STATES["India"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_IN",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Kolkata",
       faker_locale: "en-IND",
@@ -13,6 +16,7 @@ class CountryConfig
     BD: {
       abbreviation: "BD",
       name: "Bangladesh",
+      states: COUNTRYWISE_STATES["Bangladesh"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_BD",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",
       faker_locale: "en-IND",
@@ -23,6 +27,7 @@ class CountryConfig
     ET: {
       abbreviation: "ET",
       name: "Ethiopia",
+      states: COUNTRYWISE_STATES["Ethiopia"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_ET",
       faker_locale: "en-IND",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Africa/Addis_Ababa",

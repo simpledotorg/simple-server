@@ -5,8 +5,15 @@ RSpec.describe TelemedicineReports do
   let!(:file_path) { "spec/fixtures/files/telemed_report_input.csv" }
   let!(:period_start) { Date.parse("2020-08-03").beginning_of_day }
   let!(:period_end) { Date.parse("2020-08-09").end_of_day }
-  let!(:facility_1) { create(:facility, enable_teleconsultation: true, facility_type: "HWC") }
-  let!(:facility_2) { create(:facility, enable_teleconsultation: true, facility_type: "DH") }
+
+  let!(:facility_1) do
+    create(:facility, :with_teleconsultation, facility_type: "HWC")
+  end
+
+  let!(:facility_2) do
+    create(:facility, :with_teleconsultation, facility_type: "DH")
+  end
+
   let!(:user_1) { create(:user, id: "31f4b6c4-6172-499a-95e1-aaaaaaaaaaaa", registration_facility: facility_1) }
   let!(:user_2) { create(:user, id: "31f4b6c4-6172-499a-95e1-bbbbbbbbbbbb", registration_facility: facility_2) }
   let!(:high_bps) { create_list(:blood_pressure, 2, :hypertensive, :with_encounter, facility: facility_1, user: user_1, recorded_at: period_start + 1.day) }
@@ -28,14 +35,14 @@ RSpec.describe TelemedicineReports do
     it "emails a report file" do
       report_data = [["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", ""],
         ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests (new version)", "Teleconsult - Records logged by MOs (new version)", "Teleconsult - Requests marked 'completed' (new version)", "Teleconsult requests percentage"],
-        [facility_1.state, "", "", 10, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
-        ["", facility_1.district, "", 10, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
+        [facility_1.state, "", "", 2, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
+        ["", facility_1.district, "", 2, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
         [],
         [],
         ["", "", "", "", "", "", "", "Between #{period_start.strftime("%d-%b-%Y")} and #{period_end.strftime("%d-%b-%Y")}", "", "", "", "", ""],
         ["State", "District", "Facility", "Facilities with telemedicine", "HWCs & SCs with telemedicine", "Users of telemedicine", "", "Patients who visited", "Patients with High BP", "Patients with High Blood Sugar", "Patients with High BP or Sugar", "Teleconsult - Total Button Clicks", "Teleconsult - Requests (new version)", "Teleconsult - Records logged by MOs (new version)", "Teleconsult - Requests marked 'completed' (new version)", "Teleconsult requests percentage"],
-        [facility_1.state, "", "", 10, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
-        ["", facility_1.district, "", 10, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
+        [facility_1.state, "", "", 2, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
+        ["", facility_1.district, "", 2, 1, 1, "", 2, 2, 0, 2, 10, 6, 1, 3, "500%"],
         ["", "", facility_1.name, "", "", 1, "", 2, 2, 0, 2, "", 6, 1, 3, ""],
         [],
         [],
