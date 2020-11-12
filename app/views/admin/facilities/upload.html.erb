@@ -14,7 +14,7 @@
 <ol>
   <li>
     Download and fill in
-    <%= if Flipper.enabled?(:regions_prep) %>
+    <% if Flipper.enabled?(:regions_prep) %>
       <%= link_to 'this template', '/documents/upload_facilities_without_state.csv' %>
     <% else %>
       <%= link_to 'this template', '/documents/upload_facilities.csv' %>
