@@ -24,5 +24,4 @@ RSpec.describe Seed::UserSeeder do
       expect(facility.users.size).to eq(expected_users_per_facility)
     end
   end
-
 end

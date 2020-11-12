@@ -116,7 +116,6 @@ class Facility < ApplicationRecord
       .where(blood_sugars: {facility: self})
   end
 
-
   # For compatibility w/ parent FacilityGroups
   def facilities
     [self]

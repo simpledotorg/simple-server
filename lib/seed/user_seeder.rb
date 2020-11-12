@@ -32,9 +32,9 @@ module Seed
         phone_results = PhoneNumberAuthentication.import!(auths)
       end
       user_ids_phone_ids = user_results.ids.zip(phone_results.ids)
-      auths = user_ids_phone_ids.map do |(user_id, phone_id)|
+      auths = user_ids_phone_ids.map { |(user_id, phone_id)|
         {user_id: user_id, authenticatable_type: PhoneNumberAuthentication.name, authenticatable_id: phone_id}
-      end
+      }
       benchmark("importing user auths") do
         UserAuthentication.import(auths)
       end
@@ -48,7 +48,7 @@ module Seed
       time = 30.minutes.from_now
       device_created_at = 3.months.ago
       users, auths = [], []
-      facility_ids.each { |facility_id|
+      facility_ids.each do |facility_id|
         number_of_users_per_facility.times do
           auths << {
             phone_number: Faker::PhoneNumber.phone_number,
@@ -68,7 +68,7 @@ module Seed
             role: config.seed_generated_active_user_role
           }
         end
-      }
+      end
       [users, auths]
     end
   end

@@ -10,6 +10,9 @@ require_relative "../lib/tasks/scripts/create_admin_user"
 require "factory_bot_rails"
 require "faker"
 
+Seed::Runner.call
+exit
+
 # TODO allow toggling between small 'dev' set and real-world data set
 MAX_NUM_OF_FACILITY_GROUPS = 30
 MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 200
