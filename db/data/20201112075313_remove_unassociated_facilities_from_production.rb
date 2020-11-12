@@ -3,7 +3,9 @@ class RemoveUnassociatedFacilitiesFromProduction < ActiveRecord::Migration[5.2]
     return if SIMPLE_SERVER_ENV != "production"
     return if ENV["DEFAULT_COUNTRY"] != "IN"
 
-    Facility.where(facility_group_id: nil).delete_all
+    facilities_to_purge = Facility.where(facility_group_id: nil)
+    Rails.logger.info "Purging facilities that are unassociated: #{facilities_to_purge.pluck(:id).join(", ")}."
+    facilities_to_purge.discard_all
   end
 
   def down
