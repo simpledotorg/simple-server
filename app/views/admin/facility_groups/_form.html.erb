@@ -26,18 +26,19 @@
                         disabled: action_name == "edit" ? true : false %>
       <% end %>
 
-      <% if facility_group.facilities.present? %>
-        <%= form.collection_check_boxes :facility_ids, facility_group.facilities, :id, :name, label: "Associated facilities", checked_value: 1 %>
-      <% end %>
-
-      <% if Facility.where(facility_group: nil).present? %>
-        <%= form.collection_check_boxes :facility_ids, Facility.where(facility_group: nil), :id, :name, label: "Unassociated facilities", checked: true %>
-      <% else %>
-        <% if facility_group.new_record? %>
-          <div class="row">
-            <div class="col-md-9 mb-3 text-warning">All existing facilities belong to a facility group.</div>
-          </div>
+      <label>Associated Facilities</label>
+      <%= content_tag(:ul, class: "") do %>
+        <% facility_group.facilities.each do |facility| %>
+          <li>
+            <%= link_to facility.name, admin_facility_group_facility_path(facility_group, facility), target: :_blank %>
+          </li>
         <% end %>
+      <% end if facility_group.facilities.present? %>
+
+      <% if facility_group.new_record? %>
+        <div class="row">
+          <div class="col-md-9 mb-3 text-warning">All existing facilities belong to a facility group.</div>
+        </div>
       <% end %>
 
       <div class="mt-5 mb-5">
