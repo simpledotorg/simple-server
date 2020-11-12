@@ -34,11 +34,13 @@ namespace :db do
     end
   end
 
-  desc "Purge all Patient data"
+  desc "Purge all Patient data and refresh materialized views"
   task purge_users_data: :environment do
     abort "Can't run this task in #{ENV["SIMPLE_SERVER_ENV"]}!'" if ENV["SIMPLE_SERVER_ENV"] == "production"
 
     require "tasks/scripts/purge_users_data"
     PurgeUsersData.perform
+
+    RefreshMaterializedViews.call
   end
 end
