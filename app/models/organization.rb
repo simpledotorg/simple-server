@@ -21,6 +21,7 @@ class Organization < ApplicationRecord
 
   def create_region
     return if region&.persisted?
+
     parent = Region.find_by!(region_type: Region.region_types[:root])
     region = build_region(name: name, description: description, reparent_to: parent)
     region.region_type = Region.region_types[:organization]
@@ -29,6 +30,7 @@ class Organization < ApplicationRecord
 
   def update_region
     return unless name_changed? || description_changed?
+
     region.name = name
     region.description = description
     region.save!
