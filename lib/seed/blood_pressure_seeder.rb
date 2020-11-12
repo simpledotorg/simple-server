@@ -49,7 +49,7 @@ module Seed
       end
     end
 
-    def controlled_percentage
+    def controlled_percentage_threshold
       case performance_rank
         when :low then 10
         when :medium then 20
@@ -70,7 +70,7 @@ module Seed
             recorded_at: bp_time,
             user_id: user.id
           }
-          control_trait = rand(100) < controlled_percentage ? :under_control : :hypertensive
+          control_trait = rand(100) < controlled_percentage_threshold ? :under_control : :hypertensive
           bps << FactoryBot.attributes_for(:blood_pressure, control_trait, bp_attributes)
         end
       end
