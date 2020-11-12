@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Seed::Runner do
   let(:config) { Seed::Config.new }
 
-  it "creates expected number of records from fast seed config" do
+  it "creates expected number of valid records from fast seed config" do
     facilities = create_list(:facility, 2, facility_size: "community")
     facilities.each do |f|
       create(:user, registration_facility: f, role: ENV["SEED_GENERATED_ACTIVE_USER_ROLE"])
@@ -19,6 +19,13 @@ RSpec.describe Seed::Runner do
       .and change { BloodPressure.count }.by(expected_bps)
       .and change { Encounter.count }.by(expected_bps)
       .and change { Observation.count }.by(expected_bps)
+    Patient.all.each do |patient|
+      expect(patient).to be_valid
+      expect(patient.medical_history).to be_valid
+      patient.blood_pressures.each do |bp|
+        expect(bp).to be_valid
+      end
+    end
   end
 
   it "returns how many records are created per facility and total" do

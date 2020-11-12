@@ -58,11 +58,6 @@ module Seed
     end
 
     def call
-      controlled_percentage = case performance_rank
-        when :low then 10
-        when :medium then 20
-        when :high then 35
-      end
       bps = []
       patient_info.each_with_object([]) do |(patient_id, recorded_at)|
         blood_pressures_to_create(performance_rank).times do
