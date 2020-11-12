@@ -607,6 +607,7 @@ DEPENDENCIES
   memory_profiler
   mock_redis
   ougai
+  parallel
   parallel_tests
   passenger
   pg (>= 0.18, < 2.0)

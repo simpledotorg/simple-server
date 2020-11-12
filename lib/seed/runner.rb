@@ -1,5 +1,6 @@
 require "factory_bot_rails"
 require "faker"
+require "parallel"
 
 module Seed
   class Runner
@@ -31,29 +32,30 @@ module Seed
       UserSeeder.call(config: config)
 
       puts "Starting to seed patient data for #{Facility.count} facilities..."
-      progress = ProgressBar.create(title: "Facilities completed", total: Facility.count)
 
-      Facility.includes(phone_number_authentications: :user).find_each do |facility|
-        slug = facility.slug
-        benchmark("Seeding records for facility #{slug}") do
-          counts[slug] = {patient: 0, blood_pressure: 0}
-          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
-          # Set a "birth date" for the Facility that patient records will be based from
-          facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
-          benchmark("[#{slug} Seeding patients for a #{facility.facility_size} facility") do
-            patients = patients_to_create(facility).times.map { |num|
-              build_patient(user, oldest_registration: facility_birth_date)
-            }
-            result = Patient.import(patients, recursive: true)
-            counts[slug][:patient] = result.ids.size
+      Facility.includes(phone_number_authentications: :user).find_in_batches(batch_size: 50) do |facilities|
+        Parallel.map(facilities, progress: {title: "Seeding facilities", total: Facility.count}) do |facility|
+          slug = facility.slug
+          benchmark("Seeding records for facility #{slug}") do
+            counts[slug] = {patient: 0, blood_pressure: 0}
+            user = facility.users.find_by!(role: config.seed_generated_active_user_role)
+            # Set a "birth date" for the Facility that patient records will be based from
+            facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
+            benchmark("[#{slug} Seeding patients for a #{facility.facility_size} facility") do
+              patients = patients_to_create(facility).times.map { |num|
+                build_patient(user, oldest_registration: facility_birth_date)
+              }
+              result = Patient.import(patients, recursive: true)
+              counts[slug][:patient] = result.ids.size
+            end
+            patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
+            result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
+            counts[slug].merge! result
+            create_appts(patient_info, user)
           end
-          patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
-          result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
-          counts[slug].merge! result
-          create_appts(patient_info, user)
+          puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
+          puts
         end
-        progress.log "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
-        progress.increment
       end
       hsh = sum_facility_totals
       total_counts.merge!(hsh)

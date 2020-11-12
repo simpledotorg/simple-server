@@ -88,6 +88,7 @@ group :development, :test do
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
   gem "capistrano-template", require: false
+  gem "parallel", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
   gem "ruby-progressbar", require: false
