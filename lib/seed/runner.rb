@@ -34,7 +34,11 @@ module Seed
       puts "Starting to seed patient data for #{Facility.count} facilities..."
 
       Facility.includes(phone_number_authentications: :user).find_in_batches(batch_size: 50) do |facilities|
-        Parallel.map(facilities, progress: {title: "Seeding facilities", total: Facility.count}) do |facility|
+        parallel_options = {
+          progress: {title: "Seeding facilities", total: Facility.count}
+        }
+        parallel_options[:in_processes] = 0 if Rails.env.test?
+        Parallel.map(facilities, parallel_options) do |facility|
           slug = facility.slug
           benchmark("Seeding records for facility #{slug}") do
             counts[slug] = {patient: 0, blood_pressure: 0}
