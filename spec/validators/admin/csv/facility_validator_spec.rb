@@ -89,5 +89,21 @@ RSpec.describe Admin::CSV::FacilityValidator do
         "Row(s) 5: Facility size not in #{Facility.facility_sizes.values.join(", ")}",
         "Row(s) 6: Enable diabetes management is not included in the list"]
     end
+
+    context "when regions_prep is enabled" do
+      before { enable_flag(:regions_prep) }
+
+      it "uploads facilities file and passes validations" do
+        organization = create(:organization, name: "OrgTwo")
+        facility_group = create(:facility_group, name: "FGThree", organization_id: organization.id)
+        Region.create(name: "Zone 2", region_type: Region.region_types[:block], reparent_to: facility_group.region)
+
+        facilities = [build(:facility, organization_name: "OrgTwo", facility_group_name: "FGThree", zone: "Zone 1")].map(&:attributes)
+        validator = described_class.new(facilities)
+        validator.facilities
+
+        expect(validator.errors).to match_array ["Row(s) 2: Zone not present in the facility group"]
+      end
+    end
   end
 end

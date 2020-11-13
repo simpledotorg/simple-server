@@ -84,6 +84,7 @@ class Facility < ApplicationRecord
   validates :country, presence: true
   validates :zone, presence: true, on: :create
   validates :pin, numericality: true, allow_blank: true
+  validate :block_allowed, if: -> { Flipper.enabled?(:regions_prep) }
 
   validates :facility_size, inclusion: {in: facility_sizes.values,
                                         message: "not in #{facility_sizes.values.join(", ")}",
@@ -189,6 +190,18 @@ class Facility < ApplicationRecord
     end
     facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
     errors.add(:facility, "already exists") if organization.present? && facility_group.present? && facility.present?
+  end
+
+  def block_allowed
+    organization = Organization.find_by(name: organization_name)
+    if organization.present?
+      facility_group = FacilityGroup.find_by(name: facility_group_name,
+                                             organization_id: organization.id)
+
+      unless facility_group.region.blocks.pluck(:name).include?(zone)
+        errors.add(:zone, "not present in the facility group")
+      end
+    end
   end
 
   def facility_name_presence

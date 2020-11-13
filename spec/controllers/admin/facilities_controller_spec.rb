@@ -189,35 +189,55 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   end
 
   describe "POST #upload" do
-    let!(:organization) { create(:organization, name: "OrgOne") }
-    let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+    context "when regions_prep is disabled" do
+      context "with valid data in file" do
+        let!(:organization) { create(:organization, name: "OrgOne") }
+        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+        let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
 
-    context "with valid data in file" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+        it "uploads facilities file and passes validations" do
+          post :upload, params: {upload_facilities_file: upload_file}
+          expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
+        end
+      end
+
+      context "with invalid data in file" do
+        let!(:organization) { create(:organization, name: "OrgOne") }
+        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+        let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
+
+        it "fails validations and returns a 400" do
+          post :upload, params: {upload_facilities_file: upload_file}
+          expect(response).to have_http_status(:bad_request)
+        end
+      end
+
+      context "with unsupported file type" do
+        let!(:organization) { create(:organization, name: "OrgOne") }
+        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+        let(:upload_file) do
+          fixture_file_upload("files/upload_facilities_test.docx",
+                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        end
+        it "uploads facilities file and fails validations" do
+          post :upload, params: {upload_facilities_file: upload_file}
+          expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
+        end
+      end
+    end
+
+    context "when regions_prep is enabled" do
+      before { enable_flag(:regions_prep) }
 
       it "uploads facilities file and passes validations" do
+        organization = create(:organization, name: "OrgOne")
+        facility_group = create(:facility_group, name: "FGTwo", organization_id: organization.id)
+        upload_file = fixture_file_upload("files/upload_facilities_test.csv", "text/csv")
+        Region.create(name: "Zone 1", region_type: Region.region_types[:block], reparent_to: facility_group.region)
+        Region.create(name: "Zone 2", region_type: Region.region_types[:block], reparent_to: facility_group.region)
+
         post :upload, params: {upload_facilities_file: upload_file}
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
-      end
-    end
-
-    context "with invalid data in file" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
-
-      it "fails validations and returns a 400" do
-        post :upload, params: {upload_facilities_file: upload_file}
-        expect(response).to have_http_status(:bad_request)
-      end
-    end
-
-    context "with unsupported file type" do
-      let(:upload_file) do
-        fixture_file_upload("files/upload_facilities_test.docx",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-      end
-      it "uploads facilities file and fails validations" do
-        post :upload, params: {upload_facilities_file: upload_file}
-        expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
       end
     end
   end
