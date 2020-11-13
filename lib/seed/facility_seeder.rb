@@ -64,7 +64,7 @@ module Seed
         facility_group_id, facility_group_name = *row
         number_of_facilities_per_facility_group.times {
           size = weighted_facility_size_sample
-          type = SIZES_TO_TYPE.fetch(size)
+          type = SIZES_TO_TYPE.fetch(size).sample
 
           attrs = {
             district: facility_group_name,
