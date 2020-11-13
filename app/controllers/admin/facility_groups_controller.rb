@@ -28,20 +28,24 @@ class Admin::FacilityGroupsController < AdminController
 
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    if @facility_group.save && @facility_group.toggle_diabetes_management
-      update_block_regions if Flipper.enabled?(:regions_prep)
-      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
-    else
-      render :new
+    transaction do
+      if @facility_group.save && @facility_group.toggle_diabetes_management
+        update_block_regions if Flipper.enabled?(:regions_prep)
+        redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
+      else
+        render :new
+      end
     end
   end
 
   def update
-    if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
-      update_block_regions if Flipper.enabled?(:regions_prep)
-      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
-    else
-      render :edit
+    transaction do
+      if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
+        update_block_regions if Flipper.enabled?(:regions_prep)
+        redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
+      else
+        render :edit
+      end
     end
   end
 
