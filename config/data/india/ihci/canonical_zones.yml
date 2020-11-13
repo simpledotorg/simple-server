@@ -5,7 +5,7 @@ Gurdaspur:
   - Dhariwal
   - Dinanagar
   - Dorangla
-  - Fategarh churian
+  - Fatehgarh Churian
   - Gurdaspur
   - Kahnuwan
   - Kalanaur
@@ -28,6 +28,7 @@ Bathinda:
   - Goniana
   - Talwandi Sabo
   - Maur
+  - Balianwali
 Hoshiarpur:
   - Hoshiarpur-1
   - Hoshiarpur-2
@@ -405,3 +406,7 @@ Bokaro:
   - Kasmar
   - Nawadih
   - Peterwar
+Raichur:
+  - Deodurga
+Chikmagalur:
+  - Kadur
