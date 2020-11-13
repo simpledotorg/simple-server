@@ -28,7 +28,7 @@ class Admin::FacilityGroupsController < AdminController
 
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    transaction do
+    ActiveRecord::Base.transaction do
       if @facility_group.save && @facility_group.toggle_diabetes_management
         update_block_regions if Flipper.enabled?(:regions_prep)
         redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
@@ -89,8 +89,7 @@ class Admin::FacilityGroupsController < AdminController
       :state,
       :description,
       :protocol_id,
-      :enable_diabetes_management,
-      facility_ids: []
+      :enable_diabetes_management
     )
   end
 
