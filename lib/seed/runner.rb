@@ -18,6 +18,7 @@ module Seed
     end
 
     delegate :scale_factor, to: :config
+    delegate :distance_of_time_in_words, to: Seed::Helpers
 
     def initialize(config: Seed::Config.new)
       @counts = {}
@@ -32,7 +33,7 @@ module Seed
       ProgressBar.create(
         format: "%t |%E | %b\u{15E7}%i %p%% | %a",
         remainder_mark: "\u{FF65}",
-        title: "Seeding facilities",
+        title: "Seeding Facilities",
         total: Facility.count
       )
     end
@@ -53,20 +54,15 @@ module Seed
       msg = "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
       puts msg
       logger.info msg: msg, counts: counts
-      pp total_counts
       counts[:total] = total_counts
       counts
     end
 
-    module Helpers
-      extend ActionView::Helpers::DateHelper
-    end
-    delegate :distance_of_time_in_words, to: Helpers
-
     def seed_patients(progress)
       parallel_options = {
         finish: lambda do |item, i, result|
-          progress.log("Finished seeding facility #{item} with counts: #{result}")
+          slug, facility_size = item[1], item[2]
+          progress.log("Finished facility: [#{slug}, #{facility_size}] counts: #{result}")
           progress.increment
         end
       }

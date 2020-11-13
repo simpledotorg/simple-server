@@ -52,13 +52,13 @@ RSpec.describe Seed::Runner do
     expect(result[:total][:encounter]).to eq(90)
   end
 
-  it "can create a fast data set in under 10 seconds" do
+  it "can create a small data set quickly" do
+    MAX_TIME = 7
     time = Benchmark.ms {
       seeder = Seed::Runner.new
       seeder.call
     }
     time_in_seconds = time / 1000
-    puts "#{time_in_seconds} seconds"
-    expect(time_in_seconds).to be < 10
+    expect(time_in_seconds).to be < MAX_TIME
   end
 end
