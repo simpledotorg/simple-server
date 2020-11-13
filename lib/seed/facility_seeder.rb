@@ -2,15 +2,19 @@ require_dependency "seed/config"
 
 module Seed
   class FacilitySeeder
-    ADMIN_USER_NAME = "Admin User"
-    ADMIN_USER_EMAIL = "admin@simple.org"
-
     FACILITY_SIZE_WEIGHTS = {
       community: 0.50,
       small: 0.30,
       medium: 0.15,
       large: 0.05
     }.freeze
+
+    SIZES_TO_TYPE = {
+      large: ["CH", "DH", "Hospital", "RH", "SDH"],
+      medium: ["CHC"],
+      small: ["MPHC", "PHC", "SAD", "Standalone", "UHC", "UPHC", "USAD"],
+      community: ["HWC", "Village"]
+    }
 
     def self.call(*args)
       new(*args).call
@@ -73,41 +77,6 @@ module Seed
       end
 
       Facility.import(facility_attrs, on_duplicate_key_ignore: true)
-    end
-
-    SIZES_TO_TYPE = {
-      large: ["CH", "DH", "Hospital", "RH", "SDH"],
-      medium: ["CHC"],
-      small: ["MPHC", "PHC", "SAD", "Standalone", "UHC", "UPHC", "USAD"],
-      community: ["HWC", "Village"]
-    }
-
-    # DH is one per facility group
-    # all other larges are 5% per FG
-    # medium is 15% per FG
-    # small is 30% per FG
-    # community is 50%
-    def facility_size_map
-      {
-        "CH" => :large,
-        "DH" => :large,
-        "Hospital" => :large,
-        "RH" => :large,
-        "SDH" => :large,
-
-        "CHC" => :medium,
-
-        "MPHC" => :small,
-        "PHC" => :small,
-        "SAD" => :small,
-        "Standalone" => :small,
-        "UHC" => :small,
-        "UPHC" => :small,
-        "USAD" => :small,
-
-        "HWC" => :community,
-        "Village" => :community
-      }
     end
   end
 end
