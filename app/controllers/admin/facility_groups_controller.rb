@@ -39,7 +39,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    transaction do
+    ActiveRecord::Base.transaction do
       if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
         update_block_regions if Flipper.enabled?(:regions_prep)
         redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
