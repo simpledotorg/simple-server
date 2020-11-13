@@ -11,6 +11,7 @@ class Region < ApplicationRecord
   validates :region_type, presence: true
 
   belongs_to :source, polymorphic: true, optional: true
+  auto_strip_attributes :name, squish: true, upcase_first: true
 
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.

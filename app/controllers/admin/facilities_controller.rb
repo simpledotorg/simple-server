@@ -123,7 +123,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    @available_zones = @facility_group.region&.blocks&.order(:name)&.pluck(:name) || []
+    @available_zones = @facility_group.region.blocks.pluck(:name).sort
   end
 
   def facility_params
