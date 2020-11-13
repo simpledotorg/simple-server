@@ -16,8 +16,8 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_create :create_region, unless: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, unless: -> { Flipper.enabled?(:regions_prep) }
+  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
   def create_region
     return if region&.persisted?

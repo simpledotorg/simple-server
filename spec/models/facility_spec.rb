@@ -95,14 +95,13 @@ RSpec.describe Facility, type: :model do
           org = create(:organization, name: "IHCI")
           facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
           block_name = "An Block"
-          block_region = create(:region, name: block_name, region_type: :block, reparent_to: facility_group.region)
           facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
 
           expect(facility.region).to be_present
           expect(facility.region).to be_persisted
           expect(facility.region.name).to eq "An Facility"
           expect(facility.region.region_type).to eq "facility"
-          expect(facility.region.parent).to eq block_region
+          expect(facility.region.parent).to eq facility.region.block
           expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
         end
       end
@@ -112,13 +111,12 @@ RSpec.describe Facility, type: :model do
           org = create(:organization, name: "IHCI")
           facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
           block_name = "An Block"
-          block_region = create(:region, name: block_name, region_type: :block, reparent_to: facility_group.region)
           facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
 
           facility.update(name: "A Facility")
           expect(facility.region.name).to eq "A Facility"
           expect(facility.region.region_type).to eq "facility"
-          expect(facility.region.parent).to eq block_region
+          expect(facility.region.parent).to eq facility.region.block
           expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
         end
       end

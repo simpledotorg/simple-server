@@ -17,7 +17,11 @@ FactoryBot.define do
     monthly_estimated_opd_load { 300 }
 
     # create the parent region
-    before(:create) { |f| create(:region, name: f.zone, region_type: :block, reparent_to: f.facility_group.region) }
+    before(:create) { |f|
+      if Flipper.enabled?(:regions_prep)
+        create(:region, name: f.zone, region_type: :block, reparent_to: f.facility_group.region)
+      end
+    }
 
     trait :with_teleconsultation do
       enable_teleconsultation { true }
