@@ -47,15 +47,15 @@ module Seed
 
       progress = create_progress_bar
 
-      seed_patients(progress)
-
+      results = seed_patients(progress)
+      results.each { |hsh| counts[hsh.delete(:facility)] = hsh }
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
+
       msg = "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
       puts msg
       logger.info msg: msg, counts: counts
-      counts[:total] = total_counts
-      counts
+      [counts, total_counts]
     end
 
     def seed_patients(progress)
@@ -71,7 +71,7 @@ module Seed
       facility_info = Facility.pluck(:id, :slug, :facility_size)
       Parallel.map(facility_info, parallel_options) do |(facility_id, slug, facility_size)|
         benchmark("Seeding records for facility #{slug}") do
-          counts[slug] = {patient: 0, blood_pressure: 0}
+          result = {facility: slug}
           facility = Facility.find(facility_id)
           user = facility.users.find_by!(role: config.seed_generated_active_user_role)
           # Set a "birth date" for the Facility that patient records will be based from
@@ -80,14 +80,15 @@ module Seed
             patients = patients_to_create(facility_size).times.map { |num|
               build_patient(user, oldest_registration: facility_birth_date)
             }
-            result = Patient.import(patients, recursive: true)
-            counts[slug][:patient] = result.ids.size
+            patient_result = Patient.import(patients, recursive: true)
+            result[:patient] = patient_result.ids.size
           end
           patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
-          result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
-          counts[slug].merge! result
-          create_appts(patient_info, user)
-          counts[slug]
+          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
+          result.merge! bp_result
+          appt_result = create_appts(patient_info, user)
+          result[:appointment] = appt_result.ids.size
+          result
         end
       end
     end
@@ -137,8 +138,7 @@ module Seed
         }
         attrs << FactoryBot.attributes_for(:appointment, hsh)
       }
-      appt_result = Appointment.import(attrs)
-      counts[facility.slug][:appointment] = appt_result.ids.size
+      Appointment.import(attrs)
     end
   end
 end

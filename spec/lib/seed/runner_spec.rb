@@ -36,7 +36,7 @@ RSpec.describe Seed::Runner do
 
     expected_bps = config.max_bps_to_create * config.max_patients_to_create.fetch(:community)
     seeder = Seed::Runner.new
-    result = seeder.call
+    result, total_results = seeder.call
     facilities.each { |f| expect(f.patients.size).to eq(3) }
     facilities.pluck(:slug).each do |slug|
       expect(result[slug][:patient]).to eq(3)
@@ -45,20 +45,20 @@ RSpec.describe Seed::Runner do
       expect(result[slug][:encounter]).to eq(expected_bps)
       expect(result[slug][:appointment]).to eq(3)
     end
-    expect(result[:total][:facility]).to eq(0)
-    expect(result[:total][:patient]).to eq(6)
-    expect(result[:total][:blood_pressure]).to eq(90)
-    expect(result[:total][:observation]).to eq(90)
-    expect(result[:total][:encounter]).to eq(90)
+    expect(total_results[:facility]).to eq(0)
+    expect(total_results[:patient]).to eq(6)
+    expect(total_results[:blood_pressure]).to eq(90)
+    expect(total_results[:observation]).to eq(90)
+    expect(total_results[:encounter]).to eq(90)
   end
 
   it "can create a small data set quickly" do
-    MAX_TIME = 7
+    max_time = 7
     time = Benchmark.ms {
       seeder = Seed::Runner.new
       seeder.call
     }
     time_in_seconds = time / 1000
-    expect(time_in_seconds).to be < MAX_TIME
+    expect(time_in_seconds).to be < max_time
   end
 end
