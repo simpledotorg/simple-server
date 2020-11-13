@@ -38,8 +38,8 @@ class FacilityGroup < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_create :create_region, unless: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, unless: -> { Flipper.enabled?(:regions_prep) }
 
   def create_region
     Region.create!(
@@ -57,9 +57,7 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    Region.state.find_by_name(state) || Region.create(name: state,
-                                                      region_type: Region.region_types[:state],
-                                                      reparent_to: organization.region)
+    Region.state.find_by_name(state)
   end
   # ----------------
 

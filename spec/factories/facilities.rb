@@ -8,13 +8,16 @@ FactoryBot.define do
     state { "Punjab" }
     country { "India" }
     pin { "123456" }
-    zone { "Block ABC" }
+    zone { Faker::Address.community }
     facility_type { "PHC" }
     facility_size { Facility.facility_sizes[:small] }
     facility_group { create(:facility_group) }
     enable_diabetes_management { [true, false].sample }
     enable_teleconsultation { false }
     monthly_estimated_opd_load { 300 }
+
+    # create the parent region
+    before(:create) { |f| create(:region, name: f.zone, region_type: :block, reparent_to: f.facility_group.region) }
 
     trait :with_teleconsultation do
       enable_teleconsultation { true }
