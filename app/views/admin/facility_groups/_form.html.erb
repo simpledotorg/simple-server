@@ -46,7 +46,7 @@
           <div class="input-group mb-3">
             <input type="text" class="form-control" id="new-block-name" placeholder="Add new block">
             <div class="input-group-append">
-              <a class="btn btn-primary text-white add-block" onclick="submitAddBlock()">Add</a>
+              <a class="btn btn-primary text-white add-block">Add</a>
             </div>
           </div>
           <ul class="list-group list-group-flush" id="block-list">
@@ -62,8 +62,7 @@
                          title="Contains <%= block.facilities.count %> facility(s)"></i>
                     <% else %>
                       <i class="fas fa-trash-alt remove-block text-danger cursor-pointer"
-                         data-block-identifier="<%= block.id %>"
-                         onclick="removeBlock(this.getAttribute('data-block-identifier'))"></i>
+                         data-block-identifier="<%= block.id %>"></i>
                     <% end %>
                   </div>
                 </div>
@@ -119,65 +118,6 @@
       confirm("Are you sure? This will disable diabetes management for all associated facilities.")
   }
 
-  $("#new-block-name").on("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      submitAddBlock();
-    }
-  })
-
-  function newBlockRow(name) {
-    let template = $("template#block-row").html()
-    let $template = $(template);
-    $template.find(".block-name").html(name);
-    $template.attr("data-block-identifier", name);
-    $template.find(".remove-block").attr("data-block-identifier", name);
-    $template.find(".remove-block").attr("onclick", "removeBlock(this.getAttribute('data-block-identifier'))");
-
-    return $template;
-  }
-
-  function submitAddBlock() {
-    let $blockInput = $("#new-block-name")
-    addBlock($blockInput.val());
-    $blockInput.val("");
-    scrollBlockListToBottom();
-  }
-
-  function addedBlocks() {
-    return $(".block-name").map((i, el) => $(el).text()).get()
-  }
-
-  function isBlockAdded(name) {
-    return addedBlocks().map(block => block.toLowerCase()).includes(name.toLowerCase())
-  }
-
-  function addBlock(name) {
-    if(name !== "" && !isBlockAdded(name)) {
-      $('<input>').attr({
-        "name": "facility_group[new_blocks][]",
-        "value": name,
-        "data-block-identifier": name,
-        "type": "hidden"
-      }).appendTo("#facility-group-form");
-      newBlockRow(name).appendTo("#block-list");
-    }
-  }
-
-  function removeBlock(identifier) {
-    if(existingBlocks.includes(identifier)) {
-      $('<input>').attr({
-        "name": "facility_group[remove_blocks][]",
-        "value": identifier,
-        "data-block-identifier": identifier,
-        "type": "hidden"
-      }).appendTo("#facility-group-form");
-    }
-
-    $(`.list-group-item[data-block-identifier='${identifier}']`).remove();
-  }
-
-  function scrollBlockListToBottom() {
-    $("#block-list").scrollTop($("#block-list")[0].scrollHeight)
-  }
+  // initialize block management UI
+  new FacilityGroupBlockFields().listen();
 </script>
