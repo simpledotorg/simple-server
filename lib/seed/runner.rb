@@ -82,8 +82,7 @@ module Seed
     end
 
     def patients_to_create(facility_size)
-      facility_size = facility_size.to_sym
-      max = config.max_patients_to_create.fetch(facility_size)
+      max = config.max_patients_to_create.fetch(facility_size.to_sym)
       config.rand_or_max((0..max), scale: true).to_i
     end
 
