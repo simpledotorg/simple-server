@@ -217,7 +217,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
         let(:upload_file) do
           fixture_file_upload("files/upload_facilities_test.docx",
-                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         end
         it "uploads facilities file and fails validations" do
           post :upload, params: {upload_facilities_file: upload_file}
