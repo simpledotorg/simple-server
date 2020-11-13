@@ -9,6 +9,7 @@ module Seed
 
     attr_reader :config
     attr_reader :logger
+    attr_reader :start_time
     attr_accessor :counts
     attr_accessor :total_counts
 
@@ -23,6 +24,7 @@ module Seed
       @total_counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
+      @start_time = Time.current
       puts "Starting #{self.class} with #{config.type} configuration"
     end
 
@@ -43,9 +45,28 @@ module Seed
       puts "Starting to seed patient data for #{Facility.count} facilities..."
 
       progress = create_progress_bar
+
+      seed_patients(progress)
+
+      hsh = sum_facility_totals
+      total_counts.merge!(hsh)
+      msg = "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
+      puts msg
+      logger.info msg: msg, counts: counts
+      pp total_counts
+      counts[:total] = total_counts
+      counts
+    end
+
+    module Helpers
+      extend ActionView::Helpers::DateHelper
+    end
+    delegate :distance_of_time_in_words, to: Helpers
+
+    def seed_patients(progress)
       parallel_options = {
         finish: lambda do |item, i, result|
-          progress.log("Finished seeding facility #{item}!")
+          progress.log("Finished seeding facility #{item} with counts: #{result}")
           progress.increment
         end
       }
@@ -70,14 +91,9 @@ module Seed
           result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
           counts[slug].merge! result
           create_appts(patient_info, user)
+          counts[slug]
         end
       end
-      hsh = sum_facility_totals
-      total_counts.merge!(hsh)
-      logger.info msg: "Seed complete", counts: counts
-      pp total_counts
-      counts[:total] = total_counts
-      counts
     end
 
     def self.random_gender
