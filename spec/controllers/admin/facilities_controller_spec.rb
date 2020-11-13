@@ -47,7 +47,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "GET #show" do
     it "returns a success response" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       get :show, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to be_successful
     end
@@ -62,7 +62,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "GET #edit" do
     it "returns a success response" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       get :edit, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to be_successful
     end
@@ -119,7 +119,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       end
 
       it "updates the requested facility" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         update_attributes = new_attributes
 
         put :update, params: {id: facility.to_param, facility: update_attributes, facility_group_id: facility_group.id}
@@ -132,7 +132,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       end
 
       it "redirects to the facility" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         put :update, params: {id: facility.to_param, facility: valid_attributes, facility_group_id: facility_group.id}
         expect(response).to redirect_to [:admin, facility_group, facility]
       end
@@ -140,7 +140,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
     context "with invalid params" do
       it "returns a success response (i.e. to display the 'edit' template)" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         put :update, params: {id: facility.to_param, facility: invalid_attributes, facility_group_id: facility_group.id}
         expect(response).to be_successful
       end
@@ -168,14 +168,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested facility" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       expect {
         delete :destroy, params: {id: facility.to_param, facility_group_id: facility_group.id}
       }.to change(Facility, :count).by(-1)
     end
 
     it "redirects to the facilities list" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       delete :destroy, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to redirect_to(admin_facilities_url)
     end

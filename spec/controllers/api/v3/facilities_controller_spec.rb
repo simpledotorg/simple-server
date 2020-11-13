@@ -30,15 +30,6 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           .to eq(model.all.pluck(:id).to_set)
       end
 
-      it "only sends facilities that belong to a facility group" do
-        facilities_without_group = create_list(:facility, 2, facility_group: nil)
-        get :sync_to_user
-
-        response_body = JSON(response.body)
-        expect(response_body[response_key].map { |record| record["id"] }.to_set)
-          .not_to include(*facilities_without_group.map(&:id))
-      end
-
       it "Returns new records added since last sync" do
         expected_records = create_record_list(2, updated_at: 5.minutes.ago)
         get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago)}
