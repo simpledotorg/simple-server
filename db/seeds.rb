@@ -18,7 +18,6 @@ unless EmailAuthentication.find_by_email(ADMIN_USER_EMAIL)
 end
 
 Seed::Runner.call
-exit
 
 # TODO move over this protocal drug data to new seed lib
 # protocol_data = {

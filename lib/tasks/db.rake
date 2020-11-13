@@ -2,6 +2,7 @@ namespace :db do
   desc "Refresh materialized views for dashboards"
   task refresh_materialized_views: :environment do
     RefreshMaterializedViews.call
+    puts "Materialized views have been refreshed"
   end
 
   desc "Generate fake Patient data"
@@ -43,4 +44,8 @@ namespace :db do
 
     RefreshMaterializedViews.call
   end
+end
+
+Rake::Task["db:seed"].enhance do
+  Rake::Task["db:refresh_materialized_views"].invoke
 end

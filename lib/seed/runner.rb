@@ -26,6 +26,15 @@ module Seed
       puts "Starting #{self.class} with #{config.type} configuration"
     end
 
+    def create_progress_bar
+      ProgressBar.create(
+        format: "%t |%E | %b\u{15E7}%i %p%% | %a",
+        remainder_mark: "\u{FF65}",
+        title: "Seeding facilities",
+        total: Facility.count
+      )
+    end
+
     def call
       result = FacilitySeeder.call(config: config)
       total_counts[:facility] = result&.ids&.size || 0
@@ -33,8 +42,12 @@ module Seed
 
       puts "Starting to seed patient data for #{Facility.count} facilities..."
 
+      progress = create_progress_bar
       parallel_options = {
-        progress: {title: "Seeding facilities", total: Facility.count}
+        finish: lambda do |item, i, result|
+          progress.log("Finished seeding facility #{item}!")
+          progress.increment
+        end
       }
       parallel_options[:in_processes] = 0 if Rails.env.test?
 
@@ -58,8 +71,6 @@ module Seed
           counts[slug].merge! result
           create_appts(patient_info, user)
         end
-        puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
-        puts
       end
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
