@@ -1,8 +1,5 @@
 module Seed
   class Config
-    MAX_NUM_OF_FACILITIES_PER_FACILITY_GROUP = 200
-    MAX_NUM_OF_USERS_PER_FACILITY = 2
-
     # There are two seed configs: fast and large. By default the fast seed config will be used
     # for dev and test. You can override this via the ENV var SEED_TYPE
     def initialize
