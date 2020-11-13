@@ -37,12 +37,14 @@ FactoryBot.define do
       create_parent_region { Flipper.enabled?(:regions_prep) }
     end
 
-    before(:create) { |f, options|
-      create(:region,
-        name: f.zone,
-        region_type: :block,
-        reparent_to: f.facility_group.region) if options.create_parent_region
-    }
+    before(:create) do |f, options|
+      if options.create_parent_region
+        create(:region,
+          name: f.zone,
+          region_type: :block,
+          reparent_to: f.facility_group.region)
+      end
+    end
 
     trait :without_parent_region do
       create_parent_region { false }
