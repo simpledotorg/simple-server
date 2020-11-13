@@ -59,6 +59,13 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
         expect(response).to redirect_to(admin_facilities_url)
       end
+
+      it "creates the children blocks" do
+        enable_flag(:regions_prep)
+        expect(ManageDistrictRegionService).to receive(:update_blocks)
+
+        post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
+      end
     end
 
     context "with invalid params" do
@@ -84,13 +91,21 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
         facility_group.reload
         expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug", "enable_diabetes_management"))
-          .to eq new_attributes.with_indifferent_access
+          .to eq new_attributes.except(:state).with_indifferent_access
       end
 
       it "redirects to the facilities" do
         facility_group = FacilityGroup.create! valid_attributes
         put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
         expect(response).to redirect_to(admin_facilities_url)
+      end
+
+      it "updates the block regions" do
+        enable_flag(:regions_prep)
+        facility_group = FacilityGroup.create! valid_attributes
+        expect(ManageDistrictRegionService).to receive(:update_blocks).with(hash_including(district_region: facility_group.region))
+
+        put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
       end
     end
 

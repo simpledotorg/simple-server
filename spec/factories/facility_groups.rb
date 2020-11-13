@@ -8,10 +8,7 @@ FactoryBot.define do
     name { Faker::Address.district }
     description { Faker::Company.catch_phrase }
     organization { org }
+    state { Faker::Address.state }
     protocol
-
-    sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}"
-    end
   end
 end

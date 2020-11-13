@@ -14,21 +14,26 @@ module AdminPage
         find(:xpath, "//select[@name='facility_group[organization_id]']").find(:option, value).select_option
       end
 
+      def select_state_dropdown(value)
+        find(:xpath, "//select[@name='facility_group[state]']").find(:option, value).select_option
+      end
+
       def select_protocol_name_dropdown(value)
         find(:xpath, "//select[@name='facility_group[protocol_id]']").find(:option, value).select_option
       end
 
-      def add_new_facility_group_without_assigningfacility(org_name, name, description, protocol_name)
+      def add_new_facility_group_without_assigning_facility(org_name:, name:, description:, protocol_name:, state: nil)
         select_organisation_name_dropdown(org_name)
         type(FACILITY_NAME, name)
+        select_state_dropdown(state) if state
         select_protocol_name_dropdown(protocol_name)
         click(CREATE_FACILITY_GROUP_BUTTON)
       end
 
-      def add_new_facility_group(org_name, name, description, unassociatedfacility, protocol_name)
+      def add_new_facility_group(org_name:, name:, description:, protocol_name:, state: nil)
         select_organisation_name_dropdown(org_name)
         type(FACILITY_NAME, name)
-        select_unassociated_facility(unassociatedfacility)
+        select_state_dropdown(state) if state
         select_protocol_name_dropdown(protocol_name)
         click(CREATE_FACILITY_GROUP_BUTTON)
       end

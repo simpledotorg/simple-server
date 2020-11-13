@@ -32,6 +32,41 @@ RSpec.describe Organization, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
+  describe "Callbacks" do
+    context "when regions_prep is enabled" do
+      before do
+        enable_flag(:regions_prep)
+      end
+
+      context "after_create" do
+        it "creates a region" do
+          organization = create(:organization, name: "IHCI", description: "IHCI org")
+          expect(organization.region).to be_present
+          expect(organization.region).to be_persisted
+          expect(organization.region.name).to eq "IHCI"
+          expect(organization.region.description).to eq "IHCI org"
+          expect(organization.region.path).to eq "india.ihci"
+        end
+      end
+
+      context "after_update" do
+        it "updates the associated region" do
+          organization = create(:organization, name: "IHCI")
+          organization.update(name: "New Org Name", description: "New Description")
+          expect(organization.region.name).to eq "New Org Name"
+          expect(organization.region.description).to eq "New Description"
+          expect(organization.region.path).to eq "india.ihci"
+        end
+
+        it "does nothing if the org name / description hasn't changed" do
+          organization = create(:organization, name: "IHCI")
+          expect_any_instance_of(Region).to receive(:save!).never
+          organization.touch
+        end
+      end
+    end
+  end
+
   describe "Attribute sanitization" do
     it "squishes and upcases the first letter of the name" do
       org = FactoryBot.create(:organization, name: " org name  1  ")

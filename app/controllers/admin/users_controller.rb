@@ -4,7 +4,7 @@ class Admin::UsersController < AdminController
 
   before_action :set_user, except: [:index, :teleconsult_search]
   around_action :set_time_zone, only: [:show]
-  before_action :set_district, only: [:index, :teleconsult_search]
+  before_action :set_district, only: [:index]
 
   def index
     authorize { current_admin.accessible_users(:manage).any? }
@@ -31,11 +31,8 @@ class Admin::UsersController < AdminController
   def teleconsult_search
     authorize { current_admin.accessible_users(:manage).any? }
 
-    facilities = if @district == "All"
-      current_admin.accessible_facilities(:manage)
-    else
-      current_admin.accessible_facilities(:manage).where(district: @district)
-    end
+    facility_group = FacilityGroup.find(params[:facility_group_id])
+    facilities = current_admin.accessible_facilities(:manage).where(facility_group: facility_group)
 
     users = current_admin.accessible_users(:manage)
       .joins(phone_number_authentications: :facility)

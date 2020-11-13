@@ -5,6 +5,8 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
+  before_action :set_available_zones, only: [:new, :create, :edit, :update],
+                if: -> { Flipper.enabled?(:regions_prep) }
 
   before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
@@ -48,7 +50,7 @@ class Admin::FacilitiesController < AdminController
 
   def show
     @facility_users = current_admin
-        .accessible_users(:manage)      
+        .accessible_users(:manage)
         .where(phone_number_authentications: {registration_facility_id: @facility})
   end
 
@@ -118,6 +120,9 @@ class Admin::FacilitiesController < AdminController
     @facility_group = current_admin.accessible_facility_groups(:manage).friendly.find(params[:facility_group_id])
   end
 
+  def set_available_zones
+    @available_zones = @facility_group.region.blocks.pluck(:name).sort
+  end
 
   def facility_params
     params.require(:facility).permit(
@@ -140,7 +145,20 @@ class Admin::FacilitiesController < AdminController
       :teleconsultation_isd_code,
       teleconsultation_medical_officer_ids: [],
       teleconsultation_phone_numbers_attributes: [:isd_code, :phone_number, :_destroy]
-    )
+    ).tap { |transformed_params|
+      transformed_params[:teleconsultation_medical_officer_ids] = valid_teleconsultation_medical_officer_ids
+    }
+  end
+
+  def valid_teleconsultation_medical_officer_ids
+    ids = params[:facility][:teleconsultation_medical_officer_ids]
+    facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
+
+    users = current_admin.accessible_users(:manage)
+      .joins(phone_number_authentications: :facility)
+      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
+
+    users.pluck(:id)
   end
 
   def initialize_upload
