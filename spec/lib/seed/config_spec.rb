@@ -1,20 +1,20 @@
 require "rails_helper"
 
 RSpec.describe Seed::Config do
-  it "fails unknown SimpleServer.env" do
+  it "fails for unknown SimpleServer.env" do
     expect(SimpleServer).to receive(:env).and_return("production").at_least(1).times
     expect {
       Seed::Config.new
     }.to raise_error(ArgumentError)
   end
 
-  it "sets test_mode to true when RAILS_ENV is test" do
+  it "sets test_mode to true when SIMPLE_SERVER_ENV is test" do
     config = Seed::Config.new
     expect(config.test_mode).to be_truthy
   end
 
-  it "sets test_mode to false for every other RAILS_ENV" do
-    expect(Rails.env).to receive(:test?).and_return(false)
+  it "sets test_mode to false for every other SIMPLE_SERVER_ENV" do
+    expect(SimpleServer).to receive(:env).and_return("development").at_least(1).times
     config = Seed::Config.new
     expect(config.test_mode).to be_falsey
   end

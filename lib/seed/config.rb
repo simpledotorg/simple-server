@@ -8,10 +8,12 @@ module Seed
     def initialize
       @type = ENV["SEED_TYPE"] ||
         case SimpleServer.env
-        when "development", "test"
-          then "fast"
+        when "development"
+          "small"
+        when "test"
+          "test"
         when "sandbox", "staging"
-          then "large"
+          "large"
         else
           raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
         end
@@ -28,7 +30,7 @@ module Seed
 
     # In test mode, randomness is turned off so that tests can make deterministic assertions on results.
     def test_mode
-      Rails.env.test?
+      ENV["SEED_TEST_MODE"] || false
     end
     alias_method :test_mode?, :test_mode
 
