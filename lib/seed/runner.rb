@@ -33,33 +33,33 @@ module Seed
 
       puts "Starting to seed patient data for #{Facility.count} facilities..."
 
-      Facility.includes(phone_number_authentications: :user).find_in_batches(batch_size: 50) do |facilities|
-        parallel_options = {
-          progress: {title: "Seeding facilities", total: Facility.count}
-        }
-        parallel_options[:in_processes] = 0 if Rails.env.test?
-        Parallel.map(facilities, parallel_options) do |facility|
-          slug = facility.slug
-          benchmark("Seeding records for facility #{slug}") do
-            counts[slug] = {patient: 0, blood_pressure: 0}
-            user = facility.users.find_by!(role: config.seed_generated_active_user_role)
-            # Set a "birth date" for the Facility that patient records will be based from
-            facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
-            benchmark("[#{slug} Seeding patients for a #{facility.facility_size} facility") do
-              patients = patients_to_create(facility).times.map { |num|
-                build_patient(user, oldest_registration: facility_birth_date)
-              }
-              result = Patient.import(patients, recursive: true)
-              counts[slug][:patient] = result.ids.size
-            end
-            patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
-            result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
-            counts[slug].merge! result
-            create_appts(patient_info, user)
+      parallel_options = {
+        progress: {title: "Seeding facilities", total: Facility.count}
+      }
+      parallel_options[:in_processes] = 0 if Rails.env.test?
+
+      facility_info = Facility.pluck(:id, :slug, :facility_size)
+      Parallel.map(facility_info, parallel_options) do |(facility_id, slug, facility_size)|
+        benchmark("Seeding records for facility #{slug}") do
+          counts[slug] = {patient: 0, blood_pressure: 0}
+          facility = Facility.find(facility_id)
+          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
+          # Set a "birth date" for the Facility that patient records will be based from
+          facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
+          benchmark("[#{slug} Seeding patients for a #{facility_size} facility") do
+            patients = patients_to_create(facility_size).times.map { |num|
+              build_patient(user, oldest_registration: facility_birth_date)
+            }
+            result = Patient.import(patients, recursive: true)
+            counts[slug][:patient] = result.ids.size
           end
-          puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
-          puts
+          patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
+          result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
+          counts[slug].merge! result
+          create_appts(patient_info, user)
         end
+        puts "Seeding complete for facility: #{slug} counts: #{counts[slug]}"
+        puts
       end
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
@@ -81,8 +81,8 @@ module Seed
       end
     end
 
-    def patients_to_create(facility)
-      facility_size = facility.facility_size.to_sym
+    def patients_to_create(facility_size)
+      facility_size = facility_size.to_sym
       max = config.max_patients_to_create.fetch(facility_size)
       config.rand_or_max((0..max), scale: true).to_i
     end
