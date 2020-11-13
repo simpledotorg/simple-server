@@ -1,6 +1,17 @@
 require "rails_helper"
 
 RSpec.describe Seed::Config do
+  before do
+    # We need to clear this, otherwise tests that depend on them will have weird side
+    # effects hanging around from previous tests
+    ENV.delete("SEED_TEST_MODE")
+  end
+
+  after do
+    # We want to make sure other tests have the correct test ENV values, so overload
+    Dotenv.overload!(".env.seed.test")
+  end
+
   it "fails for unknown SimpleServer.env" do
     expect(SimpleServer).to receive(:env).and_return("production").at_least(1).times
     expect {
