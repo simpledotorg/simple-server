@@ -16,13 +16,6 @@ FactoryBot.define do
     enable_teleconsultation { false }
     monthly_estimated_opd_load { 300 }
 
-    # create the parent region
-    before(:create) { |f|
-      if Flipper.enabled?(:regions_prep)
-        create(:region, name: f.zone, region_type: :block, reparent_to: f.facility_group.region)
-      end
-    }
-
     trait :with_teleconsultation do
       enable_teleconsultation { true }
       teleconsultation_medical_officers { [create(:user)] }
@@ -38,6 +31,21 @@ FactoryBot.define do
       pin { Faker::Address.zip_code }
       zone { Faker::Address.block }
       facility_type { "PHC" }
+    end
+
+    transient do
+      create_parent_region { Flipper.enabled?(:regions_prep) }
+    end
+
+    before(:create) { |f, options|
+      create(:region,
+        name: f.zone,
+        region_type: :block,
+        reparent_to: f.facility_group.region) if options.create_parent_region
+    }
+
+    trait :without_parent_region do
+      create_parent_region { false }
     end
   end
 end
