@@ -121,18 +121,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    zones =
-      if facility_region
-        facility_region.district.blocks
-      else
-        Region.find_by(source: @facility_group).blocks
-      end
-
-    @available_zones = zones.order(:name).pluck(:name)
-  end
-
-  def facility_region
-    @facility_region ||= Region.find_by(source_id: @facility.id) if @facility.id
+    @available_zones = @facility_group.region.blocks.pluck(:name).sort
   end
 
   def facility_params

@@ -13,7 +13,15 @@
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
       <% if Flipper.enabled?(:regions_prep) %>
-        <%= form.select :zone, @available_zones.zip(@available_zones), {id: :facility_zone, include_blank: true}, required: true %>
+        <%= form.select :zone,
+                        @available_zones.zip(@available_zones),
+                        {id: :facility_zone, include_blank: true, wrapper_class: "mb-0"},
+                        required: true %>
+        <small class="form-text text-muted mb-3">
+          If you don't see a block in the list,
+          <%= link_to "add it to the facility group", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
+          and refresh this page.
+        </small>
       <% else %>
         <%= form.text_field :zone, id: :facility_zone, required: true %>
       <% end %>
