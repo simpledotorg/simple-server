@@ -10,8 +10,7 @@ module Seed
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
       @number_of_users_per_facility = config.max_number_of_users_per_facility
-      org_name = "IHCI"
-      @organization = Organization.find_by!(name: org_name)
+      @organization = Seed.seed_org
       puts "Starting #{self.class} with #{config.type} configuration"
     end
 

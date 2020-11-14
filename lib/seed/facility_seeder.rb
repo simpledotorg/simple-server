@@ -45,8 +45,7 @@ module Seed
 
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-      org_name = "IHCI"
-      organization = Organization.find_by(name: org_name) || FactoryBot.create(:organization, name: org_name)
+      organization = Seed.seed_org
 
       if number_of_facility_groups <= FacilityGroup.count
         puts "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"

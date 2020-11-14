@@ -1,12 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Seed::UserSeeder do
-  before do
-    Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-    org_name = "IHCI"
-    Organization.find_by(name: org_name) || FactoryBot.create(:organization, name: org_name)
-  end
-
   it "creates Users and associated authentication" do
     create_list(:facility, 5, facility_size: "community")
 
