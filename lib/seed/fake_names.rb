@@ -14,7 +14,7 @@ module Seed
       @csv
     end
 
-    def org_name
+    def organization
       @organization_names.sample
     end
 

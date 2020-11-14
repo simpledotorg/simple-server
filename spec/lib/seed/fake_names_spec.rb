@@ -10,7 +10,7 @@ RSpec.describe Seed::FakeNames do
   it "can return fake org names" do
     fake_names = Seed::FakeNames.instance
     org_names = fake_names._csv["Organizations"]
-    expect(org_names).to include(fake_names.org_name)
+    expect(org_names).to include(fake_names.organization)
   end
 
   it "can return consistent org name for the seed org" do
