@@ -35,8 +35,6 @@ class Organization < ApplicationRecord
   end
 
   def update_region
-    return unless name_changed? || description_changed?
-
     region.name = name
     region.description = description
     region.save!
