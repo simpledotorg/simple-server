@@ -104,11 +104,11 @@ class Facility < ApplicationRecord
   # ----------------
   # Region callbacks
   #
-  # - These callbacks are medium-term temporary.
-  # - This class and the Region callbacks should ideally be totally superseded by the Region class.
-  # - Keep these callbacks simple (avoid too much branching and optimization), idempotent and loud when things break.
+  # * These callbacks are medium-term temporary.
+  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # * Keep these callbacks simple (avoid too much branching and optimization), idempotent and loud when things break.
   #
-  # - kit
+  # - kit (11/2020)
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
@@ -129,7 +129,7 @@ class Facility < ApplicationRecord
   end
 
   def block_region
-    Region.block.find_by!(name: block)
+    facility_group.region.blocks.find_by!(name: block)
   end
   # ----------------
 

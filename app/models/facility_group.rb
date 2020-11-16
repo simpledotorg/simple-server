@@ -32,7 +32,8 @@ class FacilityGroup < ApplicationRecord
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy,
   # so that we can populate Regions with a proper hierarchy through callbacks
-  # - kit
+  #
+  # - kit (11/2020)
   attr_writer :state
 
   validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
@@ -44,11 +45,11 @@ class FacilityGroup < ApplicationRecord
   # ----------------
   # Region callbacks
   #
-  # - These callbacks are medium-term temporary.
-  # - This class and the Region callbacks should ideally be totally superseded by the Region class.
-  # - Keep these callbacks simple (avoid too much branching and optimization), idempotent and loud when things break.
+  # * These callbacks are medium-term temporary.
+  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
   #
-  # - kit
+  # - kit (11/2020s)
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
@@ -69,7 +70,7 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    Region.state.find_by!(name: state)
+    organization.region.states.find_by!(name: state)
   end
   # ----------------
 
