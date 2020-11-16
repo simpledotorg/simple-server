@@ -73,74 +73,74 @@ RSpec.describe Region, type: :model do
       # TODO: Stop using backfill script to generate test data
       RegionBackfill.call(dry_run: false)
       root_region = Region.root
-      org_region = Region.organization.first
-      state_region = Region.state.first
-      district_region = Region.district.first
-      block_region = Region.block.first
-      facility_region = Region.facility.first
+      org_region = Region.organization_regions.first
+      state_region = Region.state_regions.first
+      district_region = Region.district_regions.first
+      block_region = Region.block_regions.first
+      facility_region = Region.facility_regions.first
 
       expect(root_region.root).to eq root_region
-      expect(root_region.organizations).to contain_exactly org_region
-      expect(root_region.states).to contain_exactly state_region
-      expect(root_region.districts).to contain_exactly district_region
-      expect(root_region.blocks).to contain_exactly block_region
-      expect(root_region.facilities).to contain_exactly facility_region
+      expect(root_region.organization_regions).to contain_exactly org_region
+      expect(root_region.state_regions).to contain_exactly state_region
+      expect(root_region.district_regions).to contain_exactly district_region
+      expect(root_region.block_regions).to contain_exactly block_region
+      expect(root_region.facility_regions).to contain_exactly facility_region
       expect { root_region.roots }.to raise_error NoMethodError
 
       expect(org_region.root).to eq root_region
-      expect(org_region.organization).to eq org_region
-      expect(org_region.states).to contain_exactly state_region
-      expect(org_region.districts).to contain_exactly district_region
-      expect(org_region.blocks).to contain_exactly block_region
-      expect(org_region.facilities).to contain_exactly facility_region
+      expect(org_region.organization_region).to eq org_region
+      expect(org_region.state_regions).to contain_exactly state_region
+      expect(org_region.district_regions).to contain_exactly district_region
+      expect(org_region.block_regions).to contain_exactly block_region
+      expect(org_region.facility_regions).to contain_exactly facility_region
       expect { org_region.roots }.to raise_error NoMethodError
-      expect { org_region.organizations }.to raise_error NoMethodError
+      expect { org_region.organization_regions }.to raise_error NoMethodError
 
       expect(state_region.root).to eq root_region
-      expect(state_region.organization).to eq org_region
-      expect(state_region.state).to eq state_region
-      expect(state_region.districts).to contain_exactly district_region
-      expect(state_region.blocks).to contain_exactly block_region
-      expect(state_region.facilities).to contain_exactly facility_region
+      expect(state_region.organization_region).to eq org_region
+      expect(state_region.state_region).to eq state_region
+      expect(state_region.district_regions).to contain_exactly district_region
+      expect(state_region.block_regions).to contain_exactly block_region
+      expect(state_region.facility_regions).to contain_exactly facility_region
       expect { state_region.roots }.to raise_error NoMethodError
-      expect { state_region.organizations }.to raise_error NoMethodError
-      expect { state_region.states }.to raise_error NoMethodError
+      expect { state_region.organization_regions }.to raise_error NoMethodError
+      expect { state_region.state_regions }.to raise_error NoMethodError
 
       expect(district_region.root).to eq root_region
-      expect(district_region.organization).to eq org_region
-      expect(district_region.state).to eq state_region
-      expect(district_region.district).to eq district_region
-      expect(district_region.blocks).to contain_exactly block_region
-      expect(district_region.facilities).to contain_exactly facility_region
+      expect(district_region.organization_region).to eq org_region
+      expect(district_region.state_region).to eq state_region
+      expect(district_region.district_region).to eq district_region
+      expect(district_region.block_regions).to contain_exactly block_region
+      expect(district_region.facility_regions).to contain_exactly facility_region
       expect { district_region.roots }.to raise_error NoMethodError
-      expect { district_region.organizations }.to raise_error NoMethodError
-      expect { district_region.states }.to raise_error NoMethodError
-      expect { district_region.districts }.to raise_error NoMethodError
+      expect { district_region.organization_regions }.to raise_error NoMethodError
+      expect { district_region.state_regions }.to raise_error NoMethodError
+      expect { district_region.district_regions }.to raise_error NoMethodError
 
       expect(block_region.root).to eq root_region
-      expect(block_region.organization).to eq org_region
-      expect(block_region.state).to eq state_region
-      expect(block_region.district).to eq district_region
-      expect(block_region.block).to eq block_region
-      expect(block_region.facilities).to contain_exactly facility_region
+      expect(block_region.organization_region).to eq org_region
+      expect(block_region.state_region).to eq state_region
+      expect(block_region.district_region).to eq district_region
+      expect(block_region.block_region).to eq block_region
+      expect(block_region.facility_regions).to contain_exactly facility_region
       expect { block_region.roots }.to raise_error NoMethodError
-      expect { block_region.organizations }.to raise_error NoMethodError
-      expect { block_region.states }.to raise_error NoMethodError
-      expect { block_region.districts }.to raise_error NoMethodError
-      expect { block_region.blocks }.to raise_error NoMethodError
+      expect { block_region.organization_regions }.to raise_error NoMethodError
+      expect { block_region.state_regions }.to raise_error NoMethodError
+      expect { block_region.district_regions }.to raise_error NoMethodError
+      expect { block_region.block_regions }.to raise_error NoMethodError
 
       expect(facility_region.root).to eq root_region
-      expect(facility_region.organization).to eq org_region
-      expect(facility_region.state).to eq state_region
-      expect(facility_region.district).to eq district_region
-      expect(facility_region.block).to eq block_region
-      expect(facility_region.facility).to eq facility_region
+      expect(facility_region.organization_region).to eq org_region
+      expect(facility_region.state_region).to eq state_region
+      expect(facility_region.district_region).to eq district_region
+      expect(facility_region.block_region).to eq block_region
+      expect(facility_region.facility_region).to eq facility_region
       expect { facility_region.roots }.to raise_error NoMethodError
-      expect { facility_region.organizations }.to raise_error NoMethodError
-      expect { facility_region.states }.to raise_error NoMethodError
-      expect { facility_region.districts }.to raise_error NoMethodError
-      expect { facility_region.blocks }.to raise_error NoMethodError
-      expect { facility_region.facilities }.to raise_error NoMethodError
+      expect { facility_region.organization_regions }.to raise_error NoMethodError
+      expect { facility_region.state_regions }.to raise_error NoMethodError
+      expect { facility_region.district_regions }.to raise_error NoMethodError
+      expect { facility_region.block_regions }.to raise_error NoMethodError
+      expect { facility_region.facility_regions }.to raise_error NoMethodError
     end
   end
 end
