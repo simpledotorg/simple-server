@@ -5,7 +5,7 @@ module Seed
     def initialize
       @type = ENV["SEED_TYPE"] ||
         case SimpleServer.env
-        when "development"
+        when "development", "review"
           "small"
         when "test"
           "test"
