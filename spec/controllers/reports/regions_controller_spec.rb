@@ -206,19 +206,19 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:period_info][dec_2019_period]).to eq(period_hash)
     end
 
-    fit "retrieves district data" do
+    it "retrieves district data" do
       jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
-      pp @facility.region.path
       fg = @facility.facility_group
-      pp fg.region
       expect(fg.region).to_not be_nil
       expect(fg.slug).to eq(fg.region.slug)
-      pp fg.region.type
+      # TODO probably want to rename this method to something like `region_facilities`
+      expect(fg.region.facilities).to contain_exactly(@facility.region)
+
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)

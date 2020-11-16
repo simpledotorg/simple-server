@@ -22,6 +22,8 @@ class Region < ApplicationRecord
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h
 
+  delegate :assigned_patients, to: :source
+
   # Override the auto-generated root method (via enum) to return the one, single root Region
   def self.root
     Region.find_by(region_type: :root)
@@ -39,20 +41,16 @@ class Region < ApplicationRecord
     SecureRandom.uuid[0..7]
   end
 
-  def type_name
-    type.name
-  end
-
   def facilities
-    case type_name
-    when "Facility"
+    case region_type
+    when "facility"
       [self]
-    when "District"
+    when "district"
       blocks = children
       facilities = blocks.map(&:children)
       pp facilities
       facilities.to_a.map(&:source)
-    when "Block"
+    when "block"
       children.map(&:source)
     else
       raise ArgumentError, "how to get facilities for #{self}"
