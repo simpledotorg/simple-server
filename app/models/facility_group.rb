@@ -44,8 +44,10 @@ class FacilityGroup < ApplicationRecord
   # ----------------
   # Region callbacks
   #
-  # These callbacks are medium-term temporary.
-  # This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # - These callbacks are medium-term temporary.
+  # - This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # - Keep these callbacks simple (avoid too much branching and optimization), idempotent and loud when things break.
+  #
   # - kit
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
