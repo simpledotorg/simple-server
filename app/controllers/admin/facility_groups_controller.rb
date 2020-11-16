@@ -2,8 +2,9 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
-  before_action :set_available_states, only: [:new, :create, :edit, :update],
-                                       if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_available_states, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_blocks, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  around_action :wrap_in_transaction, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -25,6 +26,7 @@ class Admin::FacilityGroupsController < AdminController
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
     if @facility_group.save && @facility_group.toggle_diabetes_management
+      update_block_regions if Flipper.enabled?(:regions_prep)
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
@@ -33,6 +35,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def update
     if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
+      update_block_regions if Flipper.enabled?(:regions_prep)
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
@@ -67,6 +70,17 @@ class Admin::FacilityGroupsController < AdminController
     @available_states = CountryConfig.current[:states]
   end
 
+  def set_blocks
+    district_region = Region.find_by(source: @facility_group)
+    @blocks = district_region&.blocks&.order(:name) || []
+  end
+
+  def wrap_in_transaction
+    ActiveRecord::Base.transaction do
+      yield
+    end
+  end
+
   def facility_group_params
     params.require(:facility_group).permit(
       :organization_id,
@@ -74,12 +88,20 @@ class Admin::FacilityGroupsController < AdminController
       :state,
       :description,
       :protocol_id,
-      :enable_diabetes_management,
-      facility_ids: []
+      :enable_diabetes_management
     )
   end
 
-  def enable_diabetes_management
-    params[:enable_diabetes_management]
+  def blocks_params
+    params.require(:facility_group).permit(
+      new_blocks: [],
+      remove_blocks: []
+    )
+  end
+
+  def update_block_regions
+    ManageDistrictRegionService.update_blocks(district_region: @facility_group.region,
+                                              new_blocks: blocks_params[:new_blocks],
+                                              remove_blocks: blocks_params[:remove_blocks])
   end
 end
