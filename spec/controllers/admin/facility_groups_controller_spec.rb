@@ -3,10 +3,12 @@ require "rails_helper"
 RSpec.describe Admin::FacilityGroupsController, type: :controller do
   let(:organization) { FactoryBot.create(:organization) }
   let(:protocol) { FactoryBot.create(:protocol) }
+  let(:state) { create(:region, :state, name: "An State", reparent_to: organization.region) }
   let(:valid_attributes) do
-    FactoryBot.attributes_for(
+    attributes_for(
       :facility_group,
       organization_id: organization.id,
+      state: state.name,
       protocol_id: protocol.id
     )
   end
@@ -15,6 +17,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     FactoryBot.attributes_for(
       :facility_group,
       name: nil,
+      state: state.name,
       organization_id: organization.id
     )
   end
@@ -82,6 +85,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         FactoryBot.attributes_for(
           :facility_group,
           organization_id: organization.id,
+          state: state.name,
           protocol_id: protocol.id
         ).except(:id, :slug)
       end
