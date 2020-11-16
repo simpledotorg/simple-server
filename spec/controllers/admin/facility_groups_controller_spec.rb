@@ -26,7 +26,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   describe "GET #show" do
     it "returns a success response" do
-      facility_group = FacilityGroup.create! valid_attributes
+      facility_group = create(:facility_group, valid_attributes)
       get :show, params: {id: facility_group.to_param, organization_id: organization.id}
       expect(response).to be_successful
     end
@@ -41,7 +41,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   describe "GET #edit" do
     it "returns a success response" do
-      facility_group = FacilityGroup.create! valid_attributes
+      facility_group = create(:facility_group, valid_attributes)
       get :edit, params: {id: facility_group.to_param, organization_id: organization.id}
       expect(response).to be_successful
     end
@@ -87,7 +87,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       end
 
       it "updates the requested facility_group" do
-        facility_group = FacilityGroup.create! valid_attributes
+        facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
         facility_group.reload
         expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug", "enable_diabetes_management"))
@@ -95,14 +95,14 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       end
 
       it "redirects to the facilities" do
-        facility_group = FacilityGroup.create! valid_attributes
+        facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
         expect(response).to redirect_to(admin_facilities_url)
       end
 
       it "updates the block regions" do
         enable_flag(:regions_prep)
-        facility_group = FacilityGroup.create! valid_attributes
+        facility_group = create(:facility_group, valid_attributes)
         expect(ManageDistrictRegionService).to receive(:update_blocks).with(hash_including(district_region: facility_group.region))
 
         put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
@@ -111,7 +111,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
     context "with invalid params" do
       it "returns a success response (i.e. to display the 'edit' template)" do
-        facility_group = FacilityGroup.create! valid_attributes
+        facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id}
         expect(response).to be_successful
       end
@@ -120,14 +120,14 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested facility_group" do
-      facility_group = FacilityGroup.create! valid_attributes
+      facility_group = create(:facility_group, valid_attributes)
       expect {
         delete :destroy, params: {id: facility_group.to_param, organization_id: organization.id}
       }.to change(FacilityGroup, :count).by(-1)
     end
 
     it "redirects to the facilities list" do
-      facility_group = FacilityGroup.create! valid_attributes
+      facility_group = create(:facility_group, valid_attributes)
       delete :destroy, params: {id: facility_group.to_param, organization_id: organization.id}
       expect(response).to redirect_to(admin_facilities_url)
     end
