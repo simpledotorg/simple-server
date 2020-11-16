@@ -8,9 +8,7 @@ class FacilityGroup < ApplicationRecord
 
   has_many :facilities, dependent: :nullify
   has_many :users, through: :facilities
-
   has_many :patients, through: :facilities, source: :registered_patients
-  alias_method :registered_patients, :patients
   has_many :assigned_patients, through: :facilities, source: :assigned_patients
   has_many :blood_pressures, through: :facilities
   has_many :blood_sugars, through: :facilities
@@ -18,19 +16,26 @@ class FacilityGroup < ApplicationRecord
   has_many :prescription_drugs, through: :facilities
   has_many :appointments, through: :facilities
   has_many :teleconsultations, through: :facilities
-
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
 
+  alias_method :registered_patients, :patients
+
   validates :name, presence: true
   validates :organization, presence: true
-  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
 
   friendly_id :name, use: :slugged
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
+
+  # FacilityGroups don't actually have a state
+  # This virtual attr exists simply to simulate the State -> FG/District hierarchy,
+  # so that we can populate Regions with a proper hierarchy through callbacks
+  # - kit
   attr_writer :state
+
+  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
 
   def state
     @state || region&.state&.name
@@ -38,13 +43,18 @@ class FacilityGroup < ApplicationRecord
 
   # ----------------
   # Region callbacks
+  #
+  # These callbacks are medium-term temporary.
+  # This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # - kit
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
   def create_region
-    Region.create!(
+    return if region&.persisted?
+
+    create_region!(
       name: name,
-      source: self,
       reparent_to: state_region,
       region_type: Region.region_types[:district]
     )
@@ -57,12 +67,8 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    Region.state.find_by_name(state) ||
-      Region.create(name: state,
-        region_type: Region.region_types[:state],
-        reparent_to: organization.region)
+    Region.state.find_by!(name: state)
   end
-
   # ----------------
 
   def registered_hypertension_patients

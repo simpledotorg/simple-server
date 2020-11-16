@@ -16,16 +16,22 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
+  #
+  # These callbacks are medium-term temporary.
+  # This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # - kit
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
   def create_region
     return if region&.persisted?
 
-    parent = Region.find_by!(region_type: Region.region_types[:root])
-    region = build_region(name: name, description: description, reparent_to: parent)
-    region.region_type = Region.region_types[:organization]
-    region.save!
+    create_region!(
+      name: name,
+      description: description,
+      reparent_to: root_region,
+      region_type: Region.region_types[:organization]
+    )
   end
 
   def update_region
@@ -34,6 +40,10 @@ class Organization < ApplicationRecord
     region.name = name
     region.description = description
     region.save!
+  end
+
+  def root_region
+    Region.find_by!(region_type: Region.region_types[:root])
   end
   # ----------------
 
