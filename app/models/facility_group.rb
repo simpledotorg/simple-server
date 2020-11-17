@@ -39,7 +39,7 @@ class FacilityGroup < ApplicationRecord
   validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
 
   def state
-    @state || region&.state&.name
+    @state || region&.state_region&.name
   end
 
   def registered_hypertension_patients
@@ -112,7 +112,8 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    organization.region.state_regions.find_by!(name: state)
+    organization.region.state_regions.find_by!(name: state) ||
+      Region.create!(name: state, region_type: Region.region_types[:state], reparent_to: organization.region)
   end
   # ----------------
 end

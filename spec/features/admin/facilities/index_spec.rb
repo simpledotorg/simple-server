@@ -35,7 +35,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
-            state: ihmi_group_bathinda.region.state.name,
+            state: ihmi_group_bathinda.region.state_region.name,
             protocol_name: protocol_01.name
           )
 
@@ -51,7 +51,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
-            state: ihmi_group_bathinda.region.state.name,
+            state: ihmi_group_bathinda.region.state_region.name,
             protocol_name: protocol_01.name
           )
 
@@ -75,7 +75,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             name: "testfacilitygroup",
             description: "testDescription",
             protocol_name: protocol_01.name,
-            state: ihmi_group_bathinda.region.state.name
+            state: ihmi_group_bathinda.region.state_region.name
           )
 
           expect(page).to have_content("Bathinda")
@@ -91,7 +91,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             name: "testfacilitygroup",
             description: "testDescription",
             protocol_name: protocol_01.name,
-            state: ihmi_group_bathinda.region.state.name
+            state: ihmi_group_bathinda.region.state_region.name
           )
 
           expect(page).to have_content("Bathinda")
