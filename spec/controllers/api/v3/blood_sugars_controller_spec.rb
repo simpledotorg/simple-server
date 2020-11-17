@@ -2,29 +2,29 @@ require "rails_helper"
 
 RSpec.describe Api::V3::BloodSugarsController, type: :controller do
   let(:request_user) { create(:user) }
-  let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
-  before :each do
-    request.env["X_USER_ID"] = request_user.id
-    request.env["X_FACILITY_ID"] = request_facility.id
-    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-  end
-
+  let(:request_facility_group) { request_user.facility.facility_group }
+  let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { BloodSugar }
-
   let(:build_payload) { -> { build_blood_sugar_payload } }
   let(:build_invalid_payload) { -> { build_invalid_blood_sugar_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { ->(blood_sugar) { updated_blood_sugar_payload(blood_sugar) } }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
+  before :each do
+    request.env["X_USER_ID"] = request_user.id
+    request.env["X_FACILITY_ID"] = request_facility.id
+    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+  end
+
   def create_record(options = {})
-    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
     patient = create(:patient, registration_facility: facility)
     create(:blood_sugar, :with_encounter, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
-    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
     patient = create(:patient, registration_facility: facility)
     create_list(:blood_sugar, n, :with_encounter, {patient: patient}.merge(options))
   end
@@ -266,7 +266,7 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
 
     describe "v3 patient prioritisation" do
       it "syncs records for patients in the request facility first" do
-        request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
+        request_2_facility = create(:facility, facility_group: request_facility_group)
 
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
@@ -295,7 +295,7 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
     end
 
     context "hba1c blood sugars" do
-      let(:facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility) { create(:facility, facility_group: request_facility_group) }
 
       before :each do
         set_authentication_headers
@@ -318,7 +318,7 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
     end
 
     context "V4 blood_sugar_values" do
-      let(:facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:facility) { create(:facility, facility_group: request_facility_group) }
 
       before :each do
         set_authentication_headers

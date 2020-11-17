@@ -2,15 +2,13 @@ require "rails_helper"
 
 RSpec.describe Api::V3::EncountersController, type: :controller do
   let(:request_user) { create(:user) }
-  let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+  let(:request_facility_group) { request_user.facility.facility_group }
+  let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:request_patient) { create(:patient, registration_facility: request_facility) }
-
   let(:model) { Encounter }
-
   let(:build_payload) { -> { build_encounters_payload } }
   let(:build_invalid_payload) { -> { build_invalid_encounters_payload } }
   let(:invalid_record) { build_invalid_payload.call }
-
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
   def build_record(options = {})
@@ -126,7 +124,7 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
 
     describe "v3 facility prioritisation" do
       it "syncs request facility's records first" do
-        request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
+        request_2_facility = create(:facility, facility_group: request_facility_group)
 
         patient_1 = create(:patient, registration_facility: request_facility)
         patient_2 = create(:patient, registration_facility: request_2_facility)
@@ -166,6 +164,51 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
         records = model.where(id: record_ids)
         expect(records.count).to eq 4
         expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
+      end
+    end
+
+    describe "syncing within a facility group" do
+      let(:facility_in_same_group) { create(:facility, facility_group: request_facility_group) }
+      let(:facility_in_another_group) { create(:facility) }
+      let(:patient_in_same_facility) { create(:patient, registration_facility: facility_in_same_group) }
+      let(:patient_in_different_facility) { create(:patient, registration_facility: facility_in_another_group) }
+
+      before :each do
+        set_authentication_headers
+        create_list(:encounter,
+          2,
+          patient: patient_in_different_facility,
+          facility: facility_in_another_group,
+          updated_at: 3.minutes.ago)
+
+        create_list(:encounter,
+          3,
+          patient: patient_in_same_facility,
+          facility: facility_in_same_group,
+          updated_at: 5.minutes.ago)
+
+        create_list(:encounter,
+          1,
+          patient: patient_in_same_facility,
+          facility: request_facility,
+          updated_at: 7.minutes.ago)
+
+        create_list(:encounter,
+          1,
+          patient: patient_in_different_facility,
+          facility: request_facility,
+          updated_at: 7.minutes.ago)
+      end
+
+      it "only sends data belonging to patients in the sync group of user's facility" do
+        get :sync_to_user, params: {limit: 6}
+
+        response_encounters = JSON(response.body)["encounters"]
+        response_facilities = response_encounters.map { |encounter| encounter["facility_id"] }.to_set
+
+        expect(response_encounters.count).to eq 4
+        expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
+        expect(response_facilities).not_to include(facility_in_another_group.id)
       end
     end
   end
