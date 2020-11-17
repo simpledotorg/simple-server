@@ -24,7 +24,7 @@ FactoryBot.define do
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
-      village_or_colony { Faker::Address.village }
+      village_or_colony { Seed::FakeNames.instance.village }
       district { Faker::Address.district }
       state { Faker::Address.state }
       country { "India" }
