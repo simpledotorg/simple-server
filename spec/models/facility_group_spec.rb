@@ -176,7 +176,7 @@ RSpec.describe FacilityGroup, type: :model do
         it "updates the state region" do
           new_state = create(:region, :state, name: "Maharashtra", reparent_to: org.region)
           facility_group.update(state: new_state.name)
-          expect(facility_group.region.state.name).to eq "Maharashtra"
+          expect(facility_group.region.state_region.name).to eq "Maharashtra"
           expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
         end
       end
