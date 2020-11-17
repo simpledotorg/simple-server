@@ -184,7 +184,11 @@ RSpec.shared_examples "a working sync controller updating records" do
 end
 
 RSpec.shared_examples "a working V3 sync controller sending records" do
-  before(:each) { set_authentication_headers }
+  before :each do
+    Timecop.travel(15.minutes.ago) { create_record_list(5) }
+    Timecop.travel(14.minutes.ago) { create_record_list(5) }
+    set_authentication_headers
+  end
 
   describe "GET sync: send data from server to device;" do
     let(:response_key) { model.to_s.underscore.pluralize }
@@ -332,7 +336,9 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
     end
 
     context "when X_SYNC_REGION_ID is current_facility_group_id" do
-      context "when process_token is empty" do
+      before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility_group.id }
+
+      context "when process_token's sync_region_id is empty" do
         it "syncs facility group records from beginning of time" do
         end
       end
@@ -349,6 +355,8 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
     end
 
     context "when X_SYNC_REGION_ID is block_id" do
+      before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block.id }
+
       context "when process_token is empty" do
         it "syncs block records from beginning of time" do
         end
@@ -360,10 +368,9 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
       end
 
       context "when process_token is block_id" do
-        it "only sends data belonging to the patients in the block of user's facility" do
-          process_token = Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json)
-          request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block.id
+        process_token = Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json)
 
+        it "only sends data belonging to the patients in the block of user's facility" do
           expected_records = [
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
             *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
