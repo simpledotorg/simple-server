@@ -170,14 +170,14 @@ RSpec.shared_examples "a working sync controller updating records" do
 
         expect(db_record).to be_discarded
         expect(db_record
-                 .attributes
-                 .to_json_and_back
-                 .except("user_id")
-                 .with_payload_keys.with_int_timestamps)
+                   .attributes
+                   .to_json_and_back
+                   .except("user_id")
+                   .with_payload_keys.with_int_timestamps)
           .not_to eq(record
-                       .to_json_and_back
-                       .except("user_id")
-                       .with_int_timestamps)
+                           .to_json_and_back
+                           .except("user_id")
+                           .with_int_timestamps)
       end
     end
   end
