@@ -6,11 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Rails.logger.info "Start seed task in #{Rails.env} and #{SimpleServer.env}"
-puts "ping"
 require_relative "../lib/tasks/scripts/create_admin_user"
-require "factory_bot_rails"
-require "faker"
 
 ADMIN_USER_NAME = "Admin User"
 ADMIN_USER_EMAIL = "admin@simple.org"
