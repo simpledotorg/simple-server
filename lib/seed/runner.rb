@@ -1,6 +1,7 @@
 require "factory_bot_rails"
 require "faker"
 require "parallel"
+require "ruby-progressbar"
 
 module Seed
   class Runner
