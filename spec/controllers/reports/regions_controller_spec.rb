@@ -219,7 +219,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       # TODO probably want to rename this method to something like `region_facilities`
       expect(fg.region.facilities).to contain_exactly(@facility.region)
 
-
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
         get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}

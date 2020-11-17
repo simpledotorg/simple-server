@@ -22,6 +22,16 @@ class Region < ApplicationRecord
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h, _suffix: "regions"
 
+  REGION_TYPES.each do |type|
+    # Our enum adds a pluralized suffix, which is nice for scopes, but weird for the question methods
+    # with individual objects. So we define our own question methods here for a nicer API.
+    define_method("#{type}_region?") do
+      region_type == type
+    end
+    # Don't leave around the old, auto generated methods to avoid confusion
+    undef_method "#{type}_regions?"
+  end
+
   delegate :assigned_patients, to: :source
 
   def self.root

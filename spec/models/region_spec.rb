@@ -24,6 +24,19 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "region_type" do
+    it "has question methods for determining type" do
+      region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
+      region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
+      region_3 = Region.create!(name: "New York", region_type: "block", reparent_to: region_2)
+      region_4 = Region.create!(name: "New York", region_type: "facility", reparent_to: region_3)
+      expect(region_1).to be_state_region
+      expect(region_2.district_region?).to be_truthy
+      expect(region_3.block_region?).to be_truthy
+      expect(region_4.facility_region?).to be_truthy
+    end
+  end
+
   context "behavior" do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
