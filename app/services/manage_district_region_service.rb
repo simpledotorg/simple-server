@@ -1,5 +1,10 @@
 class ManageDistrictRegionService
   def initialize(params)
+    unless Flipper.enabled?(:regions_prep)
+      logger.info "Calls to #{self.class.name} are skipped until the regions_prep feature is turned on."
+      return
+    end
+
     @district_region = params[:district_region]
     @new_blocks = params[:new_blocks] || []
     @remove_blocks = params[:remove_blocks] || []
@@ -12,10 +17,6 @@ class ManageDistrictRegionService
   end
 
   def self.call(*args)
-    unless Flipper.enabled?(:regions_prep)
-      logger.info "Calls to #{self.name} are skipped until the regions_prep feature is turned on."
-    end
-
     o = new(*args)
     o.update_blocks
     o.create_state
