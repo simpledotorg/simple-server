@@ -334,19 +334,16 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
     context "when X_SYNC_REGION_ID is current_facility_group_id" do
       context "when process_token is empty" do
         it "syncs facility group records from beginning of time" do
-
         end
       end
 
       context "when process_token is current_facility_group_id" do
         it "syncs facility group records" do
-
         end
       end
 
       context "when process_token is block_id" do
         it "force resyncs facility_group records" do
-
         end
       end
     end
@@ -354,13 +351,11 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
     context "when X_SYNC_REGION_ID is block_id" do
       context "when process_token is empty" do
         it "syncs block records from beginning of time" do
-
         end
       end
 
       context "when process_token is current_facility_group_id" do
         it "force resyncs block records" do
-
         end
       end
 
@@ -373,7 +368,7 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
             *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
             *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block),
+            *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
           ]
 
           expected_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
