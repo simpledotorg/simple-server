@@ -83,7 +83,7 @@ class FacilityGroup < ApplicationRecord
   def set_diabetes_management(value)
     facilities.update(enable_diabetes_management: value).map(&:valid?).all?
   end
-  
+
   # ----------------
   # Region callbacks
   #
