@@ -340,7 +340,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       }
       let(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
       let(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-      let(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block}.to_json) }
+      let(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json) }
 
       before :each do
         # TODO: replace with proper factory data
