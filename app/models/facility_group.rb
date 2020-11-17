@@ -97,8 +97,8 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    Region.state.find_by_name(state) || Region.create(name: state,
-                                                      region_type: Region.region_types[:state],
-                                                      reparent_to: organization.region)
+    Region.state_regions.find_by_name(state) || Region.create(name: state,
+                                                              region_type: Region.region_types[:state],
+                                                              reparent_to: organization.region)
   end
 end
