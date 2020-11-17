@@ -41,6 +41,8 @@ class Organization < ApplicationRecord
     region.description = description
     region.save!
   end
+
+  private :create_region, :update_region
   # ----------------
 
   def districts

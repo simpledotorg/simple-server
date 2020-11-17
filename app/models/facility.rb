@@ -131,6 +131,8 @@ class Facility < ApplicationRecord
   def block_region
     facility_group.region.block_regions.find_by!(name: block)
   end
+
+  private :create_region, :update_region
   # ----------------
 
   def hypertension_follow_ups_by_period(*args)
