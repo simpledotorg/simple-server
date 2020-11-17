@@ -2,4 +2,3 @@
 
 bundle exec rails db:schema:load:with_data
 bundle exec rails db:seed
-bundle exec rails db:seed_users_data

@@ -26,7 +26,7 @@ FactoryBot.define do
         UserAuthentication.new(authenticatable: phone_number_authentication)
       ]
 
-      user.save
+      user.save!
     end
 
     trait :with_phone_number_authentication
