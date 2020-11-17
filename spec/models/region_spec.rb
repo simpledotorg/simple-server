@@ -31,12 +31,12 @@ RSpec.describe Region, type: :model do
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
       long_name = ("This is a long facility name" * 10)
-      facility_2 = create(:facility, name: long_name, block: "Block22", state: "Test State", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: long_name, block: "Block23", state: "Test State", facility_group: facility_group_1)
 
       expect(org.region.reload.path).to eq("india.test_organization")
       expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.region.path_label}")
       expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.region.slug.underscore}")
-      expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
+      expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_2.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
     end
 
     it "can soft delete nodes" do
