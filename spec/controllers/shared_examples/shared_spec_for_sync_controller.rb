@@ -185,8 +185,15 @@ end
 
 RSpec.shared_examples "a working V3 sync controller sending records" do
   before :each do
-    Timecop.travel(15.minutes.ago) { create_record_list(5) }
-    Timecop.travel(14.minutes.ago) { create_record_list(5) }
+    Timecop.travel(15.minutes.ago) do
+      create_record_list(5)
+    end
+    Timecop.travel(14.minutes.ago) do
+      create_record_list(5)
+    end
+  end
+
+  before :each do
     set_authentication_headers
   end
 
