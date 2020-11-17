@@ -106,6 +106,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
+    it_behaves_like "a V3 sync controller that supports region level sync"
 
     context "patient prioritisation" do
       it "syncs records for patients in the request facility first" do

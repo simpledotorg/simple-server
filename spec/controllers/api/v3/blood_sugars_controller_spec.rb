@@ -262,6 +262,7 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
 
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
+    it_behaves_like "a V3 sync controller that supports region level sync"
 
     describe "v3 patient prioritisation" do
       it "syncs records for patients in the request facility first" do
@@ -290,90 +291,6 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
         records = model.where(id: record_ids)
         expect(records.count).to eq 4
         expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
-      end
-    end
-
-    context "region-level sync" do
-      let!(:facility_in_same_block) {
-        create(:facility,
-          state: request_facility.state,
-          block: request_facility.block,
-          facility_group: request_facility_group)
-      }
-
-      let!(:facility_in_another_block) {
-        create(:facility, block: "Another Block", facility_group: request_facility_group)
-      }
-
-      let!(:facility_in_another_group) {
-        create(:facility, facility_group: create(:facility_group))
-      }
-
-      let(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
-      let(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
-      let(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-      let(:patient_with_appointment_in_block) {
-        create(:patient, :without_medical_history)
-          .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-          .yield_self { |appointment| appointment.patient }
-      }
-      let(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-      let(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-      let(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json) }
-
-      before :each do
-        # TODO: replace with proper factory data
-        RegionBackfill.call(dry_run: false)
-        set_authentication_headers
-      end
-
-      after :each do
-        disable_flag(:region_level_sync, request_user)
-      end
-
-      context "region-level sync is turned on" do
-        before :each do
-          enable_flag(:region_level_sync, request_user)
-        end
-
-        it "only sends data belonging to the patients in the block of user's facility" do
-          expected_records = [
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_request_facility, facility: request_facility),
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_assigned_to_block, facility: facility_in_same_block),
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
-          ]
-
-          not_expected_records = [
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_another_block, facility: facility_in_another_block),
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_another_facility_group)
-          ]
-
-          get :sync_to_user, params: {process_token: process_token}
-
-          response_records = JSON(response.body)["blood_sugars"]
-          response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
-          response_records.each { |r| expect(r["id"]).to_not be_in(not_expected_records.map(&:id)) }
-        end
-      end
-
-      context "region-level sync is turned off" do
-        it "defaults to sending data for patients in the user's facility group" do
-          expected_records = [
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_request_facility, facility: request_facility),
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_list(:blood_sugar, 2, :with_encounter, patient: patient_in_another_block, facility: facility_in_another_block)
-          ]
-
-          not_expected_records =
-            create_list(:blood_sugar, 2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
-
-          get :sync_to_user, params: {process_token: process_token}
-
-          response_records = JSON(response.body)["blood_sugars"]
-          response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
-          response_records.each { |r| expect(r["id"]).to_not be_in(not_expected_records.map(&:id)) }
-        end
       end
     end
 

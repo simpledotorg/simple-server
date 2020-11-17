@@ -26,7 +26,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
   def create_record_list(n, options = {})
     facility = create(:facility, facility_group_id: request_facility_group.id)
     patient = build(:patient, registration_facility_id: facility.id)
-    create_list(:medical_history, n, options.merge(patient: patient))
+    create_list(:medical_history, n, options.merge(patient: patient).except(:facility))
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
