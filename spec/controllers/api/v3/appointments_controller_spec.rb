@@ -2,29 +2,29 @@ require "rails_helper"
 
 RSpec.describe Api::V3::AppointmentsController, type: :controller do
   let(:request_user) { create(:user) }
-  let(:request_facility_group) { request_user.facility.facility_group }
-  let(:request_facility) { create(:facility, facility_group: request_facility_group) }
-  let(:model) { Appointment }
-  let(:build_payload) { -> { build_appointment_payload } }
-  let(:build_invalid_payload) { -> { build_invalid_appointment_payload } }
-  let(:invalid_record) { build_invalid_payload.call }
-  let(:update_payload) { ->(appointment) { updated_appointment_payload appointment } }
-  let(:number_of_schema_errors_in_invalid_payload) { 2 }
-
+  let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
   before :each do
     request.env["X_USER_ID"] = request_user.id
     request.env["X_FACILITY_ID"] = request_facility.id
     request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
   end
 
+  let(:model) { Appointment }
+
+  let(:build_payload) { -> { build_appointment_payload } }
+  let(:build_invalid_payload) { -> { build_invalid_appointment_payload } }
+  let(:invalid_record) { build_invalid_payload.call }
+  let(:update_payload) { ->(appointment) { updated_appointment_payload appointment } }
+  let(:number_of_schema_errors_in_invalid_payload) { 2 }
+
   def create_record(options = {})
-    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     create(:appointment, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
-    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
+    facility = options[:facility] || create(:facility, facility_group: request_user.facility.facility_group)
     patient = create(:patient, registration_facility: facility)
     create_list(:appointment, n, {patient: patient}.merge(options))
   end
@@ -108,9 +108,9 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
     it_behaves_like "a working V3 sync controller sending records"
     it_behaves_like "a V3 sync controller that supports region level sync"
 
-    context "patient prioritisation" do
+    describe "patient prioritisation" do
       it "syncs records for patients in the request facility first" do
-        request_2_facility = create(:facility, facility_group: request_facility_group)
+        request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
         create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
