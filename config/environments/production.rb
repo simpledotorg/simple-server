@@ -94,8 +94,9 @@ Rails.application.configure do
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
 
+  # config.logger = ActiveSupport::TaggedLogging.new(JsonLogger.new(Rails.root.join("log", "#{Rails.env}.log")))
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger = ActiveSupport::Logger.new($stdout)
+    logger = JsonLogger.new($stdout)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
   end
