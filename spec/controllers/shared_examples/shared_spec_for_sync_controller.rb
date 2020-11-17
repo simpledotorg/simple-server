@@ -284,17 +284,16 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
         create(:facility, facility_group: create(:facility_group))
       }
 
-      let(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
-      let(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
-      let(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-      let(:patient_with_appointment_in_block) {
+      let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
+      let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
+      let!(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
+      let!(:patient_with_appointment_in_block) {
         create(:patient, :without_medical_history)
           .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
           .yield_self { |appointment| appointment.patient }
       }
-      let(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-      let(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-      let(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json) }
+      let!(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
+      let!(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
 
       before :each do
         # TODO: replace with proper factory data
@@ -370,11 +369,12 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
 
               expected_records = [
                 *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
-                *create_record_list(2,patient: patient_in_same_block, facility: facility_in_same_block),
+                *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
                 *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
-                *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
+                *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block),
               ]
 
+              expected_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
               not_expected_records = [
                 *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block),
                 *create_record_list(2, patient: patient_in_another_facility_group)
