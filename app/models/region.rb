@@ -22,7 +22,6 @@ class Region < ApplicationRecord
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h, _suffix: "regions"
 
-  # Override the auto-generated root method (via enum) to return the one, single root Region
   def self.root
     Region.find_by(region_type: :root)
   end
