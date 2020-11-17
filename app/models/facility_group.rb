@@ -33,7 +33,7 @@ class FacilityGroup < ApplicationRecord
   attr_writer :state
 
   def state
-    @state || region&.state&.name
+    @state || region&.state_region&.name
   end
 
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }

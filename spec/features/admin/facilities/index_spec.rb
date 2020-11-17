@@ -4,13 +4,10 @@ require "rails_helper"
 
 RSpec.feature "Facility page functionality", type: :feature do
   let(:admin) { create(:admin, :power_user) }
-
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
+  let!(:state) { create(:region, :state, name: "Punjab", reparent_to: ihmi.region) }
   let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
-  let!(:unassociated_facility) { create(:facility, facility_group: nil, name: "testfacility") }
-  let!(:unassociated_facility02) { create(:facility, facility_group: nil, name: "testfacility_02") }
-
   let!(:protocol_01) { create(:protocol, name: "testProtocol") }
 
   facility_page = AdminPage::Facilities::Show.new
@@ -39,6 +36,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
+            state: "Punjab",
             protocol_name: protocol_01.name
           )
 
@@ -54,6 +52,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
+            state: "Punjab",
             protocol_name: protocol_01.name
           )
 
