@@ -72,7 +72,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def set_blocks
     district_region = Region.find_by(source: @facility_group)
-    @blocks = district_region&.blocks&.order(:name) || []
+    @blocks = district_region&.block_regions&.order(:name) || []
   end
 
   def wrap_in_transaction
