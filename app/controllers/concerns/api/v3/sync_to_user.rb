@@ -83,13 +83,13 @@ module Api::V3::SyncToUser
       # allow other region types as well
       return current_facility_group if requested_sync_region_id.blank?
       return current_facility_group if requested_sync_region_id == current_facility_group.id
-      return current_block if requested_sync_region_id == current_block.id && block_level_sync?
+      return current_block if block_level_sync?
 
       current_facility_group
     end
 
     def block_level_sync?
-      current_user.feature_enabled?(:region_level_sync)
+      current_user.feature_enabled?(:region_level_sync) && requested_sync_region_id == current_block.id
     end
   end
 end
