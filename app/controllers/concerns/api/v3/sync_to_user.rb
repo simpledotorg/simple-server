@@ -72,15 +72,15 @@ module Api::V3::SyncToUser
     end
 
     def sync_region_modified?
-      process_token[:sync_region_id] != requested_sync_region_id
+      process_token[:sync_region_id] != requested_sync_region_id if requested_sync_region_id.present?
     end
 
     def current_sync_region
-      if block_level_sync?
-        current_block
-      else
-        current_facility_group
-      end
+      return current_facility_group if requested_sync_region_id.blank?
+      return current_facility_group if requested_sync_region_id == current_facility_group.id
+      current_block if block_level_sync?
+
+      current_facility_group
     end
 
     def block_level_sync?
