@@ -43,7 +43,7 @@ class APIController < ApplicationController
     request.headers["HTTP_X_RESYNC_TOKEN"]
   end
 
-  def current_sync_region_id
+  def requested_sync_region_id
     request.headers["HTTP_X_SYNC_REGION_ID"]
   end
 
