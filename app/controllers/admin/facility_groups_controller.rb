@@ -4,7 +4,7 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_protocols, only: [:new, :edit, :update, :create]
   before_action :set_available_states, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
   before_action :set_blocks, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
-  around_action :wrap_in_transaction, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  around_action :wrap_in_transaction, only: [:create, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -26,7 +26,13 @@ class Admin::FacilityGroupsController < AdminController
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
     if @facility_group.save && @facility_group.toggle_diabetes_management
-      update_block_regions if Flipper.enabled?(:regions_prep)
+      ManageDistrictRegionService.call(
+        district_region: @facility_group.region,
+        new_block: blocks_params[:new_blocks],
+        remove_blocks: blocks_params[:remove_blocks],
+        set_state_region: true,
+        state_name: facility_group_params[:state])
+
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new
@@ -34,8 +40,13 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    if @facility_group.update(facility_group_params) && @facility_group.toggle_diabetes_management
-      update_block_regions if Flipper.enabled?(:regions_prep)
+    if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
+      ManageDistrictRegionService.call(
+        district_region: @facility_group.region,
+        new_blocks: blocks_params[:new_blocks],
+        remove_blocks: blocks_params[:remove_blocks],
+        set_state_region: false)
+
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit
@@ -92,16 +103,14 @@ class Admin::FacilityGroupsController < AdminController
     )
   end
 
+  def update_params
+    facility_group_params.except(:state)
+  end
+
   def blocks_params
     params.require(:facility_group).permit(
       new_blocks: [],
       remove_blocks: []
     )
-  end
-
-  def update_block_regions
-    ManageDistrictRegionService.update_blocks(district_region: @facility_group.region,
-                                              new_blocks: blocks_params[:new_blocks],
-                                              remove_blocks: blocks_params[:remove_blocks])
   end
 end
