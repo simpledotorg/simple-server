@@ -36,7 +36,7 @@ module Api::V3::SyncToUser
         current_facility_id: current_facility.id,
         current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
         other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-        resync_token: current_resync_token,
+        resync_token: resync_token,
         sync_region_id: current_sync_region.id
       }
     end
@@ -68,7 +68,7 @@ module Api::V3::SyncToUser
     end
 
     def resync_token_modified?
-      process_token[:resync_token] != current_resync_token
+      process_token[:resync_token] != resync_token
     end
 
     def sync_region_modified?

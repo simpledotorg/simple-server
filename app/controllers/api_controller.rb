@@ -43,7 +43,7 @@ class APIController < ApplicationController
     request.headers["HTTP_X_TIMEZONE_OFFSET"].to_i || 0
   end
 
-  def current_resync_token
+  def resync_token
     request.headers["HTTP_X_RESYNC_TOKEN"]
   end
 
