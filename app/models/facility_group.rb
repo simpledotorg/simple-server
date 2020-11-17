@@ -75,6 +75,16 @@ class FacilityGroup < ApplicationRecord
     query.call
   end
 
+  # For regions compatibility
+  def facility_region?
+    false
+  end
+
+  # For regions compatibility
+  def district_region?
+    true
+  end
+
   private
 
   def set_diabetes_management(value)

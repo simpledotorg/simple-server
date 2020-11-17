@@ -151,7 +151,11 @@ class Reports::RegionsController < AdminController
 
   def find_region_v2
     region_type = report_params[:report_scope]
-    @region = Region.where(region_type: region_type).find_by!(slug: report_params[:id])
+    @region = if region_type == "facility_district"
+      FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
+    else
+      Region.where(region_type: region_type).find_by!(slug: report_params[:id])
+    end
   end
 
   def region_class

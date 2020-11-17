@@ -37,6 +37,21 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "facilities" do
+    it "returns the source facilities" do
+      facility_group = create(:facility_group)
+      facilities = create_list(:facility, 3, block: "Block ABC", facility_group: facility_group)
+      RegionBackfill.call(dry_run: false)
+
+      facility = facilities.first
+      block_region = facility.region.parent
+      district_region = block_region.parent
+      expect(block_region.facilities).to contain_exactly(*facilities)
+      expect(district_region.facilities).to contain_exactly(*facilities)
+      expect(district_region.organization_region.facilities).to contain_exactly(*facilities)
+    end
+  end
+
   context "behavior" do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")

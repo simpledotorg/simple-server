@@ -294,7 +294,7 @@
   </div>
 </div>
 <%= render "visit_details_card" %>
-<% unless @region.is_a?(Facility) %>
+<% unless @region.facility_region? %>
   <%= render "facility_tables" %>
 <% end %>
 <div id="data-json" style="display: none;">

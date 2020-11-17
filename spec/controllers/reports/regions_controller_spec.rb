@@ -216,8 +216,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       fg = @facility.facility_group
       expect(fg.region).to_not be_nil
       expect(fg.slug).to eq(fg.region.slug)
-      # TODO probably want to rename this method to something like `region_facilities`
-      expect(fg.region.facilities).to contain_exactly(@facility.region)
+      expect(fg.region.facilities).to contain_exactly(@facility)
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)

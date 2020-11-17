@@ -51,18 +51,11 @@ class Region < ApplicationRecord
   end
 
   def facilities
-    case region_type
-    when "facility"
-      [self]
-    when "district"
-      blocks = children
-      facilities = blocks.map(&:children)
-      pp facilities
-      facilities.to_a.map(&:source)
-    when "block"
-      children.map(&:source)
+    if facility_region?
+      [source]
     else
-      raise ArgumentError, "how to get facilities for #{self}"
+      ids = facility_regions.pluck(:source_id)
+      Facility.where(id: ids)
     end
   end
 
@@ -95,7 +88,7 @@ class Region < ApplicationRecord
     end
 
     # Generates has_many type of methods to fetch a region's descendants
-    # e.g. organization.facilities
+    # e.g. organization.facility_regions
     descendant_method = "#{region_type}_regions"
     define_method(descendant_method) do
       if ancestor_types(region_type).include?(self.region_type)
