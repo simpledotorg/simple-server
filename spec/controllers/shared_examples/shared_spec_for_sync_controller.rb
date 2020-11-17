@@ -234,8 +234,6 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
 
     describe "batching" do
       it "returns the number of records requested with limit" do
-        Timecop.travel(15.minutes.ago) { create_record_list(5) }
-
         get :sync_to_user, params: {
           process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
           limit: 2
@@ -274,6 +272,7 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
       get :sync_to_user
 
       response_body = JSON(response.body)
+      expect(response_body[response_key].count).to eq 15
 
       expect(response_body[response_key].map { |record| record["id"] })
         .to include(discard_record.id)
