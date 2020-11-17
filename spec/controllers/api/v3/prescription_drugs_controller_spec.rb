@@ -152,6 +152,9 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
         end
 
         it "only sends data belonging to the patients in the block of user's facility" do
+          process_token = Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json)
+          request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block.id
+
           expected_records = [
             *create_list(:prescription_drug, 2, patient: patient_in_request_facility, facility: request_facility),
             *create_list(:prescription_drug, 2, patient: patient_in_same_block, facility: facility_in_same_block),
@@ -172,22 +175,31 @@ RSpec.describe Api::V3::PrescriptionDrugsController, type: :controller do
         end
       end
 
-      context "region-level sync is turned off" do
-        it "defaults to sending data for patients in the user's facility group" do
+      context "when region-level sync is turned off" do
+        it "sends facility group records irrespective of requested_sync_region_id and process_token's sync_region_id" do
           expected_records = [
             *create_list(:prescription_drug, 2, patient: patient_in_request_facility, facility: request_facility),
             *create_list(:prescription_drug, 2, patient: patient_in_same_block, facility: facility_in_same_block),
             *create_list(:prescription_drug, 2, patient: patient_in_another_block, facility: facility_in_another_block)
           ]
 
-          not_expected_records =
-            create_list(:prescription_drug, 2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+          not_expected_records = create_list(:prescription_drug, 2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
 
-          get :sync_to_user, params: {process_token: process_token}
+          requested_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id, "invalid_id"]
+          process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
 
-          response_records = JSON(response.body)["prescription_drugs"]
-          response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
-          response_records.each { |r| expect(r["id"]).to_not be_in(not_expected_records.map(&:id)) }
+          requested_sync_region_ids.each do |requested_sync_region_id|
+            process_token_sync_region_ids.each do |process_token_sync_region_id|
+              request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
+              process_token = Base64.encode64({sync_region_id: process_token_sync_region_id}.to_json)
+
+              get :sync_to_user, params: {process_token: process_token}
+
+              response_record_ids = JSON(response.body)["prescription_drugs"].map { |r| r["id"] }
+              expect(response_record_ids).to match_array expected_records.map(&:id)
+              expect(not_expected_records).not_to include(*response_record_ids)
+            end
+          end
         end
       end
     end
