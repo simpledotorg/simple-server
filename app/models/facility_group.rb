@@ -49,7 +49,7 @@ class FacilityGroup < ApplicationRecord
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
   #
-  # - kit (11/2020s)
+  # - kit (11/2020)
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 

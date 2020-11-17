@@ -106,7 +106,7 @@ class Facility < ApplicationRecord
   #
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
-  # * Keep these callbacks simple (avoid too much branching and optimization), idempotent and loud when things break.
+  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
   #
   # - kit (11/2020)
   after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
