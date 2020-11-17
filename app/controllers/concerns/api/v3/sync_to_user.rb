@@ -72,7 +72,7 @@ module Api::V3::SyncToUser
     end
 
     def sync_region_modified?
-      process_token[:sync_region_id] != requested_sync_region_id if requested_sync_region_id.present?
+      requested_sync_region_id.present? && process_token[:sync_region_id] != requested_sync_region_id
     end
 
     def current_sync_region
