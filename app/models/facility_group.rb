@@ -112,7 +112,7 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    organization.region.states.find_by!(name: state)
+    organization.region.state_regions.find_by!(name: state)
   end
   # ----------------
 end
