@@ -12,8 +12,8 @@ RSpec.describe ManageDistrictRegionService, type: :model do
 
     described_class.update_blocks(district_region: facility_group.region, new_blocks: new_blocks)
 
-    expect(facility_group.region.blocks.pluck(:name)).to match_array new_blocks
-    expect(facility_group.region.blocks.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
+    expect(facility_group.region.block_regions.pluck(:name)).to match_array new_blocks
+    expect(facility_group.region.block_regions.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
   end
 
   it "deletes blocks from remove_blocks" do
@@ -23,8 +23,8 @@ RSpec.describe ManageDistrictRegionService, type: :model do
 
     described_class.update_blocks(district_region: facility_group.region, new_blocks: new_blocks)
 
-    block = facility_group.region.blocks.first
+    block = facility_group.region.block_regions.first
     described_class.update_blocks(district_region: facility_group.region, remove_blocks: [block.id])
-    expect(facility_group.region.blocks).not_to include block
+    expect(facility_group.region.block_regions).not_to include block
   end
 end
