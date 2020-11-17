@@ -62,20 +62,20 @@ RSpec.describe RegionBackfill, type: :model do
       expect(org.children.map(&:name)).to contain_exactly("State 1", "State 2")
       expect(org.root).to eq(root)
 
-      states = Region.state
+      states = Region.state_regions
       expect(states.count).to eq(2)
       expect(states.pluck(:slug)).to contain_exactly("state-1", "state-2")
       expect(states.pluck(:name)).to contain_exactly("State 1", "State 2")
 
-      block_regions = Region.block
+      block_regions = Region.block_regions
       expect(block_regions.size).to eq(4)
       expect(block_regions.map(&:name)).to contain_exactly("Block XYZ", "Block 123", "Block ZZZ", "Block ABC")
 
-      facility_regions = Region.facility
+      facility_regions = Region.facility_regions
       expect(facility_regions.size).to eq(6)
 
-      expect(org.facilities.map(&:source)).to contain_exactly(*facilities)
-      expect(org.facilities.pluck(:region_type).uniq).to contain_exactly("facility")
+      expect(org.facility_regions.map(&:source)).to contain_exactly(*facilities)
+      expect(org.facility_regions.pluck(:region_type).uniq).to contain_exactly("facility")
     end
 
     it "works when there is are blocks and facilities that have the same name and slug" do
@@ -91,16 +91,16 @@ RSpec.describe RegionBackfill, type: :model do
 
       RegionBackfill.call(dry_run: false)
 
-      expect(Region.root.facilities.map(&:source)).to contain_exactly(queens, new_york, manhatten, east_village, other_new_york)
-      blocks = Region.root.blocks
+      expect(Region.root.facility_regions.map(&:source)).to contain_exactly(queens, new_york, manhatten, east_village, other_new_york)
+      blocks = Region.root.block_regions
       expect(blocks.size).to eq(3)
       expect(blocks.map(&:name)).to contain_exactly("New York", "Other Block", "New York")
       blocks.each do |block|
         next unless block.name == "New York"
         expect(block.slug).to match(/new-york/)
       end
-      expect(queens.region.block).to eq(manhatten.region.block)
-      expect(queens.region.block).to_not eq(east_village.region.block)
+      expect(queens.region.block_region).to eq(manhatten.region.block_region)
+      expect(queens.region.block_region).to_not eq(east_village.region.block_region)
     end
 
     it "establishes associations from facility / facility group back to regions" do
@@ -144,11 +144,11 @@ RSpec.describe RegionBackfill, type: :model do
       end
 
       expect(Region.where(region_type: "root").count).to eq 1
-      expect(Region.organization.count).to eq 1
-      expect(Region.state.count).to eq 2
-      expect(Region.district.count).to eq 4
-      expect(Region.block.count).to eq 5
-      expect(Region.facility.count).to eq 6
+      expect(Region.organization_regions.count).to eq 1
+      expect(Region.state_regions.count).to eq 2
+      expect(Region.district_regions.count).to eq 4
+      expect(Region.block_regions.count).to eq 5
+      expect(Region.facility_regions.count).to eq 6
       expect(Region.count).to eq 19
     end
   end

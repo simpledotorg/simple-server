@@ -159,7 +159,7 @@ RSpec.describe FacilityGroup, type: :model do
         end
 
         it "creates the state region if it doesn't exist" do
-          expect(facility_group.region.state.name).to eq "Punjab"
+          expect(facility_group.region.state_region.name).to eq "Punjab"
         end
       end
 
