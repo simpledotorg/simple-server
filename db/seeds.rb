@@ -7,6 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 Rails.logger.info "Start seed task in #{Rails.env} and #{SimpleServer.env}"
+puts "ping"
 require_relative "../lib/tasks/scripts/create_admin_user"
 require "factory_bot_rails"
 require "faker"
