@@ -108,7 +108,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
     it_behaves_like "a working V3 sync controller sending records"
     it_behaves_like "a V3 sync controller that supports region level sync"
 
-    describe "v3 patient prioritisation" do
+    describe "patient prioritisation" do
       it "syncs records for patients in the request facility first" do
         request_2_facility = create(:facility, facility_group: request_user.facility.facility_group)
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
