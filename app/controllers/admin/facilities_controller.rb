@@ -109,7 +109,7 @@ class Admin::FacilitiesController < AdminController
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.district ||= @facility_group.name
-      facility.state ||= @facility_group.region.state.name if Flipper.enabled?(:regions_prep)
+      facility.state ||= @facility_group.region.state_region.name if Flipper.enabled?(:regions_prep)
       facility.country ||= Region.root.name
     end
   end
@@ -123,7 +123,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    @available_zones = @facility_group.region.blocks.pluck(:name).sort
+    @available_zones = @facility_group.region.block_regions.pluck(:name).sort
   end
 
   def facility_params

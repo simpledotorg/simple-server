@@ -263,6 +263,6 @@ class Facility < ApplicationRecord
     facility_group = FacilityGroup.find_by(name: facility_attributes[:facility_group_name],
                                            organization_id: organization&.id)
 
-    facility_group.present? && Flipper.enabled?(:regions_prep) ? {state: facility_group.region.state.name} : {}
+    facility_group.present? && Flipper.enabled?(:regions_prep) ? {state: facility_group.region.state_region.name} : {}
   end
 end
