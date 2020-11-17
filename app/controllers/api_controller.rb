@@ -32,7 +32,7 @@ class APIController < ApplicationController
   end
 
   def current_block
-    current_user.facility.region.block
+    current_facility.region.block
   end
 
   def current_timezone_offset
