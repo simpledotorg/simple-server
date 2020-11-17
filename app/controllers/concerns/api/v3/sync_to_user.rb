@@ -85,7 +85,7 @@ module Api::V3::SyncToUser
     end
 
     def block_level_sync?
-      current_user.feature_enabled?(:region_level_sync) && process_token[:sync_region_id].present?
+      current_user.feature_enabled?(:region_level_sync)
     end
   end
 end
