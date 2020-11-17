@@ -43,6 +43,7 @@ gem "kaminari"
 gem "lodash-rails"
 gem "lograge"
 gem "ougai"
+gem "parallel", require: false
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"
 gem "pg_search"
@@ -58,6 +59,7 @@ gem "request_store-sidekiq"
 gem "roo", "~> 2.8.0"
 gem "rspec-rails", "~> 3.7"
 gem "rswag", "~> 1.6.0"
+gem "ruby-progressbar", require: false
 gem "sassc-rails"
 gem "scenic"
 gem "sentry-raven"
@@ -88,10 +90,8 @@ group :development, :test do
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
   gem "capistrano-template", require: false
-  gem "parallel", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
-  gem "ruby-progressbar", require: false
   gem "rb-readline"
   gem "shoulda-matchers", "~> 4.1.2"
   gem "standard"

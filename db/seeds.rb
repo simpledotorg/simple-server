@@ -7,8 +7,6 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 require_relative "../lib/tasks/scripts/create_admin_user"
-require "factory_bot_rails"
-require "faker"
 
 ADMIN_USER_NAME = "Admin User"
 ADMIN_USER_EMAIL = "admin@simple.org"
