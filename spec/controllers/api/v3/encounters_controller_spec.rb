@@ -120,7 +120,7 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
 
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
-    it_behaves_like "a V3 sync controller that supports region level sync"
+    it_behaves_like "a sync controller that supports region level sync"
 
     describe "v3 facility prioritisation" do
       it "syncs request facility's records first" do
