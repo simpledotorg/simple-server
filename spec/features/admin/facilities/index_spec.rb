@@ -104,7 +104,6 @@ RSpec.feature "Facility page functionality", type: :feature do
             facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
           end
         end
-
       end
 
       it "admin should be able to delete facility group without facility " do
