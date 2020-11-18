@@ -7,8 +7,8 @@ RSpec.describe RegionBackfill, type: :model do
   end
 
   after do
-    Facility.set_callback(:create, :after, :create_region)
-    FacilityGroup.set_callback(:create, :after, :create_region)
+    Facility.set_callback(:create, :after, :create_region, if: -> { Flipper.enabled?(:regions_prep) })
+    FacilityGroup.set_callback(:create, :after, :create_region, if: -> { Flipper.enabled?(:regions_prep) })
   end
 
   context "dry run mode" do
