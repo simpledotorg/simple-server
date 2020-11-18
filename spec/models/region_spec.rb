@@ -198,17 +198,16 @@ RSpec.describe Region, type: :model do
       patient_from_f3 = create(:patient, assigned_facility: facility_3)
       _patient_elsewhere = create(:patient)
 
-      expect(Region.root.syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+      expect(Region.root.syncable_patients).to contain_exactly(patient_from_f1)
 
       expect(Region.organization.find_by(source: organization).syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+        .to contain_exactly(patient_from_f1)
 
       expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+        .to contain_exactly(patient_from_f1)
 
       expect(Region.district.find_by(source: facility_group).syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+        .to contain_exactly(patient_from_f1)
 
       expect(Region.block.find_by(name: "M1").syncable_patients)
         .to contain_exactly(patient_from_f1)
@@ -220,9 +219,9 @@ RSpec.describe Region, type: :model do
       expect(Region.facility.find_by(source: facility_1).syncable_patients)
         .to contain_exactly(patient_from_f1)
       expect(Region.facility.find_by(source: facility_2).syncable_patients)
-        .to contain_exactly(patient_from_f2)
+        .to be_empty
       expect(Region.facility.find_by(source: facility_3).syncable_patients)
-        .to contain_exactly(patient_from_f3)
+        .to be_empty
       expect(Region.facility.find_by(source: facility_4).syncable_patients)
         .to be_empty
     end
@@ -235,17 +234,16 @@ RSpec.describe Region, type: :model do
       create(:appointment, patient: patient_from_f3, facility: facility_3)
       _patient_elsewhere = create(:patient)
 
-      expect(Region.root.syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+      expect(Region.root.syncable_patients).to contain_exactly(patient_from_f1)
 
       expect(Region.organization.find_by(source: organization).syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+        .to contain_exactly(patient_from_f1)
 
       expect(Region.state.find_by(name: "Maharashtra").syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+        .to contain_exactly(patient_from_f1)
 
       expect(Region.district.find_by(source: facility_group).syncable_patients)
-        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3)
+        .to contain_exactly(patient_from_f1)
 
       expect(Region.block.find_by(name: "M1").syncable_patients)
         .to contain_exactly(patient_from_f1)
@@ -257,9 +255,9 @@ RSpec.describe Region, type: :model do
       expect(Region.facility.find_by(source: facility_1).syncable_patients)
         .to contain_exactly(patient_from_f1)
       expect(Region.facility.find_by(source: facility_2).syncable_patients)
-        .to contain_exactly(patient_from_f2)
+        .to be_empty
       expect(Region.facility.find_by(source: facility_3).syncable_patients)
-        .to contain_exactly(patient_from_f3)
+        .to be_empty
       expect(Region.facility.find_by(source: facility_4).syncable_patients)
         .to be_empty
     end

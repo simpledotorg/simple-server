@@ -54,21 +54,34 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
-  def self.sources
-    includes(:source).map(&:source)
+  def syncable_patients
+    case region_type
+      when "block"
+        registered_patients
+          .union(assigned_patients)
+          .union(appointed_patients)
+      else
+        registered_patients
+    end
   end
 
-  def syncable_patients
+  def registered_patients
     Patient
       .with_discarded
-      .where(registration_facility: facilities.sources)
-      .or(Patient
-            .with_discarded
-            .where(assigned_facility: facilities.sources))
-      .union(Patient
-               .with_discarded
-               .joins(:appointments)
-               .where(appointments: {facility: facilities.sources}))
+      .where(registration_facility: facilities.pluck(:source_id))
+  end
+
+  def assigned_patients
+    Patient
+      .with_discarded
+      .where(assigned_facility: facilities.pluck(:source_id))
+  end
+
+  def appointed_patients
+    Patient
+      .with_discarded
+      .joins(:appointments)
+      .where(appointments: {facility: facilities.pluck(:source_id)})
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
