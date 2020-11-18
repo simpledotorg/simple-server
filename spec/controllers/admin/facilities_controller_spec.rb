@@ -2,17 +2,17 @@ require "rails_helper"
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:block) { create(:region, :block, name: "An Block", reparent_to: facility_group.region) }
   let(:valid_attributes) do
     attributes_for(:facility,
       facility_group_id: facility_group.id,
-      zone: block.name,
+      zone: "An Block",
       enable_teleconsultation: false)
   end
 
   let(:invalid_attributes) do
     attributes_for(
       :facility,
+      zone: "An Block",
       name: nil
     )
   end
@@ -117,7 +117,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         attributes_for(:facility,
           facility_group_id: facility_group.id,
           pin: "999999",
-          zone: block.name,
+          zone: "An Block",
           monthly_estimated_opd_load: 500).except(:id, :slug)
       end
 
