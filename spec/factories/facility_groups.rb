@@ -18,7 +18,7 @@ FactoryBot.define do
 
     before(:create) do |fg, options|
       if options.create_parent_region
-        options.parent_region || create(:region, :state, name: fg.state, reparent_to: fg.organization.region)
+        create(:region, :state, name: fg.state, reparent_to: fg.organization.region)
       end
     end
 

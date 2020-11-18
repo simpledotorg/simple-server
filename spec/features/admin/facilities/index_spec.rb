@@ -35,7 +35,6 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
-            state: ihmi_group_bathinda.region.state_region.name,
             protocol_name: protocol_01.name
           )
 
@@ -51,7 +50,6 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
-            state: ihmi_group_bathinda.region.state_region.name,
             protocol_name: protocol_01.name
           )
 

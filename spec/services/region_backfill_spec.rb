@@ -1,16 +1,6 @@
 require "rails_helper"
 
 RSpec.describe RegionBackfill, type: :model do
-  before do
-    FacilityGroup.skip_callback(:create, :after, :create_region)
-    Facility.skip_callback(:create, :after, :create_region)
-  end
-
-  after do
-    Facility.set_callback(:create, :after, :create_region, if: -> { Flipper.enabled?(:regions_prep) })
-    FacilityGroup.set_callback(:create, :after, :create_region, if: -> { Flipper.enabled?(:regions_prep) })
-  end
-
   context "dry run mode" do
     before do
       org = create(:organization, name: "Test Organization")

@@ -35,12 +35,11 @@ FactoryBot.define do
 
     transient do
       create_parent_region { Flipper.enabled?(:regions_prep) }
-      parent_region
     end
 
     before(:create) do |f, options|
       if options.create_parent_region
-        options.parent_region || create(:region, :block, name: f.zone, reparent_to: f.facility_group.region)
+        create(:region, :block, name: f.zone, reparent_to: f.facility_group.region)
       end
     end
 
