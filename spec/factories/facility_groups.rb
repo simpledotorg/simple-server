@@ -23,9 +23,5 @@ FactoryBot.define do
           reparent_to: fg.organization.region)
       end
     end
-
-    trait :without_parent_region do
-      create_parent_region { false }
-    end
   end
 end
