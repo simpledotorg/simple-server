@@ -282,8 +282,6 @@ end
 
 RSpec.shared_examples "a V3 sync controller that supports region level sync" do
   let!(:response_key) { model.to_s.underscore.pluralize }
-  before(:each) { set_authentication_headers }
-
   let!(:facility_in_same_block) {
     create(:facility, state: request_facility.state, block: request_facility.block, facility_group: request_facility_group)
   }
@@ -310,6 +308,7 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
   before :each do
     # TODO: replace with proper factory data
     RegionBackfill.call(dry_run: false)
+    set_authentication_headers
   end
 
   context "region-level sync is turned on" do

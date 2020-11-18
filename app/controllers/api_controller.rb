@@ -52,16 +52,16 @@ class APIController < ApplicationController
   end
 
   def validate_facility
-    head :bad_request unless current_facility.present?
+    return head :bad_request unless current_facility.present?
   end
 
   def validate_current_facility_belongs_to_users_facility_group
-    head :unauthorized unless current_user.present? &&
+    return head :unauthorized unless current_user.present? &&
       current_facility_group.facilities.where(id: current_facility.id).present?
   end
 
   def current_user_present?
-    head :unauthorized unless current_user.present?
+    return head :unauthorized unless current_user.present?
   end
 
   def validate_sync_approval_status_allowed
@@ -70,7 +70,6 @@ class APIController < ApplicationController
 
   def authenticate
     return head :unauthorized unless access_token_authorized?
-
     RequestStore.store[:current_user_id] = current_user.id
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
   end
