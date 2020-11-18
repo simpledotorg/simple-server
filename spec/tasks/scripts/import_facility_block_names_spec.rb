@@ -7,7 +7,7 @@ RSpec.describe ImportFacilityBlockNames do
     facility = create(:facility,
       name: "Facility 1",
       state: "Maharashtra",
-      block: block.name,
+      block: "Block B",
       district: "Wardha",
       facility_group: fg)
 
