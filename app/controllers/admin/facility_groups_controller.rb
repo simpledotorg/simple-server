@@ -97,20 +97,16 @@ class Admin::FacilityGroupsController < AdminController
   def successful_create?
     @facility_group.create_state_region!
 
-    unless @facility_group.save && @facility_group.toggle_diabetes_management
-      return false
+    if @facility_group.save && @facility_group.toggle_diabetes_management
+      @facility_group.update_block_regions!
+      true
     end
-
-    @facility_group.update_block_regions!
-    true
   end
 
   def successful_update?
-    unless @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
-      return false
+    if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
+      @facility_group.update_block_regions!
+      true
     end
-
-    @facility_group.update_block_regions!
-    true
   end
 end

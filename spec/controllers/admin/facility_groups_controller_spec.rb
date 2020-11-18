@@ -2,13 +2,12 @@ require "rails_helper"
 
 RSpec.describe Admin::FacilityGroupsController, type: :controller do
   let(:organization) { create(:organization) }
-  let(:state) { create(:region, :state, name: "An State", reparent_to: organization.region) }
   let(:protocol) { create(:protocol) }
   let(:valid_attributes) do
     attributes_for(
       :facility_group,
       organization_id: organization.id,
-      state: state.name,
+      state: "An State",
       protocol_id: protocol.id
     )
   end
@@ -64,15 +63,26 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "creates the children blocks" do
         enable_flag(:regions_prep)
-        attributes_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "An State",
+            protocol_id: protocol.id
+          )
+        attrs_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
 
         expect {
-          post :create, params: {facility_group: attributes_with_blocks, organization_id: organization.id}
+          post :create, params: {facility_group: attrs_with_blocks, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(2)
 
-        attributes_with_blocks = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
+        attrs_with_block_removed = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
         expect {
-          post :create, params: {facility_group: attributes_with_blocks, organization_id: organization.id}
+          post :create, params: {facility_group: attrs_with_block_removed, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(-1)
       end
     end
@@ -111,16 +121,27 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "updates the block regions" do
         enable_flag(:regions_prep)
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "An State",
+            protocol_id: protocol.id
+          )
         facility_group = create(:facility_group, valid_attributes)
+        attr_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
 
-        attributes_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
         expect {
-          put :update, params: {id: facility_group.to_param, facility_group: attributes_with_blocks, organization_id: organization.id}
+          put :update, params: {id: facility_group.to_param, facility_group: attr_with_blocks, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(2)
 
-        attributes_with_blocks = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
+        attrs_with_block_removed = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
         expect {
-          put :update, params: {id: facility_group.to_param, facility_group: attributes_with_blocks, organization_id: organization.id}
+          put :update, params: {id: facility_group.to_param, facility_group: attrs_with_block_removed, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(-1)
       end
     end

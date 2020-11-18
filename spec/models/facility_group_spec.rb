@@ -66,6 +66,10 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe "#create_state_region!" do
+    before do
+      enable_flag(:regions_prep)
+    end
+
     it "creates a new state region if it doesn't exist" do
       org = create(:organization, name: "IHCI")
       facility_group = build(:facility_group, name: "FG", state: "Punjab", organization: org)
@@ -87,6 +91,10 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe "#update_block_regions!" do
+    before do
+      enable_flag(:regions_prep)
+    end
+
     it "creates new blocks from new_blocks" do
       org = create(:organization, name: "IHCI")
       new_blocks = ["Block 1", "Block 2"]
