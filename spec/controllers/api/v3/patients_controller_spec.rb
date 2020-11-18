@@ -515,7 +515,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                   .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
                   .yield_self { |appointment| appointment.patient }
               patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
-              patient_in_other_facility_group =  create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
+              patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
 
               process_token = make_process_token(sync_region_id: request_facility.region.block.id)
 
