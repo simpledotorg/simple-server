@@ -29,6 +29,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it "returns a success response" do
       facility_group = create(:facility_group, valid_attributes)
       get :show, params: {id: facility_group.to_param, organization_id: organization.id}
+
       expect(response).to be_successful
     end
   end
@@ -36,6 +37,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   describe "GET #new" do
     it "returns a success response" do
       get :new, params: {organization_id: organization.id}
+
       expect(response).to be_successful
     end
   end
@@ -44,6 +46,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it "returns a success response" do
       facility_group = create(:facility_group, valid_attributes)
       get :edit, params: {id: facility_group.to_param, organization_id: organization.id}
+
       expect(response).to be_successful
     end
   end
@@ -63,6 +66,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "creates state if supplied" do
         enable_flag(:regions_prep)
+
         organization = create(:organization)
         admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
         sign_in(admin.email_authentication)
@@ -82,6 +86,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "creates the children blocks" do
         enable_flag(:regions_prep)
+
         organization = create(:organization)
         admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
         sign_in(admin.email_authentication)
@@ -123,6 +128,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
         facility_group.reload
+
         expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug", "enable_diabetes_management"))
           .to eq new_attributes.except(:state).with_indifferent_access
       end
@@ -130,11 +136,13 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       it "redirects to the facilities" do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
+
         expect(response).to redirect_to(admin_facilities_url)
       end
 
       it "updates the block regions" do
         enable_flag(:regions_prep)
+
         organization = create(:organization)
         admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
         sign_in(admin.email_authentication)
@@ -161,9 +169,10 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     end
 
     context "with invalid params" do
-      it "returns a bad request response (i.e. against the 'edit' template)" do
+      it "returns a 400 response (i.e. against the 'edit' template)" do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id}
+
         expect(response).to have_http_status(:bad_request)
       end
     end
@@ -180,6 +189,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it "redirects to the facilities list" do
       facility_group = create(:facility_group, valid_attributes)
       delete :destroy, params: {id: facility_group.to_param, organization_id: organization.id}
+
       expect(response).to redirect_to(admin_facilities_url)
     end
   end

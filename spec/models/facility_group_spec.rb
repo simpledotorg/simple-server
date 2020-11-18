@@ -47,14 +47,14 @@ RSpec.describe FacilityGroup, type: :model do
     end
 
     it "does not change the slug when renamed" do
-      fg_1 = create(:facility_group, name: "old_name")
+      facility_group = create(:facility_group, name: "old_name")
 
-      original_slug = fg_1.slug
-      fg_1.name = "new name"
-      fg_1.valid?
-      fg_1.save!
+      original_slug = facility_group.slug
+      facility_group.name = "new name"
+      facility_group.valid?
+      facility_group.save!
 
-      expect(fg_1.slug).to eq(original_slug)
+      expect(facility_group.slug).to eq(original_slug)
     end
   end
 
