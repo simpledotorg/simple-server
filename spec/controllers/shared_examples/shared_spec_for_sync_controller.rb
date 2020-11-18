@@ -44,7 +44,7 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
       request_user.update(sync_approval_status: :denied)
       get :sync_to_user, params: empty_payload
 
-        expect(response.status).to eq(403)
+      expect(response.status).to eq(403)
     end
 
     it "returns 403 for users which have sync approval status set to requested" do
