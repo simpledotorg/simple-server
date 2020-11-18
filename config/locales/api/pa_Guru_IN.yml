@@ -23,22 +23,6 @@ pa:
     patients_enrolled: "%{facility_name} ਵਿਖੇ ਕਿੰਨੇ ਨਵੇਂ ਮਰੀਜ਼ਾਂ ਦਾ ਦਾਖਲਾ ਕੀਤਾ ਗਿਆ ਹੈ?"
     all_time_patients: "ਹਰ ਸਮੇਂ: %{count} ਮਰੀਜ਼"
     updated_at: "%{time} ਵਜੇ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ"
-  user_analytics:
-    hypertension: "ਹਾਈਪਰਟੈਂਸ਼ਨ"
-    diabetes: "ਸ਼ੂਗਰ"
-    genders: ["ਸਾਰੇ", "ਮਰਦ", "ਔਰਤ", "ਦੁਲਿੰਗੀ"]
-    all_time: "ਹਰ ਸਮੇਂ"
-    follow_up_patients: "ਫਾਲੋ-ਅਪ ਹਾਈਪਰਟੈਂਛਨ ਮਰੀਜ਼"
-    registered_patients: "ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼"
-    hypertension_control: "ਹਾਈਪਰਟੈਂਛਨ ਨਿਯੰਤ੍ਰਣ"
-    hypertension_control_desc: "ਮਹੀਨੇ ਵਿੱਚ ਆਖਰੀ ਫਾਲੋ-ਅਪ ਮੁਲਾਕਾਤ ਦੇ ਦੌਰਾਨ ਹਾਈਪਰਟੈਂਛਨ ਵਾਲੇ ਕਿੰਨੇ ਮਰੀਜ਼ਾਂ ਦਾ ਬੀਪੀ 140/90 ਤੋਂ ਘੱਟ ਸੀ?"
-    notes: "ਨੋਟਸ"
-    footer_note_1: "ਸਾਰੀ ਗਤੀਵਿਧੀ ਲਈ ਡੇਟਾ %{facility_name} ਵਿਖੇ ਹੈ। ਜੇਕਰ ਡੇਟਾ ਆਉਟ ਆਫ ਡੇਟ ਜਾਪਦਾ ਹੈ, ਤਾਂ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ \"ਸਿੰਕ ਪੈਂਡਿੰਗ\" ਵਾਲੇ ਲਿੰਕ 'ਤੇ ਟੈਪ ਕਰੋ।"
-    footer_note_2: "ਫਾਲੋ-ਅਪ ਕਰਵਾਉਣ ਵਾਲੇ ਮਰੀਜ਼ ਦੀ ਗਿਣਤੀ ਇੱਕ ਮਹੀਨੇ ਵਿੱਚ ਸਿਰਫ ਇੱਕ ਦੌਰੇ ਲਈ ਹੀ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਜੇਕਰ ਕੋਈ ਮਰੀਜ਼ ਮਹੀਨੇ ਵਿੱਚ ਇੱਕ ਤੋਂ ਵੱਧ ਵਾਰ ਫਾਲੋ-ਅਪ ਮੁਲਾਕਾਤ ਕਰਦਾ ਹੈ, ਤਾਂ ਉਸ ਦੀ ਗਿਣਤੀ ਸਿਰਫ ਇੱਕ ਵਾਰ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।"
-    thank_you: "ਧੰਨਵਾਦ"
-    thank_you_note: "ਹਾਈਪਰਟੈਂਛਨ ਵਾਲੇ ਮਰੀਜ਼ਾਂ ਦੇ ਇਲਾਜ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਕੀਤੀ ਸਾਰੀ ਸਖ਼ਤ ਮਿਹਨਤ ਵਾਸਤੇ ਤੁਹਾਡਾ ਧੰਨਵਾਦ। ਤੁਹਾਡਾ ਕੰਮ ਦਿਲ ਦੇ ਦੌਰਿਆਂ ਅਤੇ ਸਟ੍ਰੋਕ ਤੋਂ ਜਾਨਾਂ ਬਚਾਉਂਦਾ ਹੈ।"
-    updated: "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ: %{time}"
-    ratio_string: "%{value_1} ਕੁੱਲ %{value_2}"
   dashboard:
     graphics:
       graphics_title_html: "<b>%{previous_quarter_string}</b> ਦੇ ਦੌਰਾਨ ਰਜਿਸਟਰ ਹੋਏ %{patients_in_previous_quarter} ਮਰੀਜ਼ਾਂ ਨੂੰ <b>%{current_quarter_string}</b> ਵਿੱਚ ਕੀ ਹੋਇਆ?"

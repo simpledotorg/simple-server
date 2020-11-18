@@ -8,6 +8,8 @@ class Facility < ApplicationRecord
   extend FriendlyId
   extend RegionSource
 
+  friendly_id :name, use: :slugged
+
   attribute :import, :boolean, default: false
   attribute :organization_name, :string
   attribute :facility_group_name, :string
@@ -80,6 +82,7 @@ class Facility < ApplicationRecord
   alias_attribute :block, :zone
 
   validates :district, presence: true
+  validates :slug, presence: true
   validates :state, presence: true
   validates :country, presence: true
   validates :zone, presence: true, on: :create
@@ -112,8 +115,6 @@ class Facility < ApplicationRecord
       .diabetes_follow_ups_by_period(*args)
       .where(blood_sugars: {facility: self})
   end
-
-  friendly_id :name, use: :slugged
 
   # For compatibility w/ parent FacilityGroups
   def facilities
