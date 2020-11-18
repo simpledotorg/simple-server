@@ -6,7 +6,7 @@
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <title>User Analytics</title>
+  <title><%= t("api.analytics.page_title") %></title>
 
   <%= inline_stylesheet("user_analytics.css") %>
 </head>
@@ -16,7 +16,9 @@
   <div class="progress-contents">
 
   <p class="updated-date">
-    Updated: <span><%= @user_analytics.last_updated_at %></span>
+    <span>
+      <%= t("api.analytics.updated", time: @user_analytics.last_updated_at) %>
+    </span>
   </p>
 
   <div class="card" style="min-height: 210px;">
@@ -42,7 +44,7 @@
       <div class="day count-empty" style="display: none">
         <h3 class="stat-day"></h3>
         <%= inline_svg('icon_sync_cloud.svg') %>
-        <p>Tap "Sync" on the home screen for new data.</p>
+        <p><%= t("api.analytics.tap_sync") %></p>
       </div>
 
       <% @user_analytics.daily_period_list.each do |day_date| %>
@@ -53,19 +55,19 @@
 
           <div class="counts">
             <div class="count count-1">
-              <strong>Registered</strong>
+              <strong><%= t("api.analytics.registered") %></strong>
               <div class="big-number">
                 <%= @user_analytics.daily_stats_by_date(:registrations, day_date) %>
               </div>
-              <%= "Patient".pluralize(@user_analytics.daily_stats_by_date(:registrations, day_date)) %>
+              <%= t("api.analytics.patient", count: @user_analytics.daily_stats_by_date(:registrations, day_date)) %>
             </div>
 
             <div class="count count-2">
-              <strong>Follow-up</strong>
+              <strong><%= t("api.analytics.follow_up") %></strong>
               <div class="big-number">
                 <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
               </div>
-              <%= "Patient".pluralize(@user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
+              <%= t("api.analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
             </div>
           </div>
         </div>
@@ -76,7 +78,7 @@
   <!-- monthly registered patients view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3>Registered patients</h3>
+    <h3><%= t("api.analytics.registered_patients") %></h3>
 
     <% registrations_table_name = 'registrations' %>
 
@@ -93,7 +95,7 @@
   <!-- monthly follow-up patients view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-followup', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3>Follow-up patients</h3>
+    <h3><%= t("api.analytics.follow_up_patients") %></h3>
 
     <% follow_ups_table_name = 'follow_ups' %>
 
@@ -110,9 +112,9 @@
   <!-- monthly hypertension control view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3>Hypertension controlled</h3>
+    <h3><%= t("api.analytics.hypertension_controlled") %></h3>
     <p class="desc">
-      How many patients with hypertension BP&nbsp;&lt;140/90 in the last 3 months?
+      <%= t("api.analytics.hypertension_controlled_desc") %>
     </p>
 
     <p class="desc control-desc">
@@ -134,7 +136,7 @@
             </tr>
         </tbody>
     </table>
-    <p class="center" style="margin: 12px 0 0 0; text-align: center;">Last 12 months</p>
+    <p class="center" style="margin: 12px 0 0 0; text-align: center;"><%= t("api.analytics.last_12_months") %></p>
   </div>
 
   <div class="card">
@@ -144,7 +146,7 @@
   <!-- all trophies view -->
   <% if @user_analytics.achievements? %>
     <div class="trophies">
-      <h4>Achievements</h4>
+      <h4><%= t("api.analytics.achievements") %></h4>
       <% @user_analytics.unlocked_trophies.sort.each do |trophy| %>
         <div class="trophy trophy-<%= trophy %>">
           <%= inline_svg('ribbon.svg') %>
@@ -152,7 +154,7 @@
           <span>
               <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
             </span>
-          <div><%= trophy %> follow-up<br>hypertension patients</div>
+          <div><%= trophy %> <%= t("api.analytics.follow_up") %><br><%= t("api.analytics.hypertension_patients") %></div>
         </div>
       <% end %>
 
@@ -162,17 +164,17 @@
         <span>
             <%= inline_svg('icon_lock.svg') %>
           </span>
-        <div><%= @user_analytics.locked_trophy %> follow-up<br>hypertension patients</div>
+        <div><%= @user_analytics.locked_trophy %> <%= t("api.analytics.follow_up") %><br><%= t("api.analytics.hypertension_patients") %></div>
       </div>
     </div>
   <% end %>
 
   <!-- footer -->
   <footer>
-    <h4 style="padding-top: 60px;">Notes</h4>
-    <p>Data is for all activity at <%= @current_facility.name %>. If data appears out of date, tap the "Sync pending" link on the home screen.</p>
-    <h4 style="padding-top: 60px;">Thank you</h4>
-    <p>Thank you for all of your hard work treating patients with hypertension. Your work saves lives from heart attacks and strokes.</p>
+    <h4 style="padding-top: 60px;"><%= t("api.analytics.notes") %></h4>
+    <p><%= t("api.analytics.footer_note_1", facility_name: @current_facility.name) %></p>
+    <h4 style="padding-top: 60px;"><%= t("api.analytics.thank_you") %></h4>
+    <p><%= t("api.analytics.thank_you_note") %></p>
     <div style="height: 100px;"></div>
   </footer>
   </div>
@@ -184,12 +186,12 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Definition</h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("api.analytics.definition") %></h2>
 
         <div class="card">
-            <h3 style="margin-bottom: 1em;">Registered patients</h3>
+            <h3 style="margin-bottom: 1em;"><%= t("api.analytics.registered_patients") %></h3>
             <p class="desc" style="margin-bottom: 1em;">
-                Patients who were registered into Simple by staff at this facility. The patient's "Preferred facility" could be any facility.
+              <%= t("api.analytics.registered_patients_desc") %>
             </p>
         </div>
     </div>
@@ -201,12 +203,12 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Definition</h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("api.analytics.definition") %></h2>
 
         <div class="card">
-            <h3 style="margin-bottom: 1em;">Follow-up patients</h3>
+            <h3 style="margin-bottom: 1em;"><%= t("api.analytics.follow_up_patients") %></h3>
             <p class="desc" style="margin-bottom: 1em;">
-                Patients with a BP or blood sugar measure recorded at this facility. The follow-up patients count is not affected by where the patient was registered or what the patient's "Preferred Facility" is.
+              <%= t("api.analytics.follow_up_patients_desc") %>
             </p>
         </div>
     </div>
@@ -218,17 +220,17 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Definition</h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("api.analytics.definition") %></h2>
 
         <div class="card">
-            <h3 style="margin-bottom: 1em;">Hypertension controlled</h3>
+            <h3 style="margin-bottom: 1em;"><%= t("api.analytics.hypertension_controlled") %></h3>
             <p class="desc" style="margin-bottom: 1em;">
-                <b>Numerator</b><br>
-                Patients with at least one BP measure recorded in the last 3 months at <em>any facility</em>. At the most recent visit the patient had BP&nbsp;&lt;140 and &lt;90.
+                <b><%= t("api.analytics.numerator") %></b><br>
+              <%= t("api.analytics.hypertension_controlled_numerator") %>
             </p>
             <p class="desc">
-                <b>Denominator</b><br>
-                All patients diagnosed with hypertension who have this facility as their "Preferred Facility." Patients registered in the most recent 3 months are excluded, so the facility has the opportunity to get their BP controlled.
+                <b><%= t("api.analytics.denominator") %></b><br>
+              <%= t("api.analytics.hypertension_controlled_denominator") %>
             </p>
         </div>
     </div>
@@ -240,22 +242,22 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;">Hypertension cohort report</h2>
-        <p class="left">Cohort reports show the outcome for newly registered patients with hypertension in their first few months of treatment.</p>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("api.analytics.hypertension_cohort_report") %></h2>
+        <p class="left"><%= t("api.analytics.hypertension_cohort_report_desc") %></p>
         <div class="key">
-            <p class="left" style="color: #007A31;"><span class="key-color green"></span> Patients visited with BP &lt;140/90</p>
-            <p class="left" style="color: #FF3355;"><span class="key-color red"></span> Patients visited with BP &ge;140/90</p>
-            <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> Patients with no BP measure</p>
+            <p class="left" style="color: #007A31;"><span class="key-color green"></span> <%= t("api.analytics.patients_with_controlled_bp") %></p>
+            <p class="left" style="color: #FF3355;"><span class="key-color red"></span> <%= t("api.analytics.patients_with_uncontrolled_bp") %></p>
+            <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> <%= t("api.analytics.patients_with_no_bp_measure") %></p>
         </div>
 
         <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
           <div class="card cohort">
-              <h6><%= pluralize(cohort[:registered], "patient") %> registered in <%= cohort[:patients_registered] %></h6>
-              <div style="font-size: 16px; margin: 8px 0 12px 0;">Result from last visit in <%= cohort[:results_in] %></div>
+              <h6><%= cohort[:registered] %> <%= t("api.analytics.patient", count: cohort[:registered]) %> <%= t("api.analytics.registered_in") %> <%= cohort[:patients_registered] %></h6>
+              <div style="font-size: 16px; margin: 8px 0 12px 0;">  <%= t("api.analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %></div>
               <table class="cohort-bars">
                   <tr>
                     <% if cohort[:registered].zero? %>
-                      <td class="cohort-none">No patients</td>
+                      <td class="cohort-none"> <%= t("api.analytics.no_patients") %></td>
                     <% else %>
                       <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
                         <%= @user_analytics.cohort_no_bp(cohort) %>
@@ -272,11 +274,11 @@
           </div>
         <% end %>
 
-        <h3 style="padding-top: 40px; padding-left: 8px;">Notes</h3>
+        <h3 style="padding-top: 40px; padding-left: 8px;"> <%= t("api.analytics.notes") %></h3>
         <ul class="footnotes">
-            <li><strong>Numerator:</strong> Latest follow-up visit at any facility in quarter after registration.</li>
-            <li><strong>Denominator:</strong> All HTN patients assigned to this facility, registered in the quarter.</li>
-            <li>If a patient has multiple visits, their last BP is used to calculate BP control.</li>
+            <li><strong> <%= t("api.analytics.numerator") %>:</strong> <%= t("api.analytics.cohort_report_footnote_1") %></li>
+            <li><strong> <%= t("api.analytics.denominator") %>:</strong> <%= t("api.analytics.cohort_report_footnote_2") %></li>
+            <li><%= t("api.analytics.cohort_report_footnote_3") %></li>
         </ul>
     </div>
 </div>

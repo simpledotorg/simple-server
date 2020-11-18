@@ -23,22 +23,6 @@ om-ET:
     patients_enrolled: "Dhubsattoota haaraa meeqatu %{facility_name}tti makame?"
     all_time_patients: "Yeroo hunda: dhukkubsattoota %{count}"
     updated_at: "Yeoo %{time} kan haaroomfame"
-  user_analytics:
-    hypertension: "Baayyina dhiiga"
-    diabetes: "Sukkaara"
-    genders: ["Hunda", "dhiira", "Dubara", "Saaldarba"]
-    all_time: "Yeroo hunda"
-    follow_up_patients: "Dhukkubsattoota baayyina dhiigaa hordofi"
-    registered_patients: "Dhukkubsattoota galmaa’an"
-    hypertension_control: "Too’annoo baayyina dhiiga"
-    hypertension_control_desc: "Dhukkansattoota baayyina dhiigaa meeqatu hordoffii isaanii darbe irratti ji’a sarbee keessatti BP 140/90 gadi qaba?"
-    notes: "Yaaddannoowwan"
-    footer_note_1: "Ragaan kan goochoota hunda %{facility_name} raawwatamaniiti. Daataan yeroodhan ala yoo ta’e, fuulmanee irratti geessituu \"Sync pending\" irratti cuqaasi."
-    footer_note_2: "Dhukkubsataan hordoffii ji’atti yeroo tokko qofaaf lakkaa’ama. Yoo dhukkubsataan ji’a keessatti yeroo hedduuf hrdofame, inni yookan ishiin yeroo tokko qofaaf lakkaawamti."
-    thank_you: "Galatoomi"
-    thank_you_note: "Hojii cimaa dhukkubsattoota baayyina dhiiigaa tajaajiluudhaf taasistuuf galatoomi. Hojiin kee lubbuu balaa onnee fii dhiigni sammutti jiguu irraa baraara."
-    updated: "Haaromfameera:  %{time}"
-    ratio_string: "%{value_1} kan {value_2}"
   dashboard:
     graphics:
       graphics_title_html: "Maalyu ta’e dhukkubsattoota <b>%{current_quarter_string}</b> kan %{patients_in_previous_quarter} galmee yeroo <b>%{previous_quarter_string}</b> taasisan irratti?"
