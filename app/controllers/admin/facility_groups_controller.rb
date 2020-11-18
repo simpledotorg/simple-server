@@ -13,7 +13,6 @@ class Admin::FacilityGroupsController < AdminController
 
   def new
     @facility_group = FacilityGroup.new
-
     authorize { current_admin.accessible_organizations(:manage).any? }
   end
 
@@ -22,34 +21,20 @@ class Admin::FacilityGroupsController < AdminController
 
   def create
     @facility_group = FacilityGroup.new(facility_group_params)
-
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    if @facility_group.save && @facility_group.toggle_diabetes_management
-      ManageDistrictRegionService.call(
-        district_region: @facility_group.region,
-        new_block: blocks_params[:new_blocks],
-        remove_blocks: blocks_params[:remove_blocks],
-        set_state_region: true,
-        state_name: facility_group_params[:state])
-
+    if successful_create?
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
-      render :new
+      render :new, status: :bad_request
     end
   end
 
   def update
-    if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
-      ManageDistrictRegionService.call(
-        district_region: @facility_group.region,
-        new_blocks: blocks_params[:new_blocks],
-        remove_blocks: blocks_params[:remove_blocks],
-        set_state_region: false)
-
+    if successful_update?
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
-      render :edit
+      render :edit, status: :bad_request
     end
   end
 
@@ -99,7 +84,9 @@ class Admin::FacilityGroupsController < AdminController
       :state,
       :description,
       :protocol_id,
-      :enable_diabetes_management
+      :enable_diabetes_management,
+      new_blocks: [],
+      remove_blocks: []
     )
   end
 
@@ -107,10 +94,23 @@ class Admin::FacilityGroupsController < AdminController
     facility_group_params.except(:state)
   end
 
-  def blocks_params
-    params.require(:facility_group).permit(
-      new_blocks: [],
-      remove_blocks: []
-    )
+  def successful_create?
+    @facility_group.create_state_region!
+
+    if @facility_group.save && @facility_group.toggle_diabetes_management
+      @facility_group.update_block_regions!
+      true
+    else
+      false
+    end
+  end
+
+  def successful_update?
+    if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
+      @facility_group.update_block_regions!
+      true
+    else
+      false
+    end
   end
 end

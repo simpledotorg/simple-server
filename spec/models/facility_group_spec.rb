@@ -59,6 +59,64 @@ RSpec.describe FacilityGroup, type: :model do
     end
   end
 
+  describe "#create_state_region!" do
+    it "creates a new state region if it doesn't exist" do
+      org = create(:organization, name: "IHCI")
+      facility_group = build(:facility_group, name: "FG", state: "Punjab", organization: org)
+
+      facility_group.create_state_region!
+
+      expect(Region.state_regions.pluck(:name)).to match_array ["Punjab"]
+      expect(Region.state_regions.pluck(:path)).to contain_exactly("india.ihci.punjab")
+    end
+
+    it "does nothing if the state region already exists" do
+      org = create(:organization, name: "IHCI")
+      state_region = create(:region, :state, name: "Punjab", reparent_to: org.region)
+      facility_group = build(:facility_group, name: "FG", state: state_region.name, organization: org)
+
+      facility_group.create_state_region!
+
+      expect(Region.state_regions.pluck(:name)).to match_array ["Punjab"]
+      expect(Region.state_regions.pluck(:path)).to contain_exactly("india.ihci.punjab")
+    end
+  end
+
+  describe "#update_block_regions!" do
+    it "creates new blocks from new_blocks" do
+      org = create(:organization, name: "IHCI")
+      new_blocks = ["Block 1", "Block 2"]
+      state_region = create(:region, :state, name: "Punjab", reparent_to: org.region)
+      facility_group = create(:facility_group, name: "FG", state: state_region.name, organization: org)
+      facility_group.new_blocks = new_blocks
+
+      facility_group.update_block_regions!
+      facility_group.reload
+
+      expect(facility_group.region.block_regions.pluck(:name)).to match_array new_blocks
+      expect(facility_group.region.block_regions.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
+    end
+
+    it "deletes blocks from remove_blocks" do
+      org = create(:organization, name: "IHCI")
+      new_blocks = ["Block 1", "Block 2"]
+      state_region = create(:region, :state, name: "Punjab", reparent_to: org.region)
+      facility_group = create(:facility_group, name: "FG", state: state_region.name, organization: org)
+      facility_group.new_blocks = new_blocks
+
+      facility_group.update_block_regions!
+      facility_group.reload
+
+      block = facility_group.region.block_regions.first
+      facility_group.remove_blocks = [block.id]
+
+      facility_group.update_block_regions!
+      facility_group.reload
+
+      expect(facility_group.region.block_regions).not_to include block
+    end
+  end
+
   describe "#toggle_diabetes_management" do
     let!(:facility_group) { create(:facility_group) }
     let!(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
@@ -174,7 +232,8 @@ RSpec.describe FacilityGroup, type: :model do
         end
 
         it "updates the state region" do
-          facility_group.update(state: "Maharashtra")
+          new_state = create(:region, :state, name: "Maharashtra", reparent_to: org.region)
+          facility_group.update(state: new_state.name)
           expect(facility_group.region.state_region.name).to eq "Maharashtra"
           expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
         end
