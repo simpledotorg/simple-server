@@ -312,11 +312,9 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
   end
 
   context "region-level sync is turned on" do
-    before :each do
-      enable_flag(:region_level_sync, request_user)
-    end
+    before { enable_flag(:region_level_sync, request_user) }
 
-    context "when X_SYNC_REGION_ID is blank" do
+    context "when X_SYNC_REGION_ID is blank (support for old apps)" do
       it "sends facility group records irrespective of process_token's sync_region_id" do
         facility_group_records = [
           *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
@@ -359,7 +357,7 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
         end
       end
 
-      context "when process_token is current_facility_group_id" do
+      context "when process_token is current_facility_group_id (i.e. app starts syncing)" do
         it "syncs facility group records" do
           process_token = make_process_token(sync_region_id: request_facility_group.id)
           facility_group_records = [
@@ -379,7 +377,7 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
         end
       end
 
-      context "when process_token is block_id" do
+      context "when process_token is block_id (this can happen if we switch from block sync to FG sync)" do
         it "force resyncs facility_group records" do
           process_token = make_process_token(sync_region_id: request_facility.region.block.id,
                                              current_facility_processed_since: Time.current,
@@ -398,7 +396,7 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
     context "when X_SYNC_REGION_ID is block_id" do
       before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block.id }
 
-      context "when process_token's sync_region_id is empty" do
+      context "when process_token's sync_region_id is empty (i.e. app starts syncing)" do
         it "syncs block records from beginning of time" do
           process_token = make_process_token(current_facility_processed_since: Time.current,
                                              other_facilities_processed_since: Time.current)
@@ -430,7 +428,7 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
         end
       end
 
-      context "when process_token's sync_region_id is block_id" do
+      context "when process_token's sync_region_id is block_id (when we switch from FG sync to block level sync)" do
         it "only sends data belonging to the patients in the block of user's facility" do
           process_token = make_process_token(sync_region_id: request_facility.region.block.id)
 
