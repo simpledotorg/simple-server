@@ -6,8 +6,7 @@ RSpec.feature "Facility page functionality", type: :feature do
   let(:admin) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
-  let!(:state) { create(:region, :state, name: "Punjab", reparent_to: ihmi.region) }
-  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda") }
   let!(:protocol_01) { create(:protocol, name: "testProtocol") }
 
   facility_page = AdminPage::Facilities::Show.new
