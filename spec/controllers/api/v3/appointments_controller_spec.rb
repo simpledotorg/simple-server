@@ -184,7 +184,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
             end
           end
 
-          context "when process_token is current_facility_group_id (i.e. app starts syncing)" do
+          context "when process_token's sync_region_id is current_facility_group_id (i.e. app starts syncing)" do
             it "syncs facility group records" do
               process_token = make_process_token(sync_region_id: request_facility_group.id)
               facility_group_records = [
@@ -241,9 +241,10 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
             end
           end
 
-          context "when process_token is current_facility_group_id" do
+          context "when process_token's sync_region_id is current_facility_group_id" do
             it "force resyncs block records" do
-              process_token = make_process_token(current_facility_processed_since: Time.current,
+              process_token = make_process_token(sync_region_id: request_facility_group.id,
+                                                 current_facility_processed_since: Time.current,
                                                  other_facilities_processed_since: Time.current)
               block_records = Timecop.travel(15.minutes.ago) {
                 [*create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block),
