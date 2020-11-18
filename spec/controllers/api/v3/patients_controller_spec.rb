@@ -373,14 +373,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let!(:facility_in_same_block) {
         create(:facility, state: request_facility.state, block: request_facility.block, facility_group: request_facility_group)
       }
-
-      let!(:facility_in_another_block) {
-        create(:facility, block: "Another Block", facility_group: request_facility_group)
-      }
-
-      let!(:facility_in_another_group) {
-        create(:facility, facility_group: create(:facility_group))
-      }
+      let!(:facility_in_other_block) { create(:facility, block: "Other Block", facility_group: request_facility_group) }
+      let!(:facility_in_other_group) { create(:facility, facility_group: create(:facility_group)) }
 
       before :each do
         # TODO: replace with proper factory data
@@ -394,20 +388,14 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         end
 
         context "when X_SYNC_REGION_ID is blank (support for old apps)" do
-          let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
-          let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
-          let!(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-          let!(:patient_with_appointment_in_block) {
-            create(:patient, :without_medical_history)
-              .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-              .yield_self { |appointment| appointment.patient }
-          }
-          let!(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-          let!(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-
           it "sends facility group records irrespective of process_token's sync_region_id" do
-            facility_group_records = [patient_in_request_facility, patient_in_same_block, patient_in_another_block]
-            other_facility_group_records = [patient_in_another_facility_group]
+            patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
+            patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
+            patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
+            patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
+
+            facility_group_records = [patient_in_request_facility, patient_in_same_block, patient_in_other_block]
+            other_facility_group_records = [patient_in_other_facility_group]
 
             process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
 
@@ -442,15 +430,15 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           end
 
           context "when process_token's sync_region_id is current_facility_group_id (i.e. app starts syncing)" do
-            let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
-            let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
-            let!(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-            let!(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-
             it "syncs facility group records" do
+              patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
+              patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
+              patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
+              patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
+
               process_token = make_process_token(sync_region_id: request_facility_group.id)
-              facility_group_records = [patient_in_request_facility, patient_in_same_block, patient_in_another_block]
-              other_facility_group_records = [patient_in_another_facility_group]
+              facility_group_records = [patient_in_request_facility, patient_in_same_block, patient_in_other_block]
+              other_facility_group_records = [patient_in_other_facility_group]
 
               get :sync_to_user, params: {process_token: process_token}
 
@@ -487,7 +475,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                 create_list(:patient, 5, registration_facility: facility_in_same_block)
               }
               non_block_records = Timecop.travel(15.minutes.ago) {
-                create_list(:patient, 5, registration_facility: facility_in_another_block)
+                create_list(:patient, 5, registration_facility: facility_in_other_block)
               }
 
               get :sync_to_user, params: {process_token: process_token}
@@ -507,7 +495,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                 create_list(:patient, 5, registration_facility: facility_in_same_block)
               }
               non_block_records = Timecop.travel(15.minutes.ago) {
-                create_list(:patient, 5, registration_facility: facility_in_another_block)
+                create_list(:patient, 5, registration_facility: facility_in_other_block)
               }
               get :sync_to_user, params: {process_token: process_token}
 
@@ -518,18 +506,17 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
           end
 
           context "when process_token's sync_region_id is block_id (when we switch from FG sync to block level sync)" do
-            let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
-            let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
-            let!(:patient_assigned_to_block) { create(:patient, :without_medical_history, assigned_facility: facility_in_same_block) }
-            let!(:patient_with_appointment_in_block) {
-              create(:patient, :without_medical_history)
-                .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
-                .yield_self { |appointment| appointment.patient }
-            }
-            let!(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-            let!(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-
             it "only sends data belonging to the patients in the block of user's facility" do
+              patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
+              patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
+              patient_assigned_to_block = create(:patient, :without_medical_history, assigned_facility: facility_in_same_block)
+              patient_with_appointment_in_block =
+                create(:patient, :without_medical_history)
+                  .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
+                  .yield_self { |appointment| appointment.patient }
+              patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
+              patient_in_other_facility_group =  create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
+
               process_token = make_process_token(sync_region_id: request_facility.region.block.id)
 
               block_records =
@@ -539,8 +526,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                   patient_with_appointment_in_block]
 
               non_block_records =
-                [patient_in_another_block,
-                  patient_in_another_facility_group]
+                [patient_in_other_block,
+                  patient_in_other_facility_group]
 
               get :sync_to_user, params: {process_token: process_token}
 
@@ -553,16 +540,16 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       end
 
       context "when region-level sync is turned off" do
-        let!(:patient_in_request_facility) { create(:patient, :without_medical_history, registration_facility: request_facility) }
-        let!(:patient_in_same_block) { create(:patient, :without_medical_history, registration_facility: facility_in_same_block) }
-        let!(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-        let!(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
-
         it "sends facility group records irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-          facility_group_records =
-            [patient_in_request_facility, patient_in_same_block, patient_in_another_block]
+          patient_in_request_facility = create(:patient, :without_medical_history, registration_facility: request_facility)
+          patient_in_same_block = create(:patient, :without_medical_history, registration_facility: facility_in_same_block)
+          patient_in_other_block = create(:patient, :without_medical_history, registration_facility: facility_in_other_block)
+          patient_in_other_facility_group = create(:patient, :without_medical_history, registration_facility: facility_in_other_group)
 
-          other_facility_group_records = [patient_in_another_facility_group]
+          facility_group_records =
+            [patient_in_request_facility, patient_in_same_block, patient_in_other_block]
+
+          other_facility_group_records = [patient_in_other_facility_group]
 
           requested_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id, "invalid_id"]
           process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]

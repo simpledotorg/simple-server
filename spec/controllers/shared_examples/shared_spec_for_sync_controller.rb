@@ -286,11 +286,11 @@ RSpec.shared_examples "a working sync controller that supports region level sync
     create(:facility, state: request_facility.state, block: request_facility.block, facility_group: request_facility_group)
   }
 
-  let!(:facility_in_another_block) {
-    create(:facility, block: "Another Block", facility_group: request_facility_group)
+  let!(:facility_in_other_block) {
+    create(:facility, block: "Other Block", facility_group: request_facility_group)
   }
 
-  let!(:facility_in_another_group) {
+  let!(:facility_in_other_group) {
     create(:facility, facility_group: create(:facility_group))
   }
 
@@ -302,8 +302,8 @@ RSpec.shared_examples "a working sync controller that supports region level sync
       .yield_self { |patient| create(:appointment, patient: patient, facility: facility_in_same_block) }
       .yield_self { |appointment| appointment.patient }
   }
-  let!(:patient_in_another_block) { create(:patient, :without_medical_history, registration_facility: facility_in_another_block) }
-  let!(:patient_in_another_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_another_group) }
+  let!(:patient_in_other_block) { create(:patient, :without_medical_history, registration_facility: facility_in_other_block) }
+  let!(:patient_in_other_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_other_group) }
 
   before :each do
     # TODO: replace with proper factory data
@@ -319,11 +319,11 @@ RSpec.shared_examples "a working sync controller that supports region level sync
         facility_group_records = [
           *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
           *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-          *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block)
+          *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block)
         ]
 
         other_facility_group_records =
-          create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+          create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
 
         process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
 
@@ -363,11 +363,11 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           facility_group_records = [
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
             *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block)
+            *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block)
           ]
 
           other_facility_group_records =
-            create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+            create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
 
           get :sync_to_user, params: {process_token: process_token}
 
@@ -403,7 +403,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           block_records = Timecop.travel(15.minutes.ago) {
             create_record_list(5, patient: patient_in_same_block, facility: facility_in_same_block)
           }
-          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
+          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_other_block) }
 
           get :sync_to_user, params: {process_token: process_token}
 
@@ -421,7 +421,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           block_records = Timecop.travel(15.minutes.ago) {
             create_record_list(5, patient: patient_in_same_block, facility: facility_in_same_block)
           }
-          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
+          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_other_block) }
 
           get :sync_to_user, params: {process_token: process_token}
 
@@ -443,8 +443,8 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           ]
 
           non_block_records = [
-            *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block),
-            *create_record_list(2, patient: patient_in_another_facility_group)
+            *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block),
+            *create_record_list(2, patient: patient_in_other_facility_group)
           ]
 
           get :sync_to_user, params: {process_token: process_token}
@@ -462,10 +462,10 @@ RSpec.shared_examples "a working sync controller that supports region level sync
       facility_group_records = [
         *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
         *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-        *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block)
+        *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block)
       ]
 
-      other_facility_group_records = create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+      other_facility_group_records = create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
 
       requested_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id, "invalid_id"]
       process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
