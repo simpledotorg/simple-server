@@ -403,7 +403,6 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
           block_records = Timecop.travel(15.minutes.ago) {
             create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block)
           }
-          block_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
           non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
 
           get :sync_to_user, params: {process_token: process_token}
@@ -421,7 +420,6 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
           block_records = Timecop.travel(15.minutes.ago) {
             create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block)
           }
-          block_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
           non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
 
           get :sync_to_user, params: {process_token: process_token}
@@ -443,7 +441,6 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
             *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
           ]
 
-          block_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
           non_block_records = [
             *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block),
             *create_record_list(2, patient: patient_in_another_facility_group)
