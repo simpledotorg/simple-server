@@ -72,7 +72,7 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    organization.region.state_regions.find_by!(name: state)
+    organization.region.state_regions.find_by(name: state)
   end
 
   private :create_region, :update_region, :state_region

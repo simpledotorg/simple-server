@@ -18,7 +18,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     attributes_for(
       :facility_group,
       name: nil,
-      state: state.name,
+      state: "An State",
       organization_id: organization.id
     )
   end
@@ -118,7 +118,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         FactoryBot.attributes_for(
           :facility_group,
           organization_id: organization.id,
-          state: state.name,
+          state: "An State",
           protocol_id: protocol.id
         ).except(:id, :slug)
       end
