@@ -318,24 +318,25 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
 
     context "when X_SYNC_REGION_ID is blank" do
       it "sends facility group records irrespective of process_token's sync_region_id" do
-        expected_records = [
+        facility_group_records = [
           *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
           *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
           *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block)
         ]
 
-        not_expected_records = create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+        other_facility_group_records =
+          create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
 
         process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
 
         process_token_sync_region_ids.each do |process_token_sync_region_id|
-          process_token = Base64.encode64({sync_region_id: process_token_sync_region_id}.to_json)
+          process_token = make_process_token(sync_region_id: process_token_sync_region_id)
 
           get :sync_to_user, params: {process_token: process_token}
 
           response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-          expect(response_record_ids).to match_array expected_records.map(&:id)
-          expect(not_expected_records).not_to include(*response_record_ids)
+          expect(response_record_ids).to match_array facility_group_records.map(&:id)
+          expect(other_facility_group_records).not_to include(*response_record_ids)
         end
       end
     end
@@ -345,16 +346,51 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
 
       context "when process_token's sync_region_id is empty" do
         it "syncs facility group records from beginning of time" do
+          process_token = make_process_token(current_facility_processed_since: Time.current,
+                                             other_facilities_processed_since: Time.current)
+
+          Timecop.travel(15.minutes.ago) { create_record_list(10) }
+
+          get :sync_to_user, params: {process_token: process_token}
+
+          response_body = JSON(response.body)
+          expect(response_body[response_key].count).to eq model.count
+          expect(response_body[response_key].map { |record| record["id"] }).to eq(model.pluck(:id))
         end
       end
 
       context "when process_token is current_facility_group_id" do
         it "syncs facility group records" do
+          process_token = make_process_token(sync_region_id: request_facility_group.id)
+          facility_group_records = [
+            *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
+            *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
+            *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block)
+          ]
+
+          other_facility_group_records =
+            create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+
+          get :sync_to_user, params: {process_token: process_token}
+
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          expect(response_record_ids).to match_array facility_group_records.map(&:id)
+          expect(other_facility_group_records).not_to include(*response_record_ids)
         end
       end
 
       context "when process_token is block_id" do
         it "force resyncs facility_group records" do
+          process_token = make_process_token(sync_region_id: request_facility.region.block.id,
+                                             current_facility_processed_since: Time.current,
+                                             other_facilities_processed_since: Time.current)
+          Timecop.travel(15.minutes.ago) { create_record_list(10) }
+
+          get :sync_to_user, params: {process_token: process_token}
+
+          response_body = JSON(response.body)
+          expect(response_body[response_key].count).to eq model.count
+          expect(response_body[response_key].map { |record| record["id"] }).to eq(model.pluck(:id))
         end
       end
     end
@@ -362,38 +398,60 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
     context "when X_SYNC_REGION_ID is block_id" do
       before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block.id }
 
-      context "when process_token is empty" do
+      context "when process_token's sync_region_id is empty" do
         it "syncs block records from beginning of time" do
+          process_token = make_process_token(current_facility_processed_since: Time.current,
+                                             other_facilities_processed_since: Time.current)
+          block_records = Timecop.travel(15.minutes.ago) { create_record_list(10, facility: facility_in_same_block) }
+          block_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
+          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
+
+          get :sync_to_user, params: {process_token: process_token}
+
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          expect(response_record_ids).to match_array block_records.map(&:id)
+          expect(non_block_records).not_to include(*response_record_ids)
         end
       end
 
       context "when process_token is current_facility_group_id" do
         it "force resyncs block records" do
+          process_token = make_process_token(current_facility_processed_since: Time.current,
+                                             other_facilities_processed_since: Time.current)
+          block_records = Timecop.travel(15.minutes.ago) { create_record_list(10, facility: facility_in_same_block) }
+          block_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
+          non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
+
+          get :sync_to_user, params: {process_token: process_token}
+
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          expect(response_record_ids).to match_array block_records.map(&:id)
+          expect(non_block_records).not_to include(*response_record_ids)
         end
       end
 
-      context "when process_token is block_id" do
-        let!(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json) }
-
+      context "when process_token's sync_region_id is block_id" do
         it "only sends data belonging to the patients in the block of user's facility" do
-          expected_records = [
+          process_token = make_process_token(sync_region_id: request_facility.region.block.id)
+
+          block_records = [
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
             *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
             *create_record_list(2, patient: patient_assigned_to_block, facility: facility_in_same_block),
             *create_record_list(2, patient: patient_with_appointment_in_block, facility: facility_in_same_block)
           ]
 
-          expected_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
-          not_expected_records = [
+          block_records += patient_with_appointment_in_block.appointments if response_key == "appointments"
+          non_block_records = [
             *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block),
             *create_record_list(2, patient: patient_in_another_facility_group)
           ]
 
           get :sync_to_user, params: {process_token: process_token}
 
-          response_records = JSON(response.body)[response_key]
-          response_records.each { |r| expect(r["id"]).to be_in(expected_records.map(&:id)) }
-          response_records.each { |r| expect(r["id"]).to_not be_in(not_expected_records.map(&:id)) }
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          expect(response_record_ids).to match_array block_records.map(&:id)
+          expect(non_block_records).not_to include(*response_record_ids)
         end
       end
     end
@@ -401,13 +459,13 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
 
   context "when region-level sync is turned off" do
     it "sends facility group records irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-      expected_records = [
+      facility_group_records = [
         *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
         *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
         *create_record_list(2, patient: patient_in_another_block, facility: facility_in_another_block)
       ]
 
-      not_expected_records = create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
+      other_facility_group_records = create_record_list(2, patient: patient_in_another_facility_group, facility: facility_in_another_group)
 
       requested_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id, "invalid_id"]
       process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
@@ -415,13 +473,13 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
       requested_sync_region_ids.each do |requested_sync_region_id|
         process_token_sync_region_ids.each do |process_token_sync_region_id|
           request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
-          process_token = Base64.encode64({sync_region_id: process_token_sync_region_id}.to_json)
+          process_token = make_process_token(sync_region_id: process_token_sync_region_id)
 
           get :sync_to_user, params: {process_token: process_token}
 
           response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-          expect(response_record_ids).to match_array expected_records.map(&:id)
-          expect(not_expected_records).not_to include(*response_record_ids)
+          expect(response_record_ids).to match_array facility_group_records.map(&:id)
+          expect(other_facility_group_records).not_to include(*response_record_ids)
         end
       end
     end
