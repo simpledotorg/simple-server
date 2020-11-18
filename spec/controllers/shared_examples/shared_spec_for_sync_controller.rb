@@ -280,7 +280,7 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
   end
 end
 
-RSpec.shared_examples "a V3 sync controller that supports region level sync" do
+RSpec.shared_examples "a sync controller that supports region level sync" do
   let!(:response_key) { model.to_s.underscore.pluralize }
   let!(:facility_in_same_block) {
     create(:facility, state: request_facility.state, block: request_facility.block, facility_group: request_facility_group)
@@ -373,7 +373,7 @@ RSpec.shared_examples "a V3 sync controller that supports region level sync" do
       end
 
       context "when process_token is block_id" do
-        process_token = Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json)
+        let!(:process_token) { Base64.encode64({sync_region_id: request_facility.region.block.id}.to_json) }
 
         it "only sends data belonging to the patients in the block of user's facility" do
           expected_records = [
