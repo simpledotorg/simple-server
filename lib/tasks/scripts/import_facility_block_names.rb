@@ -10,7 +10,7 @@ class ImportFacilityBlockNames
 
       facility = Facility.where(name: facility_name, district: district)
       if facility.present?
-        facilities_updated += 1 if facility.update(block: block)
+        facilities_updated += 1 if facility.update_columns(zone: block)
       else
         facilities_not_found += 1
         Rails.logger.info "Facility #{facility_name} in district #{district} not found"
