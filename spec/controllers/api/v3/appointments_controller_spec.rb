@@ -229,7 +229,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
                                                  other_facilities_processed_since: Time.current)
               block_records = Timecop.travel(15.minutes.ago) {
                 [*create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block),
-                 appointment_in_block]
+                  appointment_in_block]
               }
               non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
 
@@ -247,7 +247,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
                                                  other_facilities_processed_since: Time.current)
               block_records = Timecop.travel(15.minutes.ago) {
                 [*create_record_list(10, patient: patient_in_same_block, facility: facility_in_same_block),
-                 appointment_in_block]
+                  appointment_in_block]
               }
               non_block_records = Timecop.travel(15.minutes.ago) { create_record_list(2, facility: facility_in_another_block) }
 
