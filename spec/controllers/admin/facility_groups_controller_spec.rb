@@ -61,6 +61,25 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         expect(response).to redirect_to(admin_facilities_url)
       end
 
+      it "creates state if supplied" do
+        enable_flag(:regions_prep)
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "An State",
+            protocol_id: protocol.id
+          )
+
+        expect {
+          post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
+        }.to change(Region.state_regions, :count).by(1)
+      end
+
       it "creates the children blocks" do
         enable_flag(:regions_prep)
         organization = create(:organization)
@@ -79,11 +98,6 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         expect {
           post :create, params: {facility_group: attrs_with_blocks, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(2)
-
-        attrs_with_block_removed = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
-        expect {
-          post :create, params: {facility_group: attrs_with_block_removed, organization_id: organization.id}
-        }.to change(Region.block_regions, :count).by(-1)
       end
     end
 
