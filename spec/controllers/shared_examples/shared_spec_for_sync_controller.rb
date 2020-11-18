@@ -44,7 +44,7 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
       request_user.update(sync_approval_status: :denied)
       get :sync_to_user, params: empty_payload
 
-      expect(response.status).to eq(403)
+        expect(response.status).to eq(403)
     end
 
     it "returns 403 for users which have sync approval status set to requested" do
@@ -351,9 +351,9 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
 
           get :sync_to_user, params: {process_token: process_token}
 
-          response_body = JSON(response.body)
-          expect(response_body[response_key].count).to eq model.count
-          expect(response_body[response_key].map { |record| record["id"] }).to eq(model.pluck(:id))
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          expect(response_record_ids.count).to eq model.count
+          expect(response_record_ids).to match_array model.pluck(:id)
         end
       end
 
@@ -386,9 +386,9 @@ RSpec.shared_examples "a sync controller that supports region level sync" do
 
           get :sync_to_user, params: {process_token: process_token}
 
-          response_body = JSON(response.body)
-          expect(response_body[response_key].count).to eq model.count
-          expect(response_body[response_key].map { |record| record["id"] }).to eq(model.pluck(:id))
+          response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
+          expect(response_record_ids.count).to eq model.count
+          expect(response_record_ids).to match_array model.pluck(:id)
         end
       end
     end
