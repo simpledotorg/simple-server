@@ -20,11 +20,12 @@ module PurgeUsersData
       Address,
       Teleconsultation]
 
-    ActiveRecord::Base.transaction do
-      models.each do |model|
-        puts "Deleting #{model} data"
-        model.with_discarded.delete_all
+    tables = models.map(&:table_name).join(", ")
+    time = Benchmark.ms {
+      ActiveRecord::Base.transaction do
+        ActiveRecord::Base.connection.execute("truncate #{tables}")
       end
-    end
+    }
+    puts "Truncated Patient related tables in #{time.round} ms"
   end
 end

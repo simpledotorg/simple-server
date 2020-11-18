@@ -6,7 +6,7 @@ RSpec.feature "Facility page functionality", type: :feature do
   let(:admin) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
-  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda") }
   let!(:protocol_01) { create(:protocol, name: "testProtocol") }
 
   facility_page = AdminPage::Facilities::Show.new
@@ -66,37 +66,46 @@ RSpec.feature "Facility page functionality", type: :feature do
           enable_flag(:regions_prep)
         end
 
-        it "create new facility group without assigning any facility" do
-          facility_page.click_add_facility_group_button
+        context "create new facility group" do
+          it "create new facility group without assigning any facility" do
+            ihmi = create(:organization, name: "IHMI2")
+            protocol_01 = create(:protocol, name: "testProtocol1")
+            create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
+            facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group_without_assigning_facility(
-            org_name: "IHMI",
-            name: "testfacilitygroup",
-            description: "testDescription",
-            protocol_name: protocol_01.name,
-            state: ihmi_group_bathinda.region.state_region.name
-          )
+            expect(page).to have_content("New facility group")
+            facility_group.add_new_facility_group_without_assigning_facility(
+              org_name: "IHMI2",
+              name: "testfacilitygroup",
+              description: "testDescription",
+              protocol_name: protocol_01.name,
+              state: "Punjab"
+            )
 
-          expect(page).to have_content("Bathinda")
-          expect(page).to have_content("Testfacilitygroup")
-        end
+            expect(page).to have_content("Bathinda")
+            expect(page).to have_content("Testfacilitygroup")
+          end
 
-        it "create new facility group with facility" do
-          facility_page.click_add_facility_group_button
+          it "create new facility group with facility" do
+            ihmi = create(:organization, name: "IHMI2")
+            protocol_01 = create(:protocol, name: "testProtocol1")
+            create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
 
-          expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group(
-            org_name: "IHMI",
-            name: "testfacilitygroup",
-            description: "testDescription",
-            protocol_name: protocol_01.name,
-            state: ihmi_group_bathinda.region.state_region.name
-          )
+            facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("Bathinda")
-          expect(page).to have_content("Testfacilitygroup")
-          facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
+            expect(page).to have_content("New facility group")
+            facility_group.add_new_facility_group(
+              org_name: "IHMI2",
+              name: "testfacilitygroup",
+              description: "testDescription",
+              protocol_name: protocol_01.name,
+              state: "Punjab"
+            )
+
+            expect(page).to have_content("Bathinda")
+            expect(page).to have_content("Testfacilitygroup")
+            facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
+          end
         end
       end
 

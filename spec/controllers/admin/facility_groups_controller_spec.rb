@@ -3,18 +3,19 @@ require "rails_helper"
 RSpec.describe Admin::FacilityGroupsController, type: :controller do
   let(:organization) { FactoryBot.create(:organization) }
   let(:protocol) { FactoryBot.create(:protocol) }
-  let(:state) { create(:region, :state, name: "An State", reparent_to: organization.region) }
+  let(:organization) { create(:organization) }
+  let(:protocol) { create(:protocol) }
   let(:valid_attributes) do
     attributes_for(
       :facility_group,
       organization_id: organization.id,
-      state: state.name,
+      state: "An State",
       protocol_id: protocol.id
     )
   end
 
   let(:invalid_attributes) do
-    FactoryBot.attributes_for(
+    attributes_for(
       :facility_group,
       name: nil,
       state: state.name,
@@ -63,18 +64,50 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         expect(response).to redirect_to(admin_facilities_url)
       end
 
+      it "creates state if supplied" do
+        enable_flag(:regions_prep)
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "An State",
+            protocol_id: protocol.id
+          )
+
+        expect {
+          post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
+        }.to change(Region.state_regions, :count).by(1)
+      end
+
       it "creates the children blocks" do
         enable_flag(:regions_prep)
-        expect(ManageDistrictRegionService).to receive(:update_blocks)
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "An State",
+            protocol_id: protocol.id
+          )
+        attrs_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
 
-        post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
+        expect {
+          post :create, params: {facility_group: attrs_with_blocks, organization_id: organization.id}
+        }.to change(Region.block_regions, :count).by(2)
       end
     end
 
     context "with invalid params" do
-      it "returns a success response (i.e. to display the 'new' template)" do
+      it "returns a 400 response" do
         post :create, params: {facility_group: invalid_attributes, organization_id: organization.id}
-        expect(response).to be_successful
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end
@@ -106,18 +139,36 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "updates the block regions" do
         enable_flag(:regions_prep)
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "An State",
+            protocol_id: protocol.id
+          )
         facility_group = create(:facility_group, valid_attributes)
-        expect(ManageDistrictRegionService).to receive(:update_blocks).with(hash_including(district_region: facility_group.region))
+        attr_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
 
-        put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
+        expect {
+          put :update, params: {id: facility_group.to_param, facility_group: attr_with_blocks, organization_id: organization.id}
+        }.to change(Region.block_regions, :count).by(2)
+
+        attrs_with_block_removed = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
+        expect {
+          put :update, params: {id: facility_group.to_param, facility_group: attrs_with_block_removed, organization_id: organization.id}
+        }.to change(Region.block_regions, :count).by(-1)
       end
     end
 
     context "with invalid params" do
-      it "returns a success response (i.e. to display the 'edit' template)" do
+      it "returns a bad request response (i.e. against the 'edit' template)" do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id}
-        expect(response).to be_successful
+        expect(response).to have_http_status(:bad_request)
       end
     end
   end

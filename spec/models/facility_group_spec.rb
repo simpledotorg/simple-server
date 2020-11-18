@@ -18,8 +18,9 @@ RSpec.describe FacilityGroup, type: :model do
     it { belong_to(:protocol) }
 
     it "nullifies facility_group_id in facilities" do
-      facility_group = FactoryBot.create(:facility_group)
-      FactoryBot.create_list(:facility, 5, facility_group: facility_group)
+      facility_group = create(:facility_group)
+      create_list(:facility, 5, facility_group: facility_group)
+
       expect { facility_group.destroy }.not_to change { Facility.count }
       expect(Facility.where(facility_group: facility_group)).to be_empty
     end
@@ -36,26 +37,92 @@ RSpec.describe FacilityGroup, type: :model do
   context "slugs" do
     it "generates slug on creation and avoids conflicts via appending a UUID" do
       fg_1 = create(:facility_group, name: "New York")
+
       expect(fg_1.slug).to eq("new-york")
+
       fg_2 = create(:facility_group, name: "New York")
+
       uuid_regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
       expect(fg_2.slug).to match(/^new-york-#{uuid_regex}$/)
     end
 
     it "does not change the slug when renamed" do
-      facility_group = create(:facility_group, name: "old_name")
-      original_slug = facility_group.slug
-      facility_group.name = "new name"
-      facility_group.valid?
-      facility_group.save!
-      expect(facility_group.slug).to eq(original_slug)
+      fg_1 = create(:facility_group, name: "old_name")
+
+      original_slug = fg_1.slug
+      fg_1.name = "new name"
+      fg_1.valid?
+      fg_1.save!
+
+      expect(fg_1.slug).to eq(original_slug)
     end
   end
 
   describe "Attribute sanitization" do
     it "squishes and upcases the first letter of the name" do
-      facility_group = FactoryBot.create(:facility_group, name: "facility  Group  ")
+      facility_group = create(:facility_group, name: "facility  Group  ")
       expect(facility_group.name).to eq("Facility Group")
+    end
+  end
+
+  describe "#create_state_region!" do
+    before do
+      enable_flag(:regions_prep)
+    end
+
+    it "creates a new state region if it doesn't exist" do
+      org = create(:organization, name: "IHCI")
+      facility_group = build(:facility_group, name: "FG", state: "Punjab", organization: org)
+      facility_group.create_state_region!
+
+      expect(Region.state_regions.pluck(:name)).to match_array ["Punjab"]
+      expect(Region.state_regions.pluck(:path)).to contain_exactly("india.ihci.punjab")
+    end
+
+    it "does nothing if the state region already exists" do
+      org = create(:organization, name: "IHCI")
+      state_region = create(:region, :state, name: "Punjab", reparent_to: org.region)
+      facility_group = build(:facility_group, name: "FG", state: state_region.name, organization: org)
+      facility_group.create_state_region!
+
+      expect(Region.state_regions.pluck(:name)).to match_array ["Punjab"]
+      expect(Region.state_regions.pluck(:path)).to contain_exactly("india.ihci.punjab")
+    end
+  end
+
+  describe "#update_block_regions!" do
+    before do
+      enable_flag(:regions_prep)
+    end
+
+    it "creates new blocks from new_blocks" do
+      org = create(:organization, name: "IHCI")
+      new_blocks = ["Block 1", "Block 2"]
+      facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
+      facility_group.new_blocks = new_blocks
+
+      facility_group.update_block_regions!
+      facility_group.reload
+
+      expect(facility_group.region.block_regions.pluck(:name)).to match_array new_blocks
+      expect(facility_group.region.block_regions.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
+    end
+
+    it "deletes blocks from remove_blocks" do
+      new_blocks = ["Block 1", "Block 2"]
+      facility_group = create(:facility_group, name: "FG", state: "Punjab")
+      facility_group.new_blocks = new_blocks
+
+      facility_group.update_block_regions!
+      facility_group.reload
+
+      block = facility_group.region.block_regions.first
+      facility_group.remove_blocks = [block.id]
+
+      facility_group.update_block_regions!
+      facility_group.reload
+
+      expect(facility_group.region.block_regions).not_to include block
     end
   end
 
@@ -94,7 +161,8 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe ".discardable?" do
-    let!(:facility_group) { create(:facility_group) }
+    let!(:org) { create(:organization, name: "IHCI") }
+    let!(:facility_group) { create(:facility_group, organization: org) }
 
     context "isn't discardable if data exists" do
       it "has patients" do
