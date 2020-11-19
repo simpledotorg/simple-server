@@ -325,7 +325,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
         other_facility_group_records =
           create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
 
-        process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
+        process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
 
         process_token_sync_region_ids.each do |process_token_sync_region_id|
           process_token = make_process_token(sync_region_id: process_token_sync_region_id)
@@ -379,7 +379,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
 
       context "when process_token is block_id (this can happen if we switch from block sync to FG sync)" do
         it "force resyncs facility_group records" do
-          process_token = make_process_token(sync_region_id: request_facility.region.block.id,
+          process_token = make_process_token(sync_region_id: request_facility.region.block_region.id,
                                              current_facility_processed_since: Time.current,
                                              other_facilities_processed_since: Time.current)
           Timecop.travel(15.minutes.ago) { create_record_list(5) }
@@ -394,7 +394,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
     end
 
     context "when X_SYNC_REGION_ID is block_id" do
-      before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block.id }
+      before { request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block_region.id }
 
       context "when process_token's sync_region_id is empty (i.e. app starts syncing)" do
         it "syncs block records from beginning of time" do
@@ -433,7 +433,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
 
       context "when process_token's sync_region_id is block_id (when we switch from FG sync to block level sync)" do
         it "only sends data belonging to the patients in the block of user's facility" do
-          process_token = make_process_token(sync_region_id: request_facility.region.block.id)
+          process_token = make_process_token(sync_region_id: request_facility.region.block_region.id)
 
           block_records = [
             *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
@@ -467,8 +467,8 @@ RSpec.shared_examples "a working sync controller that supports region level sync
 
       other_facility_group_records = create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
 
-      requested_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id, "invalid_id"]
-      process_token_sync_region_ids = [nil, request_facility.region.block.id, request_facility.facility_group_id]
+      requested_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id, "invalid_id"]
+      process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
 
       requested_sync_region_ids.each do |requested_sync_region_id|
         process_token_sync_region_ids.each do |process_token_sync_region_id|

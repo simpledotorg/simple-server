@@ -36,7 +36,7 @@ class APIController < ApplicationController
     # than fetching it by Region.find(requested_sync_region_id)
     # since the requested_sync_region_id can be an FG id.
     # This can be replaced in the future when facility group ID support is dropped.
-    current_facility.region.block
+    current_facility.region.block_region
   end
 
   def current_timezone_offset

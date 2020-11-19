@@ -607,6 +607,7 @@ DEPENDENCIES
   memory_profiler
   mock_redis
   ougai
+  parallel
   parallel_tests
   passenger
   pg (>= 0.18, < 2.0)
@@ -630,6 +631,7 @@ DEPENDENCIES
   rspec-rails (~> 3.7)
   rspec-sidekiq
   rswag (~> 1.6.0)
+  ruby-progressbar
   sassc-rails
   scenic
   sentry-raven

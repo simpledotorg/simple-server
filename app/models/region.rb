@@ -11,6 +11,7 @@ class Region < ApplicationRecord
   validates :region_type, presence: true
 
   belongs_to :source, polymorphic: true, optional: true
+  auto_strip_attributes :name, squish: true, upcase_first: true
 
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
@@ -19,9 +20,8 @@ class Region < ApplicationRecord
   before_discard :remove_path
 
   REGION_TYPES = %w[root organization state district block facility].freeze
-  enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h
+  enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h, _suffix: "regions"
 
-  # Override the auto-generated root method (via enum) to return the one, single root Region
   def self.root
     Region.find_by(region_type: :root)
   end
@@ -68,26 +68,27 @@ class Region < ApplicationRecord
   def registered_patients
     Patient
       .with_discarded
-      .where(registration_facility: facilities.pluck(:source_id))
+      .where(registration_facility: facility_regions.pluck(:source_id))
   end
 
   def assigned_patients
     Patient
       .with_discarded
-      .where(assigned_facility: facilities.pluck(:source_id))
+      .where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
   def appointed_patients
     Patient
       .with_discarded
       .joins(:appointments)
-      .where(appointments: {facility: facilities.pluck(:source_id)})
+      .where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization
-    define_method(region_type) do
+    ancestor_method = "#{region_type}_region"
+    define_method(ancestor_method) do
       if self_and_descendant_types(region_type).include?(self.region_type)
         self_and_ancestors.find_by(region_type: region_type)
       else
@@ -97,7 +98,8 @@ class Region < ApplicationRecord
 
     # Generates has_many type of methods to fetch a region's descendants
     # e.g. organization.facilities
-    define_method(region_type.pluralize) do
+    descendant_method = "#{region_type}_regions"
+    define_method(descendant_method) do
       if self_and_ancestor_types(region_type).include?(self.region_type)
         self_and_descendants.where(region_type: region_type)
       else

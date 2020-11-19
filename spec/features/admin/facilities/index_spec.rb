@@ -4,13 +4,9 @@ require "rails_helper"
 
 RSpec.feature "Facility page functionality", type: :feature do
   let(:admin) { create(:admin, :power_user) }
-
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
-  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
-  let!(:unassociated_facility) { create(:facility, facility_group: nil, name: "testfacility") }
-  let!(:unassociated_facility02) { create(:facility, facility_group: nil, name: "testfacility_02") }
-
+  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda") }
   let!(:protocol_01) { create(:protocol, name: "testProtocol") }
 
   facility_page = AdminPage::Facilities::Show.new
@@ -54,34 +50,12 @@ RSpec.feature "Facility page functionality", type: :feature do
             org_name: "IHMI",
             name: "testfacilitygroup",
             description: "testDescription",
-            unassociated_facility: unassociated_facility.name,
             protocol_name: protocol_01.name
           )
 
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
           facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
-        end
-
-        it "admin should be able to edit facility group info " do
-          facility_page.click_add_facility_group_button
-          facility_group.add_new_facility_group(
-            org_name: "IHMI",
-            name: "testfacilitygroup",
-            description: "testDescription",
-            unassociated_facility: unassociated_facility.name,
-            protocol_name: protocol_01.name
-          )
-          facility_page.click_edit_button_present_for_facilitygroup("Testfacilitygroup")
-
-          # deselecting previously selected facility
-          facility_group.select_unassociated_facility(unassociated_facility.name)
-
-          # select new unassigned facility
-          facility_group.select_unassociated_facility(unassociated_facility02.name)
-          facility_group.click_on_update_facility_group_button
-
-          expect(page).to have_content(unassociated_facility02.name)
         end
       end
 
@@ -90,60 +64,46 @@ RSpec.feature "Facility page functionality", type: :feature do
           enable_flag(:regions_prep)
         end
 
-        it "create new facility group without assigning any facility" do
-          facility_page.click_add_facility_group_button
+        context "create new facility group" do
+          it "create new facility group without assigning any facility" do
+            ihmi = create(:organization, name: "IHMI2")
+            protocol_01 = create(:protocol, name: "testProtocol1")
+            create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
+            facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group_without_assigning_facility(
-            org_name: "IHMI",
-            name: "testfacilitygroup",
-            description: "testDescription",
-            protocol_name: protocol_01.name,
-            state: "Punjab"
-          )
+            expect(page).to have_content("New facility group")
+            facility_group.add_new_facility_group_without_assigning_facility(
+              org_name: "IHMI2",
+              name: "testfacilitygroup",
+              description: "testDescription",
+              protocol_name: protocol_01.name,
+              state: "Punjab"
+            )
 
-          expect(page).to have_content("Bathinda")
-          expect(page).to have_content("Testfacilitygroup")
-        end
+            expect(page).to have_content("Bathinda")
+            expect(page).to have_content("Testfacilitygroup")
+          end
 
-        it "create new facility group with facility" do
-          facility_page.click_add_facility_group_button
+          it "create new facility group with facility" do
+            ihmi = create(:organization, name: "IHMI2")
+            protocol_01 = create(:protocol, name: "testProtocol1")
+            create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
 
-          expect(page).to have_content("New facility group")
-          facility_group.add_new_facility_group(
-            org_name: "IHMI",
-            name: "testfacilitygroup",
-            description: "testDescription",
-            unassociated_facility: unassociated_facility.name,
-            protocol_name: protocol_01.name,
-            state: "Punjab"
-          )
+            facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("Bathinda")
-          expect(page).to have_content("Testfacilitygroup")
-          facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
-        end
+            expect(page).to have_content("New facility group")
+            facility_group.add_new_facility_group(
+              org_name: "IHMI2",
+              name: "testfacilitygroup",
+              description: "testDescription",
+              protocol_name: protocol_01.name,
+              state: "Punjab"
+            )
 
-        it "admin should be able to edit facility group info " do
-          facility_page.click_add_facility_group_button
-          facility_group.add_new_facility_group(
-            org_name: "IHMI",
-            name: "testfacilitygroup",
-            description: "testDescription",
-            unassociated_facility: unassociated_facility.name,
-            protocol_name: protocol_01.name,
-            state: "Punjab"
-          )
-          facility_page.click_edit_button_present_for_facilitygroup("Testfacilitygroup")
-
-          # deselecting previously selected facility
-          facility_group.select_unassociated_facility(unassociated_facility.name)
-
-          # select new unassigned facility
-          facility_group.select_unassociated_facility(unassociated_facility02.name)
-          facility_group.click_on_update_facility_group_button
-
-          expect(page).to have_content(unassociated_facility02.name)
+            expect(page).to have_content("Bathinda")
+            expect(page).to have_content("Testfacilitygroup")
+            facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
+          end
         end
       end
 

@@ -23,22 +23,6 @@ am-ET:
     patients_enrolled: "ምን ያህል አዲስ ታካሚዎች በ %{facility_name} ተቋም ተመዝግበዋል?"
     all_time_patients: "ሁል ግዜ: %{count} ታካሚዎች"
     updated_at: "በ %{time} ዘምኗል"
-  user_analytics:
-    hypertension: "ከፍተኛ የደም ግፊት"
-    diabetes: "የስኳር በሽታ"
-    genders: ["ሁሉም", "ወንድ", "ሴት", "ጾታእሊፍ"]
-    all_time: "ሁልግዜ"
-    follow_up_patients: "ተከታታይ ህክምና ላይ ያሉ የደም ግፊት ታካሚዎች"
-    registered_patients: "የተመዘገቡ ታካሚዎች"
-    hypertension_control: "የደም ግፊት መቆጣጠሪያ"
-    hypertension_control_desc: "በወሩ መጨረሻ ላይ ለክትትል ከመጡት የደም ግፊት ካላቸው ታካሚዎች ውስጥ የደም ግፊታቸው ከ 140/90 በታች  የሆነት ስንት ነበሩ?"
-    notes: "ማስታወሻዎች"
-    footer_note_1: "ጥሬ መረጃው በ%{facility_name} ተቋም ውስጥ ላሉት ሁሉም እንቅስቃሴዎች ነው። ጥሬ መረጃው ጊዜ ያለፈበት ከሆነ \"ማጣመር በመጠባበቅ ላይ\"  የሚለውን አገናኝ መነሻ ገጽ ላይ መታ ያድርጉ።"
-    footer_note_2: "ተከታይ ህመምና ላይ ያለ ታካሚ የሚቆጠረው በየወሩ እንደ አንድ ጉብኝት ብቻ ነው ፡፡ አንድ ህመምተኛ በአንድ ወር ውስጥ ብዙ ጊዜ የሚከታተል ከሆነ እሱ ወይም እሷ አንድ ጊዜ ብቻ ይቆጠራሉ ፡፡"
-    thank_you: "አመሰግናለሁ"
-    thank_you_note: "ከፍተኛ የደም ግፊት ያላቸው ታካሚዎችን ለማከም በትጋት  ስለሠሩ እናመሰግናለን። ሥራዎ ከልብ ድካም እና ከስትሮክ ህይወትን ያድናል። ፡፡"
-    updated: "የዘመነው: %{time}"
-    ratio_string: "%{value_1} ከ %{value_2}"
   dashboard:
     graphics:
       graphics_title_html: "በ <b>%{current_quarter_string}</b> ውስጥ በ <b>%{previous_quarter_string}</b> የተመዘገቡት %{patients_in_previous_quarter} ታካሚዎች ላይ ምን ተከስቷል?"
