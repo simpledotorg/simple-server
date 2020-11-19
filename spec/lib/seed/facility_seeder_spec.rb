@@ -24,4 +24,13 @@ RSpec.describe Seed::FacilitySeeder do
     }.to change { FacilityGroup.count }.by(2)
       .and change { Facility.count }.by_at_most(8)
   end
+
+  it "creates facilities within a facility group (ie district) that are all within the same state" do
+    seeder = Seed::FacilitySeeder.new(config: Seed::Config.new)
+    seeder.call
+    Facility.all.group_by { |f| f.facility_group_id }.each do |facility_group_id, facilities|
+      single_state = facilities.first.state
+      expect(facilities.map(&:state).uniq).to contain_exactly(single_state)
+    end
+  end
 end
