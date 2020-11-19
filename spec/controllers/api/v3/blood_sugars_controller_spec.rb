@@ -265,78 +265,78 @@ RSpec.describe Api::V3::BloodSugarsController, type: :controller do
     it_behaves_like "a working V3 sync controller sending records"
     it_behaves_like "a working sync controller that supports region level sync"
 
-    describe "patient prioritisation" do
-      it "syncs records for patients in the request facility first" do
-        request_2_facility = create(:facility, facility_group: request_facility_group)
+    # describe "patient prioritisation" do
+    #   it "syncs records for patients in the request facility first" do
+    #     request_2_facility = create(:facility, facility_group: request_facility_group)
+    #
+    #     create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
+    #     create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
+    #     create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
+    #     create_record_list(2, facility: request_2_facility, updated_at: 10.minutes.ago)
+    #
+    #     # GET request 1
+    #     set_authentication_headers
+    #     get :sync_to_user, params: {limit: 4}
+    #     response_1_body = JSON(response.body)
+    #
+    #     record_ids = response_1_body["blood_sugars"].map { |r| r["id"] }
+    #     records = model.where(id: record_ids)
+    #     expect(records.count).to eq 4
+    #     expect(records.map(&:facility).to_set).to eq Set[request_facility]
+    #
+    #     # GET request 2
+    #     get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
+    #     response_2_body = JSON(response.body)
+    #
+    #     record_ids = response_2_body["blood_sugars"].map { |r| r["id"] }
+    #     records = model.where(id: record_ids)
+    #     expect(records.count).to eq 4
+    #     expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
+    #   end
+    # end
 
-        create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
-        create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
-        create_record_list(2, facility: request_2_facility, updated_at: 7.minutes.ago)
-        create_record_list(2, facility: request_2_facility, updated_at: 10.minutes.ago)
+    # context "hba1c blood sugars" do
+    #   let(:facility) { create(:facility, facility_group: request_facility_group) }
+    #
+    #   before :each do
+    #     set_authentication_headers
+    #     create_record_list(2, facility: facility, blood_sugar_type: :random)
+    #     create_record_list(2, facility: facility, blood_sugar_type: :fasting)
+    #     create_record_list(2, facility: facility, blood_sugar_type: :post_prandial)
+    #     create_record_list(2, facility: facility, blood_sugar_type: :hba1c)
+    #   end
+    #
+    #   it "doesn't send hba1c blood sugars" do
+    #     get :sync_to_user, params: {limit: 8}
+    #
+    #     response_blood_sugars = JSON(response.body)["blood_sugars"]
+    #     response_types = response_blood_sugars.map { |blood_sugar| blood_sugar["blood_sugar_type"] }.to_set
+    #
+    #     expect(response_blood_sugars.count).to eq 6
+    #     expect(response_types.count).to eq 3
+    #     expect(response_types).not_to include("hba1c")
+    #   end
+    # end
 
-        # GET request 1
-        set_authentication_headers
-        get :sync_to_user, params: {limit: 4}
-        response_1_body = JSON(response.body)
-
-        record_ids = response_1_body["blood_sugars"].map { |r| r["id"] }
-        records = model.where(id: record_ids)
-        expect(records.count).to eq 4
-        expect(records.map(&:facility).to_set).to eq Set[request_facility]
-
-        # GET request 2
-        get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
-        response_2_body = JSON(response.body)
-
-        record_ids = response_2_body["blood_sugars"].map { |r| r["id"] }
-        records = model.where(id: record_ids)
-        expect(records.count).to eq 4
-        expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
-      end
-    end
-
-    context "hba1c blood sugars" do
-      let(:facility) { create(:facility, facility_group: request_facility_group) }
-
-      before :each do
-        set_authentication_headers
-        create_record_list(2, facility: facility, blood_sugar_type: :random)
-        create_record_list(2, facility: facility, blood_sugar_type: :fasting)
-        create_record_list(2, facility: facility, blood_sugar_type: :post_prandial)
-        create_record_list(2, facility: facility, blood_sugar_type: :hba1c)
-      end
-
-      it "doesn't send hba1c blood sugars" do
-        get :sync_to_user, params: {limit: 8}
-
-        response_blood_sugars = JSON(response.body)["blood_sugars"]
-        response_types = response_blood_sugars.map { |blood_sugar| blood_sugar["blood_sugar_type"] }.to_set
-
-        expect(response_blood_sugars.count).to eq 6
-        expect(response_types.count).to eq 3
-        expect(response_types).not_to include("hba1c")
-      end
-    end
-
-    context "V4 blood_sugar_values" do
-      let(:facility) { create(:facility, facility_group: request_facility_group) }
-
-      before :each do
-        set_authentication_headers
-        create_record(facility: facility, blood_sugar_type: :random)
-        create_record(facility: facility, blood_sugar_type: :fasting)
-        create_record(facility: facility, blood_sugar_type: :post_prandial)
-        create_record(facility: facility, blood_sugar_type: :hba1c)
-      end
-
-      it "sends integer blood_sugar_values" do
-        get :sync_to_user, params: {limit: 4}
-
-        response_blood_sugars = JSON(response.body)["blood_sugars"]
-        response_values = response_blood_sugars.map { |blood_sugar| blood_sugar["blood_sugar_value"] }
-
-        response_values.each { |value| expect(value).to be_instance_of(Integer) }
-      end
-    end
+    # context "V4 blood_sugar_values" do
+    #   let(:facility) { create(:facility, facility_group: request_facility_group) }
+    #
+    #   before :each do
+    #     set_authentication_headers
+    #     create_record(facility: facility, blood_sugar_type: :random)
+    #     create_record(facility: facility, blood_sugar_type: :fasting)
+    #     create_record(facility: facility, blood_sugar_type: :post_prandial)
+    #     create_record(facility: facility, blood_sugar_type: :hba1c)
+    #   end
+    #
+    #   it "sends integer blood_sugar_values" do
+    #     get :sync_to_user, params: {limit: 4}
+    #
+    #     response_blood_sugars = JSON(response.body)["blood_sugars"]
+    #     response_values = response_blood_sugars.map { |blood_sugar| blood_sugar["blood_sugar_value"] }
+    #
+    #     response_values.each { |value| expect(value).to be_instance_of(Integer) }
+    #   end
+    # end
   end
 end
