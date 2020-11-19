@@ -127,7 +127,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
             response_records = JSON(response.body)["facilities"]
             response_records.each do |record|
-              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block.id
+              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
             end
           end
         end
