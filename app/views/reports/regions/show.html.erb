@@ -296,7 +296,7 @@
 
 <%= render "visit_details_card" %>
 
-<% if current_admin.feature_enabled?(:region_reports) && @region.district_region? %>
+<% if current_admin.feature_enabled?(:region_reports) && @region.district_region? && @region.respond_to?(:block_regions) %>
   <%= render "block_tables", data: @block_data, region_type: "block" %>
 <% end %>
 

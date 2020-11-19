@@ -32,7 +32,7 @@ class Reports::RegionsController < AdminController
                                                         period: @period).call
       }
     end
-    if current_admin.feature_enabled?(:region_reports) && @region.district_region?
+    if current_admin.feature_enabled?(:region_reports) && @region.district_region? && @region.respond_to?(:block_regions)
       @block_data = @region.block_regions.each_with_object({}) { |region, hsh|
         hsh[region.name] = Reports::RegionService.new(region: region,
                                                       period: @period).call
