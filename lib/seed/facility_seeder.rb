@@ -16,6 +16,9 @@ module Seed
       community: ["HWC", "Village"]
     }
 
+    # The max number of facilities in a block in a facility group.
+    MAX_FACILITIES_PER_BLOCK = 3.0
+
     def self.call(*args)
       new(*args).call
     end
@@ -43,6 +46,11 @@ module Seed
       FACILITY_SIZE_WEIGHTS.max_by { |_, weight| rand**(1.0 / weight) }.first
     end
 
+    def facilities_per_block
+      max_number_facilities_per_block = (number_of_facilities_per_facility_group / MAX_FACILITIES_PER_BLOCK).ceil
+      config.rand_or_max(1..max_number_facilities_per_block)
+    end
+
     def call
       Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
       organization = Seed.seed_org
@@ -61,15 +69,22 @@ module Seed
       facility_attrs = []
       fg_result.results.each do |row|
         facility_group_id, facility_group_name = *row
-        number_of_facilities_per_facility_group.times {
+        number_facilities = number_of_facilities_per_facility_group
+        state = Seed::FakeNames.instance.state
+        blocks = Seed::FakeNames.instance.blocks.sample(facilities_per_block)
+        number_facilities.times {
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
 
+          # TODO set the facility state here to match the parent district!
+          # also, what about ze blocks?
           attrs = {
             district: facility_group_name,
             facility_group_id: facility_group_id,
             facility_size: size,
-            facility_type: type
+            facility_type: type,
+            state: state,
+            zone: blocks.sample
           }
           facility_attrs << FactoryBot.build(:facility, :seed, attrs)
         }
