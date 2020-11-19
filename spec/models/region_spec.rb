@@ -138,17 +138,13 @@ RSpec.describe Region, type: :model do
   end
 
   context "#syncable_patients" do
+    before { Flipper.enable(:regions_prep) }
     let!(:organization) { create(:organization) }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:facility_1) { create(:facility, state: "Maharashtra", block: "M1", facility_group: facility_group) }
     let!(:facility_2) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
     let!(:facility_3) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
     let!(:facility_4) { create(:facility, state: "Maharashtra", block: "P1", facility_group: facility_group) }
-
-    before :each do
-      # TODO: Stop using backfill script to generate test data
-      RegionBackfill.call(dry_run: false)
-    end
 
     it "accounts for patients registered in the facility of the region" do
       patient_from_f1 = create(:patient, registration_facility: facility_1)

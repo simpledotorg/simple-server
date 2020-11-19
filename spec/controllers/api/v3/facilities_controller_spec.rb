@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::FacilitiesController, type: :controller do
+  before { Flipper.enable(:regions_prep) }
   let(:request_user) { create(:user) }
-
   let(:model) { Facility }
 
   def create_record_list(n, _options = {})
@@ -17,8 +17,6 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
       Timecop.travel(14.minutes.ago) do
         create_record_list(2)
       end
-      # TODO: Stop using backfill script to generate test data
-      RegionBackfill.call(dry_run: false)
     end
 
     describe "GET sync: send data from server to device;" do
@@ -30,15 +28,6 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
         expect(response_body[response_key].count).to eq model.count
         expect(response_body[response_key].map { |record| record["id"] }.to_set)
           .to eq(model.all.pluck(:id).to_set)
-      end
-
-      it "only sends facilities that belong to a facility group" do
-        facilities_without_group = create_list(:facility, 2, facility_group: nil)
-        get :sync_to_user
-
-        response_body = JSON(response.body)
-        expect(response_body[response_key].map { |record| record["id"] }.to_set)
-          .not_to include(*facilities_without_group.map(&:id))
       end
 
       it "Returns new records added since last sync" do

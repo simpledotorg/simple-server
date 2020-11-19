@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::PatientsController, type: :controller do
+  before { Flipper.enable(:regions_prep) }
   let(:request_user) { create(:user) }
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
@@ -376,11 +377,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       let!(:facility_in_other_block) { create(:facility, block: "Other Block", facility_group: request_facility_group) }
       let!(:facility_in_other_group) { create(:facility, facility_group: create(:facility_group)) }
 
-      before :each do
-        # TODO: replace with proper factory data
-        RegionBackfill.call(dry_run: false)
-        set_authentication_headers
-      end
+      before { set_authentication_headers }
 
       context "region-level sync is turned on" do
         before :each do

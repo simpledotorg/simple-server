@@ -281,7 +281,9 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
 end
 
 RSpec.shared_examples "a working sync controller that supports region level sync" do
-  let!(:response_key) { model.to_s.underscore.pluralize }
+  let!(:response_key) {
+    model.to_s.underscore.pluralize
+  }
   let!(:facility_in_same_block) {
     create(:facility, state: request_facility.state, block: request_facility.block, facility_group: request_facility_group)
   }
@@ -305,11 +307,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
   let!(:patient_in_other_block) { create(:patient, :without_medical_history, registration_facility: facility_in_other_block) }
   let!(:patient_in_other_facility_group) { create(:patient, :without_medical_history, registration_facility: facility_in_other_group) }
 
-  before :each do
-    # TODO: replace with proper factory data
-    RegionBackfill.call(dry_run: false)
-    set_authentication_headers
-  end
+  before { set_authentication_headers }
 
   context "region-level sync is turned on" do
     before { enable_flag(:region_level_sync, request_user) }
