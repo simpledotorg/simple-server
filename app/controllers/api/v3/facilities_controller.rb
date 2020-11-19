@@ -48,7 +48,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   private
 
   def sync_region_id(facility)
-    if current_user && current_user.feature_enabled?(:region_level_sync)
+    if current_user&.feature_enabled?(:region_level_sync)
       facility.region.block.id
     else
       facility.facility_group.id
