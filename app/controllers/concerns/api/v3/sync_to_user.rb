@@ -89,7 +89,7 @@ module Api::V3::SyncToUser
     end
 
     def block_level_sync?
-      current_user.feature_enabled?(:region_level_sync) && requested_sync_region_id == current_block.id
+      current_user.block_level_sync? && requested_sync_region_id == current_block.id
     end
   end
 end
