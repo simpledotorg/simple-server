@@ -23,7 +23,7 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = FacilityGroup.new(facility_group_params)
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    if successful_create?
+    if create_successful?
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new, status: :bad_request
@@ -31,7 +31,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    if successful_update?
+    if update_successful?
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit, status: :bad_request
@@ -85,8 +85,8 @@ class Admin::FacilityGroupsController < AdminController
       :description,
       :protocol_id,
       :enable_diabetes_management,
-      new_blocks: [],
-      remove_blocks: []
+      new_block_names: [],
+      remove_block_ids: []
     )
   end
 
@@ -94,7 +94,7 @@ class Admin::FacilityGroupsController < AdminController
     facility_group_params.except(:state)
   end
 
-  def successful_create?
+  def create_successful?
     @facility_group.create_state_region!
 
     if @facility_group.save && @facility_group.toggle_diabetes_management
@@ -103,7 +103,7 @@ class Admin::FacilityGroupsController < AdminController
     end
   end
 
-  def successful_update?
+  def update_successful?
     if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
       @facility_group.update_block_regions!
       true

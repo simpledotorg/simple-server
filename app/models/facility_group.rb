@@ -32,10 +32,10 @@ class FacilityGroup < ApplicationRecord
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
-  attr_accessor :new_blocks
-  attr_accessor :remove_blocks
-
   validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
+
+  attr_accessor :new_block_names
+  attr_accessor :remove_block_ids
 
   def state
     @state || region&.state_region&.name
@@ -105,18 +105,18 @@ class FacilityGroup < ApplicationRecord
 
   def create_block_regions!
     return unless Flipper.enabled?(:regions_prep)
-    return if new_blocks.blank?
+    return if new_block_names.blank?
 
-    new_blocks.map { |name|
+    new_block_names.map { |name|
       Region.block_regions.create!(name: name, reparent_to: region)
     }
   end
 
   def remove_block_regions!
     return unless Flipper.enabled?(:regions_prep)
-    return if remove_blocks.blank?
+    return if remove_block_ids.blank?
 
-    remove_blocks.map { |id|
+    remove_block_ids.map { |id|
       next unless Region.find(id)
       next unless Region.find(id).children.empty?
 

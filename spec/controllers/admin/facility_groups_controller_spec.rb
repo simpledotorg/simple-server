@@ -30,6 +30,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it "returns a success response" do
       facility_group = create(:facility_group, valid_attributes)
       get :show, params: {id: facility_group.to_param, organization_id: organization.id}
+
       expect(response).to be_successful
     end
   end
@@ -37,6 +38,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   describe "GET #new" do
     it "returns a success response" do
       get :new, params: {organization_id: organization.id}
+
       expect(response).to be_successful
     end
   end
@@ -45,6 +47,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it "returns a success response" do
       facility_group = create(:facility_group, valid_attributes)
       get :edit, params: {id: facility_group.to_param, organization_id: organization.id}
+
       expect(response).to be_successful
     end
   end
@@ -64,6 +67,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "creates state if supplied" do
         enable_flag(:regions_prep)
+
         organization = create(:organization)
         admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
         sign_in(admin.email_authentication)
@@ -83,6 +87,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
       it "creates the children blocks" do
         enable_flag(:regions_prep)
+
         organization = create(:organization)
         admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
         sign_in(admin.email_authentication)
@@ -94,7 +99,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
             state: "An State",
             protocol_id: protocol.id
           )
-        attrs_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
+        attrs_with_blocks = valid_attributes.merge(new_block_names: ["Block A", "Block B"])
 
         expect {
           post :create, params: {facility_group: attrs_with_blocks, organization_id: organization.id}
@@ -125,6 +130,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
         facility_group.reload
+
         expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug", "enable_diabetes_management"))
           .to eq new_attributes.except(:state).with_indifferent_access
       end
@@ -132,11 +138,35 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       it "redirects to the facilities" do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: valid_attributes, organization_id: organization.id}
+
         expect(response).to redirect_to(admin_facilities_url)
+      end
+
+      it "disallows updating state" do
+        enable_flag(:regions_prep)
+
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "Original State",
+            protocol_id: protocol.id
+          )
+        facility_group = create(:facility_group, valid_attributes)
+
+        requested_attributes = valid_attributes.merge(state: "New State")
+        put :update, params: {id: facility_group.to_param, facility_group: requested_attributes, organization_id: organization.id}
+
+        expect(facility_group.reload.state).to eq("Original State")
       end
 
       it "updates the block regions" do
         enable_flag(:regions_prep)
+
         organization = create(:organization)
         admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
         sign_in(admin.email_authentication)
@@ -149,13 +179,13 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
             protocol_id: protocol.id
           )
         facility_group = create(:facility_group, valid_attributes)
-        attr_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
+        attr_with_blocks = valid_attributes.merge(new_block_names: ["Block A", "Block B"])
 
         expect {
           put :update, params: {id: facility_group.to_param, facility_group: attr_with_blocks, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(2)
 
-        attrs_with_block_removed = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
+        attrs_with_block_removed = valid_attributes.merge(remove_block_ids: [Region.block_regions.last.id])
         expect {
           put :update, params: {id: facility_group.to_param, facility_group: attrs_with_block_removed, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(-1)
@@ -166,6 +196,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       it "returns a bad request response (i.e. against the 'edit' template)" do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id}
+
         expect(response).to have_http_status(:bad_request)
       end
     end
@@ -182,6 +213,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     it "redirects to the facilities list" do
       facility_group = create(:facility_group, valid_attributes)
       delete :destroy, params: {id: facility_group.to_param, organization_id: organization.id}
+
       expect(response).to redirect_to(admin_facilities_url)
     end
   end

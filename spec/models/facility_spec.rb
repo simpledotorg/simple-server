@@ -309,32 +309,49 @@ RSpec.describe Facility, type: :model do
   end
 
   describe ".parse_facilities" do
-    let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+    context "when regions_prep is disabled" do
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
 
-    it "parses the facilities" do
-      facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.first).to include(organization_name: "OrgOne",
-                                          facility_group_name: "FGTwo",
-                                          name: "Test Facility",
-                                          facility_type: "CHC",
-                                          district: "Bhatinda",
-                                          state: "Punjab",
-                                          country: "India",
-                                          enable_diabetes_management: "true",
-                                          import: true)
-      expect(facilities.second).to include(organization_name: "OrgOne",
-                                           facility_group_name: "FGTwo",
-                                           name: "Test Facility 2",
-                                           facility_type: "CHC",
-                                           district: "Bhatinda",
-                                           state: "Punjab",
-                                           country: "India",
-                                           import: true)
+      it "parses the facilities" do
+        facilities = described_class.parse_facilities(upload_file)
+        expect(facilities.first).to include(organization_name: "OrgOne",
+                                            facility_group_name: "FGTwo",
+                                            name: "Test Facility",
+                                            facility_type: "CHC",
+                                            district: "Bhatinda",
+                                            state: "Punjab",
+                                            country: "India",
+                                            enable_diabetes_management: "true",
+                                            import: true)
+        expect(facilities.second).to include(organization_name: "OrgOne",
+                                             facility_group_name: "FGTwo",
+                                             name: "Test Facility 2",
+                                             facility_type: "CHC",
+                                             district: "Bhatinda",
+                                             state: "Punjab",
+                                             country: "India",
+                                             import: true)
+      end
+
+      it "defaults enable_diabetes_management to false if blank" do
+        facilities = described_class.parse_facilities(upload_file)
+        expect(facilities.second[:enable_diabetes_management]).to be false
+      end
     end
 
-    it "defaults enable_diabetes_management to false if blank" do
-      facilities = described_class.parse_facilities(upload_file)
-      expect(facilities.second[:enable_diabetes_management]).to be false
+    context "when regions_prep is enabled" do
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_without_state_test.csv", "text/csv") }
+      before do
+        enable_flag(:regions_prep)
+      end
+
+      it "sets the state" do
+        create(:facility_group, name: "FGTwo", state: "Maharashtra", organization: create(:organization, name: "OrgOne"))
+        facilities = described_class.parse_facilities(upload_file)
+        expect(facilities.first).to include(organization_name: "OrgOne",
+                                            facility_group_name: "FGTwo",
+                                            state: "Maharashtra")
+      end
     end
   end
 

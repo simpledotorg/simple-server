@@ -36,25 +36,25 @@ RSpec.describe FacilityGroup, type: :model do
 
   context "slugs" do
     it "generates slug on creation and avoids conflicts via appending a UUID" do
-      fg_1 = create(:facility_group, name: "New York")
+      facility_group_1 = create(:facility_group, name: "New York")
 
-      expect(fg_1.slug).to eq("new-york")
+      expect(facility_group_1.slug).to eq("new-york")
 
-      fg_2 = create(:facility_group, name: "New York")
+      facility_group_2 = create(:facility_group, name: "New York")
 
       uuid_regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-      expect(fg_2.slug).to match(/^new-york-#{uuid_regex}$/)
+      expect(facility_group_2.slug).to match(/^new-york-#{uuid_regex}$/)
     end
 
     it "does not change the slug when renamed" do
-      fg_1 = create(:facility_group, name: "old_name")
+      facility_group = create(:facility_group, name: "old_name")
 
-      original_slug = fg_1.slug
-      fg_1.name = "new name"
-      fg_1.valid?
-      fg_1.save!
+      original_slug = facility_group.slug
+      facility_group.name = "new name"
+      facility_group.valid?
+      facility_group.save!
 
-      expect(fg_1.slug).to eq(original_slug)
+      expect(facility_group.slug).to eq(original_slug)
     end
   end
 
@@ -95,29 +95,29 @@ RSpec.describe FacilityGroup, type: :model do
       enable_flag(:regions_prep)
     end
 
-    it "creates new blocks from new_blocks" do
+    it "creates new blocks from new_block_names" do
       org = create(:organization, name: "IHCI")
-      new_blocks = ["Block 1", "Block 2"]
+      new_block_names = ["Block 1", "Block 2"]
       facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
-      facility_group.new_blocks = new_blocks
+      facility_group.new_block_names = new_block_names
 
       facility_group.update_block_regions!
       facility_group.reload
 
-      expect(facility_group.region.block_regions.pluck(:name)).to match_array new_blocks
+      expect(facility_group.region.block_regions.pluck(:name)).to match_array new_block_names
       expect(facility_group.region.block_regions.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
     end
 
-    it "deletes blocks from remove_blocks" do
-      new_blocks = ["Block 1", "Block 2"]
+    it "deletes blocks from remove_block_ids" do
+      new_block_names = ["Block 1", "Block 2"]
       facility_group = create(:facility_group, name: "FG", state: "Punjab")
-      facility_group.new_blocks = new_blocks
+      facility_group.new_block_names = new_block_names
 
       facility_group.update_block_regions!
       facility_group.reload
 
       block = facility_group.region.block_regions.first
-      facility_group.remove_blocks = [block.id]
+      facility_group.remove_block_ids = [block.id]
 
       facility_group.update_block_regions!
       facility_group.reload
