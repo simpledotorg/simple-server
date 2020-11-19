@@ -98,7 +98,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
             state: "An State",
             protocol_id: protocol.id
           )
-        attrs_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
+        attrs_with_blocks = valid_attributes.merge(new_block_names: ["Block A", "Block B"])
 
         expect {
           post :create, params: {facility_group: attrs_with_blocks, organization_id: organization.id}
@@ -177,13 +177,13 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
             protocol_id: protocol.id
           )
         facility_group = create(:facility_group, valid_attributes)
-        attr_with_blocks = valid_attributes.merge(new_blocks: ["Block A", "Block B"])
+        attr_with_blocks = valid_attributes.merge(new_block_names: ["Block A", "Block B"])
 
         expect {
           put :update, params: {id: facility_group.to_param, facility_group: attr_with_blocks, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(2)
 
-        attrs_with_block_removed = valid_attributes.merge(remove_blocks: [Region.block_regions.last.id])
+        attrs_with_block_removed = valid_attributes.merge(remove_block_ids: [Region.block_regions.last.id])
         expect {
           put :update, params: {id: facility_group.to_param, facility_group: attrs_with_block_removed, organization_id: organization.id}
         }.to change(Region.block_regions, :count).by(-1)
