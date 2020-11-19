@@ -16,6 +16,7 @@ RSpec.describe Region, type: :model do
       region_3 = Region.create!(name: "New York", region_type: "block", reparent_to: region_2)
       region_4 = Region.create!(name: "New York", region_type: "facility", reparent_to: region_3)
       region_5 = Region.create!(name: "New York", region_type: "facility", reparent_to: region_3)
+
       expect(region_1.slug).to eq("new-york")
       expect(region_2.slug).to eq("new-york-district")
       expect(region_3.slug).to eq("new-york-block")
@@ -26,31 +27,28 @@ RSpec.describe Region, type: :model do
 
   context "behavior" do
     it "sets a valid path" do
+      enable_flag(:regions_prep)
+
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
       long_name = ("This is a long facility name" * 10)
-      facility_2 = create(:facility, name: long_name, block: "Block22", state: "Test State", facility_group: facility_group_1)
-
-      # TODO: Stop using backfill script to generate test data
-      RegionBackfill.call(dry_run: false)
+      facility_2 = create(:facility, name: long_name, block: "Block23", state: "Test State", facility_group: facility_group_1)
 
       expect(org.region.reload.path).to eq("india.test_organization")
       expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.region.path_label}")
       expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.region.slug.underscore}")
-      expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
+      expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_2.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
     end
 
     it "can soft delete nodes" do
+      enable_flag(:regions_prep)
+
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, organization: org, state: "State 1")
       facility_group_2 = create(:facility_group, organization: org, state: "State 2")
-
       _facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
       _facility_2 = create(:facility, name: "facility2", state: "State 2", facility_group: facility_group_2)
-
-      # TODO: Stop using backfill script to generate test data
-      RegionBackfill.call(dry_run: false)
 
       state_2 = Region.find_by!(name: "State 2")
       expect(state_2.children).to_not be_empty
@@ -67,11 +65,11 @@ RSpec.describe Region, type: :model do
 
   context "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
+      enable_flag(:regions_prep)
+
       facility_group_1 = create(:facility_group, organization: create(:organization), state: "State 1")
       create(:facility, facility_group: facility_group_1, state: "State 1")
 
-      # TODO: Stop using backfill script to generate test data
-      RegionBackfill.call(dry_run: false)
       root_region = Region.root
       org_region = Region.organization_regions.first
       state_region = Region.state_regions.first

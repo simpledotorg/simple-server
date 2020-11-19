@@ -2,13 +2,14 @@ FactoryBot.define do
   factory :facility_group do
     transient do
       org { create(:organization) }
+      state_name { Faker::Address.state }
     end
 
     id { SecureRandom.uuid }
     name { Seed::FakeNames.instance.district }
     description { Faker::Company.catch_phrase }
     organization { org }
-    state { Faker::Address.state }
+    state { state_name }
     protocol
 
     transient do
@@ -17,11 +18,12 @@ FactoryBot.define do
 
     before(:create) do |fg, options|
       if options.create_parent_region
-        create(:region,
-          name: fg.state,
-          region_type: :state,
-          reparent_to: fg.organization.region)
+        create(:region, :state, name: fg.state, reparent_to: fg.organization.region)
       end
+    end
+
+    trait :without_parent_region do
+      create_parent_region { false }
     end
   end
 end

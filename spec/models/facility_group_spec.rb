@@ -36,14 +36,14 @@ RSpec.describe FacilityGroup, type: :model do
 
   context "slugs" do
     it "generates slug on creation and avoids conflicts via appending a UUID" do
-      fg_1 = create(:facility_group, name: "New York")
+      facility_group_1 = create(:facility_group, name: "New York")
 
-      expect(fg_1.slug).to eq("new-york")
+      expect(facility_group_1.slug).to eq("new-york")
 
-      fg_2 = create(:facility_group, name: "New York")
+      facility_group_2 = create(:facility_group, name: "New York")
 
       uuid_regex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
-      expect(fg_2.slug).to match(/^new-york-#{uuid_regex}$/)
+      expect(facility_group_2.slug).to match(/^new-york-#{uuid_regex}$/)
     end
 
     it "does not change the slug when renamed" do
