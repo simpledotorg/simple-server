@@ -31,6 +31,8 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
   attr_writer :state
+  attr_accessor :new_block_names
+  attr_accessor :remove_block_ids
 
   def state
     @state || region&.state_region&.name
@@ -53,12 +55,41 @@ class FacilityGroup < ApplicationRecord
     end
   end
 
-  def report_on_patients
-    Patient.where(registration_facility: facilities)
-  end
-
   def diabetes_enabled?
     facilities.where(enable_diabetes_management: false).count.zero?
+  end
+
+  def create_state_region!
+    return unless Flipper.enabled?(:regions_prep)
+    return if state_region || state.blank?
+
+    Region.state_regions.create!(name: state, reparent_to: organization.region)
+  end
+
+  def update_block_regions!
+    create_block_regions!
+    remove_block_regions!
+  end
+
+  def create_block_regions!
+    return unless Flipper.enabled?(:regions_prep)
+    return if new_block_names.blank?
+
+    new_block_names.map { |name|
+      Region.block_regions.create!(name: name, reparent_to: region)
+    }
+  end
+
+  def remove_block_regions!
+    return unless Flipper.enabled?(:regions_prep)
+    return if remove_block_ids.blank?
+
+    remove_block_ids.map { |id|
+      next unless Region.find(id)
+      next unless Region.find(id).children.empty?
+
+      Region.destroy(id)
+    }
   end
 
   def discardable?
@@ -97,8 +128,6 @@ class FacilityGroup < ApplicationRecord
   end
 
   def state_region
-    Region.state_regions.find_by_name(state) || Region.create(name: state,
-                                                              region_type: Region.region_types[:state],
-                                                              reparent_to: organization.region)
+    Region.state_regions.find_by(name: state)
   end
 end
