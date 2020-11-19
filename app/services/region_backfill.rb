@@ -12,7 +12,7 @@ class RegionBackfill
   def initialize(dry_run: true)
     @dry_run = dry_run
     @write = !@dry_run
-    @logger = Rails.logger
+    @logger = Rails.logger.child(class: self.class.name, dry_run: dry_run)
     @success_counts = {}
     @invalid_counts = {}
   end
