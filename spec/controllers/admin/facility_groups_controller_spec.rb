@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Admin::FacilityGroupsController, type: :controller do
-  let(:organization) { FactoryBot.create(:organization) }
-  let(:protocol) { FactoryBot.create(:protocol) }
   let(:organization) { create(:organization) }
   let(:protocol) { create(:protocol) }
   let(:valid_attributes) do
