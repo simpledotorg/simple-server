@@ -20,12 +20,10 @@ class Organization < ApplicationRecord
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  #
-  # - kit (11/2020)
-  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
   after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
-  def create_region
+  def make_region
     return if region&.persisted?
 
     create_region!(
@@ -42,7 +40,7 @@ class Organization < ApplicationRecord
     region.save!
   end
 
-  private :create_region, :update_region
+  private :make_region, :update_region
   # ----------------
 
   def districts
