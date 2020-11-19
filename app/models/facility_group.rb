@@ -70,7 +70,7 @@ class FacilityGroup < ApplicationRecord
     organization.region.state_regions.find_by(name: state)
   end
 
-  private :make_region, :update_region, :state_region
+  private :make_region, :update_region
   # ----------------
 
   def registered_hypertension_patients
@@ -96,32 +96,6 @@ class FacilityGroup < ApplicationRecord
     return if state_region || state.blank?
 
     Region.state_regions.create!(name: state, reparent_to: organization.region)
-  end
-
-  def update_block_regions!
-    create_block_regions!
-    remove_block_regions!
-  end
-
-  def create_block_regions!
-    return unless Flipper.enabled?(:regions_prep)
-    return if new_block_names.blank?
-
-    new_block_names.map { |name|
-      Region.block_regions.create!(name: name, reparent_to: region)
-    }
-  end
-
-  def remove_block_regions!
-    return unless Flipper.enabled?(:regions_prep)
-    return if remove_block_ids.blank?
-
-    remove_block_ids.map { |id|
-      next unless Region.find(id)
-      next unless Region.find(id).children.empty?
-
-      Region.destroy(id)
-    }
   end
 
   def discardable?

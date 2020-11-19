@@ -31,6 +31,8 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
+    # hack to work around how we are handling state updates on the facility group model
+    @facility_group.state = nil
     if update_successful?
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
@@ -90,23 +92,69 @@ class Admin::FacilityGroupsController < AdminController
     )
   end
 
-  def update_params
-    facility_group_params.except(:state)
-  end
-
   def create_successful?
-    @facility_group.create_state_region!
-
-    if @facility_group.save && @facility_group.toggle_diabetes_management
-      @facility_group.update_block_regions!
-      true
-    end
+    CreateFacilityGroup.new(@facility_group).create
   end
 
   def update_successful?
-    if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
-      @facility_group.update_block_regions!
-      true
+    params = facility_group_params.except(:state)
+    CreateFacilityGroup.new(@facility_group, params: params).update
+  end
+
+  class CreateFacilityGroup
+    attr_reader :facility_group
+    attr_reader :state_name
+
+    def initialize(facility_group, params: nil)
+      @facility_group = facility_group
+      @params = params
+      @state_name = @facility_group.state
+    end
+
+    def create
+      create_state_region
+      if facility_group.save && facility_group.toggle_diabetes_management
+        create_block_regions
+        remove_block_regions
+        true
+      end
+    end
+
+    def update
+      if facility_group.update(@params) && facility_group.toggle_diabetes_management
+        create_block_regions
+        remove_block_regions
+        true
+      end
+    end
+
+    def create_state_region
+      return unless Flipper.enabled?(:regions_prep)
+      return if facility_group.state_region || state_name.blank?
+
+      Region.state_regions.create!(name: state_name, reparent_to: facility_group.organization.region)
+    end
+
+    def create_block_regions
+      return unless Flipper.enabled?(:regions_prep)
+      return if facility_group.new_block_names.blank?
+
+      facility_group.new_block_names.map { |name|
+        Region.block_regions.create!(name: name, reparent_to: facility_group.region)
+      }
+    end
+
+    def remove_block_regions
+      return unless Flipper.enabled?(:regions_prep)
+      return if facility_group.remove_block_ids.blank?
+
+      facility_group.remove_block_ids.map { |id|
+        next unless Region.find(id)
+        next unless Region.find(id).children.empty?
+
+        Region.destroy(id)
+      }
     end
   end
+
 end

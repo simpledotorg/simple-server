@@ -82,7 +82,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
         expect {
           post :create, params: {facility_group: valid_attributes, organization_id: organization.id}
-        }.to change(Region.state_regions, :count).by(1)
+        }.to change(Region.state_regions, :size).by(1)
       end
 
       it "creates the children blocks" do
