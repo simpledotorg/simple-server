@@ -6,7 +6,7 @@ FactoryBot.define do
     end
 
     id { SecureRandom.uuid }
-    name { Seed::FakeNames.instance.district }
+    name { Faker::Address.city }
     description { Faker::Company.catch_phrase }
     organization { org }
     state { state_name }
