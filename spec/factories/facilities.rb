@@ -39,7 +39,8 @@ FactoryBot.define do
 
     before(:create) do |f, options|
       if options.create_parent_region
-        create(:region, :block, name: f.zone, reparent_to: f.facility_group.region)
+        f.facility_group.region.block_regions.find_by(name: f.zone) ||
+          create(:region, :block, name: f.zone, reparent_to: f.facility_group.region)
       end
     end
 
