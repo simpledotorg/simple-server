@@ -16,6 +16,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     attributes_for(
       :facility_group,
       name: nil,
+      state: "An State",
       organization_id: organization.id
     )
   end
@@ -120,6 +121,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         FactoryBot.attributes_for(
           :facility_group,
           organization_id: organization.id,
+          state: "An State",
           protocol_id: protocol.id
         ).except(:id, :slug)
       end
@@ -191,7 +193,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     end
 
     context "with invalid params" do
-      it "returns a 400 response (i.e. against the 'edit' template)" do
+      it "returns a bad request response (i.e. against the 'edit' template)" do
         facility_group = create(:facility_group, valid_attributes)
         put :update, params: {id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id}
 
