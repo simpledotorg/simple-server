@@ -15,7 +15,7 @@ Pathankot:
   - Narot Jaimal Singh
   - Bamial
   - Dharkalan
-  - Pathankot
+  - Pathankot Urban
   - Gharota
   - Sujanpur
 Bathinda:
@@ -30,8 +30,6 @@ Bathinda:
   - Maur
   - Balianwali
 Hoshiarpur:
-  - Hoshiarpur-1
-  - Hoshiarpur-2
   - Bhunga
   - Dasuya
   - Hajipur
@@ -40,12 +38,15 @@ Hoshiarpur:
   - Talwara
   - Mahilpur
   - Garhshankar
+  - Chakowal
+  - Harta Badla
 Mansa:
   - Mansa
   - Sardulgarh
   - Budhlada
   - Jhunir
   - Bhikhi
+  - Khiala Kalan
 Chennai:
   - Zone 1 Thiruvottriyur
   - Zone 2 Manali
@@ -410,3 +411,18 @@ Raichur:
   - Deodurga
 Chikmagalur:
   - Kadur
+Jalandhar:
+  - Adampur
+  - Bara Pind
+  - Bilga
+  - Jamsher
+  - Jandiala
+  - Kala Bakra
+  - Kartarpur
+  - Lohian Khas
+  - Mehatpur
+  - Nakodar
+  - Phillaur
+  - Shahkot
+  - Shankar
+  - Urban Jalandhar
