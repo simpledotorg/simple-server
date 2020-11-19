@@ -140,6 +140,28 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
         expect(response).to redirect_to(admin_facilities_url)
       end
 
+      it "disallows updating state" do
+        enable_flag(:regions_prep)
+
+        organization = create(:organization)
+        admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
+        sign_in(admin.email_authentication)
+        protocol = create(:protocol)
+        valid_attributes =
+          attributes_for(
+            :facility_group,
+            organization_id: organization.id,
+            state: "Original State",
+            protocol_id: protocol.id
+          )
+        facility_group = create(:facility_group, valid_attributes)
+
+        requested_attributes = valid_attributes.merge(state: "New State")
+        put :update, params: {id: facility_group.to_param, facility_group: requested_attributes, organization_id: organization.id}
+
+        expect(facility_group.reload.state).to eq("Original State")
+      end
+
       it "updates the block regions" do
         enable_flag(:regions_prep)
 
