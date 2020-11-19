@@ -32,7 +32,13 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
-  delegate :assigned_patients, to: :source
+  def assigned_patients
+    if source
+      source.assigned_patients
+    else
+      Block.new(name: name, facilities: facilities).assigned_patients
+    end
+  end
 
   def self.root
     Region.find_by(region_type: :root)

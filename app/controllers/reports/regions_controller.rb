@@ -32,6 +32,12 @@ class Reports::RegionsController < AdminController
                                                         period: @period).call
       }
     end
+    if current_admin.feature_enabled?(:region_reports) && @region.district_region?
+      @block_data = @region.block_regions.each_with_object({}) { |region, hsh|
+        hsh[region.name] = Reports::RegionService.new(region: region,
+                                                      period: @period).call
+      }
+    end
   end
 
   def details
@@ -160,12 +166,14 @@ class Reports::RegionsController < AdminController
 
   def region_class
     @region_class ||= case report_params[:report_scope]
+    when "facility_district"
+      "facility_district"
     when "district"
       "facility_group"
     when "facility"
       "facility"
-    when "facility_district"
-      "facility_district"
+    when "block"
+      "block"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
     end

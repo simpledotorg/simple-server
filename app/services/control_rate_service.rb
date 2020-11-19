@@ -19,8 +19,8 @@ class ControlRateService
     end
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
-    logger.info class: self.class, msg: "created", region: region.id, region_name: region.name,
-                report_range: report_range.inspect, facilities: facilities.map(&:id)
+    logger.info class: self.class.name, msg: "created", region: region.id, region_name: region.name,
+                report_range: report_range.inspect, facilities: facilities.map(&:id), cache_key: cache_key
   end
 
   delegate :logger, to: Rails
@@ -63,7 +63,8 @@ class ControlRateService
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    @registration_counts = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type, :recorded_at, {format: formatter}).count
+    @registration_counts = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type,
+      :recorded_at, {format: formatter}).count
   end
 
   def controlled_patients(period)
