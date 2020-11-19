@@ -26,7 +26,9 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def transform_to_response(facility)
-    Api::V3::FacilityTransformer.to_response(facility)
+    Api::V3::FacilityTransformer
+      .to_response(facility)
+      .merge(sync_region_id: sync_region_id(facility))
   end
 
   def response_process_token
@@ -41,5 +43,15 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
       .updated_on_server_since(other_facilities_processed_since, limit)
       .includes(:facility_group)
       .where.not(facility_group: nil)
+  end
+
+  private
+
+  def sync_region_id(facility)
+    if current_user && current_user.feature_enabled?(:region_level_sync)
+      facility.region.block.id
+    else
+      facility.facility_group.id
+    end
   end
 end

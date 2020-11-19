@@ -17,6 +17,8 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
       Timecop.travel(14.minutes.ago) do
         create_record_list(2)
       end
+      # TODO: Stop using backfill script to generate test data
+      RegionBackfill.call(dry_run: false)
     end
 
     describe "GET sync: send data from server to device;" do
@@ -92,6 +94,42 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
           expect(received_records.map { |record| record["id"] }.to_set)
             .to eq(model.all.pluck(:id).to_set)
+        end
+      end
+
+      context "sync_region_id" do
+        it "sets the sync_region_id to the facility group id when region level sync is disabled" do
+          get :sync_to_user
+
+          response_records = JSON(response.body)["facilities"]
+          response_records.each do |record|
+            expect(record["sync_region_id"]).to eq record["facility_group_id"]
+          end
+        end
+
+        context "when region level sync is enabled" do
+          it "sets the sync_region_id to the block id and user is not available" do
+            enable_flag(:region_level_sync, request_user)
+            get :sync_to_user
+
+            response_records = JSON(response.body)["facilities"]
+            response_records.each do |record|
+              expect(record["sync_region_id"]).to eq record["facility_group_id"]
+            end
+          end
+
+          it "sets the sync_region_id to the block id when user is available" do
+            request.env["HTTP_X_USER_ID"] = request_user.id
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+
+            enable_flag(:region_level_sync, request_user)
+            get :sync_to_user
+
+            response_records = JSON(response.body)["facilities"]
+            response_records.each do |record|
+              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block.id
+            end
+          end
         end
       end
     end
