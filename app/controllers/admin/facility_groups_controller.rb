@@ -4,7 +4,6 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_protocols, only: [:new, :edit, :update, :create]
   before_action :set_available_states, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
   before_action :set_blocks, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
-  around_action :wrap_in_transaction, only: [:create, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -111,20 +110,26 @@ class Admin::FacilityGroupsController < AdminController
       @state_name = @facility_group.state
     end
 
+    delegate :transaction, to: ActiveRecord::Base
+
     def create
-      create_state_region
-      if facility_group.save && facility_group.toggle_diabetes_management
-        create_block_regions
-        remove_block_regions
-        true
+      transaction do
+        create_state_region
+        if facility_group.save && facility_group.toggle_diabetes_management
+          create_block_regions
+          remove_block_regions
+          true
+        end
       end
     end
 
     def update
-      if facility_group.update(@params) && facility_group.toggle_diabetes_management
-        create_block_regions
-        remove_block_regions
-        true
+      transaction do
+        if facility_group.update(@params) && facility_group.toggle_diabetes_management
+          create_block_regions
+          remove_block_regions
+          true
+        end
       end
     end
 
