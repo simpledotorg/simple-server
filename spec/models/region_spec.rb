@@ -152,6 +152,8 @@ RSpec.describe Region, type: :model do
       patient_from_f3 = create(:patient, registration_facility: facility_3)
       patient_from_f4 = create(:patient, registration_facility: facility_4)
 
+      pp "Hello3"
+
       expect(Region.root.syncable_patients)
         .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
 
@@ -186,6 +188,8 @@ RSpec.describe Region, type: :model do
       patient_from_f2 = create(:patient, assigned_facility: facility_2)
       patient_from_f3 = create(:patient, assigned_facility: facility_3)
       patient_elsewhere = create(:patient)
+
+      pp "Hello4"
 
       expect(Region.root.syncable_patients)
         .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
@@ -223,6 +227,8 @@ RSpec.describe Region, type: :model do
       patient_from_f3 = create(:patient)
       create(:appointment, patient: patient_from_f3, facility: facility_3)
       patient_elsewhere = create(:patient)
+
+      pp "Hello5"
 
       expect(Region.root.syncable_patients)
         .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
