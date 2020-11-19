@@ -140,11 +140,11 @@ RSpec.describe Region, type: :model do
   context "#syncable_patients" do
     before { Flipper.enable(:regions_prep) }
     let!(:organization) { create(:organization) }
-    let!(:facility_group) { create(:facility_group, organization: organization) }
-    let!(:facility_1) { create(:facility, state: "Maharashtra", block: "M1", facility_group: facility_group) }
-    let!(:facility_2) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
-    let!(:facility_3) { create(:facility, state: "Maharashtra", block: "M2", facility_group: facility_group) }
-    let!(:facility_4) { create(:facility, state: "Maharashtra", block: "P1", facility_group: facility_group) }
+    let!(:facility_group) { create(:facility_group, organization: organization, state: "Maharashtra") }
+    let!(:facility_1) { create(:facility, block: "M1", facility_group: facility_group) }
+    let!(:facility_2) { create(:facility, block: "M2", facility_group: facility_group) }
+    let!(:facility_3) { create(:facility, block: "M2", facility_group: facility_group) }
+    let!(:facility_4) { create(:facility, block: "P1", facility_group: facility_group) }
 
     it "accounts for patients registered in the facility of the region" do
       patient_from_f1 = create(:patient, registration_facility: facility_1)
@@ -185,9 +185,10 @@ RSpec.describe Region, type: :model do
       patient_from_f1 = create(:patient, registration_facility: facility_1)
       patient_from_f2 = create(:patient, assigned_facility: facility_2)
       patient_from_f3 = create(:patient, assigned_facility: facility_3)
-      _patient_elsewhere = create(:patient)
+      patient_elsewhere = create(:patient)
 
-      expect(Region.root.syncable_patients).to contain_exactly(patient_from_f1)
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
 
       expect(Region.organization_regions.find_by(source: organization).syncable_patients)
         .to contain_exactly(patient_from_f1)
@@ -221,9 +222,10 @@ RSpec.describe Region, type: :model do
       create(:appointment, patient: patient_from_f2, facility: facility_2)
       patient_from_f3 = create(:patient)
       create(:appointment, patient: patient_from_f3, facility: facility_3)
-      _patient_elsewhere = create(:patient)
+      patient_elsewhere = create(:patient)
 
-      expect(Region.root.syncable_patients).to contain_exactly(patient_from_f1)
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
 
       expect(Region.organization_regions.find_by(source: organization).syncable_patients)
         .to contain_exactly(patient_from_f1)
