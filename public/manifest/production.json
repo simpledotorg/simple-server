@@ -2,7 +2,7 @@
   "v1": [
     {
       "country_code": "IN1",
-      "endpoint": "https://api-production-perf-1.simple.org/",
+      "endpoint": "https://api-production-perf-1.simple.org/api",
       "display_name": "I Performance",
       "isd_code": "91"
     },
