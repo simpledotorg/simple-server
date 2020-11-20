@@ -10,39 +10,39 @@ class Csv::FacilitiesParser
   CONVERTORS = [:strip_whitespace]
   HEADERS = true
   COLUMNS = if Flipper.enabled?(:regions_prep)
-              {
-                organization_name: "organization",
-                facility_group_name: "facility_group",
-                name: "facility_name",
-                facility_type: "facility_type",
-                street_address: "street_address (optional)",
-                village_or_colony: "village_or_colony (optional)",
-                zone: "zone_or_block",
-                district: "district",
-                pin: "pin (optional)",
-                latitude: "latitude (optional)",
-                longitude: "longitude (optional)",
-                facility_size: "size (optional)",
-                enable_diabetes_management: "enable_diabetes_management (true/false)"
-              }
-            else
-              {
-                organization_name: "organization",
-                facility_group_name: "facility_group",
-                name: "facility_name",
-                facility_type: "facility_type",
-                street_address: "street_address (optional)",
-                village_or_colony: "village_or_colony (optional)",
-                zone: "zone_or_block",
-                district: "district",
-                state: "state",
-                pin: "pin (optional)",
-                latitude: "latitude (optional)",
-                longitude: "longitude (optional)",
-                facility_size: "size (optional)",
-                enable_diabetes_management: "enable_diabetes_management (true/false)"
-              }
-            end
+    {
+      organization_name: "organization",
+      facility_group_name: "facility_group",
+      name: "facility_name",
+      facility_type: "facility_type",
+      street_address: "street_address (optional)",
+      village_or_colony: "village_or_colony (optional)",
+      zone: "zone_or_block",
+      district: "district",
+      pin: "pin (optional)",
+      latitude: "latitude (optional)",
+      longitude: "longitude (optional)",
+      facility_size: "size (optional)",
+      enable_diabetes_management: "enable_diabetes_management (true/false)"
+    }
+  else
+    {
+      organization_name: "organization",
+      facility_group_name: "facility_group",
+      name: "facility_name",
+      facility_type: "facility_type",
+      street_address: "street_address (optional)",
+      village_or_colony: "village_or_colony (optional)",
+      zone: "zone_or_block",
+      district: "district",
+      state: "state",
+      pin: "pin (optional)",
+      latitude: "latitude (optional)",
+      longitude: "longitude (optional)",
+      facility_size: "size (optional)",
+      enable_diabetes_management: "enable_diabetes_management (true/false)"
+    }
+  end
 
   def self.parse(*args)
     new(*args).call
@@ -74,7 +74,6 @@ class Csv::FacilitiesParser
 
   def validate
     facilities.each do |facility|
-
       errors << CSV::FacilityValidator.validate(facility).errors
     end
   end
@@ -90,7 +89,7 @@ class Csv::FacilitiesParser
       country: Region.root.name,
       enable_diabetes_management: facility_attrs[:enable_diabetes_management] || false,
       enable_teleconsultation: facility_attrs[:enable_teleconsultation] || false,
-      facility_group_id: facility_group&.id,
+      facility_group_id: facility_group&.id
     ).merge(state(facility_group))
   end
 
