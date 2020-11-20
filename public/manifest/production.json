@@ -2,21 +2,15 @@
   "v1": [
     {
       "country_code": "IN",
-      "endpoint": "https://api.simple.org/api/",
-      "display_name": "India",
+      "endpoint": "https://api-production-perf-2.simple.org/",
+      "display_name": "I Performance",
       "isd_code": "91"
     },
     {
-      "country_code": "BD",
-      "endpoint": "https://api.bd.simple.org/api/",
-      "display_name": "Bangladesh",
-      "isd_code": "880"
-    },
-    {
-      "country_code": "ET",
-      "endpoint": "https://api.et.simple.org/api/",
-      "display_name": "Ethiopia",
-      "isd_code": "251"
+      "country_code": "IN2",
+      "endpoint": "https://api-production-perf-1.simple.org/api/",
+      "display_name": "II Performance",
+      "isd_code": "91"
     }
   ]
 }
