@@ -5,10 +5,12 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_available_zones, only: [:new, :create, :edit, :update],
-                if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
-  before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
+  before_action :initialize_upload,
+    :validate_file_type,
+    :validate_file_size,
+    :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
@@ -172,11 +174,16 @@ class Admin::FacilitiesController < AdminController
     return render :upload, status: :bad_request if @errors.present?
 
     @file_contents = read_xlsx_or_csv_file(@file)
-    @facilities = Facility.parse_facilities(@file_contents)
+    @facilities = Facility.parse_facilities_from_file(@file_contents)
+    @errors = Csv::FacilityValidator.validate_all(@facilities)
+    @errors = @facilities.map(&:errors)
   end
 
   def validate_facility_rows
-    @errors = Admin::CSV::FacilityValidator.validate(@facilities).errors
+    Admin::CSV::FacilityValidator.validate_all(@facilities)
+    Admin::CSV::FacilityValidator.new(@facility).errors
+
+    @errors = Admin::CSV::FacilityValidator.new(@facilities).errors
   end
 
   def file_exists?
