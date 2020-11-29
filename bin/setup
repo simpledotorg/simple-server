@@ -73,6 +73,20 @@ rbenv_install_ruby_version (){
   rbenv local $RUBY_VERSION
 }
 
+has_asdf (){
+  hash asdf >/dev/null 2>&1
+}
+
+update_asdf () {
+  brew update
+  brew upgrade asdf
+}
+
+asdf_install_ruby_version (){
+  asdf install ruby $RUBY_VERSION
+  asdf local ruby $RUBY_VERSION
+}
+
 has_ruby_version (){
   INSTALLED_RUBY_VERSION=$(ruby -e 'puts RUBY_VERSION')
   [ "$INSTALLED_RUBY_VERSION" == "$RUBY_VERSION" ]
@@ -81,9 +95,9 @@ has_ruby_version (){
 install_ruby_version (){
   verify_homebrew
 
-  if [ ! has_rvm ] && [ ! has_rbenv ]
+  if [ ! has_rvm ] && [ ! has_rbenv ] && [ ! has_asdf ]
   then
-    echo 'Please install rbenv or rvm to manage your ruby versions.'
+    echo 'Please install rbenv, rvm or asdf to manage your ruby versions.'
     exit 1
   fi
 
@@ -96,6 +110,11 @@ install_ruby_version (){
   has_rbenv && {
     update_rbenv
     rbenv_install_ruby_version
+  }
+
+  has_asdf && {
+    update_asdf
+    asdf_install_ruby_version
   }
 }
 
