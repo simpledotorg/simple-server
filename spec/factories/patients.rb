@@ -1,16 +1,16 @@
 FactoryBot.define do
   factory :patient do
-    common_names = {"female" => %w[Anjali Divya Ishita Priya Priyanka Riya Shreya Tanvi Tanya Vani],
-                    "male" => %w[Abhishek Aditya Amit Ankit Deepak Mahesh Rahul Rohit Shyam Yash],
-                    "transgender" => %w[Bharathi Madhu Bharathi Manabi Anjum Vani Riya Shreya Kiran Amit]}
+    common_names = {female: %w[Anjali Divya Ishita Priya Priyanka Riya Shreya Tanvi Tanya Vani],
+                    male: %w[Abhishek Aditya Amit Ankit Deepak Mahesh Rahul Rohit Shyam Yash],
+                    transgender: %w[Bharathi Madhu Bharathi Manabi Anjum Vani Riya Shreya Kiran Amit]}
 
     transient do
       has_date_of_birth? { [true, false].sample }
     end
 
     id { SecureRandom.uuid }
-    gender { Patient::GENDERS.sample }
-    full_name { common_names[gender].sample + " " + common_names[gender].sample }
+    gender { Seed::Runner.random_gender }
+    full_name { common_names[gender.to_sym].sample + " " + common_names[gender.to_sym].sample }
     status { Patient::STATUSES[0] }
     date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
     age { rand(18..100) unless has_date_of_birth? }

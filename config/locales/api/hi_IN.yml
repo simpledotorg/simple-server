@@ -23,22 +23,6 @@ hi-IN:
     patients_enrolled: "कितने मरीजों ने %{facility_name} पर नामांकन किया?"
     all_time_patients: "सभी समय: %{count} मरीज़"
     updated_at: "%{time} पर अद्यतित"
-  user_analytics:
-    hypertension: "हाइपरटेंशन"
-    diabetes: "मधुमेह"
-    genders: ["सभी", "पुरूष", "महिला", "ट्रांसजेंडर"]
-    all_time: "हमेशा"
-    follow_up_patients: "हाइपरटेंशन के रोगियों को फ़ॉलो-अप करें"
-    registered_patients: "रजिस्टर किए गए रोगी"
-    hypertension_control: "हाइपरटेंशन का नियंत्रण"
-    hypertension_control_desc: "माह की पिछली फ़ॉलो-अप विज़िट में हाइपरटेंशन के कितने रोगियों का बीपी 140/90 से कम था?"
-    notes: "नोट"
-    footer_note_1: "%{facility_name} की सभी गतिविधि का डेटा है। अगर डेटा पुराना दिखाई दे रहा है, तो होम स्क्रीन पर \"लंबित को सिंक्रनाइज़ करें\" लिंक पर टैप करें।"
-    footer_note_2: "फ़ॉलो अप रोगियों को हर माह केवल एक विज़िट के लिए गिना जाता है। अगर कोई रोगी, एक माह में एक से ज़्यादा बार फ़ॉलो अप करता है, तो उसे केवल एक बार ही गिना जाएगा।"
-    thank_you: "आपका धन्यवाद"
-    thank_you_note: "हाइपरटेंशन के रोगियों का उपचार करने में आपकी कड़ी मेहनत के लिए धन्यवाद। आपका काम, हृदयाघात और स्ट्रोक से लोगों का जीवन बचाता है।"
-    updated: "अपडेट किया गया: %{time}"
-    ratio_string: "%{value_2} का %{value_1}"
   dashboard:
     graphics:
       graphics_title_html: "<b>%{current_quarter_string}</b> के दौरान पंजीकृत %{patients_in_previous_quarter} मरीज़ों का <b>%{previous_quarter_string}</b> में क्या हुआ?"

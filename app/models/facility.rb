@@ -8,6 +8,8 @@ class Facility < ApplicationRecord
   extend FriendlyId
   extend RegionSource
 
+  friendly_id :name, use: :slugged
+
   attribute :import, :boolean, default: false
   attribute :organization_name, :string
   attribute :facility_group_name, :string
@@ -80,6 +82,7 @@ class Facility < ApplicationRecord
   alias_attribute :block, :zone
 
   validates :district, presence: true
+  validates :slug, presence: true
   validates :state, presence: true
   validates :country, presence: true
   validates :zone, presence: true, on: :create
@@ -101,6 +104,38 @@ class Facility < ApplicationRecord
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
+  # ----------------
+  # Region callbacks
+  #
+  # * These callbacks are medium-term temporary.
+  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
+  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+
+  def make_region
+    return if region&.persisted?
+
+    create_region!(
+      name: name,
+      reparent_to: block_region,
+      region_type: Region.region_types[:facility]
+    )
+  end
+
+  def update_region
+    region.reparent_to = block_region
+    region.name = name
+    region.save!
+  end
+
+  def block_region
+    facility_group.region.block_regions.find_by(name: block)
+  end
+
+  private :make_region, :update_region
+  # ----------------
+
   def hypertension_follow_ups_by_period(*args)
     patients
       .hypertension_follow_ups_by_period(*args)
@@ -112,8 +147,6 @@ class Facility < ApplicationRecord
       .diabetes_follow_ups_by_period(*args)
       .where(blood_sugars: {facility: self})
   end
-
-  friendly_id :name, use: :slugged
 
   # For compatibility w/ parent FacilityGroups
   def facilities
@@ -134,23 +167,37 @@ class Facility < ApplicationRecord
     query.call
   end
 
-  CSV_IMPORT_COLUMNS = {
-    organization_name: "organization",
-    facility_group_name: "facility_group",
-    name: "facility_name",
-    facility_type: "facility_type",
-    street_address: "street_address (optional)",
-    village_or_colony: "village_or_colony (optional)",
-    zone: "zone_or_block",
-    district: "district",
-    state: "state",
-    country: "country",
-    pin: "pin (optional)",
-    latitude: "latitude (optional)",
-    longitude: "longitude (optional)",
-    facility_size: "size (optional)",
-    enable_diabetes_management: "enable_diabetes_management (true/false)"
-  }
+  CSV_IMPORT_COLUMNS =
+    if Flipper.enabled?(:regions_prep)
+      {organization_name: "organization",
+       facility_group_name: "facility_group",
+       name: "facility_name",
+       facility_type: "facility_type",
+       street_address: "street_address (optional)",
+       village_or_colony: "village_or_colony (optional)",
+       zone: "zone_or_block",
+       district: "district",
+       pin: "pin (optional)",
+       latitude: "latitude (optional)",
+       longitude: "longitude (optional)",
+       facility_size: "size (optional)",
+       enable_diabetes_management: "enable_diabetes_management (true/false)"}
+    else
+      {organization_name: "organization",
+       facility_group_name: "facility_group",
+       name: "facility_name",
+       facility_type: "facility_type",
+       street_address: "street_address (optional)",
+       village_or_colony: "village_or_colony (optional)",
+       zone: "zone_or_block",
+       district: "district",
+       state: "state",
+       pin: "pin (optional)",
+       latitude: "latitude (optional)",
+       longitude: "longitude (optional)",
+       facility_size: "size (optional)",
+       enable_diabetes_management: "enable_diabetes_management (true/false)"}
+    end
 
   def self.parse_facilities(file_contents)
     facilities = []
@@ -158,9 +205,10 @@ class Facility < ApplicationRecord
       facility = CSV_IMPORT_COLUMNS.map { |attribute, column_name| [attribute, row[column_name]] }.to_h
       next if facility.values.all?(&:blank?)
 
-      facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes_management] || false,
+      facilities << facility.merge(country: Region.root.name,
+                                   enable_diabetes_management: facility[:enable_diabetes_management] || false,
                                    enable_teleconsultation: facility[:enable_teleconsultation] || false,
-                                   import: true)
+                                   import: true).merge(state_region_name(facility))
     end
     facilities
   end
@@ -241,5 +289,13 @@ class Facility < ApplicationRecord
 
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
+  def self.state_region_name(facility_attributes)
+    organization = Organization.find_by(name: facility_attributes[:organization_name])
+    facility_group = FacilityGroup.find_by(name: facility_attributes[:facility_group_name],
+                                           organization_id: organization&.id)
+
+    facility_group.present? && Flipper.enabled?(:regions_prep) ? {state: facility_group.region.state_region.name} : {}
   end
 end

@@ -85,7 +85,7 @@ class RegionBackfill
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
 
-    existing_region = parent.children.find_by(name: region_name, region_type: region_type)
+    existing_region = parent.children.reload.find_by(name: region_name, region_type: region_type)
     return existing_region if existing_region
 
     region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type, reparent_to: parent), dry_run: dry_run?, logger: logger)
