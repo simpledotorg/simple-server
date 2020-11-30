@@ -3,12 +3,12 @@ class CSV::FacilitiesValidator
     new(facilities).validate
   end
 
+  attr_accessor :errors
+
   def initialize(facilities)
     @facilities = facilities
     @errors = []
   end
-
-  attr_reader :errors
 
   def validate
     at_least_one_facility
@@ -33,16 +33,17 @@ class CSV::FacilitiesValidator
   def per_facility_validations
     row_errors = []
 
-    facilities.each.with_index do |import_facility, row_num|
-      csv_validator = FacilityValidator.new(import_facility.attributes)
-      next if csv_validator.valid?
-      next if import_facility.valid? # run regular ol' model validations
+    facilities.each.with_index(2) do |facility, row_num|
+      row_validator = FacilityValidator.new(facility)
+
+      # skip if both csv-specific validations and model validations succeed
+      next if row_validator.valid? && facility.valid?
 
       row_errors << [
         row_num,
-        csv_validator.errors.full_messages.to_sentence,
-        import_facility.errors.full_messages.to_sentence,
-      ]
+        row_validator.errors.full_messages.to_sentence,
+        facility.errors.full_messages.to_sentence,
+      ].reject(&:blank?)
     end
 
     group_row_errors(row_errors).each { |error| errors << error } if row_errors.present?
@@ -57,7 +58,7 @@ class CSV::FacilitiesValidator
   end
 
   class FacilityValidator
-    include ActiveModel::Model
+    include ActiveModel::Validations
     include Memery
 
     validates :name, presence: true
@@ -67,9 +68,14 @@ class CSV::FacilitiesValidator
     validate :organization_exists
     validate :facility_group_exists
 
-    attr_accessor(*Facility.new.attributes.keys.map(&:to_sym))
+    def initialize(new_facility)
+      @new_facility = new_facility
+    end
 
     private
+
+    attr_reader :new_facility
+    delegate :name, :organization_name, :facility_group_name, to: :new_facility
 
     def organization_exists
       if organization_name.present? && organization.blank?
