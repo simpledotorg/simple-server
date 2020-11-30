@@ -19,8 +19,6 @@ class CSV::FacilitiesValidator
 
   private
 
-  STARTING_ROW = 2
-
   attr_reader :facilities, :organization_name, :facility_group_name
 
   def at_least_one_facility
@@ -35,23 +33,22 @@ class CSV::FacilitiesValidator
   def per_facility_validations
     row_errors = []
 
-    facilities.each.with_index(STARTING_ROW) do |import_facility, row_num|
+    facilities.each.with_index do |import_facility, row_num|
       csv_validator = FacilityValidator.new(import_facility.attributes)
-
       next if csv_validator.valid?
-      next if import_facility.valid? # run model validations
+      next if import_facility.valid? # run regular ol' model validations
 
       row_errors << [
         row_num,
+        csv_validator.errors.full_messages.to_sentence,
         import_facility.errors.full_messages.to_sentence,
-        csv_validator.errors.full_messages.to_sentence
       ]
     end
 
-    group_row_errors!(row_errors).each { |error| errors << error } if row_errors.present?
+    group_row_errors(row_errors).each { |error| errors << error } if row_errors.present?
   end
 
-  def group_row_errors!(row_errors)
+  def group_row_errors(row_errors)
     unique_errors = row_errors.map { |_row, message| message }.uniq
     unique_errors.map do |error|
       rows = row_errors.select { |row, message| row if error == message }.map { |row, _message| row }
