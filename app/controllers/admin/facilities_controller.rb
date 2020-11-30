@@ -175,15 +175,10 @@ class Admin::FacilitiesController < AdminController
 
     @file_contents = read_xlsx_or_csv_file(@file)
     @facilities = Facility.parse_facilities_from_file(@file_contents)
-    @errors = Csv::FacilityValidator.validate_all(@facilities)
-    @errors = @facilities.map(&:errors)
   end
 
   def validate_facility_rows
-    Admin::CSV::FacilityValidator.validate_all(@facilities)
-    Admin::CSV::FacilityValidator.new(@facility).errors
-
-    @errors = Admin::CSV::FacilityValidator.new(@facilities).errors
+    @errors = Csv::FacilitiesValidator.validate(@facilities).errors
   end
 
   def file_exists?

@@ -1,24 +1,27 @@
 class CSV::FacilitiesValidator
-  STARTING_ROW = 2
-  include Memery
-
   def self.validate(facilities)
     new(facilities).validate
   end
 
   def initialize(facilities)
     @facilities = facilities
+    @errors = []
   end
+
+  attr_reader :errors
 
   def validate
     at_least_one_facility
     duplicate_rows
-    facilities
+    per_facility_validations
+    self
   end
 
   private
 
-  attr_reader :organization_name, :facility_group_name
+  STARTING_ROW = 2
+
+  attr_reader :facilities, :organization_name, :facility_group_name
 
   def at_least_one_facility
     errors << "Uploaded file doesn't contain any valid facilities" if facilities.blank?
@@ -29,18 +32,26 @@ class CSV::FacilitiesValidator
     errors << "Uploaded file has duplicate facilities" if fields.count != fields.uniq.count
   end
 
-  def facilities
+  def per_facility_validations
     row_errors = []
 
     facilities.each.with_index(STARTING_ROW) do |import_facility, row_num|
-      next if import_facility.valid?
-      row_errors << [row_num, import_facility.errors.full_messages.to_sentence]
+      csv_validator = FacilityValidator.new(import_facility.attributes)
+
+      next if csv_validator.valid?
+      next if import_facility.valid? # run model validations
+
+      row_errors << [
+        row_num,
+        import_facility.errors.full_messages.to_sentence,
+        csv_validator.errors.full_messages.to_sentence
+      ]
     end
 
-    group_row_errors(row_errors).each { |error| errors << error } if row_errors.present?
+    group_row_errors!(row_errors).each { |error| errors << error } if row_errors.present?
   end
 
-  def group_row_errors(row_errors)
+  def group_row_errors!(row_errors)
     unique_errors = row_errors.map { |_row, message| message }.uniq
     unique_errors.map do |error|
       rows = row_errors.select { |row, message| row if error == message }.map { |row, _message| row }
@@ -50,11 +61,7 @@ class CSV::FacilitiesValidator
 
   class FacilityValidator
     include ActiveModel::Model
-
-    def initialize(attributes = {})
-      @attributes = attributes.to_hash.with_indifferent_access
-      super(attributes)
-    end
+    include Memery
 
     validates :name, presence: true
     validates :organization_name, presence: true
@@ -62,6 +69,8 @@ class CSV::FacilitiesValidator
     validate :facility_is_unique
     validate :organization_exists
     validate :facility_group_exists
+
+    attr_accessor(*Facility.new.attributes.keys.map(&:to_sym))
 
     private
 

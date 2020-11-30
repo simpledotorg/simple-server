@@ -55,13 +55,12 @@ class Csv::FacilitiesParser
 
   def call
     parse
-    # validate
     facilities
   end
 
   private
 
-  attr_reader :file_contents, :errors
+  attr_reader :file_contents
   attr_accessor :facilities
 
   def parse
@@ -69,12 +68,6 @@ class Csv::FacilitiesParser
       facility = extract_facility(row)
       next if facility.values.all?(&:blank?)
       facilities << Facility.new(attach_meta(facility))
-    end
-  end
-
-  def validate
-    facilities.each do |facility|
-      errors << CSV::FacilityValidator.validate(facility).errors
     end
   end
 
