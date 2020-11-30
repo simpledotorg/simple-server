@@ -104,6 +104,38 @@ class Facility < ApplicationRecord
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
+  # ----------------
+  # Region callbacks
+  #
+  # * These callbacks are medium-term temporary.
+  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
+  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+
+  def make_region
+    return if region&.persisted?
+
+    create_region!(
+      name: name,
+      reparent_to: block_region,
+      region_type: Region.region_types[:facility]
+    )
+  end
+
+  def update_region
+    region.reparent_to = block_region
+    region.name = name
+    region.save!
+  end
+
+  def block_region
+    facility_group.region.block_regions.find_by(name: block)
+  end
+
+  private :make_region, :update_region
+  # ----------------
+
   def hypertension_follow_ups_by_period(*args)
     patients
       .hypertension_follow_ups_by_period(*args)

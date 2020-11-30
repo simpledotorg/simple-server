@@ -84,6 +84,45 @@ RSpec.describe Facility, type: :model do
     end
   end
 
+  describe "Callbacks" do
+    context "when regions_prep is enabled" do
+      before do
+        enable_flag(:regions_prep)
+      end
+
+      context "after_create" do
+        it "creates a region" do
+          org = create(:organization, name: "IHCI")
+          facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
+          block_name = "An Block"
+          facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
+
+          expect(facility.region).to be_present
+          expect(facility.region).to be_persisted
+          expect(facility.region.name).to eq "An Facility"
+          expect(facility.region.region_type).to eq "facility"
+          expect(facility.region.parent).to eq facility.region.block_region
+          expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
+        end
+      end
+
+      context "after_update" do
+        it "updates the associated region" do
+          org = create(:organization, name: "IHCI")
+          facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
+          block_name = "An Block"
+          facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
+
+          facility.update(name: "A Facility")
+          expect(facility.region.name).to eq "A Facility"
+          expect(facility.region.region_type).to eq "facility"
+          expect(facility.region.parent).to eq facility.region.block_region
+          expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
+        end
+      end
+    end
+  end
+
   describe "Delegates" do
     context "#patient_follow_ups_by_period" do
       it "counts follow_ups across HTN and DM" do
