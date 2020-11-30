@@ -9,6 +9,7 @@ task enable_block_level_sync: :environment do |_t, args|
 
     Flipper.enable(:region_level_sync, user)
     user.facility_group.facilities.update_all(updated_at: Time.current)
+
     "Block level sync enabled for #{user_id}"
   }
 end
