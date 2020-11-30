@@ -16,10 +16,10 @@ FactoryBot.define do
       create_parent_region { Flipper.enabled?(:regions_prep) }
     end
 
-    before(:create) do |fg, options|
+    before(:create) do |facility_group, options|
       if options.create_parent_region
-        fg.organization.region.state_regions.find_by(name: fg.state) ||
-          create(:region, :state, name: fg.state, reparent_to: fg.organization.region)
+        facility_group.organization.region.state_regions.find_by(name: facility_group.state) ||
+          create(:region, :state, name: facility_group.state, reparent_to: facility_group.organization.region)
       end
     end
 
