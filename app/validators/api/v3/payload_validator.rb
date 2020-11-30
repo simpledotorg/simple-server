@@ -1,4 +1,4 @@
-class Api::V3::Api::V3::AppointmentPayloadValidatorPayloadValidator
+class Api::V3::PayloadValidator
   include ActiveModel::Model
 
   def initialize(attributes = {})
