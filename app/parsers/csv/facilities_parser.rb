@@ -1,4 +1,4 @@
-class Csv::FacilitiesParser
+class CSV::FacilitiesParser
   CSV::Converters[:strip_whitespace] = ->(value) {
     begin
       value.strip

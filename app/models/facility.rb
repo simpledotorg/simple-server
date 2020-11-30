@@ -176,16 +176,11 @@ class Facility < ApplicationRecord
 
   def opd_load_for_facility_size
     case facility_size
-      when "community"
-        450
-      when "small"
-        1800
-      when "medium"
-        3000
-      when "large"
-        7500
-      else
-        450
+    when "community" then 450
+    when "small" then 1800
+    when "medium" then 3000
+    when "large" then 7500
+    else 450
     end
   end
 

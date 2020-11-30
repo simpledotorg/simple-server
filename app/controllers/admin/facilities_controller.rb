@@ -5,12 +5,10 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_available_zones, only: [:new, :create, :edit, :update],
+                if: -> { Flipper.enabled?(:regions_prep) }
 
-  before_action :initialize_upload,
-    :validate_file_type,
-    :validate_file_size,
-    :parse_file,
+  before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
     :validate_facility_rows, if: :file_exists?, only: [:upload]
 
   def index
@@ -178,7 +176,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def validate_facility_rows
-    @errors = Csv::FacilitiesValidator.validate(@facilities).errors
+    @errors = CSV::FacilitiesValidator.validate(@facilities).errors
   end
 
   def file_exists?
