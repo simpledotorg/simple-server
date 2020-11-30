@@ -11,10 +11,6 @@ class Facility < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  attribute :import, :boolean, default: false
-  attribute :organization_name, :string
-  attribute :facility_group_name, :string
-
   belongs_to :facility_group, optional: true
 
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
@@ -67,6 +63,9 @@ class Facility < ApplicationRecord
   auto_strip_attributes :district, squish: true, upcase_first: true
   auto_strip_attributes :zone, squish: true, upcase_first: true
 
+  attribute :organization_name, :string
+  attribute :facility_group_name, :string
+
   alias_attribute :block, :zone
 
   validates :name, presence: true
@@ -96,7 +95,7 @@ class Facility < ApplicationRecord
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
   def self.parse_facilities_from_file(file_contents)
-    Csv::FacilitiesParser.parse(file_contents)
+    CSV::FacilitiesParser.parse(file_contents)
   end
 
   # ----------------
@@ -198,11 +197,5 @@ class Facility < ApplicationRecord
 
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
-  end
-
-  def block_allowed
-    unless facility_group.region.blocks.pluck(:name).include?(block)
-      errors.add(:zone, "not present in the facility group")
-    end
   end
 end
