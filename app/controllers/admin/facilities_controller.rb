@@ -98,9 +98,10 @@ class Admin::FacilitiesController < AdminController
     return render :upload, status: :bad_request if @errors.present?
 
     if @facilities.present?
-      ImportFacilitiesJob.perform_later(@facilities)
+      ImportFacilitiesJob.perform_later(@facilities.map(&:attributes))
       flash.now[:notice] = "File upload successful, your facilities will be created shortly."
     end
+
     render :upload
   end
 
