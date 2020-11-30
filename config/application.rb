@@ -32,7 +32,7 @@ module SimpleServer
       g.helper false
     end
 
-    config.autoload_paths += %W[#{config.root}/lib #{config.root}/parsers]
+    config.autoload_paths += %W[#{config.root}/lib]
 
     # Locale configuration
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
