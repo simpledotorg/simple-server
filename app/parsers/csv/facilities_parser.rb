@@ -67,7 +67,8 @@ class CSV::FacilitiesParser
     CSV.parse(file_contents, headers: HEADERS, converters: CONVERTORS) do |row|
       facility = extract_facility(row)
       next if facility.values.all?(&:blank?)
-      facilities << Facility.new(attach_meta(facility))
+
+      facilities << Facility.new(metadata(facility))
     end
   end
 
@@ -75,15 +76,36 @@ class CSV::FacilitiesParser
     COLUMNS.map { |attr, col_name| [attr, row[col_name]] }.to_h
   end
 
-  def attach_meta(facility_attrs)
-    facility_group = facility_group(facility_attrs)
+  def metadata(facility_attrs)
+    facility_attrs
+      .merge(set_region_data(facility_attrs))
+      .merge(set_state(facility_attrs))
+      .merge(set_blanks_to_false(facility_attrs))
+  end
 
-    facility_attrs.merge(
+  def set_region_data(facility_attrs)
+    {
       country: Region.root.name,
-      enable_diabetes_management: facility_attrs[:enable_diabetes_management] || false,
+      facility_group_id: facility_group(facility_attrs)&.id
+    }
+  end
+
+  # This method can be removed and state can be inlined in the region metadata once the feature-flag is deprecated
+  def set_state(facility_attrs)
+    if Flipper.enabled?(:regions_prep)
+      {
+        state: facility_group(facility_attrs)&.region.state_region.name
+      }
+    else
+      {}
+    end
+  end
+
+  def set_blanks_to_false(facility_attrs)
+    {
       enable_teleconsultation: facility_attrs[:enable_teleconsultation] || false,
-      facility_group_id: facility_group&.id
-    ).merge(state(facility_group))
+      enable_diabetes_management: facility_attrs[:enable_diabetes_management] || false
+    }
   end
 
   def organization(organization_name)
@@ -95,16 +117,5 @@ class CSV::FacilitiesParser
       name: facility_attrs[:facility_group_name],
       organization: organization(facility_attrs[:organization_name])
     )
-  end
-
-  # This method can be removed and state can be inlined in the metadata once the feature-flag is deprecated
-  def state(facility_group)
-    if Flipper.enabled?(:regions_prep)
-      {
-        state: facility_group&.region.state_region.name
-      }
-    else
-      {}
-    end
   end
 end
