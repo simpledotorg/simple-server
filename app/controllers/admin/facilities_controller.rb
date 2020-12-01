@@ -46,8 +46,8 @@ class Admin::FacilitiesController < AdminController
 
   def show
     @facility_users = current_admin
-        .accessible_users(:manage)
-        .where(phone_number_authentications: {registration_facility_id: @facility})
+                        .accessible_users(:manage)
+                        .where(phone_number_authentications: {registration_facility_id: @facility})
   end
 
   def new
@@ -91,15 +91,16 @@ class Admin::FacilitiesController < AdminController
   def upload
     authorize { current_admin.accessible_facility_groups(:manage).any? }
 
-    return render :upload, status: :bad_request unless file_exists?
-    initialize_upload
+    if file_exists?
+      initialize_upload
 
-    validate_file_type
-    validate_file_size
-    return render :upload, status: :bad_request if @errors.present?
+      validate_file_type
+      validate_file_size
+      return render :upload, status: :bad_request if @errors.present?
 
-    parse_file
-    return render :upload, status: :bad_request if @errors.present?
+      parse_file
+      return render :upload, status: :bad_request if @errors.present?
+    end
 
     if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
@@ -162,8 +163,8 @@ class Admin::FacilitiesController < AdminController
     facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
 
     users = current_admin.accessible_users(:manage)
-      .joins(phone_number_authentications: :facility)
-      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
+              .joins(phone_number_authentications: :facility)
+              .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
 
     users.pluck(:id)
   end

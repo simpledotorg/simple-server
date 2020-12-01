@@ -40,13 +40,10 @@ class Csv::FacilitiesValidator
       row_validator = FacilityValidator.new(facility)
 
       # skip populating errors if both csv-specific validations and model validations succeed
-      next if row_validator.valid? && facility.valid?
+      next if [row_validator.valid?, facility.valid?].all?
 
-      row_errors << [
-        row_num,
-        row_validator.errors.full_messages.to_sentence,
-        facility.errors.full_messages.to_sentence
-      ]
+      row_errors << [row_num, row_validator.errors.full_messages.to_sentence] if row_validator.errors.present?
+      row_errors << [row_num, facility.errors.full_messages.to_sentence] if facility.errors.present?
     end
 
     group_row_errors(row_errors).each { |error| errors << error } if row_errors.present?
@@ -56,9 +53,8 @@ class Csv::FacilitiesValidator
     unique_errors = row_errors.map { |_row, message| message }.uniq
     unique_errors.map do |error|
       rows = row_errors
-        .select { |row, message| row if error == message }
-        .map { |row, _message| row }
-        .reject(&:blank?)
+               .select { |row, message| row if error == message }
+               .map { |row, _message| row }
 
       "Row(s) #{rows.join(", ")}: #{error}"
     end

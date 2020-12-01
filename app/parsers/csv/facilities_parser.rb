@@ -92,7 +92,7 @@ class Csv::FacilitiesParser
   def set_state(facility_attrs)
     if Flipper.enabled?(:regions_prep)
       {
-        state: facility_group(facility_attrs)&.region.state_region.name
+        state: facility_group(facility_attrs)&.region&.state_region&.name
       }
     else
       {}
