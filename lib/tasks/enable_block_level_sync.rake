@@ -8,7 +8,7 @@ task enable_block_level_sync: :environment do |_t, args|
     if user
       enable_block_level_sync(user)
     else
-      Rails.logger.info "User #{user_id} not found" unless user
+      Rails.logger.info "User #{user_id} not found"
     end
   end
 end
