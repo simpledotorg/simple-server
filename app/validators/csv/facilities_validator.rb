@@ -55,7 +55,11 @@ class Csv::FacilitiesValidator
   def group_row_errors(row_errors)
     unique_errors = row_errors.map { |_row, message| message }.uniq
     unique_errors.map do |error|
-      rows = row_errors.select { |row, message| row if error == message }.map { |row, _message| row }.reject(&:blank?)
+      rows = row_errors
+               .select { |row, message| row if error == message }
+               .map { |row, _message| row }
+               .reject(&:blank?)
+
       "Row(s) #{rows.join(", ")}: #{error}"
     end
   end

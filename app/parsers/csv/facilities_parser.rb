@@ -7,7 +7,7 @@ class Csv::FacilitiesParser
     end
   }
 
-  CONVERTORS = [:strip_whitespace]
+  CONVERTERS = [:strip_whitespace]
   HEADERS = true
   COLUMNS = if Flipper.enabled?(:regions_prep)
     {
@@ -64,7 +64,7 @@ class Csv::FacilitiesParser
   attr_accessor :facilities
 
   def parse
-    CSV.parse(file_contents, headers: HEADERS, converters: CONVERTORS) do |row|
+    CSV.parse(file_contents, headers: HEADERS, converters: CONVERTERS) do |row|
       attrs = facility_attributes(row)
       next if attrs.values.all?(&:blank?)
 
