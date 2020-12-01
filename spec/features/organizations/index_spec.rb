@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Verify Dashboard", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }

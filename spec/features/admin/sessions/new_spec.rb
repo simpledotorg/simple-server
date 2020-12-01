@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Owner Login as Admin", type: :feature do
   let(:facility) { create(:facility) }

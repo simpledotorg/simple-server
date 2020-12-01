@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Overdue appointments", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
