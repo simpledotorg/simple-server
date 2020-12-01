@@ -263,7 +263,7 @@ RSpec.describe ControlRateService, type: :model do
 
     # sanity checks for proper amount of regions
     expect(Region.state_regions.count).to eq(1)
-    expect(Region.count).to eq(10)
+    expect(Region.count).to eq(9) # 1 root, 1 org, 1 state, 1 district, 2 blocks, 3 facilities
 
     Timecop.freeze(jan_2020) do
       (controlled_in_facility_1 + controlled_in_facility_2).map do |patient|
