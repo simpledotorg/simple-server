@@ -108,7 +108,7 @@ class Region < ApplicationRecord
   private
 
   def initialize_path
-    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
+    logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
     self.path = if reparent_to.path.present?
       "#{reparent_to.path}.#{path_label}"
     else

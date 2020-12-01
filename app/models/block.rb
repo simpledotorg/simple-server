@@ -1,5 +1,6 @@
 class Block
   attr_reader :name, :facilities
+
   def initialize(name:, facilities:)
     @name = name
     @facilities = facilities
