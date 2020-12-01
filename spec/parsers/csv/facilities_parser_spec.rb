@@ -15,7 +15,7 @@ RSpec.describe CSV::FacilitiesParser do
                                                     district: "Bhatinda",
                                                     state: "Punjab",
                                                     country: "India",
-                                                    enable_diabetes_management: "true")
+                                                    enable_diabetes_management: true)
 
         expect(facilities.second).to have_attributes(organization_name: "OrgOne",
                                                      facility_group_name: "FGTwo",

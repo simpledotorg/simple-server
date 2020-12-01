@@ -11,6 +11,7 @@ RSpec.describe CSV::FacilitiesValidator do
 
     context "when there are duplicate rows" do
       let!(:organization) { create(:organization, name: "O") }
+      let!(:facility_group) { create(:facility_group, name: "FG", organization_id: organization.id) }
       let!(:facilities) { create_list(:facility, 2, organization_name: "O", facility_group_name: "FG", name: "F") }
       let!(:validator) { described_class.new(facilities) }
       before { validator.validate }
