@@ -42,7 +42,7 @@ RSpec.shared_examples "v3 API sync requests" do
     expect(received_records.to_set)
       .to include model.updated_on_server_since(request_process_token[:current_facility_processed_since].to_time)
         .map { |record| to_response(record) }
-      .to_set
+        .to_set
   end
 
   it "pushes nothing, pulls nothing" do
