@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Facility page functionality", type: :feature do
   let(:admin) { create(:admin, :power_user) }
