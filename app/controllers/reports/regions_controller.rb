@@ -26,7 +26,7 @@ class Reports::RegionsController < AdminController
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict) || @region.district_region?
+    if @region.district_region?
       @data_for_facility = @region.facilities.each_with_object({}) { |facility, hsh|
         hsh[facility.name] = Reports::RegionService.new(region: facility,
                                                         period: @period).call
