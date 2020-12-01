@@ -5,11 +5,14 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_available_zones, only: [:new, :create, :edit, :update],
-                if: -> { Flipper.enabled?(:regions_prep) }
-
-  before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
-    :validate_facility_rows, if: :file_exists?, only: [:upload]
+  before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  before_action(
+    :initialize_upload,
+    :validate_file_type,
+    :validate_file_size,
+    :parse_and_validate_file,
+    if: :file_exists?, only: [:upload]
+  )
 
   def index
     authorize do
@@ -95,12 +98,11 @@ class Admin::FacilitiesController < AdminController
   def upload
     authorize { current_admin.accessible_facility_groups(:manage).any? }
 
-    return render :upload, status: :bad_request if @errors.present?
-
     if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
       flash.now[:notice] = "File upload successful, your facilities will be created shortly."
     end
+
     render :upload
   end
 
@@ -168,15 +170,15 @@ class Admin::FacilitiesController < AdminController
     @file = params.require(:upload_facilities_file)
   end
 
-  def parse_file
+  def parse_and_validate_file
     return render :upload, status: :bad_request if @errors.present?
 
     @file_contents = read_xlsx_or_csv_file(@file)
-    @facilities = Facility.parse_facilities(@file_contents)
-  end
+    parsed_facilities = Facility.parse_facilities_from_file(@file_contents)
+    @errors = CSV::FacilitiesValidator.validate(parsed_facilities).errors
+    return render :upload, status: :bad_request if @errors.present?
 
-  def validate_facility_rows
-    @errors = Admin::CSV::FacilityValidator.validate(@facilities).errors
+    @facilities = parsed_facilities.map { |facility| facility.attributes.with_indifferent_access }
   end
 
   def file_exists?
