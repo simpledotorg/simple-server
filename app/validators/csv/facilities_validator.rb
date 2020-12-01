@@ -56,9 +56,9 @@ class Csv::FacilitiesValidator
     unique_errors = row_errors.map { |_row, message| message }.uniq
     unique_errors.map do |error|
       rows = row_errors
-               .select { |row, message| row if error == message }
-               .map { |row, _message| row }
-               .reject(&:blank?)
+        .select { |row, message| row if error == message }
+        .map { |row, _message| row }
+        .reject(&:blank?)
 
       "Row(s) #{rows.join(", ")}: #{error}"
     end
@@ -107,11 +107,11 @@ class Csv::FacilitiesValidator
     end
 
     memoize def existing_facility_group
-      FacilityGroup.find_by(name: facility_group_name, organization: organization)
+      FacilityGroup.find_by(name: facility_group_name, organization: existing_organization)
     end
 
     def existing_facility
-      Facility.find_by(name: name, facility_group: facility_group) if existing_facility_group.present?
+      Facility.find_by(name: name, facility_group: existing_facility_group) if existing_facility_group.present?
     end
   end
 end

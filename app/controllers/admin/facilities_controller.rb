@@ -90,6 +90,8 @@ class Admin::FacilitiesController < AdminController
 
   def upload
     authorize { current_admin.accessible_facility_groups(:manage).any? }
+
+    return render :upload, status: :bad_request unless file_exists?
     initialize_upload
 
     validate_file_type
