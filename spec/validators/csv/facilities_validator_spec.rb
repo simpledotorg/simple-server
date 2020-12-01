@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe CSV::FacilitiesValidator do
+RSpec.describe Csv::FacilitiesValidator do
   describe "#validate" do
     context "when no facilities are passed in" do
       let!(:validator) { described_class.new([]) }

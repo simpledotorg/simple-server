@@ -175,7 +175,7 @@ class Admin::FacilitiesController < AdminController
 
     @file_contents = read_xlsx_or_csv_file(@file)
     parsed_facilities = Facility.parse_facilities_from_file(@file_contents)
-    @errors = CSV::FacilitiesValidator.validate(parsed_facilities).errors
+    @errors = Csv::FacilitiesValidator.validate(parsed_facilities).errors
     return render :upload, status: :bad_request if @errors.present?
 
     @facilities = parsed_facilities.map { |facility| facility.attributes.with_indifferent_access }

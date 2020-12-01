@@ -94,7 +94,7 @@ class Facility < ApplicationRecord
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
 
   def self.parse_facilities_from_file(file_contents)
-    CSV::FacilitiesParser.parse(file_contents)
+    Csv::FacilitiesParser.parse(file_contents)
   end
 
   # ----------------
