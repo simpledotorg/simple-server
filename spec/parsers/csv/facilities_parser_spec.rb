@@ -9,21 +9,21 @@ RSpec.describe CSV::FacilitiesParser do
         facilities = described_class.parse(upload_file)
 
         expect(facilities.first).to have_attributes(organization_name: "OrgOne",
-          facility_group_name: "FGTwo",
-          name: "Test Facility",
-          facility_type: "CHC",
-          district: "Bhatinda",
-          state: "Punjab",
-          country: "India",
-          enable_diabetes_management: "true")
+                                                    facility_group_name: "FGTwo",
+                                                    name: "Test Facility",
+                                                    facility_type: "CHC",
+                                                    district: "Bhatinda",
+                                                    state: "Punjab",
+                                                    country: "India",
+                                                    enable_diabetes_management: "true")
 
         expect(facilities.second).to have_attributes(organization_name: "OrgOne",
-          facility_group_name: "FGTwo",
-          name: "Test Facility 2",
-          facility_type: "CHC",
-          district: "Bhatinda",
-          state: "Punjab",
-          country: "India")
+                                                     facility_group_name: "FGTwo",
+                                                     name: "Test Facility 2",
+                                                     facility_type: "CHC",
+                                                     district: "Bhatinda",
+                                                     state: "Punjab",
+                                                     country: "India")
       end
 
       it "defaults enable_diabetes_management to false if blank" do
@@ -50,5 +50,3 @@ RSpec.describe CSV::FacilitiesParser do
     end
   end
 end
-
-

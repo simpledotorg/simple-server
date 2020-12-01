@@ -42,7 +42,7 @@ class CSV::FacilitiesValidator
       row_errors << [
         row_num,
         row_validator.errors.full_messages.to_sentence,
-        facility.errors.full_messages.to_sentence,
+        facility.errors.full_messages.to_sentence
       ].reject(&:blank?)
     end
 
