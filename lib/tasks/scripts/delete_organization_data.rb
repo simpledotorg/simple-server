@@ -26,19 +26,29 @@ class DeleteOrganizationData
   attr_reader :organization, :facility_groups, :facilities
 
   def delete_patient_data
-    patients = Patient.with_discarded.where(registration_facility: facilities)
-    patient_business_identifiers = PatientBusinessIdentifier.with_discarded.where(patient_id: patients)
+    patients = Patient.with_discarded.where(registration_facility_id: facilities)
+    address_ids = patients.pluck(:address_id)
 
-    Address.with_discarded.where(patient_id: patients).destroy_all
-    Appointment.with_discarded.where(patient_id: patients).destroy_all
-    BloodPressure.with_discarded.where(patient_id: patients).destroy_all
-    BloodSugar.with_discarded.where(patient_id: patients).destroy_all
-    PassportAuthentication.with_discarded.where(patient_business_identifier: patient_business_identifiers).destroy_all
-    patient_business_identifiers.with_discarded.destroy_all
-    Observation.with_discarded.where(patient_id: patients).destroy_all
-    Encounter.with_discarded.where(patient_id: patients).destroy_all
-    MedicalHistory.with_discarded.where(patient_id: patients).destroy_all
-    PrescriptionDrug.with_discarded.where(patient_id: patients).destroy_all
+    Appointment.with_discarded.where(patient_id: patients).delete_all
+    BloodPressure.with_discarded.where(patient_id: patients).delete_all
+    BloodSugar.with_discarded.where(patient_id: patients).delete_all
+    MedicalHistory.with_discarded.where(patient_id: patients).delete_all
+    PrescriptionDrug.with_discarded.where(patient_id: patients).delete_all
+
+    patient_phone_numbers = PatientPhoneNumber.with_discarded.where(patient_id: patients)
+    ExotelPhoneNumberDetail.where(patient_phone_number_id: patient_phone_numbers).delete_all
+    patient_phone_numbers.delete_all
+
+    patient_business_identifiers = PatientBusinessIdentifier.with_discarded.where(patient_id: patients)
+    PassportAuthentication.where(patient_business_identifier: patient_business_identifiers).delete_all
+    patient_business_identifiers.with_discarded.delete_all
+
+    encounters = Encounter.with_discarded.where(patient_id: patients)
+    Observation.with_discarded.where(encounter_id: encounters).delete_all
+    encounters.delete_all
+
+    patients.delete_all
+    Address.with_discarded.where(id: address_ids).delete_all
   end
 
   def delete_app_users
