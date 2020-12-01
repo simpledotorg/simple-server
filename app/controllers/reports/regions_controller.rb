@@ -48,7 +48,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    if @region.is_a?(Facility)
+    if @region.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
     end
   end
