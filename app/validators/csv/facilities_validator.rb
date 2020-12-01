@@ -3,7 +3,7 @@ class CSV::FacilitiesValidator
     new(facilities).validate
   end
 
-  attr_accessor :errors
+  attr_reader :errors
 
   def initialize(facilities)
     @facilities = facilities
@@ -19,7 +19,10 @@ class CSV::FacilitiesValidator
 
   private
 
-  attr_reader :facilities, :organization_name, :facility_group_name
+  STARTING_ROW = 2
+
+  attr_reader :facilities
+  attr_writer :errors
 
   def at_least_one_facility
     errors << "Uploaded file doesn't contain any valid facilities" if facilities.blank?
@@ -33,7 +36,7 @@ class CSV::FacilitiesValidator
   def per_facility_validations
     row_errors = []
 
-    facilities.each.with_index(2) do |facility, row_num|
+    facilities.each.with_index(STARTING_ROW) do |facility, row_num|
       row_validator = FacilityValidator.new(facility)
 
       # skip if both csv-specific validations and model validations succeed
