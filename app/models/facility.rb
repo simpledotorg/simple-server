@@ -88,7 +88,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :block_allowed, if: -> { Flipper.enabled?(:regions_prep) }
+  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
@@ -199,7 +199,7 @@ class Facility < ApplicationRecord
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
-  def block_allowed
+  def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
     end
