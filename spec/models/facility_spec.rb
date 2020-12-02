@@ -230,6 +230,19 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to validate_presence_of(:country) }
     it { is_expected.to validate_numericality_of(:pin) }
 
+    describe "valid_block" do
+      before { enable_flag(:regions_prep) }
+      let!(:organization) { create(:organization, name: "OrgTwo") }
+      let!(:facility_group) { create(:facility_group, name: "FGThree", organization_id: organization.id) }
+      let!(:block) { create(:region, :block, name: "Zone 2", reparent_to: facility_group.region) }
+      subject { Facility.new(block: "Zone 1", facility_group: facility_group) }
+
+      it do
+        subject.valid?
+        expect(subject.errors[:zone]).to match_array("not present in the facility group")
+      end
+    end
+
     describe "teleconsultation medical officers" do
       context "when teleconsultation is enabled" do
         subject { Facility.new(enable_teleconsultation: true) }
