@@ -45,6 +45,17 @@ class FacilityGroup < ApplicationRecord
     organization.region.state_regions.find_by(name: state)
   end
 
+  def update_block_regions
+    FacilityGroupCallback.new.sync_block_regions(self)
+  end
+
+  def create_state_region!
+    return true unless Flipper.enabled?(:regions_prep)
+    return if state_region || state.blank?
+
+    Region.state_regions.create!(name: state, reparent_to: organization.region)
+  end
+
   # ----------------
   # Region callbacks
   #
@@ -70,13 +81,6 @@ class FacilityGroup < ApplicationRecord
 
   def diabetes_enabled?
     facilities.where(enable_diabetes_management: false).count.zero?
-  end
-
-  def create_state_region!
-    return unless Flipper.enabled?(:regions_prep)
-    return if state_region || state.blank?
-
-    Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
 
   def discardable?
