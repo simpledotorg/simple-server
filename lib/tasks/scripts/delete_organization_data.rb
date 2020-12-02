@@ -14,10 +14,10 @@ class DeleteOrganizationData
   end
 
   def delete_path_data
-    # if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
-    #   Rails.logger.info "Can run only in India production"
-    #   return
-    # end
+    if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
+      Rails.logger.info "Can run only in India production"
+      return
+    end
 
     ActiveRecord::Base.transaction do
       delete_patient_data
