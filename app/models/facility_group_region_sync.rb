@@ -1,4 +1,9 @@
-class FacilityGroupCallback < SimpleDelegator
+# This object keeps Facility Group in sync with related regions
+#
+# These callbacks are medium-term temporary.
+# This class and the Region callbacks should ideally be totally superseded by the Region class.
+# Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
+class FacilityGroupRegionSync < SimpleDelegator
   def after_create
     return true unless Flipper.enabled?(:regions_prep)
     return if region&.persisted?
