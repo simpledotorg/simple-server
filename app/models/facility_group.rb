@@ -41,37 +41,18 @@ class FacilityGroup < ApplicationRecord
     @state || region&.state_region&.name
   end
 
+  def state_region
+    organization.region.state_regions.find_by(name: state)
+  end
+
   # ----------------
   # Region callbacks
   #
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
-
-  def make_region
-    return if region&.persisted?
-
-    create_region!(
-      name: name,
-      reparent_to: state_region,
-      region_type: Region.region_types[:district]
-    )
-  end
-
-  def update_region
-    region.reparent_to = state_region
-    region.name = name
-    region.save!
-  end
-
-  def state_region
-    organization.region.state_regions.find_by(name: state)
-  end
-
-  private :make_region, :update_region
-  # ----------------
+  after_create FacilityGroupCallback.new
+  after_update FacilityGroupCallback.new
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
