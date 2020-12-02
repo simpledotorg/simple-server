@@ -78,18 +78,18 @@ class DeleteOrganizationData
     observations = Observation.with_discarded.where(encounter_id: encounters)
 
     records = [appointments,
-               bps,
-               blood_sugars,
-               medical_histories,
-               prescription_drugs,
-               exotel_phone_number_details,
-               patient_phone_numbers,
-               passport_authentications,
-               patient_business_identifiers,
-               observations,
-               encounters,
-               patients,
-               addresses]
+      bps,
+      blood_sugars,
+      medical_histories,
+      prescription_drugs,
+      exotel_phone_number_details,
+      patient_phone_numbers,
+      passport_authentications,
+      patient_business_identifiers,
+      observations,
+      encounters,
+      patients,
+      addresses]
 
     records.map do |record|
       log "#{record.count} #{record.klass.name} deleted"
