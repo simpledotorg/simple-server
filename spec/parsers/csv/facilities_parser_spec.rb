@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe CSV::FacilitiesParser do
+RSpec.describe Csv::FacilitiesParser do
   describe ".parse" do
     context "when regions_prep is disabled" do
       let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }

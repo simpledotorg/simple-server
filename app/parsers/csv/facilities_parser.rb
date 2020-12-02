@@ -1,4 +1,4 @@
-class CSV::FacilitiesParser
+class Csv::FacilitiesParser
   CSV::Converters[:strip_whitespace] = ->(value) {
     begin
       value.strip
@@ -7,7 +7,7 @@ class CSV::FacilitiesParser
     end
   }
 
-  CONVERTORS = [:strip_whitespace]
+  CONVERTERS = [:strip_whitespace]
   HEADERS = true
   COLUMNS = if Flipper.enabled?(:regions_prep)
     {
@@ -64,23 +64,21 @@ class CSV::FacilitiesParser
   attr_accessor :facilities
 
   def parse
-    CSV.parse(file_contents, headers: HEADERS, converters: CONVERTORS) do |row|
-      facility = extract_facility(row)
-      next if facility.values.all?(&:blank?)
+    CSV.parse(file_contents, headers: HEADERS, converters: CONVERTERS) do |row|
+      attrs = facility_attributes(row)
+      next if attrs.values.all?(&:blank?)
 
-      facilities << Facility.new(metadata(facility))
+      facilities << Facility.new(attrs)
     end
   end
 
-  def extract_facility(row)
-    COLUMNS.map { |attr, col_name| [attr, row[col_name]] }.to_h
-  end
-
-  def metadata(facility_attrs)
-    facility_attrs
-      .merge(set_region_data(facility_attrs))
-      .merge(set_state(facility_attrs))
-      .merge(set_blanks_to_false(facility_attrs))
+  def facility_attributes(row)
+    COLUMNS
+      .map { |attr, col_name| [attr, row[col_name]] }
+      .to_h
+      .yield_self { |attrs| attrs.merge(set_region_data(attrs)) }
+      .yield_self { |attrs| attrs.merge(set_state(attrs)) }
+      .yield_self { |attrs| attrs.merge(set_blanks_to_false(attrs)) }
   end
 
   def set_region_data(facility_attrs)
@@ -94,7 +92,7 @@ class CSV::FacilitiesParser
   def set_state(facility_attrs)
     if Flipper.enabled?(:regions_prep)
       {
-        state: facility_group(facility_attrs)&.region.state_region.name
+        state: facility_group(facility_attrs)&.region&.state_region&.name
       }
     else
       {}

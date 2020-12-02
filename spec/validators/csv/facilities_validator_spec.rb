@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe CSV::FacilitiesValidator do
+RSpec.describe Csv::FacilitiesValidator do
   describe "#validate" do
     context "when no facilities are passed in" do
       let!(:validator) { described_class.new([]) }
@@ -65,7 +65,7 @@ RSpec.describe CSV::FacilitiesValidator do
           build(:facility, organization_name: "O", facility_group_name: "FG", state: nil, enable_teleconsultation: false),
           build(:facility, organization_name: "O", facility_group_name: "FG", country: nil, enable_teleconsultation: false),
           build(:facility, organization_name: "O", facility_group_name: "FG", facility_size: "invalid size", enable_teleconsultation: false),
-          build(:facility, organization_name: "O", facility_group_name: "FG", enable_diabetes_management: nil, enable_teleconsultation: false)
+          build(:facility, facility_group_name: "FG", enable_diabetes_management: nil, enable_teleconsultation: false)
         ]
 
         validator = described_class.new(facilities)
@@ -76,7 +76,8 @@ RSpec.describe CSV::FacilitiesValidator do
           "Row(s) 3: State can't be blank",
           "Row(s) 4: Country can't be blank",
           "Row(s) 5: Facility size not in #{Facility.facility_sizes.values.join(", ")}",
-          "Row(s) 6: Enable diabetes management is not included in the list"
+          "Row(s) 6: Enable diabetes management is not included in the list",
+          "Row(s) 6: Organization name can't be blank"
         ]
       end
 

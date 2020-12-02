@@ -6,13 +6,6 @@ class Admin::FacilitiesController < AdminController
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
   before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
-  before_action(
-    :initialize_upload,
-    :validate_file_type,
-    :validate_file_size,
-    :parse_and_validate_file,
-    if: :file_exists?, only: [:upload]
-  )
 
   def index
     authorize do
@@ -53,8 +46,8 @@ class Admin::FacilitiesController < AdminController
 
   def show
     @facility_users = current_admin
-        .accessible_users(:manage)
-        .where(phone_number_authentications: {registration_facility_id: @facility})
+                        .accessible_users(:manage)
+                        .where(phone_number_authentications: {registration_facility_id: @facility})
   end
 
   def new
@@ -97,6 +90,17 @@ class Admin::FacilitiesController < AdminController
 
   def upload
     authorize { current_admin.accessible_facility_groups(:manage).any? }
+
+    if file_exists?
+      initialize_upload
+
+      validate_file_type
+      validate_file_size
+      return render :upload, status: :bad_request if @errors.present?
+
+      parse_file
+      return render :upload, status: :bad_request if @errors.present?
+    end
 
     if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
@@ -159,8 +163,8 @@ class Admin::FacilitiesController < AdminController
     facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
 
     users = current_admin.accessible_users(:manage)
-      .joins(phone_number_authentications: :facility)
-      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
+              .joins(phone_number_authentications: :facility)
+              .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
 
     users.pluck(:id)
   end
@@ -170,15 +174,11 @@ class Admin::FacilitiesController < AdminController
     @file = params.require(:upload_facilities_file)
   end
 
-  def parse_and_validate_file
-    return render :upload, status: :bad_request if @errors.present?
-
+  def parse_file
     @file_contents = read_xlsx_or_csv_file(@file)
-    parsed_facilities = Facility.parse_facilities_from_file(@file_contents)
-    @errors = CSV::FacilitiesValidator.validate(parsed_facilities).errors
-    return render :upload, status: :bad_request if @errors.present?
-
-    @facilities = parsed_facilities.map { |facility| facility.attributes.with_indifferent_access }
+    facilities = Facility.parse_facilities_from_file(@file_contents)
+    @errors = Csv::FacilitiesValidator.validate(facilities).errors
+    @facilities = facilities.map { |facility| facility.attributes.with_indifferent_access }
   end
 
   def file_exists?
