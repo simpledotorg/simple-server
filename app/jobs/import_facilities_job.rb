@@ -12,6 +12,10 @@ class ImportFacilitiesJob < ApplicationJob
       import_facilities << import_facility
     end
 
-    Facility.import!(import_facilities, validate: true)
+    ActiveRecord::Base.transaction do
+      Facility.import!(import_facilities, validate: true)
+      # import! can't run callbacks, so we manually ensure that we create regions
+      import_facilities.each(&:make_region) if Flipper.enabled?(:regions_prep)
+    end
   end
 end
