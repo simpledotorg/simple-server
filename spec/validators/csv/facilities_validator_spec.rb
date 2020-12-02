@@ -80,6 +80,24 @@ RSpec.describe Csv::FacilitiesValidator do
           "Row(s) 6: Organization name can't be blank"
         ]
       end
+
+      context "when regions_prep is enabled" do
+        before { enable_flag(:regions_prep) }
+
+        it "uploads facilities file and passes validations" do
+          organization = create(:organization, name: "OrgTwo")
+          facility_group = create(:facility_group, name: "FGThree", organization_id: organization.id)
+          create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+
+          facilities = [
+            build(:facility, organization_name: "OrgTwo", facility_group_name: "FGThree", zone: "Zone 1")
+          ]
+          validator = described_class.new(facilities)
+          validator.validate
+
+          expect(validator.errors).to match_array ["Row(s) 2: Zone not present in the facility group"]
+        end
+      end
     end
   end
 end
