@@ -1,7 +1,13 @@
 class DeleteOrganizationData
   include Memery
 
-  def self.delete_path_data(path_org_id, dry_run: false)
+  def initialize(organization_id:, facilities: nil, dry_run: true)
+    @organization_id = organization_id
+    @facilities = facilities
+    @dry_run = dry_run
+  end
+
+  def self.delete_path_data(path_org_id, dry_run: true)
     # Narrowing down by facility_type is the only way to
     # distinguish between soft deleted facilities from IHCI and PATH
     facilities =
@@ -14,7 +20,7 @@ class DeleteOrganizationData
   end
 
   def delete_path_data
-    if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
+    if !SimpleServer.env.development? && !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
       Rails.logger.info "Can run only in India production"
       return
     end
@@ -32,12 +38,6 @@ class DeleteOrganizationData
 
   def self.call(*args)
     new(*args).call
-  end
-
-  def initialize(organization_id:, facilities:, dry_run: true)
-    @organization_id = organization_id
-    @facilities = facilities
-    @dry_run = dry_run
   end
 
   def call
@@ -158,17 +158,17 @@ class DeleteOrganizationData
   end
 
   def delete_organization
-    organization = organization.find(@organization_id)
+    organization = Organization.find(@organization_id)
     log "#{organization.name} Organization deleted"
     organization.destroy
   end
 
   memoize def facility_groups
-    FacilityGroup.with_discarded.where(organization_id: @organization_id)
+    FacilityGroup.with_discarded.where(organization_id: organization_id)
   end
 
   memoize def facilities
-    @facilities || Facility.with_discarded.where(facility_group_id: @facility_groups)
+    @facilities || Facility.with_discarded.where(facility_group_id: facility_groups)
   end
 
   def log(*args)
