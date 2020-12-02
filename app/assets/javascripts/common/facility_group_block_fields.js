@@ -1,5 +1,4 @@
 FacilityGroupBlockFields = function() {
-
   this.newBlockRow = (name) => {
     let template = $("template#block-row").html()
     let $template = $(template);
@@ -26,7 +25,7 @@ FacilityGroupBlockFields = function() {
   }
 
   this.isBlockAdded = (name) => {
-    return this.addedBlocks().map(block => block.toLowerCase()).includes(name.toLowerCase())
+    return this.addedBlocks().map(block => block.toLowerCase().trim()).includes(name.toLowerCase().trim())
   }
 
   this.addBlock = (name) => {
