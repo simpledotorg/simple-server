@@ -1,40 +1,42 @@
-class FacilityGroupCallback
-  def after_create(record)
+class FacilityGroupCallback < SimpleDelegator
+  def after_create
     return true unless Flipper.enabled?(:regions_prep)
-    return if record.region&.persisted?
+    return if region&.persisted?
 
-    record.create_region!(
-      name: record.name,
-      reparent_to: record.state_region,
+    create_region!(
+      name: name,
+      reparent_to: state_region,
       region_type: Region.region_types[:district]
     )
   end
 
-  def after_update(record)
+  def after_update
     return true unless Flipper.enabled?(:regions_prep)
-    record.region.reparent_to = record.state_region
-    record.region.name = record.name
-    record.region.save!
+    region.reparent_to = state_region
+    region.name = name
+    region.save!
   end
 
-  def sync_block_regions(record)
+  def sync_block_regions
     return true unless Flipper.enabled?(:regions_prep)
-    create_block_regions(record)
-    remove_block_regions(record)
+    create_block_regions
+    remove_block_regions
   end
 
-  def create_block_regions(record)
-    return if record.new_block_names.blank?
+  private
 
-    record.new_block_names.map { |name|
-      Region.block_regions.create!(name: name, reparent_to: record.region)
+  def create_block_regions
+    return if new_block_names.blank?
+
+    new_block_names.map { |name|
+      Region.block_regions.create!(name: name, reparent_to: region)
     }
   end
 
-  def remove_block_regions(record)
-    return if record.remove_block_ids.blank?
+  def remove_block_regions
+    return if remove_block_ids.blank?
 
-    record.remove_block_ids.map { |id|
+    remove_block_ids.map { |id|
       next unless Region.find(id)
       next unless Region.find(id).children.empty?
 

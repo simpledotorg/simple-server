@@ -45,10 +45,6 @@ class FacilityGroup < ApplicationRecord
     organization.region.state_regions.find_by(name: state)
   end
 
-  def update_block_regions
-    FacilityGroupCallback.new.sync_block_regions(self)
-  end
-
   def create_state_region!
     return true unless Flipper.enabled?(:regions_prep)
     return if state_region || state.blank?
@@ -62,8 +58,12 @@ class FacilityGroup < ApplicationRecord
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create FacilityGroupCallback.new
-  after_update FacilityGroupCallback.new
+  after_create { |record| FacilityGroupCallback.new(record).after_create }
+  after_update { |record| FacilityGroupCallback.new(record).after_update }
+
+  def update_block_regions
+    FacilityGroupCallback.new(self).sync_block_regions
+  end
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
