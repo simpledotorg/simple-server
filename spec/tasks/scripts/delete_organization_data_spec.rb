@@ -7,6 +7,8 @@ RSpec.describe DeleteOrganizationData do
     let!(:organization) { create(:organization, id: path_organization_id) }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:facilities) { create_list(:facility, 2, facility_group: facility_group, facility_type: "Standalone") }
+    let!(:soft_deleted_facilities) { create_list(:facility, 2, facility_group: nil, facility_type: "Standalone", deleted_at: Time.current) }
+
     let!(:patients) { facilities.map { |facility| create_list(:patient, 2, registration_facility: facility) }.flatten }
     let!(:blood_pressures) { patients.map { |patient| create_list(:blood_pressure, 2, patient: patient) }.flatten }
     let!(:blood_sugars) { patients.map { |patient| create_list(:blood_sugar, 2, patient: patient) }.flatten }
@@ -26,6 +28,7 @@ RSpec.describe DeleteOrganizationData do
       described_class.delete_path_data(path_organization_id, dry_run: false)
 
       facilities.each { |facility| expect { facility.reload }.to raise_error ActiveRecord::RecordNotFound }
+      soft_deleted_facilities.each { |facility| expect { facility.reload }.to raise_error ActiveRecord::RecordNotFound }
       patients.each { |patient| expect { patient.reload }.to raise_error ActiveRecord::RecordNotFound }
       blood_pressures.each { |blood_pressure| expect { blood_pressure.reload }.to raise_error ActiveRecord::RecordNotFound }
       blood_sugars.each { |blood_sugar| expect { blood_sugar.reload }.to raise_error ActiveRecord::RecordNotFound }
@@ -35,11 +38,13 @@ RSpec.describe DeleteOrganizationData do
       other_organizations = create_list(:organization, 2)
       other_facility_groups = other_organizations.map { |org| create_list(:facility_group, 2, organization: org) }.flatten
       other_facilities = other_facility_groups.map { |fg| create_list(:facility, 2, facility_group: fg) }.flatten
+      other_soft_deleted_facilities = create_list(:facility, 2, facility_group: nil, deleted_at: Time.current)
 
       described_class.delete_path_data(path_organization_id, dry_run: false)
       other_organizations.map { |org| expect(org.reload).to eq org }
       other_facility_groups.map { |fg| expect(fg.reload).to eq fg }
       other_facilities.map { |facility| expect(facility.reload).to eq facility }
+      other_soft_deleted_facilities.each { |facility| expect(facility.reload).to eq facility }
     end
   end
 
@@ -47,6 +52,7 @@ RSpec.describe DeleteOrganizationData do
     let!(:organization) { create(:organization) }
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
+    let!(:soft_deleted_facilities) { create_list(:facility, 2, facility_group: facility_group, facility_type: "Standalone", deleted_at: Time.current) }
     let!(:patients) { facilities.map { |facility| create_list(:patient, 2, registration_facility: facility) }.flatten }
     let!(:blood_pressures) { patients.map { |patient| create_list(:blood_pressure, 2, patient: patient) }.flatten }
     let!(:blood_sugars) { patients.map { |patient| create_list(:blood_sugar, 2, patient: patient) }.flatten }
@@ -60,6 +66,7 @@ RSpec.describe DeleteOrganizationData do
       expect { organization.reload }.to raise_error ActiveRecord::RecordNotFound
       expect { facility_group.reload }.to raise_error ActiveRecord::RecordNotFound
       facilities.each { |facility| expect { facility.reload }.to raise_error ActiveRecord::RecordNotFound }
+      soft_deleted_facilities.each { |facility| expect { facility.reload }.to raise_error ActiveRecord::RecordNotFound }
       patients.each { |patient| expect { patient.reload }.to raise_error ActiveRecord::RecordNotFound }
       blood_pressures.each { |blood_pressure| expect { blood_pressure.reload }.to raise_error ActiveRecord::RecordNotFound }
       blood_sugars.each { |blood_sugar| expect { blood_sugar.reload }.to raise_error ActiveRecord::RecordNotFound }
