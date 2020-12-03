@@ -65,7 +65,7 @@ RSpec.feature "Facility page functionality", type: :feature do
         end
 
         context "create new facility group" do
-          fit "create new facility group without assigning any facility" do
+          it "create new facility group without assigning any facility" do
             ihmi = create(:organization, name: "IHMI2")
             protocol_01 = create(:protocol, name: "testProtocol1")
             create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
