@@ -7,7 +7,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
     attributes_for(
       :facility_group,
       organization_id: organization.id,
-      state: "An State",
+      state: "New York",
       protocol_id: protocol.id
     )
   end
@@ -117,22 +117,19 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
 
   describe "PUT #update" do
     context "with valid params" do
-      let(:new_attributes) do
-        FactoryBot.attributes_for(
-          :facility_group,
-          organization_id: organization.id,
-          state: "An State",
-          protocol_id: protocol.id
-        ).except(:id, :slug)
-      end
-
-      it "updates the requested facility_group" do
+      it "updates the requested facility_group with diabetes mgmt unchanged" do
         facility_group = create(:facility_group, valid_attributes)
+        new_attributes = {
+          name: "New Name",
+          description: "New Description",
+          state: "New York",
+        }
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
         facility_group.reload
 
-        expect(facility_group.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug", "enable_diabetes_management"))
-          .to eq new_attributes.except(:state).with_indifferent_access
+        expect(facility_group.name).to eq("New Name")
+        expect(facility_group.description).to eq("New Description")
+        expect(facility_group.state).to eq("New York")
       end
 
       it "redirects to the facilities" do
