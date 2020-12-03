@@ -103,7 +103,7 @@ RSpec.describe DeleteOrganizationData do
     let!(:blood_pressures) { patients.map { |patient| create_list(:blood_pressure, 2, :with_encounter, patient: patient, facility: facilities.second) }.flatten }
     let!(:blood_sugars) { patients.map { |patient| create_list(:blood_sugar, 2, :with_encounter, patient: patient, facility: facilities.first) }.flatten }
     let!(:encounters) { [*blood_pressures.map(&:encounter), *blood_sugars.map(&:encounter)] }
-    let!(:observations) { [*blood_pressures.map(&:observation), *blood_sugars.map(&:observation)]}
+    let!(:observations) { [*blood_pressures.map(&:observation), *blood_sugars.map(&:observation)] }
     let!(:appointments) { patients.map { |patient| create_list(:appointment, 2, patient: patient, facility: facilities.first) }.flatten }
     let!(:app_users) { create_list(:user, 2, :with_phone_number_authentication, registration_facility: facilities.first) }
     let!(:dashboard_users) { create_list(:admin, 2, organization: organization) }
