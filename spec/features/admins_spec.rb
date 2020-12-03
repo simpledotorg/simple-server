@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.xfeature "Admins", type: :feature do
   let(:full_name) { Faker::Name.name }

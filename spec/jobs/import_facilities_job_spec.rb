@@ -4,20 +4,13 @@ RSpec.describe ImportFacilitiesJob, type: :job do
   include ActiveJob::TestHelper
 
   describe "#perform_later" do
-    let(:organization) { FactoryBot.create(:organization, name: "OrgOne") }
-    let!(:facility_group_2) do
-      FactoryBot.create(:facility_group, name: "FGTwo",
-                                         organization_id: organization.id)
-    end
+    let(:organization) { create(:organization, name: "OrgOne") }
+    let!(:facility_group_2) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
     let(:facilities) do
-      [FactoryBot.attributes_for(:facility,
-        organization_name: "OrgOne",
-        facility_group_name: "FGTwo",
-        import: true).except(:id),
-        FactoryBot.attributes_for(:facility,
-          organization_name: "OrgOne",
-          facility_group_name: "FGTwo",
-          import: true).except(:id)]
+      [
+        attributes_for(:facility, organization_name: "OrgOne", facility_group_name: "FGTwo").except(:id),
+        attributes_for(:facility, organization_name: "OrgOne", facility_group_name: "FGTwo").except(:id)
+      ]
     end
     let(:job) { ImportFacilitiesJob.perform_later(facilities) }
 
