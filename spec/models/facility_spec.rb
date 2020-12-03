@@ -226,7 +226,10 @@ RSpec.describe Facility, type: :model do
   describe "Validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:district) }
-    it { is_expected.to validate_presence_of(:state) }
+    context "validate state presence only if facility_group exists" do
+      let(:subject) { Facility.new(facility_group: create(:facility_group)) }
+      it { is_expected.to validate_presence_of(:state) }
+    end
     it { is_expected.to validate_presence_of(:country) }
     it { is_expected.to validate_numericality_of(:pin) }
 
