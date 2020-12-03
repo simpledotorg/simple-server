@@ -35,8 +35,16 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
     {
       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
       resync_token: resync_token,
-      sync_region_id: current_sync_region&.id || Region.root.id
+      sync_region_id: temp_sync_region_id
     }
+  end
+
+  def temp_sync_region_id
+    if current_user
+      current_sync_region&.id
+    else
+      Region.root.id
+    end
   end
 
   def records_to_sync
