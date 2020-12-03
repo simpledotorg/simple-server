@@ -151,7 +151,7 @@ RSpec.describe DeleteOrganizationData do
       described_class.call(organization_id: organization.id, dry_run: false)
       other_organizations.map { |org| expect(org.reload).to eq org }
       other_facility_groups.map { |fg| expect(fg.reload).to eq fg }
-      other_facilities.each { |facility| expect(facility.reload).to eq facility}
+      other_facilities.each { |facility| expect(facility.reload).to eq facility }
       other_soft_deleted_facilities.each { |facility| expect(facility.reload).to eq facility }
 
       other_patients.each { |patient| expect(patient.reload).to eq patient }
