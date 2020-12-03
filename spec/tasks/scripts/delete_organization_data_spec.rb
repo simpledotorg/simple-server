@@ -10,9 +10,16 @@ RSpec.describe DeleteOrganizationData do
     let!(:soft_deleted_facilities) { create_list(:facility, 2, facility_group: nil, facility_type: "Standalone", deleted_at: Time.current) }
 
     let!(:patients) { facilities.map { |facility| create_list(:patient, 2, registration_facility: facility) }.flatten }
-    let!(:blood_pressures) { patients.map { |patient| create_list(:blood_pressure, 2, patient: patient) }.flatten }
-    let!(:blood_sugars) { patients.map { |patient| create_list(:blood_sugar, 2, patient: patient) }.flatten }
-    # TODO: add more things
+    let!(:medical_histories) { patients.map(&:medical_history) }
+    let!(:prescription_drugs) { patients.map(&:prescription_drugs).flatten }
+    let!(:patient_phone_numbers) { patients.map(&:phone_numbers).flatten }
+    let!(:blood_pressures) { patients.map { |patient| create_list(:blood_pressure, 2, :with_encounter, patient: patient, facility: facilities.second) }.flatten }
+    let!(:blood_sugars) { patients.map { |patient| create_list(:blood_sugar, 2, :with_encounter, patient: patient, facility: facilities.first) }.flatten }
+    let!(:encounters) { [*blood_pressures.map(&:encounter), *blood_sugars.map(&:encounter)] }
+    let!(:observations) { [*blood_pressures.map(&:observation), *blood_sugars.map(&:observation)]}
+    let!(:appointments) { patients.map { |patient| create_list(:appointment, 2, patient: patient, facility: facilities.first) }.flatten }
+    let!(:app_users) { create_list(:user, 2, :with_phone_number_authentication, registration_facility: facilities.first) }
+
 
     before do
       allow(SimpleServer).to receive_message_chain(:env, :production?).and_return(true)
@@ -30,8 +37,17 @@ RSpec.describe DeleteOrganizationData do
       facilities.each { |facility| expect { facility.reload }.to raise_error ActiveRecord::RecordNotFound }
       soft_deleted_facilities.each { |facility| expect { facility.reload }.to raise_error ActiveRecord::RecordNotFound }
       patients.each { |patient| expect { patient.reload }.to raise_error ActiveRecord::RecordNotFound }
+      appointments.each { |appointment| expect { appointment.reload }.to raise_error ActiveRecord::RecordNotFound }
       blood_pressures.each { |blood_pressure| expect { blood_pressure.reload }.to raise_error ActiveRecord::RecordNotFound }
       blood_sugars.each { |blood_sugar| expect { blood_sugar.reload }.to raise_error ActiveRecord::RecordNotFound }
+
+      encounters.each { |encounter| expect { encounter.reload }.to raise_error ActiveRecord::RecordNotFound }
+      observations.each { |observation| expect { observation.reload }.to raise_error ActiveRecord::RecordNotFound }
+      medical_histories.each { |medical_history| expect { medical_history.reload }.to raise_error ActiveRecord::RecordNotFound }
+      prescription_drugs.each { |prescription_drug| expect { prescription_drug.reload }.to raise_error ActiveRecord::RecordNotFound }
+      patient_phone_numbers.each { |patient_phone_number| expect { patient_phone_number.reload }.to raise_error ActiveRecord::RecordNotFound }
+      app_users.each { |app_user| expect { app_user.reload }.to raise_error ActiveRecord::RecordNotFound }
+      
     end
 
     it "does not delete things from other orgs" do
