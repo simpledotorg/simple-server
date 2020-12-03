@@ -124,19 +124,13 @@ class DeleteOrganizationData
         .joins("LEFT OUTER JOIN user_authentications ON users.id = user_authentications.user_id")
         .where(user_authentications: {authenticatable_type: "EmailAuthentication"})
         .where("user_authentications.id IS NOT NULL")
-    email_auths = EmailAuthentication.joins(:user_authentication).with_discarded.where(user_authentications: {user_id: users})
-    user_auths = UserAuthentication.with_discarded.where(user_id: users)
     accesses = Access.where(user_id: users)
 
     log "#{accesses.count} Access deleted"
-    log "#{user_auths.count} UserAuthentication deleted"
-    log "#{email_auths.count} EmailAuthentication deleted"
     log "#{users.count} Dashboard users deleted"
 
     accesses.delete_all
-    user_auths.delete_all
-    email_auths.delete_all
-    users.delete_all
+    users.destroy_all
   end
 
   def delete_regions
