@@ -5,7 +5,7 @@ namespace :hard_delete do
   task :path_data, [:dry_run] => :environment do |_t, args|
     dry_run = args.dry_run || args.dry_run.nil?
 
-    if !SimpleServer.env.development? && !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
+    if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
       abort "Can run only in India production"
     end
 

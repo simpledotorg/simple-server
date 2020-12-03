@@ -7,7 +7,7 @@ class DeleteOrganizationData
     @dry_run = dry_run
   end
 
-  def self.delete_path_data(path_org_id, dry_run: true)
+  def self.delete_path_data(path_org_id, dry_run:)
     # Narrowing down by facility_type is the only way to
     # distinguish between soft deleted facilities from IHCI and PATH
     facilities =
@@ -20,7 +20,7 @@ class DeleteOrganizationData
   end
 
   def delete_path_data
-    if !SimpleServer.env.development? && !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
+    if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
       Rails.logger.info "Can run only in India production"
       return
     end
