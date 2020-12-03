@@ -104,7 +104,7 @@ RSpec.describe FacilityGroup, type: :model do
       block = district_region.block_regions.find_by!(name: "Block 1")
       facility_group.remove_block_ids = [block.id]
 
-      facility_group.update_block_regions
+      facility_group.sync_block_regions
 
       expect(facility_group.region.block_regions.map(&:name)).to contain_exactly("Block 2")
     end
