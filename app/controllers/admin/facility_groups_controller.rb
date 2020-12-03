@@ -5,8 +5,6 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_available_states, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
   before_action :set_blocks, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
-  delegate :transaction, to: ActiveRecord::Base
-
   def show
     @facilities = @facility_group.facilities.order(:name)
     @users = @facility_group.users.order(:full_name)
@@ -53,7 +51,7 @@ class Admin::FacilityGroupsController < AdminController
   # Do all the things for create inside a single transaction. Note that we explicitly return true if everything
   # succeeds so we don't need to rely on return values from the model layer.
   def create_facility_group
-    transaction do
+    ActiveRecord::Base.transaction do
       @facility_group.create_state_region!
       @facility_group.save!
       @facility_group.sync_block_regions
@@ -65,7 +63,7 @@ class Admin::FacilityGroupsController < AdminController
   # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
   # succeeds so we don't need to rely on return values from the model layer.
   def update_facility_group
-    transaction do
+    ActiveRecord::Base.transaction do
       @facility_group.update!(facility_group_params.except(:state))
       @facility_group.sync_block_regions
       @facility_group.toggle_diabetes_management
