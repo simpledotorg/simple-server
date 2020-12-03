@@ -4,7 +4,8 @@ namespace :hard_delete do
   desc "Delete PATH and associated data"
   task :path_data, [:dry_run] => :environment do |_t, args|
     # This is a temporary rake task to delete PATH specifically since
-    # an earlier cleanup didn't go correctly.
+    # an earlier cleanup cleared only the Org and FGs. This deletes
+    # the associated data only.
     dry_run = args.dry_run || args.dry_run.nil?
 
     if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
