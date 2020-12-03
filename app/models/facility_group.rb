@@ -94,6 +94,6 @@ class FacilityGroup < ApplicationRecord
   private
 
   def set_diabetes_management(value)
-    facilities.update(enable_diabetes_management: value).map(&:valid?).all?
+    facilities.each { |f| f.update!(enable_diabetes_management: value) }
   end
 end
