@@ -40,7 +40,7 @@ class FacilityGroup < ApplicationRecord
   after_create { |record| FacilityGroupRegionSync.new(record).after_create }
   after_update { |record| FacilityGroupRegionSync.new(record).after_update }
 
-  def update_block_regions
+  def sync_block_regions
     FacilityGroupRegionSync.new(self).sync_block_regions
   end
 

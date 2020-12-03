@@ -41,11 +41,7 @@ class FacilityGroupRegionSync < SimpleDelegator
   def remove_block_regions
     return if remove_block_ids.blank?
 
-    remove_block_ids.map { |id|
-      next unless Region.find(id)
-      next unless Region.find(id).children.empty?
-
-      Region.destroy(id)
-    }
+    block_regions = Region.where(id: remove_block_ids)
+    block_regions.reject { |r| r.children.any? }.each { |region| region.destroy! }
   end
 end

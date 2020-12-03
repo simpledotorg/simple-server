@@ -24,14 +24,7 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = FacilityGroup.new(facility_group_params)
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    result = transaction do
-      @facility_group.create_state_region! &&
-        @facility_group.save! &&
-        @facility_group.toggle_diabetes_management &&
-        @facility_group.update_block_regions
-    end
-
-    if result
+    if create_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new, status: :bad_request
@@ -39,12 +32,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    result = transaction do
-      @facility_group.update(facility_group_params.except(:state)) &&
-        @facility_group.update_block_regions &&
-        @facility_group.toggle_diabetes_management
-    end
-    if result
+    if update_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit, status: :bad_request
@@ -61,6 +49,29 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   private
+
+  # Do all the things for create inside a single transaction. Note that we explicitly return true if everything
+  # succeeds so we don't need to rely on return values from the model layer.
+  def create_facility_group
+    transaction do
+      @facility_group.create_state_region!
+      @facility_group.save!
+      @facility_group.sync_block_regions
+      @facility_group.toggle_diabetes_management
+      true
+    end
+  end
+
+  # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
+  # succeeds so we don't need to rely on return values from the model layer.
+  def update_facility_group
+    transaction do
+      @facility_group.update!(facility_group_params.except(:state))
+      @facility_group.sync_block_regions
+      @facility_group.toggle_diabetes_management
+      true
+    end
+  end
 
   def set_organizations
     # include the facility group's organization along with the ones you can access
