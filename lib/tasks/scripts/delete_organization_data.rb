@@ -32,7 +32,10 @@ class DeleteOrganizationData
       delete_regions
       delete_facilities
 
-      raise ActiveRecord::Rollback if dry_run
+      if dry_run
+        log "Rolling back"
+        raise ActiveRecord::Rollback
+      end
     end
   end
 
@@ -50,7 +53,10 @@ class DeleteOrganizationData
       delete_facility_groups
       delete_organization
 
-      raise ActiveRecord::Rollback if dry_run
+      if dry_run
+        log "Rolling back"
+        raise ActiveRecord::Rollback
+      end
     end
   end
 
