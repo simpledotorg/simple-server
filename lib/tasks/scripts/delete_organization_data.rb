@@ -73,6 +73,7 @@ class DeleteOrganizationData
     blood_sugars = BloodSugar.with_discarded.where(patient_id: patients)
     medical_histories = MedicalHistory.with_discarded.where(patient_id: patients)
     prescription_drugs = PrescriptionDrug.with_discarded.where(patient_id: patients)
+    teleconsultations = Teleconsultation.with_discarded.where(patient_id: patients)
 
     patient_phone_numbers = PatientPhoneNumber.with_discarded.where(patient_id: patients)
     exotel_phone_number_details = ExotelPhoneNumberDetail.with_discarded.where(patient_phone_number_id: patient_phone_numbers)
@@ -88,6 +89,7 @@ class DeleteOrganizationData
       blood_sugars,
       medical_histories,
       prescription_drugs,
+      teleconsultations,
       exotel_phone_number_details,
       patient_phone_numbers,
       passport_authentications,

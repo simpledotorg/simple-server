@@ -26,18 +26,26 @@ namespace :hard_delete do
   end
 
   desc "Delete an org and associated data"
-  task :organization, [:dry_run, :organization_id] => :environment do |_t, args|
-    dry_run = args.dry_run || args.dry_run.nil?
+  task :organization, [:organization_id, :dry_run] => :environment do |_t, args|
+    # hard_delete:organization[<org_id>] for a dry run
+    # hard_delete:organization[<org_id>,false] otherwise
+    dry_run =
+      if args.dry_run == "false"
+        false
+      else
+        args.dry_run || args.dry_run.nil?
+      end
+
     abort "Org id cannot be blank" if args.organization_id.blank?
 
-    organization = Organization.find_by(id: organization_id)
-    abort "Could not find organization #{organization_id}" unless organization
+    organization = Organization.find_by(id: args.organization_id)
+    abort "Could not find organization #{args.organization_id}" unless organization
 
     puts "Dry run: #{dry_run}"
-    puts "This will delete the org #{organization.name}, #{facilities.count} facilities and all associated data"
+    puts "This will delete the org #{organization.name}, its facilities and all associated data"
     puts "Are you sure you want to proceed? (y/n): "
     abort unless $stdin.gets.chomp.downcase == "y"
 
-    DeleteOrganizationData.call(organization_id: args.organization_id, dry_run: dry_run)
+    DeleteOrganizationData.call(organization_id: organization.id, dry_run: dry_run)
   end
 end
