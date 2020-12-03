@@ -16,7 +16,7 @@ RSpec.describe DeleteOrganizationData do
     let!(:blood_pressures) { patients.map { |patient| create_list(:blood_pressure, 2, :with_encounter, patient: patient, facility: facilities.second) }.flatten }
     let!(:blood_sugars) { patients.map { |patient| create_list(:blood_sugar, 2, :with_encounter, patient: patient, facility: facilities.first) }.flatten }
     let!(:encounters) { [*blood_pressures.map(&:encounter), *blood_sugars.map(&:encounter)] }
-    let!(:observations) { [*blood_pressures.map(&:observation), *blood_sugars.map(&:observation)]}
+    let!(:observations) { [*blood_pressures.map(&:observation), *blood_sugars.map(&:observation)] }
     let!(:appointments) { patients.map { |patient| create_list(:appointment, 2, patient: patient, facility: facilities.first) }.flatten }
     let!(:app_users) { create_list(:user, 2, :with_phone_number_authentication, registration_facility: facilities.first) }
     let!(:dashboard_users) { create_list(:admin, 2, organization: organization) }
@@ -72,7 +72,7 @@ RSpec.describe DeleteOrganizationData do
       described_class.delete_path_data(path_organization_id, dry_run: false)
       other_organizations.map { |org| expect(org.reload).to eq org }
       other_facility_groups.map { |fg| expect(fg.reload).to eq fg }
-      other_facilities.each { |facility| expect(facility.reload).to eq facility}
+      other_facilities.each { |facility| expect(facility.reload).to eq facility }
       other_soft_deleted_facilities.each { |facility| expect(facility.reload).to eq facility }
 
       other_patients.each { |patient| expect(patient.reload).to eq patient }
@@ -82,7 +82,7 @@ RSpec.describe DeleteOrganizationData do
       other_encounters.each { |encounter| expect(encounter.reload).to eq encounter }
       other_observations.each { |observation| expect(observation.reload).to eq observation }
       other_medical_histories.each { |medical_history| expect(medical_history.reload).to eq medical_history }
-      other_prescription_drugs.each  { |prescription_drug| expect(prescription_drug.reload).to eq prescription_drug }
+      other_prescription_drugs.each { |prescription_drug| expect(prescription_drug.reload).to eq prescription_drug }
       other_patient_phone_numbers.each { |patient_phone_number| expect(patient_phone_number.reload).to eq patient_phone_number }
 
       other_app_users.each { |app_user| expect(app_user.reload).to eq app_user }
@@ -161,7 +161,7 @@ RSpec.describe DeleteOrganizationData do
       other_encounters.each { |encounter| expect(encounter.reload).to eq encounter }
       other_observations.each { |observation| expect(observation.reload).to eq observation }
       other_medical_histories.each { |medical_history| expect(medical_history.reload).to eq medical_history }
-      other_prescription_drugs.each  { |prescription_drug| expect(prescription_drug.reload).to eq prescription_drug }
+      other_prescription_drugs.each { |prescription_drug| expect(prescription_drug.reload).to eq prescription_drug }
       other_patient_phone_numbers.each { |patient_phone_number| expect(patient_phone_number.reload).to eq patient_phone_number }
 
       other_app_users.each { |app_user| expect(app_user.reload).to eq app_user }
