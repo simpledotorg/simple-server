@@ -26,7 +26,7 @@ RSpec.describe DeleteOrganizationData do
       allow(CountryConfig).to receive(:current).and_return({name: "India"})
       allow_any_instance_of(described_class).to receive(:log)
 
-      # Accidentally delete PATH and it's FGs. womp womp.
+      # Accidentally delete PATH and its FGs. womp womp.
       facility_group.destroy
       organization.destroy
     end
