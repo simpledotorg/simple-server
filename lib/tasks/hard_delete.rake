@@ -16,6 +16,7 @@ namespace :hard_delete do
   task :organization, [:dry_run, :organization_id] => :environment do |_t, args|
     dry_run = args.dry_run || args.dry_run.nil?
     abort "Org id cannot be blank" if args.organization_id.blank?
+    abort "Could not find organization #{organization_id}" unless Organization.find_by(id: organization_id)
 
     DeleteOrganizationData.call(organization_id: args.organization_id, dry_run: dry_run)
   end
