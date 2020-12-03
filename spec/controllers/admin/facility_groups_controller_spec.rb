@@ -214,7 +214,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       new_attributes = {
         name: "New Name",
         description: "New Description",
-        state: "California",
+        state: "California"
       }
       expect {
         put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
