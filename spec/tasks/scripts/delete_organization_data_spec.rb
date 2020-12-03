@@ -23,13 +23,13 @@ RSpec.describe DeleteOrganizationData do
 
     it "does not delete things from other orgs" do
       other_organizations = create_list(:organization, 2)
-      other_facility_groups = other_organizations.map { |org| create_list(:facility_group, 2, organization: org) }
-      other_facilities = other_facility_groups.map { |fg| create_list(:facility, 2, facility_group: fg) }
+      other_facility_groups = other_organizations.map { |org| create_list(:facility_group, 2, organization: org) }.flatten
+      other_facilities = other_facility_groups.map { |fg| create_list(:facility, 2, facility_group: fg) }.flatten
 
-      described_class.call(organization_id: facility.facility_group.organization_id, dry_run: false)
-      expect(other_organizations.reload).to eq other_organizations
-      expect(other_facility_groups.reload).to eq other_facility_groups
-      expect(other_facilities.reload).to eq other_facilities
+      described_class.call(organization_id: organization.id, dry_run: false)
+      other_organizations.map { |org| expect(org.reload).to eq org }
+      other_facility_groups.map { |fg| expect(fg.reload).to eq fg }
+      other_facilities.map { |facility| expect(facility.reload).to eq facility }
     end
   end
 end
