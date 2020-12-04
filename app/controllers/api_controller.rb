@@ -36,7 +36,6 @@ class APIController < ApplicationController
     # and block-level sync (via regions) and offers facility group as a safe fallback.
     # Over time, the facility group ID support can be dropped and this method can
     # allow other region types as well
-    return Region.new unless current_user
     return current_facility_group if requested_sync_region_id.blank?
     return current_facility_group if requested_sync_region_id == current_facility_group.id
     return current_block if block_level_sync?

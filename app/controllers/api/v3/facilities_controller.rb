@@ -34,13 +34,13 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   def response_process_token
     {
       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-      resync_token: resync_token,
-      sync_region_id: temp_sync_region_id
+      resync_token: resync_token
     }
   end
 
-  def temp_sync_region_id
-    current_sync_region.id if current_user
+  def force_resync?
+    Rails.logger.info "Resync token modified in resource #{controller_name}" if resync_token_modified?
+    resync_token_modified?
   end
 
   def records_to_sync
