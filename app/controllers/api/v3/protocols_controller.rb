@@ -29,19 +29,15 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
     protocol.as_json(include: :protocol_drugs)
   end
 
-  def temp_sync_region_id
-    if current_user
-      current_sync_region&.id
-    else
-      Region.root.id
-    end
-  end
-
   def response_process_token
     {
       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
       resync_token: resync_token,
       sync_region_id: temp_sync_region_id
     }
+  end
+
+  def temp_sync_region_id
+    current_sync_region.id if current_user
   end
 end

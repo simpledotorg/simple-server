@@ -40,11 +40,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def temp_sync_region_id
-    if current_user
-      current_sync_region&.id
-    else
-      Region.root.id
-    end
+    current_sync_region.id if current_user
   end
 
   def records_to_sync
