@@ -6,7 +6,7 @@ class RegionIntegrityCheck
   def sweep
     resources.each do |name, resource|
       log(:info, "Sweeping for – #{name}")
-      result = Result.check(resource[:source], resource[:region])
+      result = Result.check(resource)
       report_errors(result.inconsistencies.merge(name: name)) unless result.ok?
     end
   end
@@ -72,15 +72,14 @@ class RegionIntegrityCheck
   end
 
   Result = Struct.new(:source, :region) do
-    def self.check(*args)
-      new(*args).check
+    def self.check(resource)
+      new(resource).check
     end
 
     attr_reader :inconsistencies
 
-    def initialize(source, region)
-      super(source, region)
-
+    def initialize(resource)
+      super(resource[:source], resource[:region])
       @inconsistencies = {
         missing_regions: [],
         missing_sources: []
@@ -104,8 +103,8 @@ class RegionIntegrityCheck
       sources_without_regions = source - region
       regions_without_sources = region - source
 
-      @inconsistencies[:missing_regions] << sources_without_regions if sources_without_regions
-      @inconsistencies[:missing_sources] << regions_without_sources if regions_without_sources
+      @inconsistencies[:missing_regions] << sources_without_regions
+      @inconsistencies[:missing_sources] << regions_without_sources
     end
   end
 end
