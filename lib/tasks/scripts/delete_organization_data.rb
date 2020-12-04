@@ -1,5 +1,8 @@
 class DeleteOrganizationData
   include Memery
+
+  class ScriptDisabled < RuntimeError; end
+
   DISABLE = true
 
   def initialize(organization:, dry_run: true)
@@ -13,7 +16,7 @@ class DeleteOrganizationData
 
   def call
     if DISABLE
-      raise RuntimeError, "This script is currently disabled, to enable it, raise a PR and make necessary code changes."
+      raise ScriptDisabled, "This script is currently disabled, to enable it, raise a PR and make necessary code changes."
     end
 
     ActiveRecord::Base.transaction do
