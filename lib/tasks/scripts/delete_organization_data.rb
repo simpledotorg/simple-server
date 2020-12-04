@@ -1,42 +1,10 @@
 class DeleteOrganizationData
   include Memery
+  DISABLE = true
 
-  def initialize(organization_id:, facilities: nil, dry_run: true)
-    @organization_id = organization_id
-    @facilities = facilities
+  def initialize(organization:, dry_run: true)
+    @organization = organization
     @dry_run = dry_run
-  end
-
-  def self.delete_path_data(path_org_id, dry_run:)
-    # Narrowing down by facility_type is the only way to
-    # distinguish between soft deleted facilities from IHCI and PATH
-    facilities =
-      Facility
-        .with_discarded
-        .where(facility_group_id: nil)
-        .where("facility_type = 'Standalone' OR facility_type = 'Hospital'")
-
-    new(organization_id: path_org_id, facilities: facilities, dry_run: dry_run).delete_path_data
-  end
-
-  def delete_path_data
-    if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
-      log "Can run only in India production"
-      return
-    end
-
-    ActiveRecord::Base.transaction do
-      delete_patient_data
-      delete_app_users
-      delete_dashboard_users
-      delete_regions
-      delete_facilities
-
-      if dry_run
-        log "Rolling back"
-        raise ActiveRecord::Rollback
-      end
-    end
   end
 
   def self.call(*args)
@@ -44,6 +12,10 @@ class DeleteOrganizationData
   end
 
   def call
+    if DISABLE
+      raise RuntimeError, "This script is currently disabled, to enable it, raise a PR and make necessary code changes."
+    end
+
     ActiveRecord::Base.transaction do
       delete_patient_data
       delete_app_users
@@ -62,7 +34,7 @@ class DeleteOrganizationData
 
   private
 
-  attr_reader :organization_id, :dry_run
+  attr_reader :organization, :dry_run
 
   def delete_patient_data
     patients = Patient.with_discarded.where(registration_facility_id: facilities)
@@ -128,7 +100,7 @@ class DeleteOrganizationData
     users =
       User
         .with_discarded
-        .where(organization_id: organization_id)
+        .where(organization: organization)
         .joins("LEFT OUTER JOIN user_authentications ON users.id = user_authentications.user_id")
         .where(user_authentications: {authenticatable_type: "EmailAuthentication"})
         .where("user_authentications.id IS NOT NULL")
@@ -142,7 +114,7 @@ class DeleteOrganizationData
   end
 
   def delete_regions
-    regions = Region.find_by(source_id: @organization_id)&.self_and_descendants
+    regions = Region.find_by(source_id: organization.id)&.self_and_descendants
     if regions.present?
       log "#{regions.count} Region deleted"
       regions.delete_all
@@ -160,17 +132,16 @@ class DeleteOrganizationData
   end
 
   def delete_organization
-    organization = Organization.find(@organization_id)
     log "#{organization.name} Organization deleted"
     organization.destroy
   end
 
   memoize def facility_groups
-    FacilityGroup.with_discarded.where(organization_id: organization_id)
+    FacilityGroup.with_discarded.where(organization: organization)
   end
 
   memoize def facilities
-    @facilities || Facility.with_discarded.where(facility_group_id: facility_groups)
+    Facility.with_discarded.where(facility_group_id: facility_groups)
   end
 
   def log(*args)
