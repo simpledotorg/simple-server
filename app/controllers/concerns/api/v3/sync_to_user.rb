@@ -77,21 +77,5 @@ module Api::V3::SyncToUser
       return if requested_sync_region_id.blank?
       process_token[:sync_region_id] != requested_sync_region_id
     end
-
-    def current_sync_region
-      # This method selectively permits only FacilityGroup sync (via facility group ID)
-      # and block-level sync (via regions) and offers facility group as a safe fallback.
-      # Over time, the facility group ID support can be dropped and this method can
-      # allow other region types as well
-      return current_facility_group if requested_sync_region_id.blank?
-      return current_facility_group if requested_sync_region_id == current_facility_group.id
-      return current_block if block_level_sync?
-
-      current_facility_group
-    end
-
-    def block_level_sync?
-      current_user.block_level_sync? && requested_sync_region_id == current_block.id
-    end
   end
 end
