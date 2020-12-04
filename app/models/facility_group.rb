@@ -37,41 +37,27 @@ class FacilityGroup < ApplicationRecord
   attr_accessor :new_block_names
   attr_accessor :remove_block_ids
 
+  after_create { |record| FacilityGroupRegionSync.new(record).after_create }
+  after_update { |record| FacilityGroupRegionSync.new(record).after_update }
+
+  def sync_block_regions
+    FacilityGroupRegionSync.new(self).sync_block_regions
+  end
+
   def state
     @state || region&.state_region&.name
-  end
-
-  # ----------------
-  # Region callbacks
-  #
-  # * These callbacks are medium-term temporary.
-  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
-  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
-
-  def make_region
-    return if region&.persisted?
-
-    create_region!(
-      name: name,
-      reparent_to: state_region,
-      region_type: Region.region_types[:district]
-    )
-  end
-
-  def update_region
-    region.reparent_to = state_region
-    region.name = name
-    region.save!
   end
 
   def state_region
     organization.region.state_regions.find_by(name: state)
   end
 
-  private :make_region, :update_region, :state_region
-  # ----------------
+  def create_state_region!
+    return true unless Flipper.enabled?(:regions_prep)
+    return if state_region || state.blank?
+
+    Region.state_regions.create!(name: state, reparent_to: organization.region)
+  end
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
@@ -89,39 +75,6 @@ class FacilityGroup < ApplicationRecord
 
   def diabetes_enabled?
     facilities.where(enable_diabetes_management: false).count.zero?
-  end
-
-  def create_state_region!
-    return unless Flipper.enabled?(:regions_prep)
-    return if state_region || state.blank?
-
-    Region.state_regions.create!(name: state, reparent_to: organization.region)
-  end
-
-  def update_block_regions!
-    create_block_regions!
-    remove_block_regions!
-  end
-
-  def create_block_regions!
-    return unless Flipper.enabled?(:regions_prep)
-    return if new_block_names.blank?
-
-    new_block_names.map { |name|
-      Region.block_regions.create!(name: name, reparent_to: region)
-    }
-  end
-
-  def remove_block_regions!
-    return unless Flipper.enabled?(:regions_prep)
-    return if remove_block_ids.blank?
-
-    remove_block_ids.map { |id|
-      next unless Region.find(id)
-      next unless Region.find(id).children.empty?
-
-      Region.destroy(id)
-    }
   end
 
   def discardable?
@@ -151,6 +104,6 @@ class FacilityGroup < ApplicationRecord
   private
 
   def set_diabetes_management(value)
-    facilities.update(enable_diabetes_management: value).map(&:valid?).all?
+    facilities.each { |f| f.update!(enable_diabetes_management: value) }
   end
 end

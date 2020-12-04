@@ -90,39 +90,23 @@ RSpec.describe FacilityGroup, type: :model do
     end
   end
 
-  describe "#update_block_regions!" do
+  describe "keeps block regions in sync" do
     before do
       enable_flag(:regions_prep)
     end
 
-    it "creates new blocks from new_block_names" do
-      org = create(:organization, name: "IHCI")
-      new_block_names = ["Block 1", "Block 2"]
-      facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
-      facility_group.new_block_names = new_block_names
-
-      facility_group.update_block_regions!
-      facility_group.reload
-
-      expect(facility_group.region.block_regions.pluck(:name)).to match_array new_block_names
-      expect(facility_group.region.block_regions.pluck(:path)).to contain_exactly("india.ihci.punjab.fg.block_1", "india.ihci.punjab.fg.block_2")
-    end
-
     it "deletes blocks from remove_block_ids" do
-      new_block_names = ["Block 1", "Block 2"]
       facility_group = create(:facility_group, name: "FG", state: "Punjab")
-      facility_group.new_block_names = new_block_names
+      district_region = facility_group.region
+      district_region.block_regions.create!(name: "Block 1", reparent_to: district_region)
+      district_region.block_regions.create!(name: "Block 2", reparent_to: district_region)
 
-      facility_group.update_block_regions!
-      facility_group.reload
-
-      block = facility_group.region.block_regions.first
+      block = district_region.block_regions.find_by!(name: "Block 1")
       facility_group.remove_block_ids = [block.id]
 
-      facility_group.update_block_regions!
-      facility_group.reload
+      facility_group.sync_block_regions
 
-      expect(facility_group.region.block_regions).not_to include block
+      expect(facility_group.region.block_regions.map(&:name)).to contain_exactly("Block 2")
     end
   end
 

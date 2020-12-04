@@ -5,14 +5,11 @@ class Facility < ApplicationRecord
   include QuarterHelper
   include PgSearch::Model
   include LiberalEnum
+
   extend FriendlyId
   extend RegionSource
 
   friendly_id :name, use: :slugged
-
-  attribute :import, :boolean, default: false
-  attribute :organization_name, :string
-  attribute :facility_group_name, :string
 
   belongs_to :facility_group, optional: true
 
@@ -66,43 +63,41 @@ class Facility < ApplicationRecord
   auto_strip_attributes :district, squish: true, upcase_first: true
   auto_strip_attributes :zone, squish: true, upcase_first: true
 
-  with_options if: :import do |facility|
-    facility.validates :organization_name, presence: true
-    facility.validates :facility_group_name, presence: true
-    facility.validate :facility_name_presence
-    facility.validate :organization_exists
-    facility.validate :facility_group_exists
-    facility.validate :facility_is_unique
-  end
-
-  with_options unless: :import do |facility|
-    facility.validates :name, presence: true
-  end
+  attribute :organization_name, :string
+  attribute :facility_group_name, :string
 
   alias_attribute :block, :zone
 
+  validates :name, presence: true
   validates :district, presence: true
   validates :slug, presence: true
-  validates :state, presence: true
+  # this validation (and the field) should go away from facility after regions become first-class
+  validates :state, presence: true, if: -> { facility_group.present? }
   validates :country, presence: true
   validates :zone, presence: true, on: :create
   validates :pin, numericality: true, allow_blank: true
-
-  validates :facility_size, inclusion: {in: facility_sizes.values,
-                                        message: "not in #{facility_sizes.values.join(", ")}",
-                                        allow_blank: true}
+  validates :facility_size,
+    inclusion: {
+      in: facility_sizes.values,
+      message: "not in #{facility_sizes.values.join(", ")}",
+      allow_blank: true
+    }
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
   validates :teleconsultation_medical_officers,
     presence: {
       if: :enable_teleconsultation,
       message: "must be added to enable teleconsultation"
     }
-
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
+  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) && facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
+
+  def self.parse_facilities_from_file(file_contents)
+    Csv::FacilitiesParser.parse(file_contents)
+  end
 
   # ----------------
   # Region callbacks
@@ -133,7 +128,7 @@ class Facility < ApplicationRecord
     facility_group.region.block_regions.find_by(name: block)
   end
 
-  private :make_region, :update_region
+  private :update_region
   # ----------------
 
   def hypertension_follow_ups_by_period(*args)
@@ -165,84 +160,6 @@ class Facility < ApplicationRecord
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
     query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
     query.call
-  end
-
-  CSV_IMPORT_COLUMNS =
-    if Flipper.enabled?(:regions_prep)
-      {organization_name: "organization",
-       facility_group_name: "facility_group",
-       name: "facility_name",
-       facility_type: "facility_type",
-       street_address: "street_address (optional)",
-       village_or_colony: "village_or_colony (optional)",
-       zone: "zone_or_block",
-       district: "district",
-       pin: "pin (optional)",
-       latitude: "latitude (optional)",
-       longitude: "longitude (optional)",
-       facility_size: "size (optional)",
-       enable_diabetes_management: "enable_diabetes_management (true/false)"}
-    else
-      {organization_name: "organization",
-       facility_group_name: "facility_group",
-       name: "facility_name",
-       facility_type: "facility_type",
-       street_address: "street_address (optional)",
-       village_or_colony: "village_or_colony (optional)",
-       zone: "zone_or_block",
-       district: "district",
-       state: "state",
-       pin: "pin (optional)",
-       latitude: "latitude (optional)",
-       longitude: "longitude (optional)",
-       facility_size: "size (optional)",
-       enable_diabetes_management: "enable_diabetes_management (true/false)"}
-    end
-
-  def self.parse_facilities(file_contents)
-    facilities = []
-    CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
-      facility = CSV_IMPORT_COLUMNS.map { |attribute, column_name| [attribute, row[column_name]] }.to_h
-      next if facility.values.all?(&:blank?)
-
-      facilities << facility.merge(country: Region.root.name,
-                                   enable_diabetes_management: facility[:enable_diabetes_management] || false,
-                                   enable_teleconsultation: facility[:enable_teleconsultation] || false,
-                                   import: true).merge(state_region_name(facility))
-    end
-    facilities
-  end
-
-  def organization_exists
-    organization = Organization.find_by(name: organization_name)
-    errors.add(:organization, "doesn't exist") if organization_name.present? && organization.blank?
-  end
-
-  def facility_group_exists
-    organization = Organization.find_by(name: organization_name)
-    if organization.present?
-      facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                             organization_id: organization.id)
-    end
-    if organization.present? && facility_group_name.present? && facility_group.blank?
-      errors.add(:facility_group, "doesn't exist for the organization")
-    end
-  end
-
-  def facility_is_unique
-    organization = Organization.find_by(name: organization_name)
-    if organization.present?
-      facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                             organization_id: organization.id)
-    end
-    facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
-    errors.add(:facility, "already exists") if organization.present? && facility_group.present? && facility.present?
-  end
-
-  def facility_name_presence
-    if name.blank?
-      errors.add(:facility_name, "can't be blank")
-    end
   end
 
   def diabetes_enabled?
@@ -279,14 +196,6 @@ class Facility < ApplicationRecord
     teleconsultation_medical_officers.map(&:full_teleconsultation_phone_number)
   end
 
-  CSV::Converters[:strip_whitespace] = ->(value) {
-    begin
-      value.strip
-    rescue
-      value
-    end
-  }
-
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
@@ -307,5 +216,11 @@ class Facility < ApplicationRecord
                                            organization_id: organization&.id)
 
     facility_group.present? && Flipper.enabled?(:regions_prep) ? {state: facility_group.region.state_region.name} : {}
+  end
+
+  def valid_block
+    unless facility_group.region.block_regions.pluck(:name).include?(block)
+      errors.add(:zone, "not present in the facility group")
+    end
   end
 end

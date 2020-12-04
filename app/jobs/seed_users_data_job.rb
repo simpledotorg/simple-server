@@ -1,5 +1,7 @@
 require "factory_bot_rails"
 require "faker"
+require "seed"
+require "seed/runner"
 require File.expand_path("spec/utils")
 
 class SeedUsersDataJob
