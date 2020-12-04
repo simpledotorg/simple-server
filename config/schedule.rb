@@ -45,3 +45,7 @@ every :monday, at: local("11:00 am"), roles: [:cron] do
     rake "reports:telemedicine"
   end
 end
+
+every 5.minutes, roles: [:cron] do
+  runner "RegionIntegrityCheck.sweep"
+end

@@ -1,45 +1,111 @@
 class RegionIntegrityCheck
-  def self.sweep(*args)
-    new(*args).sweep
+  def self.sweep
+    new.sweep
   end
 
-  class MissingRegion < RuntimeError; end
-
-  def initialize(*args) end
-
   def sweep
-    {
-      organizations: organizations?,
-      facilities: facilities?,
-      facility_groups: facility_groups?,
-      blocks: blocks?,
-      states: states?
-    }.each do |resource, check|
-      unless check
-        raise MissingRegion, "Regions for #{resource}, don't add up. This can be catastrophic."
-      end
+    resources.each do |name, resource|
+      log(:info, "Sweeping for – #{name}")
+      result = Result.check(resource[:source], resource[:region])
+      report_errors(result.inconsistencies.merge(name: name)) unless result.ok?
     end
   end
 
   private
 
-  def organizations?
-    Organization.count == Region.organization_regions.count
+  def resources
+    {
+      organizations: organizations,
+      facilities: facilities,
+      facility_groups: facility_groups,
+      blocks: blocks,
+      states: states
+    }
   end
 
-  def facilities?
-    Facility.count == Region.facility_regions.map(&:source).count
+  def organizations
+    {
+      source: Organization.pluck(:id),
+      region: Region.organization_regions.pluck(:source_id)
+    }
   end
 
-  def facility_groups?
-    FacilityGroup.count == Region.district_regions.count
+  def facilities
+    {
+      source: Facility.pluck(:id),
+      region: Region.facility_regions.pluck(:source_id)
+    }
   end
 
-  def blocks?
-    Facility.pluck(:block, :facility_group_id).uniq.count == Region.block_regions.pluck(:name).count
+  def facility_groups
+    {
+      source: FacilityGroup.pluck(:id),
+      region: Region.district_regions.pluck(:id)
+    }
   end
 
-  def states?
-    Facility.pluck(:state).uniq.count == Region.state_regions.count
+  def blocks
+    {
+      source: Facility.pluck(:block, :facility_group_id).uniq.map(&:first),
+      region: Region.block_regions.pluck(:name)
+    }
+  end
+
+  def states
+    {
+      source: Facility.pluck(:state, :facility_group_id).uniq.map(&:first),
+      region: Region.state_regions.pluck(:name)
+    }
+  end
+
+  def report_errors(*args)
+    log(:error, *args)
+    sentry(*args)
+  end
+
+  def log(type, *args)
+    Rails.logger.public_send(type, msg: args, class: self.class.name)
+  end
+
+  def sentry(*args)
+    Raven.capture_message("Missing Region", logger: "logger", extra: args, tags: {type: "regions"})
+  end
+
+  Result = Struct.new(:source, :region) do
+    def self.check(*args)
+      new(*args).check
+    end
+
+    attr_reader :inconsistencies
+
+    def initialize(source, region)
+      super(source, region)
+
+      @inconsistencies = {
+        missing_regions: [],
+        missing_sources: []
+      }
+    end
+
+    def check
+      set_inconsistencies unless ok?
+      self
+    end
+
+    def ok?
+      source.to_set == region.to_set
+    end
+
+    private
+
+    attr_writer :inconsistencies
+
+    def set_inconsistencies
+      sources_without_regions = source - region
+      regions_without_sources = region - source
+
+      @inconsistencies[:missing_regions] << sources_without_regions if sources_without_regions
+      @inconsistencies[:missing_sources] << regions_without_sources if regions_without_sources
+    end
   end
 end
