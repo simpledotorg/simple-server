@@ -4,7 +4,6 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_protocols, only: [:new, :edit, :update, :create]
   before_action :set_available_states, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
   before_action :set_blocks, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
-  around_action :wrap_in_transaction, only: [:create, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -23,7 +22,7 @@ class Admin::FacilityGroupsController < AdminController
     @facility_group = FacilityGroup.new(facility_group_params)
     authorize { current_admin.accessible_organizations(:manage).find(@facility_group.organization.id) }
 
-    if create_successful?
+    if create_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
       render :new, status: :bad_request
@@ -31,7 +30,7 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   def update
-    if update_successful?
+    if update_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
     else
       render :edit, status: :bad_request
@@ -48,6 +47,29 @@ class Admin::FacilityGroupsController < AdminController
   end
 
   private
+
+  # Do all the things for create inside a single transaction. Note that we explicitly return true if everything
+  # succeeds so we don't need to rely on return values from the model layer.
+  def create_facility_group
+    ActiveRecord::Base.transaction do
+      @facility_group.create_state_region!
+      @facility_group.save!
+      @facility_group.sync_block_regions
+      @facility_group.toggle_diabetes_management
+      true
+    end
+  end
+
+  # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
+  # succeeds so we don't need to rely on return values from the model layer.
+  def update_facility_group
+    ActiveRecord::Base.transaction do
+      @facility_group.update!(facility_group_params.except(:state))
+      @facility_group.sync_block_regions
+      @facility_group.toggle_diabetes_management
+      true
+    end
+  end
 
   def set_organizations
     # include the facility group's organization along with the ones you can access
@@ -71,12 +93,6 @@ class Admin::FacilityGroupsController < AdminController
     @blocks = district_region&.block_regions&.order(:name) || []
   end
 
-  def wrap_in_transaction
-    ActiveRecord::Base.transaction do
-      yield
-    end
-  end
-
   def facility_group_params
     params.require(:facility_group).permit(
       :organization_id,
@@ -88,25 +104,5 @@ class Admin::FacilityGroupsController < AdminController
       new_block_names: [],
       remove_block_ids: []
     )
-  end
-
-  def update_params
-    facility_group_params.except(:state)
-  end
-
-  def create_successful?
-    @facility_group.create_state_region!
-
-    if @facility_group.save && @facility_group.toggle_diabetes_management
-      @facility_group.update_block_regions!
-      true
-    end
-  end
-
-  def update_successful?
-    if @facility_group.update(update_params) && @facility_group.toggle_diabetes_management
-      @facility_group.update_block_regions!
-      true
-    end
   end
 end
