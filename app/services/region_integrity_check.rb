@@ -71,7 +71,7 @@ class RegionIntegrityCheck
     Raven.capture_message("Missing Region", logger: "logger", extra: args, tags: {type: "regions"})
   end
 
-  Result = Struct.new(:source, :region) do
+  Result = Struct.new(:source, :region) {
     def self.check(resource)
       new(resource).check
     end
@@ -106,5 +106,5 @@ class RegionIntegrityCheck
       @inconsistencies[:missing_regions] << sources_without_regions
       @inconsistencies[:missing_sources] << regions_without_sources
     end
-  end
+  }
 end
