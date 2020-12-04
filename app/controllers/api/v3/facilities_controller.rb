@@ -56,7 +56,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
     if current_user&.block_level_sync?
       facility.region.block_region.id
     else
-      facility.facility_group.id
+      facility.facility_group_id
     end
   end
 end
