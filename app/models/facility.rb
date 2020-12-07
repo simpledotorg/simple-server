@@ -131,11 +131,13 @@ class Facility < ApplicationRecord
   # the gem to bulk import cannot run callbacks, so we manually ensure that we create regions
   def self.import_with_regions(facilities, *args)
     Facility.transaction do
-      Facility.import(facilities, *args)
+      imported_facilities = Facility.import(facilities, *args)
 
       if Flipper.enabled?(:regions_prep)
         facilities.each { |facility| facility.make_region }
       end
+
+      imported_facilities
     end
   end
 
