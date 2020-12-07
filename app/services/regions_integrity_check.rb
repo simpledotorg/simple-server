@@ -113,7 +113,7 @@ class RegionsIntegrityCheck
 
     def set_inconsistencies
       @inconsistencies[:missing_regions] += sources_without_regions
-      @inconsistencies[:missing_sources_count] += regions_without_sources_count
+      @inconsistencies[:missing_sources_count] = regions_without_sources_count
     end
 
     def sources_without_regions
