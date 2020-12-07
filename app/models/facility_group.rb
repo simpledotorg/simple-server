@@ -24,8 +24,6 @@ class FacilityGroup < ApplicationRecord
   validates :name, presence: true
   validates :organization, presence: true
 
-  alias_method :registered_patients, :patients
-
   friendly_id :name, use: :slugged
 
   auto_strip_attributes :name, squish: true, upcase_first: true
