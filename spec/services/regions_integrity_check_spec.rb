@@ -7,11 +7,11 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
   let!(:organization) { create(:organization) }
   let!(:state) { create(:region, :state, reparent_to: organization.region) }
-  let!(:facility_groups) { create_list(:facility_group, 2, state: state.name) }
+  let!(:facility_groups) { create_list(:facility_group, 2, state: state.name, organization: organization) }
   let!(:block_1) { create(:region, :block, name: "B1", reparent_to: facility_groups[0].region) }
   let!(:block_2) { create(:region, :block, name: "B2", reparent_to: facility_groups[1].region) }
-  let!(:facility_1) { create_list(:facility, 2, state: state.name, block: block_1.name, facility_group: facility_groups[0]) }
-  let!(:facility_2) { create_list(:facility, 2, state: state.name, block: block_2.name, facility_group: facility_groups[1]) }
+  let!(:facility_1) { create(:facility, state: state.name, block: block_1.name, facility_group: facility_groups[0]) }
+  let!(:facility_2) { create(:facility, state: state.name, block: block_2.name, facility_group: facility_groups[1]) }
 
   context "missing regions" do
     it "tracks missing org" do
@@ -63,7 +63,46 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
     end
   end
 
-  context "tracks missing sources" do
+  context "tracks the count of missing sources" do
+    it "tracks missing orgs" do
+      create(:region, region_type: :organization, reparent_to: Region.root)
+
+      swept = RegionsIntegrityCheck.sweep
+
+      expect(swept.errors.dig(:organizations, :regions_without_sources_count)).to eq(1)
+    end
+
+    it "tracks missing states" do
+      create(:region, :state, reparent_to: organization.region)
+
+      swept = RegionsIntegrityCheck.sweep
+
+      expect(swept.errors.dig(:states, :regions_without_sources_count)).to eq(1)
+    end
+
+    it "tracks missing facility groups" do
+      create(:region, region_type: :district, reparent_to: state)
+
+      swept = RegionsIntegrityCheck.sweep
+
+      expect(swept.errors.dig(:facility_groups, :regions_without_sources_count)).to eq(1)
+    end
+
+    it "tracks missing blocks" do
+      create(:region, :block, reparent_to: facility_groups[0].region)
+
+      swept = RegionsIntegrityCheck.sweep
+
+      expect(swept.errors.dig(:blocks, :regions_without_sources_count)).to eq(1)
+    end
+
+    it "tracks missing facilities" do
+      create(:region, region_type: :facility, reparent_to: block_1)
+
+      swept = RegionsIntegrityCheck.sweep
+
+      expect(swept.errors.dig(:facilities, :regions_without_sources_count)).to eq(1)
+    end
   end
 
   context "logging" do
@@ -73,7 +112,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expected_log = {
         class: "RegionsIntegrityCheck",
-        msg: [{blocks: {missing_regions: %w[B2 B1], missing_sources: []}}]
+        msg: [{blocks: {missing_regions: %w[B2 B1], regions_without_sources_count: 0, extra_regions_for_source: []}}]
       }
 
       expect(Rails.logger).to receive(:error).with(expected_log)
@@ -94,9 +133,9 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       _remove_block_regions = Region.block_regions.delete_all
 
       expected_msg = [
-        "Missing Region",
+        "Regions Integrity Failure",
         {
-          extra: [{blocks: {missing_regions: %w[B2 B1], missing_sources: []}}],
+          extra: [{blocks: {missing_regions: %w[B2 B1], regions_without_sources_count: 0, extra_regions_for_source: []}}],
           logger: "logger",
           tags: {type: "regions"}
         }

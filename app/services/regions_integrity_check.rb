@@ -1,4 +1,6 @@
 class RegionsIntegrityCheck
+  SENTRY_ERROR_TITLE = "Regions Integrity Failure"
+
   def self.sweep
     new.sweep
   end
@@ -79,7 +81,7 @@ class RegionsIntegrityCheck
   end
 
   def sentry(*args)
-    Raven.capture_message("Missing Region", logger: "logger", extra: args, tags: {type: "regions"})
+    Raven.capture_message(SENTRY_ERROR_TITLE, logger: "logger", extra: args, tags: {type: "regions"})
   end
 
   Result = Struct.new(:source, :region) {
@@ -91,19 +93,18 @@ class RegionsIntegrityCheck
 
     def initialize(resource)
       super(resource[:source], resource[:region])
-      @inconsistencies = {
-        missing_regions: [],
-        missing_sources: []
-      }
+      @inconsistencies = init_inconsistencies
+      @checked = false
     end
 
     def check
-      set_inconsistencies unless ok?
+      set_inconsistencies
+      @checked = true
       self
     end
 
     def ok?
-      source.to_set == region.to_set
+      @checked && (@inconsistencies == init_inconsistencies)
     end
 
     private
@@ -111,11 +112,28 @@ class RegionsIntegrityCheck
     attr_writer :inconsistencies
 
     def set_inconsistencies
-      sources_without_regions = (source - region).to_set
-      regions_without_sources = (region - source).to_set
+      @inconsistencies[:missing_regions] += sources_without_regions
+      @inconsistencies[:regions_without_sources_count] = regions_without_sources_count
+    end
 
-      @inconsistencies[:missing_regions] += sources_without_regions.to_a
-      @inconsistencies[:missing_sources] += regions_without_sources.to_a
+    def sources_without_regions
+      (source.to_set - region.to_set).to_a
+    end
+
+    def regions_without_sources_count
+      if region.uniq.count > source.uniq.count
+        (region.to_set - source.to_set).count
+      else
+        0
+      end
+    end
+
+    def init_inconsistencies
+      {
+        missing_regions: [],
+        extra_regions_for_source: [],
+        regions_without_sources_count: 0,
+      }
     end
   }
 end
