@@ -43,12 +43,10 @@ class FacilityGroup < ApplicationRecord
   # the gem to bulk import cannot run callbacks, so we manually ensure that we create regions
   def self.import_with_regions(facility_groups, *args)
     Facility.transaction do
-      imported_facility_groups = FacilityGroup.import(facility_groups, *args)
+      FacilityGroup.import(facility_groups, *args)
 
       if Flipper.enabled?(:regions_prep)
-        imported_facility_groups.each do |facility_group|
-          FacilityGroupRegionSync.new(facility_group).after_create
-        end
+        facility_groups.each { |facility_group| FacilityGroupRegionSync.new(facility_group).after_create }
       end
     end
   end
