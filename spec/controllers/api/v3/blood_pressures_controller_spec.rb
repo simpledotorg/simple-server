@@ -283,7 +283,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
   end
 
   describe "GET sync: send data from server to device;" do
-    # it_behaves_like "a working V3 sync controller sending records"
+    it_behaves_like "a working V3 sync controller sending records"
     it_behaves_like "a working sync controller that supports region level sync"
 
     describe "patient prioritisation" do
