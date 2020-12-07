@@ -132,7 +132,7 @@ class RegionsIntegrityCheck
       {
         missing_regions: [],
         extra_regions_for_source: [],
-        regions_without_sources_count: 0,
+        regions_without_sources_count: 0
       }
     end
   }
