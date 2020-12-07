@@ -86,19 +86,9 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
         end
       end
 
-      context "sync_region_id" do
-        it "sets the sync_region_id to the facility group id when region level sync is disabled" do
-          get :sync_to_user
-
-          response_records = JSON(response.body)["facilities"]
-          response_records.each do |record|
-            expect(record["sync_region_id"]).to eq record["facility_group_id"]
-          end
-        end
-
-        context "when region level sync is enabled" do
-          it "sets the sync_region_id to the block id and user is not available" do
-            enable_flag(:region_level_sync, request_user)
+      context "region-level sync" do
+        context "sync_region_id" do
+          it "sets the sync_region_id to the facility group id when region level sync is disabled" do
             get :sync_to_user
 
             response_records = JSON(response.body)["facilities"]
@@ -107,17 +97,57 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
             end
           end
 
-          it "sets the sync_region_id to the block id when user is available" do
-            request.env["HTTP_X_USER_ID"] = request_user.id
-            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+          context "when region level sync is enabled" do
+            it "sets the sync_region_id to the block id and user is not available" do
+              enable_flag(:region_level_sync, request_user)
+              get :sync_to_user
 
-            enable_flag(:region_level_sync, request_user)
-            get :sync_to_user
-
-            response_records = JSON(response.body)["facilities"]
-            response_records.each do |record|
-              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
+              response_records = JSON(response.body)["facilities"]
+              response_records.each do |record|
+                expect(record["sync_region_id"]).to eq record["facility_group_id"]
+              end
             end
+
+            it "sets the sync_region_id to the block id when user is available" do
+              request.env["HTTP_X_USER_ID"] = request_user.id
+              request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+
+              enable_flag(:region_level_sync, request_user)
+              get :sync_to_user
+
+              response_records = JSON(response.body)["facilities"]
+              response_records.each do |record|
+                expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
+              end
+            end
+          end
+        end
+
+        context "for authenticated requests" do
+          def set_authentication_headers
+            request.env["HTTP_X_USER_ID"] = request_user.id
+            request.env["HTTP_X_FACILITY_ID"] = request_facility.id if defined? request_facility
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+            request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block_region.id
+          end
+
+          let(:request_user) { create(:user) }
+          let(:request_facility_group) { request_user.facility.facility_group }
+          let(:request_facility) { create(:facility, facility_group: request_facility_group) }
+
+          before do
+            set_authentication_headers
+          end
+
+          it "avoids resyncing when X_SYNC_REGION_ID doesn't match process token's sync_region_id" do
+            process_token = make_process_token(sync_region_id: "some-sync-region-uuid",
+                                               other_facilities_processed_since: Time.current)
+            facility_records = Timecop.travel(15.minutes.ago) { create_list(:facility, 5) }
+
+            get :sync_to_user, params: {process_token: process_token}
+
+            response_record_ids = JSON(response.body)["facilities"].map { |r| r["id"] }
+            expect(response_record_ids).not_to include(*facility_records.map(&:id))
           end
         end
       end
