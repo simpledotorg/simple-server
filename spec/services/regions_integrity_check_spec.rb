@@ -69,7 +69,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:organizations, :regions_without_sources_count)).to eq(1)
+      expect(swept.errors.dig(:organizations, :missing_sources_count)).to eq(1)
     end
 
     it "tracks missing states" do
@@ -77,7 +77,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:states, :regions_without_sources_count)).to eq(1)
+      expect(swept.errors.dig(:states, :missing_sources_count)).to eq(1)
     end
 
     it "tracks missing facility groups" do
@@ -85,7 +85,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:facility_groups, :regions_without_sources_count)).to eq(1)
+      expect(swept.errors.dig(:facility_groups, :missing_sources_count)).to eq(1)
     end
 
     it "tracks missing blocks" do
@@ -93,7 +93,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:blocks, :regions_without_sources_count)).to eq(1)
+      expect(swept.errors.dig(:blocks, :missing_sources_count)).to eq(1)
     end
 
     it "tracks missing facilities" do
@@ -101,7 +101,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:facilities, :regions_without_sources_count)).to eq(1)
+      expect(swept.errors.dig(:facilities, :missing_sources_count)).to eq(1)
     end
   end
 
@@ -112,7 +112,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expected_log = {
         class: "RegionsIntegrityCheck",
-        msg: [{blocks: {missing_regions: %w[B2 B1], regions_without_sources_count: 0, extra_regions_for_source: []}}]
+        msg: [{blocks: {missing_regions: %w[B2 B1], missing_sources_count: 0}}]
       }
 
       expect(Rails.logger).to receive(:error).with(expected_log)
@@ -135,7 +135,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       expected_msg = [
         "Regions Integrity Failure",
         {
-          extra: [{blocks: {missing_regions: %w[B2 B1], regions_without_sources_count: 0, extra_regions_for_source: []}}],
+          extra: [{blocks: {missing_regions: %w[B2 B1], missing_sources_count: 0}}],
           logger: "logger",
           tags: {type: "regions"}
         }
