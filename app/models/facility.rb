@@ -128,7 +128,20 @@ class Facility < ApplicationRecord
     facility_group.region.block_regions.find_by(name: block)
   end
 
-  private :update_region
+  # the gem to bulk import cannot run callbacks, so we manually ensure that we create regions
+  def self.import_with_regions(facilities, *args)
+    Facility.transaction do
+      imported_facilities = Facility.import(facilities, *args)
+
+      if Flipper.enabled?(:regions_prep)
+        imported_facilities.each do |facility|
+          facility.make_region
+        end
+      end
+    end
+  end
+
+  private :make_region, :update_region
   # ----------------
 
   def hypertension_follow_ups_by_period(*args)

@@ -64,7 +64,7 @@ module Seed
       facility_groups = number_of_facility_groups.times.map {
         FactoryBot.build(:facility_group, organization_id: organization.id, state: nil)
       }
-      fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
+      fg_result = FacilityGroup.import_with_regions(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
 
       facility_attrs = []
       fg_result.results.each do |row|
@@ -90,7 +90,7 @@ module Seed
         }
       end
 
-      Facility.import(facility_attrs, on_duplicate_key_ignore: true)
+      Facility.import_with_regions(facility_attrs, on_duplicate_key_ignore: true)
     end
   end
 end
