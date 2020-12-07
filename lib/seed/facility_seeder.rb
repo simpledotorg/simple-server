@@ -62,19 +62,22 @@ module Seed
       puts "Creating #{number_of_facility_groups} FacilityGroups..."
 
       facility_groups = number_of_facility_groups.times.map {
-        FactoryBot.build(:facility_group, organization_id: organization.id, state: nil)
+        state_region = FactoryBot.create(:region, :state, name: Seed::FakeNames.instance.state, reparent_to: organization.region)
+        FactoryBot.build(:facility_group, organization_id: organization.id, state: state_region.name)
       }
       fg_result = FacilityGroup.import_with_regions(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
 
       facility_attrs = []
       fg_result.results.each do |row|
         facility_group_id, facility_group_name = *row
+        fg_region = Region.find(facility_group_id)
+        state_region = fg_region.state_region
         number_facilities = number_of_facilities_per_facility_group
-        state = Seed::FakeNames.instance.state
         blocks = Seed::FakeNames.instance.blocks.sample(facilities_per_block)
         number_facilities.times {
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
+          block_region = FactoryBot.create(:region, :block, name: blocks.sample, reparent_to: fg_region)
 
           # TODO set the facility state here to match the parent district!
           # also, what about ze blocks?
@@ -83,8 +86,8 @@ module Seed
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
-            state: state,
-            zone: blocks.sample
+            state: state_region.name,
+            zone: block_region.name
           }
           facility_attrs << FactoryBot.build(:facility, :seed, attrs)
         }
