@@ -176,7 +176,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               get :sync_to_user, params: {process_token: process_token}
 
               response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-              expect(response_record_ids.count).to eq Appointment.where.not(id: appointment_in_block).count
               expect(response_record_ids).to match_array Appointment.where.not(id: appointment_in_block).pluck(:id)
             end
           end
@@ -211,7 +210,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               get :sync_to_user, params: {process_token: process_token}
 
               response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-              expect(response_record_ids.count).to eq Appointment.where.not(id: appointment_in_block).count
               expect(response_record_ids).to match_array Appointment.where.not(id: appointment_in_block).pluck(:id)
             end
           end

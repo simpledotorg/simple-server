@@ -421,7 +421,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
               get :sync_to_user, params: {process_token: process_token}
 
               response_record_ids = JSON(response.body)["patients"].map { |r| r["id"] }
-              expect(response_record_ids.count).to eq model.count
               expect(response_record_ids).to match_array model.pluck(:id)
             end
           end
@@ -455,7 +454,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
               get :sync_to_user, params: {process_token: process_token}
 
               response_record_ids = JSON(response.body)["patients"].map { |r| r["id"] }
-              expect(response_record_ids.count).to eq model.count
               expect(response_record_ids).to match_array model.pluck(:id)
             end
           end

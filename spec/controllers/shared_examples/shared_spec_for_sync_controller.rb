@@ -350,7 +350,6 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           get :sync_to_user, params: {process_token: process_token}
 
           response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-          expect(response_record_ids.count).to eq model.count
           expect(response_record_ids).to match_array model.pluck(:id)
         end
       end
@@ -385,7 +384,6 @@ RSpec.shared_examples "a working sync controller that supports region level sync
           get :sync_to_user, params: {process_token: process_token}
 
           response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-          expect(response_record_ids.count).to eq model.count
           expect(response_record_ids).to match_array model.pluck(:id)
         end
       end
