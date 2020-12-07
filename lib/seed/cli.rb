@@ -17,7 +17,7 @@ module Seed
 
     def run
       config = Seed::Config.new
-      output.puts "Starting seed process with a *#{config.type}* sized data set using #{Parallel::processor_count} cores, continue? (Y/n)"
+      output.puts "Starting seed process with a *#{config.type}* sized data set using #{Parallel.processor_count} cores, continue? (Y/n)"
       answer = input.gets.chomp
       if answer == "Y"
         Seed::Runner.call
