@@ -1,14 +1,23 @@
-class RegionIntegrityCheck
+class RegionsIntegrityCheck
   def self.sweep
     new.sweep
+  end
+
+  attr_reader :errors
+
+  def initialize
+    @errors = {}
   end
 
   def sweep
     resources.each do |name, resource|
       log(:info, "Sweeping for – #{name}")
       result = Result.check(resource)
-      report_errors(result.inconsistencies.merge(name: name)) unless result.ok?
+      errors[name] = result.inconsistencies unless result.ok?
     end
+
+    report_errors
+    self
   end
 
   private
@@ -40,7 +49,7 @@ class RegionIntegrityCheck
   def facility_groups
     {
       source: FacilityGroup.pluck(:id),
-      region: Region.district_regions.pluck(:id)
+      region: Region.district_regions.pluck(:source_id)
     }
   end
 
@@ -58,9 +67,11 @@ class RegionIntegrityCheck
     }
   end
 
-  def report_errors(*args)
-    log(:error, *args)
-    sentry(*args)
+  def report_errors
+    return if @errors.blank?
+
+    log(:error, @errors)
+    sentry(@errors)
   end
 
   def log(type, *args)
@@ -100,11 +111,11 @@ class RegionIntegrityCheck
     attr_writer :inconsistencies
 
     def set_inconsistencies
-      sources_without_regions = source - region
-      regions_without_sources = region - source
+      sources_without_regions = (source - region).to_set
+      regions_without_sources = (region - source).to_set
 
-      @inconsistencies[:missing_regions] << sources_without_regions
-      @inconsistencies[:missing_sources] << regions_without_sources
+      @inconsistencies[:missing_regions] += sources_without_regions.to_a
+      @inconsistencies[:missing_sources] += regions_without_sources.to_a
     end
   }
 end
