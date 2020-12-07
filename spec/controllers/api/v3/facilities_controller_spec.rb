@@ -140,7 +140,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           end
 
           it "avoids resyncing when X_SYNC_REGION_ID doesn't match process token's sync_region_id" do
-            process_token = make_process_token(sync_region_id: "some-sync-region-uuid",
+            process_token = make_process_token(sync_region_id: "a-sync-region-uuid",
                                                other_facilities_processed_since: Time.current)
             facility_records = Timecop.travel(15.minutes.ago) { create_list(:facility, 5) }
 
