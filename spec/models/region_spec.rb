@@ -51,6 +51,24 @@ RSpec.describe Region, type: :model do
       expect(district_region.facilities).to contain_exactly(*facilities)
       expect(district_region.organization_region.facilities).to contain_exactly(*facilities)
     end
+
+    it "gets assigned patients via facilities" do
+      facility_group = create(:facility_group)
+      block_1_facilities = create_list(:facility, 3, block: "Block 1", facility_group: facility_group)
+      block_2_facility = create(:facility, block: "Block 2", facility_group: facility_group)
+      patients_in_block_1 = block_1_facilities.each_with_object([]) do |facility, ary|
+        ary << create(:patient, registration_facility: facility)
+      end
+      patients_in_block_2 = create_list(:patient, 2, registration_facility: block_2_facility)
+      RegionBackfill.call(dry_run: false)
+      block_1 = Region.block_regions.find_by!(name: "Block 1")
+      block_2 = Region.block_regions.find_by!(name: "Block 2")
+      expect(block_2_facility.region.assigned_patients).to match_array(patients_in_block_2)
+      expect(block_1.assigned_patients).to match_array(patients_in_block_1)
+      expect(block_2.assigned_patients).to match_array(patients_in_block_2)
+      expect(facility_group.region.assigned_patients).to match_array(patients_in_block_1 + patients_in_block_2)
+      expect(facility_group.region.state_region.assigned_patients).to match_array(patients_in_block_1 + patients_in_block_2)
+    end
   end
 
   context "behavior" do

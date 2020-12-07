@@ -32,14 +32,6 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
-  def assigned_patients
-    if source
-      source.assigned_patients
-    else
-      Block.new(name: name, facilities: facilities).assigned_patients
-    end
-  end
-
   def self.root
     Region.find_by(region_type: :root)
   end
@@ -56,9 +48,13 @@ class Region < ApplicationRecord
     SecureRandom.uuid[0..7]
   end
 
+  def assigned_patients
+    Patient.where(assigned_facility: facilities)
+  end
+
   def facilities
     if facility_region?
-      [source]
+      source
     else
       ids = facility_regions.pluck(:source_id)
       Facility.where(id: ids)
@@ -89,7 +85,7 @@ class Region < ApplicationRecord
       if self_and_descendant_types(region_type).include?(self.region_type)
         self_and_ancestors.find_by(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type} for #{self} of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type} for region '#{name}' of type #{self.region_type}"
       end
     end
 
@@ -100,7 +96,7 @@ class Region < ApplicationRecord
       if ancestor_types(region_type).include?(self.region_type)
         descendants.where(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type.pluralize} for #{self} of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
     end
   end
