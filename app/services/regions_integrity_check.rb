@@ -48,7 +48,7 @@ class RegionsIntegrityCheck
       Region
         .organization_regions
         .group(:source_id)
-        .having('count(source_id) > 1')
+        .having("count(source_id) > 1")
         .count
         .keys
         .yield_self { |src_ids| Region.organization_regions.where(source_id: src_ids).pluck(:id) }
@@ -84,7 +84,7 @@ class RegionsIntegrityCheck
             .children
             .where(name: r.name)
             .pluck(:id)
-        }.to_set
+        }.uniq
 
     {
       missing_regions: missing_regions,
@@ -101,11 +101,11 @@ class RegionsIntegrityCheck
       Region
         .district_regions
         .group(:source_id)
-        .having('count(source_id) > 1')
+        .having("count(source_id) > 1")
         .count
         .keys
         .yield_self { |src_ids| Region.district_regions.where(source_id: src_ids).pluck(:id) }
-        .to_set
+        .uniq
 
     {
       missing_regions: missing_regions,
@@ -122,19 +122,20 @@ class RegionsIntegrityCheck
           .pluck("regions.name, district.source_id")
           .to_set
       ).to_a
-    duplicate_regions = Region
-                          .block_regions
-                          .select("SUBPATH(path,0,4) AS district_path, name, count('name')")
-                          .group("district_path, name")
-                          .having("count('name') > 1")
-                          .flat_map { |r|
-                            Region
-                              .district_regions
-                              .find_by_path(r.district_path)
-                              .children
-                              .where(name: r.name)
-                              .pluck(:id)
-                          }.to_set
+    duplicate_regions =
+      Region
+        .block_regions
+        .select("SUBPATH(path,0,4) AS district_path, name, count('name')")
+        .group("district_path, name")
+        .having("count('name') > 1")
+        .flat_map { |r|
+          Region
+            .district_regions
+            .find_by_path(r.district_path)
+            .children
+            .where(name: r.name)
+            .pluck(:id)
+        }.uniq
 
     {
       missing_regions: missing_regions,
@@ -151,11 +152,11 @@ class RegionsIntegrityCheck
       Region
         .facility_regions
         .group(:source_id)
-        .having('count(source_id) > 1')
+        .having("count(source_id) > 1")
         .count
         .keys
         .yield_self { |src_ids| Region.facility_regions.where(source_id: src_ids).pluck(:id) }
-        .to_set
+        .uniq
 
     {
       missing_regions: missing_regions,
