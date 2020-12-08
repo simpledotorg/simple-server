@@ -15,11 +15,11 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
   context "missing regions" do
     it "tracks missing org" do
-      orgs_without_region = Organization.import(build_list(:organization, 2)).ids
+      missing = Organization.import(build_list(:organization, 2)).ids
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:organizations, :missing_regions)).to match_array(orgs_without_region)
+      expect(swept.inconsistencies.dig(:organizations, :missing_regions)).to match_array(missing)
     end
 
     it "tracks missing state" do
@@ -31,24 +31,25 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:states, :missing_regions)).to match_array(missing_state)
-      expect(swept.errors.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
+      expect(swept.inconsistencies.dig(:states, :missing_regions)).to match_array([[missing_state, organization.id]])
+      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
     end
 
     it "tracks missing facility_groups" do
-      fgs_without_region = FacilityGroup.import(build_list(:facility_group, 2, state: state.name)).ids
+      missing = FacilityGroup.import(build_list(:facility_group, 2, state: state.name)).ids
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:facility_groups, :missing_regions)).to match_array(fgs_without_region)
+      expect(swept.inconsistencies.dig(:districts, :missing_regions)).to match_array(missing)
     end
 
     it "tracks missing blocks" do
       _remove_block_regions = Region.block_regions.delete_all
 
       swept = RegionsIntegrityCheck.sweep
+      expected = [[block_1.name, facility_groups[0].id], [block_2.name, facility_groups[1].id]]
 
-      expect(swept.errors.dig(:blocks, :missing_regions)).to match_array([block_1.name, block_2.name])
+      expect(swept.inconsistencies.dig(:blocks, :missing_regions)).to match_array(expected)
     end
 
     it "tracks missing facilities" do
@@ -59,49 +60,63 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
+      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
     end
   end
 
-  context "tracks the count of missing sources" do
-    it "tracks missing orgs" do
-      create(:region, region_type: :organization, reparent_to: Region.root)
+  context "duplicate regions for the same source" do
+    it "tracks duplicate orgs" do
+      duplicates =
+        create_list(:region, 2, source: organization, region_type: :organization, reparent_to: Region.root)
+          .yield_self { |orgs| orgs << organization.region }
+          .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:organizations, :missing_sources_count)).to eq(1)
+      expect(swept.inconsistencies.dig(:organizations, :duplicate_regions)).to match_array(duplicates)
     end
 
-    it "tracks missing states" do
-      create(:region, :state, reparent_to: organization.region)
+    it "tracks duplicate states" do
+      duplicates =
+        create_list(:region, 2, :state, name: state.name, reparent_to: organization.region)
+          .yield_self { |states| states << state }
+          .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:states, :missing_sources_count)).to eq(1)
+      expect(swept.inconsistencies.dig(:states, :duplicate_regions)).to match_array(duplicates)
     end
 
-    it "tracks missing facility groups" do
-      create(:region, region_type: :district, reparent_to: state)
+    it "tracks duplicate facility groups" do
+      duplicates =
+        create_list(:region, 2, region_type: :district, source: facility_groups[0], reparent_to: state)
+          .yield_self { |districts| districts << facility_groups[0].region }
+          .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:facility_groups, :missing_sources_count)).to eq(1)
+      expect(swept.inconsistencies.dig(:districts, :duplicate_regions)).to match_array(duplicates)
     end
 
-    it "tracks missing blocks" do
-      create(:region, :block, reparent_to: facility_groups[0].region)
+    it "tracks duplicate blocks" do
+      duplicates =
+        create_list(:region, 2, :block, name: block_1.name, reparent_to: facility_groups[0].region)
+          .yield_self { |blocks| blocks << block_1 }
+          .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:blocks, :missing_sources_count)).to eq(1)
+      expect(swept.inconsistencies.dig(:blocks, :duplicate_regions)).to match_array(duplicates)
     end
 
-    it "tracks missing facilities" do
-      create(:region, region_type: :facility, reparent_to: block_1)
+    it "tracks duplicate facilities" do
+      duplicates = create_list(:region, 2, region_type: :facility, source: facility_1, reparent_to: block_1)
+                     .yield_self { |facilities| facilities << facility_1.region }
+                     .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.errors.dig(:facilities, :missing_sources_count)).to eq(1)
+      expect(swept.inconsistencies.dig(:facilities, :duplicate_regions)).to match_array(duplicates)
     end
   end
 
@@ -112,7 +127,10 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expected_log = {
         class: "RegionsIntegrityCheck",
-        msg: [{blocks: {missing_regions: %w[B2 B1], missing_sources_count: 0}}]
+        msg: [{
+          resource: :blocks,
+          result: {missing_regions: [["B1", facility_groups[0].id], ["B2", facility_groups[1].id]]}
+        }]
       }
 
       expect(Rails.logger).to receive(:error).with(expected_log)
@@ -135,7 +153,15 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       expected_msg = [
         "Regions Integrity Failure",
         {
-          extra: [{blocks: {missing_regions: %w[B2 B1], missing_sources_count: 0}}],
+          extra: [
+            {
+              resource: :blocks,
+              result:
+                {
+                  missing_regions: [["B1", facility_groups[0].id], ["B2", facility_groups[1].id]]
+                }
+            }
+          ],
           logger: "logger",
           tags: {type: "regions"}
         }
