@@ -51,8 +51,4 @@ class Organization < ApplicationRecord
   def discardable?
     facility_groups.none? && users.none? && appointments.none?
   end
-
-  def syncable_patients
-    registered_patients.with_discarded
-  end
 end
