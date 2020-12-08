@@ -56,8 +56,8 @@ class Region < ApplicationRecord
     if facility_region?
       Facility.where(id: source_id)
     else
-      ids = facility_regions.pluck(:source_id)
-      Facility.where(id: ids)
+      source_ids = facility_regions.pluck(:source_id)
+      Facility.where(id: source_ids)
     end
   end
 
