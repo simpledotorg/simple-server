@@ -214,4 +214,3 @@ class RegionsIntegrityCheck
     Raven.capture_message(SENTRY_ERROR_TITLE, logger: "logger", extra: args, tags: {type: "regions"})
   end
 end
-
