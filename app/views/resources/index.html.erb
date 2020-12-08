@@ -38,29 +38,37 @@
 
               <div class="card" id="card-presentations">
                 <h2>Training presentations</h2>
-
-                    <div class="resource-link resource-presentation">
-                        <a href="https://docs.google.com/presentation/d/1y4tEmm6ZaIphf48s8NNr6LjQt7pV8m_2AAubovGGVO8/edit" class="resource-url">
-                            Teach Simple for new users
-                            <span>Use this presentation to teach new users, like doctors and nurses, to use the Simple Android app.</span>
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </a>
-                    </div>
-                    <div class="resource-link resource-presentation">
-                        <a href="https://docs.google.com/presentation/d/1sna087oQH6NbMk28pwmvvLvvAV4xyB0hHBACLP4iU1E/edit#slide=id.g7402fb462f_0_836" class="resource-url">
-                            Training for trainers
-                            <span>Use this presentation to learn how to conduct a training.</span>
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </a>
-                    </div>
-                    <div class="resource-link resource-presentation">
-                        <a href="https://docs.google.com/presentation/d/1G3YEqGID5O9sPsHW_rSemr37i-kDLfDD-pKm0XxBrh0/edit#slide=id.g7da453f218_0_0" class="resource-url">
-                            Manage facilities on the Dashboard
-                            <span>Use this presentation to learn how to add, edit, and delete facilities on the Dashboard.</span>
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </a>
-                    </div>
-
+                    <% if CountryConfig.current[:name] == "Ethiopia" %>
+                      <div class="resource-link resource-presentation">
+                          <a href="https://docs.google.com/presentation/d/1GM57_sHZ53huaMCi1Vsg5O2aAjtXKWdLGvsvKzMROME/edit" class="resource-url">
+                              Guide for trainers and program managers
+                              <span>Use this presentation to learn about the Simple program and how to use the Android App and Dashboard</span>
+                              <i class="fas fa-chalkboard-teacher"></i>
+                          </a>
+                      </div>
+                    <% else %>
+                      <div class="resource-link resource-presentation">
+                          <a href="https://docs.google.com/presentation/d/1y4tEmm6ZaIphf48s8NNr6LjQt7pV8m_2AAubovGGVO8/edit" class="resource-url">
+                              Teach Simple for new users
+                              <span>Use this presentation to teach new users, like doctors and nurses, to use the Simple Android app.</span>
+                              <i class="fas fa-chalkboard-teacher"></i>
+                          </a>
+                      </div>
+                      <div class="resource-link resource-presentation">
+                          <a href="https://docs.google.com/presentation/d/1sna087oQH6NbMk28pwmvvLvvAV4xyB0hHBACLP4iU1E/edit#slide=id.g7402fb462f_0_836" class="resource-url">
+                              Training for trainers
+                              <span>Use this presentation to learn how to conduct a training.</span>
+                              <i class="fas fa-chalkboard-teacher"></i>
+                          </a>
+                      </div>
+                      <div class="resource-link resource-presentation">
+                          <a href="https://docs.google.com/presentation/d/1G3YEqGID5O9sPsHW_rSemr37i-kDLfDD-pKm0XxBrh0/edit#slide=id.g7da453f218_0_0" class="resource-url">
+                              Manage facilities on the Dashboard
+                              <span>Use this presentation to learn how to add, edit, and delete facilities on the Dashboard.</span>
+                              <i class="fas fa-chalkboard-teacher"></i>
+                          </a>
+                      </div>
+                    <% end %>
 
 
               </div>
