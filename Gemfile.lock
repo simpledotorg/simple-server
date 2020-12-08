@@ -502,7 +502,7 @@ GEM
     sshkit-interactive (0.3.0)
       sshkit (~> 1.12)
     stackprof (0.2.15)
-    standard (0.10.1)
+    standard (0.10.2)
       rubocop (= 1.4.2)
       rubocop-performance (= 1.9.1)
     strong_password (0.0.8)
