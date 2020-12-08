@@ -80,8 +80,7 @@ module Seed
           generating_seed_data: true,
           name: district_names[i],
           organization_id: organization.id,
-          state: nil
-        )
+          state: nil)
       }
       fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
 
