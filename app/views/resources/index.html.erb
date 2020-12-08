@@ -206,22 +206,35 @@
               </div>
 
               <div class="card" id="card-1pager">
-                <h2>1-pager about Simple</h2>
-                    <div class="resource-link resource-doc">
-                        <a href="https://drive.google.com/a/resolvetosavelives.org/file/d/1M2BpHYZALN8UAOaLZUfwFKCRvmq0fI7s/view?usp=sharing" class="resource-url">
-                            1-pager for IHCI
-                            <span>Regularly updated document explaining Simple and IHCI.</span>
-                            <i class="far fa-file-pdf"></i>
-                        </a>
-                    </div>
-
-                    <div class="resource-link resource-doc">
-                        <a href="https://drive.google.com/open?id=1LzGcSK5nPS0izJT4kV7B3y6syl84ACqo&authuser=dburka%40resolvetosavelives.org&usp=drive_fs" class="resource-url">
-                            1-pager
-                            <span>Regularly updated document explaining Simple.</span>
-                            <i class="far fa-file-pdf"></i>
-                        </a>
-                    </div>
+                <h2>
+                  1-pagers about Simple
+                </h2>
+                <% if CountryConfig.current[:name] == "India" %>
+                  <div class="resource-link resource-doc">
+                    <a
+                      href="https://drive.google.com/a/resolvetosavelives.org/file/d/1M2BpHYZALN8UAOaLZUfwFKCRvmq0fI7s/view?usp=sharing"
+                      class="resource-url"
+                    >
+                      1-pager for IHCI
+                      <span>
+                        Regularly updated document explaining Simple and IHCI
+                      </span>
+                      <i class="far fa-file-pdf"></i>
+                    </a>
+                  </div>
+                <% end %>
+                <div class="resource-link resource-doc">
+                  <a
+                    href="https://drive.google.com/open?id=1LzGcSK5nPS0izJT4kV7B3y6syl84ACqo&authuser=dburka%40resolvetosavelives.org&usp=drive_fs" 
+                    class="resource-url"
+                  >
+                    1-pager
+                    <span>
+                      Regularly updated document explaining Simple
+                    </span>
+                    <i class="far fa-file-pdf"></i>
+                  </a>
+                </div>
               </div>
               <div class="card" id="card-print">
                 <h2>Print material</h2>
