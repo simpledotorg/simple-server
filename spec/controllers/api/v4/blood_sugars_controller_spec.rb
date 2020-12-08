@@ -1,6 +1,6 @@
 require "rails_helper"
 
-[:disable, :enable].each do |regions_prep_toggle|
+[:enable, :disable].each do |regions_prep_toggle|
   RSpec.describe Api::V4::BloodSugarsController, type: :controller do
     before { Flipper.public_send(regions_prep_toggle, :regions_prep) }
     let(:request_user) { create(:user) }

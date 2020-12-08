@@ -94,8 +94,8 @@ require "rails_helper"
             patient = create(:patient, recorded_at: patient_recorded_at)
             older_blood_sugar_recording_date = 5.months.ago
             blood_sugar = build_blood_sugar_payload(build(:blood_sugar,
-                                                          patient: patient,
-                                                          recorded_at: older_blood_sugar_recording_date))
+              patient: patient,
+              recorded_at: older_blood_sugar_recording_date))
             post(:sync_from_user, params: {blood_sugars: [blood_sugar]}, as: :json)
 
             patient.reload
@@ -139,9 +139,9 @@ require "rails_helper"
 
             blood_sugars = (1..3).map {
               FactoryBot.build(:blood_sugar,
-                               facility: request_facility,
-                               patient: patient,
-                               recorded_at: blood_sugar_recording)
+                facility: request_facility,
+                patient: patient,
+                recorded_at: blood_sugar_recording)
             }
 
             blood_sugars_payload = blood_sugars.map(&method(:build_blood_sugar_payload))
@@ -168,9 +168,9 @@ require "rails_helper"
 
             blood_sugars = [day_1, day_2, day_3].map { |date|
               FactoryBot.build(:blood_sugar,
-                               facility: request_facility,
-                               patient: patient,
-                               recorded_at: date)
+                facility: request_facility,
+                patient: patient,
+                recorded_at: date)
             }
 
             _add_blood_sugars = create_list(:blood_sugar, 5)
@@ -182,8 +182,8 @@ require "rails_helper"
             }.to change { Encounter.count }.by(3)
             expect(response).to have_http_status(200)
             expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on_1,
-                                                                        encountered_on_2,
-                                                                        encountered_on_3)
+              encountered_on_2,
+              encountered_on_3)
             expected_blood_sugars_thru_encounters = Encounter.all.flat_map(&:blood_sugars)
             expect(expected_blood_sugars_thru_encounters).to match_array(BloodSugar.where(id: blood_sugars.pluck(:id)))
           end
@@ -201,9 +201,9 @@ require "rails_helper"
 
               range_of_possible_observations.map do
                 build(:blood_sugar,
-                      facility: facility,
-                      patient: patient,
-                      recorded_at: date)
+                  facility: facility,
+                  patient: patient,
+                  recorded_at: date)
               end
             }
 
@@ -224,9 +224,9 @@ require "rails_helper"
           let!(:blood_sugar_payload) do
             build_blood_sugar_payload(
               build(:blood_sugar,
-                    patient: blood_pressure.patient,
-                    facility: blood_pressure.facility,
-                    recorded_at: blood_pressure.recorded_at)
+                patient: blood_pressure.patient,
+                facility: blood_pressure.facility,
+                recorded_at: blood_pressure.recorded_at)
             )
           end
 

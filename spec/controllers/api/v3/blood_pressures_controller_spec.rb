@@ -94,8 +94,8 @@ require "rails_helper"
             patient = create(:patient, recorded_at: patient_recorded_at)
             older_bp_recording_date = 5.months.ago
             blood_pressure = build_blood_pressure_payload(FactoryBot.build(:blood_pressure,
-                                                                           patient: patient,
-                                                                           recorded_at: older_bp_recording_date))
+              patient: patient,
+              recorded_at: older_bp_recording_date))
             post(:sync_from_user, params: {blood_pressures: [blood_pressure]}, as: :json)
 
             patient.reload
@@ -117,8 +117,8 @@ require "rails_helper"
             older_bp_recording_date = 2.months.ago
             blood_pressure = build_blood_pressure_payload(
               FactoryBot.build(:blood_pressure,
-                               patient: patient,
-                               device_created_at: older_bp_recording_date)
+                patient: patient,
+                device_created_at: older_bp_recording_date)
             ).except("recorded_at")
             post(:sync_from_user, params: {blood_pressures: [blood_pressure]}, as: :json)
 
@@ -132,16 +132,16 @@ require "rails_helper"
             three_months_ago = 3.months.ago
             bp_recorded_two_months_ago = build_blood_pressure_payload(
               FactoryBot.build(:blood_pressure,
-                               patient: patient,
-                               device_created_at: two_months_ago)
+                patient: patient,
+                device_created_at: two_months_ago)
             )
-                                           .except("recorded_at")
+              .except("recorded_at")
             bp_recorded_three_months_ago = build_blood_pressure_payload(
               FactoryBot.build(:blood_pressure,
-                               patient: patient,
-                               device_created_at: three_months_ago)
+                patient: patient,
+                device_created_at: three_months_ago)
             )
-                                             .except("recorded_at")
+              .except("recorded_at")
 
             post(:sync_from_user, params: {blood_pressures: [bp_recorded_three_months_ago]}, as: :json)
             post(:sync_from_user, params: {blood_pressures: [bp_recorded_two_months_ago]}, as: :json)
@@ -160,9 +160,9 @@ require "rails_helper"
 
             blood_pressures = (1..3).map {
               FactoryBot.build(:blood_pressure,
-                               facility: request_facility,
-                               patient: patient,
-                               recorded_at: blood_pressure_recording)
+                facility: request_facility,
+                patient: patient,
+                recorded_at: blood_pressure_recording)
             }
 
             blood_pressures_payload = blood_pressures.map(&method(:build_blood_pressure_payload))
@@ -189,9 +189,9 @@ require "rails_helper"
 
             blood_pressures = [day_1, day_2, day_3].map { |date|
               FactoryBot.build(:blood_pressure,
-                               facility: request_facility,
-                               patient: patient,
-                               recorded_at: date)
+                facility: request_facility,
+                patient: patient,
+                recorded_at: date)
             }
 
             _add_random_bps = create_list(:blood_pressure, 5)
@@ -203,8 +203,8 @@ require "rails_helper"
             }.to change { Encounter.count }.by(3)
             expect(response).to have_http_status(200)
             expect(Encounter.pluck(:encountered_on)).to contain_exactly(encountered_on_1,
-                                                                        encountered_on_2,
-                                                                        encountered_on_3)
+              encountered_on_2,
+              encountered_on_3)
             expected_bps_thru_encounters = Encounter.all.flat_map(&:blood_pressures)
             expect(expected_bps_thru_encounters).to match_array(BloodPressure.where(id: blood_pressures.pluck(:id)))
           end
@@ -222,9 +222,9 @@ require "rails_helper"
 
               range_of_possible_observations.map do
                 build(:blood_pressure,
-                      facility: facility,
-                      patient: patient,
-                      recorded_at: date)
+                  facility: facility,
+                  patient: patient,
+                  recorded_at: date)
               end
             }
 
@@ -245,9 +245,9 @@ require "rails_helper"
           let!(:blood_pressure_payload) do
             build_blood_pressure_payload(
               build(:blood_pressure,
-                    patient: blood_sugar.patient,
-                    facility: blood_sugar.facility,
-                    recorded_at: blood_sugar.recorded_at)
+                patient: blood_sugar.patient,
+                facility: blood_sugar.facility,
+                recorded_at: blood_sugar.recorded_at)
             )
           end
 

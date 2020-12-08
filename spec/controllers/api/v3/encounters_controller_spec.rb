@@ -70,7 +70,7 @@ require "rails_helper"
           expect {
             post(:sync_from_user, params: {encounters: [encounter_with_no_observations]}, as: :json)
           }.to change { Encounter.count }.by(1)
-                 .and change { Observation.count }.by(0)
+            .and change { Observation.count }.by(0)
 
           expect(response).to have_http_status(200)
         end
@@ -136,21 +136,21 @@ require "rails_helper"
           patient_2 = create(:patient, registration_facility: request_2_facility)
 
           create_record_list(2,
-                             patient: patient_1,
-                             facility: request_facility,
-                             updated_at: 3.minutes.ago)
+            patient: patient_1,
+            facility: request_facility,
+            updated_at: 3.minutes.ago)
           create_record_list(2,
-                             patient: patient_1,
-                             facility: request_facility,
-                             updated_at: 5.minutes.ago)
+            patient: patient_1,
+            facility: request_facility,
+            updated_at: 5.minutes.ago)
           create_record_list(2,
-                             patient: patient_2,
-                             facility: request_2_facility,
-                             updated_at: 7.minutes.ago)
+            patient: patient_2,
+            facility: request_2_facility,
+            updated_at: 7.minutes.ago)
           create_record_list(2,
-                             patient: patient_2,
-                             facility: request_2_facility,
-                             updated_at: 10.minutes.ago)
+            patient: patient_2,
+            facility: request_2_facility,
+            updated_at: 10.minutes.ago)
 
           # GET request 1
           set_authentication_headers

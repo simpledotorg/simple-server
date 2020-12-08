@@ -98,8 +98,8 @@ require "rails_helper"
             patient = FactoryBot.build(:patient)
             blood_pressure_recorded_at = 1.month.ago
             create(:blood_pressure,
-                   patient_id: patient.id,
-                   recorded_at: blood_pressure_recorded_at)
+              patient_id: patient.id,
+              recorded_at: blood_pressure_recorded_at)
 
             patient_payload = build_payload.call(patient).except("recorded_at")
             post :sync_from_user, params: {patients: [patient_payload]}, as: :json
@@ -518,13 +518,13 @@ require "rails_helper"
 
                 block_records =
                   [patient_in_request_facility,
-                   patient_in_same_block,
-                   patient_assigned_to_block,
-                   patient_with_appointment_in_block]
+                    patient_in_same_block,
+                    patient_assigned_to_block,
+                    patient_with_appointment_in_block]
 
                 non_block_records =
                   [patient_in_other_block,
-                   patient_in_other_facility_group]
+                    patient_in_other_facility_group]
 
                 get :sync_to_user, params: {process_token: process_token}
 
