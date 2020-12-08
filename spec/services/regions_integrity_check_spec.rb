@@ -111,8 +111,8 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
     it "tracks duplicate facilities" do
       duplicates = create_list(:region, 2, region_type: :facility, source: facility_1, reparent_to: block_1)
-        .yield_self { |facilities| facilities << facility_1.region }
-        .map(&:id)
+                     .yield_self { |facilities| facilities << facility_1.region }
+                     .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
@@ -127,10 +127,10 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expected_log = {
         class: "RegionsIntegrityCheck",
-        msg: [{
+        msg: {
           resource: :blocks,
           result: {missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]}
-        }]
+        }
       }
 
       expect(Rails.logger).to receive(:error).with(expected_log)
@@ -153,15 +153,13 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       expected_msg = [
         "Regions Integrity Failure",
         {
-          extra: [
-            {
-              resource: :blocks,
-              result:
-                {
-                  missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]
-                }
-            }
-          ],
+          extra: {
+            resource: :blocks,
+            result:
+              {
+                missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]
+              }
+          },
           logger: "logger",
           tags: {type: "regions"}
         }
