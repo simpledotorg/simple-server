@@ -16,7 +16,9 @@ class Region < ApplicationRecord
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to
+  attr_accessor :parent_path
   before_validation :initialize_path, if: :reparent_to
+  before_validation :_set_path_for_seeds, if: :parent_path
   before_discard :remove_path
 
   REGION_TYPES = %w[root organization state district block facility].freeze
@@ -80,8 +82,12 @@ class Region < ApplicationRecord
 
   private
 
+  def _set_path_for_seeds
+    self.path = "#{parent_path}.#{path_label}"
+  end
+
   def initialize_path
-    logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
+    # logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
     self.path = if reparent_to.path.present?
       "#{reparent_to.path}.#{path_label}"
     else
