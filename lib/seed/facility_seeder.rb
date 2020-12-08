@@ -72,13 +72,16 @@ module Seed
       state_results = Region.import(states, returning: [:path])
 
       # Create FacilityGroups
-      facility_groups = number_of_facility_groups.times.map {
+      district_names = Seed::FakeNames.instance.districts.sample(number_of_facility_groups)
+      facility_groups = number_of_facility_groups.times.each_with_index.map { |i|
         FactoryBot.build(:facility_group,
           id: nil,
-          organization_id: organization.id,
-          state: nil,
           create_parent_region: false,
-          generating_seed_data: true)
+          generating_seed_data: true,
+          name: district_names[i],
+          organization_id: organization.id,
+          state: nil
+        )
       }
       fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
 
