@@ -17,7 +17,6 @@
 # Reporting –
 # It reports inconsistencies to Sentry and Logs to standard logger
 class RegionsIntegrityCheck
-  RegionsIntegrityCheck.sweep
   SENTRY_ERROR_TITLE = "Regions Integrity Failure"
 
   attr_reader :inconsistencies
