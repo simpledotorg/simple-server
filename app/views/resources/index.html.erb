@@ -19,11 +19,11 @@
 
           <div class="col-12 col-sm-8 col-lg-10">
               <% if CountryConfig.current[:name] == "India" %>
-                <%= render "shared/india_office_hours" %>
+                <%= render "shared/office_hours_india" %>
               <% elsif CountryConfig.current[:name] == "Bangladesh" %>
-                <%= render "shared/bangladesh_office_hours" %>
+                <%= render "shared/office_hours_bangladesh" %>
               <% elsif CountryConfig.current[:name] == "Ethiopia" %>
-                <%= render "shared/ethiopia_office_hours" %>
+                <%= render "shared/office_hours_ethiopia" %>
               <% end %>
               <div class="card" id="card-checklist">
                   <h2>Deployment checklist</h2>
@@ -37,40 +37,16 @@
               </div>
 
               <div class="card" id="card-presentations">
-                <h2>Training presentations</h2>
-                    <% if CountryConfig.current[:name] == "Ethiopia" %>
-                      <div class="resource-link resource-presentation">
-                          <a href="https://docs.google.com/presentation/d/1GM57_sHZ53huaMCi1Vsg5O2aAjtXKWdLGvsvKzMROME/edit" class="resource-url">
-                              Guide for trainers and program managers
-                              <span>Use this presentation to learn about the Simple program and how to use the Android App and Dashboard</span>
-                              <i class="fas fa-chalkboard-teacher"></i>
-                          </a>
-                      </div>
-                    <% else %>
-                      <div class="resource-link resource-presentation">
-                          <a href="https://docs.google.com/presentation/d/1y4tEmm6ZaIphf48s8NNr6LjQt7pV8m_2AAubovGGVO8/edit" class="resource-url">
-                              Teach Simple for new users
-                              <span>Use this presentation to teach new users, like doctors and nurses, to use the Simple Android app.</span>
-                              <i class="fas fa-chalkboard-teacher"></i>
-                          </a>
-                      </div>
-                      <div class="resource-link resource-presentation">
-                          <a href="https://docs.google.com/presentation/d/1sna087oQH6NbMk28pwmvvLvvAV4xyB0hHBACLP4iU1E/edit#slide=id.g7402fb462f_0_836" class="resource-url">
-                              Training for trainers
-                              <span>Use this presentation to learn how to conduct a training.</span>
-                              <i class="fas fa-chalkboard-teacher"></i>
-                          </a>
-                      </div>
-                      <div class="resource-link resource-presentation">
-                          <a href="https://docs.google.com/presentation/d/1G3YEqGID5O9sPsHW_rSemr37i-kDLfDD-pKm0XxBrh0/edit#slide=id.g7da453f218_0_0" class="resource-url">
-                              Manage facilities on the Dashboard
-                              <span>Use this presentation to learn how to add, edit, and delete facilities on the Dashboard.</span>
-                              <i class="fas fa-chalkboard-teacher"></i>
-                          </a>
-                      </div>
-                    <% end %>
-
-
+                <h2>
+                  Training presentations
+                </h2>
+                <% if CountryConfig.current[:name] == "Ethiopia" %>
+                  <%= render "shared/simple_training_guide_ethiopia" %>
+                <% elsif CountryConfig.current[:name] == "India" %>
+                  <%= render "shared/simple_training_guide_india" %>
+                <% elsif CountryConfig.current[:name] == "Bangladesh" %>
+                  <%= render "shared/simple_training_guide_bangladesh" %>
+                <% end %>
               </div>
               <div class="card" id="card-videos">
                 <h2>Training videos</h2>
