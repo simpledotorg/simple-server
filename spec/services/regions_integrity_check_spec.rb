@@ -111,8 +111,8 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
     it "tracks duplicate facilities" do
       duplicates = create_list(:region, 2, region_type: :facility, source: facility_1, reparent_to: block_1)
-                     .yield_self { |facilities| facilities << facility_1.region }
-                     .map(&:id)
+        .yield_self { |facilities| facilities << facility_1.region }
+        .map(&:id)
 
       swept = RegionsIntegrityCheck.sweep
 
