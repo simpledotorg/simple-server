@@ -1,32 +1,10 @@
 require "tasks/scripts/delete_organization_data"
 
 namespace :hard_delete do
-  desc "Delete PATH and associated data"
-  task :path_data, [:dry_run] => :environment do |_t, args|
-    # This is a temporary rake task to delete PATH specifically since
-    # an earlier cleanup cleared only the Org and FGs. This deletes
-    # the associated data only.
-    dry_run =
-      if args.dry_run == "false"
-        false
-      else
-        args.dry_run || args.dry_run.nil?
-      end
-
-    if !SimpleServer.env.production? || CountryConfig.current[:name] != "India"
-      abort "Can run only in India production"
-    end
-
-    puts "Dry run: #{dry_run}"
-    puts "This will delete all facilities belonging to PATH and associated data"
-    puts "Are you sure you want to proceed? (y/n): "
-    abort unless $stdin.gets.chomp.downcase == "y"
-
-    DeleteOrganizationData.delete_path_data("7e896fa8-5e8f-4902-b814-b58d12332d0f", dry_run: dry_run)
-  end
-
   desc "Delete an org and associated data"
   task :organization, [:organization_id, :dry_run] => :environment do |_t, args|
+    abort "This script is currently disabled, to enable it, raise a PR and make necessary code changes."
+
     # hard_delete:organization[<org_id>] for a dry run
     # hard_delete:organization[<org_id>,false] otherwise
     dry_run =
@@ -46,6 +24,6 @@ namespace :hard_delete do
     puts "Are you sure you want to proceed? (y/n): "
     abort unless $stdin.gets.chomp.downcase == "y"
 
-    DeleteOrganizationData.call(organization_id: organization.id, dry_run: dry_run)
+    DeleteOrganizationData.call(organization: organization, dry_run: dry_run)
   end
 end
