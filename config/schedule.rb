@@ -46,6 +46,6 @@ every :monday, at: local("11:00 am"), roles: [:cron] do
   end
 end
 
-every 5.minutes, roles: [:cron] do
+every 1.hour, roles: [:cron] do
   runner "RegionIntegrityCheck.sweep"
 end

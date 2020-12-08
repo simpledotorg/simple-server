@@ -129,7 +129,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
         class: "RegionsIntegrityCheck",
         msg: [{
           resource: :blocks,
-          result: {missing_regions: [["B1", facility_groups[0].id], ["B2", facility_groups[1].id]]}
+          result: {missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]}
         }]
       }
 
@@ -158,7 +158,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
               resource: :blocks,
               result:
                 {
-                  missing_regions: [["B1", facility_groups[0].id], ["B2", facility_groups[1].id]]
+                  missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]
                 }
             }
           ],
