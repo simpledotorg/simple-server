@@ -6,6 +6,7 @@
 
             <nav class="secondary-nav">
                 <h4 class="pl-2 mt-3">Resources</h4>
+                <a href="#card-office-hours" class="nav-link">Tech team office hours</a>
                 <a href="#card-checklist" class="nav-link">Deployment checklist</a>
                 <a href="#card-presentations" class="nav-link">Training presentations</a>
                 <a href="#card-videos" class="nav-link">Training videos</a>
@@ -17,6 +18,13 @@
           </div>
 
           <div class="col-12 col-sm-8 col-lg-10">
+              <% if CountryConfig.current[:name] == "India" %>
+                <%= render "shared/india_office_hours" %>
+              <% elsif CountryConfig.current[:name] == "Bangladesh" %>
+                <%= render "shared/bangladesh_office_hours" %>
+              <% elsif CountryConfig.current[:name] == "Ethiopia" %>
+                <%= render "shared/ethiopia_office_hours" %>
+              <% end %>
               <div class="card" id="card-checklist">
                   <h2>Deployment checklist</h2>
                     <div class="resource-link resource-doc">
