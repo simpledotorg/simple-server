@@ -57,9 +57,9 @@ class Region < ApplicationRecord
   def syncable_patients
     case region_type
       when "block"
-        registered_patients
-          .union(assigned_patients)
-          .union(appointed_patients)
+        registered_patients.with_discarded
+          .union(assigned_patients.with_discarded)
+          .union(appointed_patients.with_discarded)
       else
         registered_patients
     end
@@ -67,19 +67,16 @@ class Region < ApplicationRecord
 
   def registered_patients
     Patient
-      .with_discarded
       .where(registration_facility: facility_regions.pluck(:source_id))
   end
 
   def assigned_patients
     Patient
-      .with_discarded
       .where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
   def appointed_patients
     Patient
-      .with_discarded
       .joins(:appointments)
       .where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
