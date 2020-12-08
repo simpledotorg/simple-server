@@ -21,7 +21,7 @@ FactoryBot.define do
         if facility_group.organization.region.nil?
           raise ArgumentError, <<-EOL.strip_heredoc
             The facility group's organization lacks a region, which is required for regions_prep.
-            Check the ordering of fixtures, something was properly created before the regions_prep flag was enabled."
+            Check the ordering of fixtures, something was probably created before the regions_prep flag was enabled."
           EOL
         end
         facility_group.organization.region.state_regions.find_by(name: facility_group.state) ||
