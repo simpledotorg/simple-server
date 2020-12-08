@@ -109,7 +109,7 @@ require "rails_helper"
     describe "GET sync: send data from server to device;" do
       it_behaves_like "a working V3 sync controller sending records"
 
-      context "region level sync" do
+      context "region-level sync" do
         before { skip unless Flipper.enabled?(:regions_prep) }
         let!(:response_key) { model.to_s.underscore.pluralize }
         let!(:facility_in_same_block) {
