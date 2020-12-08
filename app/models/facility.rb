@@ -210,14 +210,6 @@ class Facility < ApplicationRecord
     false
   end
 
-  def self.state_region_name(facility_attributes)
-    organization = Organization.find_by(name: facility_attributes[:organization_name])
-    facility_group = FacilityGroup.find_by(name: facility_attributes[:facility_group_name],
-                                           organization_id: organization&.id)
-
-    facility_group.present? && Flipper.enabled?(:regions_prep) ? {state: facility_group.region.state_region.name} : {}
-  end
-
   def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
