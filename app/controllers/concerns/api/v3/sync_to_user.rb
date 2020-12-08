@@ -9,7 +9,7 @@ module Api::V3::SyncToUser
 
     def current_facility_records
       region_records
-        .where(patient: current_facility.syncable_patients)
+        .where(patient: prioritized_patients)
         .updated_on_server_since(current_facility_processed_since, limit)
     end
 
@@ -17,7 +17,7 @@ module Api::V3::SyncToUser
       other_facilities_limit = limit - current_facility_records.count
 
       region_records
-        .where.not(patient: current_facility.syncable_patients)
+        .where.not(patient: prioritized_patients)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
@@ -25,6 +25,10 @@ module Api::V3::SyncToUser
 
     def records_to_sync
       current_facility_records + other_facility_records
+    end
+
+    def prioritized_patients
+      current_facility.registered_patients.with_discarded
     end
 
     def processed_until(records)
