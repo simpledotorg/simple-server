@@ -56,9 +56,9 @@ RSpec.describe Region, type: :model do
       facility_group = create(:facility_group)
       block_1_facilities = create_list(:facility, 3, block: "Block 1", facility_group: facility_group)
       block_2_facility = create(:facility, block: "Block 2", facility_group: facility_group)
-      patients_in_block_1 = block_1_facilities.each_with_object([]) do |facility, ary|
+      patients_in_block_1 = block_1_facilities.each_with_object([]) { |facility, ary|
         ary << create(:patient, registration_facility: facility)
-      end
+      }
       patients_in_block_2 = create_list(:patient, 2, registration_facility: block_2_facility)
       RegionBackfill.call(dry_run: false)
       block_1 = Region.block_regions.find_by!(name: "Block 1")
