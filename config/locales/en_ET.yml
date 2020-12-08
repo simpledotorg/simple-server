@@ -24,3 +24,10 @@ en_ET:
       facility:
         create: "Save facility"
         update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "Hi there community"
+        small: "Hi there small"
+        medium: "Hi there medium"
+        large: "Hi there large"

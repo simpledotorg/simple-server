@@ -215,4 +215,14 @@ class Facility < ApplicationRecord
       errors.add(:zone, "not present in the facility group")
     end
   end
+
+  def self.localized_facility_size(facility_size)
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}")
+  end
+
+  def localized_facility_size
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}")
+  end
 end
