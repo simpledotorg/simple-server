@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "To test overdue appointment functionality", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }

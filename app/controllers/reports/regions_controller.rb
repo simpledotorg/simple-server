@@ -26,10 +26,16 @@ class Reports::RegionsController < AdminController
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)
+    if @region.district_region?
       @data_for_facility = @region.facilities.each_with_object({}) { |facility, hsh|
         hsh[facility.name] = Reports::RegionService.new(region: facility,
                                                         period: @period).call
+      }
+    end
+    if current_admin.feature_enabled?(:region_reports) && @region.district_region? && @region.respond_to?(:block_regions)
+      @block_data = @region.block_regions.each_with_object({}) { |region, hsh|
+        hsh[region.name] = Reports::RegionService.new(region: region,
+                                                      period: @period).call
       }
     end
   end
@@ -42,7 +48,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    if @region.is_a?(Facility)
+    if @region.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(@region.recent_blood_pressures)
     end
   end
@@ -66,7 +72,7 @@ class Reports::RegionsController < AdminController
 
     respond_to do |format|
       format.csv do
-        if @region.is_a?(FacilityGroup)
+        if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
@@ -132,6 +138,14 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
+    if current_admin.feature_enabled?("region_reports")
+      find_region_v2
+    else
+      find_region_v1
+    end
+  end
+
+  def find_region_v1
     if report_params[:report_scope] == "facility_district"
       @region = FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
     else
@@ -141,14 +155,25 @@ class Reports::RegionsController < AdminController
     end
   end
 
+  def find_region_v2
+    region_type = report_params[:report_scope]
+    @region = if region_type == "facility_district"
+      FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
+    else
+      Region.where(region_type: region_type).find_by!(slug: report_params[:id])
+    end
+  end
+
   def region_class
     @region_class ||= case report_params[:report_scope]
+    when "facility_district"
+      "facility_district"
     when "district"
       "facility_group"
     when "facility"
       "facility"
-    when "facility_district"
-      "facility_district"
+    when "block"
+      "block"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
     end

@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Organization management", type: :feature do
   let!(:owner) { create(:admin, :power_user) }

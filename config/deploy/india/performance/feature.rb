@@ -1,1 +1,1 @@
-server "13.233.225.56", user: "deploy", roles: %w[web app db cron]
+server "65.0.55.38", user: "deploy", roles: %w[web app db cron]
