@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionsController, type: :controller do
+  let(:jan_2020) { Time.parse("January 1 2020") }
   let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
   let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
@@ -26,16 +27,16 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  context "details" do
+  fcontext "details" do
     render_views
 
     before do
+      enable_flag(:regions_prep)
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
     it "is successful" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -44,6 +45,40 @@ RSpec.describe Reports::RegionsController, type: :controller do
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
         get :details, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      expect(response).to be_successful
+    end
+
+    it "is successful for a district (region_reports)" do
+      enable_flag(:region_reports)
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :details, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
+      end
+      expect(response).to be_successful
+    end
+
+    it "is successful for a block (region_reports)" do
+      Flipper.enable(:region_reports, cvho)
+      patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
+      create(:blood_pressure, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
+
+      patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
+      create(:blood_pressure, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
+
+      refresh_views
+
+      block = @facility.region.block_region
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :details, params: {id: block.slug, report_scope: "block"}
       end
       expect(response).to be_successful
     end
@@ -58,7 +93,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves monthly cohort data by default" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
