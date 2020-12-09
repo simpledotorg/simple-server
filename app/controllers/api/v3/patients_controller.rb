@@ -14,8 +14,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def region_records
-    Patient
-      .syncable_to_region(current_sync_region)
+    super
       .includes(:address, :phone_numbers, :business_identifiers)
   end
 

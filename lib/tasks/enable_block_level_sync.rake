@@ -17,7 +17,7 @@ def enable_block_level_sync(user)
   ActiveRecord::Base.transaction do
     if user.phone_number_authentication
       user.facility_group.facilities.update_all(updated_at: Time.current)
-      Flipper.enable(:region_level_sync, user)
+      Flipper.enable(:block_level_sync, user)
 
       Rails.logger.info "Block level sync enabled for #{user.id}"
     else

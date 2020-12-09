@@ -79,6 +79,33 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
+  def syncable_patients
+    case region_type
+      when "block"
+        registered_patients.with_discarded
+          .union(assigned_patients.with_discarded)
+          .union(appointed_patients.with_discarded)
+      else
+        registered_patients
+    end
+  end
+
+  def registered_patients
+    Patient
+      .where(registration_facility: facility_regions.pluck(:source_id))
+  end
+
+  def assigned_patients
+    Patient
+      .where(assigned_facility: facility_regions.pluck(:source_id))
+  end
+
+  def appointed_patients
+    Patient
+      .joins(:appointments)
+      .where(appointments: {facility: facility_regions.pluck(:source_id)})
+  end
+
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
     # Generates belongs_to type of methods to fetch a region's ancestor
     # e.g. facility.organization
@@ -95,8 +122,8 @@ class Region < ApplicationRecord
     # e.g. organization.facility_regions
     descendant_method = "#{region_type}_regions"
     define_method(descendant_method) do
-      if ancestor_types(region_type).include?(self.region_type)
-        descendants.where(region_type: region_type)
+      if self_and_ancestor_types(region_type).include?(self.region_type)
+        self_and_descendants.where(region_type: region_type)
       else
         raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
@@ -110,12 +137,14 @@ class Region < ApplicationRecord
   end
 
   def initialize_path
-    # logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
+    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
+
     self.path = if reparent_to.path.present?
       "#{reparent_to.path}.#{path_label}"
     else
       path_label
     end
+
     self.reparent_to = nil
   end
 
