@@ -39,7 +39,7 @@ module Seed
     end
 
     def number_of_states
-      3
+      config.number_of_states
     end
 
     def number_of_facilities_per_facility_group
