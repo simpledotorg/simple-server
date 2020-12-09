@@ -8,9 +8,7 @@ class FacilityGroup < ApplicationRecord
 
   has_many :facilities, dependent: :nullify
   has_many :users, through: :facilities
-
   has_many :patients, through: :facilities, source: :registered_patients
-  alias_method :registered_patients, :patients
   has_many :assigned_patients, through: :facilities, source: :assigned_patients
   has_many :blood_pressures, through: :facilities
   has_many :blood_sugars, through: :facilities
@@ -18,26 +16,49 @@ class FacilityGroup < ApplicationRecord
   has_many :prescription_drugs, through: :facilities
   has_many :appointments, through: :facilities
   has_many :teleconsultations, through: :facilities
-
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
 
+  alias_method :registered_patients, :patients
+
   validates :name, presence: true
   validates :organization, presence: true
-  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
 
   friendly_id :name, use: :slugged
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
-  attr_writer :state
 
-  def state
-    @state || region&.state&.name
+  # FacilityGroups don't actually have a state
+  # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
+  attr_writer :state
+  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }, unless: :generating_seed_data
+
+  attr_accessor :new_block_names
+  attr_accessor :remove_block_ids
+  attr_accessor :generating_seed_data
+
+  after_create { |record| FacilityGroupRegionSync.new(record).after_create }
+  after_update { |record| FacilityGroupRegionSync.new(record).after_update }
+
+  def sync_block_regions
+    FacilityGroupRegionSync.new(self).sync_block_regions
   end
 
-  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  def state
+    @state || region&.state_region&.name
+  end
+
+  def state_region
+    organization.region.state_regions.find_by(name: state)
+  end
+
+  def create_state_region!
+    return true unless Flipper.enabled?(:regions_prep)
+    return if state_region || state.blank?
+
+    Region.state_regions.create!(name: state, reparent_to: organization.region)
+  end
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
@@ -51,10 +72,6 @@ class FacilityGroup < ApplicationRecord
     else
       true
     end
-  end
-
-  def report_on_patients
-    Patient.where(registration_facility: facilities)
   end
 
   def diabetes_enabled?
@@ -75,30 +92,19 @@ class FacilityGroup < ApplicationRecord
     query.call
   end
 
+  # For regions compatibility
+  def facility_region?
+    false
+  end
+
+  # For regions compatibility
+  def district_region?
+    true
+  end
+
   private
 
   def set_diabetes_management(value)
-    facilities.update(enable_diabetes_management: value).map(&:valid?).all?
-  end
-
-  def create_region
-    Region.create!(
-      name: name,
-      source: self,
-      reparent_to: state_region,
-      region_type: Region.region_types[:district]
-    )
-  end
-
-  def update_region
-    region.reparent_to = state_region
-    region.name = name
-    region.save!
-  end
-
-  def state_region
-    Region.state_regions.find_by_name(state) || Region.create(name: state,
-                                                              region_type: Region.region_types[:state],
-                                                              reparent_to: organization.region)
+    facilities.each { |f| f.update!(enable_diabetes_management: value) }
   end
 end

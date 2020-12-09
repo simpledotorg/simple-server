@@ -16,23 +16,31 @@ class Organization < ApplicationRecord
 
   # ----------------
   # Region callbacks
-  after_create :create_region, if: -> { Flipper.enabled?(:regions_prep) }
-  before_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  #
+  # * These callbacks are medium-term temporary.
+  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
+  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
 
-  def create_region
+  def make_region
     return if region&.persisted?
-    parent = Region.find_by!(region_type: Region.region_types[:root])
-    region = build_region(name: name, description: description, reparent_to: parent)
-    region.region_type = Region.region_types[:organization]
-    region.save!
+
+    create_region!(
+      name: name,
+      description: description,
+      reparent_to: Region.root,
+      region_type: Region.region_types[:organization]
+    )
   end
 
   def update_region
-    return unless name_changed? || description_changed?
     region.name = name
     region.description = description
     region.save!
   end
+
+  private :make_region, :update_region
   # ----------------
 
   def districts
