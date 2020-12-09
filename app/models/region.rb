@@ -24,6 +24,16 @@ class Region < ApplicationRecord
   REGION_TYPES = %w[root organization state district block facility].freeze
   enum region_type: REGION_TYPES.zip(REGION_TYPES).to_h, _suffix: "regions"
 
+  REGION_TYPES.each do |type|
+    # Our enum adds a pluralized suffix, which is nice for scopes, but weird for the question methods
+    # with individual objects. So we define our own question methods here for a nicer API.
+    define_method("#{type}_region?") do
+      region_type == type
+    end
+    # Don't leave around the old, auto generated methods to avoid confusion
+    undef_method "#{type}_regions?"
+  end
+
   def self.root
     Region.find_by(region_type: :root)
   end
@@ -38,6 +48,19 @@ class Region < ApplicationRecord
 
   def short_uuid
     SecureRandom.uuid[0..7]
+  end
+
+  def assigned_patients
+    Patient.where(assigned_facility: facilities)
+  end
+
+  def facilities
+    if facility_region?
+      Facility.where(id: source_id)
+    else
+      source_ids = facility_regions.pluck(:source_id)
+      Facility.where(id: source_ids)
+    end
   end
 
   # A label is a sequence of alphanumeric characters and underscores.
@@ -64,18 +87,18 @@ class Region < ApplicationRecord
       if self_and_descendant_types(region_type).include?(self.region_type)
         self_and_ancestors.find_by(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type} for #{self} of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type} for region '#{name}' of type #{self.region_type}"
       end
     end
 
     # Generates has_many type of methods to fetch a region's descendants
-    # e.g. organization.facilities
+    # e.g. organization.facility_regions
     descendant_method = "#{region_type}_regions"
     define_method(descendant_method) do
       if ancestor_types(region_type).include?(self.region_type)
         descendants.where(region_type: region_type)
       else
-        raise NoMethodError, "undefined method #{region_type.pluralize} for #{self} of type #{self.region_type}"
+        raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
     end
   end
