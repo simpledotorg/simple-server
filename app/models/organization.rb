@@ -7,6 +7,7 @@ class Organization < ApplicationRecord
   has_many :appointments, through: :facilities
   has_many :users
   has_many :protocols, through: :facility_groups
+  has_many :registered_patients, through: :facility_groups, source: :patients
 
   validates :name, presence: true
 

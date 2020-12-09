@@ -35,10 +35,6 @@ class Api::V3::SyncController < APIController
     false
   end
 
-  def sync_api_toggled_on?
-    FeatureToggle.enabled_for_regex?("MATCHING_SYNC_APIS", controller_name)
-  end
-
   def params_with_errors(params, errors)
     error_ids = errors.map { |error| error[:id] }
     params
@@ -74,8 +70,8 @@ class Api::V3::SyncController < APIController
 
   def limit
     return ENV["DEFAULT_NUMBER_OF_RECORDS"].to_i unless params[:limit].present?
-    params_limit = params[:limit].to_i
 
+    params_limit = params[:limit].to_i
     params_limit < max_limit ? params_limit : max_limit
   end
 end
