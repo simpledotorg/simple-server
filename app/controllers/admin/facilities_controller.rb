@@ -5,11 +5,7 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_available_zones, only: [:new, :create, :edit, :update],
-                if: -> { Flipper.enabled?(:regions_prep) }
-
-  before_action :initialize_upload, :validate_file_type, :validate_file_size, :parse_file,
-    :validate_facility_rows, if: :file_exists?, only: [:upload]
+  before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
 
   def index
     authorize do
@@ -50,8 +46,8 @@ class Admin::FacilitiesController < AdminController
 
   def show
     @facility_users = current_admin
-        .accessible_users(:manage)
-        .where(phone_number_authentications: {registration_facility_id: @facility})
+                        .accessible_users(:manage)
+                        .where(phone_number_authentications: {registration_facility_id: @facility})
   end
 
   def new
@@ -95,12 +91,22 @@ class Admin::FacilitiesController < AdminController
   def upload
     authorize { current_admin.accessible_facility_groups(:manage).any? }
 
-    return render :upload, status: :bad_request if @errors.present?
+    if file_exists?
+      initialize_upload
+
+      validate_file_type
+      validate_file_size
+      return render :upload, status: :bad_request if @errors.present?
+
+      parse_file
+      return render :upload, status: :bad_request if @errors.present?
+    end
 
     if @facilities.present?
       ImportFacilitiesJob.perform_later(@facilities)
       flash.now[:notice] = "File upload successful, your facilities will be created shortly."
     end
+
     render :upload
   end
 
@@ -108,7 +114,9 @@ class Admin::FacilitiesController < AdminController
 
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
-      facility.country ||= Rails.application.config.country[:name]
+      facility.district ||= @facility_group.name
+      facility.state ||= @facility_group.region.state_region.name if Flipper.enabled?(:regions_prep)
+      facility.country ||= Region.root.name
     end
   end
 
@@ -121,7 +129,7 @@ class Admin::FacilitiesController < AdminController
   end
 
   def set_available_zones
-    @available_zones = @facility_group.region.blocks.pluck(:name).sort
+    @available_zones = @facility_group.region.block_regions.pluck(:name).sort
   end
 
   def facility_params
@@ -155,8 +163,8 @@ class Admin::FacilitiesController < AdminController
     facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
 
     users = current_admin.accessible_users(:manage)
-      .joins(phone_number_authentications: :facility)
-      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
+              .joins(phone_number_authentications: :facility)
+              .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
 
     users.pluck(:id)
   end
@@ -167,14 +175,10 @@ class Admin::FacilitiesController < AdminController
   end
 
   def parse_file
-    return render :upload, status: :bad_request if @errors.present?
-
     @file_contents = read_xlsx_or_csv_file(@file)
-    @facilities = Facility.parse_facilities(@file_contents)
-  end
-
-  def validate_facility_rows
-    @errors = Admin::CSV::FacilityValidator.validate(@facilities).errors
+    facilities = Facility.parse_facilities_from_file(@file_contents)
+    @errors = Csv::FacilitiesValidator.validate(facilities).errors
+    @facilities = facilities.map { |facility| facility.attributes.with_indifferent_access }
   end
 
   def file_exists?

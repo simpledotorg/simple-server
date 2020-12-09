@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "To test Forgot password functionality", type: :feature do
   let(:owner) { create(:admin, :power_user) }

@@ -13,5 +13,9 @@ FactoryBot.define do
       password { nil }
       password_digest { Faker::Crypto.sha256 }
     end
+
+    trait :without_facility do
+      facility { nil }
+    end
   end
 end

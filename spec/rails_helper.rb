@@ -3,14 +3,12 @@ ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../config/environment", __dir__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
-require "capybara/rails"
 require "factory_bot_rails"
 require "faker"
 require "timecop"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 Dir[Rails.root.join("spec/pages/application_page.rb")].sort.each { |f| require f }
-Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 Dir[Rails.root.join("spec/**/shared_examples/**/*.rb")].sort.each { |f| require f }
 
 ActiveRecord::Migration.maintain_test_schema!

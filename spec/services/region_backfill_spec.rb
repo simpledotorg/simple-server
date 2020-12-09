@@ -4,9 +4,9 @@ RSpec.describe RegionBackfill, type: :model do
   context "dry run mode" do
     before do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, organization: org)
-      _facility_group_2 = create(:facility_group, organization: org)
-      create(:facility, facility_group: facility_group_1)
+      facility_group_1 = create(:facility_group, :without_parent_region, organization: org)
+      _facility_group_2 = create(:facility_group, :without_parent_region, organization: org)
+      create(:facility, :without_parent_region, facility_group: facility_group_1)
     end
 
     it "does not create any records" do
@@ -17,26 +17,19 @@ RSpec.describe RegionBackfill, type: :model do
   end
 
   context "write mode" do
-    it "fails in countries other than India for now" do
-      allow(CountryConfig).to receive(:current).and_return({name: "Bangladesh"})
-      expect {
-        RegionBackfill.call(dry_run: false)
-      }.to raise_error(RegionBackfill::UnsupportedCountry)
-    end
-
     it "backfills" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "fg1", organization: org, state: "State 1")
-      facility_group_2 = create(:facility_group, name: "fg2", organization: org, state: "State 2")
-      _facility_group_3 = create(:facility_group, name: "fg3", organization: org, state: "State 1")
-      facility_group_4 = create(:facility_group, name: "fg4", organization: org, state: "State 1")
+      facility_group_1 = create(:facility_group, :without_parent_region, name: "fg1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, :without_parent_region, name: "fg2", organization: org, state: "State 2")
+      _facility_group_3 = create(:facility_group, :without_parent_region, name: "fg3", organization: org, state: "State 1")
+      facility_group_4 = create(:facility_group, :without_parent_region, name: "fg4", organization: org, state: "State 1")
 
-      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
-      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
-      facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
-      facility_4 = create(:facility, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
-      facility_5 = create(:facility, name: "facility5", facility_group: facility_group_4, block: "Block ABC", state: "State 1")
-      facility_6 = create(:facility, name: "facility6", facility_group: facility_group_1, block: "Block 123", state: "State 1")
+      facility_1 = create(:facility, :without_parent_region, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
+      facility_2 = create(:facility, :without_parent_region, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
+      facility_3 = create(:facility, :without_parent_region, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      facility_4 = create(:facility, :without_parent_region, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      facility_5 = create(:facility, :without_parent_region, name: "facility5", facility_group: facility_group_4, block: "Block ABC", state: "State 1")
+      facility_6 = create(:facility, :without_parent_region, name: "facility6", facility_group: facility_group_1, block: "Block 123", state: "State 1")
       facilities = [facility_1, facility_2, facility_3, facility_4, facility_5, facility_6]
 
       RegionBackfill.call(dry_run: false)
@@ -70,14 +63,14 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "works when there is are blocks and facilities that have the same name and slug" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "fg1", organization: org)
-      facility_group_2 = create(:facility_group, name: "fg2", organization: org)
+      facility_group_1 = create(:facility_group, :without_parent_region, name: "fg1", organization: org)
+      facility_group_2 = create(:facility_group, :without_parent_region, name: "fg2", organization: org)
 
-      queens = create(:facility, name: "Queens", facility_group: facility_group_1, block: "New York", state: "State 1")
-      new_york = create(:facility, name: "New York", facility_group: facility_group_1, block: "Other Block", state: "State 1")
-      manhatten = create(:facility, name: "Manhatten", facility_group: facility_group_1, block: "New York", state: "State 1")
-      east_village = create(:facility, name: "East Village", facility_group: facility_group_2, block: "New York", state: "State 2")
-      other_new_york = create(:facility, name: "New York", facility_group: facility_group_2, block: "New York", state: "State 2")
+      queens = create(:facility, :without_parent_region, name: "Queens", facility_group: facility_group_1, block: "New York", state: "State 1")
+      new_york = create(:facility, :without_parent_region, name: "New York", facility_group: facility_group_1, block: "Other Block", state: "State 1")
+      manhatten = create(:facility, :without_parent_region, name: "Manhatten", facility_group: facility_group_1, block: "New York", state: "State 1")
+      east_village = create(:facility, :without_parent_region, name: "East Village", facility_group: facility_group_2, block: "New York", state: "State 2")
+      other_new_york = create(:facility, :without_parent_region, name: "New York", facility_group: facility_group_2, block: "New York", state: "State 2")
 
       RegionBackfill.call(dry_run: false)
 
@@ -95,12 +88,12 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "establishes associations from facility / facility group back to regions" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "FG 1", organization: org, state: "State 1")
-      facility_group_2 = create(:facility_group, name: "FG 2", organization: org, state: "State 2")
+      facility_group_1 = create(:facility_group, :without_parent_region, name: "FG 1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, :without_parent_region, name: "FG 2", organization: org, state: "State 2")
 
-      facility_1 = create(:facility, name: "facility1", facility_group: facility_group_1, state: "State 1")
-      _facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1, state: "State 1")
-      _facility_3 = create(:facility, name: "facility3", facility_group: facility_group_2, state: "State 2")
+      facility_1 = create(:facility, :without_parent_region, name: "facility1", facility_group: facility_group_1, state: "State 1")
+      _facility_2 = create(:facility, :without_parent_region, name: "facility2", facility_group: facility_group_1, state: "State 1")
+      _facility_3 = create(:facility, :without_parent_region, name: "facility3", facility_group: facility_group_2, state: "State 2")
 
       RegionBackfill.call(dry_run: false)
 
@@ -117,17 +110,17 @@ RSpec.describe RegionBackfill, type: :model do
 
     it "is idempotent and does not create same data multiple times" do
       org = create(:organization, name: "Test Organization")
-      facility_group_1 = create(:facility_group, name: "fg1", organization: org, state: "State 1")
-      facility_group_2 = create(:facility_group, name: "fg2", organization: org, state: "State 2")
-      facility_group_3 = create(:facility_group, name: "fg3", organization: org, state: "State 1")
-      facility_group_4 = create(:facility_group, name: "fg4", organization: org, state: "State 1")
+      facility_group_1 = create(:facility_group, :without_parent_region, name: "fg1", organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, :without_parent_region, name: "fg2", organization: org, state: "State 2")
+      facility_group_3 = create(:facility_group, :without_parent_region, name: "fg3", organization: org, state: "State 1")
+      facility_group_4 = create(:facility_group, :without_parent_region, name: "fg4", organization: org, state: "State 1")
 
-      create(:facility, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
-      create(:facility, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
-      create(:facility, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
-      create(:facility, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
-      create(:facility, name: "facility5", facility_group: facility_group_3, block: "Block ABC", state: "State 1")
-      create(:facility, name: "facility6", facility_group: facility_group_4, block: "Block 123", state: "State 1")
+      create(:facility, :without_parent_region, name: "facility1", facility_group: facility_group_1, block: "Block XYZ", state: "State 1")
+      create(:facility, :without_parent_region, name: "facility2", facility_group: facility_group_1, block: "Block 123", state: "State 1")
+      create(:facility, :without_parent_region, name: "facility3", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      create(:facility, :without_parent_region, name: "facility4", facility_group: facility_group_2, block: "Block ZZZ", state: "State 2")
+      create(:facility, :without_parent_region, name: "facility5", facility_group: facility_group_3, block: "Block ABC", state: "State 1")
+      create(:facility, :without_parent_region, name: "facility6", facility_group: facility_group_4, block: "Block 123", state: "State 1")
 
       3.times do
         RegionBackfill.call(dry_run: false)

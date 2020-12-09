@@ -9,8 +9,8 @@ FactoryBot.define do
     device_created_at { Time.current }
     device_updated_at { Time.current }
 
-    association :facility, strategy: :build
-    association :patient, strategy: :build
+    patient
+    facility
     user
 
     trait :deleted do
