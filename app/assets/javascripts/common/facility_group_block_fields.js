@@ -1,5 +1,4 @@
 FacilityGroupBlockFields = function() {
-
   this.newBlockRow = (name) => {
     let template = $("template#block-row").html()
     let $template = $(template);
@@ -26,13 +25,13 @@ FacilityGroupBlockFields = function() {
   }
 
   this.isBlockAdded = (name) => {
-    return this.addedBlocks().map(block => block.toLowerCase()).includes(name.toLowerCase())
+    return this.addedBlocks().map(block => block.toLowerCase().trim()).includes(name.toLowerCase().trim())
   }
 
   this.addBlock = (name) => {
     if(name !== "" && !this.isBlockAdded(name)) {
       $('<input>').attr({
-        "name": "facility_group[new_blocks][]",
+        "name": "facility_group[new_block_names][]",
         "value": name,
         "data-block-identifier": name,
         "type": "hidden"
@@ -44,7 +43,7 @@ FacilityGroupBlockFields = function() {
   this.removeBlock = (identifier) =>{
     if(existingBlocks.includes(identifier)) {
       $('<input>').attr({
-        "name": "facility_group[remove_blocks][]",
+        "name": "facility_group[remove_block_ids][]",
         "value": identifier,
         "data-block-identifier": identifier,
         "type": "hidden"

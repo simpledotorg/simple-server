@@ -5,12 +5,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:valid_attributes) do
     attributes_for(:facility,
       facility_group_id: facility_group.id,
+      zone: "An Block",
       enable_teleconsultation: false)
   end
 
   let(:invalid_attributes) do
     attributes_for(
       :facility,
+      zone: "An Block",
       name: nil
     )
   end
@@ -47,7 +49,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "GET #show" do
     it "returns a success response" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       get :show, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to be_successful
     end
@@ -62,7 +64,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "GET #edit" do
     it "returns a success response" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       get :edit, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to be_successful
     end
@@ -115,11 +117,12 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         attributes_for(:facility,
           facility_group_id: facility_group.id,
           pin: "999999",
+          zone: "An Block",
           monthly_estimated_opd_load: 500).except(:id, :slug)
       end
 
       it "updates the requested facility" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         update_attributes = new_attributes
 
         put :update, params: {id: facility.to_param, facility: update_attributes, facility_group_id: facility_group.id}
@@ -132,7 +135,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       end
 
       it "redirects to the facility" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         put :update, params: {id: facility.to_param, facility: valid_attributes, facility_group_id: facility_group.id}
         expect(response).to redirect_to [:admin, facility_group, facility]
       end
@@ -140,7 +143,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
     context "with invalid params" do
       it "returns a success response (i.e. to display the 'edit' template)" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         put :update, params: {id: facility.to_param, facility: invalid_attributes, facility_group_id: facility_group.id}
         expect(response).to be_successful
       end
@@ -168,14 +171,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested facility" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       expect {
         delete :destroy, params: {id: facility.to_param, facility_group_id: facility_group.id}
       }.to change(Facility, :count).by(-1)
     end
 
     it "redirects to the facilities list" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       delete :destroy, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to redirect_to(admin_facilities_url)
     end
@@ -189,35 +192,55 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   end
 
   describe "POST #upload" do
-    let!(:organization) { create(:organization, name: "OrgOne") }
-    let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+    context "when regions_prep is disabled" do
+      context "with valid data in file" do
+        let!(:organization) { create(:organization, name: "OrgOne") }
+        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+        let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
 
-    context "with valid data in file" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+        it "uploads facilities file and passes validations" do
+          post :upload, params: {upload_facilities_file: upload_file}
+          expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
+        end
+      end
+
+      context "with invalid data in file" do
+        let!(:organization) { create(:organization, name: "OrgOne") }
+        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+        let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
+
+        it "fails validations and returns a 400" do
+          post :upload, params: {upload_facilities_file: upload_file}
+          expect(response).to have_http_status(:bad_request)
+        end
+      end
+
+      context "with unsupported file type" do
+        let!(:organization) { create(:organization, name: "OrgOne") }
+        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
+        let(:upload_file) do
+          fixture_file_upload("files/upload_facilities_test.docx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        end
+        it "uploads facilities file and fails validations" do
+          post :upload, params: {upload_facilities_file: upload_file}
+          expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
+        end
+      end
+    end
+
+    context "when regions_prep is enabled" do
+      before { enable_flag(:regions_prep) }
 
       it "uploads facilities file and passes validations" do
+        organization = create(:organization, name: "OrgOne")
+        facility_group = create(:facility_group, name: "FGTwo", organization_id: organization.id)
+        upload_file = fixture_file_upload("files/upload_facilities_test.csv", "text/csv")
+        Region.create(name: "Zone 1", region_type: Region.region_types[:block], reparent_to: facility_group.region)
+        Region.create(name: "Zone 2", region_type: Region.region_types[:block], reparent_to: facility_group.region)
+
         post :upload, params: {upload_facilities_file: upload_file}
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
-      end
-    end
-
-    context "with invalid data in file" do
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
-
-      it "fails validations and returns a 400" do
-        post :upload, params: {upload_facilities_file: upload_file}
-        expect(response).to have_http_status(:bad_request)
-      end
-    end
-
-    context "with unsupported file type" do
-      let(:upload_file) do
-        fixture_file_upload("files/upload_facilities_test.docx",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-      end
-      it "uploads facilities file and fails validations" do
-        post :upload, params: {upload_facilities_file: upload_file}
-        expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
       end
     end
   end

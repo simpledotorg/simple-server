@@ -2,8 +2,6 @@ require "simplecov" if ENV["CI"]
 require "utils"
 require "webmock/rspec"
 require "sidekiq/testing"
-require "capybara"
-require "webdrivers"
 require "flipper_helper"
 
 WebMock.allow_net_connect!
@@ -11,8 +9,16 @@ WebMock.allow_net_connect!
 RSpec.configure do |config|
   SimpleCov.start if ENV["CI"]
 
+  config.include FlipperHelpers
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true
+
+  # Rendering views in controller specs adds significant overhead and time - so sometimes it is useful to
+  # only render_views on CI, especially if you are using guard and re-running focused specs.
+  # For example, on an iMac Pro it takes about 2.8 seconds to run a single controller spec w/o views, and 6 seconds to run w/ views.
+  def render_views_on_ci
+    render_views if ENV["CI"]
+  end
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -28,26 +34,6 @@ RSpec.configure do |config|
     Rails.cache.clear
     RequestStore.clear!
   end
-
-  Capybara.default_max_wait_time = 5
-
-  Webdrivers::Chromedriver.update
-
-  Capybara.register_driver :chrome do |app|
-    Capybara::Selenium::Driver.new(app, browser: :chrome)
-  end
-
-  Capybara.register_driver :headless_chrome do |app|
-    Capybara::Selenium::Driver.new app, browser: :chrome,
-                                        options: Selenium::WebDriver::Chrome::Options.new(args: %w[headless
-                                          disable-gpu
-                                          window-size=1280,800])
-  end
-
-  Capybara.default_driver = :headless_chrome
-  Capybara.javascript_driver = :headless_chrome
-
-  config.include FlipperHelpers
 
   config.before :all do
     # create a root region and persist across all tests (the root region is effectively a singleton)

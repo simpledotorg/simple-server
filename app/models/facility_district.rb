@@ -58,4 +58,14 @@ class FacilityDistrict
   def updated_at
     facilities.maximum(:updated_at) || Time.current.beginning_of_day
   end
+
+  # For regions compatibility
+  def facility_region?
+    false
+  end
+
+  # For regions compatibility
+  def district_region?
+    true
+  end
 end
