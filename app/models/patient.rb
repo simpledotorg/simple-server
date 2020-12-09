@@ -56,12 +56,10 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
-  scope :search_by_address,
-    ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
-
+  scope :syncable_to_region, ->(region) { region.syncable_patients }
+  scope :search_by_address, ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
-
   scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
     follow_ups_with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
   }
@@ -81,10 +79,6 @@ class Patient < ApplicationRecord
       .where.not(status: "dead")
       .joins(:phone_numbers)
       .merge(PatientPhoneNumber.phone_type_mobile)
-  }
-
-  scope :syncable_to_region, ->(region) {
-    with_discarded.where(registration_facility: region.facilities)
   }
 
   def self.follow_ups_with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
