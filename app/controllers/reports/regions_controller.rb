@@ -172,8 +172,6 @@ class Reports::RegionsController < AdminController
       "facility_group"
     when "facility"
       "facility"
-    when "block"
-      "block"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
     end
