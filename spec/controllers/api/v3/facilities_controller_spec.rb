@@ -102,7 +102,7 @@ require "rails_helper"
 
             context "when region level sync is enabled" do
               it "sets the sync_region_id to the block id and user is not available" do
-                enable_flag(:region_level_sync, request_user)
+                enable_flag(:block_level_sync, request_user)
                 get :sync_to_user
 
                 response_records = JSON(response.body)["facilities"]
@@ -115,7 +115,7 @@ require "rails_helper"
                 request.env["HTTP_X_USER_ID"] = request_user.id
                 request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
 
-                enable_flag(:region_level_sync, request_user)
+                enable_flag(:block_level_sync, request_user)
                 get :sync_to_user
 
                 response_records = JSON(response.body)["facilities"]

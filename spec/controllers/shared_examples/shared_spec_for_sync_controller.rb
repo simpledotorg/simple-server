@@ -310,7 +310,7 @@ RSpec.shared_examples "a working sync controller that supports region level sync
   before { set_authentication_headers }
 
   context "region-level sync is turned on" do
-    before { enable_flag(:region_level_sync, request_user) }
+    before { enable_flag(:block_level_sync, request_user) }
 
     context "when X_SYNC_REGION_ID is blank (support for old apps)" do
       it "sends facility group records irrespective of process_token's sync_region_id" do

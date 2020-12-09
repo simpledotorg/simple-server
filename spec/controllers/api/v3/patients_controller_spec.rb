@@ -383,7 +383,7 @@ require "rails_helper"
 
         context "region-level sync is turned on" do
           before :each do
-            enable_flag(:region_level_sync, request_user)
+            enable_flag(:block_level_sync, request_user)
           end
 
           context "when X_SYNC_REGION_ID is blank (support for old apps)" do
