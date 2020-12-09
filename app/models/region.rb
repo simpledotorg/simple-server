@@ -54,6 +54,14 @@ class Region < ApplicationRecord
     Patient.where(assigned_facility: facilities)
   end
 
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
+  def registered_diabetes_patients
+    Patient.with_diabetes.where(registration_facility: facilities)
+  end
+
   def facilities
     if facility_region?
       Facility.where(id: source_id)
@@ -61,6 +69,11 @@ class Region < ApplicationRecord
       source_ids = facility_regions.pluck(:source_id)
       Facility.where(id: source_ids)
     end
+  end
+
+  def dashboard_analytics(period:, prev_periods:, include_current_period: true)
+    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
+    query.call
   end
 
   # A label is a sequence of alphanumeric characters and underscores.
