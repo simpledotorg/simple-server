@@ -253,6 +253,26 @@ html, body {
     }
   }
 
+  a.telegram-button {
+    display: block;
+    margin: 16px 0 0 0;
+    padding: 14px 0 10px 0;
+    text-align: center;
+    background-color: #e1f2ff;
+    color: #1f5177;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2), 0 3px 0 #b8d2e5;
+
+    div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+
   .app-button {
     display: block;
     margin: 0.7em 0;
@@ -380,4 +400,8 @@ html, body {
 .tos {
     color: rgba(0,0,0,0.2);
     padding: 24px 8px;
+}
+
+.help-subtitle {
+  margin-bottom: 16px;
 }

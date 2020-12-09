@@ -11,6 +11,7 @@ en_ET:
         district: "Zone *"
         state: "Region *"
         country: "Country *"
+        pin: "Postal Code"
       address:
         street_address: "House and street number"
         village_or_colony: "Kebele"
@@ -18,6 +19,7 @@ en_ET:
         district: "Zone"
         state: "Region *"
         country: "Country *"
+        pin: "Postal Code"
     submit:
       facility:
         create: "Save facility"

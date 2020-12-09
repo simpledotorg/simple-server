@@ -8,7 +8,7 @@ FactoryBot.define do
     state { "Punjab" }
     country { "India" }
     pin { "123456" }
-    zone { "Block ABC" }
+    zone { Faker::Address.community }
     facility_type { "PHC" }
     facility_size { Facility.facility_sizes[:small] }
     facility_group { create(:facility_group) }
@@ -24,13 +24,28 @@ FactoryBot.define do
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
-      village_or_colony { Faker::Address.village }
+      village_or_colony { Seed::FakeNames.instance.village }
       district { Faker::Address.district }
       state { Faker::Address.state }
       country { "India" }
       pin { Faker::Address.zip_code }
       zone { Faker::Address.block }
       facility_type { "PHC" }
+    end
+
+    transient do
+      create_parent_region { Flipper.enabled?(:regions_prep) }
+    end
+
+    before(:create) do |facility, options|
+      if options.create_parent_region
+        facility.facility_group.region.block_regions.find_by(name: facility.zone) ||
+          create(:region, :block, name: facility.zone, reparent_to: facility.facility_group.region)
+      end
+    end
+
+    trait :without_parent_region do
+      create_parent_region { false }
     end
   end
 end

@@ -16,7 +16,10 @@
         </div>
       <% end %>
 
-      <%= form.select(:organization_id, organizations.map { |organization| [organization.name, organization.id] }) %>
+      <%= form.select(:organization_id,
+                      organizations.pluck(:name, :id),
+                      {},
+                      {disabled: action_name == "edit"}) %>
       <%= form.text_field :name, id: :facility_name, required: true, help: "Usually the name of a District", autocomplete: "off" %>
       <% if Flipper.enabled?(:regions_prep) %>
         <%= form.select :state,
@@ -47,7 +50,7 @@
                       <i class="fas fa-trash-alt text-grey"
                          data-toggle="tooltip"
                          data-placement="right"
-                         title="Contains <%= block.facilities.count %> facility(s)"></i>
+                         title="Contains <%= block.facility_regions.count %> facility(s)"></i>
                     <% else %>
                       <i class="fas fa-trash-alt remove-block text-danger cursor-pointer"
                          data-block-identifier="<%= block.id %>"></i>
