@@ -82,7 +82,7 @@ RSpec.describe Region, type: :model do
       facility_2 = create(:facility, name: long_name, block: "Block23", state: "Test State", facility_group: facility_group_1)
 
       expect(org.region.reload.path).to eq("india.test_organization")
-      expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.region.path_label}")
+      expect(facility_group_1.region.path).to eq("india.test_organization.test_state.district_xyz")
       expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.region.slug.underscore}")
       expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_2.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
     end

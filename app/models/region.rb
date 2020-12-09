@@ -50,10 +50,6 @@ class Region < ApplicationRecord
     SecureRandom.uuid[0..7]
   end
 
-  def assigned_patients
-    Patient.where(assigned_facility: facilities)
-  end
-
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
   end
@@ -76,22 +72,6 @@ class Region < ApplicationRecord
     query.call
   end
 
-  # A label is a sequence of alphanumeric characters and underscores.
-  # (In C locale the characters A-Za-z0-9_ are allowed).
-  # Labels must be less than 256 bytes long.
-  def path_label
-    set_slug unless slug
-    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
-  end
-
-  def log_payload
-    attrs = attributes.slice("name", "slug", "path")
-    attrs["id"] = id.presence
-    attrs["region_type"] = region_type
-    attrs["errors"] = errors.full_messages.join(",") if errors.any?
-    attrs.symbolize_keys
-  end
-
   def syncable_patients
     case region_type
       when "block"
@@ -104,19 +84,15 @@ class Region < ApplicationRecord
   end
 
   def registered_patients
-    Patient
-      .where(registration_facility: facility_regions.pluck(:source_id))
+    Patient.where(registration_facility: facility_regions.pluck(:source_id))
   end
 
   def assigned_patients
-    Patient
-      .where(assigned_facility: facility_regions.pluck(:source_id))
+    Patient.where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
   def appointed_patients
-    Patient
-      .joins(:appointments)
-      .where(appointments: {facility: facility_regions.pluck(:source_id)})
+    Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
@@ -141,6 +117,14 @@ class Region < ApplicationRecord
         raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
     end
+  end
+
+  def log_payload
+    attrs = attributes.slice("name", "slug", "path")
+    attrs["id"] = id.presence
+    attrs["region_type"] = region_type
+    attrs["errors"] = errors.full_messages.join(",") if errors.any?
+    attrs.symbolize_keys
   end
 
   private
@@ -179,5 +163,13 @@ class Region < ApplicationRecord
 
   def self_and_descendant_types(region_type)
     [region_type] + descendant_types(region_type)
+  end
+
+  # A label is a sequence of alphanumeric characters and underscores.
+  # (In C locale the characters A-Za-z0-9_ are allowed).
+  # Labels must be less than 256 bytes long.
+  def path_label
+    set_slug unless slug
+    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 end
