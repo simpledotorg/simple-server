@@ -199,12 +199,16 @@
                     <div class="mt-2"><a href="<%= ExternalFilesHelper::APP_USERS_GUIDE_LINK %>" class="doc-download"><i class="far fa-file-pdf"></i> Download PDF</a></div>
                 </div>
                 <div class="col-sm-3 mt-3 mb-4">
-                    <%= image_tag 'resources/bp-poster.jpg', style: 'width: 100%' %>
-                    <strong class="mt-2 d-block">Poster: How to take a BP</strong>
-                    <div class="mt-2"><a href="<%= ExternalFilesHelper::HOW_TO_TAKE_A_BP_POSTER_LINK %>">Contact us</a>, this poster is available in many languages.</div>
-                </div>
+                  <%= image_tag 'resources/bp-poster.jpg', style: 'width: 100%' %>
+                  <strong class="mt-2 d-block">Poster: How to take a BP</strong>
+                  <div class="mt-2">
+                    <a class="doc-download" href="<%= ExternalFilesHelper::HOW_TO_TAKE_A_BP_POSTER_LINK %>">
+                      <i class="far fa-file-pdf"></i> Download PDF
+                    </a>
+                  </div>
                 </div>
               </div>
+            </div>
 
               <div class="card" id="card-faq">
                 <h2>Common questions</h2>
