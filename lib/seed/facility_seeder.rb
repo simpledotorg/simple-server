@@ -67,7 +67,7 @@ module Seed
 
       # Create state Regions
       states = number_of_states.times.map {
-        FactoryBot.build(:region, id: nil, region_type: :state, parent_path: Region.root.path)
+        FactoryBot.build(:region, :state, id: nil, parent_path: Region.root.path)
       }
       state_results = Region.import(states, returning: [:path])
 
