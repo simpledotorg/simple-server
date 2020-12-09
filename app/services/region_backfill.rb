@@ -42,9 +42,6 @@ class RegionBackfill
 
   def create_regions
     current_country_name = CountryConfig.current[:name]
-    if current_country_name != "India" && !dry_run?
-      raise UnsupportedCountry, "#{self.class.name} not yet ready to run in write mode in #{current_country_name}"
-    end
     root_type = "root"
     org_type = "organization"
     state_type = "state"

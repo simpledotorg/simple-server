@@ -71,7 +71,8 @@ class Facility < ApplicationRecord
   validates :name, presence: true
   validates :district, presence: true
   validates :slug, presence: true
-  validates :state, presence: true
+  # this validation (and the field) should go away from facility after regions become first-class
+  validates :state, presence: true, if: -> { facility_group.present? }
   validates :country, presence: true
   validates :zone, presence: true, on: :create
   validates :pin, numericality: true, allow_blank: true
@@ -88,7 +89,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) }
+  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) && facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
@@ -127,7 +128,7 @@ class Facility < ApplicationRecord
     facility_group.region.block_regions.find_by(name: block)
   end
 
-  private :make_region, :update_region
+  private :update_region
   # ----------------
 
   def hypertension_follow_ups_by_period(*args)
@@ -197,6 +198,16 @@ class Facility < ApplicationRecord
 
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
+  # For regions compatibility
+  def facility_region?
+    true
+  end
+
+  # For regions compatibility
+  def district_region?
+    false
   end
 
   def valid_block
