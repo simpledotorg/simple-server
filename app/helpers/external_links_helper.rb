@@ -1,4 +1,4 @@
-module ExternalFilesHelper
+module ExternalLinksHelper
   INDIA_OFFICE_HOURS_ZOOM_LINK = "https://vitalstrategies.zoom.us/j/93706353132?pwd=U1EzczNuVm1FakppaGVNMWhaelFaQT09"
   BANGLADESH_OFFICE_HOURS_ZOOM_LINK = "https://vitalstrategies.zoom.us/j/94473705913?pwd=NWROVVoyTHFRcXJRaGVlU1k3bElFQT09"
   ETHIOPIA_OFFICE_HOURS_ZOOM_LINK = "https://vitalstrategies.zoom.us/j/93245696030?pwd=eGFmZnA5THd2Nmdhazl1TTRGYTFqdz09"
