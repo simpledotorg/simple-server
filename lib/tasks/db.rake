@@ -12,7 +12,7 @@ namespace :db do
   end
 
   desc "Clear patient data, regenerate patient seed data, and refresh materialized views"
-  task purge_and_refresh: [:purge_users_data, :seed_patients, :refresh_materialized_views]
+  task purge_and_reseed: [:purge_users_data, :seed_patients, :refresh_materialized_views]
 
   desc "Generate some fake data for a seed user roles"
   task seed_users_data: :environment do

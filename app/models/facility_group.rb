@@ -32,10 +32,11 @@ class FacilityGroup < ApplicationRecord
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
-  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
+  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }, unless: :generating_seed_data
 
   attr_accessor :new_block_names
   attr_accessor :remove_block_ids
+  attr_accessor :generating_seed_data
 
   after_create { |record| FacilityGroupRegionSync.new(record).after_create }
   after_update { |record| FacilityGroupRegionSync.new(record).after_update }
@@ -89,6 +90,16 @@ class FacilityGroup < ApplicationRecord
   def cohort_analytics(period:, prev_periods:)
     query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
     query.call
+  end
+
+  # For regions compatibility
+  def facility_region?
+    false
+  end
+
+  # For regions compatibility
+  def district_region?
+    true
   end
 
   private
