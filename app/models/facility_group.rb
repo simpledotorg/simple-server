@@ -95,7 +95,7 @@ class FacilityGroup < ApplicationRecord
   def syncable_patients
     registered_patients.with_discarded
   end
-  
+
   # For regions compatibility
   def facility_region?
     false
