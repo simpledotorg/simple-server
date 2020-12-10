@@ -101,7 +101,7 @@ module Seed
 
       # Create block Regions
       block_regions = district_regions_results.results.map { |row|
-        id, name, path = *row
+        _id, _name, path = *row
         attrs = {
           id: nil,
           name: Seed::FakeNames.instance.blocks.sample,
@@ -139,6 +139,7 @@ module Seed
       end
 
       facility_results = Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
+      # Create Facility Regions
       facility_regions = facility_results.results.map { |row|
         id, name, block_name = *row
         block = Region.find_by!(name: block_name)
@@ -152,7 +153,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      result = Region.import(facility_regions)
+      Region.import(facility_regions)
     end
   end
 end
