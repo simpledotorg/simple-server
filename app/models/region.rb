@@ -34,6 +34,10 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def organization
+    organization_region.source
+  end
+
   def self.root
     Region.find_by(region_type: :root)
   end
@@ -50,8 +54,12 @@ class Region < ApplicationRecord
     SecureRandom.uuid[0..7]
   end
 
-  def assigned_patients
-    Patient.where(assigned_facility: facilities)
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
+  def registered_diabetes_patients
+    Patient.with_diabetes.where(registration_facility: facilities)
   end
 
   def facilities
@@ -63,20 +71,12 @@ class Region < ApplicationRecord
     end
   end
 
-  # A label is a sequence of alphanumeric characters and underscores.
-  # (In C locale the characters A-Za-z0-9_ are allowed).
-  # Labels must be less than 256 bytes long.
-  def path_label
-    set_slug unless slug
-    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
+  def cohort_analytics(period:, prev_periods:)
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
-  def log_payload
-    attrs = attributes.slice("name", "slug", "path")
-    attrs["id"] = id.presence
-    attrs["region_type"] = region_type
-    attrs["errors"] = errors.full_messages.join(",") if errors.any?
-    attrs.symbolize_keys
+  def dashboard_analytics(period:, prev_periods:, include_current_period: true)
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def syncable_patients
@@ -91,19 +91,15 @@ class Region < ApplicationRecord
   end
 
   def registered_patients
-    Patient
-      .where(registration_facility: facility_regions.pluck(:source_id))
+    Patient.where(registration_facility: facility_regions.pluck(:source_id))
   end
 
   def assigned_patients
-    Patient
-      .where(assigned_facility: facility_regions.pluck(:source_id))
+    Patient.where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
   def appointed_patients
-    Patient
-      .joins(:appointments)
-      .where(appointments: {facility: facility_regions.pluck(:source_id)})
+    Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
@@ -128,6 +124,14 @@ class Region < ApplicationRecord
         raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
     end
+  end
+
+  def log_payload
+    attrs = attributes.slice("name", "slug", "path")
+    attrs["id"] = id.presence
+    attrs["region_type"] = region_type
+    attrs["errors"] = errors.full_messages.join(",") if errors.any?
+    attrs.symbolize_keys
   end
 
   private
@@ -166,5 +170,13 @@ class Region < ApplicationRecord
 
   def self_and_descendant_types(region_type)
     [region_type] + descendant_types(region_type)
+  end
+
+  # A label is a sequence of alphanumeric characters and underscores.
+  # (In C locale the characters A-Za-z0-9_ are allowed).
+  # Labels must be less than 256 bytes long.
+  def path_label
+    set_slug unless slug
+    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 end
