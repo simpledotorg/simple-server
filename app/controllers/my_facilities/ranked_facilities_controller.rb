@@ -37,7 +37,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
     end
 
     # Sort facilities by overall score, highest to lowest
-    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }.reverse
+    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }
   end
 
   private
