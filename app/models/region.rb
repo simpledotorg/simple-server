@@ -34,6 +34,10 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def organization
+    organization_region.source
+  end
+
   def self.root
     Region.find_by(region_type: :root)
   end
@@ -67,9 +71,12 @@ class Region < ApplicationRecord
     end
   end
 
+  def cohort_analytics(period:, prev_periods:)
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
+  end
+
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def syncable_patients

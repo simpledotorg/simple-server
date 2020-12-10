@@ -71,6 +71,17 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "organization" do
+    it "gets the org from the parent org region" do
+      enable_flag(:regions_prep)
+
+      org = create(:organization, name: "Test Organization")
+      facility_group = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
+      region = facility_group.region
+      expect(region.organization).to eq(org)
+    end
+  end
+
   context "behavior" do
     it "sets a valid path" do
       enable_flag(:regions_prep)

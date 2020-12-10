@@ -127,7 +127,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "can retrieve quarterly cohort data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -2))
       create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
       refresh_views
@@ -176,7 +175,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -193,7 +191,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves facility data" do
-      jan_2020 = Time.parse("January 1 2020")
+      Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -210,7 +208,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves facility district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -259,7 +256,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -281,7 +277,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves facility data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -298,8 +293,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves block data" do
-      jan_2020 = Time.parse("January 1 2020")
-
       patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
       create(:blood_pressure, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
 
@@ -327,7 +320,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves facility district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -353,7 +345,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves cohort data for a facility" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -369,7 +360,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves cohort data for a facility group" do
-      jan_2020 = Time.parse("January 1 2020")
       facility_group = @facility.facility_group
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
@@ -386,7 +376,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves cohort data for a facility district" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -404,28 +393,59 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   describe "#whatsapp_graphics" do
     render_views
+    before { Flipper.enable(:regions_prep) }
 
-    before do
-      @facility_group = create(:facility_group, organization: organization)
-      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-      sign_in(cvho.email_authentication)
-    end
+    context "region reports disabled" do
+      before do
+        Flipper.disable(:region_reports, cvho)
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+        sign_in(cvho.email_authentication)
+      end
 
-    context "html requested" do
-      it "renders graphics_header partial" do
-        get :whatsapp_graphics, format: :html, params: {id: @facility.slug, report_scope: "facility"}
+      context "html requested" do
+        it "renders graphics_header partial" do
+          get :whatsapp_graphics, format: :html, params: {id: @facility.slug, report_scope: "facility"}
 
-        expect(response).to be_ok
-        expect(response).to render_template("shared/graphics/_graphics_partial")
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/_graphics_partial")
+        end
+      end
+
+      context "png requested" do
+        it "renders the image template for downloading" do
+          get :whatsapp_graphics, format: :png, params: {id: @facility_group.slug, report_scope: "district"}
+
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/image_template")
+        end
       end
     end
 
-    context "png requested" do
-      it "renders the image template for downloading" do
-        get :whatsapp_graphics, format: :png, params: {id: @facility_group.slug, report_scope: "district"}
+    context "region reports enabled" do
+      before do
+        Flipper.enable(:region_reports, cvho)
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+        sign_in(cvho.email_authentication)
+      end
 
-        expect(response).to be_ok
-        expect(response).to render_template("shared/graphics/image_template")
+      context "html requested" do
+        it "renders graphics_header partial" do
+          get :whatsapp_graphics, format: :html, params: {id: @facility.region.slug, report_scope: "facility"}
+
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/_graphics_partial")
+        end
+      end
+
+      context "png requested" do
+        it "renders the image template for downloading" do
+          get :whatsapp_graphics, format: :png, params: {id: @facility_group.region.slug, report_scope: "district"}
+
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/image_template")
+        end
       end
     end
   end
