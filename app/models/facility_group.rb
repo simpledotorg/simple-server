@@ -83,13 +83,15 @@ class FacilityGroup < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
+  end
+
+  def syncable_patients
+    registered_patients.with_discarded
   end
 
   # For regions compatibility

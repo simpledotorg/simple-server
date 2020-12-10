@@ -71,6 +71,17 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "organization" do
+    it "gets the org from the parent org region" do
+      enable_flag(:regions_prep)
+
+      org = create(:organization, name: "Test Organization")
+      facility_group = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
+      region = facility_group.region
+      expect(region.organization).to eq(org)
+    end
+  end
+
   context "behavior" do
     it "sets a valid path" do
       enable_flag(:regions_prep)
@@ -82,7 +93,7 @@ RSpec.describe Region, type: :model do
       facility_2 = create(:facility, name: long_name, block: "Block23", state: "Test State", facility_group: facility_group_1)
 
       expect(org.region.reload.path).to eq("india.test_organization")
-      expect(facility_group_1.region.path).to eq("india.test_organization.test_state.#{facility_group_1.region.path_label}")
+      expect(facility_group_1.region.path).to eq("india.test_organization.test_state.district_xyz")
       expect(facility_1.region.path).to eq("#{facility_group_1.region.path}.#{facility_1.block.downcase}.#{facility_1.region.slug.underscore}")
       expect(facility_2.region.path).to eq("#{facility_group_1.region.path}.#{facility_2.block.downcase}.#{facility_2.region.slug[0..254].underscore}")
     end
@@ -138,7 +149,6 @@ RSpec.describe Region, type: :model do
       expect(org_region.block_regions).to contain_exactly block_region
       expect(org_region.facility_regions).to contain_exactly facility_region
       expect { org_region.roots }.to raise_error NoMethodError
-      expect { org_region.organization_regions }.to raise_error NoMethodError
 
       expect(state_region.root).to eq root_region
       expect(state_region.organization_region).to eq org_region
@@ -148,7 +158,6 @@ RSpec.describe Region, type: :model do
       expect(state_region.facility_regions).to contain_exactly facility_region
       expect { state_region.roots }.to raise_error NoMethodError
       expect { state_region.organization_regions }.to raise_error NoMethodError
-      expect { state_region.state_regions }.to raise_error NoMethodError
 
       expect(district_region.root).to eq root_region
       expect(district_region.organization_region).to eq org_region
@@ -159,7 +168,6 @@ RSpec.describe Region, type: :model do
       expect { district_region.roots }.to raise_error NoMethodError
       expect { district_region.organization_regions }.to raise_error NoMethodError
       expect { district_region.state_regions }.to raise_error NoMethodError
-      expect { district_region.district_regions }.to raise_error NoMethodError
 
       expect(block_region.root).to eq root_region
       expect(block_region.organization_region).to eq org_region
@@ -171,7 +179,6 @@ RSpec.describe Region, type: :model do
       expect { block_region.organization_regions }.to raise_error NoMethodError
       expect { block_region.state_regions }.to raise_error NoMethodError
       expect { block_region.district_regions }.to raise_error NoMethodError
-      expect { block_region.block_regions }.to raise_error NoMethodError
 
       expect(facility_region.root).to eq root_region
       expect(facility_region.organization_region).to eq org_region
@@ -184,7 +191,123 @@ RSpec.describe Region, type: :model do
       expect { facility_region.state_regions }.to raise_error NoMethodError
       expect { facility_region.district_regions }.to raise_error NoMethodError
       expect { facility_region.block_regions }.to raise_error NoMethodError
-      expect { facility_region.facility_regions }.to raise_error NoMethodError
+    end
+  end
+
+  context "#syncable_patients" do
+    before { Flipper.enable(:regions_prep) }
+    let!(:organization) { create(:organization) }
+    let!(:facility_group) { create(:facility_group, organization: organization, state: "Maharashtra") }
+    let!(:facility_1) { create(:facility, block: "M1", facility_group: facility_group) }
+    let!(:facility_2) { create(:facility, block: "M2", facility_group: facility_group) }
+    let!(:facility_3) { create(:facility, block: "M2", facility_group: facility_group) }
+    let!(:facility_4) { create(:facility, block: "P1", facility_group: facility_group) }
+
+    it "accounts for patients registered in the facility of the region" do
+      patient_from_f1 = create(:patient, registration_facility: facility_1)
+      patient_from_f2 = create(:patient, registration_facility: facility_2)
+      patient_from_f3 = create(:patient, registration_facility: facility_3)
+      patient_from_f4 = create(:patient, registration_facility: facility_4)
+
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
+
+      expect(Region.organization_regions.find_by(source: organization).syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
+
+      expect(organization.region.state_regions.find_by(name: "Maharashtra").syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
+
+      expect(organization.region.district_regions.find_by(source: facility_group).syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_from_f4)
+
+      expect(organization.region.block_regions.find_by(name: "M1").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(organization.region.block_regions.find_by(name: "M2").syncable_patients)
+        .to contain_exactly(patient_from_f2, patient_from_f3)
+      expect(organization.region.block_regions.find_by(name: "P1").syncable_patients)
+        .to contain_exactly(patient_from_f4)
+
+      expect(organization.region.facility_regions.find_by(source: facility_1).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(organization.region.facility_regions.find_by(source: facility_2).syncable_patients)
+        .to contain_exactly(patient_from_f2)
+      expect(organization.region.facility_regions.find_by(source: facility_3).syncable_patients)
+        .to contain_exactly(patient_from_f3)
+      expect(organization.region.facility_regions.find_by(source: facility_4).syncable_patients)
+        .to contain_exactly(patient_from_f4)
+    end
+
+    it "accounts for patients assigned in the facility of the region" do
+      patient_from_f1 = create(:patient, registration_facility: facility_1)
+      patient_from_f2 = create(:patient, assigned_facility: facility_2)
+      patient_from_f3 = create(:patient, assigned_facility: facility_3)
+      patient_elsewhere = create(:patient)
+
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
+
+      expect(Region.organization_regions.find_by(source: organization).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+
+      expect(organization.region.state_regions.find_by(name: "Maharashtra").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+
+      expect(organization.region.district_regions.find_by(source: facility_group).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+
+      expect(organization.region.block_regions.find_by(name: "M1").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(organization.region.block_regions.find_by(name: "M2").syncable_patients)
+        .to contain_exactly(patient_from_f2, patient_from_f3)
+      expect(organization.region.block_regions.find_by(name: "P1").syncable_patients)
+        .to be_empty
+
+      expect(organization.region.facility_regions.find_by(source: facility_1).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(organization.region.facility_regions.find_by(source: facility_2).syncable_patients)
+        .to be_empty
+      expect(organization.region.facility_regions.find_by(source: facility_3).syncable_patients)
+        .to be_empty
+      expect(organization.region.facility_regions.find_by(source: facility_4).syncable_patients)
+        .to be_empty
+    end
+
+    it "accounts for patients who have an appointment in the facility of the region" do
+      patient_from_f1 = create(:patient, registration_facility: facility_1)
+      patient_from_f2 = create(:patient)
+      create(:appointment, patient: patient_from_f2, facility: facility_2)
+      patient_from_f3 = create(:patient)
+      create(:appointment, patient: patient_from_f3, facility: facility_3)
+      patient_elsewhere = create(:patient)
+
+      expect(Region.root.syncable_patients)
+        .to contain_exactly(patient_from_f1, patient_from_f2, patient_from_f3, patient_elsewhere)
+
+      expect(Region.organization_regions.find_by(source: organization).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+
+      expect(organization.region.state_regions.find_by(name: "Maharashtra").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+
+      expect(organization.region.district_regions.find_by(source: facility_group).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+
+      expect(organization.region.block_regions.find_by(name: "M1").syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(organization.region.block_regions.find_by(name: "M2").syncable_patients)
+        .to contain_exactly(patient_from_f2, patient_from_f3)
+      expect(organization.region.block_regions.find_by(name: "P1").syncable_patients)
+        .to be_empty
+
+      expect(organization.region.facility_regions.find_by(source: facility_1).syncable_patients)
+        .to contain_exactly(patient_from_f1)
+      expect(organization.region.facility_regions.find_by(source: facility_2).syncable_patients)
+        .to be_empty
+      expect(organization.region.facility_regions.find_by(source: facility_3).syncable_patients)
+        .to be_empty
+      expect(organization.region.facility_regions.find_by(source: facility_4).syncable_patients)
+        .to be_empty
     end
   end
 end
