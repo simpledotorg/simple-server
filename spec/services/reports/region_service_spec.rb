@@ -58,7 +58,6 @@ RSpec.describe Reports::RegionService, type: :model do
 
       service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       result = service.call
-      pp result[:missed_visits]
       expect(result[:missed_visits].size).to eq(service.range.entries.size)
       expect(result[:missed_visits][Period.month("August 1 2018")]).to eq(1)
       expect(result[:missed_visits][jan_2020.to_period]).to eq(1)
