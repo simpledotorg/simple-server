@@ -18,7 +18,7 @@ en_IN:
   activerecord:
     facility:
       facility_size:
-        community: "Hi there community"
-        small: "Hi there small"
-        medium: "Hi there medium"
-        large: "Hi there large"
+        community: "HWC/SC"
+        small: "PHC"
+        medium: "CHC"
+        large: "SDH/DH"

@@ -27,7 +27,7 @@ en_ET:
   activerecord:
     facility:
       facility_size:
-        community: "Hi there community"
-        small: "Hi there small"
-        medium: "Hi there medium"
-        large: "Hi there large"
+        community: "Health post"
+        small: "Health center"
+        medium: "Primary hospital"
+        large: "General/specialized hospital"
