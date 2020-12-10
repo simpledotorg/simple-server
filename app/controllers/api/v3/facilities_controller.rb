@@ -26,12 +26,21 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def transform_to_response(facility)
-    Api::V3::FacilityTransformer.to_response(facility)
+    Api::V3::FacilityTransformer
+      .to_response(facility)
+      .merge(sync_region_id: sync_region_id(facility))
   end
 
   def response_process_token
-    {other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-     resync_token: resync_token}
+    {
+      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      resync_token: resync_token
+    }
+  end
+
+  def force_resync?
+    Rails.logger.info "Resync token modified in resource #{controller_name}" if resync_token_modified?
+    resync_token_modified?
   end
 
   def records_to_sync
@@ -39,5 +48,15 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
       .updated_on_server_since(other_facilities_processed_since, limit)
       .includes(:facility_group)
       .where.not(facility_group: nil)
+  end
+
+  private
+
+  def sync_region_id(facility)
+    if current_user&.block_level_sync?
+      facility.region.block_region.id
+    else
+      facility.facility_group_id
+    end
   end
 end
