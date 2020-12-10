@@ -100,11 +100,13 @@ module Seed
       district_regions_results = Region.import(district_regions, returning: [:id, :name, :path])
 
       # Create block Regions
-      block_regions = district_regions_results.results.map { |row|
+      block_count = district_regions_results.ids.size
+      block_names = Seed::FakeNames.instance.blocks.sample(block_count)
+      block_regions = district_regions_results.results.each_with_index.map { |row, i|
         _id, _name, path = *row
         attrs = {
           id: nil,
-          name: Seed::FakeNames.instance.blocks.sample,
+          name: block_names[i],
           parent_path: path,
           region_type: "block"
         }
