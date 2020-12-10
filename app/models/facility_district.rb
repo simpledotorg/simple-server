@@ -20,13 +20,7 @@ class FacilityDistrict
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(
-      self,
-      period,
-      prev_periods,
-      include_current_period: include_current_period
-    )
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def cohort_analytics(period:, prev_periods:)
