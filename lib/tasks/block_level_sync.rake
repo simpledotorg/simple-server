@@ -39,7 +39,7 @@ def set_block_level_sync(user, enable)
       else
         Flipper.disable(:block_level_sync, user)
       end
-      Rails.logger.info "Block level sync #{ enable ? "enabled" : "disabled"} for #{user.id}"
+      Rails.logger.info "Block level sync #{enable ? "enabled" : "disabled"} for #{user.id}"
     else
       Rails.logger.info "User #{user.id} does not have a phone number authentication"
     end
