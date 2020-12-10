@@ -124,8 +124,6 @@ module Seed
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
 
-          # TODO set the facility state here to match the parent district!
-          # also, what about ze blocks?
           attrs = {
             district: facility_group_name,
             facility_group_id: facility_group_id,
