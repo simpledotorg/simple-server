@@ -24,6 +24,8 @@ RSpec.describe Seed::Runner do
       expect(patient.medical_history).to be_valid
       patient.blood_pressures.each do |bp|
         expect(bp).to be_valid
+        expect(bp.created_at).to be < Date.current
+        expect(bp.updated_at).to be < Date.current
       end
     end
   end
