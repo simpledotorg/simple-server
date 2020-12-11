@@ -481,13 +481,13 @@ require "rails_helper"
 
                 block_records =
                   [patient_in_request_facility,
-                   patient_in_same_block,
-                   patient_assigned_to_block,
-                   patient_with_appointment_in_block]
+                    patient_in_same_block,
+                    patient_assigned_to_block,
+                    patient_with_appointment_in_block]
 
                 non_block_records =
                   [patient_in_other_block,
-                   patient_in_other_facility_group]
+                    patient_in_other_facility_group]
 
                 get :sync_to_user
 

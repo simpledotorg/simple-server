@@ -491,9 +491,9 @@ RSpec.shared_examples "a working sync controller that supports region level sync
     end
 
     it "does not trigger a resync irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-      old_facility_group_records = Timecop.travel(15.minutes.ago) do
+      old_facility_group_records = Timecop.travel(15.minutes.ago) {
         create_record_list(4, patient: patient_in_request_facility, facility: request_facility)
-      end
+      }
 
       get :sync_to_user
 
