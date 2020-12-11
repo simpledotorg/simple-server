@@ -16,9 +16,11 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   end
 
   def other_facility_records
-    Protocol
-      .with_discarded
-      .updated_on_server_since(other_facilities_processed_since, limit)
+    Statsd.instance.time("other_facility_records.Protocol") do
+      Protocol
+        .with_discarded
+        .updated_on_server_since(other_facilities_processed_since, limit)
+    end
   end
 
   def disable_audit_logs?

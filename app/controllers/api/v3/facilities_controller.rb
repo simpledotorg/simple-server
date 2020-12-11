@@ -16,9 +16,11 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def other_facility_records
-    Facility
-      .with_discarded
-      .updated_on_server_since(other_facilities_processed_since, limit)
+    Statsd.instance.time("other_facility_records.Facility") do
+      Facility
+        .with_discarded
+        .updated_on_server_since(other_facilities_processed_since, limit)
+    end
   end
 
   def disable_audit_logs?
@@ -44,10 +46,11 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    Facility
-      .updated_on_server_since(other_facilities_processed_since, limit)
-      .includes(:facility_group)
-      .where.not(facility_group: nil)
+    Statsd.instance.time("records_to_sync.Facility") do
+      other_facility_records
+        .includes(:facility_group)
+        .where.not(facility_group: nil)
+    end
   end
 
   private
