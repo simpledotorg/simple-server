@@ -6,6 +6,34 @@ describe Reports::PerformanceScore, type: :model do
   let(:reports_result) { double("Reports::Result") }
   let(:perf_score) { Reports::PerformanceScore.new(region: facility, reports_result: reports_result, period: period) }
 
+  describe "#letter_grade" do
+    it "returns the correct grade for a given score", :aggregate_failures do
+      allow(perf_score).to receive(:overall_score).and_return(100)
+      expect(perf_score.letter_grade).to eq("A")
+
+      allow(perf_score).to receive(:overall_score).and_return(75.5)
+      expect(perf_score.letter_grade).to eq("A")
+
+      allow(perf_score).to receive(:overall_score).and_return(75)
+      expect(perf_score.letter_grade).to eq("B")
+
+      allow(perf_score).to receive(:overall_score).and_return(50.5)
+      expect(perf_score.letter_grade).to eq("B")
+
+      allow(perf_score).to receive(:overall_score).and_return(50)
+      expect(perf_score.letter_grade).to eq("C")
+
+      allow(perf_score).to receive(:overall_score).and_return(25.5)
+      expect(perf_score.letter_grade).to eq("C")
+
+      allow(perf_score).to receive(:overall_score).and_return(25)
+      expect(perf_score.letter_grade).to eq("D")
+
+      allow(perf_score).to receive(:overall_score).and_return(0)
+      expect(perf_score.letter_grade).to eq("D")
+    end
+  end
+
   describe "#overall_score" do
     it "returns a score that sums control, visits, and registration scores" do
       allow(perf_score).to receive(:control_score).and_return(30)
