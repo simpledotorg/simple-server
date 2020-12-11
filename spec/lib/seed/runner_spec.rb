@@ -14,6 +14,7 @@ RSpec.describe Seed::Runner do
     expect {
       seeder.call
     }.to change { Patient.count }.by(6)
+      .and change { Address.count }.by(6)
       .and change { PatientBusinessIdentifier.count }.by(6)
       .and change { MedicalHistory.count }.by(6)
       .and change { BloodPressure.count }.by(expected_bps)
@@ -22,6 +23,7 @@ RSpec.describe Seed::Runner do
     Patient.all.each do |patient|
       expect(patient).to be_valid
       expect(patient.medical_history).to be_valid
+      expect(patient.address).to be_valid
       patient.blood_pressures.each do |bp|
         expect(bp).to be_valid
         expect(bp.created_at).to be < Date.current
@@ -41,6 +43,7 @@ RSpec.describe Seed::Runner do
     result, total_results = seeder.call
     facilities.each { |f| expect(f.patients.size).to eq(3) }
     facilities.pluck(:slug).each do |slug|
+      expect(result[slug][:address]).to eq(3)
       expect(result[slug][:patient]).to eq(3)
       expect(result[slug][:blood_pressure]).to eq(expected_bps)
       expect(result[slug][:observation]).to eq(expected_bps)
