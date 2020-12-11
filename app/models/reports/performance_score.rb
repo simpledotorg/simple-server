@@ -15,9 +15,21 @@ module Reports
       @period = period
     end
 
+    def letter_grade
+      if overall_score > 75
+        "A"
+      elsif overall_score > 50
+        "B"
+      elsif overall_score > 25
+        "C"
+      else
+        "D"
+      end
+    end
+
     def overall_score
       # max score: 100
-      (control_score + visits_score + registrations_score)
+      @overall_score ||= (control_score + visits_score + registrations_score)
     end
 
     def control_score
