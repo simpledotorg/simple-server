@@ -1,123 +1,183 @@
 require "rails_helper"
 
 describe Reports::PerformanceScore, type: :model do
-  let(:facility) { build(:facility, monthly_estimated_opd_load: @opd_load) }
-  let(:reports_result) do
-    double(
-      "Reports::Result",
-      controlled_patients_rate: {_: @control_rate},
-      missed_visits_rate: {_: @missed_visits_rate},
-      registrations: {_: @registrations}
-    )
-  end
-  let(:perf_score) { Reports::PerformanceScore.new(region: facility, reports_result: reports_result) }
+  let(:period) { Period.month("July 1 2020") }
+  let(:facility) { build(:facility) }
+  let(:reports_result) { double("Reports::Result") }
+  let(:perf_score) { Reports::PerformanceScore.new(region: facility, reports_result: reports_result, period: period) }
 
   describe "#overall_score" do
     it "returns a score that sums control, visits, and registration scores" do
-      @control_rate = 40
-      @missed_visits_rate = 60
-      @registrations = 80
-      @opd_load = 1000
+      allow(perf_score).to receive(:control_score).and_return(30)
+      allow(perf_score).to receive(:visits_score).and_return(20)
+      allow(perf_score).to receive(:registrations_score).and_return(15)
+      expect(perf_score.overall_score).to eq(65)
+    end
 
-      expect(perf_score.overall_score).to eq(20 + 12 + 16)
+    it "returns a 100% if a facility matches the ideal rates" do
+      allow(perf_score).to receive(:adjusted_control_rate).and_return(100)
+      allow(perf_score).to receive(:adjusted_visits_rate).and_return(100)
+      allow(perf_score).to receive(:adjusted_registrations_rate).and_return(100)
+      expect(perf_score.overall_score).to eq(100)
     end
   end
 
   describe "#control_score" do
-    it "returns a 50% weighted score based on control rate" do
-      @control_rate = 40
+    it "returns a 50% weighted score based on adjusted control rate" do
+      allow(perf_score).to receive(:adjusted_control_rate).and_return(40)
       expect(perf_score.control_score).to eq(20)
     end
+  end
 
-    it "functions when control rate is 0" do
-      @control_rate = 0
-      expect(perf_score.control_score).to eq(0)
+  describe "#adjusted_control_rate" do
+    it "returns 100 when the control rate matches the ideal" do
+      allow(perf_score).to receive(:control_rate).and_return(70)
+      expect(perf_score.adjusted_control_rate).to eq(100)
     end
 
-    it "functions when control rate is 0" do
-      @control_rate = nil
-      expect(perf_score.control_score).to eq(0)
+    it "returns 100 when the control rate is half of the ideal" do
+      allow(perf_score).to receive(:control_rate).and_return(35)
+      expect(perf_score.adjusted_control_rate).to eq(50)
+    end
+
+    it "returns 100 when the control rate exceeds the ideal" do
+      allow(perf_score).to receive(:control_rate).and_return(90)
+      expect(perf_score.adjusted_control_rate).to eq(100)
+    end
+
+    it "returns 0 when control rate is 0" do
+      allow(perf_score).to receive(:control_rate).and_return(0)
+      expect(perf_score.adjusted_control_rate).to eq(0)
+    end
+  end
+
+  describe "#control_rate" do
+    it "returns the control rate" do
+      allow(reports_result).to receive(:controlled_patients_rate_for).with(period).and_return(20)
+      expect(perf_score.control_rate).to eq(20)
+    end
+
+    it "returns 0 when control rate is nil" do
+      allow(reports_result).to receive(:controlled_patients_rate_for).with(period).and_return(nil)
+      expect(perf_score.control_rate).to eq(0)
     end
   end
 
   describe "#visits_score" do
-    it "returns a 30% weighted score based on the inverse of the visits rate" do
-      @missed_visits_rate = 60
-      expect(perf_score.visits_score).to eq(12)
+    it "returns a 30% weighted score based on adjusted visits rate" do
+      allow(perf_score).to receive(:adjusted_visits_rate).and_return(60)
+      expect(perf_score.visits_score).to eq(18)
+    end
+  end
+
+  describe "#adjusted_visits_rate" do
+    it "returns 100 when the visits rate matches the ideal" do
+      allow(perf_score).to receive(:visits_rate).and_return(80)
+      expect(perf_score.adjusted_visits_rate).to eq(100)
+    end
+
+    it "returns 100 when the visits rate is half of the ideal" do
+      allow(perf_score).to receive(:visits_rate).and_return(40)
+      expect(perf_score.adjusted_visits_rate).to eq(50)
+    end
+
+    it "returns 100 when the visits rate exceeds the ideal" do
+      allow(perf_score).to receive(:visits_rate).and_return(90)
+      expect(perf_score.adjusted_visits_rate).to eq(100)
+    end
+
+    it "returns 0 when visits rate is 0" do
+      allow(perf_score).to receive(:visits_rate).and_return(0)
+      expect(perf_score.adjusted_visits_rate).to eq(0)
     end
   end
 
   describe "#visits_rate" do
-    it "returns the inverse of the visits rate" do
-      @missed_visits_rate = 60
+    it "returns the inverse of the missed visits rate" do
+      allow(reports_result).to receive(:missed_visits_rate_for).with(period).and_return(60)
       expect(perf_score.visits_rate).to eq(40)
     end
 
-    it "functions when missed_visits is 0" do
-      @missed_visits_rate = 0
+    it "returns 100 when missed visits rate is 0" do
+      allow(reports_result).to receive(:missed_visits_rate_for).with(period).and_return(0)
       expect(perf_score.visits_rate).to eq(100)
     end
 
-    it "functions when missed_visits is 0" do
-      @missed_visits_rate = nil
+    it "returns 100 when missed visits rate is nil" do
+      allow(reports_result).to receive(:missed_visits_rate_for).with(period).and_return(nil)
       expect(perf_score.visits_rate).to eq(100)
     end
   end
 
   describe "#registrations_score" do
-    it "returns a 30% weighted score based on registration rate" do
-      @registrations = 80
-      @opd_load = 1000
-      expect(perf_score.registrations_score).to eq(16)
+    it "returns a 20% weighted score based on registrations rate" do
+      allow(perf_score).to receive(:adjusted_registrations_rate).and_return(40)
+      expect(perf_score.registrations_score).to eq(8)
+    end
+  end
+
+  describe "#adjusted_registrations_rate" do
+    it "returns 100 when the visits rate matches the ideal" do
+      allow(perf_score).to receive(:registrations_rate).and_return(100)
+      expect(perf_score.adjusted_registrations_rate).to eq(100)
+    end
+
+    it "returns 100 when the registrations rate is half of the ideal" do
+      allow(perf_score).to receive(:registrations_rate).and_return(50)
+      expect(perf_score.adjusted_registrations_rate).to eq(50)
+    end
+
+    it "returns 100 when the visits rate exceeds the ideal" do
+      allow(perf_score).to receive(:registrations_rate).and_return(120)
+      expect(perf_score.adjusted_registrations_rate).to eq(100)
+    end
+
+    it "returns 0 when registrations rate is 0" do
+      allow(perf_score).to receive(:registrations_rate).and_return(0)
+      expect(perf_score.adjusted_registrations_rate).to eq(0)
     end
   end
 
   describe "#registrations_rate" do
-    it "returns the registration rate based on registrations / target registrations" do
-      @registrations = 80
-      @opd_load = 1000
-      expect(perf_score.registrations_rate).to eq(80)
+    it "returns registrations rate based on registrations / target registrations" do
+      allow(perf_score).to receive(:registrations).and_return(30)
+      allow(perf_score).to receive(:target_registrations).and_return(60)
+      expect(perf_score.registrations_rate).to eq(50)
     end
 
-    it "functions when registrations is 0" do
-      @registrations = 0
-      @opd_load = 1000
-      expect(perf_score.registrations_rate).to eq(0)
-    end
-
-    it "functions when registrations is nil" do
-      @registrations = nil
-      @opd_load = 1000
-      expect(perf_score.registrations_rate).to eq(0)
-    end
-
-    it "functions when opd_load is 0" do
-      @registrations = 80
-      @opd_load = 0
+    it "returns 100 if target is 0 and any registrations happen" do
+      allow(perf_score).to receive(:registrations).and_return(10)
+      allow(perf_score).to receive(:target_registrations).and_return(0)
       expect(perf_score.registrations_rate).to eq(100)
     end
 
-    it "functions when registrations and opd_load is 0" do
-      @registrations = 0
-      @opd_load = 0
+    it "returns 0 if target is 0 and no registrations happen" do
+      allow(perf_score).to receive(:registrations).and_return(0)
+      allow(perf_score).to receive(:target_registrations).and_return(0)
       expect(perf_score.registrations_rate).to eq(0)
     end
+  end
 
-    it "maxes at 100 if registrations exceeds target" do
-      @registrations = 500
-      @opd_load = 100
-      expect(perf_score.registrations_rate).to eq(100)
+  describe "#registrations" do
+    it "returns the registrations count" do
+      allow(reports_result).to receive(:registrations_for).with(period).and_return(20)
+      expect(perf_score.registrations).to eq(20)
+    end
+
+    it "returns 0 when registrations count is nil" do
+      allow(reports_result).to receive(:registrations_for).with(period).and_return(nil)
+      expect(perf_score.registrations).to eq(0)
     end
   end
 
   describe "#target_registrations" do
     it "returns the target based on the estimated OPD load" do
-      @opd_load = 1000
+      allow(facility).to receive(:monthly_estimated_opd_load).and_return(1000)
       expect(perf_score.target_registrations).to eq(100)
     end
 
     it "functions when opd_load is 0" do
-      @opd_load = 0
+      allow(facility).to receive(:monthly_estimated_opd_load).and_return(0)
       expect(perf_score.target_registrations).to eq(0)
     end
   end
