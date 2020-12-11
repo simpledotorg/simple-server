@@ -78,7 +78,8 @@ module Api::V3::SyncToUser
     end
 
     def sync_region_modified?
-      return if requested_sync_region_id.blank? && process_token[:sync_region_id].blank?
+      return if requested_sync_region_id.blank?
+      return if process_token[:sync_region_id].blank?
       process_token[:sync_region_id] != requested_sync_region_id
     end
   end
