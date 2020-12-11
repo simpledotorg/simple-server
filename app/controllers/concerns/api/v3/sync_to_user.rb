@@ -68,8 +68,8 @@ module Api::V3::SyncToUser
     end
 
     def force_resync?
-      Rails.logger.info "Resync token modified in resource #{controller_name}" if resync_token_modified?
-      Rails.logger.info "Sync region modified in resource #{controller_name}" if sync_region_modified?
+      Rails.logger.info "[force_resync] Resync token modified in resource #{controller_name}" if resync_token_modified?
+      Rails.logger.info "[force_resync] Sync region modified in resource #{controller_name}" if sync_region_modified?
       resync_token_modified? || sync_region_modified?
     end
 

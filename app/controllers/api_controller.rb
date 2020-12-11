@@ -38,7 +38,10 @@ class APIController < ApplicationController
     # allow other region types as well
     return current_facility_group if requested_sync_region_id.blank?
     return current_facility_group if requested_sync_region_id == current_facility_group.id
-    return current_block if block_level_sync?
+    if block_level_sync?
+      Rails.logger.info "current_sync_region set to block #{current_block.id} for user #{current_user.id}"
+      current_block
+    end
 
     current_facility_group
   end
