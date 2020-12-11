@@ -113,7 +113,7 @@ class Csv::FacilitiesParser
     # {
     #   "Localized facility size" => "facility_size",
     # }
-    @facility_sizes ||= Facility.facility_sizes.transform_values {|size| Facility.localized_facility_size(size)}.invert
+    @facility_sizes ||= Facility.facility_sizes.transform_values { |size| Facility.localized_facility_size(size) }.invert
   end
 
   def set_blanks_to_false(facility_attrs)
