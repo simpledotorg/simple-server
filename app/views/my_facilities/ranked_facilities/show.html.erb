@@ -61,7 +61,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @facilities.each_with_index do |facility| %>
+          <% @facilities.each do |facility| %>
             <tr>
               <td class="type-grade grade-<%= @scores_for_facility[facility.name].letter_grade.downcase %>"
                   data-sort-column-key="rank"
