@@ -153,13 +153,11 @@ class Facility < ApplicationRecord
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.call
+    FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def diabetes_enabled?
