@@ -124,8 +124,7 @@ module Seed
         created_at: recorded_at,
         device_created_at: recorded_at,
         device_updated_at: recorded_at,
-        updated_at: recorded_at
-      )
+        updated_at: recorded_at)
       FactoryBot.build(:patient,
         address: address,
         created_at: recorded_at,
