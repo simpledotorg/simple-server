@@ -78,6 +78,7 @@ class Csv::FacilitiesParser
       .to_h
       .yield_self { |attrs| attrs.merge(set_region_data(attrs)) }
       .yield_self { |attrs| attrs.merge(set_state(attrs)) }
+      .yield_self { |attrs| attrs.merge(set_facility_size(attrs)) }
       .yield_self { |attrs| attrs.merge(set_blanks_to_false(attrs)) }
   end
 
@@ -97,6 +98,22 @@ class Csv::FacilitiesParser
     else
       {}
     end
+  end
+
+  def set_facility_size(facility_attrs)
+    size = facility_attrs[:facility_size]
+    return {} unless size.present?
+
+    {
+      facility_size: facility_sizes.fetch(size, size)
+    }
+  end
+
+  def facility_sizes
+    # {
+    #   "Localized facility size" => "facility_size",
+    # }
+    @facility_sizes ||= Facility.facility_sizes.transform_values {|size| Facility.localized_facility_size(size)}.invert
   end
 
   def set_blanks_to_false(facility_attrs)

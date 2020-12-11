@@ -218,11 +218,11 @@ class Facility < ApplicationRecord
 
   def self.localized_facility_size(facility_size)
     return unless facility_size
-    I18n.t("activerecord.facility.facility_size.#{facility_size}")
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 
   def localized_facility_size
     return unless facility_size
-    I18n.t("activerecord.facility.facility_size.#{facility_size}")
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 end
