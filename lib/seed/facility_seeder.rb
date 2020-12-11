@@ -100,11 +100,13 @@ module Seed
       district_regions_results = Region.import(district_regions, returning: [:id, :name, :path])
 
       # Create block Regions
-      block_regions = district_regions_results.results.map { |row|
-        id, name, path = *row
+      block_count = district_regions_results.ids.size
+      block_names = Seed::FakeNames.instance.blocks.sample(block_count)
+      block_regions = district_regions_results.results.each_with_index.map { |row, i|
+        _id, _name, path = *row
         attrs = {
           id: nil,
-          name: Seed::FakeNames.instance.blocks.sample,
+          name: block_names[i],
           parent_path: path,
           region_type: "block"
         }
@@ -124,8 +126,6 @@ module Seed
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
 
-          # TODO set the facility state here to match the parent district!
-          # also, what about ze blocks?
           attrs = {
             district: facility_group_name,
             facility_group_id: facility_group_id,
@@ -139,6 +139,7 @@ module Seed
       end
 
       facility_results = Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
+      # Create Facility Regions
       facility_regions = facility_results.results.map { |row|
         id, name, block_name = *row
         block = Region.find_by!(name: block_name)
@@ -152,7 +153,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      result = Region.import(facility_regions)
+      Region.import(facility_regions)
     end
   end
 end

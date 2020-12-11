@@ -19,7 +19,7 @@ require "rails_helper"
       }.to change { Region.district_regions.count }.by(2)
         .and change { Region.facility_regions.count }.by(8)
         .and change { FacilityGroup.count }.by(2)
-        .and change { Facility.count }.by(8)
+        .and change { Facility.count }.by_at_least(7)
       expect(Region.block_regions.count).to be > 0
       expect(Region.state_regions.count).to be > 0
       # verify facility regions are linked up correctly
