@@ -106,7 +106,9 @@
         <tr class="row-total" data-sort-method="none">
           <td class="type-title">All</td>
           <% @display_periods.reverse.each do |period| %>
-            <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>><%= @total_registrations_by_period[period].to_i %></td>
+            <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>>
+              <%= number_or_dash_with_delimiter(@total_registrations_by_period[period].to_i) %>
+            </td>
           <% end %>
           <td class="type-number"><%= number_or_dash_with_delimiter(@total_registrations.values.sum) %></td>
         </tr>
