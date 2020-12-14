@@ -6,5 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [http-kit "2.5.0"]
                  [com.cemerick/url "0.1.1"]
-                 [metosin/jsonista "0.2.7"]]
+                 [metosin/jsonista "0.2.7"]
+                 [org.clojure/core.async "1.3.610"]]
+  :main sync-tests.core
   :repl-options {:init-ns sync-tests.core})

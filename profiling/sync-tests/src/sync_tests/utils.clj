@@ -5,6 +5,9 @@
 
 (defn timing [body-fn]
   (let [start (now)
-        result (body-fn)]
-    {:elapsed (- (now) start)
-     :result result}))
+        result (body-fn)
+        end (now)]
+    {:elapsed (- end start)
+     :start start
+     :end end
+     :response result}))
