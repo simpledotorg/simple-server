@@ -1,6 +1,6 @@
 <div class="row">
   <div class="alert alert-primary mx-3 mr-lg-0 ml-lg-3">
-    <span class="fw-bold">Experimental page:</span> The ranking algorithm is a first experiment. Let us know how you would rank facilities in the WhatsApp group or send Claudio a WhatsApp directly at <a href="https://wa.me/16467446707">+1 (646) 744 - 6707</a>. Thanks!
+    <span class="fw-bold">Experimental page:</span> The ranking algorithm is a first experiment. Email us at claudio@simple.org and let us know how you would rank facilities. Thanks!
   </div>
   <div class="col-lg-12">
     <div class="card card-responsive">
@@ -14,9 +14,7 @@
           </p>
         </div>
         <p>
-          Facilities are ranked using their BP controlled, missed visits, and % of target registrations values.
-          <br>
-          The highest score is 100, where the score = (50% &times; BP controlled) + (30% &times; (100% - missed visits)) + (20% &times; % of target registrations)
+          A measure of how close a facility comes to the ideals of 70% BP control rate or higher, 20% missed visits rate or lower, and registering 10% or more of it's estimated OPD load. The score is weighted, with up to 50 points for BP control rate, up to 30 points for missed visits rate, and 20 points for registrations.
         </p>
       </div>
       <div class="d-flex fw-wrap">
@@ -109,14 +107,40 @@
           </tbody>
         </table>
       <% end %>
+      <div class="px-20px pb-8px pb-lg-0">
+        <div class="mb-2">
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
+            <strong>BP controlled:</strong> Hypertensive patients with BP &lt;140/90 at their most recent visit in the last 3 months divided by hypertensive patients registered before the last 3 months
+          </p>
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
+            <strong>Missed visits:</strong> Hypertensive patients with no visit in the last 3 months divided by hypertensive patients registered before the last 3 months
+          </p>
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
+            <strong>Registrations:</strong> Monthly registrations divided by a facility's monthly adult OPD load
+          </p>
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
+            <strong>Grading equation:</strong>
+          </p>
+          <p class="mb-8px ml-8px fs-14px c-grey-dark c-print-black">
+            Grade = (0.5 &times; MIN(100, BP_CONTROLLED / 70 &times; 100)) + (0.3 &times; MIN(100, (100 - MISSED_VISITS) / 80 &times; 100)) + (0.2 * REGISTRATIONS)
+          </p>
+          <p class="mb-8px fs-14px c-grey-dark c-print-black">
+            <strong>Grading scale:</strong>
+          </p>
+          <p class="mb-0px ml-8px fs-14px c-grey-dark c-print-black">
+            <strong>A</strong> = 75 - 100
+          </p>
+          <p class="mb-0px ml-8px fs-14px c-grey-dark c-print-black">
+            <strong>B</strong> = 50 - 74
+          </p>
+          <p class="mb-0px ml-8px fs-14px c-grey-dark c-print-black">
+            <strong>C</strong> = 25 - 49
+          </p>
+          <p class="mb-0px ml-8px fs-14px c-grey-dark c-print-black">
+            <strong>D</strong> = 0 - 24
+          </p>
+        </div>
+      </div>
     </div>
-    <section class="footnotes">
-      <ol>
-        <li><strong>BP controlled:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months</li>
-        <li><strong>Missed visits:</strong> Patients with no visit in the last 3 months</li>
-        <li><strong>OPD load:</strong> A facility's estimated monthly adult outpatient department load. Facilities with no OPD load (marked "est") use the average OPD load of all district facilities of the same size.</li>
-        <li><strong>Target registrations:</strong> 10% of a facility's OPD load.</li>
-      </ol>
-    </section>
   </div>
 </div>
