@@ -125,7 +125,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       }
       put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
       expect(response).to be_redirect
-      expect(flash.notice).to eq("FacilityGroup was successfully updated.")
+      expect(flash.notice).to eq("Facility group was successfully updated.")
       facility_group.reload
 
       expect(facility_group.name).to eq("New Name")
@@ -182,7 +182,7 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       }
       put :update, params: {id: facility_group.to_param, facility_group: new_attributes, organization_id: organization.id}
       expect(response).to be_redirect
-      expect(flash.notice).to eq("FacilityGroup was successfully updated.")
+      expect(flash.notice).to eq("Facility group was successfully updated.")
       facility_group.reload
 
       expect(facility_group.name).to eq("New Name")
