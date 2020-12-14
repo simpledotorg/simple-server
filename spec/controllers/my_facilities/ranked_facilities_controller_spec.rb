@@ -4,7 +4,7 @@ RSpec::Matchers.define :facilities do |facilities|
   match { |actual| actual.map(&:id) == facilities.map(&:id) }
 end
 
-RSpec.describe MyFacilities::RankedFacilitiesController, type: :controller do
+RSpec.describe MyFacilities::FacilityPerformanceController, type: :controller do
   let(:facility_group) { create(:facility_group) }
   let!(:facilities) { create_list(:facility, 3, facility_group: facility_group) }
   let(:supervisor) { create(:admin, :manager, :with_access, resource: facility_group) }
