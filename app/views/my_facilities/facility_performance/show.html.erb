@@ -26,7 +26,7 @@
       <% %w(large medium small community).each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
 
-        <h3><%= size %></h3>
+        <h3><%= size.capitalize %></h3>
 
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" id="ranked-facilities-table">
           <colgroup>
@@ -42,26 +42,19 @@
             <col class="mobile">
           </colgroup>
           <thead>
-            <tr>
-              <th></th>
-              <th></th>
-              <th colspan="2">BP controlled<sup>1</sup></th>
-              <th colspan="2">Missed visits<sup>2</sup></th>
-              <th colspan="3">Registrations</th>
-              <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            </tr>
             <tr data-sort-method="thead" class="sorts">
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default>Grade</th>
               <th class="row-label sort-label">Facilities</th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
-                Patients with BP<br>&lt;140/90 in <%= @period %>
+                BP controlled in <%= @period %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
-                Patients with no<br>visit in &gt;3 months
+                Missed visits in <%= @period %>
               </th>
-              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations">New registrations<br>in <%= @period %></th>
-              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly adult<br>OPD load</th>
-              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="registration_rate">% of target<br>registrations <sup>4</sup></th>
+              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations" colspan="2">
+                Registrations in <%= @period %>
+              </th>
+              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly OPD load</th>
               <th class="mobile"></th>
             </tr>
           </thead>
@@ -81,35 +74,35 @@
                     <%= facility.name %>
                   <% end %>
                 </td>
+                <td class="type-number">
+                  <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last || 0) %>
+                </td>
                 <td class="type-percent" data-sort-column-key="controlled_patients_rate">
                   <em>
                     <%= number_to_percentage(@data_for_facility[facility.name]["controlled_patients_rate"].values.last || 0, precision: 0) %>
                   </em>
                 </td>
                 <td class="type-number">
-                  <%= number_with_delimiter(@data_for_facility[facility.name]["controlled_patients"].values.last || 0) %>
+                  <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last || 0) %>
                 </td>
                 <td class="type-percent" data-sort-column-key="missed_visits_rate">
                   <em>
                     <%= number_to_percentage(@data_for_facility[facility.name]["missed_visits_rate"].values.last || 0, precision: 0) %>
                   </em>
                 </td>
-                <td class="type-number">
-                  <%= number_with_delimiter(@data_for_facility[facility.name]["missed_visits"].values.last || 0) %>
-                </td>
                 <td class="type-number" data-sort-column-key="monthly_registrations">
                   <%= number_with_delimiter(@data_for_facility[facility.name]["registrations"].values.last || 0) %>
+                </td>
+                <td class="type-percent" data-sort-column-key="registration_rate">
+                  <em>
+                    <%= number_to_percentage(@scores_for_facility[facility.name].registrations_rate, precision: 0) %>
+                  </em>
                 </td>
                 <td class="type-number" data-sort-column-key="opd_load">
                   <% unless facility.opd_load_estimated? %>
                     <small>(est.)</small>
                   <% end %>
                   <%= number_with_delimiter(facility.opd_load) %>
-                </td>
-                <td class="type-percent" data-sort-column-key="registration_rate">
-                  <em>
-                    <%= number_to_percentage(@scores_for_facility[facility.name].registrations_rate, precision: 0) %>
-                  </em>
                 </td>
               </tr>
             <% end %>
