@@ -125,7 +125,7 @@ class Reports::RegionsController < AdminController
   end
 
   def default_period
-    Period.month(Date.current.last_month.beginning_of_month).attributes
+    Period.month(Date.current.beginning_of_month).attributes
   end
 
   def set_period

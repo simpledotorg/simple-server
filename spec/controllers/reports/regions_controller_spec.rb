@@ -174,6 +174,19 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:period_info][dec_2019_period]).to eq(period_hash)
     end
 
+    it "returns period info for current month" do
+      today = Date.current
+      Timecop.freeze(today) do
+        patient = create(:patient, registration_facility: @facility, recorded_at: today)
+        create(:blood_pressure, :under_control, recorded_at: today, patient: patient, facility: @facility)
+        refresh_views
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
+    end
+
     it "retrieves district data" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
