@@ -1,6 +1,6 @@
 <div class="row">
-  <div class="alert alert-primary mx-3 mr-lg-0 ml-lg-3">
-    <span class="fw-bold">Experimental page:</span> The ranking algorithm is a first experiment. Email us at claudio@simple.org and let us know how you would rank facilities. Thanks!
+  <div class="alert alert-primary mx-3 w-100">
+    <span class="fw-bold">Experimental page:</span> The ranking algorithm is a first experiment - email Claudio at claudio@simple.org and let us know how you would rank facilities
   </div>
   <div class="col-lg-12">
     <div class="card card-responsive">
@@ -17,15 +17,14 @@
           A measure of how close a facility comes to the ideals of 70% BP control rate or higher, 20% missed visits rate or lower, and registering 10% or more of it's estimated OPD load. The score is weighted, with up to 50 points for BP control rate, up to 30 points for missed visits rate, and 20 points for registrations.
         </p>
       </div>
-      <div class="d-flex fw-wrap">
+      <div class="d-flex fw-wrap mb-16px">
         <%= render "shared/size_and_zone_filters" %>
       </div>
-
       <% %w(large medium small community).each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
-
-        <h3><%= size.capitalize %></h3>
-
+        <p class="mb-0px fw-bold">
+          <%= size.capitalize %>
+        </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" id="ranked-facilities-table">
           <colgroup>
             <col>
