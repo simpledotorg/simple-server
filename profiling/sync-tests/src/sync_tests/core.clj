@@ -1,4 +1,5 @@
 (ns sync-tests.core
+  (:gen-class)
   (:require [clojure.java.io :as io]
             [sync-tests.env :as env]
             [sync-tests.sync-to-user :as stu]
