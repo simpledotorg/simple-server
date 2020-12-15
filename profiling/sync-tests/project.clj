@@ -7,6 +7,7 @@
                  [http-kit "2.5.0"]
                  [com.cemerick/url "0.1.1"]
                  [metosin/jsonista "0.2.7"]
-                 [org.clojure/core.async "1.3.610"]]
+                 [org.clojure/core.async "1.3.610"]
+                 [com.taoensso/timbre "5.1.0"]]
   :main sync-tests.core
   :repl-options {:init-ns sync-tests.core})
