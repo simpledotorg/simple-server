@@ -174,6 +174,19 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:period_info][dec_2019_period]).to eq(period_hash)
     end
 
+    it "returns period info for current month" do
+      today = Date.current
+      Timecop.freeze(today) do
+        patient = create(:patient, registration_facility: @facility, recorded_at: today)
+        create(:blood_pressure, :under_control, recorded_at: today, patient: patient, facility: @facility)
+        refresh_views
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
+    end
+
     it "retrieves district data" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
@@ -186,7 +199,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
@@ -203,7 +216,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
@@ -219,7 +232,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
@@ -272,7 +285,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
@@ -288,7 +301,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
@@ -331,7 +344,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
