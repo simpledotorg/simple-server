@@ -11,10 +11,9 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
   after_action :verify_authorization_attempted
 
+  around_action :set_time_zone
   before_action :authorize_my_facilities
   before_action :set_last_updated_at
-  before_action :set_period
-  around_action :set_time_zone
 
   def show
     unless current_admin.feature_enabled?(:ranked_facilities)
@@ -22,6 +21,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
       return
     end
 
+    set_period
     @facilities = filter_facilities([:manage, :facility])
 
     @data_for_facility = {}
