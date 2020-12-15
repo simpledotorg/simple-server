@@ -45,7 +45,6 @@
 
            body                             (try (j/read-value (:body response))
                                                  (catch com.fasterxml.jackson.databind.exc.MismatchedInputException e
-
                                                    (log/info response)))
 
            records                          (get body (name resource))
