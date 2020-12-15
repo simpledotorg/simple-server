@@ -9,7 +9,7 @@
             [sync-tests.env :as env]))
 
 (def ^:private users
-  (-> "sync_to_user.edn.sample"
+  (-> "sync_to_user.edn"
       io/resource
       slurp
       edn/read-string
@@ -42,7 +42,12 @@
           result  {resource {:total-elapsed-ms 0.0, :per-req-info [] :record-count 0}}]
      (let [resource-path                    (get resources resource)
            {:keys [response start elapsed]} (u/timing #(deref (api/request resource-path options)))
-           body                             (j/read-value (:body response))
+
+           body                             (try (j/read-value (:body response))
+                                                 (catch com.fasterxml.jackson.databind.exc.MismatchedInputException e
+
+                                                   (log/info response)))
+
            records                          (get body (name resource))
            response-process-token           (get body "process_token")
            updated-result                   (-> result
@@ -60,7 +65,8 @@
   (doall (map #(resource-sync %1 user) (keys resources))))
 
 (defn across-users []
-  (let [user-count  (count users)
+  (let [selected-users (take (:num-users @env/config) users)
+        user-count  (count selected-users)
         result-chan (async/chan user-count)]
     (doall (map
             (fn [user]
@@ -68,8 +74,7 @@
                 (let [{:keys [response elapsed]} (u/timing #(resources-sync user))]
                   (async/>! result-chan {(:id user) {:time   elapsed
                                                      :result response}}))))
-            (take (:num-users @env/config)
-                  users)))
+            selected-users))
 
     (loop [users-read 0]
       (if (= users-read user-count)
