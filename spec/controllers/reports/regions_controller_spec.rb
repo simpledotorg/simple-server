@@ -35,6 +35,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
+
     context "region_reports disabled" do
       before { Flipper.disable(:region_reports) }
 
@@ -158,6 +159,16 @@ RSpec.describe Reports::RegionsController, type: :controller do
         sign_in(cvho.email_authentication)
         get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
       }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    fit "raises error if user does not have authorization to region" do
+      other_fg = create(:facility_group, name: "other facility group")
+      other_fg.facilities << build(:facility, name: "other facility")
+      user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+      sign_in(user.email_authentication)
+      get :show, params: {id: @facility.slug, report_scope: "facility"}
+      expect(response).to_not be_successful
     end
 
     it "returns period info for every month" do

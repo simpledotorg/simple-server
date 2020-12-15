@@ -19,7 +19,9 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
+    facilities = authorize { current_admin.accessible_facilities(:view_reports) }
+    p facilities
+    @region = facilities.find_by!(name: params[:id])
 
     @data = Reports::RegionService.new(region: @region, period: @period).call
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
