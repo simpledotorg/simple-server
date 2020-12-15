@@ -17,6 +17,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   def other_facility_records
     Facility
+      .with_block_region_id
       .with_discarded
       .updated_on_server_since(other_facilities_processed_since, limit)
   end
@@ -54,7 +55,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   def sync_region_id(facility)
     if current_user&.block_level_sync?
-      facility.region.block_region.id
+      facility.block_region_id
     else
       facility.facility_group_id
     end
