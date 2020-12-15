@@ -63,11 +63,13 @@ module Seed
         blood_pressures_to_create(performance_rank).times do
           bp_time = Faker::Time.between(from: recorded_at, to: 1.day.ago)
           bp_attributes = {
+            created_at: bp_time,
             device_created_at: bp_time,
             device_updated_at: bp_time,
             facility_id: facility.id,
             patient_id: patient_id,
             recorded_at: bp_time,
+            updated_at: bp_time,
             user_id: user.id
           }
           control_trait = rand(100) < controlled_percentage_threshold ? :under_control : :hypertensive
@@ -82,12 +84,14 @@ module Seed
         bp_id, recorded_at, patient_id = *row
         encounters << {
           blood_pressure_id: bp_id,
+          created_at: recorded_at,
           id: SecureRandom.uuid,
           device_created_at: recorded_at,
           device_updated_at: recorded_at,
           encountered_on: recorded_at,
           facility_id: facility.id,
           patient_id: patient_id,
+          updated_at: recorded_at,
           timezone_offset: 0
         }
       end
