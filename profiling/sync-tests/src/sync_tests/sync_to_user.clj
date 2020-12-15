@@ -42,11 +42,9 @@
           result  {resource {:total-elapsed-ms 0.0 :record-count 0}}]
      (let [resource-path                    (get resources resource)
            {:keys [response start elapsed]} (u/timing #(deref (api/request resource-path options)))
-
            body                             (try (j/read-value (:body response))
                                                  (catch com.fasterxml.jackson.databind.exc.MismatchedInputException e
                                                    (log/info response)))
-
            records                          (get body (name resource))
            response-process-token           (get body "process_token")
            updated-result                   (-> result
@@ -74,7 +72,6 @@
                   (async/>! result-chan {(:id user) {:time   elapsed
                                                      :result response}}))))
             selected-users))
-
     (loop [users-read 0]
       (if (= users-read user-count)
         (log/info "Finished all requests for all users!")
