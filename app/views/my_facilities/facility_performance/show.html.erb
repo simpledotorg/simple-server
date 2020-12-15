@@ -56,8 +56,8 @@
                 <%= @data_for_facility[first_facility_name].last_value(:period_info)["bp_control_start_date"] %> to <%= @data_for_facility[first_facility_name].last_value(:period_info)["bp_control_end_date"] %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations" colspan="2">
-                New registrations in<br>
-                <%= @data_for_facility[first_facility_name].last_key(:registrations) %>
+                Registrations as % of OPD load<br>
+                in <%= @data_for_facility[first_facility_name].last_key(:registrations) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">
                 Monthly OPD load
