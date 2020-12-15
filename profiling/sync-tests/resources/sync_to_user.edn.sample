@@ -1,4 +1,4 @@
-{:users [{:id "431ec870-850c-45cc-b5cc-9918e4351667",
-          :access-token "22a91bb3f105da57f3edada1f70d990dcb207e1fb1fa9f6b499993049aec08d1",
-          :facility-id "296abcf9-9b55-4d36-9f0a-41ae74341d84",
-          :sync-region-id "2fe1041a-8687-4a96-8f81-47817061f421"}]}
+{:users [{:id "00060d78-9727-47c5-b921-19e8fafafc28"
+          :access_token "106df471aec7dc3b69f22f9d63b0af2ec3289fb620803de5eb009dad077e71bd"
+          :facility_id "94581b9d-6987-430d-bab7-c3477353499f"
+          :sync_region_id "296abcf9-9b55-4d36-9f0a-41ae74341d84"}]}

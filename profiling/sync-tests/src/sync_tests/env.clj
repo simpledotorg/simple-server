@@ -2,4 +2,7 @@
 
 (def valids #{:dev :sbx :perf1 :perf2})
 (def valid? (fn [env] (contains? valids env)))
-(def नाम (atom :dev))
+(def config (atom {:name        :dev
+                   :num-users   10
+                   :req-limit   500
+                   :req-timeout (* 1 60 1000)}))

@@ -11,7 +11,7 @@
 
 (defn request [path options]
   (http/get (-> base-url
-                (get @env/नाम)
+                (get (:name @env/config))
                 (url path)
                 str)
             options))

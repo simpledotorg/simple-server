@@ -5,10 +5,11 @@
             [jsonista.core :as j]
             [sync-tests.api :as api]
             [sync-tests.utils :as u]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [sync-tests.env :as env]))
 
 (def ^:private users
-  (-> "sync_to_user.edn"
+  (-> "sync_to_user.edn.sample"
       io/resource
       slurp
       edn/read-string
@@ -24,16 +25,16 @@
    :blood_pressures   "/api/v3/blood_pressures/sync"
    :precription_drugs "/api/v3/prescription_drugs/sync"})
 
-(def ^:private limit 500)
-
-(defn headers [{:keys [id facility-id access-token sync-region-id] :as user}]
-  {"X-FACILITY-ID" facility-id
-   "X-USER-ID"     id
-   "Authorization" (apply str ["Bearer" " " access-token])})
+(defn headers [{:keys [id facility_id access_token sync_region_id] :as user}]
+  {"X-FACILITY-ID"    facility_id
+   "X-USER-ID"        id
+   "X-SYNC-REGION-ID" sync_region_id
+   "Authorization"    (apply str ["Bearer" " " access_token])})
 
 (defn init-req-options [user]
   {:headers      (headers user)
-   :query-params {:limit limit :process_token nil}})
+   :timeout      (:req-timeout @env/config)
+   :query-params {:limit (:req-limit @env/config) :process_token nil}})
 
 (defn resource-sync
   ([resource user]
@@ -47,7 +48,8 @@
            updated-result                   (-> result
                                                 (update-in [resource :record-count] + (count records))
                                                 (update-in [resource :total-elapsed-ms] + elapsed))]
-       (if (< (count records) limit)
+       (if (< (count records)
+              (:req-limit @env/config))
          updated-result
          (recur (assoc-in options
                           [:query-params :process_token]
@@ -58,7 +60,7 @@
   (doall (map #(resource-sync %1 user) (keys resources))))
 
 (defn across-users []
-  (let [user-count (count users)
+  (let [user-count  (count users)
         result-chan (async/chan user-count)]
     (doall (map
             (fn [user]
@@ -66,7 +68,8 @@
                 (let [{:keys [response elapsed]} (u/timing #(resources-sync user))]
                   (async/>! result-chan {(:id user) {:time   elapsed
                                                      :result response}}))))
-            users))
+            (take (:num-users @env/config)
+                  users)))
 
     (loop [users-read 0]
       (if (= users-read user-count)
