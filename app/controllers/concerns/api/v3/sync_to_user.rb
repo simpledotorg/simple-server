@@ -8,7 +8,9 @@ module Api::V3::SyncToUser
     end
 
     def current_facility_records
-      model
+      controller_name
+        .classify
+        .constantize
         .where(patient: prioritized_patients)
         .updated_on_server_since(current_facility_processed_since, limit)
     end
