@@ -148,6 +148,7 @@ GEM
     dotenv-rails (2.7.5)
       dotenv (= 2.7.5)
       railties (>= 3.2, < 6.1)
+    edn (1.1.1)
     erubi (1.9.0)
     execjs (2.7.0)
     factory_bot (4.11.1)
@@ -582,6 +583,7 @@ DEPENDENCIES
   discard (~> 1.0)
   dogstatsd-ruby
   dotenv-rails
+  edn
   factory_bot_rails (~> 4.8)
   faker
   flamegraph
