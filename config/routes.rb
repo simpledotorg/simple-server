@@ -163,7 +163,8 @@ Rails.application.routes.draw do
     get "blood_pressure_control", to: "blood_pressure_control"
     get "registrations", to: "registrations"
     get "missed_visits", to: "missed_visits"
-    get "ranked_facilities", to: "ranked_facilities#show"
+    get "facility_performance", to: "facility_performance#show"
+    get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
   end
 
   scope :resources do
