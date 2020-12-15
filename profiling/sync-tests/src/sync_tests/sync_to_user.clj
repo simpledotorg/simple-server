@@ -39,7 +39,7 @@
 (defn resource-sync
   ([resource user]
    (loop [options (init-req-options user)
-          result  {resource {:total-elapsed-ms 0.0, :per-req-info [] :record-count 0}}]
+          result  {resource {:total-elapsed-ms 0.0 :record-count 0}}]
      (let [resource-path                    (get resources resource)
            {:keys [response start elapsed]} (u/timing #(deref (api/request resource-path options)))
 
