@@ -25,7 +25,7 @@ module Api::V3::SyncToUser
 
     def records_to_sync
       Datadog.tracer.trace(
-        "#{model} current_facility_records + other_facility_records",
+        "#{controller_name} merge_current_and_other_facility_records",
         service: "simple_server",
         resource: (self.class.to_s + "#" + action_name).to_s,
         span_type: ""
