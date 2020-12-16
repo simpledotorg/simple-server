@@ -31,7 +31,7 @@ class Admin::FacilityGroupsController < AdminController
 
   def update
     if update_facility_group
-      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
+      redirect_to admin_facilities_url, notice: "Facility group was successfully updated."
     else
       render :edit, status: :bad_request
     end

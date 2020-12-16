@@ -20,19 +20,11 @@ class FacilityDistrict
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(
-      self,
-      period,
-      prev_periods,
-      include_current_period: include_current_period
-    )
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
   def registered_hypertension_patients
@@ -57,6 +49,10 @@ class FacilityDistrict
 
   def updated_at
     facilities.maximum(:updated_at) || Time.current.beginning_of_day
+  end
+
+  def region
+    self
   end
 
   # For regions compatibility

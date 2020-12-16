@@ -81,6 +81,9 @@ module Seed
             patients = patients_to_create(facility_size).times.map { |num|
               build_patient(user, oldest_registration: facility_birth_date)
             }
+            addresses = patients.map { |patient| patient.address }
+            address_result = Address.import(addresses)
+            result[:address] = address_result.ids.size
             patient_result = Patient.import(patients, recursive: true)
             result[:patient] = patient_result.ids.size
           end
@@ -117,11 +120,18 @@ module Seed
 
     def build_patient(user, oldest_registration:)
       recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
+      address = FactoryBot.build(:address,
+        created_at: recorded_at,
+        device_created_at: recorded_at,
+        device_updated_at: recorded_at,
+        updated_at: recorded_at)
       FactoryBot.build(:patient,
-        address: nil,
+        address: address,
+        created_at: recorded_at,
         recorded_at: recorded_at,
         registration_user: user,
-        registration_facility: user.facility)
+        registration_facility: user.facility,
+        updated_at: recorded_at)
     end
 
     def create_appts(patient_info, user)

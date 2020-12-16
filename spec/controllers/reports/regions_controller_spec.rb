@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionsController, type: :controller do
+  let(:jan_2020) { Time.parse("January 1 2020") }
   let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
   let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
@@ -30,22 +31,75 @@ RSpec.describe Reports::RegionsController, type: :controller do
     render_views
 
     before do
+      enable_flag(:regions_prep)
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "is successful" do
-      jan_2020 = Time.parse("January 1 2020")
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
-      refresh_views
+    context "region_reports disabled" do
+      before { Flipper.disable(:region_reports) }
 
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :details, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      it "is successful for a facility group" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: @facility.facility_group.slug, report_scope: "district"}
+        end
+        expect(response).to be_successful
       end
-      expect(response).to be_successful
+    end
+
+    context "region_reports enabled" do
+      before { Flipper.enable(:region_reports, cvho) }
+
+      it "is successful for a facility" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: @facility.region.slug, report_scope: "facility"}
+        end
+        expect(response).to be_successful
+      end
+
+      it "is successful for a district" do
+        patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+        create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+        create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+        refresh_views
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
+        end
+        expect(response).to be_successful
+      end
+
+      it "is successful for a block" do
+        patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
+        create(:blood_pressure, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
+
+        patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
+        create(:blood_pressure, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
+        create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
+
+        refresh_views
+
+        block = @facility.region.block_region
+
+        Timecop.freeze("June 1 2020") do
+          sign_in(cvho.email_authentication)
+          get :details, params: {id: block.slug, report_scope: "block"}
+        end
+        expect(response).to be_successful
+      end
     end
   end
 
@@ -58,7 +112,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves monthly cohort data by default" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -75,7 +128,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "can retrieve quarterly cohort data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -2))
       create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
       refresh_views
@@ -95,18 +147,42 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "show" do
-    render_views
+    render_views_on_ci
 
     before do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if matching region slug found" do
-      expect {
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    # TODO this should be a 404 error
+    it "redirects if matching region slug not found" do
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      expect(response).to be_redirect
+    end
+
+    # TODO this should be a 404 error
+    it "raises error if user does not have authorization to region" do
+      other_fg = create(:facility_group, name: "other facility group")
+      other_fg.facilities << build(:facility, name: "other facility")
+      user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+      sign_in(user.email_authentication)
+      get :show, params: {id: @facility.slug, report_scope: "facility"}
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      expect(response).to be_redirect
+    end
+
+    it "renders successfully if report viewer has access to region" do
+      other_fg = create(:facility_group, name: "other facility group", organization: organization)
+      other_fg.facilities << build(:facility, name: "other facility")
+      user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+      pp user.accessible_facility_groups(:view_reports)
+
+      sign_in(user.email_authentication)
+      get :show, params: {id: other_fg.slug, report_scope: "district"}
+      expect(response).to be_successful
     end
 
     it "returns period info for every month" do
@@ -123,8 +199,20 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:period_info][dec_2019_period]).to eq(period_hash)
     end
 
+    it "returns period info for current month" do
+      today = Date.current
+      Timecop.freeze(today) do
+        patient = create(:patient, registration_facility: @facility, recorded_at: today)
+        create(:blood_pressure, :under_control, recorded_at: today, patient: patient, facility: @facility)
+        refresh_views
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+      end
+      data = assigns(:data)
+      expect(data[:period_info][Period.month(today.beginning_of_month)]).to_not be_nil
+    end
+
     it "retrieves district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -136,12 +224,12 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
     it "retrieves facility data" do
-      jan_2020 = Time.parse("January 1 2020")
+      Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -153,12 +241,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
     it "retrieves facility district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -170,7 +257,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
@@ -185,11 +272,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if matching region slug found" do
-      expect {
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "raises error if matching region slug not found" do
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      expect(response).to be_redirect
     end
 
     it "returns period info for every month" do
@@ -207,7 +294,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -224,12 +310,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
 
     it "retrieves facility data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -241,13 +326,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
     it "retrieves block data" do
-      jan_2020 = Time.parse("January 1 2020")
-
       patient_2 = create(:patient, registration_facility: @facility, recorded_at: "June 01 2019 00:00:00 UTC", registration_user: cvho)
       create(:blood_pressure, :hypertensive, recorded_at: "Feb 2020", facility: @facility, patient: patient_2, user: cvho)
 
@@ -275,7 +358,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves facility district data" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -287,7 +369,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(9) # sanity check
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
@@ -301,7 +383,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves cohort data for a facility" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -317,7 +398,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves cohort data for a facility group" do
-      jan_2020 = Time.parse("January 1 2020")
       facility_group = @facility.facility_group
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
@@ -334,7 +414,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves cohort data for a facility district" do
-      jan_2020 = Time.parse("January 1 2020")
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
@@ -352,28 +431,59 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   describe "#whatsapp_graphics" do
     render_views
+    before { Flipper.enable(:regions_prep) }
 
-    before do
-      @facility_group = create(:facility_group, organization: organization)
-      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-      sign_in(cvho.email_authentication)
-    end
+    context "region reports disabled" do
+      before do
+        Flipper.disable(:region_reports, cvho)
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+        sign_in(cvho.email_authentication)
+      end
 
-    context "html requested" do
-      it "renders graphics_header partial" do
-        get :whatsapp_graphics, format: :html, params: {id: @facility.slug, report_scope: "facility"}
+      context "html requested" do
+        it "renders graphics_header partial" do
+          get :whatsapp_graphics, format: :html, params: {id: @facility.slug, report_scope: "facility"}
 
-        expect(response).to be_ok
-        expect(response).to render_template("shared/graphics/_graphics_partial")
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/_graphics_partial")
+        end
+      end
+
+      context "png requested" do
+        it "renders the image template for downloading" do
+          get :whatsapp_graphics, format: :png, params: {id: @facility_group.slug, report_scope: "district"}
+
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/image_template")
+        end
       end
     end
 
-    context "png requested" do
-      it "renders the image template for downloading" do
-        get :whatsapp_graphics, format: :png, params: {id: @facility_group.slug, report_scope: "district"}
+    context "region reports enabled" do
+      before do
+        Flipper.enable(:region_reports, cvho)
+        @facility_group = create(:facility_group, organization: organization)
+        @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+        sign_in(cvho.email_authentication)
+      end
 
-        expect(response).to be_ok
-        expect(response).to render_template("shared/graphics/image_template")
+      context "html requested" do
+        it "renders graphics_header partial" do
+          get :whatsapp_graphics, format: :html, params: {id: @facility.region.slug, report_scope: "facility"}
+
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/_graphics_partial")
+        end
+      end
+
+      context "png requested" do
+        it "renders the image template for downloading" do
+          get :whatsapp_graphics, format: :png, params: {id: @facility_group.region.slug, report_scope: "district"}
+
+          expect(response).to be_ok
+          expect(response).to render_template("shared/graphics/image_template")
+        end
       end
     end
   end
