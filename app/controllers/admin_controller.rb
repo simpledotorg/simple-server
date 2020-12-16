@@ -54,13 +54,13 @@ class AdminController < ApplicationController
       capture = yield(blk)
 
       unless current_admin.power_user? || capture
-        logger.warn "authorize error: user does not have access to specified resource(s)"
+        logger.error "authorize error: user does not have access to specified resource(s)"
         raise UserAccess::NotAuthorizedError
       end
 
       capture
     rescue ActiveRecord::RecordNotFound
-      logger.warn "authorize error: RecordNotFound raised, turning it into a NotAuthorizedError"
+      logger.error "authorize error: RecordNotFound raised, turning it into a NotAuthorizedError"
       raise UserAccess::NotAuthorizedError
     end
   end
