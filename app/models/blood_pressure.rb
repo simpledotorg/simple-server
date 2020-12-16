@@ -32,10 +32,6 @@ class BloodPressure < ApplicationRecord
       .where(arel_table[:diastolic].lt(THRESHOLDS[:hypertensive][:diastolic]))
   }
 
-  scope :syncable_to_region, ->(region) {
-    with_discarded.where(patient: Patient.syncable_to_region(region))
-  }
-
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
   end

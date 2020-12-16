@@ -2,35 +2,31 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
-    def region_records
-      model = controller_name.classify.constantize
-      model.syncable_to_region(current_sync_region)
-    end
-
     def current_facility_records
-      controller_name
-        .classify
-        .constantize
-        .where(patient: prioritized_patients)
+      model
+        .where(patient: current_facility.syncable_patients)
         .updated_on_server_since(current_facility_processed_since, limit)
     end
 
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.size
 
-      region_records
-        .where.not(patient: prioritized_patients)
+      model
+        .where(patient: current_sync_region.syncable_patients - current_facility.syncable_patients)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
     private
 
-    def records_to_sync
-      current_facility_records + other_facility_records
+    def model
+      controller_name
+        .classify
+        .constantize
+        .with_discarded
     end
 
-    def prioritized_patients
-      current_facility.registered_patients.with_discarded
+    def records_to_sync
+      current_facility_records + other_facility_records
     end
 
     def processed_until(records)
@@ -70,8 +66,8 @@ module Api::V3::SyncToUser
     end
 
     def force_resync?
-      Rails.logger.info "[force_resync] Resync token modified in resource #{controller_name}" if resync_token_modified?
       Rails.logger.info "[force_resync] Sync region modified in resource #{controller_name}" if sync_region_modified?
+      Rails.logger.info "[force_resync] Resync token modified in resource #{controller_name}" if resync_token_modified?
       resync_token_modified? || sync_region_modified?
     end
 

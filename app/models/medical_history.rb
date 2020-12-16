@@ -29,10 +29,6 @@ class MedicalHistory < ApplicationRecord
   enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
 
-  scope :syncable_to_region, ->(region) {
-    with_discarded.where(patient: Patient.syncable_to_region(region))
-  }
-
   def indicates_hypertension_risk?
     prior_heart_attack_boolean || prior_stroke_boolean
   end

@@ -21,10 +21,6 @@ class PrescriptionDrug < ApplicationRecord
   validates :is_protocol_drug, inclusion: {in: [true, false]}
   validates :is_deleted, inclusion: {in: [true, false]}
 
-  scope :syncable_to_region, ->(region) {
-    with_discarded.where(patient: Patient.syncable_to_region(region))
-  }
-
   def self.prescribed_as_of(date)
     where("device_created_at <= ?", date.end_of_day)
       .where(%(prescription_drugs.is_deleted = false OR

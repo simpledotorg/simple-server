@@ -13,22 +13,19 @@ class Api::V3::PatientsController < Api::V3::SyncController
     {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
-  def region_records
-    super
-      .includes(:address, :phone_numbers, :business_identifiers)
-  end
-
   def current_facility_records
-    region_records
-      .where(registration_facility: current_facility)
+    Patient
+      .with_nested_sync_resources
+      .where(id: current_facility.syncable_patients)
       .updated_on_server_since(current_facility_processed_since, limit)
   end
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
 
-    region_records
-      .where.not(registration_facility: current_facility)
+    Patient
+      .with_nested_sync_resources
+      .where(id: region.syncable_patients - current_facility.syncable_patients)
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
