@@ -178,7 +178,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
       other_fg.facilities << build(:facility, name: "other facility")
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
-      pp user.accessible_facility_groups(:view_reports)
 
       sign_in(user.email_authentication)
       get :show, params: {id: other_fg.slug, report_scope: "district"}

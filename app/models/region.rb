@@ -34,6 +34,11 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def child_region_type
+    index = REGION_TYPES.find_index { |type| type == region_type }
+    REGION_TYPES[index + 1]
+  end
+
   def organization
     organization_region.source
   end

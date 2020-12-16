@@ -13,6 +13,12 @@ class FacilityDistrict
     scope.where(district: name)
   end
 
+  def child_region_type
+    "facility"
+  end
+
+  alias_method :children, :facilities
+
   def organization
     facility_group_ids = facilities.pluck(:facility_group_id).uniq
     organization_ids = FacilityGroup.where(id: facility_group_ids).pluck(:organization_id).uniq
