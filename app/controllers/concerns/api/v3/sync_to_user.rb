@@ -24,7 +24,14 @@ module Api::V3::SyncToUser
     end
 
     def records_to_sync
-      current_facility_records + other_facility_records
+      Datadog.tracer.trace(
+        "#{model} current_facility_records + other_facility_records",
+        service: "simple_server",
+        resource: (self.class.to_s + "#" + action_name).to_s,
+        span_type: ""
+      ) do |span|
+        current_facility_records + other_facility_records
+      end
     end
 
     def processed_until(records)

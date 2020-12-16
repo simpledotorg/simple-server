@@ -12,9 +12,26 @@ class Api::V3::SyncController < APIController
 
   def __sync_to_user__(response_key)
     AuditLog.create_logs_async(current_user, records_to_sync, "fetch", Time.current) unless disable_audit_logs?
+    records = Datadog.tracer.trace(
+      "#{controller_name} records_to_sync fetch",
+      service: "simple_server",
+      resource: (self.class.to_s + "#" + action_name).to_s,
+      span_type: ""
+    ) do |span|
+      records_to_sync
+    end
+
+
     render(
       json: {
-        response_key => records_to_sync.map { |record| transform_to_response(record) },
+        response_key => Datadog.tracer.trace(
+          "#{controller_name} transformer",
+          service: "simple_server",
+          resource: (self.class.to_s + "#" + action_name).to_s,
+          span_type: ""
+        ) do |span|
+          records.map { |record| transform_to_response(record) }
+        end,
         "process_token" => encode_process_token(response_process_token)
       },
       status: :ok
