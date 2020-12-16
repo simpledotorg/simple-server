@@ -35,10 +35,10 @@ class Api::V3::SyncController < APIController
       resource: (self.class.to_s + "#" + action_name).to_s
     ) do |span|
       render(
-        json: {
+        json: Oj.dump({
           response_key => mapped_records,
           "process_token" => encode_process_token(response_process_token)
-        },
+        }, mode: :compat),
         status: :ok
       )
     end
