@@ -27,6 +27,10 @@ class Api::V3::PatientsController < Api::V3::SyncController
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
+  def records_to_sync
+    current_facility_records + other_facility_records
+  end
+
   private
 
   def unscope_associations

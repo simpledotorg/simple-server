@@ -11,14 +11,7 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    records = Datadog.tracer.trace(
-      "#{controller_name} records_to_sync fetch",
-      service: "simple_server",
-      resource: (self.class.to_s + "#" + action_name).to_s,
-      span_type: ""
-    ) do |span|
-      records_to_sync
-    end
+    records = records_to_sync
 
     Datadog.tracer.trace(
       "#{controller_name} auditlog job queueing",

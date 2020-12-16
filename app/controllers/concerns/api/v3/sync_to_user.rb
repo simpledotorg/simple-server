@@ -25,12 +25,12 @@ module Api::V3::SyncToUser
 
     def records_to_sync
       Datadog.tracer.trace(
-        "#{controller_name} merge_current_and_other_facility_records",
+        "#{controller_name}_records_to_sync",
         service: "simple_server",
         resource: (self.class.to_s + "#" + action_name).to_s,
         span_type: ""
       ) do |span|
-        current_facility_records + other_facility_records
+        current_facility_records.union(other_facility_records)
       end
     end
 

@@ -12,7 +12,7 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   private
 
   def current_facility_records
-    []
+    Protocol.none
   end
 
   def other_facility_records
