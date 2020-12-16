@@ -24,16 +24,10 @@ class Reports::RegionsController < AdminController
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.district_region? || @region.block_region?
-      @data_for_facility = @region.facilities.each_with_object({}) { |facility, hsh|
-        hsh[facility.name] = Reports::RegionService.new(region: facility,
-                                                        period: @period).call
-      }
-    end
-    if current_admin.feature_enabled?(:region_reports) && @region.district_region? && @region.respond_to?(:block_regions)
-      @block_data = @region.block_regions.each_with_object({}) { |region, hsh|
-        hsh[region.name] = Reports::RegionService.new(region: region,
-                                                      period: @period).call
+    if @region.respond_to?(:children)
+      @children_data = @region.children.each_with_object({}) { |child, hsh|
+        hsh[child.name] = Reports::RegionService.new(region: child,
+                                                     period: @period).call
       }
     end
   end

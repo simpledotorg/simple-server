@@ -297,12 +297,8 @@
 
 <%= render "visit_details_card" %>
 
-<% if current_admin.feature_enabled?(:region_reports) && @region.district_region? && @region.respond_to?(:block_regions) %>
-  <%= render "block_tables", data: @block_data, region_type: "block" %>
-<% end %>
-
-<% if @region.district_region? || @region.block_region? %>
-  <%= render "facility_tables" %>
+<% if @region.child_region_type.in?(["block", "facility"]) %>
+  <%= render "child_data_tables", data: @children_data, region_type: @region.child_region_type %>
 <% end %>
 
 <div id="data-json" style="display: none;">

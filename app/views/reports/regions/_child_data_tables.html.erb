@@ -1,6 +1,6 @@
 <h3 class="mt-48px mb-8px fs-28px c-black">
   <%= region_type.capitalize.pluralize %> in <%= @region.name %>
-  <% denominator = "<strong>Denominator:</strong> All hypertensive patients assigned to a #{region_type} in #{@region.name} registered before the last 3 months" %>
+  <% denominator = "<strong>Denominator:</strong> All hypertensive patients assigned to a #{region_type} in #{@region.name} registered before the last 3 months".html_safe %>
 </h3>
 <p class="mb-24px fs-16px c-grey-dark c-print-black">
   <span class="fw-bold">Total:</span> <%= @region.facilities.length %> facilities

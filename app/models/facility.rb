@@ -148,6 +148,10 @@ class Facility < ApplicationRecord
     [self]
   end
 
+  def child_region_type
+    nil
+  end
+
   def recent_blood_pressures
     blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
