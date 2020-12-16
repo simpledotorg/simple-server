@@ -106,7 +106,7 @@
             Training chapters
           </h4>
           <div class="row">
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-1.jpg', style: 'width: 100%;' %>
               <strong>
                 1: Install the app
@@ -121,7 +121,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 48 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-2.jpg', style: 'width: 100%;' %>
               <strong>
                 2: Introduction
@@ -136,7 +136,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 59 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-3.jpg', style: 'width: 100%;' %>
               <strong>
                 3: Register a patient
@@ -151,7 +151,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 86 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-4.jpg', style: 'width: 100%;' %>
               <strong>
                 4: Search for a follow-up patient
@@ -166,7 +166,7 @@
                   <i class="fas fa-arrow-circle-down"></i> Download: 64 <small>MB</small>
                 </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-5.jpg', style: 'width: 100%;' %>
               <strong>
                 5: Find the right patient
@@ -181,7 +181,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 33 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-6.jpg', style: 'width: 100%;' %>
               <strong>
                 6: Call overdue patients
@@ -196,7 +196,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 35 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-7.jpg', style: 'width: 100%;' %>
               <strong>
                 7: Important features
@@ -211,7 +211,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 52 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-8.jpg', style: 'width: 100%;' %>
               <strong>
                 8: FAQ
@@ -226,7 +226,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 39 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-9.jpg', style: 'width: 100%;' %>
               <strong>
                 9: How to get help
@@ -241,7 +241,7 @@
                 <i class="fas fa-arrow-circle-down"></i> Download: 20 <small>MB</small>
               </a>
             </div>
-            <div class="col-sm-3 col-video">
+            <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-10.jpg', style: 'width: 100%;' %>
               <strong>
                 10: Start using Simple
@@ -346,25 +346,99 @@
             Print material
           </h2>
           <div class="row">
-            <div class="col-sm-3 mt-3 mb-4">
+            <div class="col-sm-3 col-video mt-3 mb-0px">
               <%= image_tag 'resources/user-handbook.jpg', style: 'width: 100%;' %>
-              <strong class="mt-2 d-block" style="display: block;">
+              <strong class="mt-2 d-block">
                 App Users Guidebook
               </strong>
               <div class="mt-2">
-                <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_LINK %>" class="doc-download">
-                  <i class="far fa-file-pdf"></i> Download PDF
+                <% if CountryConfig.current[:name] == "India" %>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_BENGALI_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Bengali PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_HINDI_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Hindi PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_MARATHI_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Marathi PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_PUNJABI_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Punjabi PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_TAMIL_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Tamil PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_TELUGU_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Telugu PDF
+                  </a>
+                <% elsif CountryConfig.current[:name] == "Bangladesh" %>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_BENGALI_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Bengali PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_HINDI_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Hindi PDF
+                  </a>
+                <% elsif CountryConfig.current[:name] == "Ethiopia" %>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_AMHARIC_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Amharic PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_OROMO_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Oromo PDF
+                  </a>
+                  <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_TIGRINYA_DOWNLOAD_LINK %>" class="doc-download">
+                    <i class="fas fa-arrow-circle-down"></i> Download Tigrinya PDF
+                  </a>
+                <% end %>
+                <a href="<%= ExternalLinksHelper::APP_USERS_GUIDE_ENGLISH_DOWNLOAD_LINK %>" class="doc-download">
+                  <i class="fas fa-arrow-circle-down"></i> Download English PDF
                 </a>
               </div>
             </div>
-            <div class="col-sm-3 mt-3 mb-4">
+            <div class="col-sm-3 col-video mt-3 mb-0px">
               <%= image_tag 'resources/bp-poster.jpg', style: 'width: 100%' %>
               <strong class="mt-2 d-block">
                 Poster: How to take a BP
               </strong>
               <div class="mt-2">
-                <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_LINK %>">
-                  <i class="far fa-file-pdf"></i> Download PDF
+                <% if CountryConfig.current[:name] == "India" %>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_BENGALI_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Bengali PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_HINDI_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Hindi PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_MARATHI_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Marathi PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_PUNJABI_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Punjabi PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_TAMIL_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Tamil PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_TELUGU_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Telugu PDF
+                  </a>
+                <% elsif CountryConfig.current[:name] == "Bangladesh" %>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_BENGALI_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Bengali PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_HINDI_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Hindi PDF
+                  </a>
+                <% elsif CountryConfig.current[:name] == "Ethiopia" %>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_AMHARIC_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Amharic PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_OROMO_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Oromo PDF
+                  </a>
+                  <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_TIGRINYA_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Tigrinya PDF
+                  </a>
+                <% end %>
+                <a class="doc-download" href="<%= ExternalLinksHelper::HOW_TO_TAKE_A_BP_POSTER_ENGLISH_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download English PDF
                 </a>
               </div>
             </div>
