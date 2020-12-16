@@ -2,17 +2,28 @@
 
 <div class="dashboard">
   <nav class="breadcrumb mb-0px">
-    <%= link_to 'All reports', dashboard_districts_path %>
-    <% if @region.respond_to?(:facility_group) %>
-      <i class="fas fa-chevron-right"></i>
-      <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.slug, report_scope: "district") %>
+    <%= link_to "All reports", dashboard_districts_path %>
+
+    <% if current_admin.feature_enabled?(:region_reports) %>
+      <% @region.ancestors.where(region_type: %w[district block facility]).order(:path).each do |region| %>
+        <i class="fas fa-chevron-right"></i>
+        <%= link_to region.name, reports_region_path(region.slug, report_scope: region.region_type) %>
+      <% end %>
+    <% else %>
+      <% if @region.respond_to?(:facility_group) %>
+        <i class="fas fa-chevron-right"></i>
+        <%= link_to @region.facility_group.name, reports_region_path(@region.facility_group.slug, report_scope: "district") %>
+      <% end %>
     <% end %>
+
     <i class="fas fa-chevron-right"></i>
     <%= @region.name %>
   </nav>
+
   <p class="mb-12px fs-xxlarge fw-bold">
     <%= @region.name %>
   </p>
+
   <p class="d-none fw-bold d-print-block">
     <%= @period %> Report — <% if params[:action] == "show" %>Overview<% elsif params[:action] == "details" %>Details<% elsif params[:action] == "cohort" %>Cohort Reports<% end %>
   </p>
