@@ -17,7 +17,6 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   def other_facility_records
     Facility
-      .with_block_region_id
       .with_discarded
       .updated_on_server_since(other_facilities_processed_since, limit)
   end
@@ -45,8 +44,8 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    Facility
-      .updated_on_server_since(other_facilities_processed_since, limit)
+    other_facility_records
+      .with_block_region_id
       .includes(:facility_group)
       .where.not(facility_group: nil)
   end

@@ -49,9 +49,11 @@ class Facility < ApplicationRecord
     foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
-  scope :with_block_region_id, -> { joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
-                                      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
-                                      .select("block_region.id AS block_region_id, *") }
+  scope :with_block_region_id, -> {
+    joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
+      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
+      .select("block_region.id AS block_region_id, *")
+  }
 
   enum facility_size: {
     community: "community",
