@@ -94,15 +94,7 @@ class FacilityGroup < ApplicationRecord
     registered_patients.with_discarded
   end
 
-  # For regions compatibility
-  def facility_region?
-    false
-  end
-
-  # For regions compatibility
-  def district_region?
-    true
-  end
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
 
   private
 
