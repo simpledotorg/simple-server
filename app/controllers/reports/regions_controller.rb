@@ -149,7 +149,7 @@ class Reports::RegionsController < AdminController
       when "Facility"
         current_admin.accessible_facilities(:view_reports).find_by!(slug: params[:id])
       else
-        raise "bad region_class #{region_class}"
+        raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
       end
     }
     @region = if current_admin.feature_enabled?(:region_reports)
