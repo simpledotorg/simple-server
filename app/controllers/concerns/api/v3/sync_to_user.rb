@@ -19,10 +19,7 @@ module Api::V3::SyncToUser
     private
 
     def model
-      controller_name
-        .classify
-        .constantize
-        .with_discarded
+      controller_name.classify.constantize.for_sync
     end
 
     def records_to_sync

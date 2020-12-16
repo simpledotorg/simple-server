@@ -13,10 +13,6 @@ class Api::V3::PatientsController < Api::V3::SyncController
     {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
-  def model
-    Patient.with_discarded.with_nested_sync_resources
-  end
-
   def current_facility_records
     model
       .where(id: current_facility.syncable_patients)
