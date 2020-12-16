@@ -1,5 +1,6 @@
 <h3 class="mt-48px mb-8px fs-28px c-black">
-  Blocks in <%= @region.name %>
+  <%= region_type.capitalize.pluralize %> in <%= @region.name %>
+  <% denominator = "<strong>Denominator:</strong> All hypertensive patients assigned to a #{region_type} in #{@region.name} registered before the last 3 months" %>
 </h3>
 <p class="mb-24px fs-16px c-grey-dark c-print-black">
   <span class="fw-bold">Total:</span> <%= @region.facilities.length %> facilities
@@ -22,7 +23,7 @@
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Facility
+                <%= region_type.capitalize %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 % of patients with BP controlled
@@ -67,8 +68,7 @@
           <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black ">
-          <strong>Denominator:</strong> All hypertensive patients assigned to a facility in <%= @region.name %> registered before
-          the last 3 months
+          <%= denominator %>
         </p>
       </div>
     </div>
@@ -90,7 +90,7 @@
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Facility
+                <%= region_type.capitalize %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 % of patients with BP not controlled
@@ -135,8 +135,7 @@
           <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black ">
-          <strong>Denominator:</strong> All hypertensive patients assigned to a facility in <%= @region.name %> registered before
-          the last 3 months
+          <%= denominator %>
         </p>
       </div>
     </div>
@@ -158,7 +157,7 @@
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Facility
+                <%= region_type.capitalize %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 % of patients with no visit in >3 months
@@ -203,8 +202,7 @@
           <strong>Numerator:</strong> Patients with no visit in >3 months
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black ">
-          <strong>Denominator:</strong> All hypertensive patients assigned to a facility in <%= @region.name %> registered before
-          the last 3 months
+          <%= denominator %>
         </p>
       </div>
     </div>
@@ -226,7 +224,7 @@
           <thead>
             <tr class="sorts" data-sort-method="thead">
               <th class="row-label sort-label sort-label-small ta-left">
-                Facility
+                <%= region_type.capitalize %>
               </th>
               <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
                 Patients registered in <%= @period.to_s %>
@@ -268,8 +266,7 @@
       </div>
       <div class="mb-2 pt-12px">
         <p class="us-none fs-14px c-transparent">
-          <strong>Denominator:</strong> All hypertensive patients assigned to a facility in <%= @region.name %> registered before
-          the last 3 months
+          <%= denominator %>
         </p>
       </div>
     </div>
