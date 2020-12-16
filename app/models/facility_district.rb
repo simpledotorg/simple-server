@@ -13,6 +13,10 @@ class FacilityDistrict
     scope.where(district: name)
   end
 
+  def child_region_type
+    "facility"
+  end
+
   alias_method :children, :facilities
 
   def organization

@@ -4,7 +4,8 @@
   <nav class="breadcrumb mb-0px">
     <%= link_to "All reports", dashboard_districts_path %>
 
-    <% if current_admin.feature_enabled?(:region_reports) %>
+    <% # we can get rid of this check when FacilityDistrict goes away %>
+    <% if @region.respond_to?(:ancestors) %>
       <% @region.ancestors.where(region_type: %w[district block facility]).order(:path).each do |region| %>
         <i class="fas fa-chevron-right"></i>
         <%= link_to region.name, reports_region_path(region.slug, report_scope: region.region_type) %>
