@@ -49,18 +49,19 @@
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
                 Patients with controlled BP from<br>
-                <%= @data_for_facility[first_facility_name].last_value(:period_info)["bp_control_start_date"] %> to <%= @data_for_facility[first_facility_name].last_value(:period_info)["bp_control_end_date"] %>
+                <%= @period.start_date.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end_date.to_s(:day_mon_year) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
                 Patients with no visit from<br>
-                <%= @data_for_facility[first_facility_name].last_value(:period_info)["bp_control_start_date"] %> to <%= @data_for_facility[first_facility_name].last_value(:period_info)["bp_control_end_date"] %>
+                <%= @period.start_date.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end_date.to_s(:day_mon_year) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations" colspan="2">
                 Registrations as % of OPD load<br>
-                in <%= @data_for_facility[first_facility_name].last_key(:registrations) %>
+                in <%= @period %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">
-                Monthly OPD load
+                Estimated monthly<br>
+                OPD load
               </th>
               <th class="mobile"></th>
             </tr>
