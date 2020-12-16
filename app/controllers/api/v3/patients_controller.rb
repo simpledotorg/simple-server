@@ -25,7 +25,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
 
     Patient
       .with_nested_sync_resources
-      .where(id: region.syncable_patients - current_facility.syncable_patients)
+      .where(id: current_sync_region.syncable_patients - current_facility.syncable_patients)
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
