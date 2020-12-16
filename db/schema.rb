@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_02_074942) do
+ActiveRecord::Schema.define(version: 2020_12_16_115247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -67,8 +67,8 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id", "scheduled_date"], name: "index_appointments_on_patient_id_and_scheduled_date", order: { scheduled_date: :desc }
+    t.index ["patient_id", "updated_at"], name: "index_appointments_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
-    t.index ["updated_at"], name: "index_appointments_on_updated_at"
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
@@ -86,9 +86,9 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
     t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
+    t.index ["patient_id", "updated_at"], name: "index_blood_pressures_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["recorded_at"], name: "index_blood_pressures_on_recorded_at"
-    t.index ["updated_at"], name: "index_blood_pressures_on_updated_at"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -107,8 +107,8 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["blood_sugar_type"], name: "index_blood_sugars_on_blood_sugar_type"
     t.index ["blood_sugar_value"], name: "index_blood_sugars_on_blood_sugar_value"
     t.index ["facility_id"], name: "index_blood_sugars_on_facility_id"
+    t.index ["patient_id", "updated_at"], name: "index_blood_sugars_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_sugars_on_patient_id"
-    t.index ["updated_at"], name: "index_blood_sugars_on_updated_at"
     t.index ["user_id"], name: "index_blood_sugars_on_user_id"
   end
 
@@ -242,6 +242,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
+    t.index ["updated_at"], name: "index_facilities_on_updated_at"
   end
 
   create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
@@ -303,6 +304,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.uuid "user_id"
     t.text "hypertension"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
+    t.index ["patient_id", "updated_at"], name: "index_medical_histories_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
     t.index ["user_id"], name: "index_medical_histories_on_user_id"
   end
@@ -440,9 +442,9 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.integer "duration_in_days"
     t.uuid "teleconsultation_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
+    t.index ["patient_id", "updated_at"], name: "index_prescription_drugs_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
     t.index ["teleconsultation_id"], name: "index_prescription_drugs_on_teleconsultation_id"
-    t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
 
@@ -464,6 +466,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
+    t.index ["updated_at"], name: "index_protocols_on_updated_at"
   end
 
   create_table "regions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -861,33 +864,6 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
   SQL
   add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
 
-  create_view "patients_blood_pressures_facilities", sql_definition: <<-SQL
-      SELECT patients.id AS p_id,
-      patients.age AS p_age,
-      patients.gender AS p_gender,
-      blood_pressures.id,
-      blood_pressures.systolic,
-      blood_pressures.diastolic,
-      blood_pressures.patient_id,
-      blood_pressures.created_at,
-      blood_pressures.updated_at,
-      blood_pressures.device_created_at,
-      blood_pressures.device_updated_at,
-      blood_pressures.facility_id,
-      blood_pressures.user_id,
-      blood_pressures.deleted_at,
-      facilities.name,
-      facilities.district,
-      facilities.state,
-      facilities.facility_type,
-      users.full_name,
-      users.sync_approval_status
-     FROM patients,
-      blood_pressures,
-      facilities,
-      users
-    WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
-  SQL
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
@@ -1024,5 +1000,32 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
              FROM appointments
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
+  SQL
+  create_view "patients_blood_pressures_facilities", sql_definition: <<-SQL
+      SELECT patients.id AS p_id,
+      patients.age AS p_age,
+      patients.gender AS p_gender,
+      blood_pressures.id,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      blood_pressures.patient_id,
+      blood_pressures.created_at,
+      blood_pressures.updated_at,
+      blood_pressures.device_created_at,
+      blood_pressures.device_updated_at,
+      blood_pressures.facility_id,
+      blood_pressures.user_id,
+      blood_pressures.deleted_at,
+      facilities.name,
+      facilities.district,
+      facilities.state,
+      facilities.facility_type,
+      users.full_name,
+      users.sync_approval_status
+     FROM patients,
+      blood_pressures,
+      facilities,
+      users
+    WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
 end
