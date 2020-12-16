@@ -47,7 +47,7 @@ module ExternalLinksHelper
   ONE_PAGER_SIMPLE_LINK = "https://drive.google.com/open?id=1LzGcSK5nPS0izJT4kV7B3y6syl84ACqo&authuser=dburka%40resolvetosavelives.org&usp=drive_fs"
 
   APP_USERS_GUIDE_AMHARIC_DOWNLOAD_LINK = "https://drive.google.com/file/d/1_RemdV7sOgTPsihXOxRp9Ud_ZV8DP1U_/view?usp=sharing"
-  APP_USERS_GUIDE_BENGALI_DOWNLOAD_LINK = "https://drive.google.com/file/d/1FBgCXQRKYcHUZZo5MAUwt7d_hJaoa4Mi/view?usp=sharing"
+  APP_USERS_GUIDE_BENGALI_DOWNLOAD_LINK = "https://drive.google.com/file/d/1yHBxU1gifqqDbwhkc1vgd-fg6NxKTj9i/view?usp=sharing"
   APP_USERS_GUIDE_ENGLISH_DOWNLOAD_LINK = "https://drive.google.com/file/d/1mFE2sFtDkUqCxGS-jBfUfrVHvqqtNHoU/view?usp=sharing"
   APP_USERS_GUIDE_HINDI_DOWNLOAD_LINK = "https://drive.google.com/file/d/1fVFZZZu9sW8jxsM2H11d7jmbjV8RJzA_/view?usp=sharing"
   APP_USERS_GUIDE_MARATHI_DOWNLOAD_LINK = "https://drive.google.com/file/d/1v_B9uoI4zmKDXJFQ0bigjB6-ChuMUngh/view?usp=sharing"
