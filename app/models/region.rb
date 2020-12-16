@@ -134,6 +134,10 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
+  def region
+    self
+  end
+
   private
 
   def _set_path_for_seeds
