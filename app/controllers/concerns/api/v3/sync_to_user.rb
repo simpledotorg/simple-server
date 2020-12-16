@@ -30,7 +30,7 @@ module Api::V3::SyncToUser
         resource: (self.class.to_s + "#" + action_name).to_s,
         span_type: ""
       ) do |span|
-        current_facility_records.union(other_facility_records)
+        current_facility_records + other_facility_records
       end
     end
 

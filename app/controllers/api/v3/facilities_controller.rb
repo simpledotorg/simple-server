@@ -12,7 +12,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   private
 
   def current_facility_records
-    Facility.none
+    []
   end
 
   def other_facility_records
