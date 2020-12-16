@@ -147,28 +147,42 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "show" do
-    render_views
+    render_views_on_ci
 
     before do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if matching region slug found" do
-      expect {
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    # TODO this should be a 404 error
+    it "redirects if matching region slug not found" do
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      expect(response).to be_redirect
     end
 
-    fit "raises error if user does not have authorization to region" do
+    # TODO this should be a 404 error
+    it "raises error if user does not have authorization to region" do
       other_fg = create(:facility_group, name: "other facility group")
       other_fg.facilities << build(:facility, name: "other facility")
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
       get :show, params: {id: @facility.slug, report_scope: "facility"}
-      expect(response).to_not be_successful
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      expect(response).to be_redirect
+    end
+
+    it "renders successfully if report viewer has access to region" do
+      other_fg = create(:facility_group, name: "other facility group", organization: organization)
+      other_fg.facilities << build(:facility, name: "other facility")
+      user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+      pp user.accessible_facility_groups(:view_reports)
+
+      sign_in(user.email_authentication)
+      get :show, params: {id: other_fg.slug, report_scope: "district"}
+      expect(response).to be_successful
     end
 
     it "returns period info for every month" do
@@ -258,11 +272,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "raises error if matching region slug found" do
-      expect {
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "raises error if matching region slug not found" do
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
+      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      expect(response).to be_redirect
     end
 
     it "returns period info for every month" do
