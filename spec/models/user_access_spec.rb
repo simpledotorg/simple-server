@@ -422,7 +422,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_protocols(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -460,7 +460,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_protocols(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -498,7 +498,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_protocols(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -538,7 +538,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_protocol_drugs(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -576,7 +576,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_protocol_drugs(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -614,7 +614,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_protocol_drugs(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -655,7 +655,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_admins(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -694,7 +694,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_admins(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
@@ -733,7 +733,7 @@ RSpec.describe UserAccess, type: :model do
                   action,
                   expected_resources,
                   admin.accessible_admins(action))
-                  admin.accesses.delete_all
+              admin.accesses.delete_all
             end
           end
         end
