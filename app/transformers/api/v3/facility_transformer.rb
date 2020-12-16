@@ -2,7 +2,7 @@ class Api::V3::FacilityTransformer
   class << self
     def to_response(facility)
       facility
-        .as_json
+        .attributes
         .except("enable_diabetes_management",
           "monthly_estimated_opd_load",
           "enable_teleconsultation",
