@@ -11,11 +11,10 @@ module Api::V3::SyncToUser
 
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.size
-      other_facilities_patients = current_sync_region.syncable_patients - current_facility.syncable_patients
 
       @other_facility_records ||=
         model
-          .where(patient: other_facilities_patients)
+          .where(patient: current_sync_region.syncable_patients - current_facility.syncable_patients)
           .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
