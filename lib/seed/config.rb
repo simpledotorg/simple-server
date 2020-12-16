@@ -45,6 +45,10 @@ module Seed
       ENV["SEED_GENERATED_ACTIVE_USER_ROLE"]
     end
 
+    def number_of_states
+      Integer(ENV["NUMBER_OF_STATES"])
+    end
+
     def number_of_facility_groups
       Integer(ENV["NUMBER_OF_FACILITY_GROUPS"])
     end
