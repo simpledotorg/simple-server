@@ -177,14 +177,17 @@
     "RAILS_SERVE_STATIC_FILES": {
       "value": "enabled"
     },
+    "SEED_GENERATED_ACTIVE_USER_ROLE": {
+      "value": "Seed User | Active"
+    },
+    "SEED_GENERATED_INACTIVE_USER_ROLE": {
+      "value": "Seed User | Inactive"
+    },
     "SENTRY_CURRENT_ENV": {
       "value": "review"
     },
     "SENTRY_ENV": {
       "value": "review"
-    },
-    "SENTRY_SECURITY_HEADER_ENDPOINT": {
-      "value": "https://o152587.ingest.sentry.io/api/1217715/security/?sentry_key=67a72e806c7a427db73a0342ddc3f965"
     },
     "SIDEKIQ_CONCURRENCY": {
       "value": "2"
