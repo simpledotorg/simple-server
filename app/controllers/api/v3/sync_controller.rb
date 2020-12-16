@@ -11,7 +11,6 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    AuditLog.create_logs_async(current_user, records_to_sync, "fetch", Time.current) unless disable_audit_logs?
     records = Datadog.tracer.trace(
       "#{controller_name} records_to_sync fetch",
       service: "simple_server",
@@ -21,6 +20,14 @@ class Api::V3::SyncController < APIController
       records_to_sync
     end
 
+    Datadog.tracer.trace(
+      "#{controller_name} auditlog job queueing",
+      service: "simple_server",
+      resource: (self.class.to_s + "#" + action_name).to_s,
+      span_type: ""
+    ) do |span|
+      AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
+    end
 
     render(
       json: {
