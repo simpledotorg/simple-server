@@ -300,7 +300,7 @@
   <%= render "block_tables", data: @block_data, region_type: "block" %>
 <% end %>
 
-<% if @region.district_region? %>
+<% if @region.district_region? || @region.block_region? %>
   <%= render "facility_tables" %>
 <% end %>
 
