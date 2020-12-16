@@ -5,7 +5,7 @@ class Api::V3::Transformer
     end
 
     def to_response(model)
-      rename_attributes(model.attributes, inverted_key_mapping).as_json
+      rename_attributes(model.attributes, inverted_key_mapping)
     end
 
     def rename_attributes(attributes, mapping)
