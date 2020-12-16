@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_16_115247) do
+ActiveRecord::Schema.define(version: 2020_12_16_123632) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -400,11 +400,11 @@ ActiveRecord::Schema.define(version: 2020_12_16_115247) do
     t.index ["address_id"], name: "index_patients_on_address_id"
     t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
+    t.index ["id", "updated_at"], name: "index_patients_on_id_and_updated_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
     t.index ["reminder_consent"], name: "index_patients_on_reminder_consent"
-    t.index ["updated_at"], name: "index_patients_on_updated_at"
   end
 
   create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
