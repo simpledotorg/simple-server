@@ -3,19 +3,16 @@ module Api::V3::SyncToUser
 
   included do
     def current_facility_records
-      @current_facility_records ||=
-        model
-          .where(patient: current_facility.syncable_patients)
-          .updated_on_server_since(current_facility_processed_since, limit)
+      model
+        .where(patient: current_facility.syncable_patients)
+        .updated_on_server_since(current_facility_processed_since, limit)
     end
 
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.size
-
-      @other_facility_records ||=
-        model
-          .where(patient: current_sync_region.syncable_patients - current_facility.syncable_patients)
-          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      model
+        .where(patient: current_sync_region.syncable_patients - current_facility.syncable_patients)
+        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
     private
