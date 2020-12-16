@@ -14,17 +14,19 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def current_facility_records
-    model
-      .where(id: current_facility.syncable_patients)
-      .updated_on_server_since(current_facility_processed_since, limit)
+    @current_facility_records ||=
+      model
+        .where(id: current_facility.syncable_patients)
+        .updated_on_server_since(current_facility_processed_since, limit)
   end
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
 
-    model
-      .where(id: current_sync_region.syncable_patients - current_facility.syncable_patients)
-      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+    @other_facility_records ||=
+      model
+        .where(id: current_sync_region.syncable_patients - current_facility.syncable_patients)
+        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
   private
