@@ -16,26 +16,32 @@ class Api::V3::SyncController < APIController
     Datadog.tracer.trace(
       "#{controller_name} auditlog job queueing",
       service: "simple_server",
-      resource: (self.class.to_s + "#" + action_name).to_s,
-      span_type: ""
+      resource: (self.class.to_s + "#" + action_name).to_s
     ) do |span|
       AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
     end
 
-    render(
-      json: {
-        response_key => Datadog.tracer.trace(
-          "#{controller_name} transformer",
-          service: "simple_server",
-          resource: (self.class.to_s + "#" + action_name).to_s,
-          span_type: ""
-        ) do |span|
-          records.map { |record| transform_to_response(record) }
-        end,
-        "process_token" => encode_process_token(response_process_token)
-      },
-      status: :ok
-    )
+    mapped_records = Datadog.tracer.trace(
+      "#{controller_name} transformer",
+      service: "simple_server",
+      resource: (self.class.to_s + "#" + action_name).to_s
+    ) do |span|
+      records.map { |record| transform_to_response(record) }
+    end
+
+    Datadog.tracer.trace(
+      "#{controller_name} json render",
+      service: "simple_server",
+      resource: (self.class.to_s + "#" + action_name).to_s
+    ) do |span|
+      render(
+        json: {
+          response_key => mapped_records,
+          "process_token" => encode_process_token(response_process_token)
+        },
+        status: :ok
+      )
+    end
   end
 
   private
