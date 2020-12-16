@@ -8,7 +8,8 @@
                  [com.cemerick/url "0.1.1"]
                  [metosin/jsonista "0.2.7"]
                  [org.clojure/core.async "1.3.610"]
-                 [com.taoensso/timbre "5.1.0"]]
+                 [com.taoensso/timbre "5.1.0"]
+                 [org.clojure/data.csv "1.0.0"]]
   :profiles {:uberjar {:aot :all}}
   :main ^:skip-aot sync-tests.core
   :repl-options {:init-ns sync-tests.core})
