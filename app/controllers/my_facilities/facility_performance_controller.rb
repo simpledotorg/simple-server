@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MyFacilities::RankedFacilitiesController < AdminController
+class MyFacilities::FacilityPerformanceController < AdminController
   include Pagination
   include MyFacilitiesFiltering
 
@@ -37,6 +37,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
     end
 
     @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   private
