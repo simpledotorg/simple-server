@@ -6,41 +6,41 @@ RSpec.describe UserAccess, type: :model do
   let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
   describe "accessible_*" do
-    let!(:organization_1) { create(:organization) }
-    let!(:organization_2) { create(:organization) }
-    let!(:organization_3) { create(:organization) }
+    let!(:organization_1) { create(:organization, name: "org_1") }
+    let!(:organization_2) { create(:organization, name: "org_2") }
+    let!(:organization_3) { create(:organization, name: "org_3") }
 
-    let!(:facility_group_1) { create(:facility_group, organization: organization_1) }
-    let!(:facility_group_2) { create(:facility_group, organization: organization_2) }
-    let!(:facility_group_3_1) { create(:facility_group, organization: organization_3) }
-    let!(:facility_group_3_2) { create(:facility_group, organization: organization_3) }
+    let(:facility_group_1) { create(:facility_group, organization: organization_1, name: "facility_group_1") }
+    let(:facility_group_2) { create(:facility_group, organization: organization_2, name: "facility_group_2") }
+    let(:facility_group_3_1) { create(:facility_group, organization: organization_3, name: "facility_group_3_1") }
+    let(:facility_group_3_2) { create(:facility_group, organization: organization_3, name: "facility_group_3_2") }
 
-    let!(:facility_1) { create(:facility, facility_group: facility_group_1) }
-    let!(:facility_2) { create(:facility, facility_group: facility_group_2) }
-    let!(:facility_3) { create(:facility, facility_group: facility_group_3_1) }
-    let!(:facility_4) { create(:facility, facility_group: facility_group_3_2) }
-    let!(:facility_5) { create(:facility) }
-    let!(:facility_6) { create(:facility) }
+    let(:facility_1) { create(:facility, facility_group: facility_group_1) }
+    let(:facility_2) { create(:facility, facility_group: facility_group_2) }
+    let(:facility_3) { create(:facility, facility_group: facility_group_3_1) }
+    let(:facility_4) { create(:facility, facility_group: facility_group_3_2) }
+    let(:facility_5) { create(:facility) }
+    let(:facility_6) { create(:facility) }
 
-    let!(:user_1) { create(:user, :with_phone_number_authentication, registration_facility: facility_1) }
-    let!(:user_2) { create(:user, :with_phone_number_authentication, registration_facility: facility_2) }
-    let!(:user_3) { create(:user, :with_phone_number_authentication, registration_facility: facility_3) }
-    let!(:user_4) { create(:user, :with_phone_number_authentication, registration_facility: facility_4) }
-    let!(:user_5) { create(:user, :with_phone_number_authentication, registration_facility: facility_5) }
+    let(:user_1) { create(:user, :with_phone_number_authentication, registration_facility: facility_1) }
+    let(:user_2) { create(:user, :with_phone_number_authentication, registration_facility: facility_2) }
+    let(:user_3) { create(:user, :with_phone_number_authentication, registration_facility: facility_3) }
+    let(:user_4) { create(:user, :with_phone_number_authentication, registration_facility: facility_4) }
+    let(:user_5) { create(:user, :with_phone_number_authentication, registration_facility: facility_5) }
 
-    let!(:admin_1) { create(:admin, :call_center, :with_access, resource: organization_1) }
-    let!(:admin_2) { create(:admin, :call_center, :with_access, resource: organization_1) }
-    let!(:admin_3) { create(:admin, :call_center, :with_access, resource: organization_3) }
-    let!(:admin_4) { create(:admin, :call_center, :with_access, resource: organization_3) }
-    let!(:admin_5) { create(:admin, :call_center) }
+    let(:admin_1) { create(:admin, :call_center, :with_access, full_name: "admin_1", resource: organization_1) }
+    let(:admin_2) { create(:admin, :call_center, :with_access, full_name: "admin_2", resource: organization_1) }
+    let(:admin_3) { create(:admin, :call_center, :with_access, full_name: "admin_3", resource: organization_3) }
+    let(:admin_4) { create(:admin, :call_center, :with_access, full_name: "admin_4", resource: organization_3) }
+    let(:admin_5) { create(:admin, :call_center, full_name: "admin_5") }
 
-    let!(:manager) { create(:admin, :manager) }
-    let!(:viewer_all) { create(:admin, :viewer_all) }
-    let!(:viewer_reports_only) { create(:admin, :viewer_reports_only) }
-    let!(:call_center) { create(:admin, :call_center) }
+    let(:manager) { create(:admin, :manager, full_name: "manager") }
+    let(:viewer_all) { create(:admin, :viewer_all, full_name: "viewer_all") }
+    let(:viewer_reports_only) { create(:admin, :viewer_reports_only, full_name: "viewer_reports_only") }
+    let(:call_center) { create(:admin, :call_center, full_name: "call_center") }
 
-    let!(:protocol_1) { create(:protocol) }
-    let!(:protocol_drug_1) { create(:protocol_drug) }
+    let(:protocol_1) { create(:protocol) }
+    let(:protocol_drug_1) { create(:protocol_drug) }
 
     context "non power users" do
       context "#accessible_organizations" do
@@ -650,8 +650,9 @@ RSpec.describe UserAccess, type: :model do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
 
+              row = [admin.full_name, action, current_resource.slug, expected_resources.map(&:full_name)]
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
-                error_message(admin,
+                "Failure in row: #{row}\n" + error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_admins(action))
@@ -689,8 +690,9 @@ RSpec.describe UserAccess, type: :model do
             permission_matrix.each do |admin, action, current_resource, expected_resources|
               admin.accesses.create!(resource: current_resource)
 
+              row = [admin.full_name, action, current_resource.slug, expected_resources.map(&:full_name)]
               expect(admin.accessible_admins(action)).to match_array(expected_resources),
-                error_message(admin,
+                "Failure in row: #{row}\n" + error_message(admin,
                   action,
                   expected_resources,
                   admin.accessible_admins(action))
