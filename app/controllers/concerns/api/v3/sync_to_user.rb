@@ -2,33 +2,30 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
-    def region_records
-      model = controller_name.classify.constantize
-      model.syncable_to_region(current_sync_region)
-    end
-
     def current_facility_records
-      region_records
-        .where(patient: prioritized_patients)
+      model
+        .where(patient: current_facility.syncable_patients)
         .updated_on_server_since(current_facility_processed_since, limit)
     end
 
     def other_facility_records
-      other_facilities_limit = limit - current_facility_records.count
+      other_facilities_limit = limit - current_facility_records.size
+      other_patient_records =
+        current_sync_region.syncable_patients - current_facility.syncable_patients
 
-      region_records
-        .where.not(patient: prioritized_patients)
+      model
+        .where(patient: other_patient_records)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
     private
 
-    def records_to_sync
-      current_facility_records + other_facility_records
+    def model
+      controller_name.classify.constantize.for_sync
     end
 
-    def prioritized_patients
-      current_facility.registered_patients.with_discarded
+    def records_to_sync
+      current_facility_records + other_facility_records
     end
 
     def processed_until(records)

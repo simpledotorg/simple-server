@@ -209,4 +209,8 @@ class Facility < ApplicationRecord
       errors.add(:zone, "not present in the facility group")
     end
   end
+
+  def syncable_patients
+    registered_patients.with_discarded
+  end
 end

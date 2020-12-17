@@ -15,33 +15,6 @@ RSpec.describe PrescriptionDrug, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
-  describe "Scopes" do
-    describe ".syncable_to_region" do
-      it "returns all patients registered in the region" do
-        facility_group = create(:facility_group)
-        facility = create(:facility, facility_group: facility_group)
-        patient = create(:patient)
-        other_patient = create(:patient)
-
-        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
-
-        prescription_drugs = [
-          create(:prescription_drug, patient: patient, facility: facility),
-          create(:prescription_drug, patient: patient, facility: facility).tap(&:discard),
-          create(:prescription_drug, patient: patient)
-        ]
-
-        _other_prescription_drugs = [
-          create(:prescription_drug, patient: other_patient, facility: facility),
-          create(:prescription_drug, patient: other_patient, facility: facility).tap(&:discard),
-          create(:prescription_drug, patient: other_patient)
-        ]
-
-        expect(PrescriptionDrug.syncable_to_region(facility_group)).to contain_exactly(*prescription_drugs)
-      end
-    end
-  end
-
   describe ".prescribed_as_of" do
     def remove_drug(prescription_drug, time)
       prescription_drug.update(is_deleted: true, device_updated_at: time)
