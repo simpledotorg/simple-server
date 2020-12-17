@@ -11,7 +11,9 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    AuditLog.create_logs_async(current_user, records_to_sync, "fetch", Time.current) unless disable_audit_logs?
+    records = records_to_sync
+
+    AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
     render(
       json: Oj.dump({
         response_key => records.map { |record| transform_to_response(record) },
