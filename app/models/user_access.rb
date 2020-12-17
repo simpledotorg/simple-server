@@ -64,6 +64,13 @@ class UserAccess
       .includes(:facilities)
   end
 
+  def accessible_blocks(action)
+    district_regions = accessible_facility_groups(action).includes(:region).map(&:region)
+    paths = district_regions.pluck(:path)
+    globs = paths.map { |path| " '#{path}.*' "}.join(",")
+    Region.block_regions.where("path ? ARRAY[#{globs}]::lquery[]")
+  end
+
   def accessible_facilities(action)
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))

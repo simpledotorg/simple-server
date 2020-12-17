@@ -6,9 +6,9 @@ RSpec.describe UserAccess, type: :model do
   let(:power_user) { UserAccess.new(create(:admin, :power_user)) }
 
   describe "accessible_*" do
-    let!(:organization_1) { create(:organization, name: "org_1") }
-    let!(:organization_2) { create(:organization, name: "org_2") }
-    let!(:organization_3) { create(:organization, name: "org_3") }
+    let(:organization_1) { create(:organization, name: "org_1") }
+    let(:organization_2) { create(:organization, name: "org_2") }
+    let(:organization_3) { create(:organization, name: "org_3") }
 
     let(:facility_group_1) { create(:facility_group, organization: organization_1, name: "facility_group_1") }
     let(:facility_group_2) { create(:facility_group, organization: organization_2, name: "facility_group_2") }
@@ -157,6 +157,31 @@ RSpec.describe UserAccess, type: :model do
               admin.accesses.delete_all
             end
           end
+        end
+      end
+
+      fcontext "#accessible_blocks" do
+        before { Flipper.enable(:regions_prep) }
+
+        it "returns any blocks in the org an admin manages" do
+          block_1 = create(:region, :block, reparent_to: facility_group_3_1.region)
+          block_2 = create(:region, :block, reparent_to: facility_group_3_2.region)
+          _block_3 = create(:region, :block, name: "block_1", reparent_to: facility_group_1.region)
+          manager.accesses.create!(resource: organization_3)
+          expect(manager.accessible_blocks(:manage)).to match_array([block_1, block_2])
+          viewer_all.accesses.create!(resource: organization_3)
+          expect(viewer_all.accessible_blocks(:manage)).to match_array([])
+          expect(viewer_all.accessible_blocks(:view_reports)).to match_array([block_1, block_2])
+        end
+
+        it "returns any blocks underneath any accessible_facility groups" do
+          block_1 = create(:region, :block, name: "block_1", reparent_to: facility_group_1.region)
+          block_2 = create(:region, :block, reparent_to: facility_group_2.region)
+          _block_3 = create(:region, :block, reparent_to: facility_group_3_1.region)
+          manager.accesses.create!(resource: facility_group_1)
+          expect(manager.accessible_blocks(:manage)).to match_array([block_1])
+          manager.accesses.create!(resource: facility_group_2)
+          expect(manager.accessible_blocks(:manage)).to match_array([block_1, block_2])
         end
       end
 
