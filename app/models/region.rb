@@ -91,7 +91,7 @@ class Region < ApplicationRecord
           .or(assigned_patients.with_discarded)
           .union(appointed_patients.with_discarded)
       else
-        registered_patients
+        registered_patients.with_discarded
     end
   end
 
