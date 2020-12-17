@@ -48,6 +48,9 @@
            {:keys [response start elapsed]} (u/timing #(deref (api/request resource-path options)))
            body                             (try (j/read-value (:body response))
                                                  (catch com.fasterxml.jackson.databind.exc.MismatchedInputException e
+                                                   (log/info response))
+                                                 (catch com.fasterxml.jackson.core.io.JsonEOFException e
+                                                   (log/info "EOF error thrown on")
                                                    (log/info response)))
            records                          (get body (name resource))
            response-process-token           (get body "process_token")
