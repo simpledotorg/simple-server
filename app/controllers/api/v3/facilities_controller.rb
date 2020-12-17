@@ -44,8 +44,8 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    Facility
-      .updated_on_server_since(other_facilities_processed_since, limit)
+    other_facility_records
+      .with_block_region_id
       .includes(:facility_group)
       .where.not(facility_group: nil)
   end
@@ -54,7 +54,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   def sync_region_id(facility)
     if current_user&.block_level_sync?
-      facility.region.block_region.id
+      facility.block_region_id
     else
       facility.facility_group_id
     end
