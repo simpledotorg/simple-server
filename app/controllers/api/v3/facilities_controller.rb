@@ -52,8 +52,14 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
 
   private
 
+  # Memoize this call here so that we don't end up making thousands of calls to check user for each facility
+  def block_level_sync?
+    @is_block_level_sync_enabled = current_user&.block_level_sync? if @is_block_level_sync_enabled.nil?
+    @is_block_level_sync_enabled
+  end
+
   def sync_region_id(facility)
-    if current_user&.block_level_sync?
+    if block_level_sync?
       facility.block_region_id
     else
       facility.facility_group_id
