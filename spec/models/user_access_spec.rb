@@ -160,7 +160,7 @@ RSpec.describe UserAccess, type: :model do
         end
       end
 
-      fcontext "#accessible_blocks" do
+      context "#accessible_blocks" do
         before { Flipper.enable(:regions_prep) }
 
         it "returns any blocks in the org an admin manages" do
