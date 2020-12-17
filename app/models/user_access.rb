@@ -76,12 +76,17 @@ class UserAccess
     return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
 
     manageable_facilities = user.accessible_facilities(:manage)
+    manageable_facility_groups = user.accessible_facility_groups(:manage)
+    manageable_orgs = user.accessible_organizations(:manage)
 
     resource_ids =
       [
         manageable_facilities.pluck("facilities.id"),
         manageable_facilities.map(&:facility_group_id),
-        manageable_facilities.map { |facility| facility.organization.id }
+        manageable_facilities.map(&:organization_id),
+        manageable_facility_groups.map(&:id),
+        manageable_facility_groups.map(&:organization_id),
+        manageable_orgs.map(&:id)
       ].flatten.uniq
 
     User
