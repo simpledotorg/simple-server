@@ -27,7 +27,7 @@
    :appointments      "/api/v3/blood_pressures/sync"
    :blood_sugars      "/api/v4/blood_sugars/sync"
    :blood_pressures   "/api/v3/blood_pressures/sync"
-   :precription_drugs "/api/v3/prescription_drugs/sync"})
+   :prescription_drugs "/api/v3/prescription_drugs/sync"})
 
 (defn headers [{:keys [id facility_id access_token sync_region_id] :as user}]
   {"X-FACILITY-ID"    facility_id
