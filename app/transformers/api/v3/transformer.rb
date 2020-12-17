@@ -9,12 +9,17 @@ class Api::V3::Transformer
     end
 
     def rename_attributes(attributes, mapping)
-      mapping = mapping.with_indifferent_access
-      attributes
+      replace_keys(attributes
         .to_hash
-        .except(*mapping.values)
-        .transform_keys! { |key| mapping[key] || key }
+        .except(*mapping.values), mapping)
         .with_indifferent_access
+    end
+
+    def replace_keys(h, mapping)
+      mapping.each do |k, v|
+        h[v] = h.delete(k)
+      end
+      h
     end
 
     def key_mapping
