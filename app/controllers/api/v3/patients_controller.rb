@@ -15,14 +15,14 @@ class Api::V3::PatientsController < Api::V3::SyncController
 
   def current_facility_records
     model
-      .where(id: current_facility.syncable_patients)
+      .where(id: current_facility.syncable_patients.pluck(:id))
       .updated_on_server_since(current_facility_processed_since, limit)
   end
 
   def other_facility_records
     other_facilities_limit = limit - current_facility_records.count
     other_patient_records =
-      current_sync_region.syncable_patients - current_facility.syncable_patients
+      current_sync_region.syncable_patients.pluck(:id) - current_facility.syncable_patients.pluck(:id)
 
     model
       .where(id: other_patient_records)
