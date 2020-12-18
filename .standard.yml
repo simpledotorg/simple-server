@@ -2,5 +2,3 @@ ignore:
   - bundle/bin/*
   - db/schema.rb
   - db/data_schema.rb
-  - lib/tasks/hard_delete.rake:
-      - Lint/UnreachableCode
