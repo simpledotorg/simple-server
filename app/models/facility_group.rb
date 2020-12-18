@@ -32,10 +32,11 @@ class FacilityGroup < ApplicationRecord
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
-  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }
+  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }, unless: :generating_seed_data
 
   attr_accessor :new_block_names
   attr_accessor :remove_block_ids
+  attr_accessor :generating_seed_data
 
   after_create { |record| FacilityGroupRegionSync.new(record).after_create }
   after_update { |record| FacilityGroupRegionSync.new(record).after_update }
@@ -58,6 +59,16 @@ class FacilityGroup < ApplicationRecord
 
     Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
+
+  # For Regions compatibility
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+
+  def child_region_type
+    "facility"
+  end
+
+  # A FacilityGroup's children are Facilities for reporting purposes
+  alias_method :children, :facilities
 
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
@@ -82,23 +93,15 @@ class FacilityGroup < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
-  # For regions compatibility
-  def facility_region?
-    false
-  end
-
-  # For regions compatibility
-  def district_region?
-    true
+  def syncable_patients
+    registered_patients.with_discarded
   end
 
   private

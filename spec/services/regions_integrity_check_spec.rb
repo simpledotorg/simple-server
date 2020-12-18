@@ -127,10 +127,10 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
       expected_log = {
         class: "RegionsIntegrityCheck",
-        msg: [{
+        msg: {
           resource: :blocks,
           result: {missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]}
-        }]
+        }
       }
 
       expect(Rails.logger).to receive(:error).with(expected_log)
@@ -153,15 +153,13 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
       expected_msg = [
         "Regions Integrity Failure",
         {
-          extra: [
-            {
-              resource: :blocks,
-              result:
-                {
-                  missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]
-                }
-            }
-          ],
+          extra: {
+            resource: :blocks,
+            result:
+              {
+                missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]
+              }
+          },
           logger: "logger",
           tags: {type: "regions"}
         }

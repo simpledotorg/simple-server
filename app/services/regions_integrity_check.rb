@@ -206,11 +206,11 @@ class RegionsIntegrityCheck
     end
   end
 
-  def log(type, *args)
+  def log(type, args)
     Rails.logger.public_send(type, msg: args, class: self.class.name)
   end
 
-  def sentry(*args)
+  def sentry(args)
     Raven.capture_message(SENTRY_ERROR_TITLE, logger: "logger", extra: args, tags: {type: "regions"})
   end
 end

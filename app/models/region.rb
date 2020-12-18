@@ -16,7 +16,9 @@ class Region < ApplicationRecord
   # To set a new path for a Region, assign the parent region via `reparent_to`, and the before_validation
   # callback will assign the new path.
   attr_accessor :reparent_to
+  attr_accessor :parent_path
   before_validation :initialize_path, if: :reparent_to
+  before_validation :_set_path_for_seeds, if: :parent_path
   before_discard :remove_path
 
   REGION_TYPES = %w[root organization state district block facility].freeze
@@ -30,6 +32,15 @@ class Region < ApplicationRecord
     end
     # Don't leave around the old, auto generated methods to avoid confusion
     undef_method "#{type}_regions?"
+  end
+
+  def child_region_type
+    index = REGION_TYPES.find_index { |type| type == region_type }
+    REGION_TYPES[index + 1]
+  end
+
+  def organization
+    organization_region.source
   end
 
   def self.root
@@ -48,8 +59,12 @@ class Region < ApplicationRecord
     SecureRandom.uuid[0..7]
   end
 
-  def assigned_patients
-    Patient.where(assigned_facility: facilities)
+  def registered_hypertension_patients
+    Patient.with_hypertension.where(registration_facility: facilities)
+  end
+
+  def registered_diabetes_patients
+    Patient.with_diabetes.where(registration_facility: facilities)
   end
 
   def facilities
@@ -61,20 +76,35 @@ class Region < ApplicationRecord
     end
   end
 
-  # A label is a sequence of alphanumeric characters and underscores.
-  # (In C locale the characters A-Za-z0-9_ are allowed).
-  # Labels must be less than 256 bytes long.
-  def path_label
-    set_slug unless slug
-    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
+  def cohort_analytics(period:, prev_periods:)
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
-  def log_payload
-    attrs = attributes.slice("name", "slug", "path")
-    attrs["id"] = id.presence
-    attrs["region_type"] = region_type
-    attrs["errors"] = errors.full_messages.join(",") if errors.any?
-    attrs.symbolize_keys
+  def dashboard_analytics(period:, prev_periods:, include_current_period: true)
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+  end
+
+  def syncable_patients
+    case region_type
+      when "block"
+        registered_patients.with_discarded
+          .union(assigned_patients.with_discarded)
+          .union(appointed_patients.with_discarded)
+      else
+        registered_patients
+    end
+  end
+
+  def registered_patients
+    Patient.where(registration_facility: facility_regions.pluck(:source_id))
+  end
+
+  def assigned_patients
+    Patient.where(assigned_facility: facility_regions.pluck(:source_id))
+  end
+
+  def appointed_patients
+    Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
   end
 
   REGION_TYPES.reject { |t| t == "root" }.map do |region_type|
@@ -93,23 +123,40 @@ class Region < ApplicationRecord
     # e.g. organization.facility_regions
     descendant_method = "#{region_type}_regions"
     define_method(descendant_method) do
-      if ancestor_types(region_type).include?(self.region_type)
-        descendants.where(region_type: region_type)
+      if self_and_ancestor_types(region_type).include?(self.region_type)
+        self_and_descendants.where(region_type: region_type)
       else
         raise NoMethodError, "undefined method #{region_type.pluralize} for region '#{name}' of type #{self.region_type}"
       end
     end
   end
 
+  def log_payload
+    attrs = attributes.slice("name", "slug", "path")
+    attrs["id"] = id.presence
+    attrs["region_type"] = region_type
+    attrs["errors"] = errors.full_messages.join(",") if errors.any?
+    attrs.symbolize_keys
+  end
+
+  def region
+    self
+  end
+
   private
 
+  def _set_path_for_seeds
+    self.path = "#{parent_path}.#{path_label}"
+  end
+
   def initialize_path
-    logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
+    # logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
     self.path = if reparent_to.path.present?
       "#{reparent_to.path}.#{path_label}"
     else
       path_label
     end
+
     self.reparent_to = nil
   end
 
@@ -131,5 +178,13 @@ class Region < ApplicationRecord
 
   def self_and_descendant_types(region_type)
     [region_type] + descendant_types(region_type)
+  end
+
+  # A label is a sequence of alphanumeric characters and underscores.
+  # (In C locale the characters A-Za-z0-9_ are allowed).
+  # Labels must be less than 256 bytes long.
+  def path_label
+    set_slug unless slug
+    slug.gsub(/\W/, "_").slice(0, MAX_LABEL_LENGTH)
   end
 end

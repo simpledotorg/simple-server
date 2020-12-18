@@ -38,6 +38,10 @@ module Seed
       config.number_of_facility_groups
     end
 
+    def number_of_states
+      config.number_of_states
+    end
+
     def number_of_facilities_per_facility_group
       config.rand_or_max(1..config.max_number_of_facilities_per_facility_group)
     end
@@ -61,23 +65,67 @@ module Seed
       end
       puts "Creating #{number_of_facility_groups} FacilityGroups..."
 
-      facility_groups = number_of_facility_groups.times.map {
-        FactoryBot.build(:facility_group, organization_id: organization.id, state: nil)
+      # Create state Regions
+      states = number_of_states.times.map {
+        FactoryBot.build(:region, :state, id: nil, parent_path: Region.root.path)
+      }
+      state_results = Region.import(states, returning: [:path])
+
+      # Create FacilityGroups
+      district_names = Seed::FakeNames.instance.districts.sample(number_of_facility_groups)
+      facility_groups = number_of_facility_groups.times.each_with_index.map { |i|
+        FactoryBot.build(:facility_group,
+          id: nil,
+          create_parent_region: false,
+          generating_seed_data: true,
+          name: district_names[i],
+          organization_id: organization.id,
+          state: nil)
       }
       fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
 
+      # Create district Regions
+      district_regions = fg_result.results.map { |row|
+        facility_group_id, facility_group_name = *row
+        attrs = {
+          id: nil,
+          name: facility_group_name,
+          region_type: "district",
+          parent_path: state_results.results.sample,
+          source_id: facility_group_id,
+          source_type: "FacilityGroup"
+        }
+        FactoryBot.build(:region, attrs)
+      }
+      district_regions_results = Region.import(district_regions, returning: [:id, :name, :path])
+
+      # Create block Regions
+      block_count = district_regions_results.ids.size
+      block_names = Seed::FakeNames.instance.blocks.sample(block_count)
+      block_regions = district_regions_results.results.each_with_index.map { |row, i|
+        _id, _name, path = *row
+        attrs = {
+          id: nil,
+          name: block_names[i],
+          parent_path: path,
+          region_type: "block"
+        }
+        FactoryBot.build(:region, attrs)
+      }
+      Region.import(block_regions, returning: [:id, :name, :path])
+
+      # Create Facilities
       facility_attrs = []
       fg_result.results.each do |row|
         facility_group_id, facility_group_name = *row
+        facility_group_region = Region.find_by!(source_id: facility_group_id)
         number_facilities = number_of_facilities_per_facility_group
-        state = Seed::FakeNames.instance.state
-        blocks = Seed::FakeNames.instance.blocks.sample(facilities_per_block)
+        state = facility_group_region.state_region
+        blocks = facility_group_region.block_regions.pluck(:name)
         number_facilities.times {
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
 
-          # TODO set the facility state here to match the parent district!
-          # also, what about ze blocks?
           attrs = {
             district: facility_group_name,
             facility_group_id: facility_group_id,
@@ -90,7 +138,22 @@ module Seed
         }
       end
 
-      Facility.import(facility_attrs, on_duplicate_key_ignore: true)
+      facility_results = Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
+      # Create Facility Regions
+      facility_regions = facility_results.results.map { |row|
+        id, name, block_name = *row
+        block = Region.find_by!(name: block_name)
+        attrs = {
+          id: nil,
+          name: name,
+          parent_path: block&.path,
+          region_type: "facility",
+          source_id: id,
+          source_type: "Facility"
+        }
+        FactoryBot.build(:region, attrs)
+      }
+      Region.import(facility_regions)
     end
   end
 end
