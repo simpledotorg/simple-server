@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_02_074942) do
+ActiveRecord::Schema.define(version: 2020_12_18_062046) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -68,7 +68,6 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id", "scheduled_date"], name: "index_appointments_on_patient_id_and_scheduled_date", order: { scheduled_date: :desc }
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
-    t.index ["updated_at"], name: "index_appointments_on_updated_at"
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
 
@@ -88,7 +87,6 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["recorded_at"], name: "index_blood_pressures_on_recorded_at"
-    t.index ["updated_at"], name: "index_blood_pressures_on_updated_at"
     t.index ["user_id"], name: "index_blood_pressures_on_user_id"
   end
 
@@ -108,7 +106,6 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["blood_sugar_value"], name: "index_blood_sugars_on_blood_sugar_value"
     t.index ["facility_id"], name: "index_blood_sugars_on_facility_id"
     t.index ["patient_id"], name: "index_blood_sugars_on_patient_id"
-    t.index ["updated_at"], name: "index_blood_sugars_on_updated_at"
     t.index ["user_id"], name: "index_blood_sugars_on_user_id"
   end
 
@@ -402,7 +399,6 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
     t.index ["reminder_consent"], name: "index_patients_on_reminder_consent"
-    t.index ["updated_at"], name: "index_patients_on_updated_at"
   end
 
   create_table "phone_number_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -442,7 +438,6 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
     t.index ["teleconsultation_id"], name: "index_prescription_drugs_on_teleconsultation_id"
-    t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
 
