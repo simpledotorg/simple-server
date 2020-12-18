@@ -36,6 +36,15 @@ RSpec.describe Region, type: :model do
       expect(region_3.block_region?).to be_truthy
       expect(region_4.facility_region?).to be_truthy
     end
+
+    it "can determine child region type" do
+      state = Region.new(name: "New York", region_type: "state")
+      expect(state.child_region_type).to eq("district")
+      district = Region.new(region_type: "district")
+      expect(district.child_region_type).to eq("block")
+      district = Region.new(region_type: "facility")
+      expect(district.child_region_type).to be_nil
+    end
   end
 
   context "facilities" do
