@@ -25,7 +25,6 @@ RSpec.describe TelemedicineReports do
   let!(:teleconsultation_requests_marked_incomplete) { patients.slice(5, 2).each { |patient| create(:teleconsultation, facility: facility_1, patient: patient, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day, requester_completion_status: "waiting", recorded_at: nil) } }
   let!(:teleconsultation_requests_not_marked) { patients.slice(7, 2).each { |patient| create(:teleconsultation, facility: facility_1, patient: patient, requester: user_1, requested_medical_officer: user_2, medical_officer: user_2, device_created_at: Date.parse("2020-08-04").beginning_of_day, requester_completion_status: nil, recorded_at: nil) } }
 
-
   before do
     allow(Flipper).to receive(:enabled?).with(:weekly_telemed_report).and_return(true)
     allow(ENV).to receive(:fetch).with("TELEMED_REPORT_EMAILS").and_return("test@example.com")
