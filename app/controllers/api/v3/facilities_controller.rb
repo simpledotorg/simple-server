@@ -44,18 +44,24 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    other_facility_records
-      .with_block_region_id
-      .includes(:facility_group)
-      .where.not(facility_group: nil)
+    if Flipper.enabled?(:regions_prep)
+      other_facility_records
+        .with_block_region_id
+        .includes(:facility_group)
+        .where.not(facility_group: nil)
+    else
+      other_facility_records
+        .includes(:facility_group)
+        .where.not(facility_group: nil)
+    end
   end
 
   private
 
-  # Memoize this call here so that we don't end up making thousands of calls to check user for each facility
+  # Memoize this call so that we don't end up making thousands of calls to check user for each facility
   def block_level_sync?
-    @is_block_level_sync_enabled = current_user&.block_level_sync? if @is_block_level_sync_enabled.nil?
-    @is_block_level_sync_enabled
+    return @block_level_sync_enabled if defined? @block_level_sync_enabled
+    @block_level_sync_enabled = current_user&.block_level_sync?
   end
 
   def sync_region_id(facility)
