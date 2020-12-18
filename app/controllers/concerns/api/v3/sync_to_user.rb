@@ -3,7 +3,7 @@ module Api::V3::SyncToUser
 
   included do
     def current_facility_records
-      model
+      model_sync_scope
         .where(patient: current_facility.syncable_patients.pluck(:id))
         .updated_on_server_since(current_facility_processed_since, limit)
     end
@@ -13,14 +13,14 @@ module Api::V3::SyncToUser
       other_patient_records =
         current_sync_region.syncable_patients.pluck(:id) - current_facility.syncable_patients.pluck(:id)
 
-      model
+      model_sync_scope
         .where(patient: other_patient_records)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
     private
 
-    def model
+    def model_sync_scope
       controller_name.classify.constantize.for_sync
     end
 

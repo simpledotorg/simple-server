@@ -14,7 +14,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def current_facility_records
-    model
+    model_sync_scope
       .where(id: current_facility.syncable_patients.pluck(:id))
       .updated_on_server_since(current_facility_processed_since, limit)
   end
@@ -24,7 +24,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
     other_patient_records =
       current_sync_region.syncable_patients.pluck(:id) - current_facility.syncable_patients.pluck(:id)
 
-    model
+    model_sync_scope
       .where(id: other_patient_records)
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end

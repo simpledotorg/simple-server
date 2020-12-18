@@ -12,7 +12,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
 
   private
 
-  def model
+  def model_sync_scope
     super.for_v3
   end
 
