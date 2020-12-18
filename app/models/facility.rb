@@ -213,7 +213,7 @@ class Facility < ApplicationRecord
   def syncable_patients
     registered_patients.with_discarded
   end
-      
+
   def self.localized_facility_size(facility_size)
     return unless facility_size
     I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
