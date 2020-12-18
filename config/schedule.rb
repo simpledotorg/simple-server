@@ -40,7 +40,7 @@ every :month, at: local("04:00 am"), roles: [:seed_data] do
   rake "db:seed_users_data"
 end
 
-every :monday, at: local("11:00 am"), roles: [:cron] do
+every :monday, at: local("6:00 am"), roles: [:cron] do
   if Flipper.enabled?(:weekly_telemed_report)
     rake "reports:telemedicine"
   end
