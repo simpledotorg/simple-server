@@ -33,7 +33,7 @@ module Api::V3::SyncToUser
     end
 
     def processed_until(records)
-      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.present?
+      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.any?
     end
 
     def response_process_token
