@@ -34,6 +34,11 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def child_region_type
+    index = REGION_TYPES.find_index { |type| type == region_type }
+    REGION_TYPES[index + 1]
+  end
+
   def organization
     organization_region.source
   end
@@ -134,6 +139,10 @@ class Region < ApplicationRecord
     attrs.symbolize_keys
   end
 
+  def region
+    self
+  end
+
   private
 
   def _set_path_for_seeds
@@ -141,8 +150,7 @@ class Region < ApplicationRecord
   end
 
   def initialize_path
-    logger.info(class: self.class, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
-
+    # logger.info(class: self.class.name, msg: "got reparent_to: #{reparent_to.name}, going to initialize new path")
     self.path = if reparent_to.path.present?
       "#{reparent_to.path}.#{path_label}"
     else
