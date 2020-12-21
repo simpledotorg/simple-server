@@ -167,21 +167,18 @@ describe Reports::PerformanceScore, type: :model do
   end
 
   describe "#registrations_rate" do
-    it "returns registrations rate based on registrations / target registrations" do
+    it "returns registrations rate based on registrations / opd load" do
       allow(perf_score).to receive(:registrations).and_return(30)
-      allow(perf_score).to receive(:target_registrations).and_return(60)
-      expect(perf_score.registrations_rate).to eq(50)
+      expect(perf_score.registrations_rate).to eq(10)
     end
 
-    it "returns 100 if target is 0 and any registrations happen" do
+    it "returns 100 if opd load is 0 and any registrations happen" do
       allow(perf_score).to receive(:registrations).and_return(10)
-      allow(perf_score).to receive(:target_registrations).and_return(0)
       expect(perf_score.registrations_rate).to eq(100)
     end
 
-    it "returns 0 if target is 0 and no registrations happen" do
+    it "returns 0 if opd load is 0 and no registrations happen" do
       allow(perf_score).to receive(:registrations).and_return(0)
-      allow(perf_score).to receive(:target_registrations).and_return(0)
       expect(perf_score.registrations_rate).to eq(0)
     end
   end
@@ -195,18 +192,6 @@ describe Reports::PerformanceScore, type: :model do
     it "returns 0 when registrations count is nil" do
       allow(reports_result).to receive(:registrations_for).with(period).and_return(nil)
       expect(perf_score.registrations).to eq(0)
-    end
-  end
-
-  describe "#target_registrations" do
-    it "returns the target based on the estimated OPD load" do
-      allow(facility).to receive(:monthly_estimated_opd_load).and_return(1000)
-      expect(perf_score.target_registrations).to eq(100)
-    end
-
-    it "functions when opd_load is 0" do
-      allow(facility).to receive(:monthly_estimated_opd_load).and_return(0)
-      expect(perf_score.target_registrations).to eq(0)
     end
   end
 end
