@@ -13,7 +13,7 @@ FactoryBot.define do
     protocol
 
     transient do
-      create_parent_region { Flipper.enabled?(:regions_prep) }
+      create_parent_region { true }
     end
 
     before(:create) do |facility_group, options|
@@ -24,6 +24,7 @@ FactoryBot.define do
             Check the ordering of fixtures, something was probably created before the regions_prep flag was enabled."
           EOL
         end
+
         facility_group.organization.region.state_regions.find_by(name: facility_group.state) ||
           create(:region, :state, name: facility_group.state, reparent_to: facility_group.organization.region)
       end

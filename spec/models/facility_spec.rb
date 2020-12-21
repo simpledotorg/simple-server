@@ -85,40 +85,34 @@ RSpec.describe Facility, type: :model do
   end
 
   describe "Callbacks" do
-    context "when regions_prep is enabled" do
-      before do
-        enable_flag(:regions_prep)
+    context "after_create" do
+      it "creates a region" do
+        org = create(:organization, name: "IHCI")
+        facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
+        block_name = "An Block"
+        facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
+
+        expect(facility.region).to be_present
+        expect(facility.region).to be_persisted
+        expect(facility.region.name).to eq "An Facility"
+        expect(facility.region.region_type).to eq "facility"
+        expect(facility.region.parent).to eq facility.region.block_region
+        expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
       end
+    end
 
-      context "after_create" do
-        it "creates a region" do
-          org = create(:organization, name: "IHCI")
-          facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
-          block_name = "An Block"
-          facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
+    context "after_update" do
+      it "updates the associated region" do
+        org = create(:organization, name: "IHCI")
+        facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
+        block_name = "An Block"
+        facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
 
-          expect(facility.region).to be_present
-          expect(facility.region).to be_persisted
-          expect(facility.region.name).to eq "An Facility"
-          expect(facility.region.region_type).to eq "facility"
-          expect(facility.region.parent).to eq facility.region.block_region
-          expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
-        end
-      end
-
-      context "after_update" do
-        it "updates the associated region" do
-          org = create(:organization, name: "IHCI")
-          facility_group = create(:facility_group, name: "FG", state: "Punjab", organization: org)
-          block_name = "An Block"
-          facility = create(:facility, name: "An Facility", block: block_name, facility_group: facility_group)
-
-          facility.update(name: "A Facility")
-          expect(facility.region.name).to eq "A Facility"
-          expect(facility.region.region_type).to eq "facility"
-          expect(facility.region.parent).to eq facility.region.block_region
-          expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
-        end
+        facility.update(name: "A Facility")
+        expect(facility.region.name).to eq "A Facility"
+        expect(facility.region.region_type).to eq "facility"
+        expect(facility.region.parent).to eq facility.region.block_region
+        expect(facility.region.path).to eq "india.ihci.punjab.fg.an_block.an_facility"
       end
     end
   end
@@ -226,15 +220,16 @@ RSpec.describe Facility, type: :model do
   describe "Validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:district) }
+
     context "validate state presence only if facility_group exists" do
       let(:subject) { Facility.new(facility_group: create(:facility_group)) }
       it { is_expected.to validate_presence_of(:state) }
     end
+
     it { is_expected.to validate_presence_of(:country) }
     it { is_expected.to validate_numericality_of(:pin) }
 
     describe "valid_block" do
-      before { enable_flag(:regions_prep) }
       let!(:organization) { create(:organization, name: "OrgTwo") }
       let!(:facility_group) { create(:facility_group, name: "FGThree", organization_id: organization.id) }
       let!(:block) { create(:region, :block, name: "Zone 2", reparent_to: facility_group.region) }
@@ -252,7 +247,7 @@ RSpec.describe Facility, type: :model do
 
         it do
           is_expected.to validate_presence_of(:teleconsultation_medical_officers)
-            .with_message("must be added to enable teleconsultation")
+                           .with_message("must be added to enable teleconsultation")
         end
       end
 

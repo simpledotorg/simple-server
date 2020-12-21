@@ -128,10 +128,10 @@ class Facility < ApplicationRecord
     facility_group.region.block_regions.find_by(name: block)
   end
 
-  def import_with_regions!(import_facilities, options)
+  def self.import_with_regions!(import_facilities, options)
     ActiveRecord::Base.transaction do
       Facility.import!(import_facilities, options)
-      import_facilities.each(&:make_region)
+      import_facilities.each { |facility| facility.send(:make_region) }
     end
   end
 

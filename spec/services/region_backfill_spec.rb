@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe RegionBackfill, type: :model do
+  before { skip "RegionBackfill is deprecated and should be removed along with these specs." }
+
   context "dry run mode" do
     before do
       org = create(:organization, name: "Test Organization")
