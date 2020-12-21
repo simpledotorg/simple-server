@@ -58,8 +58,8 @@ class Patient < ApplicationRecord
 
   scope :syncable_to_region, ->(region) { region.syncable_patients }
   scope :search_by_address, ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
-  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
-  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
+  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes).distinct }
+  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes).distinct }
   scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
     follow_ups_with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
   }
