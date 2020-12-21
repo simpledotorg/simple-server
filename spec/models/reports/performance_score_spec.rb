@@ -173,11 +173,13 @@ describe Reports::PerformanceScore, type: :model do
     end
 
     it "returns 100 if opd load is 0 and any registrations happen" do
+      allow(facility).to receive(:monthly_estimated_opd_load).and_return(0)
       allow(perf_score).to receive(:registrations).and_return(10)
       expect(perf_score.registrations_rate).to eq(100)
     end
 
     it "returns 0 if opd load is 0 and no registrations happen" do
+      allow(facility).to receive(:monthly_estimated_opd_load).and_return(0)
       allow(perf_score).to receive(:registrations).and_return(0)
       expect(perf_score.registrations_rate).to eq(0)
     end
