@@ -60,6 +60,16 @@ class FacilityGroup < ApplicationRecord
     Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
 
+  # For Regions compatibility
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+
+  def child_region_type
+    "facility"
+  end
+
+  # A FacilityGroup's children are Facilities for reporting purposes
+  alias_method :children, :facilities
+
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
   end
@@ -92,16 +102,6 @@ class FacilityGroup < ApplicationRecord
 
   def syncable_patients
     registered_patients.with_discarded
-  end
-
-  # For regions compatibility
-  def facility_region?
-    false
-  end
-
-  # For regions compatibility
-  def district_region?
-    true
   end
 
   private

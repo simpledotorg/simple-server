@@ -55,9 +55,9 @@
     aria-expanded="false"
   >
     <% if @selected_sizes.size == 1 %>
-      <%= @selected_sizes.first.capitalize %>
+      <%= Facility.localized_facility_size(@selected_sizes.first) %>
     <% else %>
-      All facility sizes 
+      All facility sizes
     <% end %>
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -81,7 +81,7 @@
         form="query-filters"
         onclick="$('#selected-size').remove()"
       >
-        <%= size.capitalize %>
+        <%= Facility.localized_facility_size(size) %>
       </button>
     <% end %>
   </div>

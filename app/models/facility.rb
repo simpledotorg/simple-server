@@ -148,6 +148,10 @@ class Facility < ApplicationRecord
     [self]
   end
 
+  def child_region_type
+    nil
+  end
+
   def recent_blood_pressures
     blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
@@ -198,19 +202,21 @@ class Facility < ApplicationRecord
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
-  # For regions compatibility
-  def facility_region?
-    true
-  end
-
-  # For regions compatibility
-  def district_region?
-    false
-  end
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
 
   def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
     end
+  end
+
+  def self.localized_facility_size(facility_size)
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
+  end
+
+  def localized_facility_size
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 end
