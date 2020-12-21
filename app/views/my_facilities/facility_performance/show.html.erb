@@ -14,7 +14,7 @@
           </p>
         </div>
         <p>
-          A measure of how close a facility comes to the ideals of 70% BP control rate or higher, 20% missed visits rate or lower, and registering 10% or more of it's estimated OPD load. The score is weighted, with up to 50 points for BP control rate, up to 30 points for missed visits rate, and 20 points for registrations.
+          A measure of how close a facility comes to the ideals of 70% BP control rate or higher, 20% missed visits rate or lower, and registering 10% or more of its estimated OPD load. The score is weighted, with up to 50 points for BP control rate, up to 30 points for missed visits rate, and 20 points for registrations.
         </p>
       </div>
       <div class="d-flex fw-wrap mb-16px">
@@ -22,8 +22,8 @@
       </div>
       <% %w(large medium small community).each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
-        <p class="mb-0px fw-bold">
-          <%= size.capitalize %>
+        <p class="mt-20px mb-0px fw-bold">
+          <%= size.capitalize %> facilities
         </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" id="ranked-facilities-table">
           <colgroup>
@@ -40,18 +40,28 @@
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
-              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default>Grade</th>
-              <th class="row-label sort-label">Facilities</th>
+              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="rank" data-sort-default style="width: 80px"">
+                Grade
+              </th>
+              <th class="row-label sort-label" style="width: 200px">
+                Facilities
+              </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
-                BP controlled in <%= @period %>
+                Patients with controlled BP from<br>
+                <%= @period.start_date.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end_date.to_s(:day_mon_year) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
-                Missed visits in <%= @period %>
+                Patients with no visit from<br>
+                <%= @period.start_date.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end_date.to_s(:day_mon_year) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations" colspan="2">
-                Registrations in <%= @period %>
+                Registrations as % of OPD load<br>
+                in <%= @period %>
               </th>
-              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">Monthly OPD load</th>
+              <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="opd_load">
+                Estimated monthly<br>
+                OPD load
+              </th>
               <th class="mobile"></th>
             </tr>
           </thead>

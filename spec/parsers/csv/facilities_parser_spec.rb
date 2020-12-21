@@ -15,6 +15,7 @@ RSpec.describe Csv::FacilitiesParser do
                                                     district: "Bhatinda",
                                                     state: "Punjab",
                                                     country: "India",
+                                                    facility_size: "community",
                                                     enable_diabetes_management: true)
 
         expect(facilities.second).to have_attributes(organization_name: "OrgOne",
@@ -23,6 +24,7 @@ RSpec.describe Csv::FacilitiesParser do
                                                      facility_type: "CHC",
                                                      district: "Bhatinda",
                                                      state: "Punjab",
+                                                     facility_size: "large",
                                                      country: "India")
       end
 
@@ -46,6 +48,23 @@ RSpec.describe Csv::FacilitiesParser do
         facilities = described_class.parse(upload_file)
 
         expect(facilities.first).to have_attributes(organization_name: "OrgOne", facility_group_name: "FGTwo", state: "Maharashtra")
+      end
+    end
+
+    context "when provided localized facility sizes" do
+      around do |example|
+        I18n.with_locale(:en_IN) do
+          example.run
+        end
+      end
+
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+
+      it "parses the facilities" do
+        facilities = described_class.parse(upload_file)
+
+        expect(facilities.first.facility_size).to eq("community")
+        expect(facilities.second.facility_size).to eq("large")
       end
     end
   end
