@@ -43,16 +43,18 @@ class Api::V3::SyncController < APIController
     if resync_token_modified?
       Rails.logger.info(msg: "[force_resync] Resync token modified", resource: response_key)
     end
-    if sync_region_modified?
-      Rails.logger.info msg: "[force_resync] Sync region modified",
-                        region_type: current_sync_region.class.name,
-                        region_id: current_sync_region.id,
-                        resource: response_key
-    end
-    if block_level_sync?
-      Rails.logger.info msg: "current_sync_region set to block",
-                        block_id: current_block.id,
-                        user_id: current_user.id
+    if current_user
+      if sync_region_modified?
+        Rails.logger.info msg: "[force_resync] Sync region modified",
+                          region_type: current_sync_region.class.name,
+                          region_id: current_sync_region.id,
+                          resource: response_key
+      end
+      if block_level_sync?
+        Rails.logger.info msg: "current_sync_region set to block",
+                          block_id: current_block.id,
+                          user_id: current_user.id
+      end
     end
   end
 
