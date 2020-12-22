@@ -6,42 +6,56 @@
     </div>
 
     <ul>
-    <% current_admin.accessible_districts(:any).each do |district| %>
+    <% current_admin.accessible_districts(:any).each do |region| %>
       <li>
-        <div class="access-item facility-group collapsed">
+        <div class="access-item">
 
           <div class="access-item__dropdown">
             <i class="fas fa-caret-down light"></i>
           </div>
 
           <div class="form-check show">
-            <%= district.name %>
+            <%= link_to region.name, reports_region_path(region, report_scope: region.region_type) %>
           </div>
 
           <div class="access-item__padding"></div>
-
-          <span class="access-ratio">
-            # TODO facilities count
-          </span>
         </div>
 
-
         <ul class="access-item-wrapper block">
-          <% district.block_regions.each do |block| %>
+          <% region.children.each do |region| %>
             <li>
-              <div class="access-item block collasped " data-facility-group-id="<%=block.parent.id%>">
-              <span class="spacer"></span>
+              <div class="access-item block collasped">
+                <span class="spacer"></span>
 
                 <div class="access-item__dropdown">
                   <i class="fas fa-caret-down light"></i>
                 </div>
 
                 <div class="form-check show">
-                  <%= block.name %>
+                  <%= link_to region.name, reports_region_path(region, report_scope: region.region_type) %>
                 </div>
 
                 <div class="access-item__padding"></div>
               </div>
+
+            <ul class="access-item-wrapper block">
+            <% region.children.each do |region| %>
+              <li>
+                <div class="access-item <%= region.region_type %> collasped ">
+                  <span class="spacer"></span>
+                  <span class="spacer"></span>
+                  <span class="spacer"></span>
+
+                  <div class="form-check show">
+                    <%= link_to region.name, reports_region_path(region, report_scope: region.region_type) %>
+                  </div>
+
+                  <div class="access-item__padding"></div>
+                </div>
+              </li> <!-- facility -->
+            <% end %>
+            </ul>
+
             </li>
           <% end %>
         </ul>

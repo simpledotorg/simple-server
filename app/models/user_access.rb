@@ -64,6 +64,11 @@ class UserAccess
       .includes(:facilities)
   end
 
+  def accessible_districts(action)
+    facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
+    Region.district_regions.where(source_id: facility_group_ids)
+  end
+
   def accessible_blocks(action)
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
     paths = Region.district_regions.where(source_id: facility_group_ids, source_type: "FacilityGroup").pluck(:path)
