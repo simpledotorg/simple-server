@@ -1,5 +1,4 @@
 require "rails_helper"
-require "tasks/scripts/report_duplicate_passports"
 
 RSpec.describe ReportDuplicatePassports do
   describe ".duplicate_passports" do
