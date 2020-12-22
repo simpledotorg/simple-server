@@ -15,3 +15,10 @@ en_IN:
       facility:
         create: "Save facility"
         update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "HWC/SC"
+        small: "PHC"
+        medium: "CHC"
+        large: "SDH/DH"
