@@ -1,0 +1,59 @@
+<div id="facility-access" data-page="show">
+
+  <div class="card access-tree show">
+    <div class="access-tree__section-header">
+      District and Facility reports
+    </div>
+
+    <ul>
+    <% current_admin.accessible_districts(:any).each do |district| %>
+      <li>
+        <div class="access-item facility-group collapsed">
+
+          <div class="access-item__dropdown">
+            <i class="fas fa-caret-down light"></i>
+          </div>
+
+          <div class="form-check show">
+            <%= district.name %>
+          </div>
+
+          <div class="access-item__padding"></div>
+
+          <span class="access-ratio">
+            # TODO facilities count
+          </span>
+        </div>
+
+
+        <ul class="access-item-wrapper block">
+          <% district.block_regions.each do |block| %>
+            <li>
+              <div class="access-item block collasped " data-facility-group-id="<%=block.parent.id%>">
+              <span class="spacer"></span>
+
+                <div class="access-item__dropdown">
+                  <i class="fas fa-caret-down light"></i>
+                </div>
+
+                <div class="form-check show">
+                  <%= block.name %>
+                </div>
+
+                <div class="access-item__padding"></div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+
+      </li>
+    <% end%>
+    </ul>
+
+  </div>
+</div>
+
+<script>
+  const async = false
+  new AdminAccess("facility-access").initialize(async)
+</script>

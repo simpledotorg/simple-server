@@ -1,30 +1,9 @@
 <div class="container">
   <div class="row">
       <% if current_admin.feature_enabled?(:region_reports) %>
-
-        <% admin = AdminAccessPresenter.new(current_admin) %>
-
-        <div id="facility-access" data-page="show">
-          <div class="card access-tree show">
-            <div class="access-tree__section-header">
-              District and Facility reports
-            </div>
-
-              <%= render_async(access_tree_admin_path(admin, :show), error_message: access_tree_load_error) do %>
-
-                <div class="spinner-wrapper">
-                  <div class="spinner spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>
-                </div>
-              <% end %>
-          </div>
+        <div class="col-sm-5 col-lg-7">
+          <%= render "index_tree" %>
         </div>
-
-        <script>
-          new AdminAccess("facility-access").initialize()
-        </script>
-
       <% else %>
 
       <div class="col-sm-5 col-lg-7">
