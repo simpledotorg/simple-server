@@ -68,7 +68,7 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
         expect {
           post(:sync_from_user, params: {encounters: [encounter_with_no_observations]}, as: :json)
         }.to change { Encounter.count }.by(1)
-               .and change { Observation.count }.by(0)
+          .and change { Observation.count }.by(0)
 
         expect(response).to have_http_status(200)
       end
@@ -112,7 +112,7 @@ RSpec.describe Api::V3::EncountersController, type: :controller do
         it "returns an error in the response" do
           post(:sync_from_user, params: {encounters: [encounter]}, as: :json)
           expect(JSON(response.body)["errors"]).to eq(["schema" => ["Encounter observations belong to more than one facility"],
-            "id" => encounter["id"]])
+                                                       "id" => encounter["id"]])
         end
       end
     end

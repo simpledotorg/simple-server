@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:block) { create(:region, :block, name: "Block A", reparent_to: facility_group.region)}
+  let(:block) { create(:region, :block, name: "Block A", reparent_to: facility_group.region) }
   let(:valid_attributes) do
     attributes_for(:facility,
       facility_group_id: facility_group.id,

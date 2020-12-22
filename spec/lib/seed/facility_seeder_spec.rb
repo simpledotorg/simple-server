@@ -5,16 +5,16 @@ RSpec.describe Seed::FacilitySeeder do
     expect {
       Seed::FacilitySeeder.call(config: Seed::Config.new)
     }.to change { FacilityGroup.count }.by(2)
-           .and change { Facility.count }.by(8)
+      .and change { Facility.count }.by(8)
   end
 
   it "creates facility groups and facilities with regions" do
     expect {
       Seed::FacilitySeeder.call(config: Seed::Config.new)
     }.to change { Region.district_regions.count }.by(2)
-           .and change { Region.facility_regions.count }.by(8)
-                  .and change { FacilityGroup.count }.by(2)
-                         .and change { Facility.count }.by_at_least(7)
+      .and change { Region.facility_regions.count }.by(8)
+      .and change { FacilityGroup.count }.by(2)
+      .and change { Facility.count }.by_at_least(7)
     expect(Region.block_regions.count).to be > 0
     expect(Region.state_regions.count).to be > 0
     # verify facility regions are linked up correctly
@@ -42,7 +42,7 @@ RSpec.describe Seed::FacilitySeeder do
     expect {
       3.times { Seed::FacilitySeeder.call(config: Seed::Config.new) }
     }.to change { FacilityGroup.count }.by(2)
-           .and change { Facility.count }.by_at_most(8)
+      .and change { Facility.count }.by_at_most(8)
   end
 
   it "creates facilities within a facility group (ie district) that are all within the same state" do

@@ -133,13 +133,13 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
               patient: patient,
               device_created_at: two_months_ago)
           )
-                                         .except("recorded_at")
+            .except("recorded_at")
           bp_recorded_three_months_ago = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
               patient: patient,
               device_created_at: three_months_ago)
           )
-                                           .except("recorded_at")
+            .except("recorded_at")
 
           post(:sync_from_user, params: {blood_pressures: [bp_recorded_three_months_ago]}, as: :json)
           post(:sync_from_user, params: {blood_pressures: [bp_recorded_two_months_ago]}, as: :json)
