@@ -10,8 +10,8 @@
             Facility performance
           <% end %>
         <% end %>
-        <%= link_to(my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("blood_pressure_control")}") do %>
-          BP control
+        <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("blood_pressure_control")}") do %>
+          BP controlled
         <% end %>
         <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
           Missed visits
