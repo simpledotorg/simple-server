@@ -67,7 +67,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
     @period = if period_params.present?
       Period.new(period_params)
     else
-      Reports::RegionService.default_period
+      Reports::RegionService.default_period.previous
     end
   end
 

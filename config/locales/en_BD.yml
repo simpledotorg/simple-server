@@ -15,3 +15,10 @@ en_BD:
       facility:
         create: "Save facility"
         update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "CC"
+        small: "USC"
+        medium: "UHC"
+        large: "DH and larger"

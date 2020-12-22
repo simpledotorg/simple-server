@@ -25,7 +25,7 @@ class AdminsController < AdminController
       when :new, :edit
         AdminAccessPresenter.new(current_admin).visible_access_tree
       else
-        head :not_found and return
+        head(:not_found) && return
       end
 
     user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
@@ -36,7 +36,7 @@ class AdminsController < AdminController
              root: access_tree[:root],
              user_being_edited: user_being_edited,
              tree_depth: 0,
-             page: page_for_access_tree,
+             page: page_for_access_tree
            }
   end
 
