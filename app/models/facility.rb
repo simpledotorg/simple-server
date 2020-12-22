@@ -49,6 +49,11 @@ class Facility < ApplicationRecord
     foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
+  scope :with_block_region_id, -> {
+    joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
+      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
+      .select("block_region.id AS block_region_id, facilities.*")
+  }
 
   enum facility_size: {
     community: "community",
@@ -208,5 +213,15 @@ class Facility < ApplicationRecord
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
     end
+  end
+
+  def self.localized_facility_size(facility_size)
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
+  end
+
+  def localized_facility_size
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 end

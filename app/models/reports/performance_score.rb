@@ -7,7 +7,6 @@ module Reports
     CONTROL_SCORE_WEIGHT = 0.5
     VISITS_SCORE_WEIGHT = 0.3
     REGISTRATIONS_SCORE_WEIGHT = 0.2
-    TARGET_REGISTRATIONS_RATE = 0.1
 
     def initialize(region:, reports_result:, period:)
       @region = region
@@ -65,20 +64,16 @@ module Reports
     end
 
     def registrations_rate
-      # If the target is zero, return 100% if any registrations occurred
-      if target_registrations <= 0
+      # If opd load is 0, return 100% if any registrations occurred
+      if (@region.opd_load || 0) <= 0
         return registrations > 0 ? 100 : 0
       end
 
-      registrations / target_registrations.to_f * 100.0
+      registrations / @region.opd_load.to_f * 100.0
     end
 
     def registrations
       @reports_result.registrations_for(@period) || 0
-    end
-
-    def target_registrations
-      TARGET_REGISTRATIONS_RATE * (@region.opd_load || 0)
     end
   end
 end
