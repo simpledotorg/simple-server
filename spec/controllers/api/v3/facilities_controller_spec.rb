@@ -113,6 +113,7 @@ require "rails_helper"
 
               it "sets the sync_region_id to the block id when user is available" do
                 request.env["HTTP_X_USER_ID"] = request_user.id
+                request.env["HTTP_X_FACILITY_ID"] = request_user.facility.id
                 request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
 
                 enable_flag(:block_level_sync, request_user)
