@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe RegionBackfill, type: :model do
-  before { skip "RegionBackfill is deprecated and should be removed along with these specs." }
+  before { skip "RegionBackfill is now deprecated and should be removed eventually." }
 
   context "dry run mode" do
     before do

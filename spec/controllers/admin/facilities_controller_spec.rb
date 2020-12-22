@@ -195,13 +195,14 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   describe "POST #upload" do
     let!(:organization) { create(:organization, name: "OrgOne") }
     let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
-    before do
-      create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
-      create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
-    end
 
     context "with valid data in file" do
       let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
 
       it "uploads facilities file and passes validations" do
         post :upload, params: {upload_facilities_file: upload_file}
@@ -211,6 +212,11 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
     context "with invalid data in file" do
       let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
 
       it "fails validations and returns a 400" do
         post :upload, params: {upload_facilities_file: upload_file}
@@ -222,6 +228,11 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
       let(:upload_file) do
         fixture_file_upload("files/upload_facilities_test.docx",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+      end
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
       end
 
       it "uploads facilities file and fails validations" do

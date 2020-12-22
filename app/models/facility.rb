@@ -128,14 +128,7 @@ class Facility < ApplicationRecord
     facility_group.region.block_regions.find_by(name: block)
   end
 
-  def self.import_with_regions!(import_facilities, options)
-    ActiveRecord::Base.transaction do
-      Facility.import!(import_facilities, options)
-      import_facilities.each { |facility| facility.send(:make_region) }
-    end
-  end
-
-  private :make_region, :update_region
+  private :update_region
   # ----------------
 
   def hypertension_follow_ups_by_period(*args)
