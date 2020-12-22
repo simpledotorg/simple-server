@@ -141,19 +141,22 @@ RSpec.describe Region, type: :model do
       facility_3 = create(:facility, name: "facility3", state: "State 2", facility_group: facility_group_2)
       block_region = facility_1.region.parent
 
-      facility_manager = create(:admin, :call_center, :with_access, full_name: "facility_manager", resource: facility_1)
-      district_manager = create(:admin, :call_center, :with_access, full_name: "district_manager", resource: facility_group_1)
-      other_admin = create(:admin, :manager, :with_access, full_name: "district_manager", resource: facility_group_2)
+      facility_report_viewer = create(:admin, :viewer_reports_only, :with_access, full_name: "facility_report_viewer", resource: facility_1)
+      district_report_viewer = create(:admin, :viewer_reports_only, :with_access, full_name: "district_report_viewer", resource: facility_group_1)
+      other_admin = create(:admin, :manager, :with_access, full_name: "district_report_viewer", resource: facility_group_2)
 
-      expect(facility_group_1.region.accessible_children(facility_manager)).to be_empty
-      expect(block_region.accessible_children(facility_manager)).to contain_exactly(facility_1.region)
+      expect(facility_group_1.region.accessible_children(facility_report_viewer)).to be_empty
+      expect(block_region.accessible_children(facility_report_viewer)).to contain_exactly(facility_1.region)
 
-      expect(facility_group_1.region.accessible_children(district_manager)).to match_array(facility_group_1.region.block_regions)
-      expect(facility_group_1.region.accessible_children(district_manager, :facility)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer)).to match_array(facility_group_1.region.block_regions)
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility, access_level: :view_reports)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility, access_level: :manage)).to be_empty
 
-      expect(facility_group_1.region.accessible_children(other_admin, :facility)).to be_empty
-      expect(facility_group_1.region.accessible_children(other_admin, :block)).to be_empty
-      expect(facility_group_2.region.accessible_children(other_admin, :facility)).to match_array(facility_3.region)
+      expect(facility_group_1.region.accessible_children(other_admin, region_type: :facility)).to be_empty
+      expect(facility_group_1.region.accessible_children(other_admin, region_type: :block)).to be_empty
+      expect(facility_group_2.region.accessible_children(other_admin, region_type: :facility)).to match_array(facility_3.region)
+      expect(facility_group_2.region.accessible_children(other_admin, region_type: :facility, access_level: :manage)).to match_array(facility_3.region)
     end
   end
 

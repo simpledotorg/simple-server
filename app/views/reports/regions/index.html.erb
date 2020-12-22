@@ -1,9 +1,11 @@
 <div class="container">
   <div class="row">
       <% if current_admin.feature_enabled?(:region_reports) %>
+
         <div class="col-sm-5 col-lg-7">
-          <%= render "index_tree" %>
+          <%= render "index_tree", regions: @accessible_regions %>
         </div>
+
       <% else %>
 
       <div class="col-sm-5 col-lg-7">

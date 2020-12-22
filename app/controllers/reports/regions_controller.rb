@@ -11,11 +11,23 @@ class Reports::RegionsController < AdminController
 
   def index
     authorize { current_admin.accessible_facilities(:view_reports).any? }
-    @organizations = current_admin.accessible_facilities(:view_reports)
-      .flat_map(&:organization)
-      .uniq
-      .compact
-      .sort_by(&:name)
+
+    if current_admin.feature_enabled?(:regions_reports)
+      @organizations = current_admin.accessible_facilities(:view_reports)
+        .flat_map(&:organization)
+        .uniq
+        .compact
+        .sort_by(&:name)
+    else
+      @accessible_regions = current_admin.accessible_facility_regions(:view_reports).each_with_object({}) { |facility, result|
+        ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
+        org, district, block = ancestors.values_at("organization", "district", "block")
+        result[org] ||= {}
+        result[org][district] ||= {}
+        result[org][district][block] ||= []
+        result[org][district][block] << facility
+      }
+    end
   end
 
   def show
@@ -92,6 +104,19 @@ class Reports::RegionsController < AdminController
   end
 
   private
+
+  def accessible_district?(district)
+    @accessible_district_ids ||= current_admin.accessible_district_regions(:view_reports).pluck(:id)
+    @accessible_district_ids.include?(district.id)
+  end
+
+  def accessible_block?(block)
+    @accessible_block_ids ||= current_admin.accessible_block_regions(:view_reports).pluck(:id)
+    @accessible_block_ids.include?(block.id)
+  end
+
+  helper_method :accessible_district?
+  helper_method :accessible_block?
 
   def download_filename
     time = Time.current.to_s(:number)

@@ -1,12 +1,14 @@
 <div id="facility-access" data-page="show">
 
+  <% regions.each do |org, regions_by_district| %>
+
   <div class="card access-tree show">
     <div class="access-tree__section-header">
-      District and Facility reports
+      <%= org.name %>
     </div>
 
     <ul>
-    <% current_admin.accessible_districts(:any).each do |region| %>
+      <% regions_by_district.each do |district, regions_by_block| %>
       <li>
         <div class="access-item">
 
@@ -15,14 +17,15 @@
           </div>
 
           <div class="form-check show">
-            <%= link_to region.name, reports_region_path(region, report_scope: region.region_type) %>
+            <%= link_to_if(accessible_district?(district), district.name, reports_region_path(district, report_scope: district.region_type)) %>
           </div>
 
           <div class="access-item__padding"></div>
         </div>
 
         <ul class="access-item-wrapper block">
-          <% region.children.each do |region| %>
+          <% sorted_blocks = regions_by_block.sort_by { |block, regions| block.name } %>
+          <% sorted_blocks.each do |block, regions| %>
             <li>
               <div class="access-item block collasped">
                 <span class="spacer"></span>
@@ -32,19 +35,17 @@
                 </div>
 
                 <div class="form-check show">
-                  <%= link_to region.name, reports_region_path(region, report_scope: region.region_type) %>
+                  <%= link_to_if(accessible_block?(block), block.name, reports_region_path(block, report_scope: block.region_type)) %>
                 </div>
 
                 <div class="access-item__padding"></div>
               </div>
 
             <ul class="access-item-wrapper block">
-            <% region.children.each do |region| %>
+            <% regions.sort_by(&:name).each do |region| %>
               <li>
                 <div class="access-item <%= region.region_type %> collasped ">
-                  <span class="spacer"></span>
-                  <span class="spacer"></span>
-                  <span class="spacer"></span>
+                  <span class="spacer"></span><span class="spacer"></span><span class="spacer"></span>
 
                   <div class="form-check show">
                     <%= link_to region.name, reports_region_path(region, report_scope: region.region_type) %>
@@ -65,6 +66,7 @@
     </ul>
 
   </div>
+  <% end %>
 </div>
 
 <script>
