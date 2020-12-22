@@ -168,10 +168,10 @@ RSpec.describe UserAccess, type: :model do
           block_2 = create(:region, :block, reparent_to: facility_group_3_2.region)
           _block_3 = create(:region, :block, name: "block_1", reparent_to: facility_group_1.region)
           manager.accesses.create!(resource: organization_3)
-          expect(manager.accessible_blocks(:manage)).to match_array([block_1, block_2])
+          expect(manager.accessible_block_regions(:manage)).to match_array([block_1, block_2])
           viewer_all.accesses.create!(resource: organization_3)
-          expect(viewer_all.accessible_blocks(:manage)).to match_array([])
-          expect(viewer_all.accessible_blocks(:view_reports)).to match_array([block_1, block_2])
+          expect(viewer_all.accessible_block_regions(:manage)).to match_array([])
+          expect(viewer_all.accessible_block_regions(:view_reports)).to match_array([block_1, block_2])
         end
 
         it "returns any blocks underneath any accessible_facility groups" do
@@ -179,9 +179,9 @@ RSpec.describe UserAccess, type: :model do
           block_2 = create(:region, :block, reparent_to: facility_group_2.region)
           _block_3 = create(:region, :block, reparent_to: facility_group_3_1.region)
           manager.accesses.create!(resource: facility_group_1)
-          expect(manager.accessible_blocks(:manage)).to match_array([block_1])
+          expect(manager.accessible_block_regions(:manage)).to match_array([block_1])
           manager.accesses.create!(resource: facility_group_2)
-          expect(manager.accessible_blocks(:manage)).to match_array([block_1, block_2])
+          expect(manager.accessible_block_regions(:manage)).to match_array([block_1, block_2])
         end
       end
 
