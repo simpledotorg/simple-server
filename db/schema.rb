@@ -201,6 +201,7 @@ ActiveRecord::Schema.define(version: 2020_12_18_061336) do
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_encounters_on_deleted_at"
     t.index ["facility_id"], name: "index_encounters_on_facility_id"
+    t.index ["patient_id", "updated_at"], name: "index_encounters_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_encounters_on_patient_id"
   end
 
