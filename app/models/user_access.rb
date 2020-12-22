@@ -64,22 +64,27 @@ class UserAccess
       .includes(:facilities)
   end
 
-  def accessible_districts(action)
+  def accessible_facilities(action)
+    resources_for(Facility, action)
+      .union(Facility.where(facility_group: accessible_facility_groups(action)))
+      .includes(facility_group: :organization)
+  end
+
+  def accessible_district_regions(action)
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
     Region.district_regions.where(source_id: facility_group_ids)
   end
 
-  def accessible_blocks(action)
+  def accessible_block_regions(action)
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
     paths = Region.district_regions.where(source_id: facility_group_ids, source_type: "FacilityGroup").pluck(:path)
     globs = paths.map { |path| " '#{path}.*' "}.join(",")
     Region.block_regions.where("path ? ARRAY[#{globs}]::lquery[]")
   end
 
-  def accessible_facilities(action)
-    resources_for(Facility, action)
-      .union(Facility.where(facility_group: accessible_facility_groups(action)))
-      .includes(facility_group: :organization)
+  def accessible_facility_regions(action)
+    facility_ids = accessible_facilities(action).pluck("facilities.id")
+    Region.facility_regions.where(source_id: facility_ids)
   end
 
   def accessible_admins(action)

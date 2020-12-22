@@ -102,9 +102,10 @@ class User < ApplicationRecord
     :invited_to_sign_up?, to: :email_authentication, allow_nil: true
   delegate :accessible_organizations,
     :accessible_facilities,
-    :accessible_districts,
-    :accessible_blocks,
     :accessible_facility_groups,
+    :accessible_district_regions,
+    :accessible_block_regions,
+    :accessible_facility_regions,
     :accessible_users,
     :accessible_admins,
     :accessible_protocols,

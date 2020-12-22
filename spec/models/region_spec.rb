@@ -129,6 +129,34 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "accessible_children" do
+    before { enable_flag(:regions_prep) }
+
+    it "only returns children regions that a user has access to" do
+      org = create(:organization, name: "Test Organization")
+      facility_group_1 = create(:facility_group, organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, organization: org, state: "State 1")
+      facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
+      facility_3 = create(:facility, name: "facility3", state: "State 2", facility_group: facility_group_2)
+      block_region = facility_1.region.parent
+
+      facility_manager = create(:admin, :call_center, :with_access, full_name: "facility_manager", resource: facility_1)
+      district_manager = create(:admin, :call_center, :with_access, full_name: "district_manager", resource: facility_group_1)
+      other_admin = create(:admin, :manager, :with_access, full_name: "district_manager", resource: facility_group_2)
+
+      expect(facility_group_1.region.accessible_children(facility_manager)).to be_empty
+      expect(block_region.accessible_children(facility_manager)).to contain_exactly(facility_1.region)
+
+      expect(facility_group_1.region.accessible_children(district_manager)).to match_array(facility_group_1.region.block_regions)
+      expect(facility_group_1.region.accessible_children(district_manager, :facility)).to match_array([facility_1.region, facility_2.region])
+
+      expect(facility_group_1.region.accessible_children(other_admin, :facility)).to be_empty
+      expect(facility_group_1.region.accessible_children(other_admin, :block)).to be_empty
+      expect(facility_group_2.region.accessible_children(other_admin, :facility)).to match_array(facility_3.region)
+    end
+  end
+
   context "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
       enable_flag(:regions_prep)
