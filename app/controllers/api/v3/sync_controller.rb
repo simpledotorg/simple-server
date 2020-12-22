@@ -11,7 +11,11 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    AuditLog.create_logs_async(current_user, records_to_sync, "fetch", Time.current) unless disable_audit_logs?
+    records = records_to_sync
+
+    log_block_level_sync_metrics(response_key)
+    AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
+
     render(
       json: {
         response_key => records_to_sync.map { |record| transform_to_response(record) },
@@ -33,6 +37,23 @@ class Api::V3::SyncController < APIController
 
   def disable_audit_logs?
     false
+  end
+
+  def log_block_level_sync_metrics(response_key)
+    if resync_token_modified?
+      Rails.logger.info(msg: "[force_resync] Resync token modified", resource: response_key)
+    end
+    if sync_region_modified?
+      Rails.logger.info msg: "[force_resync] Sync region modified",
+                        region_type: current_sync_region.class.name,
+                        region_id: current_sync_region.id,
+                        resource: response_key
+    end
+    if block_level_sync?
+      Rails.logger.info msg: "current_sync_region set to block",
+                        block_id: current_block.id,
+                        user_id: current_user.id
+    end
   end
 
   def params_with_errors(params, errors)

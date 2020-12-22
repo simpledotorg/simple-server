@@ -39,7 +39,6 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   end
 
   def force_resync?
-    Rails.logger.info "Resync token modified in resource #{controller_name}" if resync_token_modified?
     resync_token_modified?
   end
 end
