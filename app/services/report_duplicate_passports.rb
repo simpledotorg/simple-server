@@ -3,8 +3,8 @@ class ReportDuplicatePassports
     IDENTIFIER_TYPES = %w[simple_bp_passport]
 
     def report
-      Rails.logger.info msg: "#{duplicate_passports_count} passports have duplicate patients across facilities",
-                        count: duplicate_passports_count
+      Rails.logger.info msg: "#{duplicate_passports_count} passports have duplicate patients across facilities"
+      Statsd.instance.gauge("passports_with_duplicate_patients_across_facilities", duplicate_passports_count)
     end
 
     def duplicate_passports

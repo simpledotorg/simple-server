@@ -51,9 +51,7 @@ class Api::V3::SyncController < APIController
                           resource: response_key
       end
       if block_level_sync?
-        Rails.logger.info msg: "current_sync_region set to block",
-                          block_id: current_block.id,
-                          user_id: current_user.id
+        Rails.logger.info msg: "current_sync_region set to block", block_id: current_block.id
       end
     end
   end
