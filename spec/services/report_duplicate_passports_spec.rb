@@ -32,7 +32,7 @@ RSpec.describe ReportDuplicatePassports do
         expect(described_class.duplicate_passports).to be_empty
       end
 
-      it "only reports different patients assigned to a passport at different facilities" do
+      it "only has different patients assigned to a passport at different facilities" do
         patients = create_list(:patient, 2, business_identifiers: [])
         identifiers =
           [create(:patient_business_identifier, identifier: identifier, patient: patients.first, metadata: {assigningFacilityUuid: SecureRandom.uuid}),

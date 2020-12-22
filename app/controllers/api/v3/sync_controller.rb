@@ -41,7 +41,7 @@ class Api::V3::SyncController < APIController
 
   def log_block_level_sync_metrics(response_key)
     if resync_token_modified?
-      Rails.logger.info(msg: "[force_resync] Resync token modified", resource: response_key)
+      Rails.logger.info msg: "[force_resync] Resync token modified", resource: response_key
     end
     if current_user
       if sync_region_modified?

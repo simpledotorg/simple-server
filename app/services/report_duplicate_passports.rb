@@ -1,7 +1,7 @@
 class ReportDuplicatePassports
-  IDENTIFIER_TYPES = %w[simple_bp_passport]
-
   class << self
+    IDENTIFIER_TYPES = %w[simple_bp_passport]
+
     def report
       Rails.logger.info msg: "#{duplicate_passports_count} passports have duplicate patients across facilities",
                         count: duplicate_passports_count
