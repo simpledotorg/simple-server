@@ -18,7 +18,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
   context "index" do
     before do
       @facility_group = create(:facility_group, organization: organization)
-      @facility_1 = create(:facility, name: "CHC Barnagar", block: "Block 1", facility_group: @facility_group)
+      @facility_1 = create(:facility, name: "Facility 1", block: "Block 1", facility_group: @facility_group)
       @facility_2 = create(:facility, name: "Facility 2", block: "Block 1", facility_group: @facility_group)
       @block = @facility_1.block_region
     end
@@ -33,14 +33,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "only loads districts the user has access to" do
       sign_in(cvho.email_authentication)
       get :index
-      expected_regions = {
-        organization.region => {
-          @facility_group.region => {
-            @block => [@facility_1.region, @facility_2.region]
-          }
-        }
-      }
-      expect(assigns[:accessible_regions]).to eq expected_regions
+      facility_regions = [@facility_1.region, @facility_2.region]
+      org_region = organization.region
+      expect(assigns[:accessible_regions].keys).to eq([org_region])
+      expect(assigns[:accessible_regions].dig(org_region, @facility_group.region, @block.region)).to match_array(facility_regions)
     end
   end
 
