@@ -1,23 +1,26 @@
 <form>
   <select class="card-dropdown <%= data_table_name %>" onchange='filterDataByGender("<%= data_table_name %>")'>
     <% if is_diabetes_enabled %>
-      <option value="all"><%= t("analytics.all_hypertension_and_diabetes") %></option>
+      <option value="all"><%= raw t("analytics.all_hypertension_and_diabetes") %></option>
     <% end %>
 
-    <% hypertension_option_text = is_diabetes_enabled ? t('analytics.hypertension').to_s + ": "  : "" %>
+    <% hypertension_option_text = is_diabetes_enabled ? raw(t('analytics.hypertension')).to_s + ": "  : "" %>
 
-    <option value="hypertension:all"><%= hypertension_option_text + t('analytics.genders.all') %></option>
+    <option value="hypertension:all"><%= hypertension_option_text + raw(t('analytics.genders.all')) %></option>
     <% Patient::GENDERS.each do |gender| %>
       <option value="hypertension:<%= gender %>">
-        <%= hypertension_option_text + t('analytics.genders.' + gender.to_s) %>
+        <%= hypertension_option_text + raw(t('analytics.genders.' + gender.to_s)) %>
       </option>
     <% end %>
 
     <% if is_diabetes_enabled %>
-      <option value="diabetes:all"><%= t('analytics.diabetes').to_s + ": " + t('analytics.genders.all') %></option>
+      <option value="diabetes:all">
+        <%= raw(t('analytics.diabetes')).to_s + ": " + raw(t('analytics.genders.all')) %>
+      </option>
+
       <% Patient::GENDERS.each do |gender| %>
         <option value="diabetes:<%= gender %>">
-          <%= t('analytics.diabetes').to_s + ": " + t('analytics.genders.' + gender.to_s) %>
+          <%= raw(t('analytics.diabetes')).to_s + ": " + raw(t('analytics.genders.' + gender.to_s)) %>
         </option>
       <% end %>
     <% end %>
