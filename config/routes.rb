@@ -164,6 +164,7 @@ Rails.application.routes.draw do
     get "registrations", to: "registrations"
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"
+    get "drug_stock", to: "drug_stock#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
   end
 

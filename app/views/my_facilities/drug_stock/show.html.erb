@@ -1,0 +1,462 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card card-responsive">
+      <div>
+        <div class="d-flex align-baseline jc-between">
+          <h3>
+            Drug stock on hand: end of Dec-2020
+          </h3>
+          <p class="c-grey-dark">
+            Last updated: <%= @last_updated_at %>
+          </p>
+        </div>
+        
+        <div class="modal fade" id="DrugReportModal" tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+            <h2 class="modal-title" id="exampleModalLabel">Drug stock report</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true"><i class="fas fa-times"></i></span>
+            </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="medicationDate">Date</label>
+                
+                <input type="date" class="form-control" id="medicationDate" value="" max=""></input>
+                
+                
+              <script>
+              
+                var today = new Date();
+                
+                var dateTime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                
+                document.getElementById("medicationDate").value = dateTime;
+                document.getElementById("medicationDate").max = dateTime;
+              
+              </script>
+              
+              </div>
+                <div class="form-group">
+                <label for="medicationFacility">Facility</label>
+                <select class="form-control" id="medicationFacility">
+                  <option>Choose a facility...</option>
+                  <option>CHC Mango</option>
+                  <option>CHC Turkey Fig</option>
+                  <option>DH Fruitvale</option>
+                  <option>HWC Blueberries</option>
+                  <option>HWC Pomegranate</option>
+                  <option>PHC Apple</option>
+                  <option>PHC Mandarin Orange</option>
+                  <option>PHC Melon</option>
+                  <option>PHC Peach</option>
+                  <option>SDH Coconut</option>
+                </select>
+              </div>
+              <h3 class="pt-4">Tablets</h3>
+              <p>Leave blank if unknown. Enter "0" if stock is empty.</p>
+                  
+              <div class="form-group mt-4">
+                  <label for="a-medicationAmlodipine5mg">Amlodipine 5 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-medicationAmlodipine5mg">
+                    <small id="a-medicationAmlodipine5mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-medicationAmlodipine5mg">
+                      <small id="b-medicationAmlodipine5mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+              <div class="form-group mt-4">
+                  <label for="a-medicationAmlodipine10mg">Amlodipine 10 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-medicationAmlodipine10mg">
+                    <small id="a-medicationAmlodipine10mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-medicationAmlodipine10mg">
+                      <small id="b-medicationAmlodipine10mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+              
+              <div class="form-group mt-4">
+                  <label for="a-Telmisartin20mg">Telmisartin 20 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-Telmisartin20mg">
+                    <small id="a-Telmisartin20mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-Telmisartin20mg">
+                      <small id="b-Telmisartin20mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+              
+              <div class="form-group mt-4">
+                  <label for="a-Telmisartin40mg">Telmisartin 40 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-Telmisartin40mg">
+                    <small id="a-Telmisartin40mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-Telmisartin40mg">
+                      <small id="b-Telmisartin40mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+              
+              <div class="form-group mt-4">
+                  <label for="a-Losartan50mg">Losartan 50 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-Losartan50mg">
+                    <small id="a-Losartan50mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-Losartan50mg">
+                      <small id="b-Losartan50mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+              
+              <div class="form-group mt-4">
+                  <label for="a-Hydrochlorathiazide125mg">Hydrochlorathiazide 12.5 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-Hydrochlorathiazide125mg">
+                    <small id="a-Hydrochlorathiazide125mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-Hydrochlorathiazide125mg">
+                      <small id="b-Hydrochlorathiazide125mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+              
+              <div class="form-group mt-4">
+                  <label for="a-Hydrochlorathiazide25mg">Hydrochlorathiazide 25 mg</label>
+                  <div class="form-row">
+                    <div class="col">
+                    <input type="number" class="form-control" id="a-Hydrochlorathiazide25mg">
+                    <small id="a-Hydrochlorathiazide25mg" class="form-text text-muted">Received during the month</small>
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="b-Hydrochlorathiazide25mg">
+                      <small id="b-Hydrochlorathiazide25mg" class="form-text text-muted">Stock at end of the month</small>
+                    </div>
+                  </div>
+                  
+              </div>
+        
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" aria-label="Close">Save report</button>
+            </div>
+          </div>
+          </div>
+        </div>
+        <!-- End Modal -->
+        
+        
+        <p>
+          <a href="#" type="button" class="float-right ml-4 btn btn-sm btn-primary" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus-circle mr-2"></i> Drug stock report</a>
+          Patient days is calculated by comparing assigned patients against current stock on hand, normalized by estimated patients at each step of the hypertension protocol. Hover over cells to see calculation.
+        </p>
+        <p>
+          
+        </p>
+      </div>
+      <div class="d-flex fw-wrap mb-16px">
+        <%= render "shared/size_and_zone_filters" %>
+        <div class="dropdown show mb-8px mr-8px">
+          <a id="dropdownMenuLink" class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
+              Dec-2020
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <button class="dropdown-item active" value="" name="size" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+                Dec-2020
+              </button>
+              <button class="dropdown-item query-filter-size  filter-by-size" value="large" name="size" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+                Nov-2020
+              </button>
+              <button class="dropdown-item query-filter-size  filter-by-size" value="medium" name="size" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+                Oct-2020
+              </button>
+              <button class="dropdown-item query-filter-size  filter-by-size" value="small" name="size" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+                Sep-2020
+              </button>
+              <button class="dropdown-item query-filter-size  filter-by-size" value="community" name="size" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+                Aug-2020
+              </button>
+          </div>
+        </div>
+      </div>
+      
+      <table class="mt-1 table table-compact table-responsive-md table-hover analytics-table">
+        <colgroup>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col>
+          <col class="mobile">
+        </colgroup>
+        <thead>
+        <tr>
+          <th colspan="2">
+          <th colspan="3">CCB tablets</th>
+          <th colspan="4">ARB tablets</th>
+          <th colspan="3">Diuretic tablets</th>
+        </tr>
+        <tr data-sort-method="thead" class="sorts">
+            <th class="row-label sort-label" colspan="2" data-sort-default>Facilities</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="CCB1">Amlodipine<br>5 mg</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="CCB2">Amlodipine<br>10 mg</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="CCB3">Patient<br>days</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>20 mg</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB2">Telmisartin<br>40 mg</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB3">Losartan<br>50 mg</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB4">Patient<br>days</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="D1">Hydrochlorothiazide<br>12.5 mg</th>
+            <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="D2">Hydrochlorothiazide<br>25 mg</th>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="D3">Patient<br>days</th>
+          <th class="mobile"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="row-total" data-sort-method="none">
+            <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="All facilities: 23,489 patients">All</td>
+            <td class="type-number">2,089,694</td>
+            <td class="type-number">291,000</td>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>2,089,694</span>Amlodipine 5 mg<br><span class='math'>+291,000*2</span>Amlodipine 10 mg<br><span class='math'>/ 23,489*1.4</span>Patients<br><span class='math'>=81 days</span>Patient days"><em>81</em></td>
+            <td class="type-number">886,915</td>
+            <td class="type-number">1000</td>
+            <td class="type-number">128760</td>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(886,915+1000*2+128760)/(23,489 patients*0.37) = 117 days"><em>117</em></td>
+            <td class="type-number">228,365</td>
+            <td class="type-number">51,270</td>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(228,365+51,270)/(23,489 patients*0.06) = 198 days"><em>198</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Blueberries: 402 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Blueberries</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">13,000</td>
+          <td class="type-number">14,400</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(13,000+14,400*2)/(402 patients*1.4) = 74 days"><em>74</em></td>
+          <td class="type-number">16,100</td>
+          <td class="type-number">0</td>
+          <td class="type-number">0</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(16,000+0*2+0)/(402 patients*0.37) = 117 days"><em>117</em></td>
+          <td class="type-number">800</td>
+          <td class="type-number">0</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(800+0)/(402 patients*0.06) = 34 days"><em class="caution">34</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Melon: 338 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Melon</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">12,000</td>
+          <td class="type-number">200</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(12,000+200*2)/(338 patients*1.4) = 27 days"><em class="warning">27</em></td>
+          <td class="type-number">300</td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-number">500</td>
+          <td class="type-percent type-percent-warning" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(300+0*2+500)/(338 patients*0.37) = 6 days"><em class="warning">6</em></td>
+          <td class="type-number">1,000</td>
+          <td class="type-number">400</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+400)/(338 patients*0.06) = 69 days"><em>69</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="DH Fruity: 2,175 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">DH Fruitvale</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">45,800</td>
+          <td class="type-number">4,600</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(45,800+4,600*2)/(2,175 patients*1.4) = 18 days"><em class="warning">18</em></td>
+          <td class="type-number">167,700</td>
+          <td class="type-number">1000</td>
+          <td class="type-number">57,200</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(167,700+1000*2+57,200)/(2,175 patients*0.37) = 282 days"><em>282</em></td>
+          <td class="type-number">1000</td>
+          <td class="type-number">100</td>
+          <td class="type-percent type-percent-warning" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+100)/(2,175 patients*0.06) = 8 days"><em class="warning">8</em></td>
+        </tr>	
+        <tr class="row-blank">
+          <td class="type-title type-blank" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Turkey Fig: 198 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Turkey Fig</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+        </tr>
+        <tr class="row-blank">
+          <td class="type-title type-blank" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Apple: 567 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Apple</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Pomegranate: 98 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Pomegranate</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">3,250</td>
+          <td class="type-number">3,600</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(3250+3600*2)/(98 patients*1.4) = 73 days"><em>73</em></td>
+          <td class="type-number">4,000</td>
+          <td class="type-number">0</td>
+          <td class="type-number">0</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(4,000+0*2+0)/(98 patients*0.37) = 115 days"><em>115</em></td>
+          <td class="type-number">200</td>
+          <td class="type-number">0</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(200+0)/(98 patients*0.06) = 32 days"><em class="caution">32</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Mandarin Orange: 78 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Mandarin Orange</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">2,000</td>
+          <td class="type-number">500</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(2000+500*2)/(78 patients*1.4) = 74 days"><em>74</em></td>
+          <td class="type-number">800</td>
+          <td class="type-number">0</td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(800+0*2+0)/(78 patients*0.37) = 28 days"><em class="warning">28</em></td>
+          <td class="type-number">600</td>
+          <td class="type-number">300</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(600+300)/(78 patients*0.06) = 192 days"><em>192</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="SDH Coconut: 2,175 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">SDH Coconut</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">45,800</td>
+          <td class="type-number">4,600</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(45,800+4,600*2)/(2,175 patients*1.4) = 18 days"><em class="warning">18</em></td>
+          <td class="type-number">167,700</td>
+          <td class="type-number">1000</td>
+          <td class="type-number">57,200</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(167,700+1000*2+57,200)/(2,175 patients*0.37) = 282 days"><em>282</em></td>
+          <td class="type-number">1000</td>
+          <td class="type-number">100</td>
+          <td class="type-percent type-percent-warning" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+100)/(2,175 patients*0.06) = 8 days"><em class="warning">8</em></td>
+        </tr>	
+        <tr class="row-blank">
+          <td class="type-title type-blank" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Mango: 198 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Mango</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+        </tr>
+        <tr class="row-blank">
+          <td class="type-title type-blank" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Peach: 567 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Peach</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-blank"><span>?</span></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Surinam Cherry: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Surinam Cherry</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">6,500</td>
+          <td class="type-number">7,200</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(6,500+7,200*2)/(201 patients*1.4) = 74 days"><em>74</em></td>
+          <td class="type-number">8,000</td>
+          <td class="type-number">0</td>
+          <td class="type-number">0</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(8,000+0*2+0)/(201 patients*0.37) = 117 days"><em>117</em></td>
+          <td class="type-number">400</td>
+          <td class="type-number">0</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(400+0)/(201 patients*0.06) = 33 days"><em class="caution">33</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Jackfruit: 10 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Jackfruit</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">1000</td>
+          <td class="type-number">500</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(1000+500*2)/(10 patients*1.4) = 143 days"><em>143</em></td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-blank"><span>?</span></td>
+          <td class="type-number">100</td>
+          <td class="type-number">300</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(100+300)/(10 patients*0.06) = 667 days"><em>667</em></td>
+        </tr>
+        <tr>
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Nectarine: 203 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Necatarine</a></td>
+          <td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+          <td class="type-number">700</td>
+          <td class="type-number">1,000</td>
+          <td class="type-percent type-percent-warning" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>700</span>Amlodipine 5 mg<br><span class='math'>+1,000*2</span>Amlodipine 10 mg<br><span class='math'>/ 203*1.4</span>Patients<br><span class='math'>=10 days</span>Patient days"><em class="warning">10</em></td>
+          <td class="type-number">400</td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-blank"><span>&#8212;</span></td>
+          <td class="type-percent type-percent-warning" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(400+0*2+0)/(203 patients*0.37) = 5 days"><em class="warning">5</em></td>
+          <td class="type-number">200</td>
+          <td class="type-number">200</td>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="(200+200)/(203 patients*0.06) = 33 days"><em class="caution">33</em></td>
+        </tr>
+        </tbody>
+        </table>
+        
+        
+      
+        <div class="d-flex mt-4">
+          <div class="h-12px w-12px mr-8px b-2px bg-red-medium bc-red br-6px"></div>
+          <p class="fs-12px lh-1 c-grey-dark">
+          &lt;30 patients days of stock
+          </p>
+        </div>
+        <div class="d-flex">
+          <div class="h-12px w-12px mr-8px b-2px bg-yellow bc-yellow br-6px"></div>
+          <p class="fs-12px lh-1 c-grey-dark">
+          &lt;60 patients days of stock
+          </p>
+        </div>
+    </div>
+  </div>
+</div>

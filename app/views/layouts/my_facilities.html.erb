@@ -19,6 +19,9 @@
         <%= link_to(my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["zone", "size", "period"])), class: "sub-nav-link #{active_action?("registrations")}") do %>
           Registrations
         <% end %>
+        <%= link_to(my_facilities_drug_stock_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/drug_stock"}") do %>
+        Drug stock
+      <% end %>
       </div>
     </div>
   </div>
