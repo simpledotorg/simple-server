@@ -321,7 +321,7 @@ describe Patient, type: :model do
       end
 
       it "includes nested sync resources" do
-        discarded_patient = create(:patient, deleted_at: Time.now)
+        _discarded_patient = create(:patient, deleted_at: Time.now)
 
         expect(described_class.for_sync.first.association(:address).loaded?).to eq true
         expect(described_class.for_sync.first.association(:phone_numbers).loaded?).to eq true
