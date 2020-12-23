@@ -33,7 +33,7 @@ describe Encounter, type: :model do
     end
   end
 
-  describe "scopes" do
+  describe "Scopes" do
     describe ".for_sync" do
       it "includes discarded encounters" do
         discarded_encounter = create(:encounter, deleted_at: Time.now)

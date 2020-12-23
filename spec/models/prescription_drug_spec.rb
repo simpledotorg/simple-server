@@ -11,7 +11,7 @@ RSpec.describe PrescriptionDrug, type: :model do
     it { should belong_to(:teleconsultation).optional }
   end
 
-  describe "scopes" do
+  describe "Scopes" do
     describe ".for_sync" do
       it "includes discarded prescription drugs" do
         discarded_prescription_drug = create(:prescription_drug, deleted_at: Time.now)

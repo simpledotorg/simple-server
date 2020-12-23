@@ -37,7 +37,7 @@ RSpec.describe BloodSugar, type: :model do
     end
   end
 
-  describe "scopes" do
+  describe "Scopes" do
     let!(:fasting) { create(:blood_sugar, blood_sugar_type: :fasting) }
     let!(:random) { create(:blood_sugar, blood_sugar_type: :random) }
     let!(:post_prandial) { create(:blood_sugar, blood_sugar_type: :post_prandial) }

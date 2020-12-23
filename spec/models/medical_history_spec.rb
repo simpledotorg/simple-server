@@ -10,7 +10,7 @@ describe MedicalHistory, type: :model do
     it { should validate_presence_of(:device_updated_at) }
   end
 
-  describe "scopes" do
+  describe "Scopes" do
     describe ".for_sync" do
       it "includes discarded medical histories" do
         discarded_medical_history = create(:medical_history, deleted_at: Time.now)
