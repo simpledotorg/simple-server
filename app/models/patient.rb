@@ -56,7 +56,8 @@ class Patient < ApplicationRecord
 
   attribute :call_result, :string
 
-  scope :syncable_to_region, ->(region) { region.syncable_patients }
+  scope :with_nested_sync_resources, -> { includes(:address, :phone_numbers, :business_identifiers) }
+  scope :for_sync, -> { with_discarded.with_nested_sync_resources }
   scope :search_by_address, ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
   scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
   scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }

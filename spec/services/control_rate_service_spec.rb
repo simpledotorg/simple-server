@@ -247,7 +247,6 @@ RSpec.describe ControlRateService, type: :model do
   end
 
   it "returns registrations and control rates for a block" do
-    enable_flag(:regions_prep)
     brooklyn_facilities = FactoryBot.create_list(:facility, 2, block: "Brooklyn", facility_group: facility_group_1)
     queens_facility = FactoryBot.create(:facility, block: "Queens", facility_group: facility_group_1)
     facility_1, facility_2 = brooklyn_facilities[0], brooklyn_facilities[1]

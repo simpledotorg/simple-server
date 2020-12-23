@@ -5,7 +5,7 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_available_zones, only: [:new, :create, :edit, :update]
 
   def index
     authorize do
@@ -46,8 +46,8 @@ class Admin::FacilitiesController < AdminController
 
   def show
     @facility_users = current_admin
-                        .accessible_users(:manage)
-                        .where(phone_number_authentications: {registration_facility_id: @facility})
+      .accessible_users(:manage)
+      .where(phone_number_authentications: {registration_facility_id: @facility})
   end
 
   def new
@@ -115,7 +115,7 @@ class Admin::FacilitiesController < AdminController
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.district ||= @facility_group.name
-      facility.state ||= @facility_group.region.state_region.name if Flipper.enabled?(:regions_prep)
+      facility.state ||= @facility_group.region.state_region.name
       facility.country ||= Region.root.name
     end
   end
@@ -153,9 +153,9 @@ class Admin::FacilitiesController < AdminController
       :teleconsultation_isd_code,
       teleconsultation_medical_officer_ids: [],
       teleconsultation_phone_numbers_attributes: [:isd_code, :phone_number, :_destroy]
-    ).tap { |transformed_params|
+    ).tap do |transformed_params|
       transformed_params[:teleconsultation_medical_officer_ids] = valid_teleconsultation_medical_officer_ids
-    }
+    end
   end
 
   def valid_teleconsultation_medical_officer_ids
@@ -163,8 +163,8 @@ class Admin::FacilitiesController < AdminController
     facilities = current_admin.accessible_facilities(:manage).where(facility_group: @facility_group)
 
     users = current_admin.accessible_users(:manage)
-              .joins(phone_number_authentications: :facility)
-              .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
+      .joins(phone_number_authentications: :facility)
+      .where(id: ids, phone_number_authentications: {registration_facility_id: facilities})
 
     users.pluck(:id)
   end
