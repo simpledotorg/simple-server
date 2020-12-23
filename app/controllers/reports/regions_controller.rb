@@ -6,7 +6,7 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :details, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: :index
+  before_action :find_region, except: [:index]
   around_action :set_time_zone
 
   def index
@@ -19,23 +19,15 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
-
     @data = Reports::RegionService.new(region: @region, period: @period).call
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.district_region?
-      @data_for_facility = @region.facilities.each_with_object({}) { |facility, hsh|
-        hsh[facility.name] = Reports::RegionService.new(region: facility,
-                                                        period: @period).call
-      }
-    end
-    if current_admin.feature_enabled?(:region_reports) && @region.district_region? && @region.respond_to?(:block_regions)
-      @block_data = @region.block_regions.each_with_object({}) { |region, hsh|
-        hsh[region.name] = Reports::RegionService.new(region: region,
-                                                      period: @period).call
+    if @region.respond_to?(:children)
+      @children_data = @region.children.each_with_object({}) { |child, hsh|
+        hsh[child.name] = Reports::RegionService.new(region: child,
+                                                     period: @period).call
       }
     end
   end
@@ -124,12 +116,8 @@ class Reports::RegionsController < AdminController
     @facility_keys = [district, *facilities]
   end
 
-  def default_period
-    Period.month(Date.current.last_month.beginning_of_month).attributes
-  end
-
   def set_period
-    period_params = report_params[:period].presence || default_period
+    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
     @period = Period.new(period_params)
   end
 
@@ -138,29 +126,30 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    if current_admin.feature_enabled?("region_reports")
-      find_region_v2
+    region_source = authorize {
+      case region_class
+      when "FacilityDistrict"
+        scope = current_admin.accessible_facilities(:view_reports)
+        FacilityDistrict.new(name: report_params[:id], scope: scope)
+      when "FacilityGroup"
+        current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
+      when "Block" # we don't have first class auth on Blocks yet, so we authorize via the parent FacilityGroup
+        block = Region.find_by!(slug: report_params[:id], region_type: "block")
+        owning_facility_group = block.district_region.source
+        unless current_admin.accessible_facility_groups(:view_reports).include?(owning_facility_group)
+          raise UserAccess::NotAuthorizedError
+        end
+        block
+      when "Facility"
+        current_admin.accessible_facilities(:view_reports).find_by!(slug: params[:id])
+      else
+        raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
+      end
+    }
+    @region = if current_admin.feature_enabled?(:region_reports)
+      region_source.region
     else
-      find_region_v1
-    end
-  end
-
-  def find_region_v1
-    if report_params[:report_scope] == "facility_district"
-      @region = FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
-    else
-      slug = report_params[:id]
-      klass = region_class.classify.constantize
-      @region = klass.find_by!(slug: slug)
-    end
-  end
-
-  def find_region_v2
-    region_type = report_params[:report_scope]
-    @region = if region_type == "facility_district"
-      FacilityDistrict.new(name: report_params[:id], scope: current_admin.accessible_facilities(:view_reports))
-    else
-      Region.where(region_type: region_type).find_by!(slug: report_params[:id])
+      region_source
     end
   end
 
@@ -170,13 +159,13 @@ class Reports::RegionsController < AdminController
       "facility_district"
     when "district"
       "facility_group"
-    when "facility"
-      "facility"
     when "block"
       "block"
+    when "facility"
+      "facility"
     else
       raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
-    end
+    end.classify
   end
 
   def report_params

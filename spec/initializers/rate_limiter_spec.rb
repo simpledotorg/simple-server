@@ -8,6 +8,12 @@ describe "RateLimiter", type: :controller do
     Rails.application
   end
 
+  around(:example) do |example|
+    Rails.cache.clear
+    example.run
+    Rails.cache.clear
+  end
+
   describe "throttle authentication APIs" do
     context "admin logins by IP address" do
       let(:limit) { 5 }

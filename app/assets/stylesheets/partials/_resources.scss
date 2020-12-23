@@ -34,14 +34,17 @@ Resources
       font-size: 28px;
     }
 
+    &.resource-calendar i {
+      color: Grey;
+      font-size: 28px;
+    }
+
     a:hover {
       text-decoration: none;
     }
   }
 
   .col-video {
-    margin: 16px 0;
-
     strong {
       display: block;
       margin: 6px 0 0 0;
