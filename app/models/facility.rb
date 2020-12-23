@@ -210,7 +210,7 @@ class Facility < ApplicationRecord
     end
   end
 
-  def syncable_patients
+  def prioritized_patients
     registered_patients.with_discarded
   end
 

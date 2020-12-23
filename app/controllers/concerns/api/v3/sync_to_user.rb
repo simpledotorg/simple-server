@@ -4,14 +4,14 @@ module Api::V3::SyncToUser
   included do
     def current_facility_records
       model_sync_scope
-        .where(patient: current_facility.syncable_patients.pluck(:id))
+        .where(patient: current_facility.prioritized_patients.pluck(:id))
         .updated_on_server_since(current_facility_processed_since, limit)
     end
 
     def other_facility_records
       other_facilities_limit = limit - current_facility_records.size
       other_patient_records =
-        current_sync_region.syncable_patients.pluck(:id) - current_facility.syncable_patients.pluck(:id)
+        current_sync_region.syncable_patients.pluck(:id) - current_facility.prioritized_patients.pluck(:id)
 
       model_sync_scope
         .where(patient: other_patient_records)
