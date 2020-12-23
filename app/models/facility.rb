@@ -49,6 +49,11 @@ class Facility < ApplicationRecord
     foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
+  scope :with_block_region_id, -> {
+    joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
+      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
+      .select("block_region.id AS block_region_id, facilities.*")
+  }
 
   enum facility_size: {
     community: "community",
@@ -89,7 +94,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) && facility_group.present? }
+  validate :valid_block, if: -> { facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
@@ -105,8 +110,8 @@ class Facility < ApplicationRecord
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_create :make_region
+  after_update :update_region
 
   def make_region
     return if region&.persisted?
