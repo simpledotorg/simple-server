@@ -65,7 +65,7 @@ RSpec.describe DeleteOrganizationData do
         other_organizations = create_list(:organization, 2)
         other_facility_groups = other_organizations.map { |org| create_list(:facility_group, 2, organization: org) }.flatten
         other_facilities = other_facility_groups.map { |fg| create_list(:facility, 2, facility_group: fg) }.flatten
-        other_soft_deleted_facilities = create_list(:facility, 2, facility_group: nil, deleted_at: Time.current)
+        other_soft_deleted_facilities = create_list(:facility, 2, deleted_at: Time.current)
         other_patients = other_facilities.map { |facility| create_list(:patient, 2, registration_facility: facility) }.flatten
         other_medical_histories = other_patients.map(&:medical_history)
         other_prescription_drugs = other_patients.map(&:prescription_drugs).flatten
