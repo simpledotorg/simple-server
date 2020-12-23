@@ -124,8 +124,6 @@ RSpec.describe Region, type: :model do
   end
 
   context "accessible_children" do
-    before { enable_flag(:regions_prep) }
-
     it "only returns children regions that a user has access to" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, organization: org, state: "State 1")

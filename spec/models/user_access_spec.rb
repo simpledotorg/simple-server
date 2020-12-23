@@ -161,8 +161,6 @@ RSpec.describe UserAccess, type: :model do
       end
 
       context "#accessible_blocks" do
-        before { Flipper.enable(:regions_prep) }
-
         it "returns any blocks in the org an admin manages" do
           block_1 = create(:region, :block, reparent_to: facility_group_3_1.region)
           block_2 = create(:region, :block, reparent_to: facility_group_3_2.region)

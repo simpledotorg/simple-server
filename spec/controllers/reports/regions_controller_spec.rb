@@ -17,7 +17,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   context "index" do
     before do
-      enable_flag(:regions_prep)
       @facility_group = create(:facility_group, organization: organization)
       @facility_1 = create(:facility, name: "CHC Barnagar", block: "Block 1", facility_group: @facility_group)
       @facility_2 = create(:facility, name: "Facility 2", block: "Block 1", facility_group: @facility_group)
@@ -31,7 +30,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       # expect(response).to be_server_error
     end
 
-    fit "only loads districts the user has access" do
+    it "only loads districts the user has access to" do
       sign_in(cvho.email_authentication)
       get :index
       expected_regions = {
