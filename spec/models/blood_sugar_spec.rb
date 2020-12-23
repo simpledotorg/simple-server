@@ -49,5 +49,13 @@ RSpec.describe BloodSugar, type: :model do
         expect(BloodSugar.for_v3.count).to eq 3
       end
     end
+
+    describe ".for_sync" do
+      it "includes discarded blood sugars" do
+        discarded_blood_sugar = create(:blood_sugar, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_blood_sugar)
+      end
+    end
   end
 end

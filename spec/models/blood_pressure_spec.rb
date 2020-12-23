@@ -39,6 +39,14 @@ RSpec.describe BloodPressure, type: :model do
         expect(BloodPressure.under_control).not_to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
       end
     end
+
+    describe ".for_sync" do
+      it "includes discarded blood pressures" do
+        discarded_bp = create(:blood_pressure, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_bp)
+      end
+    end
   end
 
   context "utility methods" do

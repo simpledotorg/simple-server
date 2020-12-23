@@ -104,6 +104,14 @@ describe Appointment, type: :model do
         expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
       end
     end
+
+    describe ".for_sync" do
+      it "includes discarded appointments" do
+        discarded_appointment = create(:appointment, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_appointment)
+      end
+    end
   end
 
   context "For discarded patients" do

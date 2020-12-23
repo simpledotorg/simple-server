@@ -312,6 +312,20 @@ describe Patient, type: :model do
         expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
       end
     end
+
+    describe ".for_sync" do
+      it "includes discarded patients" do
+        discarded_patient = create(:patient, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_patient)
+      end
+
+      it "includes nested sync resources" do
+        expect(described_class.for_sync.first.association(:address).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:phone_numbers).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:business_identifiers).loaded?).to eq true
+      end
+    end
   end
 
   context "Utility methods" do
