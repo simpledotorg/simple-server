@@ -5,7 +5,7 @@ class Admin::FacilitiesController < AdminController
 
   before_action :set_facility, only: [:show, :edit, :update, :destroy]
   before_action :set_facility_group, only: [:show, :new, :create, :edit, :update, :destroy]
-  before_action :set_available_zones, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_available_zones, only: [:new, :create, :edit, :update]
 
   def index
     authorize do
@@ -115,7 +115,7 @@ class Admin::FacilitiesController < AdminController
   def new_facility(attributes = nil)
     @facility_group.facilities.new(attributes).tap do |facility|
       facility.district ||= @facility_group.name
-      facility.state ||= @facility_group.region.state_region.name if Flipper.enabled?(:regions_prep)
+      facility.state ||= @facility_group.region.state_region.name
       facility.country ||= Region.root.name
     end
   end
