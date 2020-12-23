@@ -2,17 +2,18 @@ require "rails_helper"
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
+  let(:block) { create(:region, :block, name: "Block A", reparent_to: facility_group.region) }
   let(:valid_attributes) do
     attributes_for(:facility,
       facility_group_id: facility_group.id,
-      zone: "An Block",
+      zone: block.name,
       enable_teleconsultation: false)
   end
 
   let(:invalid_attributes) do
     attributes_for(
       :facility,
-      zone: "An Block",
+      zone: "Invalid Block",
       name: nil
     )
   end
@@ -117,7 +118,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         attributes_for(:facility,
           facility_group_id: facility_group.id,
           pin: "999999",
-          zone: "An Block",
+          zone: block.name,
           monthly_estimated_opd_load: 500).except(:id, :slug)
       end
 
@@ -130,7 +131,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         facility.reload
 
         expect(facility.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug",
-          "facility_group_name", "import", "latitude", "longitude", "organization_name"))
+          "facility_group_name", "latitude", "longitude", "organization_name"))
           .to eq new_attributes.with_indifferent_access
       end
 
@@ -192,55 +193,51 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
   end
 
   describe "POST #upload" do
-    context "when regions_prep is disabled" do
-      context "with valid data in file" do
-        let!(:organization) { create(:organization, name: "OrgOne") }
-        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
-        let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+    let!(:organization) { create(:organization, name: "OrgOne") }
+    let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
 
-        it "uploads facilities file and passes validations" do
-          post :upload, params: {upload_facilities_file: upload_file}
-          expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
-        end
+    context "with valid data in file" do
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
       end
 
-      context "with invalid data in file" do
-        let!(:organization) { create(:organization, name: "OrgOne") }
-        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
-        let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
-
-        it "fails validations and returns a 400" do
-          post :upload, params: {upload_facilities_file: upload_file}
-          expect(response).to have_http_status(:bad_request)
-        end
-      end
-
-      context "with unsupported file type" do
-        let!(:organization) { create(:organization, name: "OrgOne") }
-        let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
-        let(:upload_file) do
-          fixture_file_upload("files/upload_facilities_test.docx",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-        end
-        it "uploads facilities file and fails validations" do
-          post :upload, params: {upload_facilities_file: upload_file}
-          expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
-        end
+      it "uploads facilities file and passes validations" do
+        post :upload, params: {upload_facilities_file: upload_file}
+        expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
       end
     end
 
-    context "when regions_prep is enabled" do
-      before { enable_flag(:regions_prep) }
+    context "with invalid data in file" do
+      let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
 
-      it "uploads facilities file and passes validations" do
-        organization = create(:organization, name: "OrgOne")
-        facility_group = create(:facility_group, name: "FGTwo", organization_id: organization.id)
-        upload_file = fixture_file_upload("files/upload_facilities_test.csv", "text/csv")
-        Region.create(name: "Zone 1", region_type: Region.region_types[:block], reparent_to: facility_group.region)
-        Region.create(name: "Zone 2", region_type: Region.region_types[:block], reparent_to: facility_group.region)
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
 
+      it "fails validations and returns a 400" do
         post :upload, params: {upload_facilities_file: upload_file}
-        expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
+
+    context "with unsupported file type" do
+      let(:upload_file) do
+        fixture_file_upload("files/upload_facilities_test.docx",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+      end
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
+
+      it "uploads facilities file and fails validations" do
+        post :upload, params: {upload_facilities_file: upload_file}
+        expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])
       end
     end
   end

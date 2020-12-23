@@ -34,7 +34,7 @@ FactoryBot.define do
     end
 
     transient do
-      create_parent_region { Flipper.enabled?(:regions_prep) }
+      create_parent_region { true }
     end
 
     before(:create) do |facility, options|
