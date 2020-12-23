@@ -82,8 +82,6 @@ RSpec.describe Region, type: :model do
 
   context "organization" do
     it "gets the org from the parent org region" do
-      enable_flag(:regions_prep)
-
       org = create(:organization, name: "Test Organization")
       facility_group = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       region = facility_group.region
@@ -93,8 +91,6 @@ RSpec.describe Region, type: :model do
 
   context "behavior" do
     it "sets a valid path" do
-      enable_flag(:regions_prep)
-
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
@@ -108,8 +104,6 @@ RSpec.describe Region, type: :model do
     end
 
     it "can soft delete nodes" do
-      enable_flag(:regions_prep)
-
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, organization: org, state: "State 1")
       facility_group_2 = create(:facility_group, organization: org, state: "State 2")
@@ -162,8 +156,6 @@ RSpec.describe Region, type: :model do
 
   context "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
-      enable_flag(:regions_prep)
-
       facility_group_1 = create(:facility_group, organization: create(:organization), state: "State 1")
       create(:facility, facility_group: facility_group_1, state: "State 1")
 
@@ -235,7 +227,6 @@ RSpec.describe Region, type: :model do
   end
 
   context "#syncable_patients" do
-    before { Flipper.enable(:regions_prep) }
     let!(:organization) { create(:organization) }
     let!(:facility_group) { create(:facility_group, organization: organization, state: "Maharashtra") }
     let!(:facility_1) { create(:facility, block: "M1", facility_group: facility_group) }

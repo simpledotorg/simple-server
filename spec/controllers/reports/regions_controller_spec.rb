@@ -49,7 +49,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     render_views
 
     before do
-      enable_flag(:regions_prep)
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
@@ -283,7 +282,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
     render_views_on_ci
 
     before do
-      Flipper.enable(:regions_prep)
       Flipper.enable_actor(:region_reports, cvho)
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
@@ -448,7 +446,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   describe "#whatsapp_graphics" do
     render_views
-    before { Flipper.enable(:regions_prep) }
 
     context "region reports disabled" do
       before do

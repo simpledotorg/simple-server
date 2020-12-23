@@ -44,16 +44,10 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    if Flipper.enabled?(:regions_prep)
-      other_facility_records
-        .with_block_region_id
-        .includes(:facility_group)
-        .where.not(facility_group: nil)
-    else
-      other_facility_records
-        .includes(:facility_group)
-        .where.not(facility_group: nil)
-    end
+    other_facility_records
+      .with_block_region_id
+      .includes(:facility_group)
+      .where.not(facility_group: nil)
   end
 
   private
