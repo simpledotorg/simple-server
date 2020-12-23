@@ -94,7 +94,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) && facility_group.present? }
+  validate :valid_block, if: -> { facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
@@ -110,8 +110,8 @@ class Facility < ApplicationRecord
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_create :make_region
+  after_update :update_region
 
   def make_region
     return if region&.persisted?

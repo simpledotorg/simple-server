@@ -237,7 +237,7 @@ class User < ApplicationRecord
   end
 
   def block_level_sync?
-    Flipper.enabled?(:regions_prep) && feature_enabled?(:block_level_sync)
+    feature_enabled?(:block_level_sync)
   end
 
   def flipper_id
