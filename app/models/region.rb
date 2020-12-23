@@ -34,6 +34,14 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def accessible_children(admin, region_type: child_region_type, access_level: :any)
+    auth_method = "accessible_#{region_type}_regions"
+    region_method = "#{region_type}_regions"
+    superset = public_send(region_method)
+    authorized_set = admin.public_send(auth_method, access_level)
+    superset & authorized_set
+  end
+
   def child_region_type
     index = REGION_TYPES.find_index { |type| type == region_type }
     REGION_TYPES[index + 1]

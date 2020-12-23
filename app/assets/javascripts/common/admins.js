@@ -14,18 +14,6 @@ AdminAccess.prototype = {
 
   facilityAccessPowerUser: () => document.getElementById("facility-access-power-user"),
 
-  facilityAccessItemsPadding: function () {
-    return document.getElementsByClassName("access-item__padding")
-  },
-
-  facilityAccessItemsAccessRatio: function () {
-    return document.getElementsByClassName("access-ratio")
-  },
-
-  facilityAccessItemsDropdown: function () {
-    return document.getElementsByClassName("access-item__dropdown")
-  },
-
   selectAllFacilitiesContainer: function () {
     return document.getElementById("select-all-facilities")
   },
@@ -52,9 +40,7 @@ AdminAccess.prototype = {
 
   resourceRowCollapseListener: function () {
     const collapsibleItems = [
-      this.facilityAccessItemsPadding(),
-      this.facilityAccessItemsAccessRatio(),
-      this.facilityAccessItemsDropdown()
+      document.getElementsByClassName("access-item")
     ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
     for (const item of collapsibleItems) {
@@ -216,8 +202,18 @@ AdminAccess.prototype = {
     });
   },
 
-  initialize: function () {
-    this.onAsyncLoaded()
+  onDOMLoaded: function() {
+    document.addEventListener('DOMContentLoaded', (_event) => {
+      this.resourceRowCollapseListener()
+    });
+  },
+
+  initialize: function (async = true) {
+    if(async) {
+      this.onAsyncLoaded()
+    } else {
+      this.onDOMLoaded()
+    }
   }
 }
 
