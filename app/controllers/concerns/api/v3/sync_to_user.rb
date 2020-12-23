@@ -3,13 +3,13 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      model_name = controller_name.classify.constantize
-      model_name.syncable_to_region(current_sync_region)
+      model = controller_name.classify.constantize
+      model.syncable_to_region(current_sync_region)
     end
 
     def current_facility_records
       region_records
-        .where(patient: Patient.syncable_to_region(current_facility))
+        .where(patient: prioritized_patients)
         .updated_on_server_since(current_facility_processed_since, limit)
     end
 
@@ -17,7 +17,7 @@ module Api::V3::SyncToUser
       other_facilities_limit = limit - current_facility_records.count
 
       region_records
-        .where.not(patient: Patient.syncable_to_region(current_facility))
+        .where.not(patient: prioritized_patients)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
@@ -27,15 +27,22 @@ module Api::V3::SyncToUser
       current_facility_records + other_facility_records
     end
 
+    def prioritized_patients
+      current_facility.registered_patients.with_discarded
+    end
+
     def processed_until(records)
       records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.present?
     end
 
     def response_process_token
-      {current_facility_id: current_facility.id,
-       current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
-       other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-       resync_token: resync_token}
+      {
+        current_facility_id: current_facility.id,
+        current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
+        other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+        resync_token: resync_token,
+        sync_region_id: current_sync_region.id
+      }
     end
 
     def encode_process_token(process_token)
@@ -61,11 +68,20 @@ module Api::V3::SyncToUser
     end
 
     def force_resync?
+      Rails.logger.info "[force_resync] Resync token modified in resource #{controller_name}" if resync_token_modified?
+      Rails.logger.info "[force_resync] Sync region modified in resource #{controller_name}" if sync_region_modified?
+      resync_token_modified? || sync_region_modified?
+    end
+
+    def resync_token_modified?
       process_token[:resync_token] != resync_token
     end
 
-    def resync_token
-      request.headers["HTTP_X_RESYNC_TOKEN"]
+    def sync_region_modified?
+      return unless current_user.feature_enabled?(:block_level_sync)
+      return if requested_sync_region_id.blank?
+      return if process_token[:sync_region_id].blank?
+      process_token[:sync_region_id] != requested_sync_region_id
     end
   end
 end

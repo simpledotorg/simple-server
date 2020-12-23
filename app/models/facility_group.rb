@@ -60,6 +60,16 @@ class FacilityGroup < ApplicationRecord
     Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
 
+  # For Regions compatibility
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+
+  def child_region_type
+    "facility"
+  end
+
+  # A FacilityGroup's children are Facilities for reporting purposes
+  alias_method :children, :facilities
+
   def registered_hypertension_patients
     Patient.with_hypertension.where(registration_facility: facilities)
   end
@@ -83,23 +93,15 @@ class FacilityGroup < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
-  # For regions compatibility
-  def facility_region?
-    false
-  end
-
-  # For regions compatibility
-  def district_region?
-    true
+  def syncable_patients
+    registered_patients.with_discarded
   end
 
   private

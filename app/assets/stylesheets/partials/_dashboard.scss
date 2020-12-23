@@ -186,7 +186,16 @@ th sup {
   col { border-left: 1px solid $grey-lightest; }
   col:first-of-type { border-left: none; }
   col.table-divider { border-left: 1px solid $grey-mid; }
-  td.type-rank { text-align: right; }
+
+  td.type-grade {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  td.grade-a { color: $green-dark }
+  td.grade-b { color: $yellow-dark }
+  td.grade-c { color: $orange-dark }
+  td.grade-d { color: $red }
 
   td.type-number {
     text-align: right;
@@ -211,33 +220,24 @@ th sup {
     background: rgba(0,0,0,0.1);
     color: rgba(0,0,0,0.6);
   }
-
-  td.type-rank i {
-    margin-left: 0.5em;
-    color: $green;
-  }
-
-  td.type-rank i.fa-long-arrow-alt-down {
-    color: $red;
-  }
 }
 
 @include media-breakpoint-down(lg) {
   .card-responsive {
     overflow: hidden;
-    
+
     .dropdown-menu {
       max-height: 350px;
       overflow:
       hidden;
       overflow: scroll;
     }
-    
+
     table {
       margin-right: -20px !important;
       width: auto;
     }
-    
+
     th {
       white-space: nowrap;
     }

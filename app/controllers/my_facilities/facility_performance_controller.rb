@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MyFacilities::RankedFacilitiesController < AdminController
+class MyFacilities::FacilityPerformanceController < AdminController
   include Pagination
   include MyFacilitiesFiltering
 
@@ -32,11 +32,12 @@ class MyFacilities::RankedFacilitiesController < AdminController
                                                                      period: @period).call
 
       @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
-                                                                          reports_result: @data_for_facility[facility.name])
+                                                                          reports_result: @data_for_facility[facility.name],
+                                                                          period: @period)
     end
 
-    # Sort facilities by overall score, highest to lowest
-    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }.reverse
+    @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   private
@@ -66,7 +67,7 @@ class MyFacilities::RankedFacilitiesController < AdminController
     @period = if period_params.present?
       Period.new(period_params)
     else
-      Reports::RegionService.default_period
+      Reports::RegionService.default_period.previous
     end
   end
 
