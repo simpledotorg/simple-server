@@ -10,17 +10,7 @@ class Reports::RegionsController < AdminController
   around_action :set_time_zone
 
   def index
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
-
-    if current_admin.feature_enabled?(:regions_reports)
-      @organizations = authorize {
-        current_admin.accessible_facilities(:view_reports)
-          .flat_map(&:organization)
-          .uniq
-          .compact
-          .sort_by(&:name)
-      }
-    else
+    if current_admin.feature_enabled?(:region_reports)
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
       @accessible_regions = accessible_facility_regions.each_with_object({}) { |facility, result|
         ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
@@ -29,6 +19,14 @@ class Reports::RegionsController < AdminController
         result[org][district] ||= {}
         result[org][district][block] ||= []
         result[org][district][block] << facility
+      }
+    else
+      @organizations = authorize {
+        current_admin.accessible_facilities(:view_reports)
+          .flat_map(&:organization)
+          .uniq
+          .compact
+          .sort_by(&:name)
       }
     end
   end

@@ -15,8 +15,9 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  context "index" do
+  context "index (with region reports)" do
     before do
+      Flipper.enable(:region_reports)
       @facility_group = create(:facility_group, organization: organization)
       @facility_1 = create(:facility, name: "Facility 1", block: "Block 1", facility_group: @facility_group)
       @facility_2 = create(:facility, name: "Facility 2", block: "Block 1", facility_group: @facility_group)
@@ -26,13 +27,14 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "loads nothing if user has no access to any regions" do
       sign_in(call_center_user.email_authentication)
       get :index
-      expect(assigns[:accessible_regions]).to be_nil
-      # expect(response).to be_server_error
+      expect(assigns[:accessible_regions]).to eq({})
+      expect(response).to be_successful
     end
 
     it "only loads districts the user has access to" do
       sign_in(cvho.email_authentication)
       get :index
+      expect(response).to be_successful
       facility_regions = [@facility_1.region, @facility_2.region]
       org_region = organization.region
       expect(assigns[:accessible_regions].keys).to eq([org_region])
