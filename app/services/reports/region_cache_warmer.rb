@@ -34,7 +34,6 @@ module Reports
           cache_blocks
         end
 
-
         notify "starting facility caching"
         Statsd.instance.time("region_cache_warmer.facilities") do
           cache_facilities
