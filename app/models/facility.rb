@@ -100,7 +100,7 @@ class Facility < ApplicationRecord
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
   delegate :district_region?, :block_region?, :facility_region?, to: :region
-  delegate :cache_key, to: :region
+  delegate :cache_key, :cache_version, to: :region
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)
