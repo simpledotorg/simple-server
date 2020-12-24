@@ -44,17 +44,23 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    Facility
-      .updated_on_server_since(other_facilities_processed_since, limit)
+    other_facility_records
+      .with_block_region_id
       .includes(:facility_group)
       .where.not(facility_group: nil)
   end
 
   private
 
+  # Memoize this call so that we don't end up making thousands of calls to check user for each facility
+  def block_level_sync?
+    return @block_level_sync_enabled if defined? @block_level_sync_enabled
+    @block_level_sync_enabled = current_user&.block_level_sync?
+  end
+
   def sync_region_id(facility)
-    if current_user&.block_level_sync?
-      facility.region.block_region.id
+    if block_level_sync?
+      facility.block_region_id
     else
       facility.facility_group_id
     end

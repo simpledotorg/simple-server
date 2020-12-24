@@ -384,12 +384,14 @@ class TelemedicineReports
     teleconsult_requests = facility
       .teleconsultations
       .where("device_created_at >= ? AND device_created_at <= ?", p_start, p_end)
-      .select("DISTINCT(patient_id)")
-    teleconsult_records = teleconsult_requests.where.not(recorded_at: nil)
-    teleconsult_marked_completed = teleconsult_requests.where(requester_completion_status: "yes")
-    teleconsult_marked_incomplete = teleconsult_requests.where(requester_completion_status: "no")
-    teleconsult_marked_waiting = teleconsult_requests.where(requester_completion_status: "waiting")
-    teleconsult_not_marked = teleconsult_requests.where(requester_completion_status: nil)
+      .select("DISTINCT ON (patient_id) patient_id, requester_completion_status, recorded_at")
+      .order(Arel.sql("patient_id, array_position(array['yes', 'no', 'waiting']::varchar[], requester_completion_status)"))
+      .to_a
+    teleconsult_records = teleconsult_requests.reject { |request| request.recorded_at.nil? }
+    teleconsult_marked_completed = teleconsult_requests.select { |request| request.requester_completion_status == "yes" }
+    teleconsult_marked_incomplete = teleconsult_requests.select { |request| request.requester_completion_status == "no" }
+    teleconsult_marked_waiting = teleconsult_requests.select { |request| request.requester_completion_status == "waiting" }
+    teleconsult_not_marked = teleconsult_requests.select { |request| request.requester_completion_status.nil? }
 
     {high_bp: high_bps.count,
      high_bs: high_sugars.count,

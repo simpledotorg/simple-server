@@ -1,5 +1,5 @@
 class ControlRateService
-  CACHE_VERSION = 8
+  CACHE_VERSION = 9
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -115,11 +115,11 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.model_name}/#{region.id}/#{report_range.begin.type}/#{Date.current}"
+    "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}"
   end
 
   def cache_version
-    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
+    "#{region.cache_version}/#{CACHE_VERSION}"
   end
 
   def force_cache?

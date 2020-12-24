@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_02_074942) do
+ActiveRecord::Schema.define(version: 2020_12_24_074852) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id", "scheduled_date"], name: "index_appointments_on_patient_id_and_scheduled_date", order: { scheduled_date: :desc }
+    t.index ["patient_id", "updated_at"], name: "index_appointments_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["updated_at"], name: "index_appointments_on_updated_at"
     t.index ["user_id"], name: "index_appointments_on_user_id"
@@ -86,6 +87,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
     t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
+    t.index ["patient_id", "updated_at"], name: "index_blood_pressures_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["recorded_at"], name: "index_blood_pressures_on_recorded_at"
     t.index ["updated_at"], name: "index_blood_pressures_on_updated_at"
@@ -107,6 +109,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["blood_sugar_type"], name: "index_blood_sugars_on_blood_sugar_type"
     t.index ["blood_sugar_value"], name: "index_blood_sugars_on_blood_sugar_value"
     t.index ["facility_id"], name: "index_blood_sugars_on_facility_id"
+    t.index ["patient_id", "updated_at"], name: "index_blood_sugars_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_sugars_on_patient_id"
     t.index ["updated_at"], name: "index_blood_sugars_on_updated_at"
     t.index ["user_id"], name: "index_blood_sugars_on_user_id"
@@ -198,6 +201,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_encounters_on_deleted_at"
     t.index ["facility_id"], name: "index_encounters_on_facility_id"
+    t.index ["patient_id", "updated_at"], name: "index_encounters_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_encounters_on_patient_id"
   end
 
@@ -242,6 +246,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
+    t.index ["updated_at"], name: "index_facilities_on_updated_at"
   end
 
   create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
@@ -303,6 +308,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.uuid "user_id"
     t.text "hypertension"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
+    t.index ["patient_id", "updated_at"], name: "index_medical_histories_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
     t.index ["user_id"], name: "index_medical_histories_on_user_id"
   end
@@ -398,6 +404,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.index ["address_id"], name: "index_patients_on_address_id"
     t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
+    t.index ["id", "updated_at"], name: "index_patients_on_id_and_updated_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
@@ -440,6 +447,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.integer "duration_in_days"
     t.uuid "teleconsultation_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
+    t.index ["patient_id", "updated_at"], name: "index_prescription_drugs_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
     t.index ["teleconsultation_id"], name: "index_prescription_drugs_on_teleconsultation_id"
     t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
@@ -464,6 +472,7 @@ ActiveRecord::Schema.define(version: 2020_12_02_074942) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
+    t.index ["updated_at"], name: "index_protocols_on_updated_at"
   end
 
   create_table "regions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

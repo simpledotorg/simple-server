@@ -70,18 +70,40 @@ class UserAccess
       .includes(facility_group: :organization)
   end
 
+  def accessible_district_regions(action)
+    facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
+    Region.district_regions.where(source_id: facility_group_ids)
+  end
+
+  def accessible_block_regions(action)
+    facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
+    paths = Region.district_regions.where(source_id: facility_group_ids, source_type: "FacilityGroup").pluck(:path)
+    globs = paths.map { |path| " '#{path}.*' " }.join(",")
+    Region.block_regions.where("path ? ARRAY[#{globs}]::lquery[]")
+  end
+
+  def accessible_facility_regions(action)
+    facility_ids = accessible_facilities(action).pluck("facilities.id")
+    Region.facility_regions.where(source_id: facility_ids)
+  end
+
   def accessible_admins(action)
     return User.none unless action == :manage
     return User.admins if power_user?
     return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
 
     manageable_facilities = user.accessible_facilities(:manage)
+    manageable_facility_groups = user.accessible_facility_groups(:manage)
+    manageable_orgs = user.accessible_organizations(:manage)
 
     resource_ids =
       [
         manageable_facilities.pluck("facilities.id"),
         manageable_facilities.map(&:facility_group_id),
-        manageable_facilities.map { |facility| facility.organization.id }
+        manageable_facilities.map(&:organization_id),
+        manageable_facility_groups.map(&:id),
+        manageable_facility_groups.map(&:organization_id),
+        manageable_orgs.map(&:id)
       ].flatten.uniq
 
     User

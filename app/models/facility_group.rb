@@ -29,10 +29,14 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
 
+  # For Regions compatibility
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+  delegate :cache_key, :cache_version, to: :region
+
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
-  validates :state, presence: true, if: -> { Flipper.enabled?(:regions_prep) }, unless: :generating_seed_data
+  validates :state, presence: true, unless: :generating_seed_data
 
   attr_accessor :new_block_names
   attr_accessor :remove_block_ids
@@ -54,14 +58,10 @@ class FacilityGroup < ApplicationRecord
   end
 
   def create_state_region!
-    return true unless Flipper.enabled?(:regions_prep)
     return if state_region || state.blank?
 
     Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
-
-  # For Regions compatibility
-  delegate :district_region?, :block_region?, :facility_region?, to: :region
 
   def child_region_type
     "facility"
