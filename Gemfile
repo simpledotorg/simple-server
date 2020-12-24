@@ -43,7 +43,6 @@ gem "kaminari"
 gem "lodash-rails"
 gem "lograge"
 gem "ougai"
-gem "oj"
 gem "parallel", require: false
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"

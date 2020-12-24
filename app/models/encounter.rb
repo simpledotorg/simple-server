@@ -9,7 +9,9 @@ class Encounter < ApplicationRecord
   has_many :blood_pressures, through: :observations, source: :observable, source_type: "BloodPressure"
   has_many :blood_sugars, through: :observations, source: :observable, source_type: "BloodSugar"
 
-  scope :for_sync, -> { with_discarded }
+  scope :syncable_to_region, ->(region) {
+    with_discarded.where(patient: Patient.syncable_to_region(region))
+  }
 
   def self.generate_id(facility_id, patient_id, encountered_on)
     UUIDTools::UUID
