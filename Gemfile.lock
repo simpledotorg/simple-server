@@ -608,7 +608,6 @@ DEPENDENCIES
   memery
   memory_profiler
   mock_redis
-  oj
   ougai
   parallel
   parallel_tests
