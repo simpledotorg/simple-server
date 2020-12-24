@@ -11,11 +11,26 @@ describe MedicalHistory, type: :model do
   end
 
   describe "Scopes" do
-    describe ".for_sync" do
-      it "includes discarded medical histories" do
-        discarded_medical_history = create(:medical_history, deleted_at: Time.now)
+    describe ".syncable_to_region" do
+      it "returns all patients registered in the region" do
+        facility_group = create(:facility_group)
+        patient = create(:patient)
+        other_patient = create(:patient)
 
-        expect(described_class.for_sync).to include(discarded_medical_history)
+        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
+
+        MedicalHistory.destroy_all
+        medical_histories = [
+          create(:medical_history, patient: patient),
+          create(:medical_history, patient: patient).tap(&:discard)
+        ]
+
+        _other_medical_histories = [
+          create(:medical_history, patient: other_patient),
+          create(:medical_history, patient: other_patient).tap(&:discard)
+        ]
+
+        expect(MedicalHistory.syncable_to_region(facility_group)).to contain_exactly(*medical_histories)
       end
     end
   end
