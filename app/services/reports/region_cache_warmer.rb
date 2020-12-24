@@ -4,7 +4,7 @@ module Reports
       new.call
     end
 
-    BATCH_SIZE = 100
+    BATCH_SIZE = 1000
 
     def initialize(period: RegionService.default_period)
       @period = period
@@ -27,6 +27,11 @@ module Reports
         notify "starting facility_group caching"
         Statsd.instance.time("region_cache_warmer.facility_groups") do
           cache_facility_groups
+        end
+
+        notify "starting block caching"
+        Statsd.instance.time("region_cache_warmer.blocks") do
+          cache_blocks
         end
 
         notify "starting facility caching"
@@ -55,6 +60,13 @@ module Reports
       FacilityGroup.find_each(batch_size: BATCH_SIZE).each do |region|
         RegionService.call(region: region, period: period)
         Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
+      end
+    end
+
+    def cache_blocks
+      Region.block_regions.find_each(batch_size: BATCH_SIZE).each do |region|
+        RegionService.call(region: region, period: period)
+        Statsd.instance.increment("region_cache_warmer.blocks.cache")
       end
     end
 
