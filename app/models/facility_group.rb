@@ -29,6 +29,10 @@ class FacilityGroup < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
 
+  # For Regions compatibility
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+  delegate :cache_key, :cache_version, to: :region
+
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
@@ -58,9 +62,6 @@ class FacilityGroup < ApplicationRecord
 
     Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
-
-  # For Regions compatibility
-  delegate :district_region?, :block_region?, :facility_region?, to: :region
 
   def child_region_type
     "facility"

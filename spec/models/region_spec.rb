@@ -47,6 +47,15 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "cache_key" do
+    it "contains class name, region type, and id" do
+      facility_group = create(:facility_group)
+      region = facility_group.region
+      expect(region.cache_key).to eq("regions/district/#{region.id}")
+      expect(facility_group.cache_key).to eq(region.cache_key)
+    end
+  end
+
   context "facilities" do
     it "returns the source facilities" do
       facility_group = create(:facility_group)

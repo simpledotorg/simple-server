@@ -151,6 +151,14 @@ class Region < ApplicationRecord
     self
   end
 
+  def cache_key
+    [model_name.cache_key, region_type, id].join("/")
+  end
+
+  def cache_version
+    updated_at.utc.to_s(:usec)
+  end
+
   private
 
   def _set_path_for_seeds

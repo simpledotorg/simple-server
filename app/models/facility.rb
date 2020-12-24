@@ -99,6 +99,8 @@ class Facility < ApplicationRecord
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+  delegate :cache_key, :cache_version, to: :region
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)
@@ -206,8 +208,6 @@ class Facility < ApplicationRecord
   def discardable?
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
-
-  delegate :district_region?, :block_region?, :facility_region?, to: :region
 
   def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)

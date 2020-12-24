@@ -53,14 +53,14 @@ module Reports
 
     def cache_facility_groups
       FacilityGroup.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.new(region: region, period: period).call
+        RegionService.call(region: region, period: period)
         Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
       end
     end
 
     def cache_facilities
       Facility.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.new(region: region, period: period).call
+        RegionService.call(region: region, period: period)
         Statsd.instance.increment("region_cache_warmer.facilities.cache")
       end
     end
