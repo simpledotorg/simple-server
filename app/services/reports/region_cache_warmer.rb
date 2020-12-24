@@ -24,11 +24,6 @@ module Reports
           return
         end
 
-        notify "starting region caching"
-        Statsd.instance.time("region_cache_warmer.regions") do
-          cache_regions
-        end
-
         notify "starting facility_group caching"
         Statsd.instance.time("region_cache_warmer.facility_groups") do
           cache_facility_groups
@@ -54,13 +49,6 @@ module Reports
         class: self.class.name
       }.merge(extra).merge(msg: msg)
       Rails.logger.info data
-    end
-
-    def cache_regions
-      Region.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.new(region: region, period: period).call
-        Statsd.instance.increment("region_cache_warmer.regions.cache")
-      end
     end
 
     def cache_facility_groups
