@@ -313,27 +313,19 @@ describe Patient, type: :model do
       end
     end
 
-    describe ".syncable_to_region" do
-      it "returns all patients registered in the region" do
-        facility_group = create(:facility_group)
-        other_facility_group = create(:facility_group)
+    describe ".for_sync" do
+      it "includes discarded patients" do
+        discarded_patient = create(:patient, deleted_at: Time.now)
 
-        facility = create(:facility, facility_group: facility_group)
-        other_facility = create(:facility, facility_group: other_facility_group)
+        expect(described_class.for_sync).to include(discarded_patient)
+      end
 
-        patients = [
-          create(:patient, registration_facility: facility),
-          create(:patient, registration_facility: facility).tap(&:discard),
-          create(:patient, registration_facility: facility, assigned_facility: other_facility)
-        ]
+      it "includes nested sync resources" do
+        _discarded_patient = create(:patient, deleted_at: Time.now)
 
-        _other_patients = [
-          create(:patient, registration_facility: other_facility),
-          create(:patient, registration_facility: other_facility).tap(&:discard),
-          create(:patient, registration_facility: other_facility, assigned_facility: facility)
-        ]
-
-        expect(Patient.syncable_to_region(facility_group)).to contain_exactly(*patients)
+        expect(described_class.for_sync.first.association(:address).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:phone_numbers).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:business_identifiers).loaded?).to eq true
       end
     end
   end
