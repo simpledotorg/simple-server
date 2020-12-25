@@ -2,10 +2,15 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
+    def region_records
+      model = controller_name.classify.constantize
+      model.syncable_to_region(current_sync_region)
+    end
+
     def current_facility_records
       Statsd.instance.time("current_facility_records.#{model.name}") do
-        model_sync_scope
-          .where(patient: current_facility.prioritized_patients.pluck(:id))
+        region_records
+          .where(patient: prioritized_patients)
           .updated_on_server_since(current_facility_processed_since, limit)
       end
     end
@@ -20,13 +25,20 @@ module Api::V3::SyncToUser
           .where(patient: other_patient_records)
           .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
       end
+
+    end
+
+    def other_facility_records
+      Statsd.instance.time("other_facility_records.#{model.name}") do
+        other_facilities_limit = limit - current_facility_records.count
+
+        region_records
+          .where.not(patient: prioritized_patients)
+          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      end
     end
 
     private
-
-    def model_sync_scope
-      controller_name.classify.constantize.for_sync
-    end
 
     def records_to_sync
       Statsd.instance.time("records_to_sync.#{model.name}") do
@@ -34,8 +46,12 @@ module Api::V3::SyncToUser
       end
     end
 
+    def prioritized_patients
+      current_facility.registered_patients.with_discarded
+    end
+
     def processed_until(records)
-      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.any?
+      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.present?
     end
 
     def response_process_token

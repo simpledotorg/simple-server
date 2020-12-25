@@ -17,10 +17,10 @@ class Api::V3::SyncController < APIController
     log_block_level_sync_metrics(response_key)
 
     render(
-      json: Oj.dump({
-        response_key => records.map { |record| transform_to_response(record) },
+      json: {
+        response_key => records_to_sync.map { |record| transform_to_response(record) },
         "process_token" => encode_process_token(response_process_token)
-      }, mode: :compat),
+      },
       status: :ok
     )
   end

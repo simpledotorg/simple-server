@@ -61,6 +61,14 @@ class FacilityDistrict
     self
   end
 
+  def cache_key
+    ["facility_districts", id].join("/")
+  end
+
+  def cache_version
+    updated_at.utc.to_s(:usec)
+  end
+
   # For regions compatibility
   def facility_region?
     false

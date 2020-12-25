@@ -20,7 +20,7 @@ class Hash
 
   def with_payload_keys
     Api::V3::Transformer.rename_attributes(
-      self, Api::V3::Transformer.to_response_key_mapping
+      self, Api::V3::Transformer.inverted_key_mapping
     )
   end
 end

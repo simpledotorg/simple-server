@@ -43,7 +43,6 @@ gem "kaminari"
 gem "lodash-rails"
 gem "lograge"
 gem "ougai"
-gem "oj"
 gem "parallel", require: false
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"
@@ -99,6 +98,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "active_record_query_trace"
   gem "guard-rspec", require: false
   gem "listen", ">= 3.0.5", "< 3.2"
   gem "rails-erd"

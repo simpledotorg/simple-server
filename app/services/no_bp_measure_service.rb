@@ -1,5 +1,5 @@
 class NoBPMeasureService
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
   CACHE_TTL = 7.days
 
   def initialize(region, periods:)
@@ -77,11 +77,11 @@ class NoBPMeasureService
   end
 
   def cache_key(period)
-    "#{self.class}/#{region.model_name}/#{region.id}/#{period}"
+    "#{self.class}/#{region.cache_key}/#{period}"
   end
 
   def cache_version
-    "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
+    "#{region.cache_version}/#{CACHE_VERSION}"
   end
 
   def force_cache?
