@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ReportDuplicatePassports do
-  describe '.duplicate_passports_count' do
+  describe ".duplicate_passports_count" do
     context "for passports with the same identifiers" do
       let!(:identifier) { SecureRandom.uuid }
 
