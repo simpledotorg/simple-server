@@ -28,7 +28,7 @@ RSpec.describe BlockLevelSync do
 
       enabled_users.each do |u|
         u.facility_group.facilities.pluck(:updated_at).each do |t|
-          expect(t).to eq(enable_time)
+          expect(t.to_i).to eq(enable_time.to_i)
         end
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe BlockLevelSync do
 
       users.each do |u|
         u.facility_group.facilities.pluck(:updated_at).each do |t|
-          expect(t).to eq(enable_time)
+          expect(t.to_i).to eq(enable_time.to_i)
         end
       end
     end

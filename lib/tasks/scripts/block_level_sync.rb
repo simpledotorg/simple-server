@@ -51,7 +51,7 @@ class BlockLevelSync
 
       newly_enabled_user_ids.each do |user_id|
         Rails.logger.info msg: "Block level sync enabled for #{user_id}",
-          block_level_sync_enabled_user_id: user_id
+                          block_level_sync_enabled_user_id: user_id
       end
     end
 

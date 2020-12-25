@@ -1,4 +1,4 @@
-require 'tasks/scripts/block_level_sync'
+require "tasks/scripts/block_level_sync"
 
 namespace :block_level_sync do
   desc "Enable block level sync for users"
