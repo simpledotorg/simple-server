@@ -41,11 +41,11 @@ class BlockLevelSync
 
   def bump(percentage)
     existing_percentage = Flipper[:block_level_sync].percentage_of_actors_value
-    existing_enabled_user_ids = enabled_user_ids.to_set
 
     ActiveRecord::Base.transaction do
       Flipper.enable_percentage_of_actors(:block_level_sync, existing_percentage + percentage)
 
+      existing_enabled_user_ids = enabled_user_ids.to_set
       existing_enabled_user_ids.each { |user_id| touch_facilities(User.find(user_id)) }
       newly_enabled_user_ids = enabled_user_ids.to_set - existing_enabled_user_ids.to_set
 
