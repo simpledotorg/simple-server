@@ -20,7 +20,7 @@ RSpec.describe BlockLevelSync do
 
     it "touches the facilities for the user" do
       enabled_users = create_list(:user, 5)
-      enable_time = 10.minutes.ago
+      enable_time = Time.new('2018-1-1')
 
       Timecop.freeze(enable_time) do
         BlockLevelSync.enable(enabled_users)
@@ -82,7 +82,7 @@ RSpec.describe BlockLevelSync do
 
     it "touches the facilities for the users" do
       users = create_list(:user, 20)
-      enable_time = 10.minutes.ago
+      enable_time = Time.new('2018-1-1')
       allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
       Timecop.freeze(enable_time) do
