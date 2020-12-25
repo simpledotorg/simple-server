@@ -17,19 +17,6 @@ module Api::V3::SyncToUser
 
     def other_facility_records
       Statsd.instance.time("other_facility_records.#{model.name}") do
-        other_facilities_limit = limit - current_facility_records.size
-        other_patient_records =
-          current_sync_region.syncable_patients.pluck(:id) - current_facility.prioritized_patients.pluck(:id)
-
-        model_sync_scope
-          .where(patient: other_patient_records)
-          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
-      end
-
-    end
-
-    def other_facility_records
-      Statsd.instance.time("other_facility_records.#{model.name}") do
         other_facilities_limit = limit - current_facility_records.count
 
         region_records
