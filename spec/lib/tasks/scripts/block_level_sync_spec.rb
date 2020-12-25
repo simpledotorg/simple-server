@@ -82,11 +82,11 @@ RSpec.describe BlockLevelSync do
 
     it "touches the facilities for the users" do
       users = create_list(:user, 20)
-      enable_time = Time.new('2018-1-1')
+      enable_time = Time.new("2018-1-1 4:08:15")
       allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
       Timecop.freeze(enable_time) do
-        BlockLevelSync.bump(95)
+        BlockLevelSync.bump(100)
       end
 
       users.each do |u|
