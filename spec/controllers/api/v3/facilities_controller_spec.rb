@@ -97,7 +97,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           end
 
           context "when region level sync is enabled" do
-            it "sets the sync_region_id to the block id and user is not available" do
+            it "sets the sync_region_id to the facility group id when user is not available" do
               enable_flag(:block_level_sync, request_user)
               get :sync_to_user
 
