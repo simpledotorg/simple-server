@@ -250,6 +250,8 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
 
         response_1 = JSON(response.body)
 
+        reset_controller
+
         get :sync_to_user, params: {
           process_token: response_1["process_token"],
           limit: 8
@@ -508,6 +510,8 @@ RSpec.shared_examples "a working sync controller that supports region level sync
         process_token_sync_region_ids.each do |process_token_sync_region_id|
           request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
           process_token = make_process_token(response_process_token.merge(sync_region_id: process_token_sync_region_id))
+
+          reset_controller
 
           get :sync_to_user, params: {process_token: process_token}
 
