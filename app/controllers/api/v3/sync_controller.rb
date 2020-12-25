@@ -18,7 +18,7 @@ class Api::V3::SyncController < APIController
 
     render(
       json: {
-        response_key => records_to_sync.map { |record| transform_to_response(record) },
+        response_key => records.map { |record| transform_to_response(record) },
         "process_token" => encode_process_token(response_process_token)
       },
       status: :ok
@@ -48,9 +48,9 @@ class Api::V3::SyncController < APIController
       if current_user
         if sync_region_modified?
           Rails.logger.info msg: "Sync region ID modified",
-            region_type: current_sync_region.class.name,
-            region_id: current_sync_region.id,
-            resource: response_key
+                            region_type: current_sync_region.class.name,
+                            region_id: current_sync_region.id,
+                            resource: response_key
         end
 
         if block_level_sync?
