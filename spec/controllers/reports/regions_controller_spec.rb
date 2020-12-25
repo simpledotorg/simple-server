@@ -5,6 +5,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
   let(:dec_2019_period) { Period.month(Date.parse("December 2019")) }
   let(:organization) { FactoryBot.create(:organization) }
   let(:cvho) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
+  let(:call_center_user) { create(:admin, :call_center, full_name: "call_center") }
 
   def refresh_views
     ActiveRecord::Base.transaction do
@@ -14,16 +15,30 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
   end
 
-  context "index" do
+  context "index (with region reports)" do
     before do
+      Flipper.enable(:region_reports)
       @facility_group = create(:facility_group, organization: organization)
-      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+      @facility_1 = create(:facility, name: "Facility 1", block: "Block 1", facility_group: @facility_group)
+      @facility_2 = create(:facility, name: "Facility 2", block: "Block 1", facility_group: @facility_group)
+      @block = @facility_1.block_region
     end
 
-    it "loads available districts" do
+    it "loads nothing if user has no access to any regions" do
+      sign_in(call_center_user.email_authentication)
+      get :index
+      expect(assigns[:accessible_regions]).to eq({})
+      expect(response).to be_successful
+    end
+
+    it "only loads districts the user has access to" do
       sign_in(cvho.email_authentication)
       get :index
       expect(response).to be_successful
+      facility_regions = [@facility_1.region, @facility_2.region]
+      org_region = organization.region
+      expect(assigns[:accessible_regions].keys).to eq([org_region])
+      expect(assigns[:accessible_regions].dig(org_region, @facility_group.region, @block.region)).to match_array(facility_regions)
     end
   end
 

@@ -2,34 +2,37 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
+    def region_records
+      model = controller_name.classify.constantize
+      model.syncable_to_region(current_sync_region)
+    end
+
     def current_facility_records
-      model_sync_scope
-        .where(patient: current_facility.prioritized_patients.pluck(:id))
+      region_records
+        .where(patient: prioritized_patients)
         .updated_on_server_since(current_facility_processed_since, limit)
     end
 
     def other_facility_records
-      other_facilities_limit = limit - current_facility_records.size
-      other_patient_records =
-        current_sync_region.syncable_patients.pluck(:id) - current_facility.prioritized_patients.pluck(:id)
+      other_facilities_limit = limit - current_facility_records.count
 
-      model_sync_scope
-        .where(patient: other_patient_records)
+      region_records
+        .where.not(patient: prioritized_patients)
         .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
     end
 
     private
 
-    def model_sync_scope
-      controller_name.classify.constantize.for_sync
-    end
-
     def records_to_sync
       current_facility_records + other_facility_records
     end
 
+    def prioritized_patients
+      current_facility.registered_patients.with_discarded
+    end
+
     def processed_until(records)
-      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.any?
+      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.present?
     end
 
     def response_process_token

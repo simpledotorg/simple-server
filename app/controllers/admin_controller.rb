@@ -35,7 +35,10 @@ class AdminController < ApplicationController
   private
 
   def current_admin
-    current_email_authentication.user
+    return @current_admin if defined?(@current_admin)
+    admin = current_email_authentication.user
+    admin.email_authentications.load
+    @current_admin = admin
   end
 
   def pundit_user

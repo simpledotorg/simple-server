@@ -12,7 +12,7 @@ class Api::V3::BloodSugarsController < Api::V3::SyncController
 
   private
 
-  def model_sync_scope
+  def region_records
     super.for_v3
   end
 

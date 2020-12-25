@@ -34,6 +34,14 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def accessible_children(admin, region_type: child_region_type, access_level: :any)
+    auth_method = "accessible_#{region_type}_regions"
+    region_method = "#{region_type}_regions"
+    superset = public_send(region_method)
+    authorized_set = admin.public_send(auth_method, access_level)
+    superset & authorized_set
+  end
+
   def child_region_type
     index = REGION_TYPES.find_index { |type| type == region_type }
     REGION_TYPES[index + 1]
@@ -88,10 +96,10 @@ class Region < ApplicationRecord
     case region_type
       when "block"
         registered_patients.with_discarded
-          .or(assigned_patients.with_discarded)
+          .union(assigned_patients.with_discarded)
           .union(appointed_patients.with_discarded)
       else
-        registered_patients.with_discarded
+        registered_patients
     end
   end
 
@@ -141,6 +149,14 @@ class Region < ApplicationRecord
 
   def region
     self
+  end
+
+  def cache_key
+    [model_name.cache_key, region_type, id].join("/")
+  end
+
+  def cache_version
+    updated_at.utc.to_s(:usec)
   end
 
   private
