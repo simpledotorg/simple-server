@@ -20,10 +20,14 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def other_facility_records
-    other_facilities_limit = limit - current_facility_records.count
+    other_facilities_limit = limit - current_facility_records.size
 
     model
-      .where(id: current_sync_region.syncable_patients.pluck(:id) - current_facility.syncable_patients.pluck(:id))
+      .where("id = ANY (array(?))",
+        current_sync_region
+          .syncable_patients
+          .where.not(registration_facility: current_facility)
+          .select(:id))
       .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
   end
 
