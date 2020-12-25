@@ -3,7 +3,6 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      model = controller_name.classify.constantize
       model.syncable_to_region(current_sync_region)
     end
 
@@ -26,6 +25,10 @@ module Api::V3::SyncToUser
     end
 
     private
+
+    def model
+      controller_name.classify.constantize
+    end
 
     def records_to_sync
       Statsd.instance.time("records_to_sync.#{model.name}") do
