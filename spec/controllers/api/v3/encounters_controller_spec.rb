@@ -162,6 +162,8 @@ require "rails_helper"
           expect(records.count).to eq 4
           expect(records.map(&:facility).to_set).to eq Set[request_facility]
 
+          reset_controller
+
           # GET request 2
           get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
           response_2_body = JSON(response.body)

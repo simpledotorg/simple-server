@@ -24,3 +24,8 @@ class Hash
     )
   end
 end
+
+def reset_controller
+  controller.instance_variable_set(:@current_facility_records, nil)
+  controller.instance_variable_set(:@other_facility_records, nil)
+end
