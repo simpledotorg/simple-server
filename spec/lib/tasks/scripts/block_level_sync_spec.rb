@@ -60,30 +60,33 @@ RSpec.describe BlockLevelSync do
   describe ".bump" do
     it "enables a percentage of users randomly" do
       users = create_list(:user, 20)
+      allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
-      BlockLevelSync.bump(5)
+      BlockLevelSync.bump(95)
 
-      expect(users.map(&:block_level_sync?).count(&:itself)).to eq(1)
+      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 21)
     end
 
     it "increases the percentage" do
       users = create_list(:user, 20)
+      allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
+
+      BlockLevelSync.bump(95)
+
+      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 21)
 
       BlockLevelSync.bump(5)
 
-      expect(users.map(&:block_level_sync?).count(&:itself)).to eq(1)
-
-      BlockLevelSync.bump(5)
-
-      expect(users.map(&:block_level_sync?).count(&:itself)).to eq(2)
+      expect(users.map(&:block_level_sync?).count(&:itself)).to eq(20)
     end
 
     it "touches the facilities for the users" do
       users = create_list(:user, 20)
       enable_time = 10.minutes.ago
+      allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
       Timecop.freeze(enable_time) do
-        BlockLevelSync.bump(5)
+        BlockLevelSync.bump(95)
       end
 
       users.each do |u|
