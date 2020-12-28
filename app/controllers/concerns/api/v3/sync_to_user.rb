@@ -3,28 +3,37 @@ module Api::V3::SyncToUser
 
   included do
     def region_records
-      model = controller_name.classify.constantize
       model.syncable_to_region(current_sync_region)
     end
 
     def current_facility_records
-      region_records
-        .where(patient: prioritized_patients)
-        .updated_on_server_since(current_facility_processed_since, limit)
+      Statsd.instance.time("current_facility_records.#{model.name}") do
+        region_records
+          .where(patient: prioritized_patients)
+          .updated_on_server_since(current_facility_processed_since, limit)
+      end
     end
 
     def other_facility_records
-      other_facilities_limit = limit - current_facility_records.count
+      Statsd.instance.time("other_facility_records.#{model.name}") do
+        other_facilities_limit = limit - current_facility_records.count
 
-      region_records
-        .where.not(patient: prioritized_patients)
-        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+        region_records
+          .where.not(patient: prioritized_patients)
+          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      end
     end
 
     private
 
+    def model
+      controller_name.classify.constantize
+    end
+
     def records_to_sync
-      current_facility_records + other_facility_records
+      Statsd.instance.time("records_to_sync.#{model.name}") do
+        current_facility_records + other_facility_records
+      end
     end
 
     def prioritized_patients
@@ -68,8 +77,6 @@ module Api::V3::SyncToUser
     end
 
     def force_resync?
-      Rails.logger.info "[force_resync] Resync token modified in resource #{controller_name}" if resync_token_modified?
-      Rails.logger.info "[force_resync] Sync region modified in resource #{controller_name}" if sync_region_modified?
       resync_token_modified? || sync_region_modified?
     end
 

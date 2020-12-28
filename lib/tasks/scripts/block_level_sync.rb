@@ -73,8 +73,11 @@ class BlockLevelSync
       .update_all(updated_at: Time.current)
   end
 
+  # this filters out admin users since there's no easy way to filter them out during percentage ramp-up
   def enabled_user_ids
-    User.find_each(batch_size: 100).each_with_object([]) do |user, ids|
+    User
+      .non_admins
+      .find_each(batch_size: 100).each_with_object([]) do |user, ids|
       ids.push(user.id) if user.feature_enabled?(:block_level_sync)
     end
   end

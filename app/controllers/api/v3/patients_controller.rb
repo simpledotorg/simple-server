@@ -14,22 +14,25 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def region_records
-    super
-      .includes(:address, :phone_numbers, :business_identifiers)
+    super.includes(:address, :phone_numbers, :business_identifiers)
   end
 
   def current_facility_records
-    region_records
-      .where(registration_facility: current_facility)
-      .updated_on_server_since(current_facility_processed_since, limit)
+    Statsd.instance.time("current_facility_records.Patient") do
+      region_records
+        .where(registration_facility: current_facility)
+        .updated_on_server_since(current_facility_processed_since, limit)
+    end
   end
 
   def other_facility_records
-    other_facilities_limit = limit - current_facility_records.count
+    Statsd.instance.time("other_facility_records.Patient") do
+      other_facilities_limit = limit - current_facility_records.count
 
-    region_records
-      .where.not(registration_facility: current_facility)
-      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      region_records
+        .where.not(registration_facility: current_facility)
+        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+    end
   end
 
   private
