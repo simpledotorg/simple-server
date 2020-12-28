@@ -30,6 +30,19 @@ sup {
   color: $grey-dark;
 }
 
+.tooltip-inner {
+  text-align: left;
+  font-size: 90%;
+  
+  span.math {
+  min-width: 6.5em;
+  display: inline-block;
+  font-weight: bold;
+  text-align: right;
+  padding-right: 1em;
+  }
+}
+
 .link-row {
   display: block;
   padding: 8px 0;
@@ -133,6 +146,13 @@ th sup {
       padding: 8px;
       min-width: 40px;
     }
+    
+    .row-medicine {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 6em;
+      white-space: nowrap;
+    }
 
     a {
       display: block;
@@ -150,6 +170,15 @@ th sup {
       i {
         opacity: 1;
       }
+    }
+  }
+  
+  td.type-blank {
+    text-align: center;
+    color: $grey-mid;
+    
+    &.type-title {
+      text-align: left;
     }
   }
 
@@ -475,4 +504,24 @@ h3 .heading-label {
   color: $grey-dark;
 
   h5 { margin: auto; }
+}
+
+em.bg-green {
+  background: $green-light !important;
+  color: $green-dark !important;
+}
+
+em.bg-red {
+  background: $red !important;
+  color: #fff !important;
+}
+
+em.bg-yellow {
+  background: $yellow-light !important;
+  color: $yellow-dark !important;
+}
+
+em.bg-orange {
+  background: $orange-light !important;
+  color: $orange-dark !important;
 }
