@@ -103,6 +103,9 @@ class User < ApplicationRecord
   delegate :accessible_organizations,
     :accessible_facilities,
     :accessible_facility_groups,
+    :accessible_district_regions,
+    :accessible_block_regions,
+    :accessible_facility_regions,
     :accessible_users,
     :accessible_admins,
     :accessible_protocols,
@@ -237,7 +240,7 @@ class User < ApplicationRecord
   end
 
   def block_level_sync?
-    Flipper.enabled?(:regions_prep) && feature_enabled?(:block_level_sync)
+    feature_enabled?(:block_level_sync)
   end
 
   def flipper_id

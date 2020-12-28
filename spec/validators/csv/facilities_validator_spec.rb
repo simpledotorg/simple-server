@@ -22,15 +22,17 @@ RSpec.describe Csv::FacilitiesValidator do
     context "per-facility validations" do
       let!(:organization) { create(:organization, name: "O") }
       let!(:facility_group) { create(:facility_group, name: "FG", organization_id: organization.id) }
+      let!(:block) { create(:region, :block, name: "Zone 42", reparent_to: facility_group.region) }
       let(:facility) do
         build(:facility,
           organization_name: "O",
           facility_group_name: "FG",
+          facility_group: facility_group,
           name: "facility",
           district: "district",
           state: "state",
           country: "country",
-          zone: "zone")
+          block: block.name)
       end
 
       it "adds no errors when facility is valid" do
@@ -60,12 +62,21 @@ RSpec.describe Csv::FacilitiesValidator do
       end
 
       it "adds an error when attributes are invalid" do
+        valid_params = {
+          organization_name: "O",
+          facility_group_name: "FG",
+          facility_group: facility_group,
+          zone: block.name,
+          enable_teleconsultation: false
+        }
+
         facilities = [
-          build(:facility, organization_name: "O", facility_group_name: "FG", district: nil, enable_teleconsultation: false),
-          build(:facility, organization_name: "O", facility_group_name: "FG", state: nil, enable_teleconsultation: false),
-          build(:facility, organization_name: "O", facility_group_name: "FG", country: nil, enable_teleconsultation: false),
-          build(:facility, organization_name: "O", facility_group_name: "FG", facility_size: "invalid size", enable_teleconsultation: false),
-          build(:facility, facility_group_name: "FG", enable_diabetes_management: nil, enable_teleconsultation: false)
+          build(:facility, valid_params.merge(district: nil)),
+          build(:facility, valid_params.merge(state: nil)),
+          build(:facility, valid_params.merge(country: nil)),
+          build(:facility, valid_params.merge(facility_size: "invalid size")),
+          build(:facility, valid_params.merge(enable_diabetes_management: nil, organization_name: nil)),
+          build(:facility, valid_params.merge(zone: "Invalid Zone"))
         ]
 
         validator = described_class.new(facilities)
@@ -77,26 +88,9 @@ RSpec.describe Csv::FacilitiesValidator do
           "Row(s) 4: Country can't be blank",
           "Row(s) 5: Facility size not in #{Facility.facility_sizes.values.join(", ")}",
           "Row(s) 6: Enable diabetes management is not included in the list",
-          "Row(s) 6: Organization name can't be blank"
+          "Row(s) 6: Organization name can't be blank",
+          "Row(s) 7: Zone not present in the facility group"
         ]
-      end
-
-      context "when regions_prep is enabled" do
-        before { enable_flag(:regions_prep) }
-
-        it "uploads facilities file and passes validations" do
-          organization = create(:organization, name: "OrgTwo")
-          facility_group = create(:facility_group, name: "FGThree", organization_id: organization.id)
-          create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
-
-          facilities = [
-            build(:facility, organization_name: "OrgTwo", facility_group_name: "FGThree", zone: "Zone 1")
-          ]
-          validator = described_class.new(facilities)
-          validator.validate
-
-          expect(validator.errors).to match_array ["Row(s) 2: Zone not present in the facility group"]
-        end
       end
     end
   end

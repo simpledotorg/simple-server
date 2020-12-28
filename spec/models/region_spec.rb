@@ -47,6 +47,15 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "cache_key" do
+    it "contains class name, region type, and id" do
+      facility_group = create(:facility_group)
+      region = facility_group.region
+      expect(region.cache_key).to eq("regions/district/#{region.id}")
+      expect(facility_group.cache_key).to eq(region.cache_key)
+    end
+  end
+
   context "facilities" do
     it "returns the source facilities" do
       facility_group = create(:facility_group)
@@ -82,8 +91,6 @@ RSpec.describe Region, type: :model do
 
   context "organization" do
     it "gets the org from the parent org region" do
-      enable_flag(:regions_prep)
-
       org = create(:organization, name: "Test Organization")
       facility_group = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       region = facility_group.region
@@ -93,8 +100,6 @@ RSpec.describe Region, type: :model do
 
   context "behavior" do
     it "sets a valid path" do
-      enable_flag(:regions_prep)
-
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
       facility_1 = create(:facility, name: "facility UHC (ZZZ)", state: "Test State", block: "Block22", facility_group: facility_group_1)
@@ -108,8 +113,6 @@ RSpec.describe Region, type: :model do
     end
 
     it "can soft delete nodes" do
-      enable_flag(:regions_prep)
-
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, organization: org, state: "State 1")
       facility_group_2 = create(:facility_group, organization: org, state: "State 2")
@@ -129,10 +132,37 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  context "accessible_children" do
+    it "only returns children regions that a user has access to" do
+      org = create(:organization, name: "Test Organization")
+      facility_group_1 = create(:facility_group, organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, organization: org, state: "State 1")
+      facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
+      facility_3 = create(:facility, name: "facility3", state: "State 2", facility_group: facility_group_2)
+      block_region = facility_1.region.parent
+
+      facility_report_viewer = create(:admin, :viewer_reports_only, :with_access, full_name: "facility_report_viewer", resource: facility_1)
+      district_report_viewer = create(:admin, :viewer_reports_only, :with_access, full_name: "district_report_viewer", resource: facility_group_1)
+      other_admin = create(:admin, :manager, :with_access, full_name: "district_report_viewer", resource: facility_group_2)
+
+      expect(facility_group_1.region.accessible_children(facility_report_viewer)).to be_empty
+      expect(block_region.accessible_children(facility_report_viewer)).to contain_exactly(facility_1.region)
+
+      expect(facility_group_1.region.accessible_children(district_report_viewer)).to match_array(facility_group_1.region.block_regions)
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility, access_level: :view_reports)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility, access_level: :manage)).to be_empty
+
+      expect(facility_group_1.region.accessible_children(other_admin, region_type: :facility)).to be_empty
+      expect(facility_group_1.region.accessible_children(other_admin, region_type: :block)).to be_empty
+      expect(facility_group_2.region.accessible_children(other_admin, region_type: :facility)).to match_array(facility_3.region)
+      expect(facility_group_2.region.accessible_children(other_admin, region_type: :facility, access_level: :manage)).to match_array(facility_3.region)
+    end
+  end
+
   context "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
-      enable_flag(:regions_prep)
-
       facility_group_1 = create(:facility_group, organization: create(:organization), state: "State 1")
       create(:facility, facility_group: facility_group_1, state: "State 1")
 
@@ -204,7 +234,6 @@ RSpec.describe Region, type: :model do
   end
 
   context "#syncable_patients" do
-    before { Flipper.enable(:regions_prep) }
     let!(:organization) { create(:organization) }
     let!(:facility_group) { create(:facility_group, organization: organization, state: "Maharashtra") }
     let!(:facility_1) { create(:facility, block: "M1", facility_group: facility_group) }

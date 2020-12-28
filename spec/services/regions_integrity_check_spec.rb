@@ -1,10 +1,6 @@
 require "rails_helper"
 
 RSpec.describe RegionsIntegrityCheck, type: :model do
-  before do
-    enable_flag(:regions_prep)
-  end
-
   let!(:organization) { create(:organization) }
   let!(:state) { create(:region, :state, reparent_to: organization.region) }
   let!(:facility_groups) { create_list(:facility_group, 2, state: state.name, organization: organization) }

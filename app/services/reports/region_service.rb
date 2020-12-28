@@ -7,6 +7,10 @@ module Reports
       Period.month(Date.current.beginning_of_month)
     end
 
+    def self.call(*args)
+      new(*args).call
+    end
+
     def initialize(region:, period:)
       @current_user = current_user
       @region = region
