@@ -15,10 +15,10 @@ namespace :block_level_sync do
     BlockLevelSync.disable(user_ids)
   end
 
-  desc "Bump block level sync for users"
-  task :bump_percentage, [:percentage] => :environment do |_t, args|
-    # bundle exec block_level_sync:bump_percentage[5]
+  desc "Set percentage rollout for block level sync users"
+  task :set_percentage, [:percentage] => :environment do |_t, args|
+    # bundle exec block_level_sync:set_percentage[5]
     percentage = args.percentage
-    BlockLevelSync.bump(percentage)
+    BlockLevelSync.set_percentage(percentage)
   end
 end

@@ -57,27 +57,30 @@ RSpec.describe BlockLevelSync do
     end
   end
 
-  describe ".bump" do
+  describe ".set_percentage" do
     it "enables a percentage of users randomly" do
       users = create_list(:user, 20)
       allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
-      BlockLevelSync.bump(95)
+      BlockLevelSync.set_percentage(95)
 
-      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 21)
+      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 20)
+      expect(Flipper[:block_level_sync].percentage_of_actors_value).to eq(95)
     end
 
     it "increases the percentage" do
       users = create_list(:user, 20)
       allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
-      BlockLevelSync.bump(95)
+      BlockLevelSync.set_percentage(95)
 
-      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 21)
+      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 20)
+      expect(Flipper[:block_level_sync].percentage_of_actors_value).to eq(95)
 
-      BlockLevelSync.bump(5)
+      BlockLevelSync.set_percentage(100)
 
       expect(users.map(&:block_level_sync?).count(&:itself)).to eq(20)
+      expect(Flipper[:block_level_sync].percentage_of_actors_value).to eq(100)
     end
 
     it "touches the facilities for the users" do
@@ -86,7 +89,7 @@ RSpec.describe BlockLevelSync do
       allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
       Timecop.freeze(enable_time) do
-        BlockLevelSync.bump(100)
+        BlockLevelSync.set_percentage(100)
       end
 
       users.each do |u|
@@ -99,7 +102,7 @@ RSpec.describe BlockLevelSync do
     it "calls the region cache warmer" do
       create_list(:user, 2)
       expect(Reports::RegionCacheWarmer).to receive(:call)
-      BlockLevelSync.bump(50)
+      BlockLevelSync.set_percentage(50)
     end
   end
 end

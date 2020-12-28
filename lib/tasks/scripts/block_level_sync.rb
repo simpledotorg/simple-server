@@ -8,8 +8,8 @@ class BlockLevelSync
       new.toggle_state(user_ids, true)
     end
 
-    def bump(percentage)
-      new.bump(percentage)
+    def set_percentage(percentage)
+      new.set_percentage(percentage)
     end
   end
 
@@ -26,7 +26,7 @@ class BlockLevelSync
           return Rails.logger.info "User #{user.id} does not have a phone number authentication"
         end
 
-        user.facility_group.facilities.update_all(updated_at: Time.current)
+        touch_facilities(user)
 
         if enable
           Flipper.enable(:block_level_sync, user)
@@ -39,19 +39,24 @@ class BlockLevelSync
     end
   end
 
-  def bump(percentage)
-    existing_percentage = Flipper[:block_level_sync].percentage_of_actors_value
+  def set_percentage(percentage)
     existing_enabled_user_ids = enabled_user_ids.to_set
 
     ActiveRecord::Base.transaction do
-      Flipper.enable_percentage_of_actors(:block_level_sync, existing_percentage + percentage)
+      Flipper.enable_percentage_of_actors(:block_level_sync, percentage)
 
       newly_enabled_user_ids = enabled_user_ids.to_set - existing_enabled_user_ids.to_set
-      newly_enabled_user_ids.each { |user_id| touch_facilities(User.find(user_id)) }
+      newly_enabled_user_ids.each do |user_id|
+        user = User.find(user_id)
+        touch_facilities(user)
+      end
 
       newly_enabled_user_ids.each do |user_id|
-        Rails.logger.info msg: "Block level sync enabled for #{user_id}",
-                          block_level_sync_enabled_user_id: user_id
+        Rails.logger.info({
+          msg: "Block level sync enabled for #{user_id}",
+          block_level_sync_enabled_user_id: user_id,
+          block_level_sync_percentage_enabled: percentage.to_s
+        })
       end
     end
 
@@ -69,6 +74,8 @@ class BlockLevelSync
   end
 
   def enabled_user_ids
-    User.all.select { |u| u.feature_enabled?(:block_level_sync) }.pluck(:id)
+    User.find_each(batch_size: 100).each_with_object([]) do |user, ids|
+      ids.push(user.id) if user.feature_enabled?(:block_level_sync)
+    end
   end
 end
