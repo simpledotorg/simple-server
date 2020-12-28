@@ -90,8 +90,16 @@ describe Patient, type: :model do
 
     describe ".with_hypertension" do
       it "only includes patients with diagnosis of hypertension" do
-        htn_patients = create_list(:patient, 2)
-        _non_htn_patient = create(:patient, :without_hypertension)
+        htn_patients = [
+          create(:patient),
+          create(:patient).tap { |patient| create(:medical_history, :hypertension_yes, patient: patient) }
+        ]
+
+        _non_htn_patients = [
+          create(:patient, :without_hypertension),
+          create(:patient).tap { |patient| patient.medical_history.discard },
+          create(:patient).tap { |patient| patient.medical_history.destroy }
+        ]
 
         expect(Patient.with_hypertension).to match_array(htn_patients)
       end
