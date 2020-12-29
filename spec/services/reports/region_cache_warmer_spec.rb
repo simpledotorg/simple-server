@@ -32,12 +32,12 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   end
 
   it "completes successfully" do
-    facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
+    _facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
     Reports::RegionCacheWarmer.call
   end
 
   it "warms the cache for all regions" do
-    facilities = FactoryBot.create_list(:facility, 5, block: "Block 1", facility_group: facility_group_1)
+    _facilities = FactoryBot.create_list(:facility, 5, block: "Block 1", facility_group: facility_group_1)
 
     expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Region))).exactly(1).times
     expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(FacilityGroup))).exactly(1).times
