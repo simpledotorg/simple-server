@@ -30,6 +30,7 @@ module Api::V3::SyncToUser
 
     def model_sync_scope
       controller_name.classify.constantize.for_sync
+    end
 
     def records_to_sync
       Statsd.instance.time("records_to_sync.#{model.name}") do
