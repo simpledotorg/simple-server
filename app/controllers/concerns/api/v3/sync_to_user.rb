@@ -29,7 +29,11 @@ module Api::V3::SyncToUser
     private
 
     def model_sync_scope
-      controller_name.classify.constantize.for_sync
+      model.for_sync
+    end
+
+    def model
+      controller_name.classify.constantize
     end
 
     def records_to_sync
