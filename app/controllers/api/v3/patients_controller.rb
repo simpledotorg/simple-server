@@ -14,22 +14,26 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def current_facility_records
-    @current_facility_records ||=
-      current_facility
-        .prioritized_patients
-        .for_sync
-        .updated_on_server_since(current_facility_processed_since, limit)
+    Statsd.instance.time("current_facility_records.Patient") do
+      @current_facility_records ||=
+        current_facility
+          .prioritized_patients
+          .for_sync
+          .updated_on_server_since(current_facility_processed_since, limit)
+    end
   end
 
   def other_facility_records
-    other_facilities_limit = limit - current_facility_records.size
+    Statsd.instance.time("other_facility_records.Patient") do
+      other_facilities_limit = limit - current_facility_records.size
 
-    @other_facility_records ||=
-      current_sync_region
-        .syncable_patients
-        .where.not(registration_facility: current_facility)
-        .for_sync
-        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      @other_facility_records ||=
+        current_sync_region
+          .syncable_patients
+          .where.not(registration_facility: current_facility)
+          .for_sync
+          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+    end
   end
 
   private
