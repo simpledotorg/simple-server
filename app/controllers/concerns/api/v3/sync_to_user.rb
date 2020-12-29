@@ -90,11 +90,11 @@ module Api::V3::SyncToUser
       process_token[:sync_region_id] != requested_sync_region_id
     end
 
-    def time(method_name, &blk)
-      raise ArgumentError, "You must supply a block" unless block_given?
+    def time(method_name, &block)
+      raise ArgumentError, "You must supply a block" unless block
 
       Statsd.instance.time("#{method_name}.#{model.name}") do
-        yield(blk)
+        yield(block)
       end
     end
   end
