@@ -3,19 +3,18 @@ module Api::V3::SyncToUser
 
   included do
     def current_facility_records
-      @current_facility_records ||=
-        Statsd.instance.time("current_facility_records.#{model.name}") do
+      time(__method__) do
+        @current_facility_records ||=
           model_sync_scope
             .where(patient: current_facility.prioritized_patients.select(:id))
             .updated_on_server_since(current_facility_processed_since, limit)
-        end
+      end
     end
 
     def other_facility_records
-      @other_facility_records ||=
-        Statsd.instance.time("other_facility_records.#{model.name}") do
-          other_facilities_limit = limit - current_facility_records.size
-
+      time(__method__) do
+        other_facilities_limit = limit - current_facility_records.size
+        @other_facility_records ||=
           model_sync_scope
             .where("patient_id = ANY (array(?))",
               current_sync_region
@@ -23,7 +22,7 @@ module Api::V3::SyncToUser
                 .where.not(registration_facility: current_facility)
                 .select(:id))
             .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
-        end
+      end
     end
 
     private
@@ -37,9 +36,7 @@ module Api::V3::SyncToUser
     end
 
     def records_to_sync
-      Statsd.instance.time("records_to_sync.#{model.name}") do
-        current_facility_records + other_facility_records
-      end
+      time(__method__) { current_facility_records + other_facility_records }
     end
 
     def processed_until(records)
@@ -91,6 +88,14 @@ module Api::V3::SyncToUser
       return if requested_sync_region_id.blank?
       return if process_token[:sync_region_id].blank?
       process_token[:sync_region_id] != requested_sync_region_id
+    end
+
+    def time(method_name, &blk)
+      raise ArgumentError, "You must supply a block" unless block_given?
+
+      Statsd.instance.time("#{method_name}.#{model.name}") do
+        yield(blk)
+      end
     end
   end
 end

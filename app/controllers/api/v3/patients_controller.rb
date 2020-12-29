@@ -14,7 +14,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def current_facility_records
-    Statsd.instance.time("current_facility_records.Patient") do
+    time(__method__) do
       @current_facility_records ||=
         current_facility
           .prioritized_patients
@@ -24,7 +24,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def other_facility_records
-    Statsd.instance.time("other_facility_records.Patient") do
+    time(__method__) do
       other_facilities_limit = limit - current_facility_records.size
 
       @other_facility_records ||=

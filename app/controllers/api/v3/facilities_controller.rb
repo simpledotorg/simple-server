@@ -16,7 +16,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def other_facility_records
-    Statsd.instance.time("other_facility_records.Facility") do
+    time(__method__) do
       Facility
         .with_discarded
         .updated_on_server_since(other_facilities_processed_since, limit)
@@ -45,7 +45,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   end
 
   def records_to_sync
-    Statsd.instance.time("records_to_sync.Facility") do
+    time(__method__) do
       other_facility_records
         .with_block_region_id
         .includes(:facility_group)
