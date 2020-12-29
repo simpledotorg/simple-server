@@ -11,6 +11,7 @@ module Api::V3::SyncToUser
       end
     end
 
+    # this is performance-critical code, be careful while refactoring it
     def other_facility_records
       time(__method__) do
         other_facilities_limit = limit - current_facility_records.size
@@ -36,7 +37,10 @@ module Api::V3::SyncToUser
     end
 
     def records_to_sync
-      time(__method__) { current_facility_records + other_facility_records }
+      time(__method__) do
+        @records_to_sync ||=
+          current_facility_records + other_facility_records
+      end
     end
 
     def processed_until(records)

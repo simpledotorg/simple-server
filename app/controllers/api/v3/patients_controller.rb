@@ -26,7 +26,6 @@ class Api::V3::PatientsController < Api::V3::SyncController
   def other_facility_records
     time(__method__) do
       other_facilities_limit = limit - current_facility_records.size
-
       @other_facility_records ||=
         current_sync_region
           .syncable_patients
