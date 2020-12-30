@@ -38,8 +38,7 @@ module Api::V3::SyncToUser
 
     def records_to_sync
       time(__method__) do
-        @records_to_sync ||=
-          current_facility_records + other_facility_records
+        current_facility_records + other_facility_records
       end
     end
 
