@@ -135,10 +135,10 @@ class RegionBackfill
 
     def save_or_check_validity
       result = if dry_run?
-                 valid?
-               else
-                 @region.save
-               end
+        valid?
+      else
+        @region.save
+      end
       logger.info msg: "save", result: result, region: log_payload, valid: result, errors: errors.full_messages.join(",")
       result
     end
