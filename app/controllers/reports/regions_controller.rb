@@ -53,8 +53,8 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    if @region.respond_to?(:recent_blood_pressures)
-      @recent_blood_pressures = paginate(@region.recent_blood_pressures)
+    if @region_source.respond_to?(:recent_blood_pressures)
+      @recent_blood_pressures = paginate(@region_source.recent_blood_pressures)
     end
   end
 
@@ -154,7 +154,7 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    region_source = authorize {
+    @region_source = authorize {
       case region_class
       when "FacilityDistrict"
         scope = current_admin.accessible_facilities(:view_reports)
@@ -175,9 +175,9 @@ class Reports::RegionsController < AdminController
       end
     }
     @region = if current_admin.feature_enabled?(:region_reports)
-      region_source.region
+      @region_source.region
     else
-      region_source
+      @region_source
     end
   end
 
