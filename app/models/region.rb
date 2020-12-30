@@ -89,7 +89,11 @@ class Region < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    if facility_region?
+      FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    else
+      DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    end
   end
 
   def syncable_patients
