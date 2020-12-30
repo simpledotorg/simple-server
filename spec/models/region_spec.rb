@@ -250,11 +250,6 @@ RSpec.describe Region, type: :model do
 
   describe "#dashboard_analytics" do
     context "for facility regions" do
-      let(:period) { double("Period") }
-      let(:prev_periods) { double("Periods") }
-      let(:include_current_period) { false }
-      let(:facility_analytics_query) { double("FacilityAnalyticsQuery", call: "result")}
-
       it "invokes the CohortAnalyticsQuery" do
         period = double("Period")
         prev_periods = double("Periods")
@@ -277,11 +272,6 @@ RSpec.describe Region, type: :model do
     end
 
     context "for non-facility regions" do
-      let(:period) { double("Period") }
-      let(:prev_periods) { double("Periods") }
-      let(:include_current_period) { false }
-      let(:district_analytics_query) { double("DistrictAnalyticsQuery", call: "result")}
-
       it "invokes the CohortAnalyticsQuery" do
         period = double("Period")
         prev_periods = double("Periods")
