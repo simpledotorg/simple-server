@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Region, type: :model do
-  context "validations" do
+  describe "validations" do
     it "requires a region type" do
       region = Region.new(name: "foo", path: "foo")
       expect(region).to_not be_valid
@@ -9,7 +9,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "slugs" do
+  describe "slugs" do
     it "handles duplicate names nicely when creating a slug" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
       region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
@@ -25,7 +25,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "region_type" do
+  describe "region_type" do
     it "has question methods for determining type" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
       region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
@@ -47,7 +47,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "cache_key" do
+  describe "cache_key" do
     it "contains class name, region type, and id" do
       facility_group = create(:facility_group)
       region = facility_group.region
@@ -56,7 +56,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "facilities" do
+  describe "facilities" do
     it "returns the source facilities" do
       facility_group = create(:facility_group)
       facilities = create_list(:facility, 3, block: "Block ABC", facility_group: facility_group)
@@ -89,7 +89,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "organization" do
+  describe "organization" do
     it "gets the org from the parent org region" do
       org = create(:organization, name: "Test Organization")
       facility_group = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
@@ -98,7 +98,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "behavior" do
+  describe "behavior" do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
@@ -132,7 +132,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "accessible_children" do
+  describe "accessible_children" do
     it "only returns children regions that a user has access to" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, organization: org, state: "State 1")
@@ -161,7 +161,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "association helper methods" do
+  describe "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
       facility_group_1 = create(:facility_group, organization: create(:organization), state: "State 1")
       create(:facility, facility_group: facility_group_1, state: "State 1")
@@ -233,7 +233,68 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "#syncable_patients" do
+  describe "#cohort_analytics" do
+    it "invokes the CohortAnalyticsQuery" do
+      period = double("Period")
+      prev_periods = double("Periods")
+      cohort_analytics_query = double("CohortAnalyticsQuery", call: "result")
+      region = Region.new(name: "foo", path: "foo")
+
+      allow(CohortAnalyticsQuery).to receive(:new)
+        .with(region, period: period, prev_periods: prev_periods)
+        .and_return(cohort_analytics_query)
+
+      expect(region.cohort_analytics(period: period, prev_periods: prev_periods)).to eq("result")
+    end
+  end
+
+  describe "#dashboard_analytics" do
+    context "for facility regions" do
+      it "invokes the CohortAnalyticsQuery" do
+        period = double("Period")
+        prev_periods = double("Periods")
+        facility_analytics_query = double("FacilityAnalyticsQuery", call: "result")
+
+        region = Region.new(name: "foo", path: "foo", region_type: "facility")
+
+        allow(FacilityAnalyticsQuery).to receive(:new)
+          .with(region, period, prev_periods, include_current_period: false)
+          .and_return(facility_analytics_query)
+
+        result = region.dashboard_analytics(
+          period: period,
+          prev_periods: prev_periods,
+          include_current_period: false
+        )
+
+        expect(result).to eq("result")
+      end
+    end
+
+    context "for non-facility regions" do
+      it "invokes the CohortAnalyticsQuery" do
+        period = double("Period")
+        prev_periods = double("Periods")
+        district_analytics_query = double("DistrictAnalyticsQuery", call: "result")
+
+        region = Region.new(name: "foo", path: "foo", region_type: "district")
+
+        allow(DistrictAnalyticsQuery).to receive(:new)
+          .with(region, period, prev_periods, include_current_period: false)
+          .and_return(district_analytics_query)
+
+        result = region.dashboard_analytics(
+          period: period,
+          prev_periods: prev_periods,
+          include_current_period: false
+        )
+
+        expect(result).to eq("result")
+      end
+    end
+  end
+
+  describe "#syncable_patients" do
     let!(:organization) { create(:organization) }
     let!(:facility_group) { create(:facility_group, organization: organization, state: "Maharashtra") }
     let!(:facility_1) { create(:facility, block: "M1", facility_group: facility_group) }
