@@ -53,9 +53,9 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    region_source = current_admin.feature_enabled?(:region_reports) ? @region.source : region
+    region_source = current_admin.feature_enabled?(:region_reports) ? @region.source : @region
     if region_source.respond_to?(:recent_blood_pressures)
-      @recent_blood_pressures = paginate(@region_source.recent_blood_pressures)
+      @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
     end
   end
 
