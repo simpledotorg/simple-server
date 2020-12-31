@@ -70,10 +70,10 @@ class MissedVisitsQuery
     @bp_query_by_cohort ||=
       @periods.map { |year, period|
         bp_query = BloodPressureControlQuery.new(facilities: @facilities,
-                                                               cohort_period: {cohort_period: @period,
-                                                                               registration_year: year,
-                                                                               registration_month: period,
-                                                                               registration_quarter: period})
+                                                 cohort_period: {cohort_period: @period,
+                                                                 registration_year: year,
+                                                                 registration_month: period,
+                                                                 registration_quarter: period})
         [[year, period], bp_query]
       }.to_h
   end
