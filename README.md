@@ -210,13 +210,11 @@ bundle exec rails standard
 
 ### Generating seed data
 
-To generate seed data, execute the following command from the project root
+To generate seed (fake patients) data, execute the following command from the project root
 
 ```bash
-$ foreman start -f Procfile.dev
-$ bundle exec rails db:seed db:seed_users_data
+$ bundle exec rails db:seed_patients
 ```
-**Note**: This **requires** server and sidekiq to be running.
 
 To purge the generated patient data, run
 
@@ -224,7 +222,13 @@ To purge the generated patient data, run
 bundle exec rails db:purge_users_data
 ```
 
-**Note**: This only removes data created by `db:seed_users_data`, it keeps the seed data created by `db:seed`.
+**Note**: This only removes data created by `db:seed_patients`, it keeps the seed data created by `db:seed`.
+
+You can also purge and re-seed by running:
+
+```bash
+bundle exec rails db:purge_and_reseed
+```
 
 ### Creating an admin user
 
