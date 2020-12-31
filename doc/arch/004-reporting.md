@@ -67,7 +67,7 @@ Note that daily is the smallest time interval that matters for reports.
 
 We'll go with a simple architecture, as described in the figure below:
 
-![reporting-arch](../reporting-arch.png "Reporting architecture")
+![reporting-arch](resources/reporting-arch.png "Reporting architecture")
 
 ### Service architecture
 We'll keep all the reporting code in the `simple-server` repository,
