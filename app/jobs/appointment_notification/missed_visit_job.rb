@@ -1,7 +1,5 @@
-class AppointmentNotification::MissedVisitJob
-  include Sidekiq::Worker
-
-  sidekiq_options queue: "high"
+class AppointmentNotification::MissedVisitJob < ApplicationJob
+  queue_as :high
 
   def perform
     return unless FeatureToggle.enabled?("APPOINTMENT_REMINDERS")
