@@ -64,7 +64,6 @@ RSpec.describe BlockLevelSync do
 
       BlockLevelSync.set_percentage(95)
 
-      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 20)
       expect(Flipper[:block_level_sync].percentage_of_actors_value).to eq(95)
     end
 
@@ -74,7 +73,6 @@ RSpec.describe BlockLevelSync do
 
       BlockLevelSync.set_percentage(95)
 
-      expect(users.map(&:block_level_sync?).count(&:itself)).to be_between(17, 20)
       expect(Flipper[:block_level_sync].percentage_of_actors_value).to eq(95)
 
       BlockLevelSync.set_percentage(100)
