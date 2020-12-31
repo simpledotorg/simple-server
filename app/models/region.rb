@@ -89,17 +89,21 @@ class Region < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    if facility_region?
+      FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    else
+      DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    end
   end
 
   def syncable_patients
     case region_type
       when "block"
         registered_patients.with_discarded
-          .union(assigned_patients.with_discarded)
+          .or(assigned_patients.with_discarded)
           .union(appointed_patients.with_discarded)
       else
-        registered_patients
+        registered_patients.with_discarded
     end
   end
 
