@@ -161,15 +161,10 @@ class Reports::RegionsController < AdminController
         FacilityDistrict.new(name: report_params[:id], scope: scope)
       when "FacilityGroup"
         current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
-      when "Block" # we don't have first class auth on Blocks yet, so we authorize via the parent FacilityGroup
-        block = Region.find_by!(slug: report_params[:id], region_type: "block")
-        owning_facility_group = block.district_region.source
-        unless current_admin.accessible_facility_groups(:view_reports).include?(owning_facility_group)
-          raise UserAccess::NotAuthorizedError
-        end
-        block
+      when "Block"
+        current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
       when "Facility"
-        current_admin.accessible_facilities(:view_reports).find_by!(slug: params[:id])
+        current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
       else
         raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
       end
