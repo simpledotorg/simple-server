@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MyFacilities::BloodPressureControlQuery do
+RSpec.describe BloodPressureControlQuery do
   include QuarterHelper
 
   describe "BP control queries" do

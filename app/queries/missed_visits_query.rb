@@ -1,4 +1,4 @@
-class MyFacilities::MissedVisitsQuery
+class MissedVisitsQuery
   # Wrap query method calls with the appropriate timezone in which the reports will be consumed
   # This is probably the Rails.application.config.country[:time_zone]
   # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_patients }`
@@ -69,7 +69,7 @@ class MyFacilities::MissedVisitsQuery
   def bp_query_by_cohort
     @bp_query_by_cohort ||=
       @periods.map { |year, period|
-        bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+        bp_query = BloodPressureControlQuery.new(facilities: @facilities,
                                                                cohort_period: {cohort_period: @period,
                                                                                registration_year: year,
                                                                                registration_month: period,

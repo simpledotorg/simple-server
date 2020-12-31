@@ -23,7 +23,7 @@ class MyFacilitiesController < AdminController
                                             .requested_sync_approval
                                             .order(updated_at: :desc))
 
-    overview_query = MyFacilities::OverviewQuery.new(facilities: @facilities)
+    overview_query = OverviewQuery.new(facilities: @facilities)
     @inactive_facilities = overview_query.inactive_facilities
 
     @facility_counts_by_size = {total: @facilities.group(:facility_size).count,
@@ -37,7 +37,7 @@ class MyFacilitiesController < AdminController
   def blood_pressure_control
     @facilities = filter_facilities([:manage, :facility])
 
-    bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+    bp_query = BloodPressureControlQuery.new(facilities: @facilities,
                                                            cohort_period: @selected_cohort_period)
 
     @totals = {cohort_patients: bp_query.cohort_patients.count,
@@ -58,7 +58,7 @@ class MyFacilitiesController < AdminController
   def registrations
     @facilities = filter_facilities([:manage, :facility])
 
-    registrations_query = MyFacilities::RegistrationsQuery.new(facilities: @facilities,
+    registrations_query = RegistrationsQuery.new(facilities: @facilities,
                                                                period: @selected_period,
                                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
 
@@ -79,7 +79,7 @@ class MyFacilitiesController < AdminController
   def missed_visits
     @facilities = filter_facilities([:manage, :facility])
 
-    missed_visits_query = MyFacilities::MissedVisitsQuery.new(facilities: @facilities,
+    missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
                                                               period: @selected_period,
                                                               last_n: PERIODS_TO_DISPLAY[@selected_period])
 
