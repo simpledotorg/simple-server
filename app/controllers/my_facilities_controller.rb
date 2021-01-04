@@ -9,11 +9,12 @@ class MyFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
-  around_action :set_time_zone
+  before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
   before_action :set_last_updated_at
+  around_action :set_time_zone
 
   def index
     @facilities = current_admin.accessible_facilities(:view_reports)
@@ -35,24 +36,29 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = filter_facilities([:manage, :facility])
+    if current_admin.feature_enabled?(:my_facilities_improvements)
+      @facilities = filter_facilities([:manage, :facility])
+      @data_for_facility = {}
+    else
+      @facilities = filter_facilities([:manage, :facility])
 
-    bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
-                                                           cohort_period: @selected_cohort_period)
+      bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+                                                              cohort_period: @selected_cohort_period)
 
-    @totals = {cohort_patients: bp_query.cohort_patients.count,
-               controlled: bp_query.cohort_controlled_bps.count,
-               uncontrolled: bp_query.cohort_uncontrolled_bps.count,
-               missed: bp_query.cohort_missed_visits_count,
-               overall_patients: bp_query.overall_patients.count,
-               overall_controlled_bps: bp_query.overall_controlled_bps.count}
+      @totals = {cohort_patients: bp_query.cohort_patients.count,
+                  controlled: bp_query.cohort_controlled_bps.count,
+                  uncontrolled: bp_query.cohort_uncontrolled_bps.count,
+                  missed: bp_query.cohort_missed_visits_count,
+                  overall_patients: bp_query.overall_patients.count,
+                  overall_controlled_bps: bp_query.overall_controlled_bps.count}
 
-    @cohort_patients_per_facility = bp_query.cohort_patients_per_facility
-    @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
-    @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
-    @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
-    @overall_patients_per_facility = bp_query.overall_patients_per_facility
-    @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
+      @cohort_patients_per_facility = bp_query.cohort_patients_per_facility
+      @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
+      @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
+      @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
+      @overall_patients_per_facility = bp_query.overall_patients_per_facility
+      @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
+    end
   end
 
   def registrations
@@ -110,5 +116,22 @@ class MyFacilitiesController < AdminController
 
   def authorize_my_facilities
     authorize { current_admin.accessible_facilities(:view_reports).any? }
+  end
+
+  def set_period
+    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
+    @period = Period.new(period_params)
+  end
+
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def report_params
+    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
+  end
+
+  def force_cache?
+    report_params[:force_cache].present?
   end
 end
