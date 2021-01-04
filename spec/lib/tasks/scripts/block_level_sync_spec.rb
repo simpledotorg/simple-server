@@ -59,7 +59,7 @@ RSpec.describe BlockLevelSync do
 
   describe ".set_percentage" do
     it "enables a percentage of users randomly" do
-      users = create_list(:user, 20)
+      _users = create_list(:user, 20)
       allow(Reports::RegionCacheWarmer).to receive(:call).and_return(true)
 
       BlockLevelSync.set_percentage(95)
@@ -98,7 +98,7 @@ RSpec.describe BlockLevelSync do
     end
 
     it "calls the region cache warmer" do
-      create_list(:user, 2)
+      _users = create_list(:user, 2)
       expect(Reports::RegionCacheWarmer).to receive(:call)
       BlockLevelSync.set_percentage(50)
     end
