@@ -39,6 +39,12 @@ class MyFacilitiesController < AdminController
     if current_admin.feature_enabled?(:my_facilities_improvements)
       @facilities = filter_facilities([:manage, :facility])
       @data_for_facility = {}
+
+      @facilities.each do |facility|
+        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+      end
+
+      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
     else
       @facilities = filter_facilities([:manage, :facility])
 

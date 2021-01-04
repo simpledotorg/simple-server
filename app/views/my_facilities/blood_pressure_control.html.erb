@@ -16,108 +16,71 @@
         <div class="d-flex fw-wrap mb-16px">
           <%= render "shared/size_and_zone_filters" %>
         </div>
-        <p class="mt-20px mb-0px fw-bold">
-          Facility type
-        </p>
-        <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
-          <colgroup>
-            <col>
-            <col>
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-          </colgroup>
-          <thead>
-            <tr data-sort-method="thead" class="sorts">
-              <th class="row-label sort-label sort-label-small" style="width: 120px;">
-                Facilities
-              </th>
-              <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
-                Total assigned<br>patients
-              </th>
-              <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
-                Total registered<br>patients
-              </th>
-              <th class="row-label sort-label sort-label-small" colspan="2">
-                6-month change
-              </th>
-              <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
-                <th class="row-label sort-label sort-label-small" data-sort-method="number" colspan="2">
-                  <%= format_period(@period.type, date) %>
+        <% %w(large medium small community).each do |size| %>
+          <% next if @facilities_by_size[size].blank? %>
+          <p class="mt-20px mb-0px fw-bold">
+            <%= size.capitalize %> facilities
+          </p>
+          <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
+            <colgroup>
+              <col>
+              <col>
+              <col>
+              <col class="table-divider">
+              <col>
+              <col class="table-divider">
+              <col>
+              <col class="table-divider">
+              <col>
+              <col class="table-divider">
+              <col>
+              <col class="table-divider">
+              <col>
+              <col class="table-divider">
+              <col>
+              <col class="table-divider">
+              <col>
+            </colgroup>
+            <thead>
+              <tr data-sort-method="thead" class="sorts">
+                <th class="row-label sort-label sort-label-small" style="width: 160px;">
+                  Facilities
                 </th>
-              <% end %>
-            </tr>
-          </thead>
-          <tbody>
-            <% current_admin.accessible_facilities(:view_reports).order(:name).each do |resource| %>
-              <tr>
-                <td class="row-title">
-                  <%= link_to resource.send(:name), send(:reports_region_facility_details_path, resource) %>
-                </td>
-                <td>
-                  TAP
-                </td>
-                <td>
-                  TRP
-                </td>
-                <td>
-                  Graph
-                </td>
-                <td>
-                  %
-                </td>
-                <td>
-                  Total
-                </td>
-                <td>
-                  %
-                </td>
-                <td>
-                  Total
-                </td>
-                <td>
-                  %
-                </td>
-                <td>
-                  Total
-                </td>
-                <td>
-                  %
-                </td>
-                <td>
-                  Total
-                </td>
-                <td>
-                  %
-                </td>
-                <td>
-                  Total
-                </td>
-                <td>
-                  %
-                </td>
-                <td>
-                  Total
-                </td>
-                <td>
-                  %
-                </td>
+                <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
+                  Total assigned<br>patients
+                </th>
+                <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
+                  Total registered<br>patients
+                </th>
+                <th class="row-label sort-label sort-label-small" colspan="2">
+                  6-month change
+                </th>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <th class="row-label sort-label sort-label-small" data-sort-method="number" colspan="2">
+                    <%= format_period(@period.type, date) %>
+                  </th>
+                <% end %>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <% @facilities_by_size[size].each do |facility| %>
+                <tr>
+                  <td class="type-title">
+                    <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+                      <%= facility.name %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["adjusted_registrations"].values.last || 0) %>
+                  </td>
+                  <td>
+                    <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last || 0) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
       </div>
     </div>
   </div>
