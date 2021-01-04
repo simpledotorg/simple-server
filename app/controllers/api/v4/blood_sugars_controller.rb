@@ -1,6 +1,5 @@
 class Api::V4::BloodSugarsController < Api::V4::SyncController
   include Api::V3::SyncEncounterObservation
-  include Api::V3::RetroactiveDataEntry
 
   def sync_from_user
     __sync_from_user__(blood_sugars_params)
@@ -22,7 +21,6 @@ class Api::V4::BloodSugarsController < Api::V4::SyncController
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
-      set_patient_recorded_at(blood_sugar_params)
       transformed_params = Api::V4::Transformer.from_request(blood_sugar_params)
       {record: merge_encounter_observation(:blood_sugars, transformed_params)}
     end

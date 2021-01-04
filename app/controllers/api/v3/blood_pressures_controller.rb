@@ -1,6 +1,5 @@
 class Api::V3::BloodPressuresController < Api::V3::SyncController
   include Api::V3::SyncEncounterObservation
-  include Api::V3::RetroactiveDataEntry
 
   def sync_from_user
     __sync_from_user__(blood_pressures_params)
@@ -18,7 +17,6 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
-      set_patient_recorded_at(bp_params)
       transformed_params = Api::V3::BloodPressureTransformer.from_request(bp_params)
       {record: merge_encounter_observation(:blood_pressures, transformed_params)}
     end
