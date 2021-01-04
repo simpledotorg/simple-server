@@ -2,7 +2,7 @@ class AppointmentNotification::Worker
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
-  sidekiq_options queue: "high"
+  sidekiq_options queue: :high
 
   DEFAULT_LOCALE = :en
 

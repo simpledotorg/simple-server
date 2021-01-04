@@ -2,7 +2,7 @@ class UpdatePhoneNumberDetailsWorker
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
-  sidekiq_options queue: :phone_number_details_queue
+  sidekiq_options queue: :low
 
   sidekiq_throttle(
     threshold: {limit: ENV["EXOTEL_API_RATE_LIMIT_PER_MINUTE"].to_i || 250, period: 1.minute}
