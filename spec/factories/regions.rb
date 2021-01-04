@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :region do
     id { SecureRandom.uuid }
-    name { Faker::Company.name }
+    sequence(:name) { |n| "#{Faker::Company.name} #{n}" }
     region_type { "organization" }
 
     trait :block do
