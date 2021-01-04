@@ -58,6 +58,8 @@ RSpec.describe Seed::Runner do
   end
 
   it "can create a small data set quickly" do
+    skip if ENV["CI"]
+
     max_time = 7
     time = Benchmark.ms {
       seeder = Seed::Runner.new
