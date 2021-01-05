@@ -55,16 +55,16 @@
                 <th class="row-label sort-label sort-label-small" colspan="2">
                   6-month change
                 </th>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% (@start_period..@period).each do |period| %>
                   <th class="row-label sort-label sort-label-small" data-sort-method="number" colspan="2">
-                    <%= format_period(@period.type, date) %>
+                    <%= period %>
                   </th>
                 <% end %>
               </tr>
             </thead>
             <tbody>
               <% @facilities_by_size[size].each do |facility| %>
-                <tr>
+                <tr data-row="<%= facility.slug %>">
                   <td class="type-title">
                     <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
                       <%= facility.name %>
@@ -77,19 +77,20 @@
                     <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last || 0) %>
                   </td>
                   <td>
-                    Trend
+                    <div style="width: 80px; height: 20px;">
+                      <canvas id=<%= facility.slug %>></canvas>
+                    </div>
                   </td>
                   <td>
                     Δ
                   </td>
-                  <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
-                    <% period = format_period(@period.type, date) %>
+                  <% (@start_period..@period).each do |period| %>
                     <td>
-                      #
+                      <%= @data_for_facility[facility.name]["controlled_patients"][period] %>
                     </td>
                     <td class="type-percent red">
-                      <em>
-                        %
+                      <em data-control-rate="<%= period %>">
+                        <%= @data_for_facility[facility.name]["controlled_patients_rate"][period] %>
                       </em>
                     </td>
                   <% end %>
@@ -101,6 +102,7 @@
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <% else %>
   <div class="row">
     <div class="col-lg-12">

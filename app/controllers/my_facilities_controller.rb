@@ -125,8 +125,8 @@ class MyFacilitiesController < AdminController
   end
 
   def set_period
-    period_params = report_params[:period].presence || Reports::RegionService.default_period.attributes
-    @period = Period.new(period_params)
+    @period = Period.month(Date.current.last_month.beginning_of_month)
+    @start_period = @period.advance(months: -5)
   end
 
   def set_force_cache
