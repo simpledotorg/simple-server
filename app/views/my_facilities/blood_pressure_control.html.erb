@@ -76,6 +76,23 @@
                   <td>
                     <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last || 0) %>
                   </td>
+                  <td>
+                    Trend
+                  </td>
+                  <td>
+                    Δ
+                  </td>
+                  <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                    <% period = format_period(@period.type, date) %>
+                    <td>
+                      #
+                    </td>
+                    <td class="type-percent red">
+                      <em>
+                        %
+                      </em>
+                    </td>
+                  <% end %>
                 </tr>
               <% end %>
             </tbody>

@@ -216,6 +216,26 @@ th sup {
     display: block;
   }
 
+  td.type-percent.green em {
+    display: block;
+    width: 2.5em;
+    padding: 2px;
+    font-style: normal;
+    color: #007a31;
+    border-radius: 100px;
+    background: #f2f8f5;
+  }
+
+  td.type-percent.red em {
+    display: block;
+    width: 2.5em;
+    padding: 2px;
+    font-style: normal;
+    color: #b81631;
+    border-radius: 100px;
+    background: #fff0f2;
+  }
+
   .row-total td.type-percent em {
     background: rgba(0,0,0,0.1);
     color: rgba(0,0,0,0.6);
