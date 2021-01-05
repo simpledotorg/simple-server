@@ -49,6 +49,10 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
   end
 end
 
+every 2.minutes, roles: [:cron] do
+  runner "TracerJob.perform_later(Time.current.iso8601)"
+end
+
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.sweep"
 end
