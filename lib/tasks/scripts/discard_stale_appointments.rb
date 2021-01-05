@@ -9,6 +9,6 @@ class DiscardStaleAppointments
 
   def call
     stale_appointment_ids = @patient.appointments.where(status: "scheduled").pluck(:id) - [@patient.latest_scheduled_appointment.id]
-    Appointment.where('id in (?)', stale_appointment_ids).discard_all
+    Appointment.where("id in (?)", stale_appointment_ids).discard_all
   end
 end

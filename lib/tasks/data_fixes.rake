@@ -21,13 +21,13 @@ namespace :data_fixes do
 
   desc "Clean up stale scheduled appointments (multiple scheduled appointments for a patient)"
   task discard_stale_scheduled_appointments: :environment do
-    patients_ids =  Appointment
-                      .where(status: "scheduled")
-                      .group(:patient_id).count
-                      .select{ |k,v| v > 1}
-                      .keys
+    patients_ids = Appointment
+      .where(status: "scheduled")
+      .group(:patient_id).count
+      .select { |k, v| v > 1 }
+      .keys
 
-    Patient.with_discarded.where('id in (?)', patients_ids).each do |patient|
+    Patient.with_discarded.where("id in (?)", patients_ids).each do |patient|
       DiscardStaleAppointments.call(patient: patient)
     end
   end
