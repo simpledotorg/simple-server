@@ -13,9 +13,9 @@ class Reports::RegionsController < AdminController
   def index
     if current_admin.feature_enabled?(:region_reports)
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
-      regions_cache_key = "#{current_admin.cache_key}/regions/index"
-      regions_cache_version = accessible_facility_regions.cache_key
-      @accessible_regions = cache.fetch(regions_cache_key, version: regions_cache_version, expires_in: 7.days) {
+      cache_key = "#{current_admin.cache_key}/regions/index"
+      cache_version = accessible_facility_regions.cache_key
+      @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
         accessible_facility_regions.each_with_object({}) { |facility, result|
           ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
           org, district, block = ancestors.values_at("organization", "district", "block")
