@@ -213,11 +213,11 @@ th sup {
     border-radius: 100px;
     padding: 2px;
     width: 3.5em;
-    display: block;
+    display: inline-block;
   }
 
   td.type-percent.green em {
-    display: block;
+    display: inline-block;
     width: 2.5em;
     padding: 2px;
     font-style: normal;
@@ -227,7 +227,7 @@ th sup {
   }
 
   td.type-percent.red em {
-    display: block;
+    display: inline-block;
     width: 2.5em;
     padding: 2px;
     font-style: normal;

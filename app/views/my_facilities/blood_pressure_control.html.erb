@@ -52,7 +52,7 @@
                 <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
                   Total registered<br>patients
                 </th>
-                <th class="row-label sort-label sort-label-small" colspan="2" style="width: 140px;">
+                <th class="row-label sort-label sort-label-small" colspan="2" style="width: 80px;">
                   6-month change
                 </th>
                 <% (@start_period..@period).each do |period| %>
@@ -89,9 +89,10 @@
                     <td>
                       <%= @data_for_facility[facility.name]["controlled_patients"][period] %>
                     </td>
-                    <td class="type-percent red">
-                      <em data-control-rate="<%= period %>">
-                        <%= @data_for_facility[facility.name]["controlled_patients_rate"][period] %>
+                    <td class="type-percent">
+                      <% controlled_patients_rate = @data_for_facility[facility.name]["controlled_patients_rate"][period] %>
+                      <em data-control-rate="<%= controlled_patients_rate %>">
+                        <%= number_to_percentage(controlled_patients_rate || 0, precision: 0) %>
                       </em>
                     </td>
                   <% end %>

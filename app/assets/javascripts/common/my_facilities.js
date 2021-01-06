@@ -11,7 +11,7 @@ window.addEventListener("DOMContentLoaded", function() {
     const $controlRates = $facilityRow.querySelectorAll('[data-control-rate]');
 
     Array.from($controlRates).forEach($controlRate => {
-      controlRateValues.push($controlRate.innerText);
+      controlRateValues.push($controlRate.getAttribute("data-control-rate"));
     });
 
     facilityControlRateData[facilitySlug] = {};
