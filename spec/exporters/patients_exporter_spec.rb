@@ -171,26 +171,20 @@ RSpec.describe PatientsExporter do
       end
     end
 
-    it "fetches patients in batches" do
-      expect_any_instance_of(facility.assigned_patients.class)
-        .to receive(:in_batches).and_return([patient_batch])
-
-      subject.csv(facility.assigned_patients)
-    end
-
     it "does not include the zone column if the country config is set to false" do
       allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
-      expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
+      expect(subject.csv_fields(PatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
     end
 
     it "includes blood sugars from other visits" do
       blood_sugar.destroy
       _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
 
-      expect(subject.csv_fields(patient)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
-      expect(subject.csv_fields(patient)).to include("Fasting")
+      patient_summary = PatientSummary.find_by(id: patient)
+      expect(subject.csv_fields(patient_summary)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
+      expect(subject.csv_fields(patient_summary)).to include("Fasting")
     end
   end
 end

@@ -92,15 +92,6 @@ class PatientsExporter
   end
 
   def csv_fields(patient_summary)
-    # We cannot rely on the ordered scopes on Patient (eg. latest_blood_pressures) to find most recent records because
-    # the batching done here will invalidate any ordering on patients, as well as its associations.
-
-    # registration_facility = patient_summary.registration_facility
-    # assigned_facility = patient_summary.assigned_facility
-    # latest_bp = patient_summary.blood_pressures.order(recorded_at: :desc).first
-    # latest_bp_facility = latest_bp&.facility
-    # latest_blood_sugar = patient_summary.blood_sugars.order(recorded_at: :desc).first
-    # latest_appointment = patient_summary.latest_scheduled_appointments.order(scheduled_date: :desc).first
     latest_bp_passport = patient_summary.patient.latest_bp_passports.order(device_created_at: :desc).first
     zone_column_index = csv_headers.index(zone_column)
 
