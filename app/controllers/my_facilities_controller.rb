@@ -47,7 +47,7 @@ class MyFacilitiesController < AdminController
 
       @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
     else
-      bp_query = MyFacilities::BloodPressureControlQuery.new(facilities: @facilities,
+      bp_query = BloodPressureControlQuery.new(facilities: @facilities,
                                                              cohort_period: @selected_cohort_period)
 
       @totals = {cohort_patients: bp_query.cohort_patients.count,
