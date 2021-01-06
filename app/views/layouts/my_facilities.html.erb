@@ -21,7 +21,10 @@
         <% end %>
         <%= link_to(my_facilities_drug_stock_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/drug_stock"}") do %>
         Drug stock
-      <% end %>
+        <% end %>
+        <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/drug_consumption"}") do %>
+        Drug consumption
+        <% end %>
       </div>
     </div>
   </div>
