@@ -14,15 +14,16 @@ class Reports::RegionsController < AdminController
     if current_admin.feature_enabled?(:region_reports)
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
       cache_key = "#{current_admin.cache_key}/regions/index"
-      cache_version = accessible_facility_regions.cache_key
+      cache_version = "#{accessible_facility_regions.cache_key} / v2"
       @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
         accessible_facility_regions.each_with_object({}) { |facility, result|
           ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
-          org, district, block = ancestors.values_at("organization", "district", "block")
+          org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
           result[org] ||= {}
-          result[org][district] ||= {}
-          result[org][district][block] ||= []
-          result[org][district][block] << facility
+          result[org][state] ||= {}
+          result[org][state][district] ||= {}
+          result[org][state][district][block] ||= []
+          result[org][state][district][block] << facility
         }
       }
     else
