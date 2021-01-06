@@ -18,10 +18,10 @@ class PatientListDownloadMailer < ApplicationMailer
   end
 
   def compress_file(file_name, file_data)
-    output_buffer = Zip::OutputStream.write_buffer do |zip|
+    output_buffer = Zip::OutputStream.write_buffer { |zip|
       zip.put_next_entry(file_name)
       zip.write file_data
-    end
+    }
 
     output_buffer.string
   end
