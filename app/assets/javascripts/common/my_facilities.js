@@ -1,35 +1,37 @@
 window.addEventListener("DOMContentLoaded", function() {
-  let controlRateData = {};
+  let facilityControlRateData = {};
+  const greenColor = "#007a31";
+  const redColor = "#b81631";
   const $facilityRows = document.querySelectorAll('[data-row]');
 
   Array.from($facilityRows).forEach($facilityRow => {
     let controlRateValues = [];
     const facilitySlug = $facilityRow.getAttribute("data-row");
+    const trendLineColor = $facilityRow.getAttribute("data-trend-color");
     const $controlRates = $facilityRow.querySelectorAll('[data-control-rate]');
 
     Array.from($controlRates).forEach($controlRate => {
       controlRateValues.push($controlRate.innerText);
     });
 
-    controlRateData[facilitySlug] = controlRateValues;
+    facilityControlRateData[facilitySlug] = {};
+    facilityControlRateData[facilitySlug].color = trendLineColor;
+    facilityControlRateData[facilitySlug].data = controlRateValues;
   });
 
-  Object.keys(controlRateData).forEach(facilitySlug => {
+  Object.keys(facilityControlRateData).forEach(facility => {
     const trendChartConfig = createBaseTrendChartConfig();
     trendChartConfig.data = {
-      labels: controlRateData[facilitySlug],
+      labels: facilityControlRateData[facility].data,
       datasets: [{
         label: "BP controlled rate",
         fill: false,
-        data: controlRateData[facilitySlug],
+        borderColor: facilityControlRateData[facility].color === "green" ? greenColor : redColor,
+        data: facilityControlRateData[facility].data,
       }],
     };
-    trendChartConfig.options.scales = {
-      xAxes: [{ display: false }],
-      yAxes: [{ display: false }],
-    };
 
-    const trendChartCanvas = document.getElementById(facilitySlug);
+    const trendChartCanvas = document.getElementById(facility);
     if (trendChartCanvas) {
       new Chart(trendChartCanvas.getContext("2d"), trendChartConfig);
     }
@@ -41,11 +43,31 @@ function createBaseTrendChartConfig() {
     type: "line",
     options: {
       animation: false,
-      elements: { point: { radius: 0, }},
+      elements: {
+        line: {
+          borderJoinStyle: "round",
+        },
+        point: {
+          radius: 0,
+        },
+      },
       responsive: true,
       maintainAspectRatio: false,
-      layout: { padding: { top: 2, right: 2, bottom: 2, left: 2, }},
-      legend: { display: false },
+      layout: {
+        padding: {
+          top: 2,
+          right: 2,
+          bottom: 2,
+          left: 2,
+        }
+      },
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{ display: false }],
+        yAxes: [{ display: false }],
+      },
     },
   };
 };

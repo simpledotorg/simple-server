@@ -64,7 +64,8 @@
             </thead>
             <tbody>
               <% @facilities_by_size[size].each do |facility| %>
-                <tr data-row="<%= facility.slug %>">
+                <% six_month_rate_change = @data_for_facility[facility.name]["controlled_patients_rate"][@period] - @data_for_facility[facility.name]["controlled_patients_rate"][@start_period] || 0 %>
+                <tr data-row="<%= facility.slug %>" data-trend-color="<%= six_month_rate_change >= 0 ? "green" : "red" %>">
                   <td class="type-title">
                     <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
                       <%= facility.name %>
@@ -77,12 +78,12 @@
                     <%= number_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last || 0) %>
                   </td>
                   <td>
-                    <div style="width: 80px; height: 20px;">
+                    <div class="w-80px h-20px">
                       <canvas id=<%= facility.slug %>></canvas>
                     </div>
                   </td>
-                  <td>
-                    Δ
+                  <td class="fw-bold ta-center <%= six_month_rate_change >= 0 ? "c-green-dark" : "c-red-dark" %>">
+                    <%= six_month_rate_change >= 0 ? "+" : "" %><%= number_to_percentage(six_month_rate_change, precision: 0) %>
                   </td>
                   <% (@start_period..@period).each do |period| %>
                     <td>
