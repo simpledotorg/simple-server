@@ -16,20 +16,15 @@ class PatientsExporter
   end
 
   def csv(patients)
+    summary = PatientSummary.where(patient: patients)
+
     CSV.generate(headers: true) do |csv|
       csv << timestamp
       csv << csv_headers
 
-      patients.in_batches(of: BATCH_SIZE).each do |batch|
-        batch.includes(
-          :registration_facility,
-          :assigned_facility,
-          :phone_numbers,
-          :address,
-          :medical_history,
-          :current_prescription_drugs
-        ).each do |patient|
-          csv << csv_fields(patient)
+      summary.in_batches(of: BATCH_SIZE).each do |batch|
+        batch.each do |patient_summary|
+          csv << csv_fields(patient_summary)
         end
       end
     end
@@ -96,61 +91,78 @@ class PatientsExporter
     ].compact
   end
 
-  def csv_fields(patient)
+  def csv_fields(patient_summary)
     # We cannot rely on the ordered scopes on Patient (eg. latest_blood_pressures) to find most recent records because
     # the batching done here will invalidate any ordering on patients, as well as its associations.
-    registration_facility = patient.registration_facility
-    assigned_facility = patient.assigned_facility
-    latest_bp = patient.blood_pressures.order(recorded_at: :desc).first
-    latest_bp_facility = latest_bp&.facility
-    latest_blood_sugar = patient.blood_sugars.order(recorded_at: :desc).first
-    latest_appointment = patient.latest_scheduled_appointments.order(scheduled_date: :desc).first
-    latest_bp_passport = patient.latest_bp_passports.order(device_created_at: :desc).first
+
+    # registration_facility = patient_summary.registration_facility
+    # assigned_facility = patient_summary.assigned_facility
+    # latest_bp = patient_summary.blood_pressures.order(recorded_at: :desc).first
+    # latest_bp_facility = latest_bp&.facility
+    # latest_blood_sugar = patient_summary.blood_sugars.order(recorded_at: :desc).first
+    # latest_appointment = patient_summary.latest_scheduled_appointments.order(scheduled_date: :desc).first
+    latest_bp_passport = patient_summary.patient.latest_bp_passports.order(device_created_at: :desc).first
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
-      patient.recorded_at.presence && I18n.l(patient.recorded_at),
-      patient.recorded_at.presence && quarter_string(patient.recorded_at),
-      ("Died" if patient.status == "dead"),
-      patient.full_name,
-      patient.current_age,
-      patient.gender.capitalize,
-      patient.phone_numbers.last&.number,
-      patient.address.street_address,
-      patient.address.village_or_colony,
-      patient.address.district,
-      patient.address.state,
-      assigned_facility&.name,
-      assigned_facility&.facility_type,
-      assigned_facility&.district,
-      assigned_facility&.state,
-      registration_facility&.name,
-      registration_facility&.facility_type,
-      registration_facility&.district,
-      registration_facility&.state,
-      patient.medical_history&.hypertension,
-      patient.medical_history&.diabetes,
-      latest_bp&.recorded_at.presence && I18n.l(latest_bp&.recorded_at),
-      latest_bp&.systolic,
-      latest_bp&.diastolic,
-      latest_bp&.recorded_at.presence && quarter_string(latest_bp&.recorded_at),
-      latest_bp_facility&.name,
-      latest_bp_facility&.facility_type,
-      latest_bp_facility&.district,
-      latest_bp_facility&.state,
-      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at),
-      latest_blood_sugar&.to_s,
-      blood_sugar_type(latest_blood_sugar),
-      latest_appointment&.facility&.name,
-      latest_appointment&.scheduled_date&.to_s(:rfc822),
-      latest_appointment&.days_overdue,
-      ("High" if patient.high_risk?),
+      patient_summary.recorded_at.presence &&
+        I18n.l(patient_summary.recorded_at),
+
+      patient_summary.recorded_at.presence &&
+        quarter_string(patient_summary.recorded_at),
+
+      ("Died" if patient_summary.status == "dead"),
+      patient_summary.full_name,
+      patient_summary.current_age.to_i,
+      patient_summary.gender.capitalize,
+      patient_summary.latest_phone_number,
+      patient_summary.street_address,
+      patient_summary.village_or_colony,
+      patient_summary.district,
+      patient_summary.state,
+      patient_summary.patient.assigned_facility.name,
+      patient_summary.patient.assigned_facility.facility_type,
+      patient_summary.patient.assigned_facility.district,
+      patient_summary.patient.assigned_facility.state,
+      patient_summary.registration_facility_name,
+      patient_summary.registration_facility_type,
+      patient_summary.registration_district,
+      patient_summary.registration_state,
+      patient_summary.patient.medical_history&.hypertension,
+      patient_summary.patient.medical_history&.diabetes,
+
+      patient_summary.recorded_at.presence &&
+        I18n.l(patient_summary.latest_blood_pressure_recorded_at),
+
+      patient_summary.latest_blood_pressure_systolic,
+      patient_summary.latest_blood_pressure_diastolic,
+
+      patient_summary.latest_blood_pressure_recorded_at.presence &&
+        quarter_string(patient_summary.latest_blood_pressure_recorded_at),
+
+      patient_summary.latest_blood_pressure_facility_name,
+      patient_summary.latest_blood_pressure_facility_type,
+      patient_summary.latest_blood_pressure_district,
+      patient_summary.latest_blood_pressure_state,
+
+      patient_summary.latest_blood_pressure_recorded_at.presence &&
+        I18n.l(patient_summary.latest_blood_pressure_recorded_at),
+
+      "#{patient_summary.latest_blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[patient_summary.latest_blood_sugar_type]}",
+
+      patient_summary.latest_blood_sugar_type.presence &&
+        BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type],
+
+      patient_summary.next_appointment_facility_name,
+      patient_summary.next_appointment_scheduled_date&.to_s(:rfc822),
+      patient_summary.days_overdue.to_i,
+      ("High" if patient_summary.patient.high_risk?),
       latest_bp_passport&.shortcode,
-      patient.id,
-      *medications_for(patient)
+      patient_summary.id,
+      *medications_for(patient_summary.patient)
     ]
 
-    csv_fields.insert(zone_column_index, patient.address.zone) if zone_column_index
+    csv_fields.insert(zone_column_index, patient_summary.patient.address.zone) if zone_column_index
     csv_fields
   end
 
@@ -158,15 +170,7 @@ class PatientsExporter
     patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
   end
 
-  private_class_method
-
   def zone_column
     "Patient #{Address.human_attribute_name :zone}"
-  end
-
-  def blood_sugar_type(blood_sugar)
-    return unless blood_sugar.present?
-
-    BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]
   end
 end
