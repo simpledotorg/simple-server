@@ -4,5 +4,6 @@
 
 :queues:
   - default
+  - mailers
   - [low, 1]
   - [high, 3]
