@@ -1,47 +1,8 @@
 require "csv"
 
-class PatientsWithHistoryExporter
-  include QuarterHelper
-
-  BATCH_SIZE = 20
-  BLOOD_SUGAR_TYPES = {
-    random: "Random",
-    post_prandial: "Postprandial",
-    fasting: "Fasting",
-    hba1c: "HbA1c"
-  }.with_indifferent_access.freeze
+class PatientsWithHistoryExporter < PatientsExporter
   DISPLAY_BLOOD_PRESSURES = 3
   DISPLAY_MEDICATION_COLUMNS = 5
-
-  def self.csv(*args)
-    new.csv(*args)
-  end
-
-  def csv(patients)
-    CSV.generate(headers: true) do |csv|
-      csv << timestamp
-      csv << csv_headers
-
-      patients.in_batches(of: BATCH_SIZE).each do |batch|
-        batch.includes(
-          :registration_facility,
-          :assigned_facility,
-          :phone_numbers,
-          :address,
-          :medical_history
-        ).each do |patient|
-          csv << csv_fields(patient)
-        end
-      end
-    end
-  end
-
-  def timestamp
-    [
-      "Report generated at:",
-      Time.current
-    ]
-  end
 
   def csv_headers
     ["Registration Date",
