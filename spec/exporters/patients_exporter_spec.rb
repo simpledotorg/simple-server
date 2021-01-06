@@ -171,7 +171,7 @@ RSpec.describe PatientsExporter do
       end
     end
 
-    it "fetches patients in batches" do
+    it "uses fetches patients in batches" do
       expect_any_instance_of(facility.assigned_patients.class)
         .to receive(:in_batches).and_return([patient_batch])
 
