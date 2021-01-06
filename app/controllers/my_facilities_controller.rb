@@ -10,6 +10,7 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
+  before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
@@ -79,15 +80,25 @@ class MyFacilitiesController < AdminController
   def missed_visits
     @facilities = filter_facilities([:manage, :facility])
 
-    missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
-                                                period: @selected_period,
-                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
+    if current_admin.feature_enabled?(:my_facilities_improvements)
+      @data_for_facility = {}
 
-    @display_periods = missed_visits_query.periods
-    @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
-    @calls_made = missed_visits_query.calls_made.count
-    @total_patients_per_facility = missed_visits_query.total_patients_per_facility
-    @totals_by_period = missed_visits_query.missed_visit_totals
+      @facilities.each do |facility|
+        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+      end
+
+      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+    else
+      missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
+                                                  period: @selected_period,
+                                                  last_n: PERIODS_TO_DISPLAY[@selected_period])
+
+      @display_periods = missed_visits_query.periods
+      @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
+      @calls_made = missed_visits_query.calls_made.count
+      @total_patients_per_facility = missed_visits_query.total_patients_per_facility
+      @totals_by_period = missed_visits_query.missed_visit_totals
+    end
   end
 
   private
@@ -110,5 +121,22 @@ class MyFacilitiesController < AdminController
 
   def authorize_my_facilities
     authorize { current_admin.accessible_facilities(:view_reports).any? }
+  end
+
+  def set_period
+    @period = Period.month(Date.current.last_month.beginning_of_month)
+    @start_period = @period.advance(months: -5)
+  end
+
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def report_params
+    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
+  end
+
+  def force_cache?
+    report_params[:force_cache].present?
   end
 end
