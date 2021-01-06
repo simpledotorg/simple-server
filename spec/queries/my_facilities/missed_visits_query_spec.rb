@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MyFacilities::MissedVisitsQuery do
+RSpec.describe MissedVisitsQuery do
   include QuarterHelper
 
   context "#missed_visits_by_facility quarter" do
