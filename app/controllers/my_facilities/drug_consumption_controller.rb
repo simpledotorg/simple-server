@@ -23,7 +23,6 @@ class MyFacilities::DrugConsumptionController < AdminController
 
     set_period
     @facilities = filter_facilities([:manage, :facility])
-
   end
 
   private
