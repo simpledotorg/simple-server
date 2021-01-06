@@ -52,11 +52,11 @@ class MyFacilitiesController < AdminController
                                                               cohort_period: @selected_cohort_period)
 
       @totals = {cohort_patients: bp_query.cohort_patients.count,
-                  controlled: bp_query.cohort_controlled_bps.count,
-                  uncontrolled: bp_query.cohort_uncontrolled_bps.count,
-                  missed: bp_query.cohort_missed_visits_count,
-                  overall_patients: bp_query.overall_patients.count,
-                  overall_controlled_bps: bp_query.overall_controlled_bps.count}
+                 controlled: bp_query.cohort_controlled_bps.count,
+                 uncontrolled: bp_query.cohort_uncontrolled_bps.count,
+                 missed: bp_query.cohort_missed_visits_count,
+                 overall_patients: bp_query.overall_patients.count,
+                 overall_controlled_bps: bp_query.overall_controlled_bps.count}
 
       @cohort_patients_per_facility = bp_query.cohort_patients_per_facility
       @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
