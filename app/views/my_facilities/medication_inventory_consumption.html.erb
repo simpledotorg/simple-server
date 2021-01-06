@@ -1,0 +1,486 @@
+<div class="card card-responsive">
+	<div class="row">
+		<div class="col-6">
+			<h2>Drug consumption</h2>
+		</div>
+		<div class="col-6 text-right">
+			<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus-circle mr-2"></i> Drug stock report</button>
+		</div>
+	</div>
+	
+	<!-- Modal -->
+	<div class="modal fade" id="DrugReportModal" tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h2 class="modal-title" id="exampleModalLabel">Drug stock report</h2>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			  <span aria-hidden="true"><i class="fas fa-times"></i></span>
+			</button>
+		  </div>
+		  <div class="modal-body">
+				<div class="form-group">
+				  <label for="medicationDate">Date</label>
+				  
+				  <input type="date" class="form-control" id="medicationDate" value="" max=""></input>
+				  
+				  
+				<script>
+				
+					var today = new Date();
+					
+					var dateTime = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+					
+					document.getElementById("medicationDate").value = dateTime;
+					document.getElementById("medicationDate").max = dateTime;
+				
+				</script>
+				
+				</div>
+				  <div class="form-group">
+					<label for="medicationFacility">Facility</label>
+					<select class="form-control" id="medicationFacility">
+					  <option>Choose a facility...</option>
+					  <option>CHC Mango</option>
+					  <option>CHC Turkey Fig</option>
+					  <option>DH Fruitvale</option>
+					  <option>HWC Blueberries</option>
+					  <option>HWC Pomegranate</option>
+					  <option>PHC Apple</option>
+					  <option>PHC Mandarin Orange</option>
+					  <option>PHC Melon</option>
+					  <option>PHC Peach</option>
+					  <option>SDH Coconut</option>
+					</select>
+				</div>
+				<h3 class="pt-4">Tablets</h3>
+				<p>Leave blank if unknown. Enter "0" if stock is empty.</p>
+						
+				<div class="form-group mt-4">
+					  <label for="a-medicationAmlodipine5mg">Amlodipine 5 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-medicationAmlodipine5mg">
+							<small id="a-medicationAmlodipine5mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-medicationAmlodipine5mg">
+							  <small id="b-medicationAmlodipine5mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+				<div class="form-group mt-4">
+					  <label for="a-medicationAmlodipine10mg">Amlodipine 10 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-medicationAmlodipine10mg">
+							<small id="a-medicationAmlodipine10mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-medicationAmlodipine10mg">
+							  <small id="b-medicationAmlodipine10mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+				
+				<div class="form-group mt-4">
+					  <label for="a-Telmisartin20mg">Telmisartin 20 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-Telmisartin20mg">
+							<small id="a-Telmisartin20mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-Telmisartin20mg">
+							  <small id="b-Telmisartin20mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+				
+				<div class="form-group mt-4">
+					  <label for="a-Telmisartin40mg">Telmisartin 40 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-Telmisartin40mg">
+							<small id="a-Telmisartin40mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-Telmisartin40mg">
+							  <small id="b-Telmisartin40mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+				
+				<div class="form-group mt-4">
+					  <label for="a-Losartan50mg">Losartan 50 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-Losartan50mg">
+							<small id="a-Losartan50mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-Losartan50mg">
+							  <small id="b-Losartan50mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+				
+				<div class="form-group mt-4">
+					  <label for="a-Hydrochlorathiazide125mg">Hydrochlorathiazide 12.5 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-Hydrochlorathiazide125mg">
+							<small id="a-Hydrochlorathiazide125mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-Hydrochlorathiazide125mg">
+							  <small id="b-Hydrochlorathiazide125mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+				
+				<div class="form-group mt-4">
+					  <label for="a-Hydrochlorathiazide25mg">Hydrochlorathiazide 25 mg</label>
+					  <div class="form-row">
+						  <div class="col">
+							<input type="number" class="form-control" id="a-Hydrochlorathiazide25mg">
+							<small id="a-Hydrochlorathiazide25mg" class="form-text text-muted">Received during the month</small>
+						  </div>
+						  <div class="col">
+							  <input type="number" class="form-control" id="b-Hydrochlorathiazide25mg">
+							  <small id="b-Hydrochlorathiazide25mg" class="form-text text-muted">Stock at end of the month</small>
+							</div>
+					  </div>
+						
+				</div>
+	
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-primary btn-block" data-dismiss="modal" aria-label="Close">Save report</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	<div>
+		
+		<div class="btn-filters">
+			<div class="btn-filters-group">
+				<div class="btn-group">
+				  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  Consumption
+				  </button>
+				  <div class="dropdown-menu">
+					  <a type="submit" name="period" value="Oct-2020" class="dropdown-item" form="query-filters" href="/my_facilities/medication_inventory">Stock on hand</a>
+					  <a type="submit" name="period" value="Sep-2020" class="dropdown-item" form="query-filters" href="/my_facilities/medication_inventory_consumption">Consumption</a>
+				  </div>
+				</div>
+				
+				<div class="btn-group">
+				  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Oct-2020
+				  </button>
+				  <div class="dropdown-menu">
+					  <button type="submit" name="period" value="Oct-2020" class="dropdown-item" form="query-filters">Oct-2020</button>
+					  <button type="submit" name="period" value="Sep-2020" class="dropdown-item" form="query-filters">Sep-2020</button>
+					  <button type="submit" name="period" value="Aug-2020" class="dropdown-item" form="query-filters">Aug-2020</button>
+					  <button type="submit" name="period" value="Jul-2020" class="dropdown-item" form="query-filters">Jul-2020</button>
+					  <button type="submit" name="period" value="Jun-2020" class="dropdown-item" form="query-filters">Jun-2020</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">May-2020</button>
+				  </div>
+				</div>
+			</div>
+			<div class="btn-filters-group">
+			
+				<div class="btn-group">
+				  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					All blocks
+				  </button>
+				  <div class="dropdown-menu">
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">All blocks</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Ash County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Aspen County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Buckthorn County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Cherry County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Dogwood County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Elder County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Elmdale County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Fir County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Mountain Ash County</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Poplar County</button>
+				  </div>
+				</div>
+				
+				<div class="btn-group">
+				  <button class="btn btn-secondary btn-sm btn-outline dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					All sizes
+				  </button>
+				  <div class="dropdown-menu">
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">All facility sizes</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Large</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Medium</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Small</button>
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Community</button>
+				  </div>
+				</div>
+			
+				<div class="btn-group ml-3">
+				  <button class="btn btn-sm btn-link dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Download
+				  </button>
+				  <div class="dropdown-menu">
+					  <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Download XLS for Oct-2020</button>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<h3 style="text-transform: none; letter-spacing: 0; font-size: 16px;" class="mt-5">Consumption during Oct-2020</h3></th>
+	<p>Consumption is calculated by: <span class="badge badge-light text-muted">OPENING BALANCE OF THIS MONTH<sup>1</sup></span> <small><i class="fas fa-plus"></i></small> <span class="badge badge-light text-muted">STOCK RECEIVED THIS MONTH</span> <small><i class="fas fa-minus"></i></small> <span class="badge badge-light text-muted">CLOSING BALANCE OF THIS MONTH</span></p>
+		
+	<table class="mt-3 table table-compact table-responsive-md table-hover analytics-table">
+		<colgroup>
+		  <col>
+		  <col>
+		  <col class="table-divider">
+		  <col>
+		  <col class="table-divider">
+		  <col>
+		  <col>
+		  <col class="table-divider">
+		  <col>
+		  <col class="table-divider">
+		  <col>
+		  <col>
+		  <col class="mobile">
+		</colgroup>
+		<thead>
+		<tr>
+		  <th colspan="2"></th>
+		  <th colspan="2">CCB tablets</th>
+		  <th colspan="3">ARB tablets</th>
+		  <th colspan="2">Diuretic tablets</th>
+		  <th colspan="3">Overall in base doses</th>
+		</tr>
+		<tr data-sort-method="thead" class="sorts">
+			<th class="row-label sort-label" colspan="2" data-sort-default>Facilities</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Amlodipine<br>5 mg</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Amlodipine<br>10 mg</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>20 mg</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>40 mg</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Losartan<br>50 mg</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Hydrochlorothiazide<br>12.5 mg</th>
+			<th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Hydrochlorothiazide<br>25 mg</th>
+			<th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB1">CCB</th>
+			<th class="row-label sort-label" data-sort-method="number" data-sort-column-key="CCB1">ARB</th>
+			<th class="row-label sort-label" data-sort-method="number" data-sort-column-key="Diuretic1">Diuretic</th>
+			<th class="mobile"></th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr class="row-total" data-sort-method="none">
+			<td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="All facilities:<br><strong>23,489 patients</strong>">All</td>
+			<td class="type-number" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>2,123,000</span>Opening balance<br><span class='math'>+967,000</span>Stock received<br><span class='math'>-2,089,694</span>Closing balance<br><span class='math'>=1,000,306</span>Tablets consumed">1,000,306</td>
+			<td class="type-number" data-html="true">728,000</td>
+			<td class="type-number" data-html="true">432,800</td>
+			<td class="type-number" data-html="true">145,700</td>
+			<td class="type-number" data-html="true">14,000</td>
+			<td class="type-number" data-html="true">98,000</td>
+			<td class="type-number" data-html="true">500</td>
+			<td class="type-number" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>1,000,306</span>Amlodipine 5 mg<br><span class='math'>+728,000*2</span>Amlodipine 10 mg<br><span class='math'>=2,456,306</span>Base doses">2,456,306</td>
+			<td class="type-number" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>432,800</span>Telmisartin 20 mg<br><span class='math'>+145,700*2</span>Telmisartin 40mg<br><span class='math'>+14,000</span>Losartin 50 mg<br><span class='math'>=736,800</span>Base doses">736,800</td>
+			<td class="type-number" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>98,000</span>Hctz 12.5 mg<br><span class='math'>+500</span>Hctz 25mg<br><span class='math'>=98,500</span>Base doses">98,500</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Blueberries: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Blueberries</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">45,500</td>
+			<td class="type-number">5,000</td>
+			<td class="type-number">450</td>
+			<td class="type-number">22,000</td>
+			<td class="type-number">15,000</td>
+			<td class="type-number">12,000</td>
+			<td class="type-number">3,000</td>
+			<td class="type-number">96,400</td>
+			<td class="type-number">45,000</td>
+			<td class="type-number">19,000</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Melon: 338 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Melon</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">400</td>
+			<td class="type-number">100</td>
+			<td class="type-number">90</td>
+			<td class="type-number">1,200</td>
+			<td class="type-blank"><span>&#8212;</span></td>
+			<td class="type-number">1,800</td>
+			<td class="type-number">870</td>
+			<td class="type-number">90,000</td>
+			<td class="type-number">23,000</td>
+			<td class="type-number">25,000</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="DH Fruitvale: 2,175 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">DH Fruitvale</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">9,000</td>
+			<td class="type-number">2,600</td>
+			<td class="type-number">1,000</td>
+			<td class="type-number">6,000</td>
+			<td class="type-number">4,000</td>
+			<td class="type-number">9,000</td>
+			<td class="type-number">13,000</td>
+			<td class="type-number">23,000</td>
+			<td class="type-number" data-html="true" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="<span class='math'>1,000</span>Telmisartin 20 mg<br><span class='math'>+6,000*2</span>Telmisartin 40mg<br><span class='math'>+4,000</span>Losartin 50 mg<br><span class='math'>=17,000</span>Base doses">17,000</td>
+			<td class="type-number">12,000</td>
+		</tr>	
+		<tr class="row-blank">
+			<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Turkey Fig: 198 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Turkey Fig</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+		</tr>
+		<tr class="row-blank">
+			<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Apple: 567 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Apple</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Pomegranate: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Pomegranate</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">56,000</td>
+			<td class="type-number">97,000</td>
+			<td class="type-number">23,000</td>
+			<td class="type-number">14,000</td>
+			<td class="type-number">19,000</td>
+			<td class="type-number">22,000</td>
+			<td class="type-number">1,400</td>
+			<td class="type-number">345,200</td>
+			<td class="type-number">210,000</td>
+			<td class="type-number">34,000</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Mandarin Orange: 78 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Mandarin Orange</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">40,000</td>
+			<td class="type-number">50,000</td>
+			<td class="type-number">23,000</td>
+			<td class="type-number">18,000</td>
+			<td class="type-number">20,000</td>
+			<td class="type-number">19,000</td>
+			<td class="type-number">14,000</td>
+			<td class="type-number">120,000</td>
+			<td class="type-number">24,000</td>
+			<td class="type-number">196,000</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="SDH Coconut: 2,175 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">SDH Coconut</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">23,000</td>
+			<td class="type-number">10,000</td>
+			<td class="type-number">108,000</td>
+			<td class="type-number">132,000</td>
+			<td class="type-number">14,000</td>
+			<td class="type-number">16,800</td>
+			<td class="type-number">12,000</td>
+			<td class="type-number">90,000</td>
+			<td class="type-number">102,000</td>
+			<td class="type-number">89,000</td>
+		</tr>	
+		<tr class="row-blank">
+			<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Mango: 198 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Mango</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+		</tr>
+		<tr class="row-blank">
+			<td class="type-title type-blank" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Peach: 567 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Peach</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-blank"><span>?</span></td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="HWC Surinam Cherry: 201 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">HWC Surinam Cherry</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">16,000</td>
+			<td class="type-number">21,000</td>
+			<td class="type-number">90,000</td>
+			<td class="type-number">14,000</td>
+			<td class="type-number">12,000</td>
+			<td class="type-number">87,000</td>
+			<td class="type-number">32,000</td>
+			<td class="type-number">187,000</td>
+			<td class="type-number">202,000</td>
+			<td class="type-number">120,000</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="PHC Jackfruit: 10 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">PHC Jackfruit</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">6,000</td>
+			<td class="type-number">4,500</td>
+			<td class="type-number">2,200</td>
+			<td class="type-blank"><span>&#8212;</span></td>
+			<td class="type-blank"><span>&#8212;</span></td>
+			<td class="type-blank"><span>&#8212;</span></td>
+			<td class="type-blank"><span>?</span></td>
+			<td class="type-number">12,000</td>
+			<td class="type-number">11,300</td>
+			<td class="type-number">15,800</td>
+		</tr>
+		<tr>
+			<td class="type-title" data-toggle="tooltip" data-placement="top"  data-trigger="hover focus click" title="" data-original-title="CHC Nectarine: 203 patients"><a href="/analytics/facilities/hwc_carambolim_buzruco">CHC Necatarine</a></td>
+			<td class="text-center"><a href="#" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus"></i></a></td>
+			<td class="type-number">11,700</td>
+			<td class="type-number">61,000</td>
+			<td class="type-number">78,900</td>
+			<td class="type-number">42,100</td>
+			<td class="type-blank"><span>&#8212;</span></td>
+			<td class="type-blank"><span>&#8212;</span></td>
+			<td class="type-number">19,000</td>
+			<td class="type-number">12,600</td>
+			<td class="type-number">21,900</td>
+			<td class="type-number">12,000</td>
+		</tr>
+		</tbody>
+		</table>
+</div>
