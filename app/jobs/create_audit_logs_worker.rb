@@ -1,7 +1,7 @@
 class CreateAuditLogsWorker
   include Sidekiq::Worker
 
-  sidekiq_options queue: :audit_log_queue
+  sidekiq_options queue: :low
 
   def perform(log_json)
     log_hash = JSON.parse(log_json)
