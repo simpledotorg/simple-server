@@ -514,14 +514,17 @@ em.bg-green {
 em.bg-red {
   background: $red !important;
   color: #fff !important;
+  border-color: $red !important;
 }
 
 em.bg-yellow {
   background: $yellow-light !important;
-  color: $yellow-dark !important;
+  color: $yellow-darkest !important;
+  border-color: $yellow-light !important;
 }
 
 em.bg-orange {
   background: $orange-light !important;
   color: $orange-dark !important;
+  border-color: $orange-light !important;
 }
