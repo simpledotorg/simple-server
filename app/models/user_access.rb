@@ -77,6 +77,7 @@ class UserAccess
 
   def accessible_block_regions(action)
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
+    facility_group_ids.uniq!
     paths = Region.district_regions.where(source_id: facility_group_ids, source_type: "FacilityGroup").pluck(:path)
     globs = paths.map { |path| " '#{path}.*' " }.join(",")
     Region.block_regions.where("path ? ARRAY[#{globs}]::lquery[]")
