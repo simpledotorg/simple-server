@@ -1,7 +1,4 @@
 class PatientListDownloadJob < ApplicationJob
-  queue_as :default
-  self.queue_adapter = :sidekiq
-
   def perform(recipient_email, model_type, params, with_medication_history: false)
     case model_type
     when "facility"

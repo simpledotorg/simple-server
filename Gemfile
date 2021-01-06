@@ -61,6 +61,7 @@ gem "roo", "~> 2.8.0"
 gem "rspec-rails", "~> 3.7"
 gem "rswag", "~> 1.6.0"
 gem "ruby-progressbar", require: false
+gem "rubyzip"
 gem "sassc-rails"
 gem "scenic"
 gem "sentry-raven"

@@ -1,5 +1,4 @@
 require "rails_helper"
-require "sidekiq/testing"
 
 RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
   let!(:ihci) { create(:organization, name: "IHCI") }
@@ -25,7 +24,6 @@ RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
     expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: overdue_appointments_from_ihci)
     expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: overdue_appointments_from_path)
 
-    described_class.perform_async
-    described_class.drain
+    described_class.perform_now
   end
 end

@@ -1,7 +1,4 @@
 class ImportFacilitiesJob < ApplicationJob
-  queue_as :default
-  self.queue_adapter = :sidekiq
-
   def perform(facilities)
     import_facilities = []
 
