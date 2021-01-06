@@ -131,7 +131,7 @@ module Seed
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
-            state: state,
+            state: state.name,
             zone: blocks.sample
           }
           facility_attrs << FactoryBot.build(:facility, :seed, attrs)
