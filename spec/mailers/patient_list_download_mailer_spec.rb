@@ -20,7 +20,7 @@ RSpec.describe PatientListDownloadMailer, type: :mailer do
     it "sends a zip archive in the attachment" do
       attachment = mail.attachments.first
       expect(attachment.content_type).to eq "application/zip"
-      expect(attachment.filename).to eq "patient-list_facility_group_Bhandara_#{I18n.l(Date.current)}.csv.zip"
+      expect(attachment.filename).to eq "patient-list_facility_group_Bhandara_#{I18n.l(Date.current)}.zip"
     end
 
     it "compresses the csv in a valid zip archive as attachment" do
