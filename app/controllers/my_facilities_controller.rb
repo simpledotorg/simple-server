@@ -10,6 +10,7 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
+  before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
@@ -53,6 +54,22 @@ class MyFacilitiesController < AdminController
     @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
     @overall_patients_per_facility = bp_query.overall_patients_per_facility
     @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
+  end
+
+  def bp_not_controlled
+    unless current_admin.feature_enabled?(:my_facilities_improvements)
+      redirect_to my_facilities_overview_path(request.query_parameters)
+      return
+    end
+
+    @facilities = filter_facilities([:manage, :facility])
+    @data_for_facility = {}
+
+    @facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+    end
+
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   def registrations
@@ -110,5 +127,22 @@ class MyFacilitiesController < AdminController
 
   def authorize_my_facilities
     authorize { current_admin.accessible_facilities(:view_reports).any? }
+  end
+
+  def set_period
+    @period = Period.month(Date.current.last_month.beginning_of_month)
+    @start_period = @period.advance(months: -5)
+  end
+
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def report_params
+    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
+  end
+
+  def force_cache?
+    report_params[:force_cache].present?
   end
 end

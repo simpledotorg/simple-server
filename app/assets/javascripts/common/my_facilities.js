@@ -1,0 +1,73 @@
+window.addEventListener("DOMContentLoaded", function() {
+  let facilityRateData = {};
+  const greenColor = "#007a31";
+  const redColor = "#b81631";
+  const $facilityRows = document.querySelectorAll('[data-row]');
+
+  Array.from($facilityRows).forEach($facilityRow => {
+    let rateValues = [];
+    const facilitySlug = $facilityRow.getAttribute("data-row");
+    const trendLineColor = $facilityRow.getAttribute("data-trend-color");
+    const $rates = $facilityRow.querySelectorAll('[data-rate]');
+
+    Array.from($rates).forEach($rate => {
+      rateValues.push($rate.getAttribute("data-rate"));
+    });
+
+    facilityRateData[facilitySlug] = {};
+    facilityRateData[facilitySlug].color = trendLineColor;
+    facilityRateData[facilitySlug].data = rateValues;
+  });
+
+  Object.keys(facilityRateData).forEach(facility => {
+    const trendChartConfig = createBaseTrendChartConfig();
+    trendChartConfig.data = {
+      labels: facilityRateData[facility].data,
+      datasets: [{
+        label: "BP controlled rate",
+        fill: false,
+        borderColor: facilityRateData[facility].color === "green" ? greenColor : redColor,
+        data: facilityRateData[facility].data,
+      }],
+    };
+
+    const trendChartCanvas = document.getElementById(facility);
+    if (trendChartCanvas) {
+      new Chart(trendChartCanvas.getContext("2d"), trendChartConfig);
+    }
+  });
+});
+
+function createBaseTrendChartConfig() {
+  return {
+    type: "line",
+    options: {
+      animation: false,
+      elements: {
+        line: {
+          borderJoinStyle: "round",
+        },
+        point: {
+          radius: 0,
+        },
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 2,
+          right: 2,
+          bottom: 2,
+          left: 2,
+        }
+      },
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{ display: false }],
+        yAxes: [{ display: false }],
+      },
+    },
+  };
+};
