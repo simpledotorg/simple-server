@@ -9,12 +9,12 @@ class MyFacilitiesController < AdminController
   DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
+  around_action :set_time_zone
   before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
   before_action :set_last_updated_at
-  around_action :set_time_zone
 
   def index
     @facilities = current_admin.accessible_facilities(:view_reports)
