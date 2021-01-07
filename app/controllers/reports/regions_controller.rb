@@ -113,6 +113,16 @@ class Reports::RegionsController < AdminController
 
   private
 
+  def accessible_region?(region)
+    send "accessible_#{region.region_type}?", region
+  end
+
+  # An admin can view a state if they have view_reports access to any of the state's districts
+  def accessible_state?(region)
+    return true if current_admin.power_user?
+    region.district_regions.any? { |district| accessible_district?(district) }
+  end
+
   def accessible_district?(district)
     return true if current_admin.power_user?
     @accessible_district_ids ||= current_admin.accessible_district_regions(:view_reports).pluck(:id)
@@ -125,6 +135,8 @@ class Reports::RegionsController < AdminController
     @accessible_block_ids.include?(block.id)
   end
 
+  helper_method :accessible_region?
+  helper_method :accessible_state?
   helper_method :accessible_district?
   helper_method :accessible_block?
 

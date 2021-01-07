@@ -13,7 +13,7 @@
       <% end %>
 
       <div class="form-check show">
-        <%= link_to_if(true, parent.name, reports_region_path(parent, report_scope: parent.region_type)) %>
+        <%= link_to_if(accessible_region?(parent), parent.name, reports_region_path(parent, report_scope: parent.region_type)) %>
       </div>
 
       <div class="access-item__padding"></div>
