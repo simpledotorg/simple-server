@@ -207,7 +207,7 @@ describe MaterializedPatientSummary, type: :model do
 
     describe "BP passport" do
       it "includes latest BP passport number" do
-        expect(patient_summary.latest_bp_passport).to eq(patient.latest_bp_passport.identifier)
+        expect(patient_summary.latest_bp_passport_identifier).to eq(patient.latest_bp_passport.identifier)
       end
     end
   end
