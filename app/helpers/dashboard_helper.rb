@@ -11,7 +11,7 @@ module DashboardHelper
 
   def number_to_percentage_with_symbol(value, options = {})
     symbol = value > 0 ? "+" : ""
-    return symbol + number_to_percentage(value, options)
+    symbol + number_to_percentage(value, options)
   end
 
   def dash_if_zero(value)
