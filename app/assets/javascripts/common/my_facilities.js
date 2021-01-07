@@ -26,7 +26,6 @@ window.addEventListener("DOMContentLoaded", function() {
     trendChartConfig.data = {
       labels: facilityRateData[facility].data,
       datasets: [{
-        label: "BP controlled rate",
         fill: false,
         borderColor: getHexCodeFromColorName(facilityRateData[facility].color),
         data: facilityRateData[facility].data,
