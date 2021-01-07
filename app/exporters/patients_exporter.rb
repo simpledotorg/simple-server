@@ -1,6 +1,5 @@
-require "csv"
-
 class PatientsExporter
+  require "csv"
   include QuarterHelper
 
   BATCH_SIZE = 20
@@ -156,6 +155,8 @@ class PatientsExporter
     csv_fields.insert(zone_column_index, patient_summary.patient.address.zone) if zone_column_index
     csv_fields
   end
+
+  private
 
   def medications_for(patient)
     patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }

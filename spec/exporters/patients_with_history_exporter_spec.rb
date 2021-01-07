@@ -274,17 +274,12 @@ RSpec.describe PatientsWithHistoryExporter do
       end
     end
 
-    it "uses fetches patients in batches" do
-      expect_any_instance_of(facility.registered_patients.class).to receive(:in_batches).and_return([patient_batch])
-
-      subject.csv(facility.registered_patients)
-    end
 
     it "does not include the zone column if the country config is set to false" do
       allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
-      expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
+      expect(subject.csv_fields(PatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
     end
   end
 end

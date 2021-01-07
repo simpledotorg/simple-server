@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe PatientsExporter do
   include QuarterHelper
 
+  let(:now) { Time.current }
   let!(:facility) { create(:facility) }
   let!(:registration_facility) { create(:facility) }
   let!(:patient) {
@@ -18,7 +19,6 @@ RSpec.describe PatientsExporter do
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_3) { create(:prescription_drug, :deleted, patient: patient) }
-  let(:now) { Time.current }
 
   let!(:old_blood_pressure) { create(:blood_pressure, recorded_at: 1.year.ago, patient: patient) }
   let!(:old_appointment) {

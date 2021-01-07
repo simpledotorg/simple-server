@@ -1,11 +1,10 @@
-require "csv"
-
 class PatientsWithHistoryExporter < PatientsExporter
   DISPLAY_BLOOD_PRESSURES = 3
   DISPLAY_MEDICATION_COLUMNS = 5
 
   def csv_headers
-    ["Registration Date",
+    [
+      "Registration Date",
       "Registration Quarter",
       "Patient died?",
       "Simple Patient ID",
@@ -32,7 +31,8 @@ class PatientsWithHistoryExporter < PatientsExporter
       "Risk Level",
       "Days Overdue For Next Follow-up",
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
-        ["BP #{i} Date",
+        [
+          "BP #{i} Date",
           "BP #{i} Quarter",
           "BP #{i} Systolic",
           "BP #{i} Diastolic",
@@ -54,53 +54,55 @@ class PatientsWithHistoryExporter < PatientsExporter
           "BP #{i} Dosage 4",
           "BP #{i} Medication 5",
           "BP #{i} Dosage 5",
-          "BP #{i} Other Medications"]
+          "BP #{i} Other Medications"
+        ]
       end,
       "Latest Blood Sugar Date",
       "Latest Blood Sugar Value",
-      "Latest Blood Sugar Type"].flatten.compact
+      "Latest Blood Sugar Type"
+    ].flatten.compact
   end
 
-  def csv_fields(patient)
-    registration_facility = patient.registration_facility
-    assigned_facility = patient.assigned_facility
-    latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
-    latest_blood_sugar = patient.latest_blood_sugar
-    latest_appointment = patient.latest_scheduled_appointment
-    latest_bp_passport = patient.latest_bp_passport
-    fetch_medication_history(patient, latest_bps.map(&:recorded_at))
+  def csv_fields(patient_summary)
+    latest_bps = patient_summary.patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
+    latest_bp_passport = patient_summary.patient.latest_bp_passports.order(device_created_at: :desc).first
+    fetch_medication_history(patient_summary.patient, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
-      patient.recorded_at.presence && I18n.l(patient.recorded_at.to_date),
-      patient.recorded_at.presence && quarter_string(patient.recorded_at.to_date),
-      ("Died" if patient.status == "dead"),
-      patient.id,
+      patient_summary.recorded_at.presence &&
+        I18n.l(patient_summary.recorded_at.to_date),
+
+      patient_summary.recorded_at.presence &&
+        quarter_string(patient_summary.recorded_at.to_date),
+
+      ("Died" if patient_summary.status == "dead"),
+      patient_summary.id,
       latest_bp_passport&.shortcode,
-      patient.full_name,
-      patient.current_age,
-      patient.gender.capitalize,
-      patient.phone_numbers.last&.number,
-      patient.address.street_address,
-      patient.address.village_or_colony,
-      patient.address.district,
-      patient.address.state,
-      assigned_facility&.name,
-      assigned_facility&.facility_type,
-      assigned_facility&.district,
-      assigned_facility&.state,
-      registration_facility&.name,
-      registration_facility&.facility_type,
-      registration_facility&.district,
-      registration_facility&.state,
-      patient.medical_history&.hypertension,
-      patient.medical_history&.diabetes,
-      ("High" if patient.high_risk?),
-      latest_appointment&.days_overdue,
+      patient_summary.full_name,
+      patient_summary.current_age.to_i,
+      patient_summary.gender.capitalize,
+      patient_summary.latest_phone_number,
+      patient_summary.street_address,
+      patient_summary.village_or_colony,
+      patient_summary.district,
+      patient_summary.state,
+      patient_summary.patient.assigned_facility.name,
+      patient_summary.patient.assigned_facility.facility_type,
+      patient_summary.patient.assigned_facility.district,
+      patient_summary.patient.assigned_facility.state,
+      patient_summary.registration_facility_name,
+      patient_summary.registration_facility_type,
+      patient_summary.registration_district,
+      patient_summary.registration_state,
+      patient_summary.patient.medical_history&.hypertension,
+      patient_summary.patient.medical_history&.diabetes,
+      ("High" if patient_summary.patient.high_risk?),
+      patient_summary.days_overdue.to_i,
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
         bp = latest_bps[i - 1]
         previous_bp = latest_bps[i]
-        appointment = appointment_created_on(patient, bp&.recorded_at)
+        appointment = appointment_created_on(patient_summary.patient, bp&.recorded_at)
 
         [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
           bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
@@ -116,20 +118,20 @@ class PatientsWithHistoryExporter < PatientsExporter
           medication_updated?(bp&.recorded_at, previous_bp&.recorded_at),
           *formatted_medications(bp&.recorded_at)]
       end,
-      latest_blood_sugar&.recorded_at.presence && I18n.l(latest_blood_sugar&.recorded_at&.to_date),
-      latest_blood_sugar&.to_s,
-      blood_sugar_type(latest_blood_sugar)
+      patient_summary.latest_blood_pressure_recorded_at.presence &&
+        I18n.l(patient_summary.latest_blood_pressure_recorded_at.to_date),
+
+      "#{patient_summary.latest_blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[patient_summary.latest_blood_sugar_type]}",
+
+      patient_summary.latest_blood_sugar_type.presence &&
+        BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type],
     ].flatten
 
-    csv_fields.insert(zone_column_index, patient.address.zone) if zone_column_index
+    csv_fields.insert(zone_column_index, patient_summary.patient.address.zone) if zone_column_index
     csv_fields
   end
 
   private
-
-  def zone_column
-    "Patient #{Address.human_attribute_name :zone}"
-  end
 
   def appointment_created_on(patient, date)
     patient.appointments
@@ -151,7 +153,6 @@ class PatientsWithHistoryExporter < PatientsExporter
   def medication_updated?(date, previous_date)
     current_medications = medications(date)
     previous_medications = medications(previous_date)
-
     current_medications == previous_medications ? "No" : "Yes"
   end
 
@@ -165,11 +166,5 @@ class PatientsWithHistoryExporter < PatientsExporter
     (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
       [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
     } << other_medications
-  end
-
-  def blood_sugar_type(blood_sugar)
-    return unless blood_sugar.present?
-
-    BLOOD_SUGAR_TYPES[blood_sugar.blood_sugar_type]
   end
 end
