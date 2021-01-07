@@ -4,6 +4,16 @@ module DashboardHelper
     number_with_delimiter(value, options)
   end
 
+  def number_or_zero_with_delimiter(value, options = {})
+    return 0 unless value
+    number_with_delimiter(value, options)
+  end
+
+  def number_to_percentage_with_symbol(value, options = {})
+    symbol = value > 0 ? "+" : ""
+    return symbol + number_to_percentage(value, options)
+  end
+
   def dash_if_zero(value)
     zero?(value) ? "-" : value
   end
