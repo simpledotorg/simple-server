@@ -15,7 +15,7 @@ class PatientsExporter
   end
 
   def csv(patients)
-    summary = PatientSummary.where(patient: patients)
+    summary = MaterializedPatientSummary.where(patient: patients)
 
     CSV.generate(headers: true) do |csv|
       csv << timestamp

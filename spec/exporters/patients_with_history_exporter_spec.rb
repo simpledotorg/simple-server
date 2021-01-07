@@ -255,8 +255,8 @@ RSpec.describe PatientsWithHistoryExporter do
 
   before do
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
-
     patient.medical_history.update!(hypertension: "no", diabetes: "yes")
+    MaterializedPatientSummary.refresh
   end
 
   describe "#csv" do
@@ -273,7 +273,6 @@ RSpec.describe PatientsWithHistoryExporter do
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
       end
     end
-
 
     it "does not include the zone column if the country config is set to false" do
       allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
