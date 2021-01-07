@@ -6,6 +6,8 @@ class MaterializedPatientSummary < ActiveRecord::Base
   belongs_to :patient, foreign_key: :id
   belongs_to :next_appointment, class_name: "Appointment", foreign_key: :next_appointment_id
   belongs_to :latest_bp_passport, class_name: "PatientBusinessIdentifier", foreign_key: :latest_bp_passport_id
+  has_many :appointments, through: :patient
+  has_many :prescription_drugs, through: :patient
 
   scope :overdue, -> { joins(:next_appointment).merge(Appointment.overdue) }
   scope :all_overdue, -> { joins(:next_appointment).merge(Appointment.all_overdue) }

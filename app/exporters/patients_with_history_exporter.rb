@@ -64,9 +64,11 @@ class PatientsWithHistoryExporter < PatientsExporter
   end
 
   def csv_fields(patient_summary)
-    latest_bps = patient_summary.patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
-    fetch_medication_history(patient_summary.patient, latest_bps.map(&:recorded_at))
+    patient = patient_summary.patient
+    latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
+    @medications = fetch_medication_history(patient, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
+    patient_appointments = patient.appointments.order(device_created_at: :desc).load
 
     csv_fields = [
       patient_summary.recorded_at.presence &&
@@ -77,7 +79,7 @@ class PatientsWithHistoryExporter < PatientsExporter
 
       ("Died" if patient_summary.status == "dead"),
       patient_summary.id,
-      patient_summary.latest_bp_passport.shortcode,
+      patient_summary.latest_bp_passport&.shortcode,
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
@@ -96,12 +98,12 @@ class PatientsWithHistoryExporter < PatientsExporter
       patient_summary.registration_state,
       patient_summary.hypertension,
       patient_summary.diabetes,
-      ("High" if patient_summary.patient.high_risk?),
+      ("High" if patient_summary.risk_level > 0),
       patient_summary.days_overdue.to_i,
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
         bp = latest_bps[i - 1]
         previous_bp = latest_bps[i]
-        appointment = appointment_created_on(patient_summary.patient, bp&.recorded_at)
+        appointment = appointment_created_on(patient_appointments, bp&.recorded_at)
 
         [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
           bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
@@ -132,21 +134,18 @@ class PatientsWithHistoryExporter < PatientsExporter
 
   private
 
-  def appointment_created_on(patient, date)
-    patient.appointments
-      .where(device_created_at: date&.all_day)
-      .order(device_created_at: :asc)
-      .first
-  end
-
-  def fetch_medication_history(patient, dates)
-    @medications = dates.each_with_object({}) { |date, cache|
-      cache[date] = date ? patient.prescribed_drugs(date: date) : PrescriptionDrug.none
-    }
+  def appointment_created_on(appointments, date)
+    date && appointments.find { |a| date.all_day.cover?(a.device_created_at) }
   end
 
   def medications(date)
     date ? @medications[date] : PrescriptionDrug.none
+  end
+
+  def fetch_medication_history(patient, dates)
+    dates.each_with_object({}) { |date, cache|
+      cache[date] = date ? patient.prescribed_drugs(date: date).order(is_protocol_drug: :desc, name: :asc).load : PrescriptionDrug.none
+    }
   end
 
   def medication_updated?(date, previous_date)
@@ -157,13 +156,12 @@ class PatientsWithHistoryExporter < PatientsExporter
 
   def formatted_medications(date)
     medications = medications(date)
-    sorted_medications = medications.order(is_protocol_drug: :desc, name: :asc)
-    other_medications = sorted_medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+    other_medications = medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                             &.map { |medication| "#{medication.name}-#{medication.dosage}" }
                             &.join(", ")
 
     (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
-      [sorted_medications[i]&.name, sorted_medications[i]&.dosage]
+      [medications[i]&.name, medications[i]&.dosage]
     } << other_medications
   end
 end

@@ -2,7 +2,7 @@ class PatientsExporter
   require "csv"
   include QuarterHelper
 
-  BATCH_SIZE = 20
+  BATCH_SIZE = 500
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
@@ -91,6 +91,7 @@ class PatientsExporter
   end
 
   def csv_fields(patient_summary)
+    patient = patient_summary.patient
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
@@ -121,7 +122,7 @@ class PatientsExporter
       patient_summary.diabetes,
 
       patient_summary.recorded_at.presence &&
-        I18n.l(patient_summary.latest_blood_pressure_recorded_at),
+        I18n.l(patient_summary.recorded_at),
 
       patient_summary.latest_blood_pressure_systolic,
       patient_summary.latest_blood_pressure_diastolic,
@@ -145,10 +146,10 @@ class PatientsExporter
       patient_summary.next_appointment_facility_name,
       patient_summary.next_appointment_scheduled_date&.to_s(:rfc822),
       patient_summary.days_overdue.to_i,
-      ("High" if patient_summary.patient.high_risk?),
-      patient_summary.latest_bp_passport.shortcode,
+      ("High" if patient_summary.risk_level > 0),
+      patient_summary.latest_bp_passport&.shortcode,
       patient_summary.id,
-      *medications_for(patient_summary.patient)
+      *medications_for(patient)
     ]
 
     csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
