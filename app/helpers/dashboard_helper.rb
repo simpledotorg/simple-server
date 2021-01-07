@@ -60,4 +60,8 @@ module DashboardHelper
 
     "#{percentage.round(0)}%"
   end
+
+  def six_month_rate_change(facility, rate_name)
+    @data_for_facility[facility.name][rate_name][@period] - @data_for_facility[facility.name][rate_name][@start_period]
+  end
 end

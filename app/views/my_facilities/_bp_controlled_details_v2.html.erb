@@ -63,7 +63,7 @@
           </thead>
           <tbody>
             <% @facilities_by_size[size].each do |facility| %>
-              <% six_month_rate_change = @data_for_facility[facility.name]["controlled_patients_rate"][@period] - @data_for_facility[facility.name]["controlled_patients_rate"][@start_period] || 0 %>
+              <% six_month_rate_change = six_month_rate_change(facility, "controlled_patients_rate") %>
               <tr data-row="<%= facility.slug %>" data-trend-color="<% if six_month_rate_change > 0 %>green<% elsif six_month_rate_change < 0 %>red<% else %>gray<% end %>">
                 <td class="type-title">
                   <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
