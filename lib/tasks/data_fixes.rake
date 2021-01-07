@@ -24,7 +24,7 @@ namespace :data_fixes do
     patients_ids = Appointment
       .where(status: "scheduled")
       .group(:patient_id).count
-      .select { |k, v| v > 1 }
+      .select { |_k, v| v > 1 }
       .keys
 
     Patient.with_discarded.where("id in (?)", patients_ids).each do |patient|
