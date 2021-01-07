@@ -1,18 +1,14 @@
 <div id="facility-access" data-page="show">
+  <% regions.each do |org, children| %>
+    <div class="card access-tree show">
+      <div class="access-tree__section-header">
+        <%= org.name %>
+      </div>
 
-  <% regions.each do |parent, children| %>
-
-  <div class="card access-tree show">
-    <div class="access-tree__section-header">
-      <%= parent.name %>
+      <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
     </div>
-
-    <%= render "children", children: children %>
-
   <% end %>
-  </div>
 </div>
-
 
 <script>
   const async = false

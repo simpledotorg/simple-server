@@ -23,7 +23,7 @@
       <div class="access-item__padding"></div>
     </div>
 
-    <%= render "children", children: children if children && children.any? %>
+    <%= render Reports::RegionTreeComponent.new(children: children) if children&.any? %>
   </li>
   <% end %>
 </ul>

@@ -1,16 +1,12 @@
 <ul class="access-item-wrapper">
-  <% @children.each do |parent, children| %>
-  <%# use minus 2 for 'state offset' %>
-  <% depth = Region::REGION_TYPES.index(parent.region_type) - 2 %>
-  <%# add more space if there arent any children, because we wont show the arrow icon  %>
-  <% depth = depth + 1 if children.nil? || children.none? %>
+  <% children.each do |parent, children| %>
   <li>
     <div class="access-item collapsed <%= parent.region_type %>">
-      <% depth.times do %>
+      <% depth(parent).times do %>
         <span class="spacer"></span>
       <% end %>
 
-      <% if children && children.any? %>
+      <% if parent.child_region_type %>
       <div class="access-item__dropdown">
         <i class="fas fa-caret-down light"></i>
       </div>
@@ -23,7 +19,7 @@
       <div class="access-item__padding"></div>
     </div>
 
-    <%= render "children", children: children if children && children.any? %>
+    <%= render Reports::RegionTreeComponent.new(parent: parent, children: children) %>
   </li>
   <% end %>
 </ul>
