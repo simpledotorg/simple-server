@@ -278,7 +278,7 @@ RSpec.describe PatientsWithHistoryExporter do
       allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
-      expect(subject.csv_fields(PatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
+      expect(subject.csv_fields(MaterializedPatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
     end
   end
 end

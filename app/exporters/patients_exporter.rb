@@ -91,7 +91,6 @@ class PatientsExporter
   end
 
   def csv_fields(patient_summary)
-    latest_bp_passport = patient_summary.patient.latest_bp_passports.order(device_created_at: :desc).first
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
@@ -110,16 +109,16 @@ class PatientsExporter
       patient_summary.village_or_colony,
       patient_summary.district,
       patient_summary.state,
-      patient_summary.patient.assigned_facility.name,
-      patient_summary.patient.assigned_facility.facility_type,
-      patient_summary.patient.assigned_facility.district,
-      patient_summary.patient.assigned_facility.state,
+      patient_summary.assigned_facility_name,
+      patient_summary.assigned_facility_type,
+      patient_summary.assigned_facility_district,
+      patient_summary.assigned_facility_state,
       patient_summary.registration_facility_name,
       patient_summary.registration_facility_type,
       patient_summary.registration_district,
       patient_summary.registration_state,
-      patient_summary.patient.medical_history&.hypertension,
-      patient_summary.patient.medical_history&.diabetes,
+      patient_summary.hypertension,
+      patient_summary.diabetes,
 
       patient_summary.recorded_at.presence &&
         I18n.l(patient_summary.latest_blood_pressure_recorded_at),
@@ -147,12 +146,12 @@ class PatientsExporter
       patient_summary.next_appointment_scheduled_date&.to_s(:rfc822),
       patient_summary.days_overdue.to_i,
       ("High" if patient_summary.patient.high_risk?),
-      latest_bp_passport&.shortcode,
+      patient_summary.latest_bp_passport.shortcode,
       patient_summary.id,
       *medications_for(patient_summary.patient)
     ]
 
-    csv_fields.insert(zone_column_index, patient_summary.patient.address.zone) if zone_column_index
+    csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
     csv_fields
   end
 

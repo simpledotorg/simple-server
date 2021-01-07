@@ -65,7 +65,6 @@ class PatientsWithHistoryExporter < PatientsExporter
 
   def csv_fields(patient_summary)
     latest_bps = patient_summary.patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
-    latest_bp_passport = patient_summary.patient.latest_bp_passports.order(device_created_at: :desc).first
     fetch_medication_history(patient_summary.patient, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
 
@@ -78,7 +77,7 @@ class PatientsWithHistoryExporter < PatientsExporter
 
       ("Died" if patient_summary.status == "dead"),
       patient_summary.id,
-      latest_bp_passport&.shortcode,
+      patient_summary.latest_bp_passport.shortcode,
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
@@ -87,16 +86,16 @@ class PatientsWithHistoryExporter < PatientsExporter
       patient_summary.village_or_colony,
       patient_summary.district,
       patient_summary.state,
-      patient_summary.patient.assigned_facility.name,
-      patient_summary.patient.assigned_facility.facility_type,
-      patient_summary.patient.assigned_facility.district,
-      patient_summary.patient.assigned_facility.state,
+      patient_summary.assigned_facility_name,
+      patient_summary.assigned_facility_type,
+      patient_summary.assigned_facility_district,
+      patient_summary.assigned_facility_state,
       patient_summary.registration_facility_name,
       patient_summary.registration_facility_type,
       patient_summary.registration_district,
       patient_summary.registration_state,
-      patient_summary.patient.medical_history&.hypertension,
-      patient_summary.patient.medical_history&.diabetes,
+      patient_summary.hypertension,
+      patient_summary.diabetes,
       ("High" if patient_summary.patient.high_risk?),
       patient_summary.days_overdue.to_i,
       (1..DISPLAY_BLOOD_PRESSURES).map do |i|
@@ -127,7 +126,7 @@ class PatientsWithHistoryExporter < PatientsExporter
         BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type],
     ].flatten
 
-    csv_fields.insert(zone_column_index, patient_summary.patient.address.zone) if zone_column_index
+    csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
     csv_fields
   end
 

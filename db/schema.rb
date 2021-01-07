@@ -1050,10 +1050,15 @@ ActiveRecord::Schema.define(version: 2021_01_07_092746) do
       addresses.street_address,
       addresses.district,
       addresses.state,
+      addresses.zone AS block,
       reg_facility.name AS registration_facility_name,
       reg_facility.facility_type AS registration_facility_type,
       reg_facility.district AS registration_district,
       reg_facility.state AS registration_state,
+      assigned_facility.name AS assigned_facility_name,
+      assigned_facility.facility_type AS assigned_facility_type,
+      assigned_facility.district AS assigned_facility_district,
+      assigned_facility.state AS assigned_facility_state,
       latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
       latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
       latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
@@ -1088,11 +1093,15 @@ ActiveRecord::Schema.define(version: 2021_01_07_092746) do
               WHEN ((((latest_blood_sugar.blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugar.blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugar.blood_sugar_value >= 9.0))) THEN 1
               ELSE 0
           END AS risk_level,
-      latest_bp_passport.identifier AS latest_bp_passport,
+      latest_bp_passport.id AS latest_bp_passport_id,
+      latest_bp_passport.identifier AS latest_bp_passport_identifier,
+      mh.hypertension,
+      mh.diabetes,
       p.id
-     FROM (((((((((((patients p
+     FROM ((((((((((((patients p
        LEFT JOIN addresses ON ((addresses.id = p.address_id)))
        LEFT JOIN facilities reg_facility ON ((reg_facility.id = p.registration_facility_id)))
+       LEFT JOIN facilities assigned_facility ON ((assigned_facility.id = p.assigned_facility_id)))
        LEFT JOIN medical_histories mh ON ((mh.patient_id = p.id)))
        LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
               patient_phone_numbers.number,
