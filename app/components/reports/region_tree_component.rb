@@ -1,6 +1,5 @@
 class Reports::RegionTreeComponent < ViewComponent::Base
   attr_reader :parent, :children
-  delegate :accessible_region?, to: :helpers
 
   def initialize(parent:, children:)
     @children = children
@@ -9,6 +8,9 @@ class Reports::RegionTreeComponent < ViewComponent::Base
 
   OFFSET = 2
 
+  # Note that we short circuit facility access checks because they are handled in the controller, as they are the
+  # leaf nodes that are returned via our accessible region view_reports finder. This avoids the many extra authz checks for
+  # index view, which could be in the thousands for users with a lot of access.
   def accessible_region?(region)
     case region.region_type
     when "facility"

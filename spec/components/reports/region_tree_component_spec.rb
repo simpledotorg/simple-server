@@ -1,13 +1,20 @@
 require "rails_helper"
 
 RSpec.describe Reports::RegionTreeComponent, type: :component do
-  pending "add some examples to (or delete) #{__FILE__}"
+  def component
+    @component ||= Reports::RegionTreeComponent.new(parent: instance_double(Region), children: {})
+  end
 
-  # it "renders something useful" do
-  #   expect(
-  #     render_inline(described_class.new(attr: "value")) { "Hello, components!" }.css("p").to_html
-  #   ).to include(
-  #     "Hello, components!"
-  #   )
-  # end
+  it "always returns true for accessible facility checks" do
+    region = build(:region, region_type: "facility")
+    expect(component.accessible_region?(region)).to be true
+  end
+
+  it "delegates to helper methods for other accessible checks" do
+    block_region = build(:region, region_type: "block")
+    fake_helpers = double("helpers")
+    expect(fake_helpers).to receive(:accessible_region?).with(block_region).and_return(false)
+    allow(component).to receive(:helpers).and_return(fake_helpers)
+    expect(component.accessible_region?(block_region)).to be false
+  end
 end

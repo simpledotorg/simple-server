@@ -66,7 +66,8 @@ class UserAccess
   def accessible_state_regions(action)
     if action == :view_reports
       districts = accessible_district_regions(:manage)
-      districts.map(&:state_region).uniq
+      state_region_ids = districts.map(&:state_region).pluck(:id)
+      Region.state_regions.where(id: state_region_ids)
     else
       raise UnsupportedAccessRequest, "States only support 'view_reports' authorization requests."
     end

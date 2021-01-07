@@ -120,8 +120,8 @@ class Reports::RegionsController < AdminController
   # An admin can view a state if they have view_reports access to any of the state's districts
   def accessible_state?(region)
     return true if current_admin.power_user?
-    @accessible_state_ids = current_admin.accessible_state_regions(:view_reports).pluck(:id)
-    @accessible_state_ids.include?(state.id)
+    @accessible_state_ids = current_admin.user_access.accessible_state_regions(:view_reports).pluck(:id)
+    @accessible_state_ids.include?(region.id)
   end
 
   def accessible_district?(district)
@@ -178,7 +178,7 @@ class Reports::RegionsController < AdminController
       authorize {
         case region_class
         when "State"
-          current_admin.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
+          current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
         when "FacilityDistrict"
           scope = current_admin.accessible_facilities(:view_reports)
           FacilityDistrict.new(name: report_params[:id], scope: scope)
