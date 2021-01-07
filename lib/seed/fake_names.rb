@@ -2,7 +2,7 @@ module Seed
   class FakeNames
     include Singleton
 
-    attr_reader :blocks, :districts
+    attr_reader :blocks, :districts, :states
 
     def initialize
       @csv = CSV.read(Rails.root.join("db/fake_names.csv").to_s, headers: true).by_col!
