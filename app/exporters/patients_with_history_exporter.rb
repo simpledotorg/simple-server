@@ -119,8 +119,8 @@ class PatientsWithHistoryExporter < PatientsExporter
           medication_updated?(bp&.recorded_at, previous_bp&.recorded_at),
           *formatted_medications(bp&.recorded_at)]
       end,
-      patient_summary.latest_blood_pressure_recorded_at.presence &&
-        I18n.l(patient_summary.latest_blood_pressure_recorded_at.to_date),
+      patient_summary.latest_blood_sugar_recorded_at.presence &&
+        I18n.l(patient_summary.latest_blood_sugar_recorded_at.to_date),
 
       "#{patient_summary.latest_blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[patient_summary.latest_blood_sugar_type]}",
 

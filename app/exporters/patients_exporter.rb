@@ -121,8 +121,8 @@ class PatientsExporter
       patient_summary.hypertension,
       patient_summary.diabetes,
 
-      patient_summary.recorded_at.presence &&
-        I18n.l(patient_summary.recorded_at),
+      patient_summary.latest_blood_pressure_recorded_at.presence &&
+        I18n.l(patient_summary.latest_blood_pressure_recorded_at),
 
       patient_summary.latest_blood_pressure_systolic,
       patient_summary.latest_blood_pressure_diastolic,
