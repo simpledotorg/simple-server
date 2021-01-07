@@ -62,6 +62,6 @@ module DashboardHelper
   end
 
   def six_month_rate_change(facility, rate_name)
-    @data_for_facility[facility.name][rate_name][@period] - @data_for_facility[facility.name][rate_name][@start_period]
+    @data_for_facility[facility.name][rate_name][@period] - @data_for_facility[facility.name][rate_name][@start_period] || 0
   end
 end
