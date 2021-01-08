@@ -10,7 +10,7 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
-  before_action :set_period, only: [:blood_pressure_control, :bp_not_controlled, :missed_visits]
+  before_action :set_period, except: [:index]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
@@ -85,22 +85,36 @@ class MyFacilitiesController < AdminController
   def registrations
     @facilities = filter_facilities([:manage, :facility])
 
-    registrations_query = RegistrationsQuery.new(facilities: @facilities,
-                                                 period: @selected_period,
-                                                 last_n: PERIODS_TO_DISPLAY[@selected_period])
+    if current_admin.feature_enabled?(:my_facilities_improvements)
+      @data_for_facility = {}
+      @scores_for_facility = {}
 
-    @registrations = registrations_query.registrations
-      .group(:facility_id, :year, @selected_period)
-      .sum(:registration_count)
+      @facilities.each do |facility|
+        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+        @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
+                                                                            reports_result: @data_for_facility[facility.name],
+                                                                            period: @period)
+      end
 
-    @total_registrations = registrations_query.total_registrations_per_facility
-    @total_registrations_by_period =
-      @registrations.each_with_object({}) { |(key, registrations), total_registrations_by_period|
-        period = [key.second.to_i, key.third.to_i]
-        total_registrations_by_period[period] ||= 0
-        total_registrations_by_period[period] += registrations
-      }
-    @display_periods = registrations_query.periods
+      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+    else
+      registrations_query = RegistrationsQuery.new(facilities: @facilities,
+                                                   period: @selected_period,
+                                                   last_n: PERIODS_TO_DISPLAY[@selected_period])
+
+      @registrations = registrations_query.registrations
+        .group(:facility_id, :year, @selected_period)
+        .sum(:registration_count)
+
+      @total_registrations = registrations_query.total_registrations_per_facility
+      @total_registrations_by_period =
+        @registrations.each_with_object({}) { |(key, registrations), total_registrations_by_period|
+          period = [key.second.to_i, key.third.to_i]
+          total_registrations_by_period[period] ||= 0
+          total_registrations_by_period[period] += registrations
+        }
+      @display_periods = registrations_query.periods
+    end
   end
 
   def missed_visits
