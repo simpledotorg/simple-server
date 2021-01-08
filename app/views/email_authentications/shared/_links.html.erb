@@ -15,7 +15,7 @@
 <% end -%>
 
 <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' && warden&.message == :locked%>
-  <i class="fas fa-envelope mr-1 text-muted"></i> <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name) %><br />
+  <i class="fas fa-envelope mr-1 text-muted"></i> <%= link_to "Didn't receive instructions to unlock your account?", new_unlock_path(resource_name) %><br />
 <% end -%>
 
 <%- if devise_mapping.omniauthable? %>
