@@ -71,12 +71,8 @@ class PatientsWithHistoryExporter < PatientsExporter
     patient_appointments = patient.appointments.order(device_created_at: :desc).load
 
     csv_fields = [
-      patient_summary.recorded_at.presence &&
-        I18n.l(patient_summary.recorded_at.to_date),
-
-      patient_summary.recorded_at.presence &&
-        quarter_string(patient_summary.recorded_at.to_date),
-
+      registration_date(patient_summary),
+      registration_quarter(patient_summary),
       ("Died" if patient_summary.status == "dead"),
       patient_summary.id,
       patient_summary.latest_bp_passport&.shortcode,
@@ -119,13 +115,9 @@ class PatientsWithHistoryExporter < PatientsExporter
           medication_updated?(bp&.recorded_at, previous_bp&.recorded_at),
           *formatted_medications(bp&.recorded_at)]
       end,
-      patient_summary.latest_blood_sugar_recorded_at.presence &&
-        I18n.l(patient_summary.latest_blood_sugar_recorded_at.to_date),
-
-      "#{patient_summary.latest_blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[patient_summary.latest_blood_sugar_type]}",
-
-      patient_summary.latest_blood_sugar_type.presence &&
-        BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type],
+      latest_blood_sugar_date(patient_summary),
+      patient_summary.latest_blood_sugar.to_s,
+      latest_blood_sugar_type(patient_summary),
     ].flatten
 
     csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
@@ -139,26 +131,33 @@ class PatientsWithHistoryExporter < PatientsExporter
   end
 
   def medications(date)
-    date ? @medications[date] : PrescriptionDrug.none
+    if date
+      @medications[date]
+    else
+      PrescriptionDrug.none
+    end
   end
 
   def fetch_medication_history(patient, dates)
     dates.each_with_object({}) { |date, cache|
-      cache[date] = date ? patient.prescribed_drugs(date: date).order(is_protocol_drug: :desc, name: :asc).load : PrescriptionDrug.none
+      cache[date] =
+        if date
+          patient.prescribed_drugs(date: date).order(is_protocol_drug: :desc, name: :asc).load
+        else
+          PrescriptionDrug.none
+        end
     }
   end
 
   def medication_updated?(date, previous_date)
-    current_medications = medications(date)
-    previous_medications = medications(previous_date)
-    current_medications == previous_medications ? "No" : "Yes"
+    medications(date) == medications(previous_date) ? "No" : "Yes"
   end
 
   def formatted_medications(date)
     medications = medications(date)
     other_medications = medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
-                            &.map { |medication| "#{medication.name}-#{medication.dosage}" }
-                            &.join(", ")
+                          &.map { |medication| "#{medication.name}-#{medication.dosage}" }
+                          &.join(", ")
 
     (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
       [medications[i]&.name, medications[i]&.dosage]

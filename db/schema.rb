@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_07_092746) do
+ActiveRecord::Schema.define(version: 2021_01_07_112850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -1180,4 +1180,6 @@ ActiveRecord::Schema.define(version: 2021_01_07_092746) do
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
   SQL
+  add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id"
+
 end

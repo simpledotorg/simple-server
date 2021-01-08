@@ -95,12 +95,8 @@ class PatientsExporter
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
-      patient_summary.recorded_at.presence &&
-        I18n.l(patient_summary.recorded_at),
-
-      patient_summary.recorded_at.presence &&
-        quarter_string(patient_summary.recorded_at),
-
+      registration_date(patient_summary),
+      registration_quarter(patient_summary),
       ("Died" if patient_summary.status == "dead"),
       patient_summary.full_name,
       patient_summary.current_age.to_i,
@@ -120,29 +116,17 @@ class PatientsExporter
       patient_summary.registration_state,
       patient_summary.hypertension,
       patient_summary.diabetes,
-
-      patient_summary.latest_blood_pressure_recorded_at.presence &&
-        I18n.l(patient_summary.latest_blood_pressure_recorded_at),
-
+      latest_bp_date(patient_summary),
       patient_summary.latest_blood_pressure_systolic,
       patient_summary.latest_blood_pressure_diastolic,
-
-      patient_summary.latest_blood_pressure_recorded_at.presence &&
-        quarter_string(patient_summary.latest_blood_pressure_recorded_at),
-
+      latest_bp_quarter(patient_summary),
       patient_summary.latest_blood_pressure_facility_name,
       patient_summary.latest_blood_pressure_facility_type,
       patient_summary.latest_blood_pressure_district,
       patient_summary.latest_blood_pressure_state,
-
-      patient_summary.latest_blood_pressure_recorded_at.presence &&
-        I18n.l(patient_summary.latest_blood_pressure_recorded_at),
-
-      "#{patient_summary.latest_blood_sugar_value} #{BloodSugar::BLOOD_SUGAR_UNITS[patient_summary.latest_blood_sugar_type]}",
-
-      patient_summary.latest_blood_sugar_type.presence &&
-        BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type],
-
+      latest_blood_sugar_date(patient_summary),
+      patient_summary.latest_blood_sugar.to_s,
+      latest_blood_sugar_type(patient_summary),
       patient_summary.next_appointment_facility_name,
       patient_summary.next_appointment_scheduled_date&.to_s(:rfc822),
       patient_summary.days_overdue.to_i,
@@ -164,5 +148,35 @@ class PatientsExporter
 
   def zone_column
     "Patient #{Address.human_attribute_name :zone}"
+  end
+
+  def registration_date(patient_summary)
+    patient_summary.recorded_at.presence &&
+      I18n.l(patient_summary.recorded_at)
+  end
+
+  def registration_quarter(patient_summary)
+    patient_summary.recorded_at.presence &&
+      quarter_string(patient_summary.recorded_at)
+  end
+
+  def latest_bp_date(patient_summary)
+    patient_summary.latest_blood_pressure_recorded_at.presence &&
+      I18n.l(patient_summary.latest_blood_pressure_recorded_at)
+  end
+
+  def latest_bp_quarter(patient_summary)
+    patient_summary.latest_blood_pressure_recorded_at.presence &&
+      quarter_string(patient_summary.latest_blood_pressure_recorded_at)
+  end
+
+  def latest_blood_sugar_date(patient_summary)
+    patient_summary.latest_blood_sugar_recorded_at.presence &&
+      I18n.l(patient_summary.latest_blood_sugar_recorded_at)
+  end
+
+  def latest_blood_sugar_type(patient_summary)
+    patient_summary.latest_blood_sugar_type.presence &&
+      BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type]
   end
 end
