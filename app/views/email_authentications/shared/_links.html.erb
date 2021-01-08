@@ -14,8 +14,8 @@
   <%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name) %><br />
 <% end -%>
 
-<%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
-  <i class="fas fa-envelope mr-1 text-muted"></i> <%= link_to "Didn't receive password reset instructions?", new_unlock_path(resource_name) %><br />
+<%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' && warden&.message == :locked%>
+  <i class="fas fa-envelope mr-1 text-muted"></i> <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name) %><br />
 <% end -%>
 
 <%- if devise_mapping.omniauthable? %>
