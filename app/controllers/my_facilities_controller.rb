@@ -120,15 +120,25 @@ class MyFacilitiesController < AdminController
   def missed_visits
     @facilities = filter_facilities([:manage, :facility])
 
-    missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
-                                                period: @selected_period,
-                                                last_n: PERIODS_TO_DISPLAY[@selected_period])
+    if current_admin.feature_enabled?(:my_facilities_improvements)
+      @data_for_facility = {}
 
-    @display_periods = missed_visits_query.periods
-    @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
-    @calls_made = missed_visits_query.calls_made.count
-    @total_patients_per_facility = missed_visits_query.total_patients_per_facility
-    @totals_by_period = missed_visits_query.missed_visit_totals
+      @facilities.each do |facility|
+        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+      end
+
+      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+    else
+      missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
+                                                  period: @selected_period,
+                                                  last_n: PERIODS_TO_DISPLAY[@selected_period])
+
+      @display_periods = missed_visits_query.periods
+      @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
+      @calls_made = missed_visits_query.calls_made.count
+      @total_patients_per_facility = missed_visits_query.total_patients_per_facility
+      @totals_by_period = missed_visits_query.missed_visit_totals
+    end
   end
 
   private
