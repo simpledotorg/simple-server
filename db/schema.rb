@@ -462,8 +462,8 @@ ActiveRecord::Schema.define(version: 2021_01_07_060947) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
-    t.string "drug_type"
-    t.boolean "track_stock", default: false, null: false
+    t.string "drug_category"
+    t.boolean "stock_tracked", default: false, null: false
     t.index ["deleted_at"], name: "index_protocol_drugs_on_deleted_at"
   end
 

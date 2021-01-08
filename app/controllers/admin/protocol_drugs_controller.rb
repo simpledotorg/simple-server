@@ -57,8 +57,8 @@ class Admin::ProtocolDrugsController < AdminController
       :name,
       :dosage,
       :rxnorm_code,
-      :drug_type,
-      :track_stock
+      :drug_category,
+      :stock_tracked
     )
   end
 end

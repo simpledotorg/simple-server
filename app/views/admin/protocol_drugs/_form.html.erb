@@ -3,11 +3,11 @@
     <%= form.text_field :name, id: :protocol_drug_name %>
     <%= form.text_field :dosage, id: :protocol_drug_dosage %>
     <%= form.text_field :rxnorm_code, id: :protocol_drug_rxnorm_code, label: "RxNorm code" %>
-    <%= form.select :drug_type,
-                    ProtocolDrug.drug_types.map { |k, v| [v, k] },
+    <%= form.select :drug_category,
+                    ProtocolDrug.drug_categories.map { |k, v| [v, k] },
                     { include_blank: true },
                     required: false %>
-    <%= form.select :track_stock,
+    <%= form.select :stock_tracked,
                    [["Yes", true], ["No", false]],
                    required: true %>
     <%= form.primary %>
