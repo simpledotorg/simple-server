@@ -10,7 +10,7 @@ class MyFacilitiesController < AdminController
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   around_action :set_time_zone
-  before_action :set_period, only: [:blood_pressure_control]
+  before_action :set_period, only: [:blood_pressure_control, :bp_not_controlled]
   before_action :authorize_my_facilities
   before_action :set_selected_cohort_period, only: [:blood_pressure_control]
   before_action :set_selected_period, only: [:registrations, :missed_visits]
@@ -64,6 +64,22 @@ class MyFacilitiesController < AdminController
       @overall_patients_per_facility = bp_query.overall_patients_per_facility
       @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
     end
+  end
+
+  def bp_not_controlled
+    unless current_admin.feature_enabled?(:my_facilities_improvements)
+      redirect_to my_facilities_overview_path(request.query_parameters)
+      return
+    end
+
+    @facilities = filter_facilities([:manage, :facility])
+    @data_for_facility = {}
+
+    @facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+    end
+
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   def registrations

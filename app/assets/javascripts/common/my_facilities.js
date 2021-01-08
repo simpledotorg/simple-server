@@ -1,35 +1,34 @@
-const grayColor = "#6c737a";
+const greyColor = "#6c737a";
 const greenColor = "#007a31";
 const redColor = "#b81631";
 
 window.addEventListener("DOMContentLoaded", function() {
-  let facilityControlRateData = {};
+  let facilityRateData = {};
   const $facilityRows = document.querySelectorAll('[data-row]');
 
   Array.from($facilityRows).forEach($facilityRow => {
-    let controlRateValues = [];
+    let rateValues = [];
     const facilitySlug = $facilityRow.getAttribute("data-row");
     const trendLineColor = $facilityRow.getAttribute("data-trend-color");
-    const $controlRates = $facilityRow.querySelectorAll('[data-control-rate]');
+    const $rates = $facilityRow.querySelectorAll('[data-rate]');
 
-    Array.from($controlRates).forEach($controlRate => {
-      controlRateValues.push($controlRate.getAttribute("data-control-rate"));
+    Array.from($rates).forEach($rate => {
+      rateValues.push($rate.getAttribute("data-rate"));
     });
 
-    facilityControlRateData[facilitySlug] = {};
-    facilityControlRateData[facilitySlug].color = trendLineColor;
-    facilityControlRateData[facilitySlug].data = controlRateValues;
+    facilityRateData[facilitySlug] = {};
+    facilityRateData[facilitySlug].color = trendLineColor;
+    facilityRateData[facilitySlug].data = rateValues;
   });
 
-  Object.keys(facilityControlRateData).forEach(facility => {
+  Object.keys(facilityRateData).forEach(facility => {
     const trendChartConfig = createBaseTrendChartConfig();
     trendChartConfig.data = {
-      labels: facilityControlRateData[facility].data,
+      labels: facilityRateData[facility].data,
       datasets: [{
-        label: "BP controlled rate",
         fill: false,
-        borderColor: getHexCodeFromColorName(facilityControlRateData[facility].color),
-        data: facilityControlRateData[facility].data,
+        borderColor: getHexCodeFromColorName(facilityRateData[facility].color),
+        data: facilityRateData[facility].data,
       }],
     };
 
@@ -80,8 +79,8 @@ function getHexCodeFromColorName(colorName) {
       return greenColor;
     case "red":
       return redColor;
-    case "gray":
-      return grayColor;
+    case "grey":
+      return greyColor;
     default:
       break;
   };
