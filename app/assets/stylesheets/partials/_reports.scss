@@ -34,11 +34,13 @@
 .w-32px { width: 32px; }
 .w-40px { width: 40px; }
 .w-48px { width: 48px; }
+.w-80px { width: 80px; }
 .w-100pt { width: 100%; }
 .mw-100pt { max-width: 100%; }
 // Height
 .h-12px { height: 12px; }
 .h-10pt { height: 10%; }
+.h-20px { height: 20px; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
 .h-300px { height: 300px; } 
@@ -71,6 +73,7 @@
 .c-green-dark { color: $green-dark; }
 .c-purple { color: $purple; }
 .c-red { color: $red; }
+.c-red-dark { color: $red-dark; }
 .c-blue { color: $blue; }
 .c-black { color: $black; }
 .c-transparent { color: transparent; }
