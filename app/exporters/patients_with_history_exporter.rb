@@ -66,7 +66,7 @@ class PatientsWithHistoryExporter < PatientsExporter
   def csv_fields(patient_summary)
     patient = patient_summary.patient
     latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
-    @medications = fetch_medication_history(patient, latest_bps.map(&:recorded_at))
+    all_medications = fetch_medication_history(patient, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
     patient_appointments = patient.appointments.order(device_created_at: :desc).load
 
@@ -112,12 +112,12 @@ class PatientsWithHistoryExporter < PatientsExporter
           appointment&.facility&.name,
           appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
           appointment&.follow_up_days,
-          medication_updated?(bp&.recorded_at, previous_bp&.recorded_at),
-          *formatted_medications(bp&.recorded_at)]
+          medication_updated?(all_medications, bp&.recorded_at, previous_bp&.recorded_at),
+          *formatted_medications(all_medications, bp&.recorded_at)]
       end,
       latest_blood_sugar_date(patient_summary),
       patient_summary.latest_blood_sugar.to_s,
-      latest_blood_sugar_type(patient_summary),
+      latest_blood_sugar_type(patient_summary)
     ].flatten
 
     csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
@@ -128,14 +128,6 @@ class PatientsWithHistoryExporter < PatientsExporter
 
   def appointment_created_on(appointments, date)
     date && appointments.find { |a| date.all_day.cover?(a.device_created_at) }
-  end
-
-  def medications(date)
-    if date
-      @medications[date]
-    else
-      PrescriptionDrug.none
-    end
   end
 
   def fetch_medication_history(patient, dates)
@@ -149,12 +141,12 @@ class PatientsWithHistoryExporter < PatientsExporter
     }
   end
 
-  def medication_updated?(date, previous_date)
-    medications(date) == medications(previous_date) ? "No" : "Yes"
+  def medication_updated?(all_medications, date, previous_date)
+    medications_on(all_medications, date) == medications_on(all_medications, previous_date) ? "No" : "Yes"
   end
 
-  def formatted_medications(date)
-    medications = medications(date)
+  def formatted_medications(all_medications, date)
+    medications = medications_on(all_medications, date)
     other_medications = medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
                           &.map { |medication| "#{medication.name}-#{medication.dosage}" }
                           &.join(", ")
@@ -162,5 +154,13 @@ class PatientsWithHistoryExporter < PatientsExporter
     (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
       [medications[i]&.name, medications[i]&.dosage]
     } << other_medications
+  end
+
+  def medications_on(all_medications, date)
+    if date
+      all_medications[date]
+    else
+      PrescriptionDrug.none
+    end
   end
 end
