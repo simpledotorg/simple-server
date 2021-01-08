@@ -152,7 +152,7 @@ class PatientsExporter
 
   def registration_date(patient_summary)
     patient_summary.recorded_at.presence &&
-      I18n.l(patient_summary.recorded_at)
+      I18n.l(patient_summary.recorded_at.to_date)
   end
 
   def registration_quarter(patient_summary)
@@ -162,7 +162,7 @@ class PatientsExporter
 
   def latest_bp_date(patient_summary)
     patient_summary.latest_blood_pressure_recorded_at.presence &&
-      I18n.l(patient_summary.latest_blood_pressure_recorded_at)
+      I18n.l(patient_summary.latest_blood_pressure_recorded_at.to_date)
   end
 
   def latest_bp_quarter(patient_summary)
@@ -172,7 +172,7 @@ class PatientsExporter
 
   def latest_blood_sugar_date(patient_summary)
     patient_summary.latest_blood_sugar_recorded_at.presence &&
-      I18n.l(patient_summary.latest_blood_sugar_recorded_at)
+      I18n.l(patient_summary.latest_blood_sugar_recorded_at.to_date)
   end
 
   def latest_blood_sugar_type(patient_summary)

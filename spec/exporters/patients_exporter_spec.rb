@@ -102,7 +102,7 @@ RSpec.describe PatientsExporter do
 
   let(:fields) do
     [
-      I18n.l(patient.recorded_at),
+      I18n.l(patient.recorded_at.to_date),
       quarter_string(patient.recorded_at),
       "Died",
       patient.full_name,
@@ -124,7 +124,7 @@ RSpec.describe PatientsExporter do
       registration_facility.state,
       "no",
       "yes",
-      I18n.l(blood_pressure.recorded_at),
+      I18n.l(blood_pressure.recorded_at.to_date),
       blood_pressure.systolic,
       blood_pressure.diastolic,
       quarter_string(blood_pressure.recorded_at),
@@ -132,7 +132,7 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.facility_type,
       blood_pressure.facility.district,
       blood_pressure.facility.state,
-      I18n.l(blood_sugar.recorded_at),
+      I18n.l(blood_sugar.recorded_at.to_date),
       "#{blood_sugar.blood_sugar_value} mg/dL",
       "Fasting",
       appointment.facility.name,
@@ -181,6 +181,7 @@ RSpec.describe PatientsExporter do
     it "includes blood sugars from other visits" do
       blood_sugar.destroy
       _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
+      MaterializedPatientSummary.refresh
 
       patient_summary = MaterializedPatientSummary.find_by(id: patient)
       expect(subject.csv_fields(patient_summary)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
