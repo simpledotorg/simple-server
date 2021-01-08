@@ -15,12 +15,11 @@ class Api::V3::SyncController < APIController
 
     AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
     log_block_level_sync_metrics(response_key)
-
     render(
-      json: {
+      json: Oj.dump({
         response_key => records.map { |record| transform_to_response(record) },
         "process_token" => encode_process_token(response_process_token)
-      },
+      }, mode: :compat),
       status: :ok
     )
   end

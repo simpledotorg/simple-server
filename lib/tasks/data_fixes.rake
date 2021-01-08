@@ -1,7 +1,4 @@
 require "tasks/scripts/move_user_recorded_data_to_registration_facility"
-require "tasks/scripts/clean_ancient_dates"
-require "tasks/scripts/delete_bangladesh_demo_facility"
-require "tasks/scripts/clean_bangladesh_phone_numbers"
 
 namespace :data_fixes do
   desc "Move all data recorded by a user from a source facility to a destination facility"
@@ -19,45 +16,5 @@ namespace :data_fixes do
          "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
-  end
-
-  desc "Clean up records with ancient dates that break reporting"
-  task clean_ancient_dates: :environment do
-    CleanAncientDates.call
-  end
-
-  desc "Clean up records with ancient dates that break reporting (dryrun)"
-  task clean_ancient_dates_dryrun: :environment do
-    CleanAncientDates.call(dryrun: true)
-  end
-
-  desc "Handle Bangladesh demo patients"
-  task handle_bangladesh_demo_patients: :environment do
-    DeleteBangladeshDemoFacility.handle_patients
-  end
-
-  desc "Handle Bangladesh demo patients (dryrun)"
-  task handle_bangladesh_demo_patients_dryrun: :environment do
-    DeleteBangladeshDemoFacility.handle_patients(dryrun: true)
-  end
-
-  desc "Delete Bangladesh demo facility"
-  task delete_bangladesh_demo_facility: :environment do
-    DeleteBangladeshDemoFacility.delete_facility
-  end
-
-  desc "Delete Bangladesh demo facility (dryrun)"
-  task delete_bangladesh_demo_facility_dryrun: :environment do
-    DeleteBangladeshDemoFacility.delete_facility(dryrun: true)
-  end
-
-  desc "Clean Bangladesh phone numbers"
-  task clean_bangladesh_phone_numbers: :environment do
-    CleanBangladeshPhoneNumbers.call
-  end
-
-  desc "Clean Bangladesh phone numbers (dryrun)"
-  task clean_bangladesh_phone_numbers_dryrun: :environment do
-    CleanBangladeshPhoneNumbers.call(dryrun: true)
   end
 end

@@ -8,17 +8,22 @@ class Reports::RegionsController < AdminController
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index]
   around_action :set_time_zone
+  delegate :cache, to: Rails
 
   def index
     if current_admin.feature_enabled?(:region_reports)
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
-      @accessible_regions = accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
-        org, district, block = ancestors.values_at("organization", "district", "block")
-        result[org] ||= {}
-        result[org][district] ||= {}
-        result[org][district][block] ||= []
-        result[org][district][block] << facility
+      cache_key = "#{current_admin.cache_key}/regions/index"
+      cache_version = accessible_facility_regions.cache_key
+      @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
+        accessible_facility_regions.each_with_object({}) { |facility, result|
+          ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
+          org, district, block = ancestors.values_at("organization", "district", "block")
+          result[org] ||= {}
+          result[org][district] ||= {}
+          result[org][district][block] ||= []
+          result[org][district][block] << facility
+        }
       }
     else
       @organizations = authorize {
@@ -53,8 +58,9 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    if @region.respond_to?(:recent_blood_pressures)
-      @recent_blood_pressures = paginate(@region.recent_blood_pressures)
+    region_source = current_admin.feature_enabled?(:region_reports) ? @region.source : @region
+    if region_source.respond_to?(:recent_blood_pressures)
+      @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
     end
   end
 
@@ -154,30 +160,36 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    region_source = authorize {
-      case region_class
-      when "FacilityDistrict"
-        scope = current_admin.accessible_facilities(:view_reports)
-        FacilityDistrict.new(name: report_params[:id], scope: scope)
-      when "FacilityGroup"
-        current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
-      when "Block" # we don't have first class auth on Blocks yet, so we authorize via the parent FacilityGroup
-        block = Region.find_by!(slug: report_params[:id], region_type: "block")
-        owning_facility_group = block.district_region.source
-        unless current_admin.accessible_facility_groups(:view_reports).include?(owning_facility_group)
-          raise UserAccess::NotAuthorizedError
+    @region ||= if current_admin.feature_enabled?(:region_reports)
+      authorize {
+        case region_class
+        when "FacilityDistrict"
+          scope = current_admin.accessible_facilities(:view_reports)
+          FacilityDistrict.new(name: report_params[:id], scope: scope)
+        when "FacilityGroup"
+          current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
+        when "Block"
+          current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
+        when "Facility"
+          current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
+        else
+          raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
         end
-        block
-      when "Facility"
-        current_admin.accessible_facilities(:view_reports).find_by!(slug: params[:id])
-      else
-        raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
-      end
-    }
-    @region = if current_admin.feature_enabled?(:region_reports)
-      region_source.region
+      }
     else
-      region_source
+      authorize {
+        case region_class
+        when "FacilityDistrict"
+          scope = current_admin.accessible_facilities(:view_reports)
+          FacilityDistrict.new(name: report_params[:id], scope: scope)
+        when "FacilityGroup"
+          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
+        when "Facility"
+          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
+        else
+          raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
+        end
+      }
     end
   end
 

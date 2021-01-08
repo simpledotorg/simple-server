@@ -43,6 +43,7 @@ gem "kaminari"
 gem "lodash-rails"
 gem "lograge"
 gem "ougai"
+gem "oj"
 gem "parallel", require: false
 gem "passenger"
 gem "pg", ">= 0.18", "< 2.0"
@@ -60,6 +61,7 @@ gem "roo", "~> 2.8.0"
 gem "rspec-rails", "~> 3.7"
 gem "rswag", "~> 1.6.0"
 gem "ruby-progressbar", require: false
+gem "rubyzip"
 gem "sassc-rails"
 gem "scenic"
 gem "sentry-raven"
@@ -94,7 +96,7 @@ group :development, :test do
   gem "rails-controller-testing"
   gem "rb-readline"
   gem "shoulda-matchers", "~> 4.1.2"
-  gem "standard"
+  gem "standard", require: false
 end
 
 group :development do
@@ -105,9 +107,7 @@ group :development do
   gem "spring"
   gem "spring-commands-rspec"
   gem "web-console", ">= 3.3.0"
-  # For memory profiling
   gem "memory_profiler"
-  # For call-stack profiling flamegraphs
   gem "flamegraph"
   gem "stackprof"
 end

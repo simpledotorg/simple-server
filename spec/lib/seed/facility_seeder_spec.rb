@@ -21,6 +21,8 @@ RSpec.describe Seed::FacilitySeeder do
     Region.facility_regions.each do |region|
       expect(region.name).to eq(region.source.name)
       expect(region.district_region).to_not be_nil
+      expect(region.state_region).to_not be_nil
+      expect(Seed::FakeNames.instance.states).to include(region.state_region.name)
       district = region.district_region
       block = region.block_region
       expect(district).to eq(region.source.facility_group.region)
