@@ -1,7 +1,9 @@
+const greyColor = "#6c737a";
+const greenColor = "#007a31";
+const redColor = "#b81631";
+
 window.addEventListener("DOMContentLoaded", function() {
   let facilityRateData = {};
-  const greenColor = "#007a31";
-  const redColor = "#b81631";
   const $facilityRows = document.querySelectorAll('[data-row]');
 
   Array.from($facilityRows).forEach($facilityRow => {
@@ -24,9 +26,8 @@ window.addEventListener("DOMContentLoaded", function() {
     trendChartConfig.data = {
       labels: facilityRateData[facility].data,
       datasets: [{
-        label: "BP controlled rate",
         fill: false,
-        borderColor: facilityRateData[facility].color === "green" ? greenColor : redColor,
+        borderColor: getHexCodeFromColorName(facilityRateData[facility].color),
         data: facilityRateData[facility].data,
       }],
     };
@@ -69,5 +70,18 @@ function createBaseTrendChartConfig() {
         yAxes: [{ display: false }],
       },
     },
+  };
+};
+
+function getHexCodeFromColorName(colorName) {
+  switch(colorName) {
+    case "green":
+      return greenColor;
+    case "red":
+      return redColor;
+    case "grey":
+      return greyColor;
+    default:
+      break;
   };
 };
