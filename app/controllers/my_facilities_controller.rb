@@ -90,7 +90,7 @@ class MyFacilitiesController < AdminController
       @scores_for_facility = {}
 
       @facilities.each do |facility|
-        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility,period: @period).call
+        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
         @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
                                                                             reports_result: @data_for_facility[facility.name],
                                                                             period: @period)
