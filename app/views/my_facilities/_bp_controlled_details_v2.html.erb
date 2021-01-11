@@ -51,11 +51,21 @@
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
                 Total registered<br>patients
               </th>
-              <th class="row-label sort-label sort-label-small" colspan="2">
+              <th
+                class="row-label sort-label sort-label-small"
+                colspan="2"
+                data-sort-column-key="6-month-change"
+                data-sort-method="number"
+              >
                 6-month change
               </th>
               <% (@start_period..@period).each do |period| %>
-                <th class="row-label sort-label sort-label-small" data-sort-method="number" colspan="2">
+                <th
+                  class="row-label sort-label sort-label-small"
+                  colspan="2"
+                  data-sort-column-key="total-patients-<%= period %>"
+                  data-sort-method="number"
+                >
                   <%= period %>
                 </th>
               <% end %>
@@ -81,15 +91,23 @@
                     <canvas id=<%= facility.slug %>></canvas>
                   </div>
                 </td>
-                <td class="fw-bold ta-center <% if six_month_rate_change > 0 %>c-green-dark<% elsif six_month_rate_change < 0 %>c-red-dark<% else %>c-grey-dark<% end %>"> 
+                <td
+                  class="fw-bold ta-center <% if six_month_rate_change > 0 %>c-green-dark<% elsif six_month_rate_change < 0 %>c-red-dark<% else %>c-grey-dark<% end %>"
+                  data-sort-column-key="6-month-change"
+                  data-sort="<%= six_month_rate_change %>"
+                >
                   <%= number_to_percentage_with_symbol(six_month_rate_change, precision: 0) %>
                 </td>
                 <% (@start_period..@period).each do |period| %>
+                  <% controlled_patients_rate = @data_for_facility[facility.name]["controlled_patients_rate"][period] %>
                   <td>
                     <%= @data_for_facility[facility.name]["controlled_patients"][period] %>
                   </td>
-                  <td class="type-percent">
-                    <% controlled_patients_rate = @data_for_facility[facility.name]["controlled_patients_rate"][period] %>
+                  <td
+                    class="type-percent"
+                    data-sort-column-key="total-patients-<%= period %>"
+                    data-sort="<%= controlled_patients_rate %>"
+                  >
                     <em data-rate="<%= controlled_patients_rate %>">
                       <%= number_to_percentage(controlled_patients_rate || 0, precision: 0) %>
                     </em>
