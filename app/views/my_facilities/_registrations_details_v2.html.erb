@@ -25,23 +25,17 @@
         </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table" style="table-layout: fixed;">
           <colgroup>
+            <col style="width: 16%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col class="table-divider" style="width: 10%;">
+            <col style="width: 6%;">
             <col style="width: 8%;">
-            <col style="width: 7%;">
-            <col style="width: 7%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 6%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 6%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 6%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 6%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 6%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 6%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
@@ -65,7 +59,6 @@
               <% (@start_period..@period).each do |period| %>
                 <th
                   class="row-label sort-label sort-label-small"
-                  colspan="2"
                   data-sort-column-key="total-patients-<%= period %>"
                   data-sort-method="number"
                 >
@@ -78,7 +71,7 @@
             <% @facilities_by_size[size].each do |facility| %>
               <% six_month_rate_change = ((@data_for_facility[facility.name]["registrations"][@period] - @data_for_facility[facility.name]["registrations"][@start_period])/facility.opd_load.to_f) * 100.0 %>
               <tr data-row="<%= facility.slug %>" data-trend-color="<% if six_month_rate_change > 0 %>green<% elsif six_month_rate_change < 0 %>red<% else %>grey<% end %>">
-                <td class="type-title" data-toggle="tooltip" title="<%= facility.name %>">
+                <td class="type-title">
                   <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
                     <%= facility.name %>
                   <% end %>
@@ -90,7 +83,7 @@
                   <%= number_or_zero_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
                 </td>
                 <td>
-                  <div class="h-20px" style="width: 32px;">
+                  <div class="w-90px h-20px">
                     <canvas id=<%= facility.slug %>></canvas>
                   </div>
                 </td>
@@ -102,13 +95,12 @@
                 </td>
                 <% (@start_period..@period).each do |period| %>
                   <% registrations_rate = @data_for_facility[facility.name]["registrations"][period] / facility.opd_load.to_f * 100.0 %>
-                  <td>
-                    <%= @data_for_facility[facility.name]["registrations"][period] %>
-                  </td>
                   <td
                     class="type-percent"
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= registrations_rate %>"
+                    data-toggle="tooltip"
+                    title="<%= @data_for_facility[facility.name]["registrations"][period] %> registrations / <%= facility.opd_load %> OPD load"
                   >
                     <em data-rate="<%= registrations_rate %>">
                       <%= number_to_percentage(registrations_rate || 0, precision: 0) %>
