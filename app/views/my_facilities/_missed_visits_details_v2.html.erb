@@ -100,7 +100,7 @@
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= missed_visits_rate %>"
                     data-toggle="tooltip"
-                    title="<%= @data_for_facility[facility.name]["missed_visits"][period] %> out of <%= @data_for_facility[facility.name]["adjusted_registrations"][period] %> patients"
+                    title="<%= @data_for_facility[facility.name]["missed_visits"][period] %> / <%= @data_for_facility[facility.name]["adjusted_registrations"][period] %> patients"
                   >
                     <em data-rate="<%= missed_visits_rate %>">
                       <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>

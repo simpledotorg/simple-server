@@ -100,7 +100,7 @@
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= registrations_rate %>"
                     data-toggle="tooltip"
-                    title="<%= @data_for_facility[facility.name]["registrations"][period] %> registrations / <%= facility.opd_load %> OPD load"
+                    title="<%= @data_for_facility[facility.name]["registrations"][period] %> registrations / <%= facility.opd_load %> est. OPD"
                   >
                     <em data-rate="<%= registrations_rate %>">
                       <%= number_to_percentage(registrations_rate || 0, precision: 0) %>

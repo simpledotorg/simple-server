@@ -100,7 +100,7 @@
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= uncontrolled_patients_rate %>"
                     data-toggle="tooltip"
-                    title="<%= @data_for_facility[facility.name]["uncontrolled_patients"][period] %> out of <%= @data_for_facility[facility.name]["adjusted_registrations"][period] %> patients"
+                    title="<%= @data_for_facility[facility.name]["uncontrolled_patients"][period] %> / <%= @data_for_facility[facility.name]["adjusted_registrations"][period] %> patients"
                   >
                     <em data-rate="<%= uncontrolled_patients_rate %>">
                       <%= number_to_percentage(uncontrolled_patients_rate || 0, precision: 0) %>
