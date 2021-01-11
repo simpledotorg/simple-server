@@ -18,5 +18,4 @@ describe DrugStock, type: :model do
   describe "Behavior" do
     it_behaves_like "a record that is deletable"
   end
-
 end
