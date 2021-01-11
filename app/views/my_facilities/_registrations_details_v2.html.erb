@@ -51,11 +51,21 @@
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
                 Total registered<br>patients
               </th>
-              <th class="row-label sort-label sort-label-small" colspan="2">
+              <th
+                class="row-label sort-label sort-label-small"
+                colspan="2"
+                data-sort-column-key="6-month-change"
+                data-sort-method="number"
+              >
                 6-month change
               </th>
               <% (@start_period..@period).each do |period| %>
-                <th class="row-label sort-label sort-label-small" data-sort-method="number" colspan="2">
+                <th
+                  class="row-label sort-label sort-label-small"
+                  colspan="2"
+                  data-sort-column-key="total-patients-<%= period %>"
+                  data-sort-method="number"
+                >
                   <%= period %>
                 </th>
               <% end %>
@@ -81,15 +91,22 @@
                     <canvas id=<%= facility.slug %>></canvas>
                   </div>
                 </td>
-                <td class="fw-bold ta-center <% if six_month_rate_change > 0 %>c-green-dark<% elsif six_month_rate_change < 0 %>c-red-dark<% else %>c-grey-dark<% end %>"> 
+                <td
+                  class="fw-bold ta-center <% if six_month_rate_change > 0 %>c-green-dark<% elsif six_month_rate_change < 0 %>c-red-dark<% else %>c-grey-dark<% end %>" 
+                  data-sort-column-key="6_month_change"
+                >
                   <%= number_to_percentage_with_symbol(six_month_rate_change, precision: 0) %>
                 </td>
                 <% (@start_period..@period).each do |period| %>
+                  <% registrations_rate = @data_for_facility[facility.name]["registrations"][period] / facility.opd_load.to_f * 100.0 %>
                   <td>
                     <%= @data_for_facility[facility.name]["registrations"][period] %>
                   </td>
-                  <td class="type-percent">
-                    <% registrations_rate = @data_for_facility[facility.name]["registrations"][period] / facility.opd_load.to_f * 100.0 %>
+                  <td
+                    class="type-percent"
+                    data-sort-column-key="total-patients-<%= period %>"
+                    data-sort="<%= registrations_rate %>"
+                  >
                     <em data-rate="<%= registrations_rate %>">
                       <%= number_to_percentage(registrations_rate || 0, precision: 0) %>
                     </em>
