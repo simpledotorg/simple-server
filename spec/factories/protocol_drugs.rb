@@ -5,7 +5,7 @@ FactoryBot.define do
     dosage { rand(1..10).to_s + " mg" }
     rxnorm_code { Faker::Code.npi }
     stock_tracked { false }
-    drug_category { "Other" }
+    drug_category { "other" }
     association :protocol, strategy: :build
   end
 end
