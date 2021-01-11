@@ -117,6 +117,7 @@ class User < ApplicationRecord
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
+  after_discard :destroy_email_authentications
 
   def phone_number_authentication
     phone_number_authentications.first
