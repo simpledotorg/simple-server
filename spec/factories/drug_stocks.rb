@@ -6,6 +6,6 @@ FactoryBot.define do
     association :protocol_drug, strategy: :create
     recorded_at { Time.current }
     in_stock { 500 }
-    received { 500 }
+    received { 100 }
   end
 end

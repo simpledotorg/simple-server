@@ -156,7 +156,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
     t.uuid "user_id", null: false
     t.uuid "protocol_drug_id", null: false
     t.integer "in_stock", null: false
-    t.integer "received", null: false
+    t.integer "received"
     t.datetime "recorded_at", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
