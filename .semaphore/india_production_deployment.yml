@@ -7,7 +7,7 @@ blocks:
         - name: Deploy to India Production
           commands:
             - checkout
-            - sem-version ruby 2.5.1
+            - sem-version ruby 2.6.6
             - cache restore
             - yarn install
             - bundle install --deployment --path vendor/bundle
