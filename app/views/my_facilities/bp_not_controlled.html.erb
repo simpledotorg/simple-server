@@ -9,8 +9,11 @@
           Last updated: <%= @last_updated_at %>
         </p>
       </div>
-      <p class="c-grey-dark">
+      <p class="mb-4px c-grey-dark">
         <strong>What to look for:</strong> Low percentages are good, and 10% or lower is ideal 
+      </p>
+      <p class="c-grey-dark c-print-black">
+        <strong>Numerator:</strong> Hypertension patients with BP &ge;140/90 at their most recent visit in the last 3 months, <%= render "denominator_footer" %>
       </p>
       <div class="d-flex fw-wrap mb-16px">
         <%= render "shared/size_and_zone_filters" %>
@@ -117,12 +120,6 @@
           </tbody>
         </table>
       <% end %>
-      <div>
-        <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>Numerator:</strong> Hypertension patients with BP &ge;140/90 at their most recent visit in the last 3 months
-        </p>
-        <%= render "denominator_footer" %>
-      </div>
     </div>
   </div>
 </div>
