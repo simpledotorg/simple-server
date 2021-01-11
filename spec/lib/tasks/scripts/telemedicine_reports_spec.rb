@@ -11,7 +11,7 @@ RSpec.describe TelemedicineReports do
   end
 
   let!(:facility_2) do
-    create(:facility, :with_teleconsultation, facility_type: "DH")
+    create(:facility, :with_teleconsultation, facility_type: "DH", facility_group: facility_1.facility_group)
   end
 
   let!(:user_1) { create(:user, id: "31f4b6c4-6172-499a-95e1-aaaaaaaaaaaa", registration_facility: facility_1) }
