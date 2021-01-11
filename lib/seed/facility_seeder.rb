@@ -66,8 +66,9 @@ module Seed
       puts "Creating #{number_of_facility_groups} FacilityGroups..."
 
       # Create state Regions
-      states = number_of_states.times.map {
-        FactoryBot.build(:region, :state, id: nil, parent_path: Region.root.path)
+      state_names = Seed::FakeNames.instance.states.sample(number_of_states)
+      states = number_of_states.times.each_with_index.map { |i|
+        FactoryBot.build(:region, :state, id: nil, name: state_names[i], parent_path: Region.root.path)
       }
       state_results = Region.import(states, returning: [:path])
 
@@ -131,7 +132,7 @@ module Seed
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
-            state: state,
+            state: state.name,
             zone: blocks.sample
           }
           facility_attrs << FactoryBot.build(:facility, :seed, attrs)
