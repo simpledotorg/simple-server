@@ -24,6 +24,8 @@ module Reports
           return
         end
 
+        cache_states
+
         notify "starting facility_group caching"
         Statsd.instance.time("region_cache_warmer.facility_groups") do
           cache_facility_groups
@@ -46,14 +48,10 @@ module Reports
 
     private
 
-    def notify(msg, extra = {})
-      data = {
-        logger: {
-          name: self.class.name
-        },
-        class: self.class.name
-      }.merge(extra).merge(msg: msg)
-      Rails.logger.info data
+    def cache_states
+      Region.state_regions.each do |region|
+        RegionService.call(region: region, period: period)
+      end
     end
 
     def cache_facility_groups
@@ -76,5 +74,16 @@ module Reports
         Statsd.instance.increment("region_cache_warmer.facilities.cache")
       end
     end
+
+    def notify(msg, extra = {})
+      data = {
+        logger: {
+          name: self.class.name
+        },
+        class: self.class.name
+      }.merge(extra).merge(msg: msg)
+      Rails.logger.info data
+    end
+
   end
 end
