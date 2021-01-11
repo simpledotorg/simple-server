@@ -114,6 +114,11 @@ class Appointment < ApplicationRecord
     self.remind_on = nil
   end
 
+  def mark_patient_as_migrated
+    patient.status = :migrated
+    patient.save
+  end
+
   def mark_patient_as_dead
     patient.status = :dead
     patient.save
