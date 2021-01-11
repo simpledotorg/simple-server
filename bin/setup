@@ -108,7 +108,7 @@ verify_bundled_gems (){
 verify_yarn_packages (){
   echo 'Updating Yarn packages...'
 
-  bundle exec yarn install 2>&1
+  bundle exec rails yarn install 2>&1
 }
 
 verify_foreman(){
