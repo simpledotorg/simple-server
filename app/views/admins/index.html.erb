@@ -17,22 +17,27 @@
   <div class="admin-list mb-5">
     <% @admins.sort_by(&:email).each do |admin| %>
       <% admin = AdminAccessPresenter.new(admin) %>
-
-      <%= link_to(admin_path(admin), class: "admin-list-item") do %>
+      <div class="admin-list-item">
         <div class="wrap-auto">
           <h5 class="title">
-            <%= admin.full_name %>, <span class="role"><%= admin.role %></span>
-            <% if admin.invited_to_sign_up? %>
-              <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
-            <% end %>
+            <%= link_to admin.full_name, admin_path(admin) %>, <span class="role"><%= admin.role %></span>
           </h5>
           <div class="email"><%= admin.email %></div>
+          <span class="access"><%= admin.display_access_level.name %></span>
         </div>
 
         <div class="text-right">
-          <span class="access"><%= admin.display_access_level.name %></span>
+          <% if admin.invited_to_sign_up? %>
+            <div class="mr-4 mt-1">
+              <span class="badge badge-success badge-pill" style="font-size: 85%; font-weight: normal;">Invite sent</span>
+            </div>
+            <div class="mr-4 mt-1">
+              <%= link_to "Resend invite", resend_invitation_admin_path(admin), method: :post %>
+            </div>
+          <% end %>
         </div>
-      <% end %>
+      </div>
+
     <% end %>
   </div>
 <% else %>
