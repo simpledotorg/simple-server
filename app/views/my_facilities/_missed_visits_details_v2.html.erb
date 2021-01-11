@@ -25,23 +25,17 @@
         </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
           <colgroup>
-            <col style="width: 12%;">
+            <col style="width: 16%;">
             <col style="width: 10%;">
             <col style="width: 10%;">
-            <col class="table-divider" style="width: 5%;">
-            <col style="width: 5%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
+            <col class="table-divider" style="width: 10%;">
+            <col style="width: 6%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
@@ -65,7 +59,6 @@
               <% (@start_period..@period).each do |period| %>
                 <th
                   class="row-label sort-label sort-label-small"
-                  colspan="2"
                   data-sort-column-key="total-patients-<%= period %>"
                   data-sort-method="number"
                 >
@@ -90,7 +83,7 @@
                   <%= number_or_zero_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
                 </td>
                 <td>
-                  <div class="w-80px h-20px">
+                  <div class="w-90px h-20px">
                     <canvas id=<%= facility.slug %>></canvas>
                   </div>
                 </td>
@@ -102,13 +95,12 @@
                 </td>
                 <% (@start_period..@period).each do |period| %>
                   <% missed_visits_rate = @data_for_facility[facility.name]["missed_visits_rate"][period] %>
-                  <td>
-                    <%= @data_for_facility[facility.name]["missed_visits"][period] %>
-                  </td>
                   <td
                     class="type-percent"
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= missed_visits_rate %>"
+                    data-toggle="tooltip"
+                    title="<%= @data_for_facility[facility.name]["missed_visits"][period] %> out of <%= @data_for_facility[facility.name]["adjusted_registrations"][period] %> patients"
                   >
                     <em data-rate="<%= missed_visits_rate %>">
                       <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>
