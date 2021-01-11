@@ -18,7 +18,7 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 Make sure you have the following dependencies installed:
 
-- Ruby 2.5.1
+- ruby 2.6.6
 - PostgreSQL 10
 - Redis
 - Yarn
@@ -30,7 +30,7 @@ brew cask install postgres
 brew install rbenv ruby-build redis yarn
 ```
 
-To set up Ruby 2.5.1, see https://gorails.com/setup/osx/10.15-catalina
+To set up ruby 2.6.6, see https://gorails.com/setup/osx/10.15-catalina
 
 Open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
 
@@ -47,15 +47,15 @@ $ bin/setup
 
 #### Docker Compose
 
-For quick development and testing, the server can be run locally using Docker Compose and the command: 
+For quick development and testing, the server can be run locally using Docker Compose and the command:
 
 ```
 docker-compose up
-``` 
+```
 
-The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development. 
+The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
 
-Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below. 
+Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
 
 
 #### Manual Setup
