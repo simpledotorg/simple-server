@@ -210,4 +210,16 @@ describe PatientSummary, type: :model do
       expect(PatientSummary.overdue.map(&:id)).not_to include(upcoming_appointment.patient_id)
     end
   end
+
+  describe "PatientSummary for a discarded patient" do
+    let!(:patient) { create(:patient) }
+
+    it "shouldn't return a PatientSummary for a discarded patient" do
+      patient.discard
+
+      create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
+
+      expect(PatientSummary.find_by(id: patient.id)).to be_nil
+    end
+  end
 end
