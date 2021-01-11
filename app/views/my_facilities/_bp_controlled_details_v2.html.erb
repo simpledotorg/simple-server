@@ -22,36 +22,36 @@
         </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
           <colgroup>
-            <col>
-            <col>
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
-            <col class="table-divider">
-            <col>
+            <col style="width: 12%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col class="table-divider" style="width: 5%;">
+            <col style="width: 5%;">
+            <col class="table-divider" style="width: 4%;">
+            <col style="width: 4%;">
+            <col class="table-divider" style="width: 4%;">
+            <col style="width: 4%;">
+            <col class="table-divider" style="width: 4%;">
+            <col style="width: 4%;">
+            <col class="table-divider" style="width: 4%;">
+            <col style="width: 4%;">
+            <col class="table-divider" style="width: 4%;">
+            <col style="width: 4%;">
+            <col class="table-divider" style="width: 4%;">
+            <col style="width: 4%;">
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
-              <th class="row-label sort-label sort-label-small" style="width: 160px;">
+              <th class="row-label sort-label sort-label-small">
                 Facilities
               </th>
-              <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
                 Total assigned<br>patients
               </th>
-              <th class="row-label sort-label sort-label-small" data-sort-method="number" style="width: 120px;">
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
                 Total registered<br>patients
               </th>
-              <th class="row-label sort-label sort-label-small" colspan="2" style="width: 80px;">
+              <th class="row-label sort-label sort-label-small" colspan="2">
                 6-month change
               </th>
               <% (@start_period..@period).each do |period| %>
@@ -100,6 +100,12 @@
           </tbody>
         </table>
       <% end %>
+      <div>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>Numerator:</strong> Hypertension patients with BP &lt;140/90 at their most recent visit in the last 3 months
+        </p>
+        <%= render "denominator_footer" %>
+      </div>
     </div>
   </div>
 </div>
