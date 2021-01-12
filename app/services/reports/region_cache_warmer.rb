@@ -24,7 +24,10 @@ module Reports
           return
         end
 
-        cache_states
+        notify "starting facility_group caching"
+        Statsd.instance.time("region_cache_warmer.states") do
+          cache_states
+        end
 
         notify "starting facility_group caching"
         Statsd.instance.time("region_cache_warmer.facility_groups") do
@@ -51,6 +54,7 @@ module Reports
     def cache_states
       Region.state_regions.each do |region|
         RegionService.call(region: region, period: period)
+        Statsd.instance.increment("region_cache_warmer.states.cache")
       end
     end
 
