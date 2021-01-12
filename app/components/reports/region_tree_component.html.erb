@@ -1,5 +1,5 @@
 <ul class="access-item-wrapper">
-  <% children.each do |parent, children| %>
+  <% children.sort_by { |parent, children| parent.name }.each do |parent, children| %>
   <li>
     <div class="access-item collapsed <%= parent.region_type %>">
       <% depth(parent).times do %>
