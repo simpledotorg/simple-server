@@ -2,7 +2,7 @@ class AdminsController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_admin, only: [:show, :edit, :update, :access_tree, :destroy]
+  before_action :set_admin, only: [:show, :edit, :update, :resend_invitation, :access_tree, :destroy]
   before_action :verify_params, only: [:update]
 
   def index
@@ -53,6 +53,23 @@ class AdminsController < AdminController
     end
 
     redirect_to admins_url, notice: "Admin was successfully updated."
+  end
+
+  def resend_invitation
+    admin = authorize { current_admin.accessible_admins(:manage).find_by!(id: params[:id]) }
+    email_authentication = admin.email_authentication
+
+    if email_authentication.blank?
+      redirect_to admins_url,
+        alert: "An invitation couldn't be sent to #{admin.full_name}. Please delete the invited administrator and try again."
+    elsif email_authentication.invited_to_sign_up?
+      email_authentication.invite!
+
+      redirect_to admins_url, notice: "An invitation was sent again to #{admin.full_name} (#{email_authentication.email})."
+    else
+      redirect_to admins_url,
+        alert: "#{admin.full_name} (#{email_authentication.email}) hasn't been invited, or has already accepted their invitation"
+    end
   end
 
   def destroy
