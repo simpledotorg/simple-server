@@ -9,8 +9,11 @@
           Last updated: <%= @last_updated_at %>
         </p>
       </div>
-      <p class="c-grey-dark">
+      <p class="mb-4px c-grey-dark">
         <strong>What to look for:</strong> Low percentages are good, and 20% or lower is ideal 
+      </p>
+      <p class="c-grey-dark c-print-black">
+        <strong>Numerator:</strong> Hypertension patients with no visit in the last 3 months, <%= render "denominator_footer" %>
       </p>
       <div class="d-flex fw-wrap mb-16px">
         <%= render "shared/size_and_zone_filters" %>
@@ -18,27 +21,21 @@
       <% %w(large medium small community).each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
         <p class="mt-20px mb-0px fw-bold">
-          <%= size.capitalize %> facilities
+          <%= Facility.localized_facility_size(size) %> facilities
         </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table">
           <colgroup>
-            <col style="width: 12%;">
+            <col style="width: 16%;">
             <col style="width: 10%;">
             <col style="width: 10%;">
-            <col class="table-divider" style="width: 5%;">
-            <col style="width: 5%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
-            <col class="table-divider" style="width: 4%;">
-            <col style="width: 4%;">
+            <col class="table-divider" style="width: 10%;">
+            <col style="width: 6%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
+            <col style="width: 8%;">
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
@@ -51,11 +48,20 @@
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
                 Total registered<br>patients
               </th>
-              <th class="row-label sort-label sort-label-small" colspan="2">
+              <th
+                class="row-label sort-label sort-label-small"
+                colspan="2"
+                data-sort-column-key="6-month-change"
+                data-sort-method="number"
+              >
                 6-month change
               </th>
               <% (@start_period..@period).each do |period| %>
-                <th class="row-label sort-label sort-label-small" data-sort-method="number" colspan="2">
+                <th
+                  class="row-label sort-label sort-label-small"
+                  data-sort-column-key="total-patients-<%= period %>"
+                  data-sort-method="number"
+                >
                   <%= period %>
                 </th>
               <% end %>
@@ -77,19 +83,25 @@
                   <%= number_or_zero_with_delimiter(@data_for_facility[facility.name]["cumulative_registrations"].values.last) %>
                 </td>
                 <td>
-                  <div class="w-80px h-20px">
+                  <div class="w-90px h-20px">
                     <canvas id=<%= facility.slug %>></canvas>
                   </div>
                 </td>
-                <td class="fw-bold ta-center <% if six_month_rate_change > 0 %>c-red-dark<% elsif six_month_rate_change < 0 %>c-green-dark<% else %>c-grey-dark<% end %>">
+                <td
+                  class="fw-bold ta-center <% if six_month_rate_change > 0 %>c-red-dark<% elsif six_month_rate_change < 0 %>c-green-dark<% else %>c-grey-dark<% end %>"
+                  data-sort-column-key="6-month-change"
+                >
                   <%= number_to_percentage_with_symbol(six_month_rate_change, precision: 0) %>
                 </td>
                 <% (@start_period..@period).each do |period| %>
-                  <td>
-                    <%= @data_for_facility[facility.name]["missed_visits"][period] %>
-                  </td>
-                  <td class="type-percent">
-                    <% missed_visits_rate = @data_for_facility[facility.name]["missed_visits_rate"][period] %>
+                  <% missed_visits_rate = @data_for_facility[facility.name]["missed_visits_rate"][period] %>
+                  <td
+                    class="type-percent"
+                    data-sort-column-key="total-patients-<%= period %>"
+                    data-sort="<%= missed_visits_rate %>"
+                    data-toggle="tooltip"
+                    title="<%= @data_for_facility[facility.name]["missed_visits"][period] %> / <%= @data_for_facility[facility.name]["adjusted_registrations"][period] %> patients"
+                  >
                     <em data-rate="<%= missed_visits_rate %>">
                       <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>
                     </em>
@@ -100,12 +112,6 @@
           </tbody>
         </table>
       <% end %>
-      <div>
-        <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>Numerator:</strong> Hypertension patients with no visit in the last 3 months
-        </p>
-        <%= render "denominator_footer" %>
-      </div>
     </div>
   </div>
 </div>

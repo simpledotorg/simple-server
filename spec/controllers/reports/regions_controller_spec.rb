@@ -16,6 +16,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "index (with region reports)" do
+    render_views
+
     before do
       Flipper.enable(:region_reports)
       @facility_group = create(:facility_group, organization: organization)
@@ -37,8 +39,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_successful
       facility_regions = [@facility_1.region, @facility_2.region]
       org_region = organization.region
+      state_region = @facility_1.region.state_region
       expect(assigns[:accessible_regions].keys).to eq([org_region])
-      expect(assigns[:accessible_regions].dig(org_region, @facility_group.region, @block.region)).to match_array(facility_regions)
+      expect(assigns[:accessible_regions][org_region].keys).to match_array(org_region.state_regions)
+      expect(assigns[:accessible_regions].dig(org_region, state_region, @facility_group.region, @block.region)).to match_array(facility_regions)
     end
   end
 

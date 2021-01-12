@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.5.1"
+ruby "2.6.6"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -74,7 +74,7 @@ gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
-gem "view_component"
+gem "view_component", require: "view_component/engine"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "memery"

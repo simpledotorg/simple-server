@@ -57,6 +57,22 @@ class UserAccess
       .includes(facility_groups: :facilities)
   end
 
+  class UnsupportedAccessRequest < RuntimeError; end
+
+  # Users can view reports for a state if they can manage any district within the state.
+  # Any other access requests (ie manage, view_pii, etc) for a state receive an error and are not supported.
+  #
+  # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
+  def accessible_state_regions(action)
+    if action == :view_reports
+      districts = accessible_district_regions(:manage)
+      state_region_ids = districts.map(&:state_region).pluck(:id)
+      Region.state_regions.where(id: state_region_ids)
+    else
+      raise UnsupportedAccessRequest, "States only support 'view_reports' authorization requests."
+    end
+  end
+
   def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
@@ -75,6 +91,9 @@ class UserAccess
     Region.district_regions.where(source_id: facility_group_ids)
   end
 
+  # User block authorization is determined via the parent district.
+  #
+  # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
   def accessible_block_regions(action)
     facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
     facility_group_ids.uniq!
