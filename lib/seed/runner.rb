@@ -30,15 +30,6 @@ module Seed
       puts "Starting #{self.class} with #{config.type} configuration"
     end
 
-    def create_progress_bar
-      ProgressBar.create(
-        format: "%t |%E | %b\u{15E7}%i %p%% | %a",
-        remainder_mark: "\u{FF65}",
-        title: "Seeding Facilities",
-        total: Facility.count
-      )
-    end
-
     def call
       result = FacilitySeeder.call(config: config)
       total_counts[:facility] = result&.ids&.size || 0
@@ -88,6 +79,15 @@ module Seed
 
     def sum_facility_totals
       counts.each_with_object(Hash.new(0)) { |(_slug, counts), hsh| counts.each { |type, count| hsh[type] += count } }
+    end
+
+    def create_progress_bar
+      ProgressBar.create(
+        format: "%t |%E | %b\u{15E7}%i %p%% | %a",
+        remainder_mark: "\u{FF65}",
+        title: "Seeding Facilities",
+        total: Facility.count
+      )
     end
 
     def create_appts(patient_info, user)
