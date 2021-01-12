@@ -84,6 +84,5 @@ module Reports
       }.merge(extra).merge(msg: msg)
       Rails.logger.info data
     end
-
   end
 end
