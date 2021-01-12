@@ -1,5 +1,7 @@
 class ProtocolDrug < ApplicationRecord
   belongs_to :protocol
+  has_many :drug_stocks
+
   before_create :assign_id
 
   validates :name, presence: true

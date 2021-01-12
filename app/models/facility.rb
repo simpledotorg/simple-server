@@ -28,6 +28,7 @@ class Facility < ApplicationRecord
   has_many :prescription_drugs
   has_many :appointments
   has_many :teleconsultations
+  has_many :drug_stocks
 
   has_many :registered_patients,
     class_name: "Patient",

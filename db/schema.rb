@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_07_060947) do
-
+ActiveRecord::Schema.define(version: 2021_01_08_060640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
   enable_extension "pgcrypto"
@@ -149,6 +148,21 @@ ActiveRecord::Schema.define(version: 2021_01_07_060947) do
   create_table "data_migrations", id: false, force: :cascade do |t|
     t.string "version", null: false
     t.index ["version"], name: "unique_data_migrations", unique: true
+  end
+
+  create_table "drug_stocks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "user_id", null: false
+    t.uuid "protocol_drug_id", null: false
+    t.integer "in_stock", null: false
+    t.integer "received"
+    t.datetime "recorded_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
+    t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
+    t.index ["user_id"], name: "index_drug_stocks_on_user_id"
   end
 
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -568,6 +582,9 @@ ActiveRecord::Schema.define(version: 2021_01_07_060947) do
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
+  add_foreign_key "drug_stocks", "facilities"
+  add_foreign_key "drug_stocks", "protocol_drugs"
+  add_foreign_key "drug_stocks", "users"
   add_foreign_key "encounters", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
