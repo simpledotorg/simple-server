@@ -19,7 +19,9 @@ FactoryBot.define do
     device_updated_at { Time.current }
     recorded_at { device_created_at }
     association :address, strategy: :build
-    phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
+    phone_numbers do
+      [association(:patient_phone_number, strategy: :build, patient: instance)]
+    end
     association :registration_facility, factory: :facility
     assigned_facility { registration_facility }
     association :registration_user, factory: :user_created_on_device

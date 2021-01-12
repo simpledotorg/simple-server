@@ -41,39 +41,31 @@ module Seed
 
     def build_patient(user, oldest_registration:)
       recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
-      identifier = FactoryBot.build(:patient_business_identifier,
+      default_attrs = {
         created_at: recorded_at,
         device_created_at: recorded_at,
         device_updated_at: recorded_at,
         patient: nil,
-        updated_at: recorded_at,
-        metadata: {
+        updated_at: recorded_at
+      }
+      identifier = FactoryBot.build(:patient_business_identifier,
+        default_attrs.merge(metadata: {
           assigning_facility_id: facility.id,
           assigning_user_id: user.id
-        })
-      medical_history = FactoryBot.build(:medical_history,
-        created_at: recorded_at,
-        device_created_at: recorded_at,
-        device_updated_at: recorded_at,
-        patient: nil,
-        updated_at: recorded_at,
-        user: user)
-      address = FactoryBot.build(:address,
-        created_at: recorded_at,
-        device_created_at: recorded_at,
-        device_updated_at: recorded_at,
-        updated_at: recorded_at)
-      FactoryBot.build(:patient,
+        }))
+      medical_history = FactoryBot.build(:medical_history, default_attrs.merge(user: user))
+      address = FactoryBot.build(:address, default_attrs.except(:patient))
+      phone_number = FactoryBot.build(:patient_phone_number, default_attrs)
+      FactoryBot.build(:patient, default_attrs.except(:patient).merge({
         address: address,
         assigned_facility: user.facility,
-        created_at: recorded_at,
-        recorded_at: recorded_at,
         business_identifiers: [identifier],
         medical_history: medical_history,
+        phone_numbers: [phone_number],
         status: patient_status,
         registration_user: user,
-        registration_facility: user.facility,
-        updated_at: recorded_at)
+        registration_facility: user.facility
+      }))
     end
 
     def self.status_index
