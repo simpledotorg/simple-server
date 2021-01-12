@@ -41,13 +41,22 @@ module Seed
 
     def build_patient(user, oldest_registration:)
       recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
+      identifier = FactoryBot.build(:patient_business_identifier,
+        created_at: recorded_at,
+        updated_at: recorded_at,
+        metadata: {
+          assigning_facility_id: facility.id,
+          assigning_user_id: user.id}
+      )
+
       address = FactoryBot.build(:address,
         created_at: recorded_at,
         device_created_at: recorded_at,
         device_updated_at: recorded_at,
         updated_at: recorded_at)
-      FactoryBot.build(:patient,
+      FactoryBot.build(:patient, :seed,
         address: address,
+        business_identifiers: [identifier],
         created_at: recorded_at,
         recorded_at: recorded_at,
         registration_user: user,
