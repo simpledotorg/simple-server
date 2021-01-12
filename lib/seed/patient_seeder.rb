@@ -23,11 +23,9 @@ module Seed
     def call
       benchmark("Seeding records for facility #{slug}") do
         result = {facility: facility.slug}
-        # Set a "birth date" for the Facility that patient records will be based from
-        facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
         benchmark("[#{slug} Seeding patients for a #{facility.facility_size} facility") do
           patients = patients_to_create(facility.facility_size).times.map { |num|
-            build_patient(user, oldest_registration: facility_birth_date)
+            build_patient(user)
           }
           addresses = patients.map { |patient| patient.address }
           address_result = Address.import(addresses)
@@ -39,8 +37,9 @@ module Seed
       end
     end
 
-    def build_patient(user, oldest_registration:)
-      recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
+    def build_patient(user)
+      start_date = facility.created_at.prev_month # allow for some registrations happening before the facility creation
+      recorded_at = Faker::Time.between(from: start_date, to: 1.day.ago)
       default_attrs = {
         created_at: recorded_at,
         device_created_at: recorded_at,

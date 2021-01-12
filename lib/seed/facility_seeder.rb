@@ -126,13 +126,15 @@ module Seed
         number_facilities.times {
           size = weighted_facility_size_sample
           type = SIZES_TO_TYPE.fetch(size).sample
-
+          created_at = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
           attrs = {
+            created_at: created_at,
             district: facility_group_name,
             facility_group_id: facility_group_id,
             facility_size: size,
             facility_type: type,
             state: state.name,
+            updated_at: created_at,
             zone: blocks.sample
           }
           facility_attrs << FactoryBot.build(:facility, :seed, attrs)
