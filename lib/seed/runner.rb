@@ -51,17 +51,10 @@ module Seed
     end
 
     def seed_patients(progress)
-      parallel_options = {
-        finish: lambda do |facility, i, result|
-          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result}")
-          progress.increment
-        end
-      }
-      parallel_options[:in_processes] = 0 if Rails.env.test?
-
       results = []
       Facility.find_in_batches(batch_size: 100) do |facilities|
-        batch_result = Parallel.map(facilities, parallel_options) { |facility|
+        options = parallel_options(progress)
+        batch_result = Parallel.map(facilities, options) { |facility|
           user = facility.users.find_by!(role: config.seed_generated_active_user_role)
           result, patient_info = PatientSeeder.call(facility, user, config: config, logger: logger)
 
@@ -75,6 +68,17 @@ module Seed
         results.concat batch_result
       end
       results
+    end
+
+    def parallel_options(progress)
+      parallel_options = {
+        finish: lambda do |facility, i, result|
+          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result}")
+          progress.increment
+        end
+      }
+      parallel_options[:in_processes] = 0 if Rails.env.test?
+      parallel_options
     end
 
     def sum_facility_totals
