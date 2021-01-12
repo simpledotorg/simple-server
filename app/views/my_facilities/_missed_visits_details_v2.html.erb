@@ -21,7 +21,7 @@
       <% %w(large medium small community).each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
         <p class="mt-20px mb-0px fw-bold">
-          <%= Facility.localized_facility_size(size) %> facilities
+          <%= Facility.localized_facility_size(size) %>
         </p>
         <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table tl-fixed">
           <colgroup>
