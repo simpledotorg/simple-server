@@ -297,7 +297,7 @@
 
 <%= render "visit_details_card" %>
 
-<% if @region.child_region_type.in?(["block", "facility"]) %>
+<% if @region.child_region_type.in?(["district", "block", "facility"]) %>
   <%= render "child_data_tables", data: @children_data, region_type: @region.child_region_type %>
 <% end %>
 
