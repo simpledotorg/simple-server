@@ -1,5 +1,5 @@
 require "rails_helper"
-require "tasks/scripts/mark_migrated_patients"
+require "tasks/scripts/mark_transferred_patients"
 
 RSpec.describe MarkTransferredPatient do
   context "for a patient with last appointment cancelled" do
