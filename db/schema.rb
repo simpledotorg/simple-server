@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_24_074852) do
+ActiveRecord::Schema.define(version: 2021_01_07_060947) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -462,6 +462,8 @@ ActiveRecord::Schema.define(version: 2020_12_24_074852) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "drug_category"
+    t.boolean "stock_tracked", default: false, null: false
     t.index ["deleted_at"], name: "index_protocol_drugs_on_deleted_at"
   end
 
