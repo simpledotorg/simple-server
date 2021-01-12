@@ -140,11 +140,14 @@ module Seed
         number_appointments = config.rand_or_max(0..1) # some patients dont get appointments
         next if number_appointments == 0
         scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
+        created_at = Faker::Time.between(from: user.created_at, to: 1.day.ago)
         hsh = {
           creation_facility_id: facility.id,
           facility_id: facility.id,
           patient_id: patient_id,
           scheduled_date: scheduled_date,
+          created_at: created_at,
+          updated_at: created_at,
           user_id: user.id
         }
         attrs << FactoryBot.attributes_for(:appointment, hsh)
