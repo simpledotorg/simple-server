@@ -59,8 +59,8 @@ class UserAccess
 
   class UnsupportedAccessRequest < RuntimeError; end
 
-  # We determine a state's view_reports access via the district manager user access. Any other access requests for
-  # a state receive an error and are not supported.
+  # Users can view reports for a state if they can manage any district within the state.
+  # Any other access requests (ie manage, view_pii, etc) for a state receive an error and are not supported.
   #
   # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
   def accessible_state_regions(action)
