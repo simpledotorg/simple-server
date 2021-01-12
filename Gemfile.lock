@@ -151,11 +151,11 @@ GEM
       railties (>= 3.2, < 6.1)
     erubi (1.9.0)
     execjs (2.7.0)
-    factory_bot (4.11.1)
-      activesupport (>= 3.0.0)
-    factory_bot_rails (4.11.1)
-      factory_bot (~> 4.11.1)
-      railties (>= 3.0.0)
+    factory_bot (5.2.0)
+      activesupport (>= 4.2.0)
+    factory_bot_rails (5.2.0)
+      factory_bot (~> 5.2.0)
+      railties (>= 4.2.0)
     faker (2.11.0)
       i18n (>= 1.6, < 2)
     faraday (1.0.1)
@@ -586,7 +586,7 @@ DEPENDENCIES
   discard (~> 1.0)
   dogstatsd-ruby
   dotenv-rails
-  factory_bot_rails (~> 4.8)
+  factory_bot_rails (~> 5.2)
   faker
   flamegraph
   flipper
