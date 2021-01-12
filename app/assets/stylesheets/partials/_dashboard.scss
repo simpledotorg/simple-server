@@ -91,7 +91,7 @@ th sup {
       color: $blue;
       height: 100%;
       padding: 16px 12px;
-      vertical-align: middle;
+      vertical-align: top;
       text-align: left;
       margin: 0;
       word-break: break-word;
@@ -412,7 +412,7 @@ th[role=columnheader]:not(.no-sort):after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
-  margin: 0 0 0 4px;
+  margin: 0;
   vertical-align: middle;
 }
 
