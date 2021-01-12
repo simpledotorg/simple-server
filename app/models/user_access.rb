@@ -91,8 +91,7 @@ class UserAccess
     Region.district_regions.where(source_id: facility_group_ids)
   end
 
-  # We determine accessible blocks via the parent district authorization - so we need to jump through some hoops
-  # here given our current user access model.
+  # User block authorization is determined via the parent district.
   #
   # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
   def accessible_block_regions(action)
