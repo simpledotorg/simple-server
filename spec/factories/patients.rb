@@ -24,8 +24,8 @@ FactoryBot.define do
     assigned_facility { registration_facility }
     association :registration_user, factory: :user_created_on_device
     business_identifiers do
-      [association(:patient_business_identifier, patient: instance,
-                                                metadata: {assigning_facility_id: registration_facility.id, assigning_user_id: registration_user.id})]
+      [association(:patient_business_identifier, strategy: :build, patient: instance,
+                                                 metadata: {assigning_facility_id: registration_facility.id, assigning_user_id: registration_user.id})]
     end
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }

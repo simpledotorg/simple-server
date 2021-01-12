@@ -7,10 +7,14 @@ describe Patient, type: :model do
     expect(described_class::GENDERS).to eq(Rails.application.config.country[:supported_genders])
   end
 
-  describe "factory bot" do
-    fit "can create a valid patient" do
-      patient = create(:patient)
-      expect(patient).to be_valid
+  describe "factory fixtures" do
+    it "can create a valid patient" do
+      expect {
+        patient = create(:patient)
+        expect(patient).to be_valid
+      }.to change { Patient.count }.by(1)
+        .and change { PatientBusinessIdentifier.count }.by(1)
+        .and change { MedicalHistory.count }.by(1)
     end
   end
 
