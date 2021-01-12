@@ -1,7 +1,7 @@
 require "rails_helper"
 require "tasks/scripts/mark_migrated_patients"
 
-RSpec.describe MarkMigratedPatient do
+RSpec.describe MarkTransferredPatient do
   context "for a patient with last appointment cancelled" do
     let!(:patient) { create(:patient) }
 
