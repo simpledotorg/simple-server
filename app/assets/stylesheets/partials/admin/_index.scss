@@ -10,11 +10,6 @@
     padding: 16px;
     border-bottom: 1px solid #f0f2f5;
 
-    &:hover {
-      background: var(--light);
-      @include transition(0.4s);
-    }
-
     .wrap-auto {
       flex: auto;
     }

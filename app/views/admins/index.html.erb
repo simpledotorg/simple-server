@@ -20,20 +20,18 @@
       <div class="admin-list-item">
         <div class="wrap-auto">
           <h5 class="title">
-            <%= link_to admin.full_name, admin_path(admin) %>, <span class="role"><%= admin.role %></span>
+            <%= link_to admin.full_name, admin_path(admin) %>,
+            <span class="role"><%= admin.role %></span>
+            <% if admin.invited_to_sign_up? %>
+              <span class="badge badge-success badge-pill mr-4 mt-1" style="font-size: 85%; font-weight: normal;">Invite sent</span>
+            <% end %>
           </h5>
-          <div class="email"><%= admin.email %></div>
-          <span class="access"><%= admin.display_access_level.name %></span>
+          <span class="access"><%= admin.display_access_level.name %> &nbsp;&centerdot;&nbsp; <%= admin.email %></span>
         </div>
 
         <div class="text-right">
           <% if admin.invited_to_sign_up? %>
-            <div class="mr-4 mt-1">
-              <span class="badge badge-success badge-pill" style="font-size: 85%; font-weight: normal;">Invite sent</span>
-            </div>
-            <div class="mr-4 mt-1">
-              <%= link_to "Resend invite", resend_invitation_admin_path(admin), method: :post %>
-            </div>
+            <%= link_to "Resend invite", resend_invitation_admin_path(admin), class: 'btn btn-sm btn-outline-primary', method: :post %>
           <% end %>
         </div>
       </div>
