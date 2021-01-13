@@ -47,6 +47,20 @@ RSpec.describe Region, type: :model do
     end
   end
 
+  describe "children_for_reports" do
+    it "is everything for India"
+    fit "excludes states and blocks for other countries" do
+      org = Seed.seed_org.region
+      state = FactoryBot.create(:region, :state, reparent_to: org)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      fg = FactoryBot.create(:facility_group, region: district)
+      facility = FactoryBot.create(:facility, facility_group: fg)
+      facility_region = facility.region
+      expect(district.children_for_reports).to contain_exactly([facility_region])
+
+    end
+  end
+
   describe "cache_key" do
     it "contains class name, region type, and id" do
       facility_group = create(:facility_group)
