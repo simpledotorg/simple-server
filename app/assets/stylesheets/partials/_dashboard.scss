@@ -30,6 +30,19 @@ sup {
   color: $grey-dark;
 }
 
+.tooltip-inner {
+  text-align: left;
+  font-size: 90%;
+
+  span.math {
+    min-width: 6.5em;
+    display: inline-block;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 1em;
+  }
+}
+
 .link-row {
   display: block;
   padding: 8px 0;
@@ -134,6 +147,13 @@ th sup {
       min-width: 40px;
     }
 
+    .row-medicine {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 6em;
+      white-space: nowrap;
+    }
+
     a {
       display: block;
       white-space: nowrap;
@@ -150,6 +170,15 @@ th sup {
       i {
         opacity: 1;
       }
+    }
+  }
+
+  td.type-blank {
+    text-align: center;
+    color: $grey-mid;
+
+    &.type-title {
+      text-align: left;
     }
   }
 
@@ -212,8 +241,8 @@ th sup {
     color: #BE72E3;
     border-radius: 100px;
     padding: 2px;
-    width: 3em;
-    display: inline-block;
+    width: 3.5em;
+    display: block;
   }
 
   .row-total td.type-percent em {
@@ -229,7 +258,7 @@ th sup {
     .dropdown-menu {
       max-height: 350px;
       overflow:
-      hidden;
+              hidden;
       overflow: scroll;
     }
 
@@ -475,4 +504,27 @@ h3 .heading-label {
   color: $grey-dark;
 
   h5 { margin: auto; }
+}
+
+em.bg-green {
+  background: $green-light !important;
+  color: $green-dark !important;
+}
+
+em.bg-red {
+  background: $red !important;
+  color: #fff !important;
+  border-color: $red !important;
+}
+
+em.bg-yellow {
+  background: $yellow-light !important;
+  color: $yellow-darkest !important;
+  border-color: $yellow-light !important;
+}
+
+em.bg-orange {
+  background: $orange-light !important;
+  color: $orange-dark !important;
+  border-color: $orange-light !important;
 }
