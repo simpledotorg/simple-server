@@ -68,7 +68,7 @@ module Seed
       # Create state Regions
       state_names = Seed::FakeNames.instance.states.sample(number_of_states)
       states = number_of_states.times.each_with_index.map { |i|
-        FactoryBot.build(:region, :state, id: nil, name: state_names[i], parent_path: Region.root.path)
+        FactoryBot.build(:region, :state, id: nil, name: state_names[i], parent_path: organization.region.path)
       }
       state_results = Region.import(states, returning: [:path])
 
