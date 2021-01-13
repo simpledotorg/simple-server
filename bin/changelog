@@ -1,12 +1,16 @@
 #!/usr/bin/env ruby
 
 last_release = ARGV[0]
-diff = `git log #{last_release}..HEAD --oneline --decorate=no`
-pretty_changelog = diff.strip.split("\n")
+if last_release.nil? || last_release == "-h" || last_release == "--help"
+  abort "You must provide a git ref to compare HEAD to for the changelog. \nFor example: bin/changelog release-2021-01-21"
+end
+
+git_log = `git log #{last_release}..HEAD --oneline --decorate=no`
+changelog = git_log.strip.split("\n")
   .map { |line| line.match(/\s(.*)/)&.captures&.last }
   .reject { |line| line =~ /^Merge/ } # remove merge commits
   .compact
   .map { |line| "• #{line}" }
   .join("\n")
 
-puts pretty_changelog
+puts changelog
