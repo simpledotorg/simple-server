@@ -1,5 +1,7 @@
 class LatestBloodPressuresPerPatientPerQuarter < ApplicationRecord
   include BloodPressureable
+  include PatientReportable
+
   scope :with_hypertension, -> { where("medical_history_hypertension = ?", "yes") }
 
   def self.refresh
