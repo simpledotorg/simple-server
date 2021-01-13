@@ -166,6 +166,7 @@ Rails.application.routes.draw do
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
+    get "drug_stocks", to: "drug_stocks#index"
   end
 
   scope :resources do

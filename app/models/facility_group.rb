@@ -18,6 +18,7 @@ class FacilityGroup < ApplicationRecord
   has_many :teleconsultations, through: :facilities
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
+  has_many :protocol_drugs, through: :protocol
 
   alias_method :registered_patients, :patients
 
