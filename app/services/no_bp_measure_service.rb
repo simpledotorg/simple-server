@@ -2,17 +2,19 @@ class NoBPMeasureService
   CACHE_VERSION = 3
   CACHE_TTL = 7.days
 
-  def initialize(region, periods:)
+  def initialize(region, periods:, with_exclusions: false)
     @region = region
     @periods = periods
     @facilities = region.facilities.to_a
     @facility_ids = @facilities.map(&:id)
+    @with_exclusions = with_exclusions
   end
 
   attr_reader :facilities
   attr_reader :facility_ids
   attr_reader :periods
   attr_reader :region
+  attr_reader :with_exclusions
 
   delegate :cache, to: Rails
 
@@ -39,7 +41,8 @@ class NoBPMeasureService
       facilities: facility_ids,
       start_date: period.blood_pressure_control_range.begin,
       end_date: period.blood_pressure_control_range.end,
-      registration_date: period.blood_pressure_control_range.begin
+      registration_date: period.blood_pressure_control_range.begin,
+      exclude_status: exclude_patient_statuses
     }
     sql = GitHub::SQL.new(<<-SQL, attributes)
       SELECT COUNT(DISTINCT "patients"."id")
@@ -58,6 +61,7 @@ class NoBPMeasureService
         AND "medical_histories"."deleted_at" IS NULL
         AND "medical_histories"."hypertension" = :hypertension
         AND "patients"."assigned_facility_id" in :facilities
+        AND "patients"."status" != :exclude_status
         AND patients.recorded_at <= :registration_date
         AND (appointments.id IS NOT NULL
             OR prescription_drugs.id IS NOT NULL
@@ -74,6 +78,14 @@ class NoBPMeasureService
         ) -- #{self.class.name} region #{region.name} period #{period} facilities #{facility_ids}
     SQL
     sql.value
+  end
+
+  def exclude_patient_statuses
+    if with_exclusions
+      ""
+    else
+      "dead"
+    end
   end
 
   def cache_key(period)

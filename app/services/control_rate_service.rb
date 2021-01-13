@@ -6,7 +6,7 @@ class ControlRateService
   #
   # Note that for the range the returned values will be for each Period going back
   # to the beginning of registrations for the region.
-  def initialize(region, periods:)
+  def initialize(region, periods:, with_exclusions: false)
     @region = region
     @facilities = region.facilities
     # Normalize between a single period and range of periods
@@ -19,6 +19,7 @@ class ControlRateService
     end
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
+    @with_exclusions = with_exclusions
     logger.info class: self.class.name, msg: "created", region: region.id, region_name: region.name,
                 report_range: report_range.inspect, facilities: facilities.map(&:id), cache_key: cache_key
   end
@@ -28,6 +29,7 @@ class ControlRateService
   attr_reader :region
   attr_reader :report_range
   attr_reader :results
+  attr_reader :with_exclusions
 
   # We cache all the data for a region to improve performance and cache hits, but then return
   # just the data the client requested
@@ -63,8 +65,19 @@ class ControlRateService
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-    @registration_counts = region.assigned_patients.with_hypertension.group_by_period(report_range.begin.type,
-      :recorded_at, {format: formatter}).count
+    records =
+      region
+        .assigned_patients
+
+    @registration_counts =
+      if with_exclusions
+        records.with_hypertension.group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+          .count
+      else
+        records.for_reports
+          .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+          .count
+      end
   end
 
   def controlled_patients(period)
@@ -80,14 +93,19 @@ class ControlRateService
     control_range = period.blood_pressure_control_range
     # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
     # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
-    LatestBloodPressuresPerPatientPerMonth
+    records = LatestBloodPressuresPerPatientPerMonth
       .with_discarded
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
-      .with_hypertension
       .where(assigned_facility_id: facilities)
       .where("patient_recorded_at < ?", control_range.begin) # TODO this doesn't seem right -- revisit this exclusion
       .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
       .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
+
+    if with_exclusions
+      records.for_reports
+    else
+      records.with_hypertension
+    end
   end
 
   def uncontrolled_patients(period)
@@ -102,12 +120,17 @@ class ControlRateService
   def bp_quarterly_query(period)
     quarter = period.value
     cohort_quarter = quarter.previous_quarter
-    LatestBloodPressuresPerPatientPerQuarter
+    records = LatestBloodPressuresPerPatientPerQuarter
       .where(assigned_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
       .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
-      .with_hypertension
       .order("patient_id, bp_recorded_at DESC, bp_id")
+
+    if with_exclusions
+      records.for_reports
+    else
+      records.with_hypertension
+    end
   end
 
   def quarterly_report?
@@ -115,7 +138,11 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}"
+    if with_exclusions
+      "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}/with_exclusions"
+    else
+      "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}"
+    end
   end
 
   def cache_version
