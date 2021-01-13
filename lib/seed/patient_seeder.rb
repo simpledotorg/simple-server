@@ -52,16 +52,15 @@ module Seed
           assigning_facility_id: facility.id,
           assigning_user_id: user.id
         }))
-      medical_history = FactoryBot.build(:medical_history, default_attrs.merge(user: user))
+      medical_history = FactoryBot.build(:medical_history, :hypertension_yes, default_attrs.merge(user: user))
       address = FactoryBot.build(:address, default_attrs.except(:patient))
       phone_number = FactoryBot.build(:patient_phone_number, default_attrs)
       FactoryBot.build(:patient, default_attrs.except(:patient).merge({
         address: address,
-        assigned_facility: user.facility,
         business_identifiers: [identifier],
         medical_history: medical_history,
         phone_numbers: [phone_number],
-        status: patient_status,
+        status: weighted_random_patient_status,
         registration_user: user,
         registration_facility: user.facility
       }))
@@ -73,18 +72,18 @@ module Seed
 
     # Return weights of patient statuses that are reasonably close to actual - the vast majority
     # of our patients are active
-    def self.status_weights
+    def self.weighted_patient_statuses
       {
-        status_index[:active] => 0.96,
-        status_index[:dead] => 0.02,
-        status_index[:migrated] => 0.01,
-        status_index[:unresponsive] => 0.005,
-        status_index[:inactive] => 0.005
+        status_index["active"] => 0.96,
+        status_index["dead"] => 0.02,
+        status_index["migrated"] => 0.01,
+        status_index["unresponsive"] => 0.005,
+        status_index["inactive"] => 0.005
       }
     end
 
-    def patient_status
-      self.class.status_weights.max_by { |_, weight| rand**(1.0 / weight) }.first
+    def weighted_random_patient_status
+      self.class.weighted_patient_statuses.max_by { |_, weight| rand**(1.0 / weight) }.first
     end
 
     def patients_to_create(facility_size)
