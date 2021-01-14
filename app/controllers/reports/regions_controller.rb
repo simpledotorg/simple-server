@@ -245,8 +245,8 @@ class Reports::RegionsController < AdminController
   end
 
   def log_cache_metrics
-    stats = RequestStore[:cache_stats]
-    hit_rate = percentage(stats[:hits], stats[:reads])
+    stats = RequestStore[:cache_stats] || {}
+    hit_rate = percentage(stats.fetch(:hits, 0), stats.fetch(:reads, 0))
     logger.info class: self.class.name, msg: "cache hit rate: #{hit_rate}% stats: #{stats.inspect}"
   end
 
