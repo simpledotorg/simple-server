@@ -21,7 +21,7 @@
           name="facility_group"
           type="submit"
           form="query-filters"
-          onclick="$('#selected-facility-group').remove()"
+          onclick="$('#selected-facility-group').remove(); $('#selected-size').remove(); $('#selected-zone').remove();"
         >
           <%= facility_group.name %>
         </button>
@@ -42,7 +42,7 @@
     aria-expanded="false"
   >
     <% if @selected_zones.size == 1 %>
-      <%= @selected_zones.first.capitalize %>
+      <%= @selected_zones.first.titleize %>
     <% else %>
       All blocks
     <% end %>
