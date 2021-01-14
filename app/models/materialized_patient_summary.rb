@@ -17,7 +17,7 @@ class MaterializedPatientSummary < ActiveRecord::Base
   scope :all_overdue, -> { joins(:next_appointment).merge(Appointment.all_overdue) }
 
   def self.refresh
-    Scenic.database.refresh_materialized_view(table_name, concurrently: false, cascade: false)
+    Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
   end
 
   def readonly?
