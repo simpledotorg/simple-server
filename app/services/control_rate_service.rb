@@ -10,6 +10,7 @@ class ControlRateService
     @region = region
     @facilities = region.facilities
     # Normalize between a single period and range of periods
+    @periods = periods
     @report_range = if !periods.is_a?(Range)
       # If calling code is asking for a single period,
       # we set the range to be the current period to the start of the next period.
@@ -115,7 +116,7 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}"
+    "#{self.class}/#{region.cache_key}/#{@periods.end.cache_key}"
   end
 
   def cache_version
