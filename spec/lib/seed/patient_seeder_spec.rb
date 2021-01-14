@@ -20,7 +20,7 @@ RSpec.describe Seed::PatientSeeder do
     user = create(:user)
     facility = user.facility
 
-    result, patient_results = Seed::PatientSeeder.call(facility, user, config: Seed::Config.new, logger: logger)
+    _result, patient_results = Seed::PatientSeeder.call(facility, user, config: Seed::Config.new, logger: logger)
     patient_results.each do |(id, _recorded_at)|
       patient = Patient.find(id)
       expect(patient.registration_facility).to eq(facility)
