@@ -112,6 +112,10 @@ class Period
     Period.new(type: type, value: value.advance(options))
   end
 
+  def cache_key
+    "#{type}/#{self}"
+  end
+
   def hash
     value.hash ^ type.hash
   end

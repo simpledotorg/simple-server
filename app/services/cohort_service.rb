@@ -46,7 +46,7 @@ class CohortService
   end
 
   def cache_key(period)
-    "#{self.class}/#{region.model_name}/#{region.id}/#{period}"
+    "#{self.class}/#{region.cache_key}/#{period.cache_key}"
   end
 
   def cache_version
