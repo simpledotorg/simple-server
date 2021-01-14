@@ -117,6 +117,13 @@
   </div>
 </div>
 <input
+  id="selected-facility-group"
+  name="facility_group"
+  value="<%= @selected_facility_group %>"
+  form="query-filters"
+  hidden
+>
+<input
   id="selected-zone"
   name="zone"
   value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>"
