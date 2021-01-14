@@ -83,7 +83,7 @@ FROM patients p
          LEFT OUTER JOIN addresses ON addresses.id = p.address_id
          LEFT OUTER JOIN facilities reg_facility ON reg_facility.id = p.registration_facility_id
          LEFT OUTER JOIN facilities assigned_facility ON assigned_facility.id = p.assigned_facility_id
-         LEFT OUTER JOIN medical_histories mh ON mh.patient_id = p.id
+         LEFT OUTER JOIN (SELECT DISTINCT ON (patient_id) * FROM medical_histories) AS mh ON mh.patient_id = p.id
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
       FROM patient_phone_numbers

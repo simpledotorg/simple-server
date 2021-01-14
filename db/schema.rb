@@ -1123,7 +1123,28 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
        LEFT JOIN addresses ON ((addresses.id = p.address_id)))
        LEFT JOIN facilities reg_facility ON ((reg_facility.id = p.registration_facility_id)))
        LEFT JOIN facilities assigned_facility ON ((assigned_facility.id = p.assigned_facility_id)))
-       LEFT JOIN medical_histories mh ON ((mh.patient_id = p.id)))
+       LEFT JOIN ( SELECT DISTINCT ON (medical_histories.patient_id) medical_histories.id,
+              medical_histories.patient_id,
+              medical_histories.prior_heart_attack_boolean,
+              medical_histories.prior_stroke_boolean,
+              medical_histories.chronic_kidney_disease_boolean,
+              medical_histories.receiving_treatment_for_hypertension_boolean,
+              medical_histories.diabetes_boolean,
+              medical_histories.device_created_at,
+              medical_histories.device_updated_at,
+              medical_histories.created_at,
+              medical_histories.updated_at,
+              medical_histories.diagnosed_with_hypertension_boolean,
+              medical_histories.prior_heart_attack,
+              medical_histories.prior_stroke,
+              medical_histories.chronic_kidney_disease,
+              medical_histories.receiving_treatment_for_hypertension,
+              medical_histories.diabetes,
+              medical_histories.diagnosed_with_hypertension,
+              medical_histories.deleted_at,
+              medical_histories.user_id,
+              medical_histories.hypertension
+             FROM medical_histories) mh ON ((mh.patient_id = p.id)))
        LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
               patient_phone_numbers.number,
               patient_phone_numbers.phone_type,
@@ -1201,6 +1222,6 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
   SQL
-  add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id"
+  add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id", unique: true
 
 end
