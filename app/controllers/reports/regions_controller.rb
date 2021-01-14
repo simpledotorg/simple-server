@@ -47,7 +47,7 @@ class Reports::RegionsController < AdminController
       @children_data = @region.children.each_with_object({}) { |child, hsh|
         hsh[child.name] = Reports::RegionService.new(region: child,
                                                      period: @period,
-                                                     with_exclusions: current_admin.feature_enabled?(:report_with_exclusions)).call
+                                                     with_exclusions: report_with_exclusions?).call
       }
     end
   end
@@ -208,6 +208,10 @@ class Reports::RegionsController < AdminController
         end
       }
     end
+  end
+
+  def report_with_exclusions?
+    current_admin.feature_enabled?(:report_with_exclusions)
   end
 
   def region_class
