@@ -22,8 +22,7 @@ class PatientsExporter
       csv << csv_headers
 
       summary.in_batches(of: BATCH_SIZE).each do |batch|
-        load_batch(batch)
-          .each do |patient_summary|
+        load_batch(batch).each do |patient_summary|
           csv << csv_fields(patient_summary)
         end
       end

@@ -3,13 +3,10 @@ class PatientsWithHistoryExporter < PatientsExporter
   DISPLAY_MEDICATION_COLUMNS = 5
 
   def load_batch(batch)
-    batch
+    super(batch)
       .includes(
         {appointments: :facility},
-        :current_prescription_drugs,
-        {latest_blood_pressures: :facility},
-        :latest_blood_sugar,
-        :latest_bp_passport
+        {latest_blood_pressures: :facility}
       )
   end
 
