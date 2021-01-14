@@ -9,6 +9,36 @@
     aria-haspopup="true"
     aria-expanded="false"
   >
+    <%= @selected_facility_group.name %>
+  </a>
+  <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
+    <form id="query-filters">
+      <% @accessible_facility_groups.each do |facility_group| %>
+        <button
+          class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group == facility_group.name %>"
+          value="<%= facility_group.slug %>"
+          name="facility_group"
+          type="submit"
+          form="query-filters"
+          onclick="$('#selected-facility-group').remove()"
+        >
+          <%= facility_group.name %>
+        </button>
+      <% end %>
+    </form>
+  </div>
+</div>
+<div class="dropdown show mb-8px mr-8px">
+  <a
+    id="dropdownMenuLink"
+    class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+    href="#"
+    role="button"
+    data-toggle="dropdown"
+    data-display="static"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
     <% if @selected_zones.size == 1 %>
       <%= @selected_zones.first.capitalize %>
     <% else %>
