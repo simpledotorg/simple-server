@@ -9,15 +9,8 @@ class ControlRateService
   def initialize(region, periods:)
     @region = region
     @facilities = region.facilities
-    # Normalize between a single period and range of periods
     @periods = periods
-    @report_range = if !periods.is_a?(Range)
-      # If calling code is asking for a single period,
-      # we set the range to be the current period to the start of the next period.
-      Range.new(periods, periods.succ)
-    else
-      periods
-    end
+    @report_range = periods
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     logger.info class: self.class.name, msg: "created", region: region.id, region_name: region.name,
