@@ -16,7 +16,7 @@
         <strong>Numerator:</strong> Hypertension patients with BP &lt;140/90 at their most recent visit in the last 3 months, <%= render "denominator_footer" %>
       </p>
       <div class="d-flex fw-wrap mb-16px">
-        <%= render "shared/size_and_zone_filters" %>
+        <%= render "shared/my_facilities_filters" %>
       </div>
       <% %w(large medium small community).each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
