@@ -30,15 +30,6 @@ module Seed
       puts "Starting #{self.class} with #{config.type} configuration"
     end
 
-    def create_progress_bar
-      ProgressBar.create(
-        format: "%t |%E | %b\u{15E7}%i %p%% | %a",
-        remainder_mark: "\u{FF65}",
-        title: "Seeding Facilities",
-        total: Facility.count
-      )
-    end
-
     def call
       result = FacilitySeeder.call(config: config)
       total_counts[:facility] = result&.ids&.size || 0
@@ -60,78 +51,47 @@ module Seed
     end
 
     def seed_patients(progress)
+      results = []
+      Facility.find_in_batches(batch_size: 100) do |facilities|
+        options = parallel_options(progress)
+        batch_result = Parallel.map(facilities, options) { |facility|
+          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
+          result, patient_info = PatientSeeder.call(facility, user, config: config, logger: logger)
+
+          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
+          result.merge! bp_result
+
+          appt_result = create_appts(patient_info, user)
+          result[:appointment] = appt_result.ids.size
+          result
+        }
+        results.concat batch_result
+      end
+      results
+    end
+
+    def parallel_options(progress)
       parallel_options = {
-        finish: lambda do |item, i, result|
-          slug, facility_size = item[1], item[2]
-          progress.log("Finished facility: [#{slug}, #{facility_size}] counts: #{result}")
+        finish: lambda do |facility, i, result|
+          progress.log("Finished facility: [#{facility.slug}, #{facility.facility_size}] counts: #{result}")
           progress.increment
         end
       }
       parallel_options[:in_processes] = 0 if Rails.env.test?
-
-      facility_info = Facility.pluck(:id, :slug, :facility_size)
-      Parallel.map(facility_info, parallel_options) do |(facility_id, slug, facility_size)|
-        benchmark("Seeding records for facility #{slug}") do
-          result = {facility: slug}
-          facility = Facility.find(facility_id)
-          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
-          # Set a "birth date" for the Facility that patient records will be based from
-          facility_birth_date = Faker::Time.between(from: 3.years.ago, to: 1.day.ago)
-          benchmark("[#{slug} Seeding patients for a #{facility_size} facility") do
-            patients = patients_to_create(facility_size).times.map { |num|
-              build_patient(user, oldest_registration: facility_birth_date)
-            }
-            addresses = patients.map { |patient| patient.address }
-            address_result = Address.import(addresses)
-            result[:address] = address_result.ids.size
-            patient_result = Patient.import(patients, recursive: true)
-            result[:patient] = patient_result.ids.size
-          end
-          patient_info = facility.assigned_patients.pluck(:id, :recorded_at)
-          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
-          result.merge! bp_result
-          appt_result = create_appts(patient_info, user)
-          result[:appointment] = appt_result.ids.size
-          result
-        end
-      end
-    end
-
-    def self.random_gender
-      return Patient::GENDERS.sample if Patient::GENDERS.size == 2
-      num = rand(100)
-      if num <= 1
-        :transgender
-      elsif num > 1 && num < 50
-        :male
-      else
-        :female
-      end
-    end
-
-    def patients_to_create(facility_size)
-      max = config.max_patients_to_create.fetch(facility_size.to_sym)
-      config.rand_or_max((0..max), scale: true).to_i
+      parallel_options
     end
 
     def sum_facility_totals
       counts.each_with_object(Hash.new(0)) { |(_slug, counts), hsh| counts.each { |type, count| hsh[type] += count } }
     end
 
-    def build_patient(user, oldest_registration:)
-      recorded_at = Faker::Time.between(from: oldest_registration, to: 1.day.ago)
-      address = FactoryBot.build(:address,
-        created_at: recorded_at,
-        device_created_at: recorded_at,
-        device_updated_at: recorded_at,
-        updated_at: recorded_at)
-      FactoryBot.build(:patient,
-        address: address,
-        created_at: recorded_at,
-        recorded_at: recorded_at,
-        registration_user: user,
-        registration_facility: user.facility,
-        updated_at: recorded_at)
+    def create_progress_bar
+      ProgressBar.create(
+        format: "%t |%E | %b\u{15E7}%i %p%% | %a",
+        remainder_mark: "\u{FF65}",
+        title: "Seeding Facilities",
+        total: Facility.count
+      )
     end
 
     def create_appts(patient_info, user)
@@ -140,11 +100,14 @@ module Seed
         number_appointments = config.rand_or_max(0..1) # some patients dont get appointments
         next if number_appointments == 0
         scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
+        created_at = Faker::Time.between(from: user.created_at, to: 1.day.ago)
         hsh = {
           creation_facility_id: facility.id,
           facility_id: facility.id,
           patient_id: patient_id,
           scheduled_date: scheduled_date,
+          created_at: created_at,
+          updated_at: created_at,
           user_id: user.id
         }
         attrs << FactoryBot.attributes_for(:appointment, hsh)

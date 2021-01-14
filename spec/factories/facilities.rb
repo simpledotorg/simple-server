@@ -22,7 +22,7 @@ FactoryBot.define do
     end
 
     trait :seed do
-      sequence(:name) { |n| "#{facility_type} #{village_or_colony} #{n}" }
+      name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
       village_or_colony { Seed::FakeNames.instance.village }
       district { Faker::Address.district }
