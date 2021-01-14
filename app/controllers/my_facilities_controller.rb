@@ -36,14 +36,7 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @accessible_facility_groups = current_admin.accessible_facility_groups(:view_reports).order(:name)
-    @selected_facility_group = if params[:facility_group]
-      @accessible_facility_groups.find_by(slug: params[:facility_group])
-    else
-      @accessible_facility_groups.first
-    end
     @facilities = filter_facilities
-    @facilities = @facilities.where(facility_group: @selected_facility_group)
 
     if current_admin.feature_enabled?(:my_facilities_improvements)
       @data_for_facility = {}

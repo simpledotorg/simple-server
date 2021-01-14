@@ -14,7 +14,7 @@
   </a>
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
     <form id="query-filters">
-      <% @accessible_facility_groups.each do |facility_group| %>
+      <% @facility_groups.each do |facility_group| %>
         <button
           class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group.name == facility_group.name %>"
           value="<%= facility_group.slug %>"
