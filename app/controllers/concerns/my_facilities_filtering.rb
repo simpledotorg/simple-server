@@ -20,6 +20,10 @@ module MyFacilitiesFiltering
       facilities_by_zone(filtered_facilities)
     end
 
+    def populate_facility_sizes
+      @facility_sizes = @facilities.pluck(:facility_size).uniq.compact.sort
+    end
+
     private
 
     def populate_facility_groups
@@ -28,10 +32,6 @@ module MyFacilitiesFiltering
 
     def populate_facilities
       @facilities = current_admin.accessible_facilities(:view_reports).where(facility_group: @selected_facility_group)
-    end
-
-    def populate_facility_sizes
-      @facility_sizes = @facilities.pluck(:facility_size).uniq.compact.sort
     end
 
     def populate_zones

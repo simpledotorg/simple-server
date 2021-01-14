@@ -45,6 +45,7 @@ class MyFacilitiesController < AdminController
         @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
       end
 
+      @facility_sizes = populate_facility_sizes
       @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
     else
       bp_query = BloodPressureControlQuery.new(facilities: @facilities,
@@ -79,6 +80,7 @@ class MyFacilitiesController < AdminController
       @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
     end
 
+    @facility_sizes = populate_facility_sizes
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
@@ -96,6 +98,7 @@ class MyFacilitiesController < AdminController
                                                                             period: @period)
       end
 
+      @facility_sizes = populate_facility_sizes
       @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
     else
       registrations_query = RegistrationsQuery.new(facilities: @facilities,
@@ -127,6 +130,7 @@ class MyFacilitiesController < AdminController
         @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
       end
 
+      @facility_sizes = populate_facility_sizes
       @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
     else
       missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
