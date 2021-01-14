@@ -1,7 +1,7 @@
 class MyFacilities::DrugStocksController < AdminController
   include Pagination
   include MyFacilitiesFiltering
-  
+
   layout "my_facilities"
 
   before_action :authorize_my_facilities
@@ -10,15 +10,13 @@ class MyFacilities::DrugStocksController < AdminController
   DRUG_CATECORIES = []
 
   def index
-    @facilities = current_admin.accessible_facilities(:view_reports).includes(facility_group: :protocol_drugs)
-  end
-
-  def new
+    @facilities = current_admin.accessible_facilities(:view_reports)
+      .eager_load(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
   end
 
   def create
   end
-
 
   private
 
