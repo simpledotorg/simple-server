@@ -7,8 +7,11 @@ class MaterializedPatientSummary < ActiveRecord::Base
   belongs_to :next_appointment, class_name: "Appointment", foreign_key: :next_appointment_id
   belongs_to :latest_bp_passport, class_name: "PatientBusinessIdentifier", foreign_key: :latest_bp_passport_id
   belongs_to :latest_blood_sugar, class_name: "BloodSugar", foreign_key: :latest_blood_sugar_id
-  has_many :appointments, through: :patient
-  has_many :prescription_drugs, through: :patient
+
+  has_many :appointments, foreign_key: :patient_id
+  has_many :prescription_drugs, foreign_key: :patient_id
+  has_many :current_prescription_drugs, -> { where(is_deleted: false).order(created_at: :desc) }, class_name: "PrescriptionDrug", foreign_key: :patient_id
+  has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: "BloodPressure", foreign_key: :patient_id
 
   scope :overdue, -> { joins(:next_appointment).merge(Appointment.overdue) }
   scope :all_overdue, -> { joins(:next_appointment).merge(Appointment.all_overdue) }
@@ -19,5 +22,9 @@ class MaterializedPatientSummary < ActiveRecord::Base
 
   def readonly?
     true
+  end
+
+  def prescribed_drugs(date: Date.current)
+    prescription_drugs.prescribed_as_of(date)
   end
 end

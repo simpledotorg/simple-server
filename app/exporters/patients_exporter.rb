@@ -22,11 +22,21 @@ class PatientsExporter
       csv << csv_headers
 
       summary.in_batches(of: BATCH_SIZE).each do |batch|
-        batch.each do |patient_summary|
+        load_batch(batch)
+          .each do |patient_summary|
           csv << csv_fields(patient_summary)
         end
       end
     end
+  end
+
+  def load_batch(batch)
+    batch
+      .includes(
+        :current_prescription_drugs,
+        :latest_blood_sugar,
+        :latest_bp_passport
+      )
   end
 
   def timestamp
@@ -91,7 +101,6 @@ class PatientsExporter
   end
 
   def csv_fields(patient_summary)
-    patient = patient_summary.patient
     zone_column_index = csv_headers.index(zone_column)
 
     csv_fields = [
@@ -133,7 +142,7 @@ class PatientsExporter
       ("High" if patient_summary.risk_level > 0),
       patient_summary.latest_bp_passport&.shortcode,
       patient_summary.id,
-      *medications_for(patient)
+      *medications_for(patient_summary)
     ]
 
     csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
@@ -142,8 +151,8 @@ class PatientsExporter
 
   private
 
-  def medications_for(patient)
-    patient.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
+  def medications_for(patient_summary)
+    patient_summary.current_prescription_drugs.flat_map { |drug| [drug.name, drug.dosage] }
   end
 
   def zone_column

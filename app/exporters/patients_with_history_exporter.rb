@@ -2,6 +2,17 @@ class PatientsWithHistoryExporter < PatientsExporter
   DISPLAY_BLOOD_PRESSURES = 3
   DISPLAY_MEDICATION_COLUMNS = 5
 
+  def load_batch(batch)
+    batch
+      .includes(
+        {appointments: :facility},
+        :current_prescription_drugs,
+        {latest_blood_pressures: :facility},
+        :latest_blood_sugar,
+        :latest_bp_passport
+      )
+  end
+
   def csv_headers
     [
       "Registration Date",
@@ -64,11 +75,16 @@ class PatientsWithHistoryExporter < PatientsExporter
   end
 
   def csv_fields(patient_summary)
-    patient = patient_summary.patient
-    latest_bps = patient.latest_blood_pressures.first(DISPLAY_BLOOD_PRESSURES + 1)
-    all_medications = fetch_medication_history(patient, latest_bps.map(&:recorded_at))
+    latest_bps = patient_summary
+                   .latest_blood_pressures
+                   .first(DISPLAY_BLOOD_PRESSURES + 1)
+
+    all_medications = fetch_medication_history(patient_summary, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
-    patient_appointments = patient.appointments.order(device_created_at: :desc).load
+
+    patient_appointments = patient_summary
+                             .appointments
+                             .sort { |prev, after| after.device_created_at <=> prev.device_created_at }
 
     csv_fields = [
       registration_date(patient_summary),
@@ -130,11 +146,11 @@ class PatientsWithHistoryExporter < PatientsExporter
     date && appointments.find { |a| date.all_day.cover?(a.device_created_at) }
   end
 
-  def fetch_medication_history(patient, dates)
+  def fetch_medication_history(patient_summary, dates)
     dates.each_with_object({}) { |date, cache|
       cache[date] =
         if date
-          patient.prescribed_drugs(date: date).order(is_protocol_drug: :desc, name: :asc).load
+          patient_summary.prescribed_drugs(date: date).order(is_protocol_drug: :desc, name: :asc).load
         else
           PrescriptionDrug.none
         end
