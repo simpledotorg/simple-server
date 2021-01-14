@@ -14,8 +14,6 @@ module MyFacilitiesFiltering
     before_action :set_selected_zones
 
     def filter_facilities
-      filtered_facilities = @facilities
-
       filtered_facilities = facilities_by_size(@facilities)
       facilities_by_zone(filtered_facilities)
     end
