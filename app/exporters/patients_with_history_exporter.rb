@@ -163,13 +163,16 @@ class PatientsWithHistoryExporter < PatientsExporter
 
   def formatted_medications(all_medications, date)
     medications = medications_on(all_medications, date)
-    other_medications = medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
-                          &.map { |medication| "#{medication.name}-#{medication.dosage}" }
-                          &.join(", ")
 
-    (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i|
-      [medications[i]&.name, medications[i]&.dosage]
-    } << other_medications
+    initial_medications =
+      medications[0...DISPLAY_MEDICATION_COLUMNS].flat_map { |med| [med&.name, med&.dosage] }
+
+    other_medications =
+      medications[DISPLAY_MEDICATION_COLUMNS..medications.length]
+        &.map { |medication| "#{medication.name}-#{medication.dosage}" }
+        &.join(", ")
+
+    initial_medications << other_medications
   end
 
   def medications_on(all_medications, date)
