@@ -138,7 +138,10 @@ Rails.application.routes.draw do
     controllers: {invitations: "email_authentications/invitations"}
 
   resources :admins do
-    get "access_tree/:page", to: "admins#access_tree", on: :member, as: :access_tree
+    member do
+      get "access_tree/:page", to: "admins#access_tree", as: :access_tree
+      post "resend_invitation", to: "admins#resend_invitation", as: :resend_invitation
+    end
   end
 
   resources :appointments, only: [:index, :update]

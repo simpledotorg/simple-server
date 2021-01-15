@@ -318,5 +318,16 @@ RSpec.describe User, type: :model do
       expect(EmailAuthentication.exists?(id: email_authentication_ids)).to eq(false)
       expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
     end
+
+    it "destroys associated email authentications and join records when discarded" do
+      user = create(:admin)
+      email_authentication_ids = user.email_authentications.map(&:id)
+      user_authentication_ids = user.user_authentications.map(&:id)
+
+      user.discard
+
+      expect(EmailAuthentication.exists?(id: email_authentication_ids)).to eq(false)
+      expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
+    end
   end
 end

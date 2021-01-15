@@ -26,7 +26,7 @@ gem "devise_invitable", "~> 1.7.0"
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby"
-gem "factory_bot_rails", "~> 4.8", require: false
+gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper"
 gem "flipper-active_record"

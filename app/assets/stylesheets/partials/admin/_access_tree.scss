@@ -24,6 +24,10 @@
   }
 
   .card {
+    &.region-index {
+      padding: 0 0 5px 0;
+    }
+
     &.access-tree {
       padding: 0;
       min-height: 460px;
