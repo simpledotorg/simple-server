@@ -146,7 +146,7 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:uncontrolled_patients_rate][Period.month(june_1_2020)]).to eq(50.0)
   end
 
-  it "excludes patients registeed in the last 3 months" do
+  it "excludes patients registered in the last 3 months" do
     facility = FactoryBot.create(:facility, facility_group: facility_group_1)
 
     controlled_jan2020_registration = create(:patient, full_name: "controlled jan2020 registration", recorded_at: jan_2020, assigned_facility: facility, registration_user: user)
@@ -166,6 +166,48 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:adjusted_registrations][Period.month(jan_2020)]).to eq(0)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(0)
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(0.0)
+  end
+
+  context "when with_exclusions is true" do
+    it "excludes patients who are dead or migrated months" do
+      facility = FactoryBot.create(:facility, facility_group: facility_group_1)
+      patients = [
+        create(:patient, recorded_at: jan_2019, assigned_facility: facility, registration_user: user),
+        create(:patient, status: :dead, recorded_at: jan_2019, assigned_facility: facility, registration_user: user) ,
+        create(:patient, status: :migrated, recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
+      ]
+
+      Timecop.freeze(june_1_2020) do
+        patients.each do |patient|
+          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
+        end
+      end
+
+      refresh_views
+
+      report_start = july_2020.advance(months: -24)
+      report_range = (Period.month(report_start)..Period.month(july_2020))
+      report_month = Period.month(june_1_2020)
+
+      result =
+        ControlRateService.new(facility_group_1, periods: report_range).call
+
+      expect(result[:cumulative_registrations][report_month]).to eq(3)
+      expect(result[:adjusted_registrations][Period.month(jan_2019)]).to eq(3)
+      expect(result[:controlled_patients][report_month]).to eq(3)
+      expect(result[:controlled_patients_rate][report_month]).to eq(100.0)
+      expect(result[:uncontrolled_patients][report_month]).to eq(0)
+      expect(result[:uncontrolled_patients_rate][report_month]).to eq(0)
+
+      result_with_exclusions =
+        ControlRateService.new(facility_group_1, periods: report_range, with_exclusions: true).call
+      expect(result_with_exclusions[:cumulative_registrations][report_month]).to eq(3)
+      expect(result_with_exclusions[:adjusted_registrations][report_month]).to eq(1)
+      expect(result_with_exclusions[:controlled_patients][report_month]).to eq(1)
+      expect(result_with_exclusions[:controlled_patients_rate][report_month]).to eq(100.0)
+      expect(result_with_exclusions[:uncontrolled_patients][report_month]).to eq(0)
+      expect(result_with_exclusions[:uncontrolled_patients_rate][report_month]).to eq(0)
+    end
   end
 
   it "quarterly control rate looks only at patients registered in the previous quarter" do

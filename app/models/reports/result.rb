@@ -71,8 +71,10 @@ module Reports
 
     def fill_in_nil_registrations
       registrations.default = 0
+      adjusted_registrations.default = 0
       full_data_range.each do |period|
         registrations[period] ||= 0
+        adjusted_registrations[period] ||= 0
       end
     end
 
@@ -113,9 +115,13 @@ module Reports
     # Adjusted registrations are the registrations as of three months ago - we use these for all the percentage
     # calculations to exclude recent registrations.
     def count_adjusted_registrations
-      self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) do |period, hsh|
-        hsh[period] = cumulative_registrations_for(period.advance(months: -3))
-      end
+      self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+        adjusted_period = period.advance(months: -3)
+        previous_registrations = running_totals[adjusted_period.previous]
+        current_registrations = adjusted_registrations[adjusted_period]
+        total = current_registrations + previous_registrations
+        running_totals[adjusted_period] = total
+      }
     end
 
     def count_cumulative_registrations

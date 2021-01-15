@@ -47,6 +47,7 @@ class ControlRateService
 
   def fetch_all_data
     results.registrations = registration_counts
+    results.adjusted_registrations = adjusted_registration_counts
     results.earliest_registration_period = registration_counts.keys.first
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
@@ -62,13 +63,23 @@ class ControlRateService
     results
   end
 
+  def adjusted_registration_counts
+    return @adjusted_registration_counts if defined? @adjusted_registration_counts
+    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
+
+    @adjusted_registration_counts =
+      region.assigned_patients
+        .for_reports(with_exclusions: with_exclusions)
+        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+        .count
+  end
+
   def registration_counts
     return @registration_counts if defined? @registration_counts
     formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
 
     @registration_counts =
       region.assigned_patients
-        .for_reports(with_exclusions: with_exclusions)
         .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
         .count
   end

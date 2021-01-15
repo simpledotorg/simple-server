@@ -10,7 +10,9 @@ module PatientReportable
 
     scope :for_reports, ->(with_exclusions: false) do
       if with_exclusions
-        with_hypertension.excluding_dead.excluding_transferred
+        with_hypertension
+          .excluding_dead
+          .excluding_transferred
       else
         with_hypertension
       end

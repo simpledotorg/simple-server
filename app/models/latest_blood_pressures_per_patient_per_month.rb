@@ -11,4 +11,6 @@ class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
   belongs_to :facility, class_name: "Facility", foreign_key: "bp_facility_id"
 
   scope :with_hypertension, -> { where("medical_history_hypertension = ?", "yes") }
+  scope :excluding_dead, -> { where.not(patient_status: :dead) }
+  scope :excluding_transferred, -> { where.not(patient_status: :migrated) }
 end
