@@ -297,11 +297,15 @@ RSpec.describe ControlRateService, type: :model do
       Rails.cache.clear
     end
 
-    it "has a cache key to keep data refreshed daily" do
-      periods = Period.month("September 1 2018")..Period.month("September 1 2020")
+    it "has a cache key that distinguishes based on period" do
+      month_periods = Period.month("September 1 2018")..Period.month("September 1 2020")
+      quarter_periods = Period.quarter(july_2018)..Period.quarter(july_2020)
       Timecop.freeze("October 1 2020") do
-        service = ControlRateService.new(facility_group_1, periods: periods)
-        expect(service.send(:cache_key)).to match(/month\/2020-10-01/)
+        service_1 = ControlRateService.new(facility_group_1, periods: month_periods)
+        expect(service_1.send(:cache_key)).to match(/month\/Sep-2020/)
+
+        service_2 = ControlRateService.new(facility_group_1, periods: quarter_periods)
+        expect(service_2.send(:cache_key)).to match(/quarter\/Q3-2020/)
       end
     end
 
