@@ -21,6 +21,7 @@
         <%= render "shared/my_facilities_filters" %>
       </div>
       <% @facility_sizes.each do |size| %>
+        <% next if @facilities_by_size[size].blank? %>
         <p class="mt-20px mb-0px fw-bold">
           <%= Facility.localized_facility_size(size) %>
         </p>

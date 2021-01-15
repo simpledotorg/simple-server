@@ -18,14 +18,14 @@ module MyFacilitiesFiltering
       facilities_by_zone(filtered_facilities)
     end
 
-    def populate_facility_sizes
-      @facility_sizes = @facilities.pluck(:facility_size).uniq.compact.sort
-    end
-
     private
 
     def populate_facility_groups
       @facility_groups = current_admin.accessible_facility_groups(:view_reports).order(:name)
+    end
+
+    def populate_facility_sizes
+      @facility_sizes = Facility.facility_sizes.keys.reverse
     end
 
     def populate_facilities
