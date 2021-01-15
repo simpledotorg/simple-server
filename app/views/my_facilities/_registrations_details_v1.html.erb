@@ -51,87 +51,91 @@
           hidden
         >
       </div>
-      <table class="mt-5 table table-compact table-responsive-md table-hover analytics-table">
-        <colgroup>
-          <col>
-          <% @display_periods.each do %>
+      <% if @facilities.length == 0 %>
+        <%= render "shared/my_facilities_table_empty_state" %>
+      <% else %>
+        <table class="mt-5 table table-compact table-responsive-md table-hover analytics-table">
+          <colgroup>
+            <col>
+            <% @display_periods.each do %>
+              <col class="table-divider">
+              <% unless @selected_period == :day %>
+                <col>
+              <% end %>
+            <% end %>
             <col class="table-divider">
-            <% unless @selected_period == :day %>
-              <col>
-            <% end %>
-          <% end %>
-          <col class="table-divider">
-          <col class="mobile">
-        </colgroup>
-        <thead>
-        <tr>
-          <% case @selected_period %>
-          <% when :quarter %>
-            <th></th>
-            <% @display_periods.reverse.each do |(year, quarter)| %>
-              <th colspan="2">
-                <%= "Q#{quarter}-#{year}" %>
-              </th>
-            <% end %>
-            <th>Total</th>
-          <% when :month %>
-            <th></th>
-            <% @display_periods.reverse.each do |(year, month)| %>
-              <th colspan="2">
-                <%= month_short_name_and_year(month_start(year, month)) %>
-              </th>
-            <% end %>
-            <th>Total</th>
-          <% end %>
-        </tr>
-        <tr data-sort-method="thead" class="sorts">
-          <th class="row-label sort-label">Facilities</th>
-          <% @display_periods.reverse.each do |period| %>
-            <th <% unless @selected_period == :day %>colspan="2"<% end %>
-                class="row-label sort-label"
-                data-sort-column-key="<%= period.join %>"
-                data-sort-method="number"
-                data-sort-default>
-              <% unless @selected_period == :day %>
-                <div class="float-left">% of OPD</div>
-              <% end %>
-              <div class="float-right"><%= @selected_period == :day ? doy_to_date_str(*period) : "Registered" %></div>
-            </th>
-          <% end %>
-          <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients </th>
-          <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr class="row-total" data-sort-method="none">
-          <td class="type-title">All</td>
-          <% @display_periods.reverse.each do |period| %>
-            <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>>
-              <%= number_or_dash_with_delimiter(@total_registrations_by_period[period].to_i) %>
-            </td>
-          <% end %>
-          <td class="type-number"><%= number_or_dash_with_delimiter(@total_registrations.values.sum) %></td>
-        </tr>
-        <% @facilities.each do |facility| %>
+            <col class="mobile">
+          </colgroup>
+          <thead>
           <tr>
-            <td class="type-title"><%= link_to facility.name, reports_region_path(facility, report_scope: "facility") %></td>
-            <% @display_periods.reverse.each do |period| %>
-              <% unless @selected_period == :day %>
-                <td class="type-percent" data-sort-column-key="<%= period.join %>">
-                  <em><%= percentage(@registrations[[facility.id, period.first.to_s, period.second.to_s]], opd_load(facility, @selected_period)) %></em>
-                </td>
+            <% case @selected_period %>
+            <% when :quarter %>
+              <th></th>
+              <% @display_periods.reverse.each do |(year, quarter)| %>
+                <th colspan="2">
+                  <%= "Q#{quarter}-#{year}" %>
+                </th>
               <% end %>
-              <td class="type-number" <% if @selected_period == :day %>data-sort-column-key="<%= period.join %>"<% end %>>
-                <%= number_or_dash_with_delimiter(@registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i) %>
+              <th>Total</th>
+            <% when :month %>
+              <th></th>
+              <% @display_periods.reverse.each do |(year, month)| %>
+                <th colspan="2">
+                  <%= month_short_name_and_year(month_start(year, month)) %>
+                </th>
+              <% end %>
+              <th>Total</th>
+            <% end %>
+          </tr>
+          <tr data-sort-method="thead" class="sorts">
+            <th class="row-label sort-label">Facilities</th>
+            <% @display_periods.reverse.each do |period| %>
+              <th <% unless @selected_period == :day %>colspan="2"<% end %>
+                  class="row-label sort-label"
+                  data-sort-column-key="<%= period.join %>"
+                  data-sort-method="number"
+                  data-sort-default>
+                <% unless @selected_period == :day %>
+                  <div class="float-left">% of OPD</div>
+                <% end %>
+                <div class="float-right"><%= @selected_period == :day ? doy_to_date_str(*period) : "Registered" %></div>
+              </th>
+            <% end %>
+            <th class="row-label sort-label" data-sort-column-key="all-time"><% if @selected_period == :day %>Total<br> <% end %> Registered patients </th>
+            <th class="mobile">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="row-total" data-sort-method="none">
+            <td class="type-title">All</td>
+            <% @display_periods.reverse.each do |period| %>
+              <td class="type-number" <% unless @selected_period == :day %>colspan="2"<% end %>>
+                <%= number_or_dash_with_delimiter(@total_registrations_by_period[period].to_i) %>
               </td>
             <% end %>
-            <td class="type-number" data-sort-column-key="all-time">
-              <%= number_or_dash_with_delimiter(@total_registrations[facility.id].to_i) %>
-            </td>
+            <td class="type-number"><%= number_or_dash_with_delimiter(@total_registrations.values.sum) %></td>
           </tr>
-        <% end %>
-        </tbody>
-      </table>
+          <% @facilities.each do |facility| %>
+            <tr>
+              <td class="type-title"><%= link_to facility.name, reports_region_path(facility, report_scope: "facility") %></td>
+              <% @display_periods.reverse.each do |period| %>
+                <% unless @selected_period == :day %>
+                  <td class="type-percent" data-sort-column-key="<%= period.join %>">
+                    <em><%= percentage(@registrations[[facility.id, period.first.to_s, period.second.to_s]], opd_load(facility, @selected_period)) %></em>
+                  </td>
+                <% end %>
+                <td class="type-number" <% if @selected_period == :day %>data-sort-column-key="<%= period.join %>"<% end %>>
+                  <%= number_or_dash_with_delimiter(@registrations[[facility.id, period.first.to_s, period.second.to_s]].to_i) %>
+                </td>
+              <% end %>
+              <td class="type-number" data-sort-column-key="all-time">
+                <%= number_or_dash_with_delimiter(@total_registrations[facility.id].to_i) %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      <% end %>
     </div>
   </div>
 </div>

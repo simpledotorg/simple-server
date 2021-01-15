@@ -18,6 +18,9 @@
       <div class="d-flex fw-wrap mb-16px">
         <%= render "shared/my_facilities_filters" %>
       </div>
+      <% if @facilities_by_size.length == 0 %>
+        <%= render "shared/my_facilities_table_empty_state" %>
+      <% end %>
       <% @facility_sizes.each do |size| %>
         <% next if @facilities_by_size[size].blank? %>
         <p class="mt-20px mb-0px fw-bold">
