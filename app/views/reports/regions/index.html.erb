@@ -2,7 +2,11 @@
   <div class="row">
     <div class="col-sm-5 col-lg-7">
     <% if current_admin.feature_enabled?(:region_reports) %>
-      <%= render "search" %>
+      <form action="#" onsubmit="return false">
+        <div class="mo-search">
+          <%= render "search" %>
+        <div>
+      </form>
 
       <div id="facility-access">
         <% @accessible_regions.each do |org, children| %>
@@ -18,7 +22,7 @@
 
     <script>
       const async = false
-      new AdminAccess("facility-access").initialize(async)
+      // new AdminAccess("facility-access").initialize(async)
     </script>
 
     <% else %>
