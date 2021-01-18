@@ -27,12 +27,11 @@ class MyFacilities::DrugStocksController < AdminController
         DrugStock.create(facility: @facility,
                          user: current_admin,
                          protocol_drug_id: drug_stock[:protocol_drug_id],
-                         received: drug_stock[:received],
-                         in_stock: drug_stock[:in_stock],
+                         received: drug_stock[:received].presence,
+                         in_stock: drug_stock[:in_stock].presence,
                          recorded_at: drug_stocks_params[:recorded_at])
       end
     end
-    binding.pry
 
     case
     when drug_stocks.empty?
@@ -40,7 +39,7 @@ class MyFacilities::DrugStocksController < AdminController
     when drug_stocks.all?(&:valid?)
       redirect_to my_facilities_drug_stocks_path, notice: "Saved drug stocks"
     when drug_stocks.any?(&:invalid?)
-      redirect_to my_facilities_drug_stocks_path, alert: "bad_request"
+      redirect_to my_facilities_drug_stocks_path, alert: "Something went wrong, Drug Stocks were not saved."
     end
   end
 

@@ -20,7 +20,7 @@
             <%= form.hidden_field :facility_id, value: facility.id %>
           </div>
           <div class="form-group">
-            <%= form.date_field :recorded_at, label: "Date", max: 1.month.from_now %>
+            <%= form.date_field :recorded_at, label: "Date", max: 1.month.from_now, required: true %>
           </div>
           <h3 class="pt-4">Tablets</h3>
           <p>Leave blank if unknown. Enter "0" if stock is empty.</p>
@@ -36,7 +36,7 @@
                     <%= drug_stock_form.number_field :received, hide_label: true, help: "Received during the month" %>
                   </div>
                   <div class="col">
-                    <%= drug_stock_form.number_field :in_stock, hide_label: true, help: "Stock at end of the month" %>
+                    <%= drug_stock_form.number_field :in_stock, hide_label: true, required: true, help: "Stock at end of the month" %>
                   </div>
                 </div>
               </div>
