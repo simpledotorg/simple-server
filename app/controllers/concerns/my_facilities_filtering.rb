@@ -5,31 +5,32 @@ module MyFacilitiesFiltering
   NEW_FACILITY_THRESHOLD = 3.months.ago
 
   included do
+    before_action :populate_facilities
     before_action :populate_facility_groups
     before_action :set_selected_facility_group
-    before_action :populate_facilities
     before_action :populate_facility_sizes
     before_action :populate_zones
     before_action :set_selected_facility_sizes
     before_action :set_selected_zones
 
     def filter_facilities
-      filtered_facilities = facilities_by_size(@facilities)
+      filtered_facilities = facilities_by_facility_group(@facilities)
+      filtered_facilities = facilities_by_size(filtered_facilities)
       facilities_by_zone(filtered_facilities)
     end
 
     private
 
+    def populate_facilities
+      @facilities = current_admin.accessible_facilities(:view_reports)
+    end
+
     def populate_facility_groups
-      @facility_groups = current_admin.accessible_facility_groups(:view_reports).order(:name)
+      @facility_groups = FacilityGroup.where(id: @facilities.map(&:facility_group_id).uniq).order(:name)
     end
 
     def populate_facility_sizes
       @facility_sizes = Facility.facility_sizes.keys.reverse
-    end
-
-    def populate_facilities
-      @facilities = current_admin.accessible_facilities(:view_reports).where(facility_group: @selected_facility_group)
     end
 
     def populate_zones
@@ -46,6 +47,10 @@ module MyFacilitiesFiltering
 
     def set_selected_zones
       @selected_zones = params[:zone].present? ? [params[:zone]] : @zones
+    end
+
+    def facilities_by_facility_group(facilities)
+      facilities.where(facility_group: @selected_facility_group)
     end
 
     def facilities_by_size(facilities)
