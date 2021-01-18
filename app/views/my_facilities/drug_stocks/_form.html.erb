@@ -1,8 +1,8 @@
-<div class="modal fade" id=<%= "DrugReportModal-#{facility.id}" %> tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="true">
+<div class="modal fade" id=<%= "drug_report_modal_#{facility.id}" %> tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="text-align: left">
       <div class="modal-header">
-        <h2 class="modal-title" id="exampleModalLabel">Drug stock report</h2>
+        <h2 class="modal-title">Drug stock report</h2>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true"><i class="fas fa-times"></i></span>
         </button>
@@ -11,7 +11,8 @@
                               method: 'POST',
                               local: true,
                               autocomplete: "off",
-                              label_errors: true) do |form| %>
+                              label_errors: true,
+                              id: "drug_report_form_#{facility.id}") do |form| %>
 
         <div class="modal-body">
           <div class="form-group">
@@ -26,17 +27,17 @@
           <p>Leave blank if unknown. Enter "0" if stock is empty.</p>
           <% facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug| %>
             <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
-              <div class="form-group mt-4">
+              <div class="form-group mt-4 protocol-drug-stock-inputs">
                 <label>
                   <%= "#{protocol_drug.name} #{protocol_drug.dosage}" %>
                 </label>
                 <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
                 <div class="form-row">
                   <div class="col">
-                    <%= drug_stock_form.number_field :received, hide_label: true, help: "Received during the month" %>
+                    <%= drug_stock_form.number_field :received,  class: :received, hide_label: true, help: "Received during the month" %>
                   </div>
                   <div class="col">
-                    <%= drug_stock_form.number_field :in_stock, hide_label: true, required: true, help: "Stock at end of the month" %>
+                    <%= drug_stock_form.number_field :in_stock, class: :in_stock, hide_label: true, required: true, help: "Stock at end of the month" %>
                   </div>
                 </div>
               </div>
@@ -44,7 +45,8 @@
           <% end %>
         </div>
         <div class="modal-footer">
-          <%= form.primary "Save Report", class: "btn btn-primary btn-block", onclick: "$('#DrugReportModal-#{facility.id}').modal('toggle')" %>
+          <%#= form.primary "Save Report", class: "btn btn-primary btn-block", onclick: "if($('#drug_report_form_#{facility.id}').checkValidity()) {$('#drug_report_modal-#{facility.id}').modal('toggle')}" %>
+          <%= form.primary "Save Report", class: "btn btn-primary btn-block", onclick: "validateAndCloseDrugStockForm('#{facility.id}')" %>
         </div>
       <% end %>
     </div>
