@@ -13,7 +13,7 @@ module MyFacilitiesFiltering
     before_action :set_selected_zones
 
     def filter_facilities
-      filtered_facilities = facilities_by_facility_group(@facilities)
+      filtered_facilities = facilities_by_facility_group(@accessible_facilities)
       filtered_facilities = facilities_by_size(filtered_facilities)
       facilities_by_zone(filtered_facilities)
     end
@@ -21,19 +21,19 @@ module MyFacilitiesFiltering
     private
 
     def populate_facilities
-      @facilities = current_admin.accessible_facilities(:view_reports)
+      @accessible_facilities = current_admin.accessible_facilities(:view_reports)
     end
 
     def populate_facility_groups
-      @facility_groups = FacilityGroup.where(id: @facilities.map(&:facility_group_id).uniq).order(:name)
+      @facility_groups = FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
     end
 
     def populate_facility_sizes
-      @facility_sizes = Facility.facility_sizes.keys.reverse
+      @facility_sizes = @accessible_facilities.where(zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
     end
 
     def populate_zones
-      @zones = @facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
+      @zones = @accessible_facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
     end
 
     def set_selected_facility_group
