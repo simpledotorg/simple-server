@@ -1060,7 +1060,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
       p.full_name,
           CASE
               WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-              ELSE ((p.age)::double precision + date_part('years'::text, age(now(), (timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at)))::timestamp with time zone)))
+              ELSE floor(((p.age)::double precision + date_part('year'::text, age(p.age_updated_at))))
           END AS current_age,
       p.gender,
       p.status,

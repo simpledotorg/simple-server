@@ -7,8 +7,8 @@ SELECT p.recorded_at,
        p.full_name,
        (CASE
             WHEN p.date_of_birth IS NOT NULL THEN date_part('year', age(p.date_of_birth))
-            ELSE p.age + date_part('years', age(NOW(), p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE
-                                                       (SELECT current_setting('TIMEZONE'))))
+            ELSE floor(p.age + date_part('year', age(p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE
+                                                     (SELECT current_setting('TIMEZONE')))))
            END)                                                                                                                  AS current_age,
        p.gender,
        p.status,

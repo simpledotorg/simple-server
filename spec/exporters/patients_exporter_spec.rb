@@ -1,9 +1,8 @@
 require "rails_helper"
 
-RSpec.describe PatientsExporter do
+RSpec.describe PatientsExporter, type: :model do
   include QuarterHelper
 
-  let(:now) { Time.current }
   let!(:facility) { create(:facility) }
   let!(:registration_facility) { create(:facility) }
   let!(:patient) {
@@ -157,6 +156,7 @@ RSpec.describe PatientsExporter do
   end
 
   describe "#csv" do
+    let(:now) { Time.current }
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do

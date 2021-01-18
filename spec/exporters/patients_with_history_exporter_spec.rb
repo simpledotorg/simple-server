@@ -1,9 +1,8 @@
 require "rails_helper"
 
-RSpec.describe PatientsWithHistoryExporter do
+RSpec.describe PatientsWithHistoryExporter, type: :model do
   include QuarterHelper
 
-  let!(:now) { Time.current }
   let!(:facility) { create(:facility) }
   let!(:registration_facility) { create(:facility) }
   let!(:patient) {
@@ -253,16 +252,17 @@ RSpec.describe PatientsWithHistoryExporter do
   end
 
   describe "#csv" do
+    let(:now) { Time.current }
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
-      travel_to now do
+      Timecop.travel now do
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      travel_to now do
+      Timecop.travel now do
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
       end
     end
