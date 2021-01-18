@@ -109,7 +109,7 @@ class ControlRateService
   end
 
   def cache_key
-    "#{self.class}/#{region.cache_key}/#{@periods.end.cache_key}"
+    "#{self.class}/#{region.cache_key}/#{@periods.end.type}"
   end
 
   def cache_version
