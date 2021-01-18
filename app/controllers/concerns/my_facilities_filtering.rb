@@ -6,8 +6,8 @@ module MyFacilitiesFiltering
   included do
     before_action :populate_facilities
     before_action :populate_facility_groups
-    before_action :set_selected_facility_group
     before_action :populate_facility_sizes
+    before_action :set_selected_facility_group
     before_action :populate_zones
     before_action :set_selected_facility_sizes
     before_action :set_selected_zones
@@ -33,7 +33,7 @@ module MyFacilitiesFiltering
     end
 
     def populate_zones
-      @zones = @facilities.pluck(:zone).uniq.compact.sort
+      @zones = @facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
     end
 
     def set_selected_facility_group
