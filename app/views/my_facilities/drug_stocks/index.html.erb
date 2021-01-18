@@ -131,8 +131,10 @@
             <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="CHC Nectarine: 203 patients">
               <a href="/analytics/facilities/hwc_carambolim_buzruco"> <%= facility.name %> </a></td>
             <td class="text-center">
-              <a href="#" data-toggle="modal" data-target=<%= "#drug_report_modal_#{facility.id}" %>><i class="fas fa-plus"></i></a>
-              <%= render "form", facility: facility %>
+              <a id=<%= "form_button_#{facility.id}" %> href="#" data-toggle="modal" data-target=<%= "#drug_report_modal_#{facility.id}" %>><i class="fas fa-plus"></i></a>
+              <div class="modal fade" id=<%= "drug_report_modal_#{facility.id}" %> tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="false">
+                <%= render_async my_facilities_drug_stock_form_path(facility.id), toggle: { selector: "#form_button_#{facility.id}", event: :click, once: true } %>
+              </div>
             </td>
             <td class="type-number">700</td>
             <td class="type-number">1,000</td>

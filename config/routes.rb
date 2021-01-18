@@ -171,6 +171,7 @@ Rails.application.routes.draw do
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
     get "drug_stocks", to: "drug_stocks#index"
     post "drug_stocks", to: "drug_stocks#create"
+    get "drug_stocks/:facility_id/new", to: "drug_stocks#new", as: :drug_stock_form
   end
 
   scope :resources do
