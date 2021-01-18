@@ -2,7 +2,6 @@
 
 module MyFacilitiesFiltering
   extend ActiveSupport::Concern
-  NEW_FACILITY_THRESHOLD = 3.months.ago
 
   included do
     before_action :populate_facilities
