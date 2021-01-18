@@ -7,6 +7,7 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
+  before_action :drug_stocks_enabled?
 
   DRUG_CATECORIES = []
 
@@ -55,5 +56,11 @@ class MyFacilities::DrugStocksController < AdminController
 
   def drug_stocks_params
     params.permit(:recorded_at, drug_stocks: [:received, :in_stock, :protocol_drug_id])
+  end
+
+  def drug_stocks_enabled?
+    unless current_admin.feature_enabled?(:drug_stocks)
+      redirect_to :root
+    end
   end
 end

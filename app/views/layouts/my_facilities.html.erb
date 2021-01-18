@@ -24,8 +24,10 @@
         <%= link_to(my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["zone", "size", "period"])), class: "sub-nav-link #{active_action?("registrations")}") do %>
           Registrations
         <% end %>
-        <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/drug_stock"}") do %>
-          Drug stock
+        <% if current_admin.feature_enabled?(:drug_stocks) %>
+          <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_controller?("my_facilities/drug_stocks")}") do %>
+            Drug stock
+          <% end %>
         <% end %>
       </div>
     </div>
