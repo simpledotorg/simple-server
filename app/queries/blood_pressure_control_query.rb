@@ -10,7 +10,7 @@ class BloodPressureControlQuery
 
   REGISTRATION_BUFFER = 3.months
 
-  def initialize(facilities: Facility.all, cohort_period: {})
+  def initialize(facilities: Facility.all, cohort_period: {}, with_exclusions: false)
     # cohort_period is map that contains
     # - :cohort_period (:quarter/:month),
     # - :registration_quarter/:registration_month
@@ -20,6 +20,7 @@ class BloodPressureControlQuery
     @registration_month = cohort_period[:registration_month]
     @registration_year = cohort_period[:registration_year]
     @facilities = Facility.where(id: facilities)
+    @with_exclusions = with_exclusions
   end
 
   def cohort_patients_per_facility
@@ -79,7 +80,7 @@ class BloodPressureControlQuery
   def overall_patients
     @overall_patients ||=
       Patient
-        .with_hypertension
+        .for_reports(with_exclusions: @with_exclusions)
         .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
@@ -99,7 +100,7 @@ class BloodPressureControlQuery
   def quarterly_patients
     @quarterly_patients ||=
       Patient
-        .with_hypertension
+        .for_reports(with_exclusions: @with_exclusions)
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_quarter_start(@registration_year, @registration_quarter),
@@ -125,7 +126,7 @@ class BloodPressureControlQuery
   def monthly_patients
     @monthly_patients ||=
       Patient
-        .with_hypertension
+        .for_reports(with_exclusions: @with_exclusions)
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_month_start(@registration_year, @registration_month),
