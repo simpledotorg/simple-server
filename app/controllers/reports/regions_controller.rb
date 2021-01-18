@@ -8,6 +8,7 @@ class Reports::RegionsController < AdminController
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index]
   around_action :set_time_zone
+  after_action :log_cache_metrics
   delegate :cache, to: Rails
 
   def index
@@ -241,5 +242,16 @@ class Reports::RegionsController < AdminController
 
     Time.use_zone(time_zone) { yield }
     Groupdate.time_zone = "UTC"
+  end
+
+  def log_cache_metrics
+    stats = RequestStore[:cache_stats] || {}
+    hit_rate = percentage(stats.fetch(:hits, 0), stats.fetch(:reads, 0))
+    logger.info class: self.class.name, msg: "cache hit rate: #{hit_rate}% stats: #{stats.inspect}"
+  end
+
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0 || numerator == 0
+    ((numerator.to_f / denominator) * 100).round(2)
   end
 end
