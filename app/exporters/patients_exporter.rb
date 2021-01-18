@@ -2,7 +2,7 @@ class PatientsExporter
   require "csv"
   include QuarterHelper
 
-  BATCH_SIZE = 500
+  BATCH_SIZE = 1000
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
