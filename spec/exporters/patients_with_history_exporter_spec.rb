@@ -14,21 +14,16 @@ RSpec.describe PatientsWithHistoryExporter do
       address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
   }
   let!(:user) { patient.registration_user }
-
   let!(:bp_1) { create(:blood_pressure, :with_encounter, :critical, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
   let!(:blood_sugar) { create(:blood_sugar, :fasting, :with_encounter, recorded_at: 2.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_1_follow_up) { create(:appointment, :overdue, device_created_at: 2.months.ago, scheduled_date: 40.days.ago, creation_facility: facility, patient: patient, user: user) }
-
   let!(:bp_2) { create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
   let!(:old_blood_sugar) { create(:blood_sugar, :with_encounter, recorded_at: 3.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_2_follow_up) { create(:appointment, device_created_at: 3.months.ago, scheduled_date: 2.months.ago, creation_facility: facility, patient: patient, user: user) }
-
   let!(:bp_3) { create(:blood_pressure, :with_encounter, recorded_at: 4.months.ago, facility: facility, patient: patient, user: user) }
   let!(:bp_3_follow_up) { create(:appointment, device_created_at: 4.month.ago, scheduled_date: 3.months.ago, creation_facility: facility, patient: patient, user: user) }
-
   let!(:bp_4) { create(:blood_pressure, :with_encounter, recorded_at: 5.months.ago, facility: facility, patient: patient, user: user) }
   let(:old_prescription_drug) { create(:prescription_drug, device_created_at: 5.months.ago, facility: facility, patient: patient) }
-
   let!(:prescription_drugs) do
     [
       *create_list(:prescription_drug,
@@ -45,7 +40,6 @@ RSpec.describe PatientsWithHistoryExporter do
         old_prescription_drug].flatten.sort_by(&:name)
     ]
   end
-
   let!(:timestamp) { ["Report generated at:", now] }
   let(:headers) do
     [
@@ -149,7 +143,6 @@ RSpec.describe PatientsWithHistoryExporter do
       "Latest Blood Sugar Type"
     ]
   end
-
   let(:fields) do
     [
       I18n.l(patient.recorded_at.to_date),

@@ -162,7 +162,7 @@ class PatientsWithHistoryExporter < PatientsExporter
     medications = medications_on(all_medications, date)
 
     initial_medications =
-      medications[0...DISPLAY_MEDICATION_COLUMNS].flat_map { |med| [med&.name, med&.dosage] }
+      (0...DISPLAY_MEDICATION_COLUMNS).flat_map { |i| [medications[i]&.name, medications[i]&.dosage] }
 
     other_medications =
       medications[DISPLAY_MEDICATION_COLUMNS..medications.length]

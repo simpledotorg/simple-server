@@ -10,19 +10,13 @@ describe MaterializedPatientSummary, type: :model do
     let(:new_date) { DateTime.new(2019, 5, 1) }
     let(:old_quarter) { "2019 Q1" }
     let(:new_quarter) { "2019 Q2" }
-
     let!(:patient) { create(:patient, recorded_at: old_date) }
-
     let!(:old_phone) { create(:patient_phone_number, patient: patient, device_created_at: old_date) }
     let!(:new_phone) { create(:patient_phone_number, patient: patient, device_created_at: new_date) }
-
     let!(:old_bp) { create(:blood_pressure, patient: patient, recorded_at: old_date) }
     let!(:new_bp) { create(:blood_pressure, patient: patient, recorded_at: new_date, systolic: 110, diastolic: 70) }
-
     let!(:old_passport) { create(:patient_business_identifier, patient: patient, device_created_at: old_date) }
-
     let!(:next_appointment) { create(:appointment, patient: patient) }
-
     let(:med_history) { create(:medical_history, patient: patient) }
 
     before { MaterializedPatientSummary.refresh }

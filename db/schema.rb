@@ -1056,11 +1056,11 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
   SQL
   create_view "materialized_patient_summaries", materialized: true, sql_definition: <<-SQL
       SELECT p.recorded_at,
-      concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
+      concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AS registration_quarter,
       p.full_name,
           CASE
               WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-              ELSE ((p.age)::double precision + date_part('years'::text, age(now(), (p.age_updated_at)::timestamp with time zone)))
+              ELSE ((p.age)::double precision + date_part('years'::text, age(now(), (timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at)))::timestamp with time zone)))
           END AS current_age,
       p.gender,
       p.status,
@@ -1082,7 +1082,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
       latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
       latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
       latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
-      concat(date_part('year'::text, latest_blood_pressure.recorded_at), ' Q', date_part('quarter'::text, latest_blood_pressure.recorded_at)) AS latest_blood_pressure_quarter,
+      concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at)))) AS latest_blood_pressure_quarter,
       latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
       latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
       latest_blood_pressure_facility.district AS latest_blood_pressure_district,
@@ -1091,7 +1091,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
       latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
       latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
       latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
-      concat(date_part('year'::text, latest_blood_sugar.recorded_at), ' Q', date_part('quarter'::text, latest_blood_sugar.recorded_at)) AS latest_blood_sugar_quarter,
+      concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at)))) AS latest_blood_sugar_quarter,
       latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
       latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
       latest_blood_sugar_facility.district AS latest_blood_sugar_district,
