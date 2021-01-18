@@ -73,15 +73,15 @@ class PatientsWithHistoryExporter < PatientsExporter
 
   def csv_fields(patient_summary)
     latest_bps = patient_summary
-                   .latest_blood_pressures
-                   .first(DISPLAY_BLOOD_PRESSURES + 1)
+      .latest_blood_pressures
+      .first(DISPLAY_BLOOD_PRESSURES + 1)
 
     all_medications = fetch_medication_history(patient_summary, latest_bps.map(&:recorded_at))
     zone_column_index = csv_headers.index(zone_column)
 
     patient_appointments = patient_summary
-                             .appointments
-                             .sort { |prev, after| after.device_created_at <=> prev.device_created_at }
+      .appointments
+      .sort { |prev, after| after.device_created_at <=> prev.device_created_at }
 
     csv_fields = [
       registration_date(patient_summary),
