@@ -15,11 +15,36 @@ describe MaterializedPatientSummary, type: :model do
     let!(:new_phone) { create(:patient_phone_number, patient: patient, device_created_at: new_date) }
     let!(:old_bp) { create(:blood_pressure, patient: patient, recorded_at: old_date) }
     let!(:new_bp) { create(:blood_pressure, patient: patient, recorded_at: new_date, systolic: 110, diastolic: 70) }
+    let!(:new_bs) { create(:blood_sugar, patient: patient, recorded_at: new_date, blood_sugar_type: "random", blood_sugar_value: 100) }
     let!(:old_passport) { create(:patient_business_identifier, patient: patient, device_created_at: old_date) }
     let!(:next_appointment) { create(:appointment, patient: patient) }
     let(:med_history) { create(:medical_history, patient: patient) }
 
     before { MaterializedPatientSummary.refresh }
+
+    describe "Associations" do
+      it { is_expected.to have_many(:appointments) }
+      it { is_expected.to have_many(:prescription_drugs) }
+      it { is_expected.to have_many(:current_prescription_drugs) }
+      it { is_expected.to have_many(:latest_blood_pressures) }
+    end
+
+    describe "Scopes" do
+      context ".overdue" do
+        let!(:overdue_appointment) { create(:appointment, :overdue) }
+        let!(:upcoming_appointment) { create(:appointment) }
+
+        before { MaterializedPatientSummary.refresh }
+
+        it "includes overdue appointments" do
+          expect(MaterializedPatientSummary.overdue.map(&:id)).to include(overdue_appointment.patient_id)
+        end
+
+        it "excludes non-overdue appointments" do
+          expect(MaterializedPatientSummary.overdue.map(&:id)).not_to include(upcoming_appointment.patient_id)
+        end
+      end
+    end
 
     describe "Patient details" do
       it "uses the same ID as patient" do
@@ -92,6 +117,28 @@ describe MaterializedPatientSummary, type: :model do
         expect(patient_summary.latest_blood_pressure_facility_type).to eq(new_bp.facility.facility_type)
         expect(patient_summary.latest_blood_pressure_district).to eq(new_bp.facility.district)
         expect(patient_summary.latest_blood_pressure_state).to eq(new_bp.facility.state)
+      end
+    end
+
+    describe "Latest Blood Sugar reading" do
+      it "includes latest BS measurements", :aggregate_failures do
+        expect(patient_summary.latest_blood_sugar_type).to eq(new_bs.blood_sugar_type)
+        expect(patient_summary.latest_blood_sugar_value).to eq(new_bs.blood_sugar_value)
+      end
+
+      it "includes latest BS date" do
+        expect(patient_summary.latest_blood_sugar_recorded_at).to eq(new_bs.recorded_at)
+      end
+
+      it "includes latest BS quarter" do
+        expect(patient_summary.latest_blood_sugar_quarter).to eq(new_quarter)
+      end
+
+      it "includes latest BS facility details", :aggregate_failures do
+        expect(patient_summary.latest_blood_sugar_facility_name).to eq(new_bs.facility.name)
+        expect(patient_summary.latest_blood_sugar_facility_type).to eq(new_bs.facility.facility_type)
+        expect(patient_summary.latest_blood_sugar_district).to eq(new_bs.facility.district)
+        expect(patient_summary.latest_blood_sugar_state).to eq(new_bs.facility.state)
       end
     end
 
@@ -200,24 +247,13 @@ describe MaterializedPatientSummary, type: :model do
     end
 
     describe "BP passport" do
-      it "includes latest BP passport number" do
+      it "includes latest BP passport" do
+        expect(patient_summary.latest_bp_passport).to eq(patient.latest_bp_passport)
+      end
+
+      it "includes latest BP passport number directly" do
         expect(patient_summary.latest_bp_passport_identifier).to eq(patient.latest_bp_passport.identifier)
       end
-    end
-  end
-
-  describe ".overdue" do
-    let!(:overdue_appointment) { create(:appointment, :overdue) }
-    let!(:upcoming_appointment) { create(:appointment) }
-
-    before { MaterializedPatientSummary.refresh }
-
-    it "includes overdue appointments" do
-      expect(MaterializedPatientSummary.overdue.map(&:id)).to include(overdue_appointment.patient_id)
-    end
-
-    it "excludes non-overdue appointments" do
-      expect(MaterializedPatientSummary.overdue.map(&:id)).not_to include(upcoming_appointment.patient_id)
     end
   end
 end
