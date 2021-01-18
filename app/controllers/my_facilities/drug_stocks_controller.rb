@@ -9,10 +9,8 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :set_facility, only: [:new, :create]
   before_action :drug_stocks_enabled?
 
-  DRUG_CATECORIES = []
-
   def index
-    @facilities = current_admin.accessible_facilities(:view_reports)
+    @facilities = filter_facilities()
                     .includes(facility_group: :protocol_drugs)
                     .where(protocol_drugs: {stock_tracked: true})
   end
