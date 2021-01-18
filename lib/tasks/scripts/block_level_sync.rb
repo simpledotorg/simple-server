@@ -67,15 +67,12 @@ class BlockLevelSync
   private
 
   def touch_facilities(user)
-    begin
-      user
-        .facility_group
-        .facilities
-        .update_all(updated_at: Time.current)
-    rescue Module::DelegationError # skip for users who don't have an associated FG
-      return
-    end
-
+    user
+      .facility_group
+      .facilities
+      .update_all(updated_at: Time.current)
+  rescue Module::DelegationError # skip for users who don't have an associated FG
+    nil
   end
 
   # this filters out admin users since there's no easy way to filter them out during percentage ramp-up
