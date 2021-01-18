@@ -193,7 +193,7 @@ RSpec.describe ControlRateService, type: :model do
         ControlRateService.new(facility_group_1, periods: report_range).call
 
       expect(result[:cumulative_registrations][report_month]).to eq(3)
-      expect(result[:adjusted_registrations][Period.month(jan_2019)]).to eq(3)
+      expect(result[:adjusted_registrations][report_month]).to eq(3)
       expect(result[:controlled_patients][report_month]).to eq(3)
       expect(result[:controlled_patients_rate][report_month]).to eq(100.0)
       expect(result[:uncontrolled_patients][report_month]).to eq(0)
