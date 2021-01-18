@@ -76,7 +76,7 @@ RSpec.describe NoBPMeasureService do
 
       patients_visited_via_appt =
         [create(:patient, status: :dead, recorded_at: Time.parse("January 1st, 2020"), assigned_facility: facility),
-         create(:patient, status: :migrated, recorded_at: Time.parse("January 1st, 2020"), assigned_facility: facility)]
+          create(:patient, status: :migrated, recorded_at: Time.parse("January 1st, 2020"), assigned_facility: facility)]
 
       patients_visited_via_appt.each do |patient|
         create(:appointment, creation_facility: facility, device_created_at: appointment_date, patient: patient)
