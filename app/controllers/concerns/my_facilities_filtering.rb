@@ -14,8 +14,8 @@ module MyFacilitiesFiltering
 
     def filter_facilities
       filtered_facilities = facilities_by_facility_group(@accessible_facilities)
-      filtered_facilities = facilities_by_size(filtered_facilities)
-      facilities_by_zone(filtered_facilities)
+      filtered_facilities = facilities_by_zone(filtered_facilities)
+      facilities_by_size(filtered_facilities)
     end
 
     private
