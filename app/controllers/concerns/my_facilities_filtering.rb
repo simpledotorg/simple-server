@@ -34,6 +34,7 @@ module MyFacilitiesFiltering
 
     def populate_facility_sizes
       @facility_sizes = @accessible_facilities.where(facility_group: @selected_facility_group, zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
+      @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
     end
 
     def set_selected_facility_group
@@ -62,6 +63,11 @@ module MyFacilitiesFiltering
       else
         facilities.where(facility_size: @selected_facility_sizes)
       end
+    end
+
+    def sort_facility_sizes_by_size(facility_sizes)
+      sorted_facility_sizes = %w(large medium small community)
+      sorted_facility_sizes.select { |size| facility_sizes.include? size }
     end
   end
 end
