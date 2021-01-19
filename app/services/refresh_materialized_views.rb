@@ -56,6 +56,10 @@ class RefreshMaterializedViews
         PatientRegistrationsPerDayPerFacility.refresh
       end
 
+      benchmark("refresh_materialized_views MaterializedPatientSummary") do
+        MaterializedPatientSummary.refresh
+      end
+
       set_last_updated_at
     end
   end
