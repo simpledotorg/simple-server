@@ -298,14 +298,20 @@ RSpec.describe ControlRateService, type: :model do
     end
 
     it "has a cache key that distinguishes based on period" do
+      region = facility_group_1.region
+
       month_periods = Period.month("September 1 2018")..Period.month("September 1 2020")
+      earlier_month_periods = Period.month("January 1 2018")..Period.month("January 1 2020")
       quarter_periods = Period.quarter(july_2018)..Period.quarter(july_2020)
       Timecop.freeze("October 1 2020") do
         service_1 = ControlRateService.new(facility_group_1, periods: month_periods)
-        expect(service_1.send(:cache_key)).to match(/month\/Sep-2020/)
+        expect(service_1.send(:cache_key)).to match(/regions\/district\/#{region.id}\/month/)
 
-        service_2 = ControlRateService.new(facility_group_1, periods: quarter_periods)
-        expect(service_2.send(:cache_key)).to match(/quarter\/Q3-2020/)
+        service_2 = ControlRateService.new(facility_group_1, periods: earlier_month_periods)
+        expect(service_2.send(:cache_key)).to match(/regions\/district\/#{region.id}\/month/)
+
+        service_3 = ControlRateService.new(facility_group_1, periods: quarter_periods)
+        expect(service_3.send(:cache_key)).to match(/regions\/district\/#{region.id}\/quarter/)
       end
     end
 
