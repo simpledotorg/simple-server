@@ -37,7 +37,6 @@ class MyFacilities::FacilityPerformanceController < AdminController
     end
 
     @facilities = @facilities.sort_by { |facility| @scores_for_facility[facility.name].overall_score }
-    @facility_sizes = populate_facility_sizes
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
