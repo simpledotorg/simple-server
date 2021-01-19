@@ -2,17 +2,23 @@
 // All this logic will automatically be available in application.js.
 
 RegionsSearch = function () {
-  this.resultToRow = (result) => {
+  this.resultToRow = (searchQuery, result) => {
+    const id = result["id"]
+    const name = result["name"]
     let html = $("template#result-row").html();
     let $html = $(html)
 
     $html.attr({
-      "data-id": result["id"],
-      "data-name": result["name"],
-      "data-link": "regions/" + result["slug"]
+      "data-id": id,
+      "data-name": name
     })
     link = $html.find("a")
-    link.text(result["name"])
+
+    const regex = new RegExp(searchQuery, "ig")
+    highlightedName = name.replace(regex, "<strong>$&</strong>")
+    console.log(regex, highlightedName)
+
+    link.append(highlightedName)
     link.attr("href", result["link"])
 
     return $html
@@ -39,7 +45,7 @@ RegionsSearch = function () {
   this.populateSearchResults = (searchQuery, response) => {
     if (response.length) {
       let html = response.map((record) => {
-        return this.resultToRow(record)
+        return this.resultToRow(searchQuery, record)
       })
       this.populateDropdown(html);
     } else {
