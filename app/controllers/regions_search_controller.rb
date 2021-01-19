@@ -18,8 +18,16 @@ class RegionsSearchController < AdminController
     }
     @query = params.permit(:query)[:query]
     regex = /.*#{Regexp.escape(@query)}.*/i
-    @results = search(@accessible_regions, regex)
-    render json: @results
+    results = search(@accessible_regions, regex)
+    json = results.sort_by(&:name).map { |region|
+      {
+        id: region.id,
+        name: region.name,
+        slug: region.slug,
+        link: reports_region_url(region, report_scope: region.region_type)
+      }
+    }
+    render json: json
   end
 
   private

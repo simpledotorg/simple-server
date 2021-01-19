@@ -3,15 +3,18 @@
 
 RegionsSearch = function () {
   this.resultToRow = (result) => {
-    let html = $("template#user-search-result-row").html();
-    let $html = $(html);
+    let html = $("template#result-row").html();
+    let $html = $(html)
 
     $html.attr({
       "data-id": result["id"],
       "data-name": result["name"],
       "data-link": "regions/" + result["slug"]
     })
-    $html.find(".name").text(result["name"])
+    link = $html.find("a")
+    link.text(result["name"])
+    link.attr("href", result["link"])
+
     return $html
   }
 
@@ -26,33 +29,24 @@ RegionsSearch = function () {
   this.showSpinner = () => {
     let spinner = $(".typeahead-spinner").first().clone();
     spinner.css({display: "block"});
-
     this.populateDropdown(spinner);
   }
 
-  this.resultsToHTML = (results) => {
-    return results.map((result) => {
-      return this.resultToRow(result)
-    })
-  }
-
-  this.searchResultsToHTML = (searchQuery, results) => {
-    return this.resultsToHTML(results)
-  }
-
   this.populateDropdown = (body) => {
-    console.log("populateDropdown called")
-    console.log(body)
     $(".typeahead .typeahead-dropdown").html(body)
   }
 
   this.populateSearchResults = (searchQuery, response) => {
     if (response.length) {
-      console.log("got " + response.length + " results")
-      let results = this.searchResultsToHTML(searchQuery, response)
-      this.populateDropdown(results);
+      let html = response.map((record) => {
+        return this.resultToRow(record)
+      })
+      this.populateDropdown(html);
     } else {
-      console.log("no results")
+      let html = $("template#no-results-found").html();
+      let $html = $(html);
+      $html.find(".search-query").html(searchQuery);
+      this.populateDropdown($html)
     }
   }
 
@@ -69,7 +63,7 @@ RegionsSearch = function () {
           "query": searchQuery,
         },
         success: (res) => {
-          console.log(res)
+          console.log("got response from server", res)
           this.populateSearchResults(searchQuery, res)
         }
       })
