@@ -4,6 +4,9 @@ class PatientsWithHistoryExporter
   include QuarterHelper
 
   BATCH_SIZE = 20
+  PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
+                                 migrated: "Transferred out",
+                                 dead: "Died"}.with_indifferent_access
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
@@ -46,12 +49,12 @@ class PatientsWithHistoryExporter
   def csv_headers
     ["Registration Date",
       "Registration Quarter",
-      "Patient died?",
       "Simple Patient ID",
       "BP Passport ID",
       "Patient Name",
       "Patient Age",
       "Patient Gender",
+      "Patient Status",
       "Patient Phone Number",
       "Patient Street Address",
       "Patient Village/Colony",
@@ -113,12 +116,12 @@ class PatientsWithHistoryExporter
     csv_fields = [
       patient.recorded_at.presence && I18n.l(patient.recorded_at.to_date),
       patient.recorded_at.presence && quarter_string(patient.recorded_at.to_date),
-      ("Died" if patient.status == "dead"),
       patient.id,
       latest_bp_passport&.shortcode,
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
+      PATIENT_STATUS_DESCRIPTIONS[patient.status],
       patient.phone_numbers.last&.number,
       patient.address.street_address,
       patient.address.village_or_colony,
