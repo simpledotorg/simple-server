@@ -79,7 +79,7 @@ RSpec.describe NoBPMeasureService do
           status: :dead,
           recorded_at: Time.parse("January 1st, 2020"),
           assigned_facility: facility)
-      create(:appointment, creation_facility: facility,  patient: dead_patient_with_visit, device_created_at: appointment_date)
+      create(:appointment, creation_facility: facility, patient: dead_patient_with_visit, device_created_at: appointment_date)
 
       report_range = (Period.month("Apr 1 2020")..Period.month("May 1 2020"))
 

@@ -8,7 +8,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility_group_2) { create(:facility_group) }
   let(:facility) { create(:facility, facility_group: facility_group) }
-  let(:cvho) { create(:admin, :manager, :with_access, resource:  organization) }
+  let(:cvho) { create(:admin, :manager, :with_access, resource: organization) }
 
   before do
     Timecop.freeze("April 15th 2020") do

@@ -173,7 +173,7 @@ RSpec.describe ControlRateService, type: :model do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       patients = [
         create(:patient, recorded_at: jan_2019, assigned_facility: facility, registration_user: user),
-        create(:patient, status: :dead, recorded_at: jan_2019, assigned_facility: facility, registration_user: user),
+        create(:patient, status: :dead, recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
       ]
 
       Timecop.freeze(june_1_2020) do
