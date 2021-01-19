@@ -13,11 +13,21 @@ RSpec.describe NoBPMeasureService do
 
   it "returns a count of 0 for a facility group with no facilities" do
     range = (Period.month("October 1 2018")..Period.month("October 1 2020"))
-    results = NoBPMeasureService.new(facility_group_1, periods: range).call
+    facility_group = double(FacilityGroup, facilities: [], cache_key: "district/xxxx-zzzz", cache_version: "")
+    results = NoBPMeasureService.new(facility_group, periods: range).call
     expect(results.size).to eq(range.entries.size)
     results.each do |period, count|
       expect(count).to eq(0)
     end
+  end
+
+  it "has a cache_key based on region and period" do
+    range = (Period.month("October 1 2018")..Period.month("October 1 2020"))
+    facility_group = double(FacilityGroup, facilities: [], cache_key: "district/xxxx-zzzz")
+    service = NoBPMeasureService.new(facility_group, periods: range)
+    expect(service.cache_key(Period.month("Septmeber 2020"))).to include("district/xxxx-zzzz")
+    expect(service.cache_key(Period.month("Septmeber 2020"))).to include("#{facility_group.cache_key}/Sep-2020")
+    expect(service.cache_key(Period.month("December 2020"))).to include("#{facility_group.cache_key}/Dec-2020")
   end
 
   it "counts visits in past three months for appts, drugs updated, blood sugar taken without blood pressures" do

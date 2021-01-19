@@ -8,21 +8,23 @@ class Reports::RegionsController < AdminController
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index]
   around_action :set_time_zone
+  after_action :log_cache_metrics
   delegate :cache, to: Rails
 
   def index
     if current_admin.feature_enabled?(:region_reports)
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
       cache_key = "#{current_admin.cache_key}/regions/index"
-      cache_version = accessible_facility_regions.cache_key
+      cache_version = "#{accessible_facility_regions.cache_key} / v2"
       @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
         accessible_facility_regions.each_with_object({}) { |facility, result|
           ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
-          org, district, block = ancestors.values_at("organization", "district", "block")
+          org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
           result[org] ||= {}
-          result[org][district] ||= {}
-          result[org][district][block] ||= []
-          result[org][district][block] << facility
+          result[org][state] ||= {}
+          result[org][state][district] ||= {}
+          result[org][state][district][block] ||= []
+          result[org][state][district][block] << facility
         }
       }
     else
@@ -112,6 +114,17 @@ class Reports::RegionsController < AdminController
 
   private
 
+  def accessible_region?(region)
+    send "accessible_#{region.region_type}?", region
+  end
+
+  # An admin can view a state if they have view_reports access to any of the state's districts
+  def accessible_state?(region)
+    return true if current_admin.power_user?
+    @accessible_state_ids = current_admin.user_access.accessible_state_regions(:view_reports).pluck(:id)
+    @accessible_state_ids.include?(region.id)
+  end
+
   def accessible_district?(district)
     return true if current_admin.power_user?
     @accessible_district_ids ||= current_admin.accessible_district_regions(:view_reports).pluck(:id)
@@ -124,6 +137,8 @@ class Reports::RegionsController < AdminController
     @accessible_block_ids.include?(block.id)
   end
 
+  helper_method :accessible_region?
+  helper_method :accessible_state?
   helper_method :accessible_district?
   helper_method :accessible_block?
 
@@ -163,6 +178,8 @@ class Reports::RegionsController < AdminController
     @region ||= if current_admin.feature_enabled?(:region_reports)
       authorize {
         case region_class
+        when "State"
+          current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
         when "FacilityDistrict"
           scope = current_admin.accessible_facilities(:view_reports)
           FacilityDistrict.new(name: report_params[:id], scope: scope)
@@ -195,6 +212,8 @@ class Reports::RegionsController < AdminController
 
   def region_class
     @region_class ||= case report_params[:report_scope]
+    when "state"
+      "state"
     when "facility_district"
       "facility_district"
     when "district"
@@ -223,5 +242,16 @@ class Reports::RegionsController < AdminController
 
     Time.use_zone(time_zone) { yield }
     Groupdate.time_zone = "UTC"
+  end
+
+  def log_cache_metrics
+    stats = RequestStore[:cache_stats] || {}
+    hit_rate = percentage(stats.fetch(:hits, 0), stats.fetch(:reads, 0))
+    logger.info class: self.class.name, msg: "cache hit rate: #{hit_rate}% stats: #{stats.inspect}"
+  end
+
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0 || numerator == 0
+    ((numerator.to_f / denominator) * 100).round(2)
   end
 end

@@ -138,7 +138,10 @@ Rails.application.routes.draw do
     controllers: {invitations: "email_authentications/invitations"}
 
   resources :admins do
-    get "access_tree/:page", to: "admins#access_tree", on: :member, as: :access_tree
+    member do
+      get "access_tree/:page", to: "admins#access_tree", as: :access_tree
+      post "resend_invitation", to: "admins#resend_invitation", as: :resend_invitation
+    end
   end
 
   resources :appointments, only: [:index, :update]
@@ -161,6 +164,7 @@ Rails.application.routes.draw do
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: "blood_pressure_control"
+    get "bp_not_controlled", to: "bp_not_controlled"
     get "registrations", to: "registrations"
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"

@@ -4,9 +4,9 @@ FactoryBot.define do
     sequence(:name) { |n| "Facility #{n}" }
     sequence(:street_address) { |n| "#{n} Gandhi Road" }
     sequence(:village_or_colony) { |n| "Colony #{n}" }
-    district { "Bathinda" }
-    state { "Punjab" }
-    country { "India" }
+    district { facility_group.name }
+    state { facility_group.state }
+    country { Region.root.name }
     pin { "123456" }
     zone { Faker::Address.community }
     facility_type { "PHC" }
@@ -22,7 +22,7 @@ FactoryBot.define do
     end
 
     trait :seed do
-      sequence(:name) { |n| "#{facility_type} #{village_or_colony} #{n}" }
+      name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
       village_or_colony { Seed::FakeNames.instance.village }
       district { Faker::Address.district }

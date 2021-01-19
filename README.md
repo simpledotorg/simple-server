@@ -16,28 +16,25 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 ### Dependencies
 
-Make sure you have the following dependencies installed:
-
-- Ruby 2.5.1
-- PostgreSQL 10
-- Redis
-- Yarn
-
-To install these on MacOS:
+We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
+If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
 
 ```
-brew cask install postgres
 brew install rbenv ruby-build redis yarn
 ```
 
-To set up Ruby 2.5.1, see https://gorails.com/setup/osx/10.15-catalina
+You also need Postgres 10 - [Postgres.app](https://postgresapp.com) is a nice small GUI to manage PostgreSQL on a mac,
+though it isn't required. You can install it via brew:
 
-Open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
+```
+brew cask install postgres
+```
 
-### Setup
+Then open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
 
-To set up the Simple server for local development, clone the git repository and
-run the setup script included.
+### bin/setup
+
+To set up the Simple server for local development, clone the git repository and run the setup script included:
 
 ```
 $ git clone git@github.com:simpledotorg/simple-server.git
@@ -45,17 +42,19 @@ $ cd simple-server
 $ bin/setup
 ```
 
+If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
+
 #### Docker Compose
 
-For quick development and testing, the server can be run locally using Docker Compose and the command: 
+For quick development and testing, the server can be run locally using Docker Compose and the command:
 
 ```
 docker-compose up
-``` 
+```
 
-The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development. 
+The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
 
-Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below. 
+Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
 
 
 #### Manual Setup

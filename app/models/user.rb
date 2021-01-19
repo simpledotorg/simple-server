@@ -60,6 +60,7 @@ class User < ApplicationRecord
     class_name: "Facility",
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
+  has_many :drug_stocks
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
@@ -117,6 +118,7 @@ class User < ApplicationRecord
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
+  after_discard :destroy_email_authentications
 
   def phone_number_authentication
     phone_number_authentications.first

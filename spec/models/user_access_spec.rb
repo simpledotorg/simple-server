@@ -160,6 +160,37 @@ RSpec.describe UserAccess, type: :model do
         end
       end
 
+      context "#accessible_state_regions" do
+        it "managers of a district have view_reports access to the districts' states" do
+          facility_group_1 = create(:facility_group, name: "district 1")
+          facility_group_2 = create(:facility_group, name: "district 2")
+          pp facility_group_1.state_region
+          pp facility_group_2.state_region
+          district_1 = facility_group_1.region
+          district_2 = facility_group_2.region
+          viewer_reports_only.accesses.create!(resource: district_1.source)
+          expect(viewer_reports_only.user_access.accessible_state_regions(:view_reports)).to be_empty
+          manager.accesses.create!(resource: district_1.source)
+          expect(manager.user_access.accessible_state_regions(:view_reports)).to match_array([district_1.state_region])
+          expect(manager.user_access.accessible_state_regions(:view_reports)).to_not match_array([district_2.state_region])
+        end
+
+        it "power users have view_reports access to all states" do
+          power_user = create(:admin, :power_user)
+          _facility_group_1 = create(:facility_group, name: "district 1")
+          _facility_group_2 = create(:facility_group, name: "district 2")
+          state_regions = Region.state_regions
+          expect(power_user.user_access.accessible_state_regions(:view_reports).count).to eq(2)
+          expect(power_user.user_access.accessible_state_regions(:view_reports)).to match_array(state_regions)
+        end
+
+        it "for other actions: returns UnsupportedOperation" do
+          expect {
+            manager.user_access.accessible_state_regions(:manage)
+          }.to raise_error(UserAccess::UnsupportedAccessRequest)
+        end
+      end
+
       context "#accessible_blocks" do
         it "returns any blocks in the org an admin manages" do
           block_1 = create(:region, :block, reparent_to: facility_group_3_1.region)

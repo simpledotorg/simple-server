@@ -66,7 +66,7 @@ en:
       inactive: "Your account is not activated yet."
       invalid: "%{authentication_keys} or password are incorrect."
       invited: "You have a pending invitation, accept it to finish creating your account."
-      locked: "Your account is locked."
+      locked: "Your account is locked. You will receive an email with instructions for how to unlock your account in a few minutes."
       last_attempt: "You have one more attempt before your account is locked."
       not_found_in_database: "Invalid %{authentication_keys} or password."
       timeout: "Your session expired. Please sign in again to continue."

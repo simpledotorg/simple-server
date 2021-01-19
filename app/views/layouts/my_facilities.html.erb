@@ -11,7 +11,12 @@
           <% end %>
         <% end %>
         <%= link_to(my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("blood_pressure_control")}") do %>
-          BP control
+          BP controlled
+        <% end %>
+        <% if current_admin.feature_enabled?(:my_facilities_improvements) %>
+          <%= link_to(my_facilities_bp_not_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("bp_not_controlled")}") do %>
+            BP not controlled
+          <% end %>
         <% end %>
         <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
           Missed visits

@@ -14,7 +14,7 @@
     },
     {
       "country_code": "ET",
-      "endpoint": "https://api-demo.et.simple.org/api/",
+      "endpoint": "https://simple-demo.moh.gov.et/api/",
       "display_name": "Ethiopia",
       "isd_code": "251"
     }
