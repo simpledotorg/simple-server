@@ -12,22 +12,31 @@ class MyFacilities::DrugStocksController < AdminController
   def index
     @facilities = filter_facilities()
                     .includes(facility_group: :protocol_drugs)
-                    .where(protocol_drugs: {stock_tracked: true})
+                    .where(protocol_drugs: { stock_tracked: true })
   end
 
   def new
+    recorded_at = Date.strptime(params[:recorded_at], "%Y-%m").end_of_month
+    drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
+                               .where(facility_id: @facility.id, recorded_at: recorded_at)
+                               .order(:protocol_drug_id, created_at: :desc)
+    @drug_stocks = drug_stock_list.inject({}) { |acc, drug_stock|
+      acc[drug_stock.protocol_drug.id] = drug_stock
+      acc
+    }
     render partial: "form"
   end
 
   def create
+    recorded_at = Date.strptime(drug_stocks_params[:recorded_at], "%Y-%m").end_of_month
     drug_stocks = DrugStock.transaction do
-      drug_stocks_params[:drug_stocks].reject { |drug_stock| drug_stock[:in_stock].blank? }.map do |drug_stock|
+      drug_stocks_reported.map do |drug_stock|
         DrugStock.create(facility: @facility,
                          user: current_admin,
                          protocol_drug_id: drug_stock[:protocol_drug_id],
                          received: drug_stock[:received].presence,
                          in_stock: drug_stock[:in_stock].presence,
-                         recorded_at: drug_stocks_params[:recorded_at])
+                         recorded_at: recorded_at) # temporarily leaving the name of the field as is
       end
     end
 
@@ -42,6 +51,12 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   private
+
+  def drug_stocks_reported
+    drug_stocks_params[:drug_stocks].reject do |drug_stock|
+      drug_stock[:in_stock].blank? && drug_stock[:received].blank?
+    end
+  end
 
   def authorize_my_facilities
     authorize { current_admin.accessible_facilities(:view_reports).any? }

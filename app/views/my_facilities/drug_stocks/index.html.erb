@@ -133,7 +133,7 @@
             <td class="text-center">
               <a id=<%= "form_button_#{facility.id}" %> href="#" data-toggle="modal" data-target=<%= "#drug_report_modal_#{facility.id}" %>><i class="fas fa-plus"></i></a>
               <div class="modal fade" id=<%= "drug_report_modal_#{facility.id}" %> tabindex="-1" role="dialog" aria-labelledby="Drug Report" aria-hidden="false">
-                <%= render_async my_facilities_drug_stock_form_path(facility.id), toggle: { selector: "#form_button_#{facility.id}", event: :click, once: true } %>
+                <%= render_async my_facilities_drug_stock_form_path(facility.id, recorded_at: Date.today.strftime("%Y-%m")), toggle: { selector: "#form_button_#{facility.id}", event: :click, once: true } %>
               </div>
             </td>
             <td class="type-number">700</td>
