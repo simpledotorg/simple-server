@@ -81,7 +81,7 @@ class PatientsWithHistoryExporter < PatientsExporter
 
     patient_appointments = patient_summary
       .appointments
-      .sort { |prev, after| prev.device_created_at <=> after.device_created_at }
+      .sort_by(&:device_created_at)
 
     csv_fields = [
       registration_date(patient_summary),

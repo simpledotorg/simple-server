@@ -256,13 +256,13 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
-      Timecop.travel now do
+      travel_to now do
         expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
       end
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      Timecop.travel now do
+      travel_to now do
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
       end
     end
