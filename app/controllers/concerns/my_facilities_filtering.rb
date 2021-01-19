@@ -29,7 +29,7 @@ module MyFacilitiesFiltering
     end
 
     def populate_facility_sizes
-      @facility_sizes = @accessible_facilities.where(zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
+      @facility_sizes = @accessible_facilities.where(facility_group: @selected_facility_group, zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
     end
 
     def populate_zones
