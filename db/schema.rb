@@ -1060,7 +1060,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
       p.full_name,
           CASE
               WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
-              ELSE floor(((p.age)::double precision + date_part('year'::text, age(p.age_updated_at))))
+              ELSE floor(((p.age)::double precision + date_part('year'::text, age(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at))))))
           END AS current_age,
       p.gender,
       p.status,
@@ -1096,19 +1096,19 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
       latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
       latest_blood_sugar_facility.district AS latest_blood_sugar_district,
       latest_blood_sugar_facility.state AS latest_blood_sugar_state,
-      GREATEST((0)::double precision, date_part('day'::text, (now() - (next_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
-      next_appointment.id AS next_appointment_id,
-      next_appointment.scheduled_date AS next_appointment_scheduled_date,
-      next_appointment.status AS next_appointment_status,
-      next_appointment.remind_on AS next_appointment_remind_on,
-      next_appointment_facility.id AS next_appointment_facility_id,
-      next_appointment_facility.name AS next_appointment_facility_name,
-      next_appointment_facility.facility_type AS next_appointment_facility_type,
-      next_appointment_facility.district AS next_appointment_district,
-      next_appointment_facility.state AS next_appointment_state,
+      GREATEST((0)::double precision, date_part('day'::text, (now() - (next_scheduled_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
+      next_scheduled_appointment.id AS next_scheduled_appointment_id,
+      next_scheduled_appointment.scheduled_date AS next_scheduled_appointment_scheduled_date,
+      next_scheduled_appointment.status AS next_scheduled_appointment_status,
+      next_scheduled_appointment.remind_on AS next_scheduled_appointment_remind_on,
+      next_scheduled_appointment_facility.id AS next_scheduled_appointment_facility_id,
+      next_scheduled_appointment_facility.name AS next_scheduled_appointment_facility_name,
+      next_scheduled_appointment_facility.facility_type AS next_scheduled_appointment_facility_type,
+      next_scheduled_appointment_facility.district AS next_scheduled_appointment_district,
+      next_scheduled_appointment_facility.state AS next_scheduled_appointment_state,
           CASE
-              WHEN (next_appointment.scheduled_date IS NULL) THEN 0
-              WHEN (next_appointment.scheduled_date > date_trunc('day'::text, (now() - '30 days'::interval))) THEN 0
+              WHEN (next_scheduled_appointment.scheduled_date IS NULL) THEN 0
+              WHEN (next_scheduled_appointment.scheduled_date > date_trunc('day'::text, (now() - '30 days'::interval))) THEN 0
               WHEN ((latest_blood_pressure.systolic >= 180) OR (latest_blood_pressure.diastolic >= 110)) THEN 1
               WHEN (((mh.prior_heart_attack = 'yes'::text) OR (mh.prior_stroke = 'yes'::text)) AND ((latest_blood_pressure.systolic >= 140) OR (latest_blood_pressure.diastolic >= 90))) THEN 1
               WHEN ((((latest_blood_sugar.blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugar.blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugar.blood_sugar_value >= 9.0))) THEN 1
@@ -1219,8 +1219,9 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               appointments.user_id,
               appointments.creation_facility_id
              FROM appointments
-            ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
-       LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
+            WHERE ((appointments.status)::text = 'scheduled'::text)
+            ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
+       LEFT JOIN facilities next_scheduled_appointment_facility ON ((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id)));
   SQL
   add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id", unique: true
 

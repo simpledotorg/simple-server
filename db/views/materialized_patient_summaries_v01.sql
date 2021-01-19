@@ -17,7 +17,7 @@ SELECT p.recorded_at,
        addresses.street_address                                                                                                  AS street_address,
        addresses.district                                                                                                        AS district,
        addresses.state                                                                                                           AS state,
-       addresses.zone                                                                                                            AS BLOCK,
+       addresses.zone                                                                                                            AS block,
        reg_facility.name                                                                                                         AS registration_facility_name,
        reg_facility.facility_type                                                                                                AS registration_facility_type,
        reg_facility.district                                                                                                     AS registration_district,
@@ -55,19 +55,19 @@ SELECT p.recorded_at,
        latest_blood_sugar_facility.district                                                                                      AS latest_blood_sugar_district,
        latest_blood_sugar_facility.state                                                                                         AS latest_blood_sugar_state,
        greatest(0,
-                date_part('day', NOW() - next_appointment.scheduled_date))                                                       AS days_overdue,
-       next_appointment.id                                                                                                       AS next_appointment_id,
-       next_appointment.scheduled_date                                                                                           AS next_appointment_scheduled_date,
-       next_appointment.status                                                                                                   AS next_appointment_status,
-       next_appointment.remind_on                                                                                                AS next_appointment_remind_on,
-       next_appointment_facility.id                                                                                              AS next_appointment_facility_id,
-       next_appointment_facility.name                                                                                            AS next_appointment_facility_name,
-       next_appointment_facility.facility_type                                                                                   AS next_appointment_facility_type,
-       next_appointment_facility.district                                                                                        AS next_appointment_district,
-       next_appointment_facility.state                                                                                           AS next_appointment_state,
+                date_part('day', NOW() - next_scheduled_appointment.scheduled_date))                                                       AS days_overdue,
+       next_scheduled_appointment.id                                                                                                       AS next_scheduled_appointment_id,
+       next_scheduled_appointment.scheduled_date                                                                                           AS next_scheduled_appointment_scheduled_date,
+       next_scheduled_appointment.status                                                                                                   AS next_scheduled_appointment_status,
+       next_scheduled_appointment.remind_on                                                                                                AS next_scheduled_appointment_remind_on,
+       next_scheduled_appointment_facility.id                                                                                              AS next_scheduled_appointment_facility_id,
+       next_scheduled_appointment_facility.name                                                                                            AS next_scheduled_appointment_facility_name,
+       next_scheduled_appointment_facility.facility_type                                                                                   AS next_scheduled_appointment_facility_type,
+       next_scheduled_appointment_facility.district                                                                                        AS next_scheduled_appointment_district,
+       next_scheduled_appointment_facility.state                                                                                           AS next_scheduled_appointment_state,
        (CASE
-            WHEN next_appointment.scheduled_date IS NULL THEN 0
-            WHEN next_appointment.scheduled_date > date_trunc('day', NOW() - interval '30 days') THEN 0
+            WHEN next_scheduled_appointment.scheduled_date IS NULL THEN 0
+            WHEN next_scheduled_appointment.scheduled_date > date_trunc('day', NOW() - interval '30 days') THEN 0
             WHEN (latest_blood_pressure.systolic >= 180
                 OR latest_blood_pressure.diastolic >= 110) THEN 1
             WHEN ((mh.prior_heart_attack = 'yes'
@@ -124,7 +124,8 @@ FROM patients p
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
       FROM appointments
+      WHERE status = 'scheduled'
       ORDER BY patient_id,
-               scheduled_date DESC) AS next_appointment ON next_appointment.patient_id = p.id
-         LEFT OUTER JOIN facilities next_appointment_facility
-                         ON next_appointment_facility.id = next_appointment.facility_id;
+               scheduled_date DESC) AS next_scheduled_appointment ON next_scheduled_appointment.patient_id = p.id
+         LEFT OUTER JOIN facilities next_scheduled_appointment_facility
+                         ON next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id;
