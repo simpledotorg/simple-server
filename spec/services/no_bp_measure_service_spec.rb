@@ -69,23 +69,22 @@ RSpec.describe NoBPMeasureService do
   end
 
   context "when with_exclusions is true" do
-    it "doesn't include dead or migrated patients" do
+    it "doesn't include dead patients" do
       facility = create(:facility, facility_group: facility_group_1)
       appointment_date = Time.parse("May 1st, 2020")
       appointment_month = Period.month("May 2020")
 
-      patients_visited_via_appt =
-        [create(:patient, status: :dead, recorded_at: Time.parse("January 1st, 2020"), assigned_facility: facility),
-          create(:patient, status: :migrated, recorded_at: Time.parse("January 1st, 2020"), assigned_facility: facility)]
-
-      patients_visited_via_appt.each do |patient|
-        create(:appointment, creation_facility: facility, device_created_at: appointment_date, patient: patient)
-      end
+      dead_patient_with_visit =
+        create(:patient,
+          status: :dead,
+          recorded_at: Time.parse("January 1st, 2020"),
+          assigned_facility: facility)
+      create(:appointment, creation_facility: facility,  patient: dead_patient_with_visit, device_created_at: appointment_date)
 
       report_range = (Period.month("Apr 1 2020")..Period.month("May 1 2020"))
 
       results = NoBPMeasureService.new(facility, periods: report_range).call
-      expect(results[appointment_month]).to eq(2)
+      expect(results[appointment_month]).to eq(1)
 
       results_with_exclusions =
         NoBPMeasureService.new(facility, periods: report_range, with_exclusions: true).call

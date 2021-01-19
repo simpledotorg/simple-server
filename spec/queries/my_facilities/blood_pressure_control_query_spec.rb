@@ -132,9 +132,8 @@ RSpec.describe BloodPressureControlQuery do
           end
 
           context "when with_exclusions is true" do
-            it "excludes dead and migrated patients" do
+            it "excludes dead patients" do
               patients_with_controlled_bp.first.update(status: :dead)
-              patients_with_controlled_bp.second.update(status: :migrated)
 
               query = described_class.new(facilities: assigned_facility,
                                           cohort_period: {cohort_period: :quarter,
@@ -142,7 +141,7 @@ RSpec.describe BloodPressureControlQuery do
                                                           registration_year: registration_quarter_year},
                                           with_exclusions: true)
 
-              expect(query.cohort_patients).not_to include(patients_with_controlled_bp.first, patients_with_controlled_bp.second)
+              expect(query.cohort_patients).not_to include(patients_with_controlled_bp.first)
             end
           end
         end
@@ -153,9 +152,8 @@ RSpec.describe BloodPressureControlQuery do
           end
 
           context "when with_exclusions is true" do
-            it "excludes dead and migrated patients" do
+            it "excludes dead patients" do
               controlled_blood_pressures.first.patient.update(status: :dead)
-              controlled_blood_pressures.second.patient.update(status: :migrated)
 
               query = described_class.new(facilities: assigned_facility,
                                           cohort_period: {cohort_period: :quarter,
@@ -163,8 +161,7 @@ RSpec.describe BloodPressureControlQuery do
                                                           registration_year: registration_quarter_year},
                                           with_exclusions: true)
 
-              expect(query.cohort_controlled_bps.pluck(:bp_id)).not_to include(controlled_blood_pressures.first.id,
-                controlled_blood_pressures.second.id)
+              expect(query.cohort_controlled_bps.pluck(:bp_id)).not_to include(controlled_blood_pressures.first.id)
             end
           end
         end
@@ -175,7 +172,7 @@ RSpec.describe BloodPressureControlQuery do
           end
 
           context "when with_exclusions is true" do
-            it "excludes dead and migrated patients" do
+            it "excludes dead patients" do
               uncontrolled_blood_pressures.first.patient.update(status: :dead)
               uncontrolled_blood_pressures.second.patient.update(status: :migrated)
 
@@ -185,8 +182,7 @@ RSpec.describe BloodPressureControlQuery do
                                                           registration_year: registration_quarter_year},
                                           with_exclusions: true)
 
-              expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).not_to include(uncontrolled_blood_pressures.first.id,
-                uncontrolled_blood_pressures.second.id)
+              expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).not_to include(uncontrolled_blood_pressures.first.id)
             end
           end
         end
@@ -501,12 +497,10 @@ RSpec.describe BloodPressureControlQuery do
           end
 
           context "when with_exclusions is true" do
-            it "excludes dead and migrated patients" do
+            it "excludes dead patients" do
               patient_with_recent_bp.update(status: :dead)
-              patient_without_recent_bp.update(status: :migrated)
 
-              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(patient_with_recent_bp,
-                patient_without_recent_bp)
+              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(patient_with_recent_bp)
             end
           end
         end

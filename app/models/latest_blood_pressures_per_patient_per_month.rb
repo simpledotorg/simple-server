@@ -12,5 +12,4 @@ class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
 
   scope :with_hypertension, -> { where("medical_history_hypertension = ?", "yes") }
   scope :excluding_dead, -> { where.not(patient_status: :dead) }
-  scope :excluding_transferred, -> { where.not(patient_status: :migrated) }
 end

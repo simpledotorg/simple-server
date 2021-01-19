@@ -50,8 +50,8 @@ class ControlRateService
     results.registrations_with_exclusions = registration_counts_with_exclusions
     results.earliest_registration_period = registration_counts.keys.first
     results.fill_in_nil_registrations
-    results.count_adjusted_registrations
     results.count_cumulative_registrations
+    results.count_adjusted_registrations
 
     results.full_data_range.each do |(period, count)|
       results.controlled_patients[period] = controlled_patients(period).count
