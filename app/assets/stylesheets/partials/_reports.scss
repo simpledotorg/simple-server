@@ -47,12 +47,14 @@
 .h-250px { height: 250px; }
 .mh-350px { max-height: 350px; }
 // Spacing
+.mb-0px { margin-bottom: 0px; }
 .mb-8px { margin-bottom: 8px; }
 .mb-20px { margin-bottom: 20px; }
 .mx-20px { margin-right: 20px; margin-left: 20px; }
 .mr-4px { margin-right: 4px; }
 .mr-8px { margin-right: 8px; }
 .pb-8px { padding-bottom: 8px; }
+.pb-56px { padding-bottom: 56px; }
 // Typography
 .fs-12px { font-size: 12px; }
 .fs-14px { font-size: 14px; }
@@ -106,6 +108,7 @@
 .bg-green-medium { background-color: $green-mid; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
+.bg-yellow-light { background-color: $yellow-light; }
 .bg-white { background-color: #ffffff; }
 .bg-grey-lightest { background-color: $grey-lightest; }
 .bg-grey-light { background-color: $grey-light; }
