@@ -8,7 +8,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility_group_2) { create(:facility_group) }
   let(:facility) { create(:facility, facility_group: facility_group) }
-  let(:cvho) { create(:admin, :manager, :with_access, resource: organization) }
+  let(:cvho) { create(:admin, :manager, :with_access, resource:  organization) }
 
   before do
     Timecop.freeze("April 15th 2020") do
@@ -25,12 +25,29 @@ RSpec.describe Reports::PatientListsController, type: :controller do
         admin_with_pii.email,
         "facility_group",
         {id: facility_group.id},
-        with_medication_history: false
+        with_medication_history: false,
+        with_exclusions: false
       )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
       expect(response).to redirect_to(reports_region_path(facility_group.slug, report_scope: "district"))
+    end
+
+    it "asks for dead patients to be excluded if admin has report_with_exclusions enabled" do
+      enable_flag(:report_with_exclusions, admin_with_pii)
+      expect(PatientListDownloadJob).to receive(:perform_later).with(
+        admin_with_pii.email,
+        "facility_group",
+        {id: facility_group.id},
+        with_medication_history: false,
+        with_exclusions: true
+      )
+
+      admin_with_pii.accesses.create!(resource: facility_group)
+      sign_in(admin_with_pii.email_authentication)
+
+      get :show, params: {id: facility_group.slug, report_scope: "district"}
     end
 
     it "rejects attempts for facility groups admin does not have access to" do
