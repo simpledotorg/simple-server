@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe RegionsSearchController, type: :controller do
   let(:organization) { FactoryBot.create(:organization) }
