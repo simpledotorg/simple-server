@@ -4,13 +4,13 @@ module MyFacilitiesFiltering
   extend ActiveSupport::Concern
 
   included do
-    before_action :populate_facilities
+    before_action :populate_accessible_facilities
     before_action :populate_facility_groups
-    before_action :populate_facility_sizes
     before_action :set_selected_facility_group
     before_action :populate_zones
-    before_action :set_selected_facility_sizes
     before_action :set_selected_zones
+    before_action :populate_facility_sizes
+    before_action :set_selected_facility_sizes
 
     def filter_facilities
       filtered_facilities = facilities_by_facility_group(@accessible_facilities)
@@ -20,7 +20,7 @@ module MyFacilitiesFiltering
 
     private
 
-    def populate_facilities
+    def populate_accessible_facilities
       @accessible_facilities = current_admin.accessible_facilities(:view_reports)
     end
 
@@ -40,12 +40,12 @@ module MyFacilitiesFiltering
       @selected_facility_group = params[:facility_group] ? @facility_groups.find_by(slug: params[:facility_group]) : @facility_groups.first
     end
 
-    def set_selected_facility_sizes
-      @selected_sizes = params[:size].present? ? [params[:size]] : @facility_sizes
-    end
-
     def set_selected_zones
       @selected_zones = params[:zone].present? ? [params[:zone]] : @zones
+    end
+
+    def set_selected_facility_sizes
+      @selected_sizes = params[:size].present? ? [params[:size]] : @facility_sizes
     end
 
     def facilities_by_facility_group(facilities)
