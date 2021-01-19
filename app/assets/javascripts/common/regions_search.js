@@ -8,12 +8,13 @@ RegionsSearch = function () {
     let html = $("template#result-row").html();
     let $html = $(html)
 
+    $html.find(".ancestors").append(result["ancestors"])
     $html.attr({
       "data-id": id,
       "data-name": name
     })
-    link = $html.find("a")
 
+    link = $html.find("a")
     const regex = new RegExp(searchQuery, "ig")
     highlightedName = name.replace(regex, "<strong>$&</strong>")
     console.log(regex, highlightedName)

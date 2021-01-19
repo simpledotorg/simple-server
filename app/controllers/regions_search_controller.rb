@@ -21,6 +21,7 @@ class RegionsSearchController < AdminController
     results = search(@accessible_regions, regex)
     json = results.sort_by(&:name).map { |region|
       {
+        ancestors: region.ancestors.where.not(region_type: "root").order(:path).map { |a| a.name }.join(" > "),
         id: region.id,
         name: region.name,
         slug: region.slug,
