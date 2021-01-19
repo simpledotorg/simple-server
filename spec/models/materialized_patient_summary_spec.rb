@@ -157,14 +157,14 @@ describe MaterializedPatientSummary, type: :model do
       end
 
       it "includes next appointment date" do
-        expect(patient_summary.next_appointment_scheduled_date).to eq(next_appointment.scheduled_date)
+        expect(patient_summary.next_scheduled_appointment_scheduled_date).to eq(next_appointment.scheduled_date)
       end
 
       it "includes latest BP facility details", :aggregate_failures do
-        expect(patient_summary.next_appointment_facility_name).to eq(next_appointment.facility.name)
-        expect(patient_summary.next_appointment_facility_type).to eq(next_appointment.facility.facility_type)
-        expect(patient_summary.next_appointment_district).to eq(next_appointment.facility.district)
-        expect(patient_summary.next_appointment_state).to eq(next_appointment.facility.state)
+        expect(patient_summary.next_scheduled_appointment_facility_name).to eq(next_appointment.facility.name)
+        expect(patient_summary.next_scheduled_appointment_facility_type).to eq(next_appointment.facility.facility_type)
+        expect(patient_summary.next_scheduled_appointment_district).to eq(next_appointment.facility.district)
+        expect(patient_summary.next_scheduled_appointment_state).to eq(next_appointment.facility.state)
       end
     end
 
