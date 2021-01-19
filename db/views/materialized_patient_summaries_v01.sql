@@ -55,16 +55,16 @@ SELECT p.recorded_at,
        latest_blood_sugar_facility.district                                                                                      AS latest_blood_sugar_district,
        latest_blood_sugar_facility.state                                                                                         AS latest_blood_sugar_state,
        greatest(0,
-                date_part('day', NOW() - next_scheduled_appointment.scheduled_date))                                                       AS days_overdue,
-       next_scheduled_appointment.id                                                                                                       AS next_scheduled_appointment_id,
-       next_scheduled_appointment.scheduled_date                                                                                           AS next_scheduled_appointment_scheduled_date,
-       next_scheduled_appointment.status                                                                                                   AS next_scheduled_appointment_status,
-       next_scheduled_appointment.remind_on                                                                                                AS next_scheduled_appointment_remind_on,
-       next_scheduled_appointment_facility.id                                                                                              AS next_scheduled_appointment_facility_id,
-       next_scheduled_appointment_facility.name                                                                                            AS next_scheduled_appointment_facility_name,
-       next_scheduled_appointment_facility.facility_type                                                                                   AS next_scheduled_appointment_facility_type,
-       next_scheduled_appointment_facility.district                                                                                        AS next_scheduled_appointment_district,
-       next_scheduled_appointment_facility.state                                                                                           AS next_scheduled_appointment_state,
+                date_part('day', NOW() - next_scheduled_appointment.scheduled_date))                                             AS days_overdue,
+       next_scheduled_appointment.id                                                                                             AS next_scheduled_appointment_id,
+       next_scheduled_appointment.scheduled_date                                                                                 AS next_scheduled_appointment_scheduled_date,
+       next_scheduled_appointment.status                                                                                         AS next_scheduled_appointment_status,
+       next_scheduled_appointment.remind_on                                                                                      AS next_scheduled_appointment_remind_on,
+       next_scheduled_appointment_facility.id                                                                                    AS next_scheduled_appointment_facility_id,
+       next_scheduled_appointment_facility.name                                                                                  AS next_scheduled_appointment_facility_name,
+       next_scheduled_appointment_facility.facility_type                                                                         AS next_scheduled_appointment_facility_type,
+       next_scheduled_appointment_facility.district                                                                              AS next_scheduled_appointment_district,
+       next_scheduled_appointment_facility.state                                                                                 AS next_scheduled_appointment_state,
        (CASE
             WHEN next_scheduled_appointment.scheduled_date IS NULL THEN 0
             WHEN next_scheduled_appointment.scheduled_date > date_trunc('day', NOW() - interval '30 days') THEN 0
@@ -95,15 +95,18 @@ FROM patients p
          LEFT OUTER JOIN facilities assigned_facility ON assigned_facility.id = p.assigned_facility_id
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
-      FROM medical_histories) AS mh ON mh.patient_id = p.id
+      FROM medical_histories
+      WHERE deleted_at IS NULL) AS mh ON mh.patient_id = p.id
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
       FROM patient_phone_numbers
+      WHERE deleted_at IS NULL
       ORDER BY patient_id,
                device_created_at DESC) AS latest_phone_number ON latest_phone_number.patient_id = p.id
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
       FROM blood_pressures
+      WHERE deleted_at IS NULL
       ORDER BY patient_id,
                recorded_at DESC) AS latest_blood_pressure ON latest_blood_pressure.patient_id = p.id
          LEFT OUTER JOIN facilities latest_blood_pressure_facility
@@ -111,6 +114,7 @@ FROM patients p
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
       FROM blood_sugars
+      WHERE deleted_at IS NULL
       ORDER BY patient_id,
                recorded_at DESC) AS latest_blood_sugar ON latest_blood_sugar.patient_id = p.id
          LEFT OUTER JOIN facilities latest_blood_sugar_facility
@@ -119,13 +123,16 @@ FROM patients p
      (SELECT DISTINCT ON (patient_id) *
       FROM patient_business_identifiers
       WHERE identifier_type = 'simple_bp_passport'
+        AND deleted_at IS NULL
       ORDER BY patient_id,
                device_created_at DESC) AS latest_bp_passport ON latest_bp_passport.patient_id = p.id
          LEFT OUTER JOIN
      (SELECT DISTINCT ON (patient_id) *
       FROM appointments
       WHERE status = 'scheduled'
+        AND deleted_at IS NULL
       ORDER BY patient_id,
                scheduled_date DESC) AS next_scheduled_appointment ON next_scheduled_appointment.patient_id = p.id
          LEFT OUTER JOIN facilities next_scheduled_appointment_facility
-                         ON next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id;
+                         ON next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id
+WHERE p.deleted_at IS NULL;

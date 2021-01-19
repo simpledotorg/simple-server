@@ -1144,7 +1144,8 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               medical_histories.deleted_at,
               medical_histories.user_id,
               medical_histories.hypertension
-             FROM medical_histories) mh ON ((mh.patient_id = p.id)))
+             FROM medical_histories
+            WHERE (medical_histories.deleted_at IS NULL)) mh ON ((mh.patient_id = p.id)))
        LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
               patient_phone_numbers.number,
               patient_phone_numbers.phone_type,
@@ -1157,6 +1158,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               patient_phone_numbers.deleted_at,
               patient_phone_numbers.dnd_status
              FROM patient_phone_numbers
+            WHERE (patient_phone_numbers.deleted_at IS NULL)
             ORDER BY patient_phone_numbers.patient_id, patient_phone_numbers.device_created_at DESC) latest_phone_number ON ((latest_phone_number.patient_id = p.id)))
        LEFT JOIN ( SELECT DISTINCT ON (blood_pressures.patient_id) blood_pressures.id,
               blood_pressures.systolic,
@@ -1171,6 +1173,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               blood_pressures.deleted_at,
               blood_pressures.recorded_at
              FROM blood_pressures
+            WHERE (blood_pressures.deleted_at IS NULL)
             ORDER BY blood_pressures.patient_id, blood_pressures.recorded_at DESC) latest_blood_pressure ON ((latest_blood_pressure.patient_id = p.id)))
        LEFT JOIN facilities latest_blood_pressure_facility ON ((latest_blood_pressure_facility.id = latest_blood_pressure.facility_id)))
        LEFT JOIN ( SELECT DISTINCT ON (blood_sugars.patient_id) blood_sugars.id,
@@ -1186,6 +1189,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               blood_sugars.created_at,
               blood_sugars.updated_at
              FROM blood_sugars
+            WHERE (blood_sugars.deleted_at IS NULL)
             ORDER BY blood_sugars.patient_id, blood_sugars.recorded_at DESC) latest_blood_sugar ON ((latest_blood_sugar.patient_id = p.id)))
        LEFT JOIN facilities latest_blood_sugar_facility ON ((latest_blood_sugar_facility.id = latest_blood_sugar.facility_id)))
        LEFT JOIN ( SELECT DISTINCT ON (patient_business_identifiers.patient_id) patient_business_identifiers.id,
@@ -1200,7 +1204,7 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               patient_business_identifiers.created_at,
               patient_business_identifiers.updated_at
              FROM patient_business_identifiers
-            WHERE ((patient_business_identifiers.identifier_type)::text = 'simple_bp_passport'::text)
+            WHERE (((patient_business_identifiers.identifier_type)::text = 'simple_bp_passport'::text) AND (patient_business_identifiers.deleted_at IS NULL))
             ORDER BY patient_business_identifiers.patient_id, patient_business_identifiers.device_created_at DESC) latest_bp_passport ON ((latest_bp_passport.patient_id = p.id)))
        LEFT JOIN ( SELECT DISTINCT ON (appointments.patient_id) appointments.id,
               appointments.patient_id,
@@ -1219,9 +1223,10 @@ ActiveRecord::Schema.define(version: 2021_01_08_060640) do
               appointments.user_id,
               appointments.creation_facility_id
              FROM appointments
-            WHERE ((appointments.status)::text = 'scheduled'::text)
+            WHERE (((appointments.status)::text = 'scheduled'::text) AND (appointments.deleted_at IS NULL))
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
-       LEFT JOIN facilities next_scheduled_appointment_facility ON ((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id)));
+       LEFT JOIN facilities next_scheduled_appointment_facility ON ((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id)))
+    WHERE (p.deleted_at IS NULL);
   SQL
   add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id", unique: true
 
