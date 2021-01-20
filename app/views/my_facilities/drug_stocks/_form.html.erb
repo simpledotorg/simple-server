@@ -36,7 +36,7 @@
                   <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received during the month" %>
                 </div>
                 <div class="col">
-                  <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, required: true, help: "Stock at end of the month" %>
+                  <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, help: "Stock at end of the month" %>
                 </div>
               </div>
             </div>
@@ -44,7 +44,7 @@
         <% end %>
       </div>
       <div class="modal-footer">
-        <%= form.primary "Save Report", class: "btn btn-primary btn-block", onclick: "validateAndCloseDrugStockForm('#{@facility.id}')" %>
+        <%= form.primary "Save Report", class: "btn btn-primary btn-block" %>
       </div>
     <% end %>
   </div>

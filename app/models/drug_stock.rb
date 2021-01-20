@@ -3,7 +3,7 @@ class DrugStock < ApplicationRecord
   belongs_to :user
   belongs_to :protocol_drug
 
-  validates :in_stock, numericality: true, presence: true
+  validates :in_stock, numericality: true, allow_nil: true
   validates :received, numericality: true, allow_nil: true
   validates :recorded_at, presence: true
 end
