@@ -2,7 +2,7 @@ RegionsSearch = function () {
   this.resultToRow = (searchQuery, result) => {
     const name = result["name"]
     const regex = new RegExp(searchQuery, "ig")
-    const highlightedName = name.replace(regex, "<strong>$&</strong>")
+    const highlightedName = name.replace(regex, "<strong class='bg-yellow-light'>$&</strong>")
 
     let html = $("template#result-row").html();
     let $html = $(html)
