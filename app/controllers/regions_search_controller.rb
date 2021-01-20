@@ -1,19 +1,19 @@
 class RegionsSearchController < AdminController
   delegate :cache, to: Rails
+  CACHE_VERSION = "V3"
 
   def show
     accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
     cache_key = "#{current_admin.cache_key}/regions/index"
-    cache_version = "#{accessible_facility_regions.cache_key} / v2"
+    cache_version = "#{accessible_facility_regions.cache_key}/#{CACHE_VERSION}"
     @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
         ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
-        org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
-        result[org] ||= {}
-        result[org][state] ||= {}
-        result[org][state][district] ||= {}
-        result[org][state][district][block] ||= []
-        result[org][state][district][block] << facility
+        state, district, block = ancestors.values_at("state", "district", "block")
+        result[state] ||= {}
+        result[state][district] ||= {}
+        result[state][district][block] ||= []
+        result[state][district][block] << facility
       }
     }
     @query = params.permit(:query)[:query] || ""
@@ -21,7 +21,7 @@ class RegionsSearchController < AdminController
     results = search(@accessible_regions, regex)
     json = results.sort_by(&:name).map { |region|
       {
-        ancestors: region.cached_ancestors.where.not(region_type: "root").order(:path).map { |a| a.name }.join(" > "),
+        ancestors: region.cached_ancestors.where.not(region_type: ["root", "organization"]).order(:path).map { |a| a.name }.join(" > "),
         id: region.id,
         name: region.name,
         slug: region.slug,

@@ -54,7 +54,7 @@ RegionsSearch = function () {
       this.clearDropDown()
       return false
     }
-    if (searchQuery.length) {
+    if (searchQuery && searchQuery.length) {
       this.showSpinner();
       $.ajax({
         url: e.form.action,
