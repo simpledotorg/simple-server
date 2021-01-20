@@ -17,7 +17,6 @@ class NoBPMeasureService
   attr_reader :with_exclusions
 
   delegate :cache, to: Rails
-  delegate :sanitize_sql, to: ActiveRecord::Base
 
   def call
     keys = cache_keys_for_period.keys
