@@ -9,7 +9,7 @@ module Seed
           "small"
         when "test"
           "test"
-        when "sandbox", "staging"
+        when "sandbox", "staging", "demo"
           "large"
         else
           raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
