@@ -131,7 +131,7 @@
             <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="CHC Nectarine: 203 patients">
               <a href="/analytics/facilities/hwc_carambolim_buzruco"> <%= facility.name %> </a></td>
             <td class="text-center">
-              <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.id, for_end_of_month: Date.today.strftime("%Y-%m")) %>>
+              <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.id, for_end_of_month: Date.today.strftime("%B %Y")) %>>
                 <i class="fas fa-plus"></i>
               </a>
             </td>

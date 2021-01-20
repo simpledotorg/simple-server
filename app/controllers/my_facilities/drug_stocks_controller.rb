@@ -76,6 +76,6 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def parse_end_of_month(year_month_string)
-    Date.strptime(year_month_string, "%Y-%m").end_of_month
+    Date.strptime(year_month_string, "%B %Y").end_of_month
   end
 end
