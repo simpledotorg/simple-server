@@ -10,7 +10,7 @@
                          id: :search_query,
                          class: "typeahead-input form-control",
                          hide_label: true,
-                         placeholder: "Find regions",
+                         placeholder: "Search for a region or facility name",
                          onkeyup: "search(this)",
                          autocomplete: "off",
                          data: { foo: "bar" }%>
@@ -38,7 +38,3 @@
     <p class="ancestors"></p>
   </div>
 </template>
-
-<script>
-  let search = new RegionsSearch().search;
-</script>

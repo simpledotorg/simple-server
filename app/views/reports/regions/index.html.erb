@@ -3,11 +3,12 @@
     <div class="col-sm-5 col-lg-7">
 
     <% if current_admin.feature_enabled?(:region_reports) %>
-      <%= form_tag regions_search_url(format: :json) do %>
+      <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
         <div class="mo-search">
           <%= render "search" %>
         <div>
       <% end %>
+
 
        <div id="facility-access">
           <% @accessible_regions.each do |org, children| %>
@@ -22,9 +23,22 @@
         </div>
 
         <script>
+          const search = new RegionsSearch().search;
+          const form = $("#search-form")
+          const input = form.find("#search_input")
+          form.on("submit", function(event) {
+            search(input);
+            return false;
+          })
+          form.on("input", function(event) {
+            search(input);
+            return false;
+          })
+
           const async = false
           new AdminAccess("facility-access").initialize(async)
         </script>
+
       <% else %>
         <% @organizations.each do |organization| %>
         <section>
