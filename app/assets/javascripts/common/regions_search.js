@@ -1,6 +1,3 @@
-// Place all the behaviors and hooks related to the matching controller here.
-// All this logic will automatically be available in application.js.
-
 RegionsSearch = function () {
   this.resultToRow = (searchQuery, result) => {
     const name = result["name"]
@@ -50,20 +47,17 @@ RegionsSearch = function () {
     }
   }
 
-  this.searchURL = "/regions_search.json";
-
   this.searchRequest = (e) => {
     let searchQuery = e.value;
 
     if (searchQuery.length) {
       this.showSpinner();
       $.ajax({
-        url: this.searchURL,
+        url: e.form.action,
         data: {
           "query": searchQuery,
         },
         success: (res) => {
-          console.log("got response from server", res)
           this.populateSearchResults(searchQuery, res)
         }
       })

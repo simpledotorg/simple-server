@@ -3,11 +3,11 @@
     <div class="col-sm-5 col-lg-7">
 
     <% if current_admin.feature_enabled?(:region_reports) %>
-      <form action="#" onsubmit="">
+      <%= form_tag regions_search_url(format: :json) do %>
         <div class="mo-search">
           <%= render "search" %>
         <div>
-      </form>
+      <% end %>
 
        <div id="facility-access">
           <% @accessible_regions.each do |org, children| %>
