@@ -79,7 +79,7 @@ class NoBPMeasureService
             AND bps.recorded_at > :start_date
             AND bps.recorded_at <= :end_date)
         )
-      SQL
+    SQL
     sql.add("AND patients.status NOT IN (:exclusions)", exclusions: "dead") if with_exclusions
     sql.add("-- #{self.class.name} region #{region.name} period #{period} facilities #{facility_ids} with_exclusions #{with_exclusions}")
     sql.value
