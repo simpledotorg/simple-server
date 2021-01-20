@@ -43,11 +43,7 @@ class NoBPMeasureService
       start_date: period.blood_pressure_control_range.begin,
       end_date: period.blood_pressure_control_range.end,
       registration_date: period.blood_pressure_control_range.begin,
-      exclusions: nil
     }
-    if with_exclusions
-      attributes[:exclusions] = :dead
-    end
     sql = GitHub::SQL.new(<<-SQL, attributes)
       SELECT COUNT(DISTINCT "patients"."id")
       FROM "patients"
