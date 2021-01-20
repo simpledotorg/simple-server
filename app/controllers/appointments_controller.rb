@@ -73,14 +73,6 @@ class AppointmentsController < AdminController
       appointment.mark_appointment_cancelled(call_result)
     end
 
-    if call_result == :dead
-      appointment.mark_patient_as_dead
-    end
-
-    if call_result == :moved_to_private || call_result == :public_hospital_transfer
-      appointment.mark_patient_as_migrated
-    end
-
     appointment.save
   end
 

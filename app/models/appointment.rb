@@ -12,6 +12,8 @@ class Appointment < ApplicationRecord
 
   has_many :communications
 
+  after_save :update_patient_status
+
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
 
@@ -114,14 +116,15 @@ class Appointment < ApplicationRecord
     self.remind_on = nil
   end
 
-  def mark_patient_as_migrated
-    patient.status = :migrated
-    patient.save
-  end
-
-  def mark_patient_as_dead
-    patient.status = :dead
-    patient.save
+  def update_patient_status
+    case cancel_reason
+    when "dead"
+      patient.update(status: :dead)
+    when "moved_to_private"
+      patient.update(status: :migrated)
+    when "public_hospital_transfer"
+      patient.update(status: :migrated)
+    end
   end
 
   def anonymized_data
