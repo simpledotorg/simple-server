@@ -114,6 +114,23 @@ describe Appointment, type: :model do
     end
   end
 
+  context "Callbacks" do
+    it "updates patient status if appointment call result is marked as dead" do
+      appointment.update(cancel_reason: :dead)
+      expect(appointment.patient.status).to eq "dead"
+    end
+
+    it "updates patient status if appointment call result is marked as moved_to_private" do
+      appointment.update(cancel_reason: :moved_to_private)
+      expect(appointment.patient.status).to eq "migrated"
+    end
+
+    it "updates patient status if appointment call result is marked as public_hospital_transfer" do
+      appointment.update(cancel_reason: :public_hospital_transfer)
+      expect(appointment.patient.status).to eq "migrated"
+    end
+  end
+
   context "For discarded patients" do
     let!(:discard_patient) { create(:patient) }
     let!(:overdue_appointment) { create(:appointment, :overdue) }
