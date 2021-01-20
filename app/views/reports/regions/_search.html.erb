@@ -1,0 +1,40 @@
+<div class="typeahead">
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">
+        <i class="fa fa-search"></i>
+      </span>
+    </div>
+    <%= search_field_tag :search_query,
+                         nil,
+                         id: :search_query,
+                         class: "typeahead-input form-control",
+                         hide_label: true,
+                         placeholder: "Search for a region or facility name",
+                         onkeyup: "search(this)",
+                         autocomplete: "off",
+                         data: { foo: "bar" }%>
+    <div class="typeahead-dropdown regions"></div>
+  </div>
+  <div class="typeahead-spinner">
+    <div class="spinner-border text-primary"></div>
+  </div>
+</div>
+
+<template id="no-results-found">
+  <span class="text-center">
+    <h3><i class="fa fa-search text-grey mt-3 mb-2"></i></h3>
+    <h3 class="mb-4">No results found for "<span class="search-query"></span>"</h3>
+    <p class="mb-4">Make sure your words are spelled correctly or try different key words</p>
+  </span>
+</template>
+
+<template id="result-row">
+  <div class="typeahead-dropdown-row"
+       data-id=""
+       data-name=""
+       data-link="">
+    <p class="mb-2"><a href=""></a></p>
+    <p class="ancestors"></p>
+  </div>
+</template>
