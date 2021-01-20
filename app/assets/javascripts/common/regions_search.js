@@ -50,7 +50,7 @@ RegionsSearch = function () {
   this.searchRequest = (e) => {
     let searchQuery = e.value;
 
-    if (searchQuery.length) {
+    if (searchQuery && searchQuery.length) {
       this.showSpinner();
       $.ajax({
         url: e.form.action,
@@ -61,6 +61,9 @@ RegionsSearch = function () {
           this.populateSearchResults(searchQuery, res)
         }
       })
+    } else {
+      console.log("invalid or empty search query")
+      return false
     }
   }
 

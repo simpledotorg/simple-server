@@ -16,7 +16,7 @@ class RegionsSearchController < AdminController
         result[org][state][district][block] << facility
       }
     }
-    @query = params.permit(:query)[:query]
+    @query = params.permit(:query)[:query] || ""
     regex = /.*#{Regexp.escape(@query)}.*/i
     results = search(@accessible_regions, regex)
     json = results.sort_by(&:name).map { |region|

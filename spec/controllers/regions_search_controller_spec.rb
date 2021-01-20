@@ -36,4 +36,12 @@ RSpec.describe RegionsSearchController, type: :controller do
     results = JSON.parse(response.body)
     expect(results).to eq([])
   end
+  
+  it "works with an empty query" do
+    sign_in(cvho.email_authentication)
+    get :show
+
+    expect(response).to be_successful
+
+  end
 end
