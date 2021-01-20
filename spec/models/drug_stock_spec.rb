@@ -8,7 +8,7 @@ describe DrugStock, type: :model do
   end
 
   describe "Validations" do
-    it { should validate_presence_of(:recorded_at) }
+    it { should validate_presence_of(:for_end_of_month) }
     it { should validate_numericality_of(:in_stock) }
     it { should validate_numericality_of(:received) }
   end

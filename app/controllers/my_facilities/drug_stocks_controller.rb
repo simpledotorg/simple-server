@@ -16,9 +16,9 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def new
-    recorded_at = Date.strptime(params[:recorded_at], "%Y-%m").end_of_month
+    for_end_of_month = parse_end_of_month(params[:for_end_of_month])
     drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
-                               .where(facility_id: @facility.id, recorded_at: recorded_at)
+                               .where(facility_id: @facility.id, for_end_of_month: for_end_of_month)
                                .order(:protocol_drug_id, created_at: :desc)
     @drug_stocks = drug_stock_list.inject({}) { |acc, drug_stock|
       acc[drug_stock.protocol_drug.id] = drug_stock
@@ -28,7 +28,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    recorded_at = Date.strptime(drug_stocks_params[:recorded_at], "%Y-%m").end_of_month
+    for_end_of_month = parse_end_of_month(drug_stocks_params[:for_end_of_month])
     drug_stocks = DrugStock.transaction do
       drug_stocks_reported.map do |drug_stock|
         DrugStock.create(facility: @facility,
@@ -36,7 +36,7 @@ class MyFacilities::DrugStocksController < AdminController
                          protocol_drug_id: drug_stock[:protocol_drug_id],
                          received: drug_stock[:received].presence,
                          in_stock: drug_stock[:in_stock].presence,
-                         recorded_at: recorded_at) # temporarily leaving the name of the field as is
+                         for_end_of_month: for_end_of_month)
       end
     end
 
@@ -67,12 +67,16 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_stocks_params
-    params.permit(:recorded_at, drug_stocks: [:received, :in_stock, :protocol_drug_id])
+    params.permit(:for_end_of_month, drug_stocks: [:received, :in_stock, :protocol_drug_id])
   end
 
   def drug_stocks_enabled?
     unless current_admin.feature_enabled?(:drug_stocks)
       redirect_to :root
     end
+  end
+
+  def parse_end_of_month(year_month_string)
+    Date.strptime(year_month_string, "%Y-%m").end_of_month
   end
 end

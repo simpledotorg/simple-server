@@ -5,5 +5,5 @@ class DrugStock < ApplicationRecord
 
   validates :in_stock, numericality: true, allow_nil: true
   validates :received, numericality: true, allow_nil: true
-  validates :recorded_at, presence: true
+  validates :for_end_of_month, presence: true
 end

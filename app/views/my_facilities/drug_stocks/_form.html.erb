@@ -20,7 +20,7 @@
           <%= form.hidden_field :facility_id, value: @facility.id %>
         </div>
         <div class="form-group">
-          <%= form.month_field :recorded_at, label: "Month:", value: Date.today.strftime("%Y-%m"), max: 1.month.from_now, required: true %>
+          <%= form.month_field :for_end_of_month, label: "Month:", value: Date.today.strftime("%Y-%m"), max: 1.month.from_now, required: true %>
         </div>
         <h3 class="pt-4">Tablets</h3>
         <p>Leave blank if unknown. Enter "0" if stock is empty.</p>

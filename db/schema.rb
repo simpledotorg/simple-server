@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_20_062330) do
+ActiveRecord::Schema.define(version: 2021_01_20_081308) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -157,7 +157,7 @@ ActiveRecord::Schema.define(version: 2021_01_20_062330) do
     t.uuid "protocol_drug_id", null: false
     t.integer "in_stock"
     t.integer "received"
-    t.datetime "recorded_at", null: false
+    t.datetime "for_end_of_month", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
