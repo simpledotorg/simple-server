@@ -3,22 +3,15 @@
 
 RegionsSearch = function () {
   this.resultToRow = (searchQuery, result) => {
-    const id = result["id"]
     const name = result["name"]
+    const regex = new RegExp(searchQuery, "ig")
+    const highlightedName = name.replace(regex, "<strong>$&</strong>")
+
     let html = $("template#result-row").html();
     let $html = $(html)
 
     $html.find(".ancestors").append(result["ancestors"])
-    $html.attr({
-      "data-id": id,
-      "data-name": name
-    })
-
-    link = $html.find("a")
-    const regex = new RegExp(searchQuery, "ig")
-    highlightedName = name.replace(regex, "<strong>$&</strong>")
-    console.log(regex, highlightedName)
-
+    let link = $html.find("a")
     link.append(highlightedName)
     link.attr("href", result["link"])
 
