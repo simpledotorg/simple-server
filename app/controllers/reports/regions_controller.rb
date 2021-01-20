@@ -119,22 +119,7 @@ class Reports::RegionsController < AdminController
     current_admin.region_access.accessible_region?(region)
   end
 
-  def accessible_state?(region)
-    current_admin.region_access.accessible_state?(region)
-  end
-
-  def accessible_district?(region)
-    current_admin.region_access.accessible_district?(region)
-  end
-
-  def accessible_block?(region)
-    current_admin.region_access.accessible_block?(region)
-  end
-
   helper_method :accessible_region?
-  helper_method :accessible_state?
-  helper_method :accessible_district?
-  helper_method :accessible_block?
 
   def download_filename
     time = Time.current.to_s(:number)
