@@ -17,11 +17,18 @@ RSpec.describe Seed::FacilitySeeder do
       .and change { Facility.count }.by_at_least(7)
     expect(Region.block_regions.count).to be > 0
     expect(Region.state_regions.count).to be > 0
+    Region.district_regions.each do |region|
+      expect(region.name).to eq(region.source.name)
+      expect(region.district_region).to_not be_nil
+      expect(region.state_region).to_not be_nil
+      expect(region.organization_region).to_not be_nil
+    end
     # verify facility regions are linked up correctly
     Region.facility_regions.each do |region|
       expect(region.name).to eq(region.source.name)
       expect(region.district_region).to_not be_nil
       expect(region.state_region).to_not be_nil
+      expect(region.organization_region).to_not be_nil
       expect(Seed::FakeNames.instance.states).to include(region.state_region.name)
       district = region.district_region
       block = region.block_region

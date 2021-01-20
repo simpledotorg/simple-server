@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.5.1"
+ruby "2.6.6"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -26,7 +26,7 @@ gem "devise_invitable", "~> 1.7.0"
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.0"
 gem "dogstatsd-ruby"
-gem "factory_bot_rails", "~> 4.8", require: false
+gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
 gem "flipper"
 gem "flipper-active_record"
@@ -74,7 +74,7 @@ gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
-gem "view_component"
+gem "view_component", require: "view_component/engine"
 gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "memery"

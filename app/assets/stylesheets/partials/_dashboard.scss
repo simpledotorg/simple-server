@@ -91,7 +91,7 @@ th sup {
       color: $blue;
       height: 100%;
       padding: 16px 12px;
-      vertical-align: middle;
+      vertical-align: top;
       text-align: left;
       margin: 0;
       word-break: break-word;
@@ -212,7 +212,7 @@ th sup {
     color: #BE72E3;
     border-radius: 100px;
     padding: 2px;
-    width: 3.5em;
+    width: 3em;
     display: inline-block;
   }
 
@@ -412,7 +412,7 @@ th[role=columnheader]:not(.no-sort):after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
-  margin: 0 0 0 4px;
+  margin: 0;
   vertical-align: middle;
 }
 
@@ -476,3 +476,5 @@ h3 .heading-label {
 
   h5 { margin: auto; }
 }
+
+.tl-fixed { table-layout: fixed; }

@@ -27,6 +27,7 @@ window.addEventListener("DOMContentLoaded", function() {
       labels: facilityRateData[facility].data,
       datasets: [{
         fill: false,
+        borderWidth: 1.5,
         borderColor: getHexCodeFromColorName(facilityRateData[facility].color),
         data: facilityRateData[facility].data,
       }],

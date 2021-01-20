@@ -9,7 +9,7 @@ FactoryBot.define do
     end
 
     id { SecureRandom.uuid }
-    gender { Seed::Runner.random_gender }
+    gender { Seed::Gender.random_gender }
     full_name { common_names[gender.to_sym].sample + " " + common_names[gender.to_sym].sample }
     status { Patient::STATUSES[0] }
     date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
@@ -19,16 +19,15 @@ FactoryBot.define do
     device_updated_at { Time.current }
     recorded_at { device_created_at }
     association :address, strategy: :build
-    phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
+    phone_numbers do
+      [association(:patient_phone_number, strategy: :build, patient: instance)]
+    end
     association :registration_facility, factory: :facility
     assigned_facility { registration_facility }
     association :registration_user, factory: :user_created_on_device
     business_identifiers do
-      build_list(:patient_business_identifier,
-        1,
-        patient_id: id,
-        metadata: {assigning_facility_id: registration_facility.id,
-                   assigning_user_id: registration_user.id})
+      [association(:patient_business_identifier, strategy: :build, patient: instance,
+                                                 metadata: {assigning_facility_id: registration_facility.id, assigning_user_id: registration_user.id})]
     end
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }
@@ -55,6 +54,10 @@ FactoryBot.define do
 
     trait :denied do
       reminder_consent { Patient.reminder_consents[:denied] }
+    end
+
+    trait(:seed) do
+      business_identifiers { nil }
     end
 
     trait(:with_sanitized_phone_number) do

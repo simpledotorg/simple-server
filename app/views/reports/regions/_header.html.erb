@@ -6,9 +6,9 @@
 
     <% # we can get rid of this check when FacilityDistrict goes away %>
     <% if @region.respond_to?(:ancestors) %>
-      <% @region.ancestors.where(region_type: %w[district block facility]).order(:path).each do |region| %>
+      <% @region.cached_ancestors.where(region_type: %w[district block facility]).order(:path).each do |region| %>
         <i class="fas fa-chevron-right"></i>
-        <%= link_to region.name, reports_region_path(region.slug, report_scope: region.region_type) %>
+        <%= link_to_if(accessible_region?(region), region.name, reports_region_path(region.slug, report_scope: region.region_type)) %>
       <% end %>
     <% else %>
       <% if @region.respond_to?(:facility_group) %>

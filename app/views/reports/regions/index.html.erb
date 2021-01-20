@@ -1,14 +1,31 @@
 <div class="container">
   <div class="row">
-      <% if current_admin.feature_enabled?(:region_reports) %>
+    <div class="col-sm-5 col-lg-7">
 
-        <div class="col-sm-5 col-lg-7">
-          <%= render "index_tree", regions: @accessible_regions %>
+    <% if current_admin.feature_enabled?(:region_reports) %>
+      <%= form_tag regions_search_url(format: :json) do %>
+        <div class="mo-search">
+          <%= render "search" %>
+        <div>
+      <% end %>
+
+       <div id="facility-access">
+          <% @accessible_regions.each do |org, children| %>
+            <div class="card show region-index">
+              <div class="access-tree__section-header">
+                <%= org.name %>
+              </div>
+
+              <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
+            </div>
+          <% end %>
         </div>
 
+        <script>
+          const async = false
+          new AdminAccess("facility-access").initialize(async)
+        </script>
       <% else %>
-
-      <div class="col-sm-5 col-lg-7">
         <% @organizations.each do |organization| %>
         <section>
           <div class="card org-card">
@@ -28,8 +45,7 @@
           </div>
         </section>
         <% end %>
-
-        </div>
       <% end %>
+    </div>
   </div>
 </div>
