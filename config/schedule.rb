@@ -31,7 +31,7 @@ every :day, at: local("01:00 am"), roles: [:cron] do
   runner "MarkPatientMobileNumbers.call"
 end
 
-every :day, at: local("02:00 am"), roles: [:cron] do
+every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
