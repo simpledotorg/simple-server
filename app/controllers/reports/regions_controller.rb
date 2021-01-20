@@ -8,16 +8,18 @@ class Reports::RegionsController < AdminController
   before_action :set_per_page, only: [:details]
   before_action :find_region, except: [:index]
   around_action :set_time_zone
+  after_action :log_cache_metrics
   delegate :cache, to: Rails
 
   def index
     if current_admin.feature_enabled?(:region_reports)
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
+
       cache_key = "#{current_admin.cache_key}/regions/index"
       cache_version = "#{accessible_facility_regions.cache_key} / v2"
       @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
         accessible_facility_regions.each_with_object({}) { |facility, result|
-          ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
+          ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
           org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
           result[org] ||= {}
           result[org][state] ||= {}
@@ -246,5 +248,16 @@ class Reports::RegionsController < AdminController
 
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
+  end
+
+  def log_cache_metrics
+    stats = RequestStore[:cache_stats] || {}
+    hit_rate = percentage(stats.fetch(:hits, 0), stats.fetch(:reads, 0))
+    logger.info class: self.class.name, msg: "cache hit rate: #{hit_rate}% stats: #{stats.inspect}"
+  end
+
+  def percentage(numerator, denominator)
+    return 0 if denominator == 0 || numerator == 0
+    ((numerator.to_f / denominator) * 100).round(2)
   end
 end

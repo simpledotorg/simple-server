@@ -9,14 +9,8 @@ class ControlRateService
   def initialize(region, periods:, with_exclusions: false)
     @region = region
     @facilities = region.facilities
-    # Normalize between a single period and range of periods
-    @report_range = if !periods.is_a?(Range)
-      # If calling code is asking for a single period,
-      # we set the range to be the current period to the start of the next period.
-      Range.new(periods, periods.succ)
-    else
-      periods
-    end
+    @periods = periods
+    @report_range = periods
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     @with_exclusions = with_exclusions
@@ -133,9 +127,9 @@ class ControlRateService
 
   def cache_key
     if with_exclusions
-      "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}/with_exclusions"
+      "#{self.class}/#{region.cache_key}/#{@periods.end.type}/with_exclusions"
     else
-      "#{self.class}/#{region.cache_key}/#{report_range.begin.type}/#{Date.current}"
+      "#{self.class}/#{region.cache_key}/#{@periods.end.type}"
     end
   end
 

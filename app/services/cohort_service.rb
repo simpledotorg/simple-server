@@ -48,9 +48,9 @@ class CohortService
 
   def cache_key(period)
     if @with_exclusions
-      "#{self.class}/#{region.model_name}/#{region.id}/#{period}/with_exclusions"
+      "#{self.class}/#{region.cache_key}/#{period.cache_key}/with_exclusions"
     else
-      "#{self.class}/#{region.model_name}/#{region.id}/#{period}"
+      "#{self.class}/#{region.cache_key}/#{period.cache_key}"
     end
   end
 

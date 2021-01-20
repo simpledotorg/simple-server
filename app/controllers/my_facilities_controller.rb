@@ -36,7 +36,7 @@ class MyFacilitiesController < AdminController
   end
 
   def blood_pressure_control
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities
 
     if current_admin.feature_enabled?(:my_facilities_improvements)
       @data_for_facility = {}
@@ -73,7 +73,7 @@ class MyFacilitiesController < AdminController
       return
     end
 
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities
     @data_for_facility = {}
 
     @facilities.each do |facility|
@@ -84,7 +84,7 @@ class MyFacilitiesController < AdminController
   end
 
   def registrations
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities
 
     if current_admin.feature_enabled?(:my_facilities_improvements)
       @data_for_facility = {}
@@ -119,7 +119,7 @@ class MyFacilitiesController < AdminController
   end
 
   def missed_visits
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities
 
     if current_admin.feature_enabled?(:my_facilities_improvements)
       @data_for_facility = {}
