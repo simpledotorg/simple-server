@@ -7,7 +7,7 @@ class RegionsSearchController < AdminController
     cache_version = "#{accessible_facility_regions.cache_key} / v2"
     @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = Hash[facility.ancestors.map { |facility| [facility.region_type, facility] }]
+        ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
         org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
         result[org] ||= {}
         result[org][state] ||= {}
@@ -21,7 +21,7 @@ class RegionsSearchController < AdminController
     results = search(@accessible_regions, regex)
     json = results.sort_by(&:name).map { |region|
       {
-        ancestors: region.ancestors.where.not(region_type: "root").order(:path).map { |a| a.name }.join(" > "),
+        ancestors: region.cached_ancestors.where.not(region_type: "root").order(:path).map { |a| a.name }.join(" > "),
         id: region.id,
         name: region.name,
         slug: region.slug,
