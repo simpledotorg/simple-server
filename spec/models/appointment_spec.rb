@@ -175,12 +175,6 @@ describe Appointment, type: :model do
           expect(appointment.status).to eq("cancelled")
         end
       end
-
-      it "sets patient status if call indicated they died" do
-        appointment.mark_patient_as_dead
-
-        expect(appointment.patient.status).to eq("dead")
-      end
     end
   end
 

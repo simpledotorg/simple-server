@@ -117,7 +117,7 @@ class Appointment < ApplicationRecord
   end
 
   def update_patient_status
-    case cancel_reason
+    case patient.appointments.order(:updated_at).last.cancel_reason
     when "dead"
       patient.update(status: :dead)
     when "moved_to_private"
