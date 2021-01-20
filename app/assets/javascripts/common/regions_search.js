@@ -40,17 +40,21 @@ RegionsSearch = function () {
       })
       this.populateDropdown(html);
     } else {
-      let html = $("template#no-results-found").html();
-      let $html = $(html);
-      $html.find(".search-query").html(searchQuery);
-      this.populateDropdown($html)
+      this.populateDropdown(this.noResultsFound(searchQuery))
     }
+  }
+
+  this.clearDropDown = () => {
+    $(".typeahead-dropdown").empty();
   }
 
   this.searchRequest = (e) => {
     let searchQuery = e.value;
-
-    if (searchQuery && searchQuery.length) {
+    if (searchQuery === "") {
+      this.clearDropDown()
+      return false
+    }
+    if (searchQuery.length) {
       this.showSpinner();
       $.ajax({
         url: e.form.action,
