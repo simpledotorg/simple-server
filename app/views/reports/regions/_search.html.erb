@@ -11,9 +11,7 @@
                          class: "typeahead-input form-control",
                          hide_label: true,
                          placeholder: "Search for a region or facility",
-                         onkeyup: "search(this)",
-                         autocomplete: "off",
-                         data: { foo: "bar" }%>
+                         autocomplete: "off" %>
     <div class="typeahead-dropdown regions"></div>
   </div>
   <div class="typeahead-spinner">
@@ -21,7 +19,7 @@
   </div>
 </div>
 
-<template id="no-results-found">
+<template class="no-results-found">
   <div class="ta-center py-40px ph-16px">
     <i class="fa fa-search c-grey-medium" style="font-size: 32px; margin-bottom: 12px;"></i>
     <p class="mb-4px fs-16px fw-bold">No reports found for "<span class="search-query"></span>"</p>
@@ -29,12 +27,13 @@
   </div>
 </template>
 
-<template id="result-row">
-  <div class="typeahead-dropdown-row"
-       data-id=""
-       data-name=""
-       data-link="">
-    <p class="mb-0px fs-16px"><a class="td-none c-black" href=""></a></p>
-    <p class="ancestors mb-0px fs-14px lh-18px c-grey-dark"></p>
+<template class="result-row">
+  <div>
+    <a href="" class="typeahead-dropdown-row d-block c-black td-none"
+        data-id=""
+        data-name=""
+        data-link="">
+      <p class="ancestors mb-0px fs-14px lh-18px c-grey-dark"></p>
+    </a>
   </div>
 </template>

@@ -12,7 +12,6 @@
     max-height: 150px;
     overflow-y: auto;
     display: none;
-    align-items: center;
     z-index: 1000;
 
     &-row {
@@ -23,6 +22,7 @@
     }
 
     &-row:hover {
+      color: #000;
       background: $grey-lightest;
     }
   }
