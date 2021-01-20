@@ -161,6 +161,8 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics
   end
 
+  resource :regions_search, controller: "regions_search"
+
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: "blood_pressure_control"
