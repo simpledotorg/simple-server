@@ -24,11 +24,10 @@ class MyFacilities::DrugStocksController < AdminController
       acc[drug_stock.protocol_drug.id] = drug_stock
       acc
     }
-    render partial: "form"
   end
 
   def create
-    for_end_of_month = parse_end_of_month(drug_stocks_params[:for_end_of_month])
+    for_end_of_month = parse_end_of_month(params[:for_end_of_month])
     drug_stocks = DrugStock.transaction do
       drug_stocks_reported.map do |drug_stock|
         DrugStock.create(facility: @facility,
