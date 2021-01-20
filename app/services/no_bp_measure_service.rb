@@ -81,7 +81,7 @@ class NoBPMeasureService
         )
       SQL
     sql.add("AND patients.status NOT IN (:exclusions)", exclusions: "dead") if with_exclusions
-    sql.add("-- #{self.class.name} region #{region.name} period #{period} facilities #{facility_ids}")
+    sql.add("-- #{self.class.name} region #{region.name} period #{period} facilities #{facility_ids} with_exclusions #{with_exclusions}")
     sql.value
   end
 
