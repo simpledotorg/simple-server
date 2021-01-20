@@ -15,13 +15,12 @@ RegionsSearch = function () {
     })
 
     link = $html.find("a")
-    regionName = $html.find(".region-name")
     const regex = new RegExp(searchQuery, "ig")
-    highlightedName = name.replace(regex, "<strong class='bg-yellow-light'>$&</strong>")
+    highlightedName = name.replace(regex, "<strong>$&</strong>")
     console.log(regex, highlightedName)
 
+    link.append(highlightedName)
     link.attr("href", result["link"])
-    regionName.append(highlightedName)
 
     return $html
   }
