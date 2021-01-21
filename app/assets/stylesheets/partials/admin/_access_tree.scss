@@ -120,10 +120,6 @@
         }
       }
 
-      &:not(.collapsed):not(.facility) {
-        background: #fff8e0;
-      }
-
       &.organization {
         div {
           label {
@@ -132,16 +128,7 @@
         }
       }
 
-      &:not(.collapsed):not(.facility) {
-        background: #fff8e0;
-      }
-
       &:not(.facility) {
-        &:hover {
-          background: var(--light);
-          @include transition(0.1s);
-        }
-
         .access-item__padding {
           flex: auto;
           cursor: pointer;
