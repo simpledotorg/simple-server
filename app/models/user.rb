@@ -133,7 +133,7 @@ class User < ApplicationRecord
   end
 
   def region_access(memoized: false)
-    RegionAccess.new(self, memoized: memoized)
+    @region_access ||= RegionAccess.new(self, memoized: memoized)
   end
 
   def registration_facility_id

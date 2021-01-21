@@ -9,8 +9,8 @@ class RegionAccess
     @memoized = memoized
   end
 
-  def accessible_region?(region)
-    public_send "accessible_#{region.region_type}?", region
+  def accessible_region?(region, action)
+    public_send("accessible_#{region.region_type}?", region, action)
   end
 
   # An admin can view a state if they have view_reports access to any of the state's districts
@@ -18,6 +18,18 @@ class RegionAccess
     return true if user.power_user?
     accessible_region_ids(region.region_type, action).include?(region.id)
   end
+
+  def accessible_district?(region, action)
+    return true if user.power_user?
+    accessible_region_ids(region.region_type, action).include?(region.id)
+  end
+
+  def accessible_block?(region, action)
+    return true if user.power_user?
+    accessible_region_ids(region.region_type, action).include?(region.id)
+  end
+
+  private
 
   def accessible_region_ids(region_type, action)
     meth = "accessible_#{region_type}_regions"
@@ -30,14 +42,4 @@ class RegionAccess
     @memoized == true
   end
 
-  def accessible_district?(region, action)
-    return true if user.power_user?
-    accessible_region_ids(region.region_type, action).include?(region.id)
-  end
-
-  def accessible_block?(region)
-    return true if user.power_user?
-    @accessible_block_ids ||= user.accessible_block_regions(:view_reports).pluck(:id)
-    @accessible_block_ids.include?(region.id)
-  end
 end

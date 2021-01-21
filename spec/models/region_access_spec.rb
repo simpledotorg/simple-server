@@ -24,6 +24,7 @@ RSpec.describe RegionAccess, type: :model do
     it "can return a memoized version" do
       facility_group = create(:facility_group, name: "district")
       district = facility_group.region
+      other_district = create(:facility_group, name: "other district").region
       user = manager
       user.accesses.create!(resource: district.source)
 
@@ -32,6 +33,7 @@ RSpec.describe RegionAccess, type: :model do
       expect(region_access.user_access).to receive(:accessible_district_regions).and_call_original.once
       expect(region_access.accessible_district?(district, :view_reports)).to be true
       expect(region_access.accessible_district?(district, :view_reports)).to be true
+      expect(region_access.accessible_district?(other_district, :view_reports)).to be false
     end
   end
 end

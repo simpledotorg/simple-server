@@ -115,8 +115,8 @@ class Reports::RegionsController < AdminController
 
   private
 
-  def accessible_region?(region)
-    current_admin.region_access.accessible_region?(region)
+  def accessible_region?(region, action)
+    current_admin.region_access(memoized: true).accessible_region?(region, action)
   end
 
   helper_method :accessible_region?
