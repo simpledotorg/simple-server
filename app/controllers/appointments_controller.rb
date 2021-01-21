@@ -73,11 +73,8 @@ class AppointmentsController < AdminController
       appointment.mark_appointment_cancelled(call_result)
     end
 
-    if call_result == :dead
-      appointment.mark_patient_as_dead
-    end
-
     appointment.save
+    appointment.update_patient_status
   end
 
   def selected_facility_id
