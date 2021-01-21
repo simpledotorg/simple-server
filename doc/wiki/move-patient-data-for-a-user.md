@@ -20,11 +20,11 @@ Fixing b. can be automated by following these steps:
 bundle exec cap india:production deploy:rake task=data_fixes:move_user_data_from_source_to_destination_facility[<user-id>,<source-facility-id>,<destination-facility-id>]
 ```
 
-* Reattach the user to the correct facility using the edit UI (eg. https://api.simple.org/admin/users/user_id/edit) and picking the correct registration facility from the drop down:
+* Reattach the user to the correct facility using the edit UI (eg. https://api.simple.org/admin/users/user_id/edit) and pick the correct registration facility from the drop down:
 
 ![](resources/select-user-facility.png)
 
-Fixing a. is tricky since the user's syncs would be failing (because facility is soft-deleted) and hence we can't recover their data. We can currently only fix this manually if we deem it important enough:
+Fixing a. is tricky since the user's syncs would be failing (because facility is soft-deleted) and hence it'd be difficult to recover their data. We can currently only fix this manually if we deem it important enough:
 
 * Un-delete the soft-deleted facility temporarily
   * This may also require creating a Region for this facility
