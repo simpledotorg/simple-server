@@ -12,8 +12,6 @@ class Appointment < ApplicationRecord
 
   has_many :communications
 
-  after_save :update_patient_status
-
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
 
@@ -117,15 +115,17 @@ class Appointment < ApplicationRecord
   end
 
   def update_patient_status
-    case patient && patient.appointments.order(:updated_at).last.cancel_reason
-    when "dead"
-      patient.update(status: :dead)
-    when "moved_to_private"
-      patient.update(status: :migrated)
-    when "public_hospital_transfer"
-      patient.update(status: :migrated)
-    else
-      patient.update(status: :active)
+    return unless patient
+
+    case cancel_reason
+      when "dead"
+        patient.update(status: :dead)
+      when "moved_to_private"
+        patient.update(status: :migrated)
+      when "public_hospital_transfer"
+        patient.update(status: :migrated)
+      else
+        patient.update(status: :active)
     end
   end
 

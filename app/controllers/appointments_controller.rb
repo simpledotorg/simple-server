@@ -74,6 +74,7 @@ class AppointmentsController < AdminController
     end
 
     appointment.save
+    appointment.update_patient_status
   end
 
   def selected_facility_id
