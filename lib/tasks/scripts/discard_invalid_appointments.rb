@@ -17,14 +17,13 @@ class DiscardInvalidAppointments
     end
 
     invalid_appointment_ids = @patient
-                              .appointments
-                              .where(status: "scheduled")
-                              .pluck(:id) - [last_valid_appointment&.id]
-
+      .appointments
+      .where(status: "scheduled")
+      .pluck(:id) - [last_valid_appointment&.id]
 
     invalid_appointments = Appointment
-                           .where(id: invalid_appointment_ids)
-                           .order(scheduled_date: :asc)
+      .where(id: invalid_appointment_ids)
+      .order(scheduled_date: :asc)
 
     Rails.logger.info msg: <<-INFO
     For patient: #{@patient.id}, discarding #{invalid_appointments.count} appointment(s) 
@@ -40,7 +39,7 @@ class DiscardInvalidAppointments
   def last_valid_appointment
     @patient
       .latest_scheduled_appointments
-      .where('scheduled_date <= ?', Date.today + 31.days)
+      .where("scheduled_date <= ?", Date.today + 31.days)
       .first
   end
 end
