@@ -31,6 +31,3 @@ Fixing a. is tricky since the user's syncs would be failing (because facility is
 * Move the data into the correct facility using the aforementioned script
 * Reattach the user to the correct facility using the edit UI (as described above)
 * Soft-delete the facility again
-
-
-
