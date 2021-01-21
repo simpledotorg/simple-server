@@ -14,9 +14,13 @@ This is the backend for the Simple app to help track hypertensive patients acros
 
 ## Development
 
-### Dependencies
+### Caveat for Apple Silicon M1 macs
 
-**NOTE** If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). We have some rubygems that don't work under the native ARM architecture, so a fully ARM native setup does not work yet. For details you can follow [this issue](https://github.com/simpledotorg/simple-server/issues/1969).
+If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). See [here](https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/) for how to create a Rosetta specific Terminal.
+
+We have some rubygems that don't work under the native ARM architecture, so a fully ARM native setup does not work yet. For details you can follow [this issue](https://github.com/simpledotorg/simple-server/issues/1969).
+
+### Dependencies
 
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
 If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
