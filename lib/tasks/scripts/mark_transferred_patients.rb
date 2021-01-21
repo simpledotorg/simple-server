@@ -13,6 +13,11 @@ class MarkTransferredPatient
         .where(cancel_reason: TRANSFER_CANCEL_REASONS)
         .pluck(:patient_id)
 
-    Patient.where(id: migrated_patient_ids).update_all(status: "migrated")
+    patients =
+      Patient.where(id: migrated_patient_ids)
+
+    Rails.logger.info "Status set to 'migrated' for #{patients.count}"
+
+    patients.update_all(status: "migrated")
   end
 end
