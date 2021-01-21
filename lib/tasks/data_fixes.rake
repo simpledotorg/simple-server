@@ -27,7 +27,7 @@ namespace :data_fixes do
       .select { |_k, v| v > 1 }
       .keys
 
-    Patient.with_discarded.where("id in (?)", patients_ids).each do |patient|
+    Patient.with_discarded.where(id: patients_ids).each do |patient|
       DiscardInvalidAppointments.call(patient: patient, dry_run: true)
     end
   end
