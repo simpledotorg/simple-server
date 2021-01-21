@@ -74,9 +74,13 @@
     }
 
     .access-item {
-      height: 44px;
       display: flex;
       align-items: center;
+      padding: 8px 0;
+
+      @include media-breakpoint-down(sm) {
+        padding: 16px 0;
+      }
 
       .access-item__dropdown {
         display: flex;
@@ -104,6 +108,13 @@
         &:hover {
           background-color: $grey-light;
           @include transition(0.2s);
+        }
+
+        @include media-breakpoint-down(sm) {
+          height: 28px;
+          width: 28px;
+          margin: 0 4px 0 16px;
+          font-size: 28px;
         }
       }
 
@@ -150,11 +161,19 @@
       }
 
       .spacer {
-        padding-left: 20px;
+        padding-left: 24px;
+
+        @include media-breakpoint-down(sm) {
+          padding-left: 36px;
+        }
       }
 
       .form-check {
         margin-left: 10px;
+
+        @include media-breakpoint-down(sm) {
+          font-size: 18px;
+        }
 
         label {
           position: relative;
