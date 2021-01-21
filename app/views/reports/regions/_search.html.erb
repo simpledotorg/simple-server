@@ -10,10 +10,8 @@
                          id: :search_query,
                          class: "typeahead-input form-control",
                          hide_label: true,
-                         placeholder: "Find regions",
-                         onkeyup: "search(this)",
-                         autocomplete: "off",
-                         data: { foo: "bar" }%>
+                         placeholder: "Search for a region or facility",
+                         autocomplete: "off" %>
     <div class="typeahead-dropdown regions"></div>
   </div>
   <div class="typeahead-spinner">
@@ -21,24 +19,21 @@
   </div>
 </div>
 
-<template id="no-results-found">
-  <span class="text-center">
-    <h3><i class="fa fa-search text-grey mt-3 mb-2"></i></h3>
-    <h3 class="mb-4">No results found for "<span class="search-query"></span>"</h3>
-    <p class="mb-4">Make sure your words are spelled correctly or try different key words</p>
-  </span>
-</template>
-
-<template id="result-row">
-  <div class="typeahead-dropdown-row"
-       data-id=""
-       data-name=""
-       data-link="">
-    <p class="mb-2"><a href=""></a></p>
-    <p class="ancestors"></p>
+<template class="no-results-found">
+  <div class="ta-center py-40px ph-16px">
+    <i class="fa fa-search c-grey-medium" style="font-size: 32px; margin-bottom: 12px;"></i>
+    <p class="mb-4px fs-16px fw-bold">No reports found for "<span class="search-query"></span>"</p>
+    <p class="mb-0px fs-14px c-grey-dark">Make sure your words are spelled correctly or use less or different key words</p>
   </div>
 </template>
 
-<script>
-  let search = new RegionsSearch().search;
-</script>
+<template class="result-row">
+  <div>
+    <a href="" class="typeahead-dropdown-row d-block c-black td-none"
+        data-id=""
+        data-name=""
+        data-link="">
+      <p class="ancestors mb-0px fs-14px lh-18px c-grey-dark"></p>
+    </a>
+  </div>
+</template>
