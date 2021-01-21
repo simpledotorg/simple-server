@@ -3,10 +3,12 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
 
   enum result: {
     queued: "queued",
-    failed: "failed",
+    sending: "sending",
     sent: "sent",
     delivered: "delivered",
     undelivered: "undelivered",
+    failed: "failed",
+    read: "read",
     unknown: "unknown"
   }
 
@@ -15,10 +17,10 @@ class TwilioSmsDeliveryDetail < ApplicationRecord
   end
 
   def successful?
-    delivered?
+    delivered? || read?
   end
 
   def in_progress?
-    queued? || sent?
+    queued? || sending? || sent?
   end
 end

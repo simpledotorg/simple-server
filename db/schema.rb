@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_16_111304) do
+ActiveRecord::Schema.define(version: 2021_01_08_060640) do
+
   # These are extensions that must be enabled in order to support this database
+  enable_extension "ltree"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "accesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "resource_type"
+    t.uuid "resource_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["resource_id"], name: "index_accesses_on_resource_id"
+    t.index ["resource_type", "resource_id"], name: "index_accesses_on_resource_type_and_resource_id"
+    t.index ["user_id", "resource_id", "resource_type"], name: "index_accesses_on_user_id_and_resource_id_and_resource_type", unique: true
+    t.index ["user_id"], name: "index_accesses_on_user_id"
+  end
 
   create_table "addresses", id: :uuid, default: nil, force: :cascade do |t|
     t.string "street_address"
@@ -52,6 +67,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.index ["deleted_at"], name: "index_appointments_on_deleted_at"
     t.index ["facility_id"], name: "index_appointments_on_facility_id"
     t.index ["patient_id", "scheduled_date"], name: "index_appointments_on_patient_id_and_scheduled_date", order: { scheduled_date: :desc }
+    t.index ["patient_id", "updated_at"], name: "index_appointments_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["updated_at"], name: "index_appointments_on_updated_at"
     t.index ["user_id"], name: "index_appointments_on_user_id"
@@ -71,6 +87,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "recorded_at"
     t.index ["deleted_at"], name: "index_blood_pressures_on_deleted_at"
     t.index ["patient_id", "recorded_at"], name: "index_blood_pressures_on_patient_id_and_recorded_at", order: { recorded_at: :desc }
+    t.index ["patient_id", "updated_at"], name: "index_blood_pressures_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_pressures_on_patient_id"
     t.index ["recorded_at"], name: "index_blood_pressures_on_recorded_at"
     t.index ["updated_at"], name: "index_blood_pressures_on_updated_at"
@@ -92,6 +109,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.index ["blood_sugar_type"], name: "index_blood_sugars_on_blood_sugar_type"
     t.index ["blood_sugar_value"], name: "index_blood_sugars_on_blood_sugar_value"
     t.index ["facility_id"], name: "index_blood_sugars_on_facility_id"
+    t.index ["patient_id", "updated_at"], name: "index_blood_sugars_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_blood_sugars_on_patient_id"
     t.index ["updated_at"], name: "index_blood_sugars_on_updated_at"
     t.index ["user_id"], name: "index_blood_sugars_on_user_id"
@@ -131,6 +149,21 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
   create_table "data_migrations", id: false, force: :cascade do |t|
     t.string "version", null: false
     t.index ["version"], name: "unique_data_migrations", unique: true
+  end
+
+  create_table "drug_stocks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "user_id", null: false
+    t.uuid "protocol_drug_id", null: false
+    t.integer "in_stock", null: false
+    t.integer "received"
+    t.datetime "recorded_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_drug_stocks_on_facility_id"
+    t.index ["protocol_drug_id"], name: "index_drug_stocks_on_protocol_drug_id"
+    t.index ["user_id"], name: "index_drug_stocks_on_user_id"
   end
 
   create_table "email_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -183,6 +216,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_encounters_on_deleted_at"
     t.index ["facility_id"], name: "index_encounters_on_facility_id"
+    t.index ["patient_id", "updated_at"], name: "index_encounters_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_encounters_on_patient_id"
   end
 
@@ -221,15 +255,19 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.string "facility_size"
     t.integer "monthly_estimated_opd_load"
     t.boolean "enable_teleconsultation", default: false, null: false
-    t.string "teleconsultation_phone_number"
-    t.string "teleconsultation_isd_code"
-    t.jsonb "teleconsultation_phone_numbers", default: [], null: false
     t.index "to_tsvector('simple'::regconfig, COALESCE((name)::text, ''::text))", name: "index_gin_facilities_on_name", using: :gin
     t.index "to_tsvector('simple'::regconfig, COALESCE((slug)::text, ''::text))", name: "index_gin_facilities_on_slug", using: :gin
     t.index ["deleted_at"], name: "index_facilities_on_deleted_at"
     t.index ["enable_diabetes_management"], name: "index_facilities_on_enable_diabetes_management"
     t.index ["facility_group_id"], name: "index_facilities_on_facility_group_id"
     t.index ["slug"], name: "index_facilities_on_slug", unique: true
+    t.index ["updated_at"], name: "index_facilities_on_updated_at"
+  end
+
+  create_table "facilities_teleconsultation_medical_officers", id: false, force: :cascade do |t|
+    t.uuid "facility_id", null: false
+    t.uuid "user_id", null: false
+    t.index ["facility_id", "user_id"], name: "index_facilities_teleconsult_mos_on_facility_id_and_user_id"
   end
 
   create_table "facility_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -285,6 +323,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.uuid "user_id"
     t.text "hypertension"
     t.index ["deleted_at"], name: "index_medical_histories_on_deleted_at"
+    t.index ["patient_id", "updated_at"], name: "index_medical_histories_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
     t.index ["user_id"], name: "index_medical_histories_on_user_id"
   end
@@ -376,7 +415,11 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.string "reminder_consent", default: "denied", null: false
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
+    t.uuid "assigned_facility_id"
+    t.index ["address_id"], name: "index_patients_on_address_id"
+    t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
+    t.index ["id", "updated_at"], name: "index_patients_on_id_and_updated_at"
     t.index ["recorded_at"], name: "index_patients_on_recorded_at"
     t.index ["registration_facility_id"], name: "index_patients_on_registration_facility_id"
     t.index ["registration_user_id"], name: "index_patients_on_registration_user_id"
@@ -415,8 +458,14 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.boolean "is_deleted", null: false
     t.datetime "deleted_at"
     t.uuid "user_id"
+    t.string "frequency"
+    t.integer "duration_in_days"
+    t.uuid "teleconsultation_id"
     t.index ["deleted_at"], name: "index_prescription_drugs_on_deleted_at"
+    t.index ["patient_id", "updated_at"], name: "index_prescription_drugs_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_prescription_drugs_on_patient_id"
+    t.index ["teleconsultation_id"], name: "index_prescription_drugs_on_teleconsultation_id"
+    t.index ["updated_at"], name: "index_prescription_drugs_on_updated_at"
     t.index ["user_id"], name: "index_prescription_drugs_on_user_id"
   end
 
@@ -428,6 +477,8 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
+    t.string "drug_category"
+    t.boolean "stock_tracked", default: false, null: false
     t.index ["deleted_at"], name: "index_protocol_drugs_on_deleted_at"
   end
 
@@ -438,6 +489,50 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_protocols_on_deleted_at"
+    t.index ["updated_at"], name: "index_protocols_on_updated_at"
+  end
+
+  create_table "regions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "description"
+    t.string "source_type"
+    t.uuid "source_id"
+    t.ltree "path"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "region_type", null: false
+    t.index ["path"], name: "index_regions_on_path", using: :gist
+    t.index ["path"], name: "index_regions_on_unique_path", unique: true
+    t.index ["region_type"], name: "index_regions_on_region_type"
+    t.index ["slug"], name: "index_regions_on_slug", unique: true
+    t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"
+  end
+
+  create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
+    t.uuid "patient_id", null: false
+    t.uuid "medical_officer_id", null: false
+    t.uuid "requested_medical_officer_id"
+    t.uuid "requester_id"
+    t.uuid "facility_id"
+    t.string "requester_completion_status"
+    t.datetime "requested_at"
+    t.datetime "recorded_at"
+    t.string "teleconsultation_type"
+    t.string "patient_took_medicines"
+    t.string "patient_consented"
+    t.string "medical_officer_number"
+    t.datetime "deleted_at"
+    t.datetime "device_updated_at"
+    t.datetime "device_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_teleconsultations_on_facility_id"
+    t.index ["medical_officer_id"], name: "index_teleconsultations_on_medical_officer_id"
+    t.index ["patient_id"], name: "index_teleconsultations_on_patient_id"
+    t.index ["requested_medical_officer_id"], name: "index_teleconsultations_on_requested_medical_officer_id"
+    t.index ["requester_id"], name: "index_teleconsultations_on_requester_id"
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
@@ -449,6 +544,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.index ["deleted_at"], name: "index_twilio_sms_delivery_details_on_deleted_at"
+    t.index ["session_id"], name: "index_twilio_sms_delivery_details_on_session_id"
   end
 
   create_table "user_authentications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -462,17 +558,6 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.index ["user_id"], name: "index_user_authentications_on_user_id"
   end
 
-  create_table "user_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id", null: false
-    t.string "permission_slug"
-    t.string "resource_type"
-    t.uuid "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "deleted_at"
-    t.index ["resource_type", "resource_id"], name: "index_user_permissions_on_resource_type_and_resource_id"
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -484,14 +569,23 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
     t.datetime "deleted_at"
     t.string "role"
     t.uuid "organization_id"
+    t.string "access_level"
+    t.string "teleconsultation_phone_number"
+    t.string "teleconsultation_isd_code"
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
+    t.index ["access_level"], name: "index_users_on_access_level"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["organization_id"], name: "index_users_on_organization_id"
+    t.index ["teleconsultation_phone_number"], name: "index_users_on_teleconsultation_phone_number"
   end
 
+  add_foreign_key "accesses", "users"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
+  add_foreign_key "drug_stocks", "facilities"
+  add_foreign_key "drug_stocks", "protocol_drugs"
+  add_foreign_key "drug_stocks", "users"
   add_foreign_key "encounters", "facilities"
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
@@ -500,7 +594,13 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
   add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"
   add_foreign_key "patients", "addresses"
+  add_foreign_key "patients", "facilities", column: "assigned_facility_id"
+  add_foreign_key "patients", "facilities", column: "registration_facility_id"
   add_foreign_key "protocol_drugs", "protocols"
+  add_foreign_key "teleconsultations", "facilities"
+  add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
+  add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
+  add_foreign_key "teleconsultations", "users", column: "requester_id"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
@@ -630,115 +730,53 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
      FROM (appointments ap
        JOIN facilities f ON ((ap.facility_id = f.id)));
   SQL
-  create_view "latest_blood_pressures_per_patient_per_days", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_month AS (
-           SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-              blood_pressures.patient_id,
-              patients.registration_facility_id,
-              blood_pressures.facility_id AS bp_facility_id,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
-              blood_pressures.systolic,
-              blood_pressures.diastolic,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
-              (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
-              (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-              (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-              (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-             FROM (blood_pressures
-               JOIN patients ON ((patients.id = blood_pressures.patient_id)))
-            WHERE (blood_pressures.deleted_at IS NULL)
-            ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-          )
-   SELECT latest_bp_per_patient_per_month.bp_id,
-      latest_bp_per_patient_per_month.patient_id,
-      latest_bp_per_patient_per_month.registration_facility_id,
-      latest_bp_per_patient_per_month.bp_facility_id,
-      latest_bp_per_patient_per_month.bp_recorded_at,
-      latest_bp_per_patient_per_month.patient_recorded_at,
-      latest_bp_per_patient_per_month.systolic,
-      latest_bp_per_patient_per_month.diastolic,
-      latest_bp_per_patient_per_month.deleted_at,
-      latest_bp_per_patient_per_month.day,
-      latest_bp_per_patient_per_month.month,
-      latest_bp_per_patient_per_month.quarter,
-      latest_bp_per_patient_per_month.year,
-      lag(latest_bp_per_patient_per_month.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_month.patient_id ORDER BY latest_bp_per_patient_per_month.bp_recorded_at, latest_bp_per_patient_per_month.bp_id) AS responsible_facility_id,
-      lag(latest_bp_per_patient_per_month.bp_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_month.patient_id ORDER BY latest_bp_per_patient_per_month.bp_recorded_at, latest_bp_per_patient_per_month.bp_id) AS previous_bp_id
-     FROM latest_bp_per_patient_per_month;
-  SQL
-  add_index "latest_blood_pressures_per_patient_per_days", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_days", unique: true
-
   create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_month AS (
-           SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-              blood_pressures.patient_id,
-              patients.registration_facility_id,
-              blood_pressures.facility_id AS bp_facility_id,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
-              blood_pressures.systolic,
-              blood_pressures.diastolic,
-              timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
-              (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-              (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-              (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-             FROM (blood_pressures
-               JOIN patients ON ((patients.id = blood_pressures.patient_id)))
-            WHERE (blood_pressures.deleted_at IS NULL)
-            ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-          )
-   SELECT latest_bp_per_patient_per_month.bp_id,
-      latest_bp_per_patient_per_month.patient_id,
-      latest_bp_per_patient_per_month.registration_facility_id,
-      latest_bp_per_patient_per_month.bp_facility_id,
-      latest_bp_per_patient_per_month.bp_recorded_at,
-      latest_bp_per_patient_per_month.patient_recorded_at,
-      latest_bp_per_patient_per_month.systolic,
-      latest_bp_per_patient_per_month.diastolic,
-      latest_bp_per_patient_per_month.deleted_at,
-      latest_bp_per_patient_per_month.month,
-      latest_bp_per_patient_per_month.quarter,
-      latest_bp_per_patient_per_month.year,
-      lag(latest_bp_per_patient_per_month.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_month.patient_id ORDER BY latest_bp_per_patient_per_month.bp_recorded_at, latest_bp_per_patient_per_month.bp_id) AS responsible_facility_id,
-      lag(latest_bp_per_patient_per_month.bp_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_month.patient_id ORDER BY latest_bp_per_patient_per_month.bp_recorded_at, latest_bp_per_patient_per_month.bp_id) AS previous_bp_id
-     FROM latest_bp_per_patient_per_month;
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+      blood_pressures.patient_id,
+      patients.registration_facility_id,
+      patients.assigned_facility_id,
+      patients.status AS patient_status,
+      blood_pressures.facility_id AS bp_facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
+      medical_histories.hypertension AS medical_history_hypertension,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+     FROM ((blood_pressures
+       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+       LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
+    WHERE (blood_pressures.deleted_at IS NULL)
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
   SQL
+  add_index "latest_blood_pressures_per_patient_per_months", ["assigned_facility_id"], name: "index_bp_months_assigned_facility_id"
   add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
+  add_index "latest_blood_pressures_per_patient_per_months", ["bp_recorded_at"], name: "index_bp_months_bp_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["medical_history_hypertension"], name: "index_bp_months_medical_history_hypertension"
+  add_index "latest_blood_pressures_per_patient_per_months", ["patient_recorded_at"], name: "index_bp_months_patient_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["registration_facility_id"], name: "index_bp_months_registration_facility_id"
 
   create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
-      WITH latest_bp_per_patient_per_quarter AS (
-           SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
-              latest_blood_pressures_per_patient_per_months.patient_id,
-              latest_blood_pressures_per_patient_per_months.registration_facility_id,
-              latest_blood_pressures_per_patient_per_months.bp_facility_id,
-              latest_blood_pressures_per_patient_per_months.bp_recorded_at,
-              latest_blood_pressures_per_patient_per_months.patient_recorded_at,
-              latest_blood_pressures_per_patient_per_months.systolic,
-              latest_blood_pressures_per_patient_per_months.diastolic,
-              latest_blood_pressures_per_patient_per_months.deleted_at,
-              latest_blood_pressures_per_patient_per_months.month,
-              latest_blood_pressures_per_patient_per_months.quarter,
-              latest_blood_pressures_per_patient_per_months.year,
-              latest_blood_pressures_per_patient_per_months.responsible_facility_id,
-              latest_blood_pressures_per_patient_per_months.previous_bp_id
-             FROM latest_blood_pressures_per_patient_per_months
-            ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id
-          )
-   SELECT latest_bp_per_patient_per_quarter.bp_id,
-      latest_bp_per_patient_per_quarter.patient_id,
-      latest_bp_per_patient_per_quarter.registration_facility_id,
-      latest_bp_per_patient_per_quarter.bp_facility_id,
-      latest_bp_per_patient_per_quarter.bp_recorded_at,
-      latest_bp_per_patient_per_quarter.patient_recorded_at,
-      latest_bp_per_patient_per_quarter.systolic,
-      latest_bp_per_patient_per_quarter.diastolic,
-      latest_bp_per_patient_per_quarter.deleted_at,
-      latest_bp_per_patient_per_quarter.month,
-      latest_bp_per_patient_per_quarter.quarter,
-      latest_bp_per_patient_per_quarter.year,
-      lag(latest_bp_per_patient_per_quarter.bp_facility_id, 1) OVER (PARTITION BY latest_bp_per_patient_per_quarter.patient_id ORDER BY latest_bp_per_patient_per_quarter.bp_recorded_at, latest_bp_per_patient_per_quarter.bp_id) AS responsible_facility_id
-     FROM latest_bp_per_patient_per_quarter;
+      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
+      latest_blood_pressures_per_patient_per_months.patient_id,
+      latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
+      latest_blood_pressures_per_patient_per_months.patient_status,
+      latest_blood_pressures_per_patient_per_months.bp_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
+      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
+      latest_blood_pressures_per_patient_per_months.systolic,
+      latest_blood_pressures_per_patient_per_months.diastolic,
+      latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
+      latest_blood_pressures_per_patient_per_months.month,
+      latest_blood_pressures_per_patient_per_months.quarter,
+      latest_blood_pressures_per_patient_per_months.year
+     FROM latest_blood_pressures_per_patient_per_months
+    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
   add_index "latest_blood_pressures_per_patient_per_quarters", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_quarters", unique: true
 
@@ -746,17 +784,18 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
       SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
       latest_blood_pressures_per_patient_per_months.patient_id,
       latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
+      latest_blood_pressures_per_patient_per_months.patient_status,
       latest_blood_pressures_per_patient_per_months.bp_facility_id,
       latest_blood_pressures_per_patient_per_months.bp_recorded_at,
       latest_blood_pressures_per_patient_per_months.patient_recorded_at,
       latest_blood_pressures_per_patient_per_months.systolic,
       latest_blood_pressures_per_patient_per_months.diastolic,
       latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
       latest_blood_pressures_per_patient_per_months.month,
       latest_blood_pressures_per_patient_per_months.quarter,
-      latest_blood_pressures_per_patient_per_months.year,
-      latest_blood_pressures_per_patient_per_months.responsible_facility_id,
-      latest_blood_pressures_per_patient_per_months.previous_bp_id
+      latest_blood_pressures_per_patient_per_months.year
      FROM latest_blood_pressures_per_patient_per_months
     ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
   SQL
@@ -861,6 +900,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
           END AS current_age,
       p.gender,
       p.status,
+      p.assigned_facility_id,
       latest_phone_number.number AS latest_phone_number,
       addresses.village_or_colony,
       addresses.street_address,
@@ -1014,4 +1054,180 @@ ActiveRecord::Schema.define(version: 2020_06_16_111304) do
       users
     WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
+  create_view "materialized_patient_summaries", materialized: true, sql_definition: <<-SQL
+      SELECT p.recorded_at,
+      concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AS registration_quarter,
+      p.full_name,
+          CASE
+              WHEN (p.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((p.date_of_birth)::timestamp with time zone))
+              ELSE floor(((p.age)::double precision + date_part('year'::text, age(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.age_updated_at))))))
+          END AS current_age,
+      p.gender,
+      p.status,
+      latest_phone_number.number AS latest_phone_number,
+      addresses.village_or_colony,
+      addresses.street_address,
+      addresses.district,
+      addresses.state,
+      addresses.zone AS block,
+      reg_facility.name AS registration_facility_name,
+      reg_facility.facility_type AS registration_facility_type,
+      reg_facility.district AS registration_district,
+      reg_facility.state AS registration_state,
+      p.assigned_facility_id,
+      assigned_facility.name AS assigned_facility_name,
+      assigned_facility.facility_type AS assigned_facility_type,
+      assigned_facility.district AS assigned_facility_district,
+      assigned_facility.state AS assigned_facility_state,
+      latest_blood_pressure.systolic AS latest_blood_pressure_systolic,
+      latest_blood_pressure.diastolic AS latest_blood_pressure_diastolic,
+      latest_blood_pressure.recorded_at AS latest_blood_pressure_recorded_at,
+      concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_pressure.recorded_at)))) AS latest_blood_pressure_quarter,
+      latest_blood_pressure_facility.name AS latest_blood_pressure_facility_name,
+      latest_blood_pressure_facility.facility_type AS latest_blood_pressure_facility_type,
+      latest_blood_pressure_facility.district AS latest_blood_pressure_district,
+      latest_blood_pressure_facility.state AS latest_blood_pressure_state,
+      latest_blood_sugar.id AS latest_blood_sugar_id,
+      latest_blood_sugar.blood_sugar_type AS latest_blood_sugar_type,
+      latest_blood_sugar.blood_sugar_value AS latest_blood_sugar_value,
+      latest_blood_sugar.recorded_at AS latest_blood_sugar_recorded_at,
+      concat(date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at))), ' Q', date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_blood_sugar.recorded_at)))) AS latest_blood_sugar_quarter,
+      latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
+      latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
+      latest_blood_sugar_facility.district AS latest_blood_sugar_district,
+      latest_blood_sugar_facility.state AS latest_blood_sugar_state,
+      GREATEST((0)::double precision, date_part('day'::text, (now() - (next_scheduled_appointment.scheduled_date)::timestamp with time zone))) AS days_overdue,
+      next_scheduled_appointment.id AS next_scheduled_appointment_id,
+      next_scheduled_appointment.scheduled_date AS next_scheduled_appointment_scheduled_date,
+      next_scheduled_appointment.status AS next_scheduled_appointment_status,
+      next_scheduled_appointment.remind_on AS next_scheduled_appointment_remind_on,
+      next_scheduled_appointment_facility.id AS next_scheduled_appointment_facility_id,
+      next_scheduled_appointment_facility.name AS next_scheduled_appointment_facility_name,
+      next_scheduled_appointment_facility.facility_type AS next_scheduled_appointment_facility_type,
+      next_scheduled_appointment_facility.district AS next_scheduled_appointment_district,
+      next_scheduled_appointment_facility.state AS next_scheduled_appointment_state,
+          CASE
+              WHEN (next_scheduled_appointment.scheduled_date IS NULL) THEN 0
+              WHEN (next_scheduled_appointment.scheduled_date > date_trunc('day'::text, (now() - '30 days'::interval))) THEN 0
+              WHEN ((latest_blood_pressure.systolic >= 180) OR (latest_blood_pressure.diastolic >= 110)) THEN 1
+              WHEN (((mh.prior_heart_attack = 'yes'::text) OR (mh.prior_stroke = 'yes'::text)) AND ((latest_blood_pressure.systolic >= 140) OR (latest_blood_pressure.diastolic >= 90))) THEN 1
+              WHEN ((((latest_blood_sugar.blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugar.blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugar.blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugar.blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugar.blood_sugar_value >= 9.0))) THEN 1
+              ELSE 0
+          END AS risk_level,
+      latest_bp_passport.id AS latest_bp_passport_id,
+      latest_bp_passport.identifier AS latest_bp_passport_identifier,
+      mh.hypertension,
+      mh.diabetes,
+      p.id
+     FROM ((((((((((((patients p
+       LEFT JOIN addresses ON ((addresses.id = p.address_id)))
+       LEFT JOIN facilities reg_facility ON ((reg_facility.id = p.registration_facility_id)))
+       LEFT JOIN facilities assigned_facility ON ((assigned_facility.id = p.assigned_facility_id)))
+       LEFT JOIN ( SELECT DISTINCT ON (medical_histories.patient_id) medical_histories.id,
+              medical_histories.patient_id,
+              medical_histories.prior_heart_attack_boolean,
+              medical_histories.prior_stroke_boolean,
+              medical_histories.chronic_kidney_disease_boolean,
+              medical_histories.receiving_treatment_for_hypertension_boolean,
+              medical_histories.diabetes_boolean,
+              medical_histories.device_created_at,
+              medical_histories.device_updated_at,
+              medical_histories.created_at,
+              medical_histories.updated_at,
+              medical_histories.diagnosed_with_hypertension_boolean,
+              medical_histories.prior_heart_attack,
+              medical_histories.prior_stroke,
+              medical_histories.chronic_kidney_disease,
+              medical_histories.receiving_treatment_for_hypertension,
+              medical_histories.diabetes,
+              medical_histories.diagnosed_with_hypertension,
+              medical_histories.deleted_at,
+              medical_histories.user_id,
+              medical_histories.hypertension
+             FROM medical_histories
+            WHERE (medical_histories.deleted_at IS NULL)) mh ON ((mh.patient_id = p.id)))
+       LEFT JOIN ( SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
+              patient_phone_numbers.number,
+              patient_phone_numbers.phone_type,
+              patient_phone_numbers.active,
+              patient_phone_numbers.created_at,
+              patient_phone_numbers.updated_at,
+              patient_phone_numbers.patient_id,
+              patient_phone_numbers.device_created_at,
+              patient_phone_numbers.device_updated_at,
+              patient_phone_numbers.deleted_at,
+              patient_phone_numbers.dnd_status
+             FROM patient_phone_numbers
+            WHERE (patient_phone_numbers.deleted_at IS NULL)
+            ORDER BY patient_phone_numbers.patient_id, patient_phone_numbers.device_created_at DESC) latest_phone_number ON ((latest_phone_number.patient_id = p.id)))
+       LEFT JOIN ( SELECT DISTINCT ON (blood_pressures.patient_id) blood_pressures.id,
+              blood_pressures.systolic,
+              blood_pressures.diastolic,
+              blood_pressures.patient_id,
+              blood_pressures.created_at,
+              blood_pressures.updated_at,
+              blood_pressures.device_created_at,
+              blood_pressures.device_updated_at,
+              blood_pressures.facility_id,
+              blood_pressures.user_id,
+              blood_pressures.deleted_at,
+              blood_pressures.recorded_at
+             FROM blood_pressures
+            WHERE (blood_pressures.deleted_at IS NULL)
+            ORDER BY blood_pressures.patient_id, blood_pressures.recorded_at DESC) latest_blood_pressure ON ((latest_blood_pressure.patient_id = p.id)))
+       LEFT JOIN facilities latest_blood_pressure_facility ON ((latest_blood_pressure_facility.id = latest_blood_pressure.facility_id)))
+       LEFT JOIN ( SELECT DISTINCT ON (blood_sugars.patient_id) blood_sugars.id,
+              blood_sugars.blood_sugar_type,
+              blood_sugars.blood_sugar_value,
+              blood_sugars.patient_id,
+              blood_sugars.user_id,
+              blood_sugars.facility_id,
+              blood_sugars.device_created_at,
+              blood_sugars.device_updated_at,
+              blood_sugars.deleted_at,
+              blood_sugars.recorded_at,
+              blood_sugars.created_at,
+              blood_sugars.updated_at
+             FROM blood_sugars
+            WHERE (blood_sugars.deleted_at IS NULL)
+            ORDER BY blood_sugars.patient_id, blood_sugars.recorded_at DESC) latest_blood_sugar ON ((latest_blood_sugar.patient_id = p.id)))
+       LEFT JOIN facilities latest_blood_sugar_facility ON ((latest_blood_sugar_facility.id = latest_blood_sugar.facility_id)))
+       LEFT JOIN ( SELECT DISTINCT ON (patient_business_identifiers.patient_id) patient_business_identifiers.id,
+              patient_business_identifiers.identifier,
+              patient_business_identifiers.identifier_type,
+              patient_business_identifiers.patient_id,
+              patient_business_identifiers.metadata_version,
+              patient_business_identifiers.metadata,
+              patient_business_identifiers.device_created_at,
+              patient_business_identifiers.device_updated_at,
+              patient_business_identifiers.deleted_at,
+              patient_business_identifiers.created_at,
+              patient_business_identifiers.updated_at
+             FROM patient_business_identifiers
+            WHERE (((patient_business_identifiers.identifier_type)::text = 'simple_bp_passport'::text) AND (patient_business_identifiers.deleted_at IS NULL))
+            ORDER BY patient_business_identifiers.patient_id, patient_business_identifiers.device_created_at DESC) latest_bp_passport ON ((latest_bp_passport.patient_id = p.id)))
+       LEFT JOIN ( SELECT DISTINCT ON (appointments.patient_id) appointments.id,
+              appointments.patient_id,
+              appointments.facility_id,
+              appointments.scheduled_date,
+              appointments.status,
+              appointments.cancel_reason,
+              appointments.device_created_at,
+              appointments.device_updated_at,
+              appointments.created_at,
+              appointments.updated_at,
+              appointments.remind_on,
+              appointments.agreed_to_visit,
+              appointments.deleted_at,
+              appointments.appointment_type,
+              appointments.user_id,
+              appointments.creation_facility_id
+             FROM appointments
+            WHERE (((appointments.status)::text = 'scheduled'::text) AND (appointments.deleted_at IS NULL))
+            ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
+       LEFT JOIN facilities next_scheduled_appointment_facility ON ((next_scheduled_appointment_facility.id = next_scheduled_appointment.facility_id)))
+    WHERE (p.deleted_at IS NULL);
+  SQL
+  add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id", unique: true
+
 end

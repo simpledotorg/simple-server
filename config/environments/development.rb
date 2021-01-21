@@ -29,6 +29,8 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
+  config.log_level = :debug
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_caching = false
@@ -61,4 +63,9 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
   config.active_job.queue_adapter = :inline
+end
+
+# Set a longer session timeout to make things easier on developers
+Devise.setup do |config|
+  config.timeout_in = 8.hours
 end

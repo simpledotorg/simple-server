@@ -1,0 +1,35 @@
+<% tree.each do |organization, facility_groups| %>
+  <ul class="access-item-wrapper">
+    <li>
+      <div class="access-item organization collapsed">
+
+        <div class="access-item__dropdown">
+          <i class="fas fa-caret-down light"></i>
+        </div>
+
+        <div class="form-check <%= "show" if page.eql?(:show) %>">
+
+          <% unless page.eql?(:show) %>
+            <% pre_checked = page.eql?(:edit) && user_being_edited.visible_organizations.include?(organization) %>
+            <%= access_checkbox(:organizations, organization, checked: pre_checked) %>
+          <% end %>
+
+          <%= access_resource_label(organization) %>
+        </div>
+
+        <div class="access-item__padding"></div>
+
+        <span class="access-ratio organization">
+          <%= access_facility_count(facility_groups.values.flatten.length) %>
+        </span>
+      </div>
+
+      <%= render "email_authentications/invitations/facility_group_access_tree",
+          tree: facility_groups,
+          page: page,
+          root: root,
+          user_being_edited: user_being_edited,
+          tree_depth: tree_depth + 1 %>
+    </li>
+  </ul>
+<% end %>

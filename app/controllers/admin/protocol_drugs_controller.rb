@@ -3,24 +3,24 @@ class Admin::ProtocolDrugsController < AdminController
   before_action :set_protocol_drug, only: [:show, :edit, :update, :destroy]
 
   def index
-    authorize([:manage, ProtocolDrug])
-    @protocol_drugs = policy_scope([:manage, ProtocolDrug])
+    authorize { current_admin.accessible_organizations(:manage).any? }
+    @protocol_drugs = current_admin.accessible_protocol_drugs(:manage).order(:name)
   end
 
   def show
   end
 
   def new
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol_drug = @protocol.protocol_drugs.new
-    authorize([:manage, @protocol_drug])
   end
 
   def edit
   end
 
   def create
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol_drug = @protocol.protocol_drugs.new(protocol_drug_params)
-    authorize([:manage, @protocol_drug])
 
     if @protocol_drug.save
       redirect_to [:admin, @protocol], notice: "Protocol drug was successfully created."
@@ -49,15 +49,16 @@ class Admin::ProtocolDrugsController < AdminController
   end
 
   def set_protocol_drug
-    @protocol_drug = ProtocolDrug.find(params[:id])
-    authorize([:manage, @protocol_drug])
+    @protocol_drug = authorize { current_admin.accessible_protocol_drugs(:manage).find(params[:id]) }
   end
 
   def protocol_drug_params
     params.require(:protocol_drug).permit(
       :name,
       :dosage,
-      :rxnorm_code
+      :rxnorm_code,
+      :drug_category,
+      :stock_tracked
     )
   end
 end

@@ -8,12 +8,14 @@ end
 RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
   describe "#create" do
     let!(:callback_url) { api_v3_twilio_sms_delivery_url(host: request.host) }
+
+    let(:base_session_id) { SecureRandom.uuid }
     let!(:base_callback_params) do
-      {"SmsSid" => SecureRandom.uuid,
+      {"SmsSid" => base_session_id,
        "SmsStatus" => "delivered",
+       "MessageSid" => base_session_id,
        "MessageStatus" => "delivered",
        "To" => Faker::PhoneNumber.phone_number,
-       "MessageSid" => SecureRandom.uuid,
        "AccountSid" => SecureRandom.uuid,
        "From" => "+15005550006",
        "ApiVersion" => "2010-04-01"}
@@ -25,7 +27,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         create(:twilio_sms_delivery_detail,
           session_id: session_id,
           result: "queued")
-        params = base_callback_params.merge("SmsSid" => session_id)
+        params = base_callback_params.merge("MessageSid" => session_id)
         set_twilio_signature_header(callback_url, params)
         post :create, params: params
 
@@ -33,13 +35,28 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
       end
 
       context "TwilioSmsDeliveryDetail" do
-        it "updates the result" do
+        it "updates the result for SmsSid and SmsStatus" do
           session_id = SecureRandom.uuid
           create(:twilio_sms_delivery_detail,
             session_id: session_id,
             result: "queued")
-          params = base_callback_params.merge("SmsSid" => session_id,
-                                              "SmsStatus" => "sent")
+          params = base_callback_params.except("MessageSid", "MessageStatus")
+            .merge("SmsSid" => session_id, "SmsStatus" => "sent")
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
+
+          twilio_sms_delivery_detail = TwilioSmsDeliveryDetail.find_by_session_id(session_id)
+          expect(twilio_sms_delivery_detail.result).to eq("sent")
+        end
+
+        it "updates the result for MessageSid and MessageStatus" do
+          session_id = SecureRandom.uuid
+          create(:twilio_sms_delivery_detail,
+            session_id: session_id,
+            result: "queued")
+          params = base_callback_params.merge("MessageSid" => session_id,
+                                              "MessageStatus" => "sent")
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
@@ -53,8 +70,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           create(:twilio_sms_delivery_detail,
             session_id: session_id,
             result: "sent")
-          params = base_callback_params.merge("SmsSid" => session_id,
-                                              "SmsStatus" => "delivered")
+          params = base_callback_params.merge("MessageSid" => session_id,
+                                              "MessageStatus" => "delivered")
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
@@ -66,17 +83,60 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
         it "does not update delivered_on if status is not delivered" do
           session_id = SecureRandom.uuid
-          create(:twilio_sms_delivery_detail,
-            session_id: session_id,
-            result: "queued")
-          params = base_callback_params.merge("SmsSid" => session_id,
-                                              "SmsStatus" => "sent")
+          create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued")
+
+          params = base_callback_params.merge(
+            "MessageSid" => session_id,
+            "MessageStatus" => "sent"
+          )
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
 
           twilio_sms_delivery_detail = TwilioSmsDeliveryDetail.find_by_session_id(session_id)
           expect(twilio_sms_delivery_detail.delivered_on).to be_nil
+        end
+
+        it "schedules a fallback SMS if a whatsapp message failed" do
+          session_id = SecureRandom.uuid
+          fallback_time = 5.minutes.from_now
+          communication = create(:communication, :missed_visit_whatsapp_reminder)
+          create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
+
+          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
+
+          params = base_callback_params.merge(
+            "MessageSid" => session_id,
+            "MessageStatus" => "failed"
+          )
+
+          expect(AppointmentNotification::Worker).to receive(:perform_at).with(
+            fallback_time,
+            communication.appointment_id,
+            "missed_visit_sms_reminder"
+          )
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
+        end
+
+        it "does not schedule a fallback SMS if an SMS failed" do
+          session_id = SecureRandom.uuid
+          fallback_time = 5.minutes.from_now
+          communication = create(:communication, :missed_visit_sms_reminder)
+          create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
+
+          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
+
+          params = base_callback_params.merge(
+            "MessageSid" => session_id,
+            "MessageStatus" => "failed"
+          )
+
+          expect(AppointmentNotification::Worker).not_to receive(:perform_at)
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
         end
       end
     end

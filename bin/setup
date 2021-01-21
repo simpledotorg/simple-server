@@ -1,4 +1,5 @@
-#! /bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 {
   RUBY_VERSION=$(cat .ruby-version)
@@ -46,19 +47,6 @@ pg_running (){
   ps aux | grep [p]ostgres > /dev/null 2>&1
 }
 
-has_rvm (){
-  hash rvm >/dev/null 2>&1
-}
-
-update_rvm (){
-  echo 'Updating rvm...'
-  rvm get latest
-}
-
-rvm_install_ruby_version (){
-  rvm install $RUBY_VERSION
-}
-
 has_rbenv (){
   hash rbenv >/dev/null 2>&1
 }
@@ -81,17 +69,11 @@ has_ruby_version (){
 install_ruby_version (){
   verify_homebrew
 
-  if [ ! has_rvm ] && [ ! has_rbenv ]
+  if [ ! has_rbenv ]
   then
-    echo 'Please install rbenv or rvm to manage your ruby versions.'
+    echo 'Please install rbenv (https://github.com/rbenv/rbenv) to manage your ruby versions.'
     exit 1
   fi
-
-  echo "Installing Ruby Version $RUBY_VERSION"
-  has_rvm && {
-    update_rvm
-    rvm_install_ruby_version
-  }
 
   has_rbenv && {
     update_rbenv
@@ -106,8 +88,8 @@ verify_postgres (){
   }
 
   pg_running || {
-    echo 'Please ensure postgresql is running'
-    exit 1
+   echo 'Please ensure postgresql is running'
+   exit 1
   }
 }
 

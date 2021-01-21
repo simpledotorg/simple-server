@@ -3,11 +3,6 @@ class Patient < ApplicationRecord
   include Mergeable
   include Hashable
 
-  enum reminder_consent: {
-    granted: "granted",
-    denied: "denied"
-  }, _prefix: true
-
   GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
@@ -17,6 +12,23 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
   DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
+
+  enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
+
+  enum reminder_consent: {
+    granted: "granted",
+    denied: "denied"
+  }, _prefix: true
+
+  enum could_not_contact_reasons: {
+    not_responding: "not_responding",
+    moved: "moved",
+    dead: "dead",
+    invalid_phone_number: "invalid_phone_number",
+    public_hospital_transfer: "public_hospital_transfer",
+    moved_to_private: "moved_to_private",
+    other: "other"
+  }
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: "PatientPhoneNumber"
@@ -30,11 +42,13 @@ class Patient < ApplicationRecord
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :appointments
   has_one :medical_history
+  has_many :teleconsultations
 
   has_many :encounters
   has_many :observations, through: :encounters
 
   belongs_to :registration_facility, class_name: "Facility", optional: true
+  belongs_to :assigned_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"
 
   has_many :latest_blood_pressures, -> { order(recorded_at: :desc) }, class_name: "BloodPressure"
@@ -48,50 +62,36 @@ class Patient < ApplicationRecord
     -> { where(identifier_type: "simple_bp_passport").order(device_created_at: :desc) },
     class_name: "PatientBusinessIdentifier"
 
-  has_many :current_prescription_drugs, -> { where(is_deleted: false) }, class_name: "PrescriptionDrug"
+  has_many :current_prescription_drugs, -> { where(is_deleted: false).order(created_at: :desc) }, class_name: "PrescriptionDrug"
 
   belongs_to :deleted_by_user, class_name: "User", optional: true
 
   attribute :call_result, :string
 
-  scope :search_by_address,
-    ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
-
-  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
-  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
-
-  scope :follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(Encounter, period, time_column: "encountered_on", last: last)
+  scope :with_nested_sync_resources, -> { includes(:address, :phone_numbers, :business_identifiers) }
+  scope :for_sync, -> { with_discarded.with_nested_sync_resources }
+  scope :search_by_address, ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
+  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes).distinct }
+  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes).distinct }
+  scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
+    follow_ups_with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
   }
 
-  scope :diabetes_follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(BloodSugar, period, last: last)
+  scope :diabetes_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
+    follow_ups_with(BloodSugar, period, at_region: at_region, current: current, last: last)
       .with_diabetes
   }
 
-  scope :hypertension_follow_ups_by_period, ->(period, last: nil) {
-    follow_ups_with(BloodPressure, period, last: last)
+  scope :hypertension_follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
+    follow_ups_with(BloodPressure, period, at_region: at_region, current: current, last: last)
       .with_hypertension
   }
 
-  def self.follow_ups_with(model_name, period, time_column: "recorded_at", last: nil)
-    table_name = model_name.table_name.to_sym
-    time_column_with_table_name = "#{table_name}.#{time_column}"
-
-    joins(table_name)
-      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
-      .group_by_period(period, time_column_with_table_name, last: last)
-      .distinct
-  end
-
-  enum could_not_contact_reasons: {
-    not_responding: "not_responding",
-    moved: "moved",
-    dead: "dead",
-    invalid_phone_number: "invalid_phone_number",
-    public_hospital_transfer: "public_hospital_transfer",
-    moved_to_private: "moved_to_private",
-    other: "other"
+  scope :contactable, -> {
+    where(reminder_consent: "granted")
+      .where.not(status: "dead")
+      .joins(:phone_numbers)
+      .merge(PatientPhoneNumber.phone_type_mobile)
   }
 
   validate :past_date_of_birth
@@ -101,6 +101,23 @@ class Patient < ApplicationRecord
 
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
+
+  def self.follow_ups_with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
+    table_name = model_name.table_name.to_sym
+    time_column_with_table_name = "#{table_name}.#{time_column}"
+
+    relation = joins(table_name)
+      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
+      .group_by_period(period, time_column_with_table_name, current: current, last: last)
+      .distinct
+
+    if at_region.present?
+      facility_ids = at_region.facilities.map(&:id)
+      relation = relation.where(table_name => {facility_id: facility_ids})
+    end
+
+    relation
+  end
 
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
@@ -186,6 +203,10 @@ class Patient < ApplicationRecord
     end
 
     super(new_call_result)
+  end
+
+  def prescribed_drugs(date: Date.current)
+    prescription_drugs.prescribed_as_of(date)
   end
 
   def self.not_contacted

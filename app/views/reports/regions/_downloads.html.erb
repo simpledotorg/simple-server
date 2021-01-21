@@ -1,0 +1,57 @@
+<div class="dropdown show mb-24px bs-small mb-lg-0">
+  <a class="btn btn-sm dropdown-toggle c-black bg-white" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fa fa-arrow-circle-down w-16px ta-center mr-4px c-grey-medium"></i>
+    Downloads
+  </a>
+  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+
+    <h6 class="dropdown-header c-grey-medium">
+      CSV files
+    </h6>
+
+    <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :quarter, format: :csv), class: "dropdown-item") do %>
+      <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+      Quarterly cohort report
+    <% end %>
+
+    <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :month, format: :csv), class: "dropdown-item") do %>
+      <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+      Monthly cohort report
+    <% end %>
+
+    <% if @region.facilities.to_set.subset?(current_admin.accessible_facilities(:view_pii).to_set) %>
+      <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
+        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        Patient list 
+      <% end %>
+      <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true), class: "dropdown-item") do %>
+        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        Patient list with med. history
+      <% end %>
+    <% end %>
+
+    <div class="dropdown-divider"></div>
+
+    <h6 class="dropdown-header c-grey-medium">
+      <%= "#{quarter_string(Date.current.prev_quarter)}" %> Snapshots
+    </h6>
+
+    <% previous_quarter_year, previous_quarter = previous_year_and_quarter %>
+    <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "html"), class: "dropdown-item") do %>
+      <i class="far fa-window-maximize w-16px ta-center mr-4px c-grey-medium"></i>
+      View in webpage
+    <% end %>
+
+    <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "png"), class: "dropdown-item") do %>
+      <i class="far fa-image w-16px ta-center mr-4px c-grey-medium"></i>
+      Download as an image 
+    <% end %>
+
+    <div class="dropdown-divider"></div>
+
+    <p class="dropdown-item mb-0px c-pointer" onclick="window.print()">
+      <i class="fas fa-print w-16px ta-center mr-4px c-grey-medium"></i>
+      Print page as PDF
+    </p>
+  </div>
+</div>

@@ -9,24 +9,30 @@ class Api::V3::PatientsController < Api::V3::SyncController
     end
   end
 
-  def metadata
-    {registration_user_id: current_user.id,
-     registration_facility_id: current_facility.id}
+  def request_metadata
+    {request_user_id: current_user.id, request_facility_id: current_facility.id}
   end
 
   def current_facility_records
-    facility_group_records
-      .includes(:address, :phone_numbers, :business_identifiers)
-      .where(registration_facility: current_facility)
-      .updated_on_server_since(current_facility_processed_since, limit)
+    time(__method__) do
+      @current_facility_records ||=
+        current_facility
+          .prioritized_patients
+          .for_sync
+          .updated_on_server_since(current_facility_processed_since, limit)
+    end
   end
 
   def other_facility_records
-    other_facilities_limit = limit - current_facility_records.count
-    facility_group_records
-      .includes(:address, :phone_numbers, :business_identifiers)
-      .where.not(registration_facility: current_facility.id)
-      .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+    time(__method__) do
+      other_facilities_limit = limit - current_facility_records.size
+      @other_facility_records ||=
+        current_sync_region
+          .syncable_patients
+          .where.not(registration_facility: current_facility)
+          .for_sync
+          .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+    end
   end
 
   private
@@ -42,15 +48,15 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def merge_if_valid(single_patient_params)
-    validator = Api::V3::PatientPayloadValidator.new(single_patient_params)
-    logger.debug "Patient had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/Patient/schema_invalid")
+    validator_params = single_patient_params.merge(request_user_id: current_user.id)
+    validator = Api::V3::PatientPayloadValidator.new(validator_params)
+
+    if validator.check_invalid?
+      logger.debug "Patient had errors: #{validator.errors_hash}"
       {errors_hash: validator.errors_hash}
     else
-      patients_params_with_metadata = single_patient_params.merge(metadata: metadata)
-      transformed_params = Api::V3::PatientTransformer.from_nested_request(patients_params_with_metadata)
-      patient = MergePatientService.new(transformed_params).merge
+      transformed_params = Api::V3::PatientTransformer.from_nested_request(single_patient_params)
+      patient = MergePatientService.new(transformed_params, request_metadata: request_metadata).merge
       {record: patient}
     end
   end
@@ -109,6 +115,8 @@ class Api::V3::PatientsController < Api::V3::SyncController
         :reminder_consent,
         :deleted_at,
         :deleted_reason,
+        :registration_facility_id,
+        :assigned_facility_id,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]

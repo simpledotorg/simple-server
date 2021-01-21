@@ -4,6 +4,11 @@ RSpec.describe Api::ManifestsController, type: :controller do
   describe "GET #show" do
     render_views
 
+    before do
+      # set default stub so other calls to ENV pass thorugh
+      allow(ENV).to receive(:[]).and_call_original
+    end
+
     context "in production environments" do
       environments = Dir
         .glob("config/deploy/*.rb")

@@ -37,16 +37,24 @@ RSpec.describe BloodSugar, type: :model do
     end
   end
 
-  describe "scopes" do
+  describe "Scopes" do
     let!(:fasting) { create(:blood_sugar, blood_sugar_type: :fasting) }
     let!(:random) { create(:blood_sugar, blood_sugar_type: :random) }
     let!(:post_prandial) { create(:blood_sugar, blood_sugar_type: :post_prandial) }
     let!(:hba1c) { create(:blood_sugar, blood_sugar_type: :hba1c) }
 
-    context "#for_v3" do
+    describe ".for_v3" do
       it "only includes non hba1c blood sugars" do
         expect(BloodSugar.for_v3).not_to include(hba1c)
         expect(BloodSugar.for_v3.count).to eq 3
+      end
+    end
+
+    describe ".for_sync" do
+      it "includes discarded blood sugars" do
+        discarded_blood_sugar = create(:blood_sugar, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_blood_sugar)
       end
     end
   end

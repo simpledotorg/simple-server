@@ -10,6 +10,7 @@
 # ± bin/deploy help
 #
 require 'pathname'
+require 'shellwords'
 
 class DeployError < StandardError
 end
@@ -161,7 +162,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
       end
 
     # create tag
-    execute_safely("git tag -a #{@tag_to_deploy} -m \"#{changelog}\"", confirm: true)
+    execute_safely("git tag -a #{@tag_to_deploy} -m \"#{changelog.shellescape}\"", confirm: true)
     puts "Created tag #{@tag_to_deploy}."
 
     # push tag
@@ -244,7 +245,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def generate_release_tag_value(date, release_number = 1)
-    "#{date}-#{release_number}"
+    "release-#{date}-#{release_number}"
   end
 
   def current_date
@@ -308,7 +309,7 @@ This is generated from the diff between #{last_deployed_sha}..HEAD
   end
 
   def release_tag_regex
-    %r{(\d{4}-\d{2}-\d{2}-\d+)}
+    %r{([0-9]{4})-([0][0-9]|[1][0-2])-([0][0-9]|[1][0-9]|[2][0-9]|[3][0-1])-([0-9]{1,})}
   end
 
   def prompt_for_confirmation(msg, prompt_codes, color)

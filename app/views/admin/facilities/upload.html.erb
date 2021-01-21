@@ -12,21 +12,29 @@
 <% end %>
 <h3>Instructions:</h3>
 <ol>
-  <li>Download and fill in <%= link_to 'this template', '/documents/upload_facilities.csv'%> to create multiple facilities via file upload.</li>
+  <li>
+    Download and fill in
+    <%= link_to 'this template', '/documents/upload_facilities.csv' %>
+    to create multiple facilities via file upload.
+  </li>
   <li>Organizations for the facilities must already exist.
-    <% if policy([:manage, Organization]).new? %>
+    <% if current_admin.power_user? %>
       Click here to create an organization:
       <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-outline-primary" %>
-    <% end %></li>
+    <% end %>
+  </li>
   <li>Facility Groups for the facilities must already exist.
-    <% if policy([:manage, FacilityGroup]).new? %>
+    <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
       Click here to create a facility group:
       <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
-    <% end %></li>
+    <% end %>
+  </li>
   <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
-  <li class="mt-1">The enable_diabetes_management and enable_teleconsultation fields will be treated as "not enabled" if blank.</li>
+  <li class="mt-1">
+    The enable_diabetes_management field will be treated as "not enabled" if blank.
+  </li>
 </ol>
 <%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
-  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label:'Upload your filled in facilities file'%>
+  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label: 'Upload your filled in facilities file' %>
   <%= f.primary 'Upload' %>
 <% end %>

@@ -1,7 +1,7 @@
 module FeatureToggle
   def self.enabled?(feature_name)
     toggle_name = "ENABLE_#{feature_name}"
-    ENV[toggle_name] == 'true'
+    ENV[toggle_name] == "true"
   end
 
   def self.enabled_for_regex?(regex_name, feature_name)
@@ -10,6 +10,6 @@ module FeatureToggle
   end
 
   def self.auto_approve_for_qa?
-    enabled?('AUTO_APPROVE_USER_FOR_QA')
+    enabled?("AUTO_APPROVE_USER_FOR_QA")
   end
 end

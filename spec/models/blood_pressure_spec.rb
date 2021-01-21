@@ -15,14 +15,14 @@ RSpec.describe BloodPressure, type: :model do
     it_behaves_like "a record that is deletable"
   end
 
-  context "utility methods" do
-    let(:bp_normal) { create(:blood_pressure, systolic: 120, diastolic: 80) }
-    let(:bp_high_systolic) { create(:blood_pressure, systolic: 140, diastolic: 80) }
-    let(:bp_high_diastolic) { create(:blood_pressure, systolic: 120, diastolic: 90) }
-    let(:bp_high_both) { create(:blood_pressure, systolic: 150, diastolic: 100) }
-
+  describe "Scopes" do
     describe ".hypertensive" do
       it "only includes hypertensive BPs" do
+        bp_normal = create(:blood_pressure, systolic: 120, diastolic: 80)
+        bp_high_systolic = create(:blood_pressure, systolic: 140, diastolic: 80)
+        bp_high_diastolic = create(:blood_pressure, systolic: 120, diastolic: 90)
+        bp_high_both = create(:blood_pressure, systolic: 150, diastolic: 100)
+
         expect(BloodPressure.hypertensive).to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
         expect(BloodPressure.hypertensive).not_to include(bp_normal)
       end
@@ -30,10 +30,30 @@ RSpec.describe BloodPressure, type: :model do
 
     describe ".under_control" do
       it "only includes BPs under control" do
+        bp_normal = create(:blood_pressure, systolic: 120, diastolic: 80)
+        bp_high_systolic = create(:blood_pressure, systolic: 140, diastolic: 80)
+        bp_high_diastolic = create(:blood_pressure, systolic: 120, diastolic: 90)
+        bp_high_both = create(:blood_pressure, systolic: 150, diastolic: 100)
+
         expect(BloodPressure.under_control).to include(bp_normal)
         expect(BloodPressure.under_control).not_to include(bp_high_systolic, bp_high_diastolic, bp_high_both)
       end
     end
+
+    describe ".for_sync" do
+      it "includes discarded blood pressures" do
+        discarded_bp = create(:blood_pressure, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_bp)
+      end
+    end
+  end
+
+  context "utility methods" do
+    let(:bp_normal) { create(:blood_pressure, systolic: 120, diastolic: 80) }
+    let(:bp_high_systolic) { create(:blood_pressure, systolic: 140, diastolic: 80) }
+    let(:bp_high_diastolic) { create(:blood_pressure, systolic: 120, diastolic: 90) }
+    let(:bp_high_both) { create(:blood_pressure, systolic: 150, diastolic: 100) }
 
     describe "#under_control?" do
       it "returns true if both systolic and diastolic are under control" do
@@ -117,6 +137,24 @@ RSpec.describe BloodPressure, type: :model do
 
         expect(blood_pressure.anonymized_data).to eq anonymised_data
       end
+    end
+  end
+
+  context "#find_or_update_observation!" do
+    let(:blood_pressure) { create(:blood_pressure, :with_encounter) }
+    let!(:encounter) { blood_pressure.encounter }
+    let!(:observation) { blood_pressure.observation }
+    let!(:user) { blood_pressure.user }
+
+    it "updates discarded observations also" do
+      observation.discard
+      blood_pressure.reload
+
+      encounter.encountered_on = 1.year.ago
+      encounter.save
+      blood_pressure.find_or_update_observation!(encounter, user)
+
+      expect(encounter.encountered_on).to eq 1.year.ago.to_date
     end
   end
 end

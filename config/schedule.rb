@@ -1,4 +1,5 @@
 require "tzinfo"
+require File.expand_path("../config/environment", __dir__)
 
 set :output, "/home/deploy/apps/simple-server/shared/log/cron.log"
 
@@ -6,7 +7,7 @@ env :PATH, ENV["PATH"]
 DEFAULT_CRON_TIME_ZONE = "Asia/Kolkata"
 
 def local(time)
-  TZInfo::Timezone.get(DEFAULT_CRON_TIME_ZONE)
+  TZInfo::Timezone.get(Rails.application.config.country[:time_zone] || DEFAULT_CRON_TIME_ZONE)
     .local_to_utc(Time.parse(time))
 end
 
@@ -22,11 +23,36 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:update_all_patients_phone_number_details"
 end
 
-every 3.hours, roles: [:cron] do
-  rake "refresh_materialized_db_views"
+every :day, at: local("12:30am"), roles: [:cron] do
+  rake "db:refresh_materialized_views"
 end
 
-every :month, at: local("02:00 am"), roles: [:seed_data] do
-  rake "db:purge_users_data"
-  rake "db:seed_users_data"
+every :day, at: local("01:00 am"), roles: [:cron] do
+  runner "MarkPatientMobileNumbers.call"
+end
+
+every :day, at: local("04:00 am"), roles: [:cron] do
+  runner "Reports::RegionCacheWarmer.call"
+end
+
+every :month, at: local("04:00 am"), roles: [:seed_data] do
+  rake "db:purge_and_reseed"
+end
+
+every :day, at: local("05:00 am"), roles: [:cron] do
+  runner "ReportDuplicatePassports.report"
+end
+
+every :monday, at: local("6:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:weekly_telemed_report)
+    rake "reports:telemedicine"
+  end
+end
+
+every 2.minutes, roles: [:cron] do
+  runner "TracerJob.perform_later(Time.current.iso8601)"
+end
+
+every 30.minutes, roles: [:cron] do
+  runner "RegionsIntegrityCheck.sweep"
 end

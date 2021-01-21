@@ -1,9 +1,8 @@
-require 'rails_helper'
-require 'sidekiq/testing'
+require "rails_helper"
 
 RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
-  let!(:ihci) { create(:organization, name: 'IHCI') }
-  let!(:path) { create(:organization, name: 'PATH') }
+  let!(:ihci) { create(:organization, name: "IHCI") }
+  let!(:path) { create(:organization, name: "PATH") }
   let!(:ihci_facility_group) { create(:facility_group, organization: ihci) }
   let!(:path_facility_group) { create(:facility_group, organization: path) }
   let!(:ihci_facility) { create(:facility, facility_group: ihci_facility_group) }
@@ -15,20 +14,16 @@ RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
   before do
     allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
 
-    allow(FeatureToggle).to receive(:enabled?).with('APPOINTMENT_REMINDERS').and_return(true)
-    allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_FAN_OUT_BATCH_SIZE').and_return(250)
+    allow(FeatureToggle).to receive(:enabled?).with("APPOINTMENT_REMINDERS").and_return(true)
   end
 
-  it 'should send reminders to enabled organizations in env' do
+  it "should send reminders to enabled organizations in env" do
     enabled_organizations = [ihci, path]
-    allow(ENV).to receive(:[]).with('APPOINTMENT_NOTIFICATION_ORG_IDS').and_return(enabled_organizations.map(&:id))
+    allow_any_instance_of(described_class).to receive(:enabled_organizations).and_return(enabled_organizations)
 
-    expect(AppointmentNotificationService).to receive(:send_after_missed_visit)
-      .exactly(enabled_organizations.count).times do |appointments|
-      expect(appointments.count).to eq(2)
-    end
+    expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: overdue_appointments_from_ihci)
+    expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: overdue_appointments_from_path)
 
-    described_class.perform_async(Time.current.hour, Time.current.hour)
-    described_class.drain
+    described_class.perform_now
   end
 end

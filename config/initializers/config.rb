@@ -1,9 +1,14 @@
+# See https://app.clubhouse.io/simpledotorg/story/1616/why-do-heroku-deployments-intermittently-fail
+unless SimpleServer.env.review? && Rake.application.top_level_tasks.any? { |task| task.include?("assets") }
+  Config.ensure_required_keys_are_present(required_keys: [
+    "SENTRY_SECURITY_HEADER_ENDPOINT"
+  ])
+end
+
 Config.ensure_required_keys_are_present(required_keys: [
   "DEFAULT_NUMBER_OF_RECORDS",
   "DEFAULT_COUNTRY",
   "SIMPLE_APP_SIGNATURE",
-  "NEW_RELIC_LICENSE_KEY",
-  "NEW_RELIC_APP_NAME",
   "SENDGRID_USERNAME",
   "SENDGRID_PASSWORD",
   "SENTRY_DSN",
@@ -21,6 +26,7 @@ Config.ensure_required_keys_are_present(required_keys: [
   "CALL_SESSION_REDIS_TIMEOUT_SEC",
   "HELP_SCREEN_YOUTUBE_VIDEO_URL",
   "HELP_SCREEN_YOUTUBE_PASSPORT_URL",
+  "HELP_SCREEN_YOUTUBE_TRAINING_URL",
   "RAILS_CACHE_REDIS_PASSWORD",
   "SIDEKIQ_CONCURRENCY",
   "ANALYTICS_DASHBOARD_CACHE_TTL"

@@ -1,17 +1,23 @@
 class Admin::UsersController < AdminController
-  include DistrictFiltering
   include Pagination
   include SearchHelper
 
-  before_action :set_user, except: [:index, :new, :create]
+  before_action :set_user, except: [:index, :teleconsult_search]
   around_action :set_time_zone, only: [:show]
+  before_action :set_district, only: [:index]
 
   def index
-    authorize([:manage, :user, User])
-    users = policy_scope([:manage, :user, User])
+    authorize { current_admin.accessible_users(:manage).any? }
+
+    facilities = if @district == "All"
+      current_admin.accessible_facilities(:manage)
+    else
+      current_admin.accessible_facilities(:manage).where(district: @district)
+    end
+
+    users = current_admin.accessible_users(:manage)
       .joins(phone_number_authentications: :facility)
-      .where("phone_number_authentications.registration_facility_id IN (?)",
-        selected_district_facilities([:manage, :user]).map(&:id))
+      .where(phone_number_authentications: {registration_facility_id: facilities})
       .order("users.full_name", "facilities.name", "users.device_created_at")
 
     @users =
@@ -20,6 +26,22 @@ class Admin::UsersController < AdminController
       else
         paginate(users)
       end
+  end
+
+  def teleconsult_search
+    authorize { current_admin.accessible_users(:manage).any? }
+
+    facility_group = FacilityGroup.find(params[:facility_group_id])
+    facilities = current_admin.accessible_facilities(:manage).where(facility_group: facility_group)
+
+    users = current_admin.accessible_users(:manage)
+      .joins(phone_number_authentications: :facility)
+      .where(phone_number_authentications: {registration_facility_id: facilities})
+      .order("users.full_name", "facilities.name", "users.device_created_at")
+
+    respond_to do |format|
+      format.json { @users = users.teleconsult_search(search_query) }
+    end
   end
 
   def show
@@ -32,6 +54,7 @@ class Admin::UsersController < AdminController
   end
 
   def edit
+    @user.teleconsultation_isd_code ||= Rails.application.config.country["sms_country_code"]
   end
 
   def update
@@ -76,8 +99,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    @user = User.find(params[:id] || params[:user_id])
-    authorize([:manage, :user, @user])
+    @user = authorize { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
   end
 
   def set_time_zone
@@ -89,10 +111,16 @@ class Admin::UsersController < AdminController
     params.require(:user).permit(
       :full_name,
       :phone_number,
+      :teleconsultation_phone_number,
+      :teleconsultation_isd_code,
       :password,
       :password_confirmation,
       :sync_approval_status,
       :registration_facility_id
     )
+  end
+
+  def set_district
+    @district = params[:district].present? ? params[:district] : "All"
   end
 end

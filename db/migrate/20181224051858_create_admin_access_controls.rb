@@ -8,6 +8,6 @@ class CreateAdminAccessControls < ActiveRecord::Migration[5.1]
       t.timestamps
     end
 
-    add_index :admin_access_controls, [:access_controllable_id, :access_controllable_type], name: 'index_access_controls_on_controllable_id_and_type'
+    add_index :admin_access_controls, [:access_controllable_id, :access_controllable_type], name: "index_access_controls_on_controllable_id_and_type"
   end
 end

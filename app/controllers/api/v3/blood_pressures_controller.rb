@@ -1,5 +1,4 @@
 class Api::V3::BloodPressuresController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry
 
@@ -16,8 +15,7 @@ class Api::V3::BloodPressuresController < Api::V3::SyncController
   def merge_if_valid(bp_params)
     validator = Api::V3::BloodPressurePayloadValidator.new(bp_params)
     logger.debug "Blood Pressure had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/BloodPressure/schema_invalid")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       set_patient_recorded_at(bp_params)

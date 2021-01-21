@@ -4,4 +4,3 @@ class AddColumnForManualOrAutomaticAppointments < ActiveRecord::Migration[5.1]
     add_index :appointments, :appointment_type
   end
 end
-

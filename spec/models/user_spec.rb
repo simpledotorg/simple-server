@@ -3,11 +3,98 @@ require "rails_helper"
 RSpec.describe User, type: :model do
   describe "Associations" do
     it { should have_many(:user_authentications) }
+    it { should have_many(:accesses) }
+    it { should have_and_belong_to_many(:teleconsultation_facilities) }
   end
 
   describe "Validations" do
     it { should validate_presence_of(:full_name) }
     it_behaves_like "a record that validates device timestamps"
+
+    context "if email_authentication is present" do
+      let!(:email_authentication) { Object.new }
+      it "validates presence of access_level" do
+        allow(subject).to receive(:email_authentication).and_return(email_authentication)
+        allow(email_authentication).to receive(:present?).and_return(true)
+
+        is_expected.to validate_presence_of(:access_level)
+      end
+    end
+
+    context "if email_authentication is not present" do
+      let!(:email_authentication) { Object.new }
+      it "does not validate presence of access_level" do
+        allow(subject).to receive(:email_authentication).and_return(email_authentication)
+        allow(email_authentication).to receive(:present?).and_return(false)
+
+        is_expected.not_to validate_presence_of(:access_level)
+      end
+    end
+
+    it {
+      is_expected.to(
+        define_enum_for(:access_level)
+          .with_suffix(:access)
+          .with_values(call_center: "call_center",
+                       viewer_reports_only: "viewer_reports_only",
+                       viewer_all: "viewer_all",
+                       manager: "manager",
+                       power_user: "power_user")
+          .backed_by_column_of_type(:string)
+      )
+    }
+  end
+
+  describe "#full_teleconsultation_phone_number" do
+    it "returns the teleconsultation phone number if its present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = Rails.application.config.country["sms_country_code"]
+      user = create(:user, teleconsultation_phone_number: phone_number, teleconsultation_isd_code: isd_code)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+
+    it "respects ISD code when different from default" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = "+12345"
+      user = create(:user, teleconsultation_phone_number: phone_number, teleconsultation_isd_code: isd_code)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+
+    it "defaults to phone number if its not present" do
+      phone_number = Faker::PhoneNumber.phone_number
+      isd_code = Rails.application.config.country["sms_country_code"]
+      user = create(:user,
+        teleconsultation_phone_number: nil,
+        teleconsultation_isd_code: isd_code,
+        phone_number: phone_number)
+      phone_number_with_isd = isd_code + phone_number
+
+      expect(User.find(user.id).full_teleconsultation_phone_number).to eq phone_number_with_isd
+    end
+  end
+
+  describe "User Access (permissions)" do
+    it { should delegate_method(:accessible_organizations).to(:user_access) }
+    it { should delegate_method(:accessible_facility_groups).to(:user_access) }
+    it { should delegate_method(:accessible_facilities).to(:user_access) }
+    it { should delegate_method(:grant_access).to(:user_access) }
+    it { should delegate_method(:permitted_access_levels).to(:user_access) }
+  end
+
+  describe "#can_teleconsult?" do
+    it "is true if the user can teleconsult at least one facility" do
+      user = create(:teleconsultation_medical_officer)
+      expect(user.can_teleconsult?).to eq true
+    end
+
+    it "is false if the user can't teleconsult anywhere" do
+      user = create(:teleconsultation_medical_officer, teleconsultation_facilities: [])
+      expect(user.can_teleconsult?).to eq false
+    end
   end
 
   describe ".build_with_phone_number_authentication" do
@@ -18,14 +105,16 @@ RSpec.describe User, type: :model do
       let(:phone_number) { Faker::PhoneNumber.phone_number }
       let(:password_digest) { BCrypt::Password.create("1234") }
       let(:params) do
-        {id: id,
-         full_name: full_name,
-         phone_number: phone_number,
-         password_digest: password_digest,
-         registration_facility_id: registration_facility.id,
-         organization_id: registration_facility.organization.id,
-         device_created_at: Time.current.iso8601,
-         device_updated_at: Time.current.iso8601}
+        {
+          id: id,
+          full_name: full_name,
+          phone_number: phone_number,
+          password_digest: password_digest,
+          registration_facility_id: registration_facility.id,
+          organization_id: registration_facility.organization.id,
+          device_created_at: Time.current.iso8601,
+          device_updated_at: Time.current.iso8601
+        }
       end
 
       let(:user) { User.build_with_phone_number_authentication(params) }
@@ -69,7 +158,7 @@ RSpec.describe User, type: :model do
         let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
         let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
-        ["Sri", "sri", "SRi", "sRi", "SRI", "sRI"].each do |term|
+        %w[Sri sri SRi sRi SRI sRI].each do |term|
           it "returns results for case-insensitive searches: #{term.inspect}" do
             expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
           end
@@ -81,7 +170,7 @@ RSpec.describe User, type: :model do
           end
         end
 
-        ["pri", "sr"].each do |term|
+        %w[pri sr].each do |term|
           it "partially matches on first name, last name or full names: #{term.inspect}" do
             expect(User.public_send(search_method, term)).to match_array([user_1, user_2])
           end
@@ -173,6 +262,72 @@ RSpec.describe User, type: :model do
             .to match_array([admin_1, admin_2])
         end
       end
+    end
+
+    describe ".teleconsult_search" do
+      include_examples "full_name search", :teleconsult_search
+
+      context "searches against phone_number and teleconsultation_phone_number" do
+        let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+
+        it "matches a user with a phone number" do
+          expect(User.search_by_name_or_phone(user_1.phone_number)).to match_array(user_1)
+        end
+
+        it "matches a user with a teleconsultation phone number" do
+          expect(User.teleconsult_search(user_1.teleconsultation_phone_number))
+            .to match_array(user_1)
+        end
+
+        it "matches a combination of name and phone number from the same user" do
+          expect(User.search_by_name_or_phone(user_1.phone_number + " " + "John"))
+            .to match_array(user_1)
+
+          expect(User.search_by_name_or_phone("Gupta" + " " + user_2.phone_number))
+            .to match_array(user_2)
+        end
+
+        it "matches a combination of name and teleconsultation_phone_number from the same user" do
+          expect(User.search_by_name_or_phone(user_1.teleconsultation_phone_number + " " + "John"))
+            .to match_array(user_1)
+
+          expect(User.search_by_name_or_phone("Gupta" + " " + user_2.teleconsultation_phone_number))
+            .to match_array(user_2)
+        end
+
+        it "matches multiple users against multiple phone numbers" do
+          expect(User.search_by_name_or_phone("Priya Sri" + " " + user_1.phone_number))
+            .to match_array([user_1, user_2])
+
+          expect(User.search_by_name_or_phone(user_1.phone_number + " " + user_2.phone_number))
+            .to match_array([user_1, user_2])
+        end
+      end
+    end
+  end
+
+  describe "destroying email authentications" do
+    it "destroys associated email authentications and join records when destroyed" do
+      user = create(:admin)
+      email_authentication_ids = user.email_authentications.map(&:id)
+      user_authentication_ids = user.user_authentications.map(&:id)
+
+      user.destroy
+
+      expect(EmailAuthentication.exists?(id: email_authentication_ids)).to eq(false)
+      expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
+    end
+
+    it "destroys associated email authentications and join records when discarded" do
+      user = create(:admin)
+      email_authentication_ids = user.email_authentications.map(&:id)
+      user_authentication_ids = user.user_authentications.map(&:id)
+
+      user.discard
+
+      expect(EmailAuthentication.exists?(id: email_authentication_ids)).to eq(false)
+      expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
     end
   end
 end

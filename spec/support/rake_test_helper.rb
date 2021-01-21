@@ -4,7 +4,7 @@ module RakeTestHelper
   end
 
   def task_path
-    "lib/tasks/#{task_name.split(':').first}"
+    "lib/tasks/#{task_name.split(":").first}"
   end
 
   def invoke_task(name)

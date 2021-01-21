@@ -3,7 +3,7 @@ class CreateFacilityGroup < ActiveRecord::Migration[5.1]
     create_table :facility_groups, id: :uuid do |t|
       t.string :name
       t.text :description
-      t.references :organization, type: :uuid, null:false, foreign_key: true
+      t.references :organization, type: :uuid, null: false, foreign_key: true
 
       t.timestamps
     end

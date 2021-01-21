@@ -1,0 +1,24 @@
+en_BD:
+  helpers:
+    label:
+      facility:
+        name: "Name"
+        facility_type: "Facility Type *"
+        size: "Size *"
+        street_address: "House and road number"
+        village_or_colony: "Village or ward"
+        zone: "Union *"
+        district: "Upazila *"
+        state: "District *"
+        country: "Country *"
+    submit:
+      facility:
+        create: "Save facility"
+        update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "CC"
+        small: "USC"
+        medium: "UHC"
+        large: "DH and larger"

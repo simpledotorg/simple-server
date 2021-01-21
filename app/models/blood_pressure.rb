@@ -2,7 +2,7 @@ class BloodPressure < ApplicationRecord
   include Mergeable
   include Hashable
   include Observeable
-  include SQLHelpers
+  extend SQLHelpers
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at bp_date registration_facility_name user_id
     bp_systolic bp_diastolic]
@@ -31,6 +31,8 @@ class BloodPressure < ApplicationRecord
     where(arel_table[:systolic].lt(THRESHOLDS[:hypertensive][:systolic]))
       .where(arel_table[:diastolic].lt(THRESHOLDS[:hypertensive][:diastolic]))
   }
+
+  scope :for_sync, -> { with_discarded }
 
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]

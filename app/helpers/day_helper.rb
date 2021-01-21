@@ -12,6 +12,6 @@ module DayHelper
   end
 
   def doy_to_date_str(year, doy)
-    doy_to_date(year, doy).strftime('%d-%b')
+    doy_to_date(year, doy).strftime("%d-%b")
   end
 end

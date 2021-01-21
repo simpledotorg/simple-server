@@ -14,11 +14,9 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules")
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )
 Rails.application.config.assets.precompile += %w[
   common_webview.scss
-  help.js
-  help.scss
   print.scss
-  user_analytics.js
-  reports.scss
+  standalone/help.js
+  help.scss
+  standalone/user_analytics.js
   user_analytics.scss
-  legacy/user_analytics.scss
 ]

@@ -2,21 +2,24 @@ require "rails_helper"
 
 RSpec.describe Admin::FacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
+  let(:block) { create(:region, :block, name: "Block A", reparent_to: facility_group.region) }
   let(:valid_attributes) do
     attributes_for(:facility,
       facility_group_id: facility_group.id,
+      zone: block.name,
       enable_teleconsultation: false)
   end
 
   let(:invalid_attributes) do
     attributes_for(
       :facility,
+      zone: "Invalid Block",
       name: nil
     )
   end
 
   before do
-    admin = create(:admin, :supervisor, facility_group: facility_group)
+    admin = create(:admin, :manager, :with_access, resource: facility_group)
     sign_in(admin.email_authentication)
   end
 
@@ -47,7 +50,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "GET #show" do
     it "returns a success response" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       get :show, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to be_successful
     end
@@ -62,7 +65,7 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
   describe "GET #edit" do
     it "returns a success response" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       get :edit, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to be_successful
     end
@@ -88,6 +91,25 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         expect(response).to be_successful
       end
     end
+
+    context "with unauthorized teleconsult medical officers" do
+      let(:valid_facility) { create(:facility, facility_group_id: facility_group.id) }
+      let(:invalid_facility) { create(:facility) }
+      let(:valid_medical_officer) { create(:user, registration_facility: valid_facility) }
+      let(:another_valid_medical_officer) { create(:user, registration_facility: valid_facility) }
+      let(:invalid_medical_officer) { create(:user, registration_facility: invalid_facility) }
+
+      it "rejects unauthorized medical officers" do
+        post :create, params: {
+          facility: valid_attributes.merge(
+            teleconsultation_medical_officer_ids: [valid_medical_officer.id, invalid_medical_officer.id]
+          ),
+          facility_group_id: facility_group.id
+        }
+
+        expect(assigns(:facility).teleconsultation_medical_officers).to contain_exactly(valid_medical_officer)
+      end
+    end
   end
 
   describe "PUT #update" do
@@ -96,24 +118,25 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         attributes_for(:facility,
           facility_group_id: facility_group.id,
           pin: "999999",
+          zone: block.name,
           monthly_estimated_opd_load: 500).except(:id, :slug)
       end
 
       it "updates the requested facility" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         update_attributes = new_attributes
-          .merge(teleconsultation_phone_numbers_attributes:
-                                       {"0" => new_attributes[:teleconsultation_phone_numbers].first})
-          .except(:teleconsultation_phone_numbers)
+
         put :update, params: {id: facility.to_param, facility: update_attributes, facility_group_id: facility_group.id}
+
         facility.reload
+
         expect(facility.attributes.except("id", "created_at", "updated_at", "deleted_at", "slug",
-          "facility_group_name", "import", "latitude", "longitude", "organization_name"))
+          "facility_group_name", "latitude", "longitude", "organization_name"))
           .to eq new_attributes.with_indifferent_access
       end
 
       it "redirects to the facility" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         put :update, params: {id: facility.to_param, facility: valid_attributes, facility_group_id: facility_group.id}
         expect(response).to redirect_to [:admin, facility_group, facility]
       end
@@ -121,23 +144,42 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
     context "with invalid params" do
       it "returns a success response (i.e. to display the 'edit' template)" do
-        facility = Facility.create! valid_attributes
+        facility = create(:facility, valid_attributes)
         put :update, params: {id: facility.to_param, facility: invalid_attributes, facility_group_id: facility_group.id}
         expect(response).to be_successful
+      end
+    end
+
+    context "with unauthorized teleconsult medical officers" do
+      let(:valid_facility) { create(:facility, facility_group_id: facility_group.id) }
+      let(:invalid_facility) { create(:facility) }
+      let(:valid_medical_officer) { create(:user, registration_facility: valid_facility) }
+      let(:another_valid_medical_officer) { create(:user, registration_facility: valid_facility) }
+      let(:invalid_medical_officer) { create(:user, registration_facility: invalid_facility) }
+
+      it "rejects unauthorized medical officers" do
+        post :create, params: {
+          facility: valid_attributes.merge(
+            teleconsultation_medical_officer_ids: [valid_medical_officer.id, invalid_medical_officer.id]
+          ),
+          facility_group_id: facility_group.id
+        }
+
+        expect(assigns(:facility).teleconsultation_medical_officers).to contain_exactly(valid_medical_officer)
       end
     end
   end
 
   describe "DELETE #destroy" do
     it "destroys the requested facility" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       expect {
         delete :destroy, params: {id: facility.to_param, facility_group_id: facility_group.id}
       }.to change(Facility, :count).by(-1)
     end
 
     it "redirects to the facilities list" do
-      facility = Facility.create! valid_attributes
+      facility = create(:facility, valid_attributes)
       delete :destroy, params: {id: facility.to_param, facility_group_id: facility_group.id}
       expect(response).to redirect_to(admin_facilities_url)
     end
@@ -157,6 +199,11 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
     context "with valid data in file" do
       let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
 
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
+
       it "uploads facilities file and passes validations" do
         post :upload, params: {upload_facilities_file: upload_file}
         expect(flash[:notice]).to match(/File upload successful, your facilities will be created shortly./)
@@ -165,6 +212,11 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
 
     context "with invalid data in file" do
       let(:upload_file) { fixture_file_upload("files/upload_facilities_invalid_test.csv", "text/csv") }
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
 
       it "fails validations and returns a 400" do
         post :upload, params: {upload_facilities_file: upload_file}
@@ -177,6 +229,12 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
         fixture_file_upload("files/upload_facilities_test.docx",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
       end
+
+      before do
+        create(:region, :block, name: "Zone 1", reparent_to: facility_group.region)
+        create(:region, :block, name: "Zone 2", reparent_to: facility_group.region)
+      end
+
       it "uploads facilities file and fails validations" do
         post :upload, params: {upload_facilities_file: upload_file}
         expect(assigns(:errors)).to eq(["File type not supported, please upload a csv or xlsx file instead"])

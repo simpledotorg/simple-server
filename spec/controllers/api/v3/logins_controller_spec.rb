@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Api::V3::LoginsController, type: :controller do
   describe "#login_user" do
     let(:password) { "1234" }
-    let(:user) { FactoryBot.create(:user, password: password) }
+    let(:user) { create(:user, password: password) }
 
     describe "valid authentication" do
       let(:request_params) do
@@ -57,7 +57,7 @@ RSpec.describe Api::V3::LoginsController, type: :controller do
 
     describe "audit logs for login" do
       it "creates an audit log of the user login" do
-        user = FactoryBot.create(:user, password: "4041")
+        user = create(:user, password: "4041")
 
         Timecop.freeze do
           expect(AuditLogger).to receive(:info).with({user: user.id,

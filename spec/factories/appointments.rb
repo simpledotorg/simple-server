@@ -27,20 +27,20 @@ end
 
 def build_invalid_appointment_payload
   build_appointment_payload.merge(
-    'status' => nil,
-    'scheduled_date' => 'foo'
+    "status" => nil,
+    "scheduled_date" => "foo"
   )
 end
 
 def updated_appointment_payload(existing_appointment)
   update_time = 10.days.from_now
   updated_status = Appointment.statuses.keys
-                              .reject { |action| action == existing_appointment.status.to_s }
-                              .reject { |action| action == 'cancelled' }
-                              .sample
+    .reject { |action| action == existing_appointment.status.to_s }
+    .reject { |action| action == "cancelled" }
+    .sample
 
   build_appointment_payload(existing_appointment).merge(
-    'updated_at' => update_time,
-    'status' => updated_status
+    "updated_at" => update_time,
+    "status" => updated_status
   )
 end

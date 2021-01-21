@@ -40,6 +40,8 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  scope :for_sync, -> { with_discarded }
+
   def self.all_overdue
     where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))
@@ -56,15 +58,16 @@ class Appointment < ApplicationRecord
 
   def self.eligible_for_reminders(days_overdue: 3)
     overdue_by(days_overdue)
-      .includes(:patient)
-      .where(patients: {reminder_consent: "granted"})
-      .where.not(patients: {status: "dead"})
-      .includes(patient: [:phone_numbers])
-      .merge(PatientPhoneNumber.phone_type_mobile)
+      .joins(:patient)
+      .merge(Patient.contactable)
   end
 
   def days_overdue
     [0, (Date.current - scheduled_date).to_i].max
+  end
+
+  def follow_up_days
+    [0, (scheduled_date - device_created_at.to_date).to_i].max
   end
 
   def scheduled?

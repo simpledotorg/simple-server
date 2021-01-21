@@ -1,12 +1,12 @@
 class ExotelAPIService
-  BASE_PATH = 'https://api.exotel.com/v1/Accounts/'
-  RESPONSE_FORMAT = '.json'
+  BASE_PATH = "https://api.exotel.com/v1/Accounts/"
+  RESPONSE_FORMAT = ".json"
 
-  EXOTEL_TRUTHY_STRINGS = ['Yes']
+  EXOTEL_TRUTHY_STRINGS = ["Yes"]
 
   attr_reader :account_sid, :token
 
-  class ExotelAPIService::HTTPError < HTTP::Error;
+  class ExotelAPIService::HTTPError < HTTP::Error
   end
 
   def initialize(account_sid, token)
@@ -20,12 +20,12 @@ class ExotelAPIService
   end
 
   def whitelist_phone_numbers(virtual_number, phone_numbers)
-    return unless FeatureToggle.enabled?('EXOTEL_WHITELIST_API')
+    return unless FeatureToggle.enabled?("EXOTEL_WHITELIST_API")
 
     request_body = {
-      :Language => 'en',
-      :VirtualNumber => virtual_number,
-      :Number => phone_numbers.join(',')
+      Language: "en",
+      VirtualNumber: virtual_number,
+      Number: phone_numbers.join(",")
     }
 
     execute_post(whitelist_phone_numbers_url, form: request_body)
@@ -58,25 +58,21 @@ class ExotelAPIService
   end
 
   def execute_get(url)
-    begin
-      HTTP
-        .basic_auth(user: account_sid, pass: token)
-        .get(url)
-    rescue HTTP::Error => e
-      report_error(url, e)
-      raise ExotelAPIService::HTTPError
-    end
+    HTTP
+      .basic_auth(user: account_sid, pass: token)
+      .get(url)
+  rescue HTTP::Error => e
+    report_error(url, e)
+    raise ExotelAPIService::HTTPError
   end
 
   def execute_post(url, data)
-    begin
-      HTTP
-        .basic_auth(user: account_sid, pass: token)
-        .post(url, data)
-    rescue HTTP::Error => e
-      report_error(url, e)
-      raise ExotelAPIService::HTTPError
-    end
+    HTTP
+      .basic_auth(user: account_sid, pass: token)
+      .post(url, data)
+  rescue HTTP::Error => e
+    report_error(url, e)
+    raise ExotelAPIService::HTTPError
   end
 
   def parse_response(response)
@@ -91,13 +87,14 @@ class ExotelAPIService
 
   def report_error(api_path, exception)
     Raven.capture_message(
-      'Error while calling the Exotel API',
-      logger: 'logger',
+      "Error while calling the Exotel API",
+      logger: "logger",
       extra: {
         api_path: api_path,
         exception: exception.to_s
       },
-      tags: { type: 'exotel-api' })
+      tags: {type: "exotel-api"}
+    )
   end
 
   def call_details_url(call_sid)
@@ -109,10 +106,10 @@ class ExotelAPIService
   end
 
   def phone_number_details_url(phone_number)
-    URI.parse("#{base_uri}/Numbers/#{URI.encode(phone_number)}#{RESPONSE_FORMAT}")
+    URI.parse("#{base_uri}/Numbers/#{ERB::Util.url_encode(phone_number)}#{RESPONSE_FORMAT}")
   end
 
   def whitelist_details_url(phone_number)
-    URI.parse("#{base_uri}/CustomerWhitelist/#{URI.encode(phone_number)}#{RESPONSE_FORMAT}")
+    URI.parse("#{base_uri}/CustomerWhitelist/#{ERB::Util.url_encode(phone_number)}#{RESPONSE_FORMAT}")
   end
 end

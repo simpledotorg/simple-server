@@ -1,22 +1,12 @@
-<h1>Overdue patients</h1>
-<p>Patients that are overdue for a follow-up visit.</p>
-
-<%= render('shared/paginate_and_filter_by_facility',
-           form_url: appointments_path,
-           current_admin: current_admin,
-           facility_id: @facility_id,
-           per_page: @per_page,
-           form_id: "search-filters",
-           scope_namespace: [:overdue_list, Facility]) %>
-
 <% if @patient_summaries.present? %>
-  <h2>Patient list</h2>
+  <h2>
+    Patient list
+  </h2>
   <% call_result_options = {
-      'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
-      'No response' => [['Remind to call later', 'remind_to_call_later']],
-      'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
+    'Patient responded' => [['Agreed to visit', 'agreed_to_visit'], ['Patient has already visited', 'patient_has_already_visited']],
+    'No response' => [['Remind to call later', 'remind_to_call_later']],
+    'Remove from overdue list' => Appointment.cancel_reasons.map { |key, value| [key.humanize, value] }
   } %>
-
   <% @patient_summaries.each do |patient_summary| %>
     <%= render('overdue_patient_card',
                patient_summary: patient_summary,
@@ -25,8 +15,9 @@
   <% end %>
 <% else %>
   <div class="card" title="no overdue patient">
-    <p class="no-results">No overdue patients found</p>
+    <p class="no-results">
+      No overdue patients found
+    </p>
   </div>
 <% end %>
-
 <%= paginate @patient_summaries %>

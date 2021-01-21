@@ -15,7 +15,7 @@
     "version": "v4",
     "title": "Simple Server",
     "x-logo": {
-      "url": "/assets/rtsl_logo-d7e4808e72f6d12641fd4a4f64669ed76d32170cd7a1e7fb9206ef7d1ba413c9.png",
+      "url": "/assets/rtsl_logo-90ad9b477469fd15ef3b36063601e9857417cb3e336d8408226260297fa4fed9.png",
       "backgroundColor": "#FFFFFF"
     },
     "contact": {
@@ -50,14 +50,12 @@
           {
             "name": "HTTP_X_USER_ID",
             "in": "header",
-            "type": "uuid",
-            "document": false
+            "type": "uuid"
           },
           {
             "name": "HTTP_X_FACILITY_ID",
             "in": "header",
-            "type": "uuid",
-            "description": "potato"
+            "type": "uuid"
           },
           {
             "name": "blood_sugars",
@@ -347,6 +345,111 @@
           },
           "401": {
             "description": "Invalid patient ID header"
+          }
+        }
+      }
+    },
+    "/facility_medical_officers/sync": {
+      "get": {
+        "summary": "Syncs Teleconsultation MOs data from server to device.",
+        "tags": [
+          "Teleconsult MOs"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "facility teleconsult MOs received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "facility_medical_officers": {
+                  "$ref": "#/definitions/facility_medical_officers"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
+    "/teleconsultations/sync": {
+      "post": {
+        "summary": "Syncs Teleconsultations from device to server.",
+        "tags": [
+          "Teleconsultations"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "teleconsultations",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "teleconsultations": {
+                  "$ref": "#/definitions/teleconsultations"
+                }
+              },
+              "required": [
+                "teleconsultations"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "teleconsultations created"
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -1135,6 +1238,21 @@
             "string",
             "null"
           ]
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "can_teleconsult": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            }
+          }
+        },
+        "teleconsultation_phone_number": {
+          "$ref": "#/definitions/non_empty_string"
         }
       },
       "required": [
@@ -1178,6 +1296,181 @@
         "id",
         "password"
       ]
+    },
+    "app_user_capabilities": {
+      "type": "object",
+      "properties": {
+        "can_teleconsult": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no"
+          ]
+        }
+      }
+    },
+    "medical_officer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "full_name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "teleconsultation_phone_number": {
+          "$ref": "#/definitions/non_empty_string"
+        }
+      }
+    },
+    "facility_medical_officer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "facility_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "medical_officers": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "full_name": {
+                "$ref": "#/definitions/non_empty_string"
+              },
+              "teleconsultation_phone_number": {
+                "$ref": "#/definitions/non_empty_string"
+              }
+            }
+          }
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      }
+    },
+    "facility_medical_officers": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/facility_medical_officer"
+      }
+    },
+    "teleconsultation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "medical_officer_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "request": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "requester_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "facility_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "requested_at": {
+              "$ref": "#/definitions/timestamp"
+            },
+            "requester_completion_status": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "yes",
+                "no",
+                "waiting",
+                null
+              ]
+            }
+          }
+        },
+        "record": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "recorded_at": {
+              "$ref": "#/definitions/timestamp"
+            },
+            "teleconsultation_type": {
+              "type": "string",
+              "enum": [
+                "audio",
+                "video",
+                "message"
+              ]
+            },
+            "patient_took_medicines": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "patient_consented": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "medical_officer_number": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      }
+    },
+    "teleconsultations": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/teleconsultation"
+      }
     }
   },
   "securityDefinitions": {

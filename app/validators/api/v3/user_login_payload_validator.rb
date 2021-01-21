@@ -1,5 +1,4 @@
 class Api::V3::UserLoginPayloadValidator < Api::V3::PayloadValidator
-
   attr_accessor(
     :phone_number,
     :password,

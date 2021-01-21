@@ -1,36 +1,9 @@
-$accent-color: #FF3355; /* PINK */
-
-$red-dark: #B81631;
-$red: #FF3355;
-$red-light: #FFD6DD;
-$yellow-dark: #E0B000;
-$yellow: #FFC800;
-
-$offwhite: #f8f9fa;
-
-$grey-lightest: #F0F2F5;
-$grey-light: #dce4e8;
-$grey-mid: #ADB2B8;
-$grey-dark: #6C737A;
-$grey-darkest: #2F363D;
-
-$highlight: #E9F3FF; /* LIGHT BLUE */
-$blue: #0075EB;
-$blue-mid: #9db8d2;
-$blue-light: #E9F3FF;
-$blue-dark: #0c3966;
-$green-light: #E0FFED;
-$green-mid: #5CFF9D;
-$green: #00B849;
-$green-dark: #007A31;
-
-$font-condensed: 'Roboto Condensed', sans-serif;
-$font-small: 11px;
-
-/********/
+// Universal variables
+@import "partials/variables";
 
 // Third-party imports
 @import "bootstrap";
+@import 'bootstrap-select';
 @import "tablesort/tablesort";
 
 // Local imports
@@ -41,12 +14,19 @@ $font-small: 11px;
 @import "partials/resources";
 @import "partials/snapshots";
 @import "partials/search";
+@import "partials/spacing";
+@import "partials/typeahead_search";
+@import "partials/reports";
+@import "partials/admin/access_tree";
+@import "partials/admin/form";
+@import "partials/admin/index";
+@import "partials/admin/show";
 
 body {
-    padding-top: 5rem;
     font-size: 15px;
     font-family: $font-condensed;
     background: $grey-lightest;
+    overflow: scroll;
 }
 
 h1, h1.btn {
@@ -131,11 +111,13 @@ nav.secondary-nav a.active {
 }
 
 .secondary-nav-filters {
+    margin-bottom: 32px;
+
     .dropdown-toggle {
         width: 100%;
         border-top: 1px solid $grey-light;
         text-align: left;
-        padding: 8px 16px 8px 16px;
+        padding: 8px 16px;
     }
 
     h4 {
@@ -185,6 +167,7 @@ nav.secondary-nav a.active {
 
 .tooltip-inner {
     font-family: $font-condensed;
+    padding: 6px 8px;
 }
 
 #app-footer {
@@ -227,7 +210,6 @@ nav.secondary-nav a.active {
 }
 
 section {
-    margin-top: 1em;
     margin-bottom: 1em;
 }
 
@@ -250,12 +232,50 @@ footer {
     color: $grey-light  ;
 }
 
-@include media-breakpoint-down(md) {
-    body {
-        padding-top: 4.5rem;
-    }
+.navbar.fixed-top {
+  position: sticky;
+}
+
+.sub-nav {
+  padding-bottom: 16px;
+  line-height: 1;
+  margin-top: -32px !important;
+  
+  .container {
+    margin-bottom: 36px;
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+}
+
+.sub-nav-link {
+  display: inline-block;
+  padding: 18px 0;
+  margin-right: 16px;
+  font-size: 16px;
+  color: $grey-darkest;
+  text-decoration: none !important;
+  
+  &:hover {
+    border-bottom: 2px solid black;
+    color: $grey-dark;
+  }
+  
+  &.active {
+    border-bottom: 2px solid $red;
+    color: $red;
+    font-weight: bold;
+  }
+}
+
+.navbar .nav-item.active a,
+.navbar .nav-item a.active {
+    font-weight: bold;
+}
+
+@include media-breakpoint-down(lg) {
     main.container {
-        margin: 0 !important;
+        margin: 16px 0 0 0 !important;
     }
     div.container {
         margin: 0 !important;
@@ -267,13 +287,10 @@ footer {
     .desktop {
         display: none;
     }
-    .navbar {
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        border-bottom: 1px solid rgba(0,0,0,0.07);
-    }
+    
     button.navbar-toggler {
         font-size: 15px;
-        padding: 8px 20px;
+        padding: 8px 16px;
     }
     .dropdown-item {
         font-size: 14px;
@@ -281,22 +298,61 @@ footer {
     h1 {
         font-size: 28px;
     }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 18px;
+    }
 }
 
-@include media-breakpoint-up(md) {
+@include media-breakpoint-down(md) {
+    .navbar {
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      
+      #navbarNav, 
+      .navbar-nav {
+        display: inline;
+      }
+      
+      .nav-item,
+      .nav-link {
+        display: inline-block;
+      }
+      
+      .nav-link {
+        padding: 6px 10px 6px 0;
+      }
+      
+      .nav-item .dropdown-menu {
+        position: fixed;
+        top: 58px;
+        left: 0;
+        width: 92%;
+        left: 4%;
+        box-shadow: 0 0 0 10px rgba(0,0,0,0.5);
+      }
+    }
+    
+    .sub-nav {
+      margin: -16px -16px 0 -16px !important;
+      line-height: 1.4;
+      
+      .container {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+      }
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    main.container {
+        margin-top: 32px !important;
+    }
+        
     .container div.container {
         margin: 0 !important;
         padding: 0 !important;
     }
     .navbar {
         border-bottom: 1px solid rgba(0,0,0,0.07);
-    }
-    .navbar-nav li > a.active {
-        color: #000;
-    }
-    .navbar .nav-link,
-    .dropdown-item {
-        font-size: 15px;
     }
     .table-compact .row-title a {
         width: 100% !important;
@@ -306,6 +362,32 @@ footer {
     .col-lg-3 .dropdown .btn {
         width: 100%;
     }
+    .navbar .nav-link,
+    .dropdown-item {
+        font-size: 18px;
+        margin-right: 6px;
+    }
+    .sub-nav-link {
+      padding: 18px 0 10px 0;
+      margin-bottom: 16px;
+    }
+}
+
+h6.dropdown-header {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 1em;
+    font-size: 75%;
+}
+
+.main-menu-icon {
+    min-width: 3em;
+    text-align: center;
+    color: $blue;
+}
+
+.dropdown .active i {
+  color: #fff;
 }
 
 .light {
@@ -439,7 +521,7 @@ span.inactive {
   @extend .text-muted;
   @extend .small;
 
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(lg) {
     display: none;
   }
 }
@@ -471,7 +553,7 @@ span.inactive {
     border: none;
     background: #fff;
     margin: 8px 0 16px 0;
-    padding: 16px;
+    padding: 20px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     position: relative;
 }
@@ -484,7 +566,7 @@ span.inactive {
 
 
 .card-footer {
-    margin: 0 -16px -16px -16px;
+    margin: 0 -20px -20px -20px;
     background: $offwhite;
 }
 
@@ -510,30 +592,9 @@ span.inactive {
     }
 }
 
-/*****************
-Subnav
-*****************/
-
-.sub-nav {
-    margin: -24px 0 32px 0;
-    line-height: 1;
-    border-bottom: 1px solid $grey-lightest;
-}
-
 .user-row .event,
 .user-row .event a {
     color: $grey-dark;
-}
-
-@include media-breakpoint-down(sm) {
-    #navbars-menu {
-        margin-top: 8px;
-            .nav-link {
-                border-top: 1px solid $grey-lightest;
-                padding: 16px 0;
-                font-size: 16px;
-        }
-    }
 }
 
 .filter-tags:not(:empty) {

@@ -2,29 +2,24 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   before_action :verify_params, only: [:create]
   helper_method :current_admin
 
+  rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
+
   def new
-    authorize([:manage, :admin, current_admin])
+    raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
     super
   end
 
   def create
-    user = User.new(user_params)
-    authorize([:manage, :admin, user])
+    raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
 
     User.transaction do
+      new_user = User.new(user_params)
+
       super do |resource|
-        user.email_authentications = [resource]
-        user.save!
+        new_user.email_authentications = [resource]
+        new_user.save!
 
-        next if permission_params.blank?
-
-        permission_params.each do |attributes|
-          user.user_permissions.create!(attributes.permit(
-            :permission_slug,
-            :resource_id,
-            :resource_type
-          ))
-        end
+        current_admin.grant_access(new_user, selected_facilities)
       end
     end
   end
@@ -35,22 +30,22 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     user = User.new(user_params)
     email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
 
-    unless user.valid? && email_authentication.valid?
+    if validate_selected_facilities?
+      flash[:alert] = "At least one facility should be selected for access before inviting an Admin."
+      render :new, status: :bad_request
+
+      return
+    end
+
+    if user.invalid? || email_authentication.invalid?
       user.errors.delete(:email_authentications)
-      render json: {errors: user.errors.full_messages + email_authentication.errors.full_messages},
-             status: :bad_request
+      flash[:alert] = (user.errors.full_messages + email_authentication.errors.full_messages).join("\n")
+      render :new, status: :bad_request
     end
   end
 
-  def user_param_errors
-    user = User.new(user_params)
-    return user.errors.full_messages if user.invalid?
-
-    []
-  end
-
   def current_admin
-    current_inviter.user
+    AdminAccessPresenter.new(current_inviter.user)
   end
 
   def pundit_user
@@ -58,12 +53,19 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
   end
 
   def user_params
-    {full_name: params[:full_name],
-     role: params[:role],
-     organization_id: params[:organization_id],
-     device_created_at: Time.current,
-     device_updated_at: Time.current,
-     sync_approval_status: :denied}
+    {
+      full_name: params[:full_name],
+      role: params[:role],
+      access_level: params[:access_level],
+      organization_id: params[:organization_id],
+      device_created_at: Time.current,
+      device_updated_at: Time.current,
+      sync_approval_status: :denied
+    }
+  end
+
+  def selected_facilities
+    params[:facilities]
   end
 
   def permission_params
@@ -76,5 +78,14 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def temporary_password
     SecureRandom.base64(16)
+  end
+
+  def validate_selected_facilities?
+    selected_facilities.blank? && user_params[:access_level] != User.access_levels[:power_user]
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
   end
 end

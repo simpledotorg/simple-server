@@ -63,6 +63,9 @@
     "EMAIL_SUBJECT_PREFIX": {
       "value": "[REVIEW]"
     },
+    "ENABLE_AUTO_APPROVE_USER_FOR_QA" : {
+      "value": "true"
+    },
     "ENABLE_CACHED_QUERIES_FOR_DASHBOARD": {
       "value": "true"
     },
@@ -74,6 +77,9 @@
     },
     "ENABLE_EXOTEL_WHITELIST_API": {
       "value": "false"
+    },
+    "ENABLE_FIXED_OTP_ON_REQUEST_FOR_QA" : {
+      "value": "true"
     },
     "ENABLE_GENERATE_ENCOUNTER_ID_ENDPOINT": {
       "value": "true"
@@ -138,17 +144,17 @@
     "HELP_SCREEN_YOUTUBE_VIDEO_URL": {
       "value": "https://youtu.be/zthrk6XfpjQ"
     },
+    "HELP_SCREEN_YOUTUBE_TRAINING_URL": {
+      "value": "https://youtu.be/MC_45DoRw2g"
+    },
     "IHCI_ORGANIZATION_UUID": {
       "value": "89008920-021e-4116-b74c-8edf86180dd6"
     },
     "LANG": {
       "value": "en_US.UTF-8"
     },
-    "NEW_RELIC_APP_NAME": {
-      "value": "Simple Server (Review)"
-    },
     "OWNER_EMAILS": {
-      "value": "Govind <govind@simple.org>, Srihari <srihari@simple.org>, Tim <tcheadle@resolvetosavelives.org>, Daniel <dburka@resolvetosavelives.org>, Deepa <deepa@simple.org>, Akshay <akshay@uncommon.is>"
+      "value": "Test Owner <test.owner@example.com>"
     },
     "PROGRAM_INCEPTION_DATE": {
       "value": "2018-01-01"
@@ -171,6 +177,12 @@
     "RAILS_SERVE_STATIC_FILES": {
       "value": "enabled"
     },
+    "SEED_GENERATED_ACTIVE_USER_ROLE": {
+      "value": "Seed User | Active"
+    },
+    "SEED_GENERATED_INACTIVE_USER_ROLE": {
+      "value": "Seed User | Inactive"
+    },
     "SENTRY_CURRENT_ENV": {
       "value": "review"
     },
@@ -178,10 +190,10 @@
       "value": "review"
     },
     "SIDEKIQ_CONCURRENCY": {
-      "value": "15"
+      "value": "2"
     },
     "SIDEKIQ_REDIS_POOL_SIZE": {
-      "value": "20"
+      "value": "4"
     },
     "SIMPLE_SERVER_DATABASE_HOST": {
       "value": "invalid"
@@ -205,7 +217,7 @@
       "value": "https"
     },
     "SUPERVISOR_EMAILS": {
-      "value": "Dr. Bidisha Sumu <bidishasumu@gmail.com>, Dr. Capt. Ruchi Mehrotra <cvhogurdaspur@ihmi.in>"
+      "value": "Test Supervisor <test.supervisor@example.com>"
     },
     "USER_OTP_VALID_UNTIL_DELTA_IN_MINUTES": {
       "value": "360"

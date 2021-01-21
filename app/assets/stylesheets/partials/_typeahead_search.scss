@@ -1,0 +1,49 @@
+.typeahead {
+  position: relative;
+
+  &-dropdown {
+    @extend .card;
+    @extend .shadow;
+    position: absolute !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    top: 42px;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+
+    &-row {
+      padding: 12px;
+      border-bottom: 1px solid $grey-light;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    &-row:hover {
+      color: #000;
+      background: $grey-lightest;
+    }
+  }
+
+  .regions {
+    max-height: 425px;
+  }
+
+  &-spinner {
+    display: none;
+    padding: 50px;
+    text-align: center;
+    border-radius: 5px;
+    height: 150px;
+  }
+
+  &-input {
+    border-top-right-radius: 0.25rem !important;
+    border-bottom-right-radius: 0.25rem !important;
+  }
+}
+
+.typeahead .typeahead-input:focus + div { display: flex; }
+.typeahead .typeahead-dropdown:hover { display: flex; }

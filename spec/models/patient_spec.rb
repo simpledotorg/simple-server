@@ -7,6 +7,17 @@ describe Patient, type: :model do
     expect(described_class::GENDERS).to eq(Rails.application.config.country[:supported_genders])
   end
 
+  describe "factory fixtures" do
+    it "can create a valid patient" do
+      expect {
+        patient = create(:patient)
+        expect(patient).to be_valid
+      }.to change { Patient.count }.by(1)
+        .and change { PatientBusinessIdentifier.count }.by(1)
+        .and change { MedicalHistory.count }.by(1)
+    end
+  end
+
   describe "Associations" do
     it { is_expected.to have_one(:medical_history) }
 
@@ -20,6 +31,7 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:facilities).through(:blood_pressures) }
     it { is_expected.to have_many(:users).through(:blood_pressures) }
     it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_many(:teleconsultations) }
 
     it { is_expected.to have_many(:encounters) }
     it { is_expected.to have_many(:observations).through(:encounters) }
@@ -71,6 +83,20 @@ describe Patient, type: :model do
       patient.date_of_birth = 3.days.from_now
       expect(patient).to be_invalid
     end
+
+    it "validates status" do
+      patient = Patient.new
+
+      # valid statuses should not cause problems
+      patient.status = "active"
+      patient.status = "dead"
+      patient.status = "migrated"
+      patient.status = "unresponsive"
+      patient.status = "inactive"
+
+      # invalid statuses should raise errors
+      expect { patient.status = "something else" }.to raise_error(ArgumentError)
+    end
   end
 
   describe "Behavior" do
@@ -89,8 +115,16 @@ describe Patient, type: :model do
 
     describe ".with_hypertension" do
       it "only includes patients with diagnosis of hypertension" do
-        htn_patients = create_list(:patient, 2)
-        _non_htn_patient = create(:patient, :without_hypertension)
+        htn_patients = [
+          create(:patient),
+          create(:patient).tap { |patient| create(:medical_history, :hypertension_yes, patient: patient) }
+        ]
+
+        _non_htn_patients = [
+          create(:patient, :without_hypertension),
+          create(:patient).tap { |patient| patient.medical_history.discard },
+          create(:patient).tap { |patient| patient.medical_history.destroy }
+        ]
 
         expect(Patient.with_hypertension).to match_array(htn_patients)
       end
@@ -170,6 +204,14 @@ describe Patient, type: :model do
                                     [second_follow_up_date, current_facility.id] => 1,
                                     [second_follow_up_date, follow_up_facility.id] => 0})
           end
+
+          it "can be filtered by region" do
+            expect(Patient
+                     .follow_ups_by_period(:day, at_region: current_facility)
+                     .group("encounters.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 2,
+                                    [second_follow_up_date, current_facility.id] => 1})
+          end
         end
 
         context "by month" do
@@ -185,6 +227,13 @@ describe Patient, type: :model do
                      .group("encounters.facility_id")
                      .count).to eq({[first_follow_up_date, current_facility.id] => 2,
                                     [first_follow_up_date, follow_up_facility.id] => 1})
+          end
+
+          it "can be filtered by facility" do
+            expect(Patient
+                     .follow_ups_by_period(:month, at_region: current_facility)
+                     .group("encounters.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 2})
           end
         end
       end
@@ -239,6 +288,14 @@ describe Patient, type: :model do
                                     [second_follow_up_date, current_facility.id] => 1,
                                     [second_follow_up_date, follow_up_facility.id] => 0})
           end
+
+          it "can be filtered by region" do
+            expect(Patient
+                     .hypertension_follow_ups_by_period(:day, at_region: current_facility)
+                     .group("blood_pressures.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 1,
+                                    [second_follow_up_date, current_facility.id] => 1})
+          end
         end
 
         context "by month" do
@@ -254,6 +311,13 @@ describe Patient, type: :model do
                      .group("blood_pressures.facility_id")
                      .count).to eq({[first_follow_up_date, current_facility.id] => 1,
                                     [first_follow_up_date, follow_up_facility.id] => 1})
+          end
+
+          it "can be filtered by region" do
+            expect(Patient
+                     .hypertension_follow_ups_by_period(:month, at_region: current_facility)
+                     .group("blood_pressures.facility_id")
+                     .count).to eq({[first_follow_up_date, current_facility.id] => 1})
           end
         end
       end
@@ -279,6 +343,22 @@ describe Patient, type: :model do
 
       it "excludes patients who could not be contacted" do
         expect(Patient.not_contacted).not_to include(patient_could_not_be_contacted)
+      end
+    end
+
+    describe ".for_sync" do
+      it "includes discarded patients" do
+        discarded_patient = create(:patient, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_patient)
+      end
+
+      it "includes nested sync resources" do
+        _discarded_patient = create(:patient, deleted_at: Time.now)
+
+        expect(described_class.for_sync.first.association(:address).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:phone_numbers).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:business_identifiers).loaded?).to eq true
       end
     end
   end
@@ -412,6 +492,22 @@ describe Patient, type: :model do
         _number_3 = create(:patient_phone_number, phone_type: :invalid, patient: patient)
 
         expect(patient.reload.latest_mobile_number).to eq(number_1.number)
+      end
+    end
+
+    describe "#prescribed_drugs" do
+      let!(:date) { Date.parse "01-01-2020" }
+
+      it "returns the prescribed drugs for a patient as of a date" do
+        dbl = double("patient.prescribed_as_of")
+        allow(patient.prescription_drugs).to receive(:prescribed_as_of).and_return dbl
+
+        expect(patient.prescribed_drugs(date: date)).to be dbl
+      end
+
+      it "defaults to current date when no date is passed" do
+        expect(patient.prescription_drugs).to receive(:prescribed_as_of).with(Date.current)
+        patient.prescribed_drugs
       end
     end
   end

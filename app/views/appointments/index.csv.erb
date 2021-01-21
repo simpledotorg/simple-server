@@ -1,35 +1,37 @@
-<%= [
-  "Report generated at:",
-  Time.current
-].to_csv -%>
-<%= [
-  "Patient name",
-  "Gender",
-  "Age",
-  "Days overdue",
-  "Registration date",
-  "Last BP",
-  "Last BP taken at",
-  "Last BP date",
-  "Risk level",
-  "Patient address",
-  "Patient village or colony",
-  "Patient phone"
-].to_csv -%>
-<% @patient_summaries.each do |patient_summary| %>
-  <%= [
-    patient_summary.full_name,
-    patient_summary.gender.capitalize,
-    patient_summary.current_age.to_i,
-    patient_summary.days_overdue.to_i,
-    handle_impossible_registration_date(patient_summary.recorded_at),
-    "#{patient_summary.latest_blood_pressure_systolic}/#{patient_summary.latest_blood_pressure_diastolic}",
-    patient_summary.latest_blood_pressure_facility_name,
-    display_date(patient_summary.latest_blood_pressure_recorded_at),
-    ('High' if patient_summary.risk_level > 0),
-    patient_summary.street_address,
-    patient_summary.village_or_colony,
-    patient_summary.latest_phone_number,
-    "Patient Summary"
-  ].to_csv -%>
-<% end %>
+<% csv = CSV.generate do |csv| %>
+  <% csv << [
+    "Report generated at:",
+    Time.current
+  ] %>
+  <% csv << [
+    "Patient name",
+    "Gender",
+    "Age",
+    "Days overdue",
+    "Registration date",
+    "Last BP",
+    "Last BP taken at",
+    "Last BP date",
+    "Risk level",
+    "Patient address",
+    "Patient village or colony",
+    "Patient phone"
+  ] %>
+  <% @patient_summaries.each do |patient_summary| %>
+    <% csv << [
+      patient_summary.full_name,
+      patient_summary.gender.capitalize,
+      patient_summary.current_age.to_i,
+      patient_summary.days_overdue.to_i,
+      handle_impossible_registration_date(patient_summary.recorded_at),
+      "#{patient_summary.latest_blood_pressure_systolic}/#{patient_summary.latest_blood_pressure_diastolic}",
+      patient_summary.latest_blood_pressure_facility_name,
+      display_date(patient_summary.latest_blood_pressure_recorded_at),
+      ('High' if patient_summary.risk_level > 0),
+      patient_summary.street_address,
+      patient_summary.village_or_colony,
+      patient_summary.latest_phone_number
+    ] %>
+  <% end %>
+<% end.html_safe %>
+<%= csv %>

@@ -3,411 +3,407 @@ Dashboard UI
 *****************/
 
 .dashboard h1 {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .dashboard-description {
-    font-size: 12px;
-    margin: 8px 0;
-    line-height: 1.3;
+  font-size: 12px;
+  margin: 8px 0;
+  line-height: 1.3;
 }
 
 .featured {
-    clear: both;
-    position: relative;
-    width: 100%;
-    border-radius: 5px;
-    padding: 16px;
-    margin: 8px -4px 0 -4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    background: #fff;
+  clear: both;
+  position: relative;
+  width: 100%;
+  border-radius: 5px;
+  padding: 16px;
+  margin: 8px -4px 0 -4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background: #fff;
 }
 
 sup {
-    font-size: 9px;
-    font-weight: normal;
-    padding-left: 3px;
-    color: $grey-dark;
+  font-size: 9px;
+  font-weight: normal;
+  padding-left: 3px;
+  color: $grey-dark;
 }
 
 .link-row {
-    display: block;
-    padding: 8px 0;
-    border-top: 1px solid $grey-lightest;
-    position: relative;
+  display: block;
+  padding: 8px 0;
+  border-top: 1px solid $grey-lightest;
+  position: relative;
 
-    i {
-        position: absolute;
-        top: 10px;
-        right: 8px;
-        font-size: 120%;
-        color: $grey-light;
-
-    }
+  i {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    font-size: 120%;
+    color: $grey-light;
+  }
 }
 
 .checkbox-row {
-    label {
-        display: block;
-        padding: 6px 0 0 0;
-        font-weight: normal;
-        border-top: 1px solid $grey-lightest;
-    }
-    input {
-        margin-right: 4px;
-    }
+  label {
+    display: block;
+    padding: 6px 0 0 0;
+    font-weight: normal;
+    border-top: 1px solid $grey-lightest;
+  }
+  input {
+    margin-right: 4px;
+  }
 }
 
 th sup {
-    padding-left: 0;
+  padding-left: 0;
 }
 
 .downloads {
-    margin: 32px 0;
+  margin: 32px 0;
 }
 
 .downloads h4 {
-    color: $grey-mid;
+  color: $grey-mid;
 }
 
 .downloads {
-    margin: 32px 0;
+  margin: 32px 0;
 }
 
 .downloads h4 {
-    color: $grey-mid;
+  color: $grey-mid;
 }
 
 .no-results {
-    text-align: center;
-    margin: 5em 0;
+  text-align: center;
+  margin: 5em 0;
 }
 
 .table-compact {
-    clear: both;
+  clear: both;
 
-    tr.sorts {
+  tr.sorts {
+    a, .sort-label {
+      background: $grey-lightest;
+      color: $blue;
+      height: 100%;
+      padding: 16px 12px;
+      vertical-align: top;
+      text-align: left;
+      margin: 0;
+      word-break: break-word;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 14px;
 
-        a, .sort-label {
-            background: $grey-lightest;
-            color: $blue;
-            height: 100%;
-            padding: 16px 8px;
-            vertical-align: middle;
-            text-align: left;
-            margin: 0;
-            word-break: break-word;
-            text-transform: none;
-            letter-spacing: 0;
-            font-size: 14px;
+      i {
+        margin-left: 4px;
+        opacity: 0.3;
+      }
+    }
 
-            i {
-                margin-left: 4px;
-                opacity: 0.3;
-            }
-        }
+    [aria-sort] {
+      background: $blue;
+      color: #fff;
+    }
 
-        [aria-sort] {
-            background: $blue;
-            color: #fff;
-        }
+    th[role="columnheader"]:not(.no-sort)::after {
+      content: "⇣";
+      border: none;
+      background: none;
+      font-weight: bold;
+    }
 
-        th[role="columnheader"]:not(.no-sort)::after {
-            content: "⇣";
-            border: none;
-            background: none;
-            font-weight: bold;
-        }
+    th[aria-sort="ascending"]:not(.no-sort)::after {
+      content: "⇡";
+    }
 
-        th[aria-sort="ascending"]:not(.no-sort)::after {
-            content: "⇡";
-        }
+    th.sort-label {
+      border-left: 1px solid #C9D3D8;
+    }
 
-        th.sort-label {
-            border-left: 1px solid #C9D3D8;
-        }
+    th.sort-label:first-of-type {
+      border: none !important;
+    }
 
-        th.sort-label:first-of-type {
-            border: none !important;
-        }
+    th.sort-label.sort-label-small {
+      padding: 8px;
+      min-width: 40px;
+    }
 
-        th.sort-label.sort-label-small {
-          padding: 8px 4px;
-          min-width: 40px;
-        }
+    a {
+      display: block;
+      white-space: nowrap;
+    }
 
-        a {
-            display: block;
-            white-space: nowrap;
-        }
+    a:hover {
+      background: $grey-light;
+    }
 
-        a:hover {
-            background: $grey-light;
-        }
+    a.current {
+      background: $blue;
+      color: #fff;
 
-        a.current {
-            background: $blue;
-            color: #fff;
+      i {
+        opacity: 1;
+      }
+    }
+  }
 
-            i {
-                opacity: 1;
-            }
-        }
+  th {
+    vertical-align: middle;
+    padding: 4px 8px 8px 8px;
+    font-size: 11px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-top: none !important;
+    border-bottom: none !important;
+
+    span {
+      white-space: nowrap;
+    }
+  }
+
+  td {
+    padding: 8px;
+    vertical-align: middle;
+    border-top: 1px solid $grey-lightest;
+    font-size: 14px;
+
+    a {
+      display: block;
+      white-space: nowrap;
+      max-width: 14em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  col { border-left: 1px solid $grey-lightest; }
+  col:first-of-type { border-left: none; }
+  col.table-divider { border-left: 1px solid $grey-mid; }
+
+  td.type-grade {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  td.grade-a { color: $green-dark }
+  td.grade-b { color: $yellow-dark }
+  td.grade-c { color: $orange-dark }
+  td.grade-d { color: $red }
+
+  td.type-number {
+    text-align: right;
+    padding-right: 16px;
+  }
+
+  td.type-percent {
+    text-align: center;
+  }
+
+  td.type-percent em {
+    font-style: normal;
+    background: #F1DBFF;
+    color: #BE72E3;
+    border-radius: 100px;
+    padding: 2px;
+    width: 3em;
+    display: inline-block;
+  }
+
+  .row-total td.type-percent em {
+    background: rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.6);
+  }
+}
+
+@include media-breakpoint-down(lg) {
+  .card-responsive {
+    overflow: hidden;
+
+    .dropdown-menu {
+      max-height: 350px;
+      overflow:
+      hidden;
+      overflow: scroll;
+    }
+
+    table {
+      margin-right: -20px !important;
+      width: auto;
     }
 
     th {
-        vertical-align: middle;
-        padding: 4px 8px 8px 8px;
-        font-size: 11px;
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        border-top: none !important;
-        border-bottom: none !important;
-
-        span {
-            white-space: nowrap;
-        }
+      white-space: nowrap;
     }
-
-    td {
-        padding: 8px;
-        vertical-align: middle;
-        border-top: 1px solid $grey-lightest;
-        font-size: 14px;
-
-        a {
-            display: block;
-            white-space: nowrap;
-            max-width: 14em;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-    }
-
-    col {
-        border-left: 1px solid $grey-lightest;
-    }
-
-    col:first-of-type {
-        border-left: none;
-    }
-
-    col.table-divider {
-        border-left: 1px solid $grey-mid;
-    }
-
-    td.type-rank {
-      text-align: right;
-    }
-
-    td.type-number {
-      text-align: right;
-      padding-right: 16px;
-    }
-
-    td.type-percent {
-      text-align: center;
-    }
-
-    td.type-percent em {
-      font-style: normal;
-      background: #F1DBFF;
-      color: #BE72E3;
-      border-radius: 100px;
-      padding: 2px;
-      width: 3.5em;
-      display: block;
-    }
-
-    .row-total td.type-percent em {
-      background: rgba(0,0,0,0.1);
-      color: rgba(0,0,0,0.6);
-    }
-
-    td.type-rank i {
-      margin-left: 0.5em;
-      color: $green;
-    }
-
-    td.type-rank i.fa-long-arrow-alt-down {
-      color: $red;
-    }
-}
-
-@include media-breakpoint-down(md) {
-    .card-responsive {
-        padding: 1em 0 1em 1em;
-        margin: 0 -1em;
-        border-radius: 0;
-    }
-    .table-compact td a {
-        max-width: 10em;
-    }
+  }
+  .table-compact td a {
+    max-width: 10em;
+  }
 }
 
 .table-compact th:first-child,
 .table-compact td:first-child {
-    border-left: none;
+  border-left: none;
 }
 
 .table-compact .text-small td {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .table-compact td.text-right {
-    padding-right: 2em;
+  padding-right: 2em;
 }
 
 .table-compact .row-month {
-    border-left: 1px solid $grey-lightest;
+  border-left: 1px solid $grey-lightest;
 }
 
 .table-compact .date-row td {
-    border-top-color: $grey-light;
+  border-top-color: $grey-light;
 }
 
 .row-spacer {
-    border-right: 1px solid $grey-lightest;
+  border-right: 1px solid $grey-lightest;
 }
 
 .table-compact .row-control {
-    text-align: center;
+  text-align: center;
 }
 
 .table-compact .row-total td {
-    background: #FFFAE3;
-    font-weight: bold;
-    border-color: #E2DBBB;
+  background: #FFFAE3;
+  font-weight: bold;
+  border-color: #E2DBBB;
 }
 
 .split-bars {
-    font-family: $font-condensed;
+  font-family: $font-condensed;
+  height: 40px;
+}
+
+.split-bars table {
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .split-bars td {
-    text-align: center;
-    line-height: 1.7; /* Sets height of bar */
+  text-align: center;
+  line-height: 1.7; /* Sets height of bar */
 }
 
 .split-bars .bar {
-    background: #ddd;
-    vertical-align: middle;
-    padding: 4px 8px;
-    font-size: 110%;
-    position: relative;
-    white-space: nowrap;
+  background: #ddd;
+  vertical-align: middle;
+  padding: 4px 8px;
+  font-size: 110%;
+  position: relative;
+  white-space: nowrap;
 }
 
 .split-bars .bar-none { background: $grey-light; color: $grey-dark; border-radius: 3px; }
 .split-bars .bar-1 { background: $grey-mid; color: $grey-darkest; border-radius: 3px 0 0 3px; }
 .split-bars .bar-2 { background: $red; color: #fff; }
-.split-bars .bar-3 { background: $green-mid; border-radius: 0 3px 3px 0; color: $green-dark; }
+.split-bars .bar-3 { background: $green-dark; border-radius: 0 3px 3px 0; color: $white; }
 
 .split-row-first .split-bars .bar {
-    background-image: asset-url("diagonal-stripe.png");
-    background-size: 120px;
+  background-image: asset-url("diagonal-stripe.png");
+  background-size: 120px;
 }
 
 .split-row {
-    margin-top: 4px;
-    border-top:  1px solid $grey-lightest;
-    padding-top: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
 }
 
 .bar-total {
-    float: right;
-    font-size: 90%;
-    color: $grey-dark;
-    padding: 0 0 4px 0;
+  float: right;
+  font-size: 90%;
+  color: $grey-dark;
+  padding: 0 0 4px 0;
 }
 
-.key.desktop {
-    display: inline-block;
-}
+.key.desktop { display: inline-block; }
 
 @include media-breakpoint-down(sm) {
-    .key.desktop {
-        display: none;
-    }
+  .key.desktop { display: none; }
 }
 
 .key div.key-definition {
-    position: relative;
-    padding: 4px 0 4px 28px;
-    display: inline-block;
+  position: relative;
+  padding: 4px 0 4px 28px;
+  display: inline-block;
 }
 
 .desktop .key div.key-definition {
-    font-size: 90%;
-    display: inline-block;
-    margin-left: 8px;
+  font-size: 90%;
+  display: inline-block;
+  margin-left: 8px;
 }
 
 .key div.key-definition:after {
-    content: ".";
-    width: 20px;
-    height: 12px;
-    position: absolute;
-    left: 3px;
-    top: 8px;
-    border-radius: 3px;
-    text-indent: -1000em;
+  content: ".";
+  width: 20px;
+  height: 12px;
+  position: absolute;
+  left: 3px;
+  top: 8px;
+  border-radius: 3px;
+  text-indent: -1000em;
 }
 
 .key div.didntattend:after { background: $grey-mid; }
 .key div.uncontrolled:after { background: $red; }
-.key div.controlled:after { background: $green-mid; }
+.key div.controlled:after { background: $green-dark; }
 
 .key div.didntattend { color: $grey-dark; }
 .key div.uncontrolled { color: $red-dark; }
 .key div.controlled { color: $green-dark; }
 
 @include media-breakpoint-down(sm) {
-    .key {
-        display: inherit;
+  .key {
+    display: inherit;
 
-        .row {
-            margin: 16px 0 -6px 0;
-        }
+    .row {
+      margin: 16px 0 -6px 0;
     }
+  }
 }
 
 .bar-count {
-    text-align: right;
-    white-space: nowrap;
+  text-align: right;
+  white-space: nowrap;
 }
 
-.split-bars-secondary {
-    margin-bottom: 24px;
-}
+.split-bars-secondary { margin-bottom: 24px; }
 
 .split-bars-secondary td {
-    padding: 6px;
-    border-top: 1px solid $grey-lightest;
+  padding: 6px;
+  border-top: 1px solid $grey-lightest;
 }
 
-.split-bars-secondary tr:first-child td {
-    border-top: 0;
-}
+.split-bars-secondary tr:first-child td { border-top: 0; }
 
 .bars {
-    text-align: center;
-    font-size: 11px;
-    color: #ccc;
-    margin-top: 32px;
+  text-align: center;
+  font-size: 11px;
+  color: #ccc;
+  margin-top: 32px;
 }
 
 .bars div {
-    border-radius: 2px 2px 0 0;
-    background: #ddd;
-    min-height: 2px;
-    margin-bottom: 2px;
+  border-radius: 2px 2px 0 0;
+  background: #ddd;
+  min-height: 2px;
+  margin-bottom: 2px;
 }
 
-.bars td:last-child div {
-    background: #aaa;
-}
+.bars td:last-child div { background: #aaa; }
 
 //
 // Table sorting styles (override tablesort.css)
@@ -416,7 +412,7 @@ th[role=columnheader]:not(.no-sort):after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
-  margin: 0 0 0 4px;
+  margin: 0;
   vertical-align: middle;
 }
 
@@ -432,7 +428,7 @@ th[aria-sort]:not(.no-sort):hover:after {
 // Reverse the arrows since we default to descending
 th[role=columnheader]:not(.no-sort):after,
 th[aria-sort=descending]:not(.no-sort):after {
-	border-width: 4px 4px 0;
+  border-width: 4px 4px 0;
 }
 
 th[aria-sort=ascending]:not(.no-sort):after {
@@ -440,16 +436,45 @@ th[aria-sort=ascending]:not(.no-sort):after {
   border-width: 0 4px 4px;
 }
 
-.pad-bottom {
-  padding-bottom: 10px;
-}
+.pad-bottom { padding-bottom: 10px; }
 
 h2 .heading-label,
 h3 .heading-label {
-    display: block;
-    text-transform: uppercase;
-    color: $grey-mid;
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-bottom: 0.5em;
+  display: block;
+  text-transform: uppercase;
+  color: $grey-mid;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 0.5em;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#block-list {
+  overflow-y: auto;
+  max-height: 210px;
+}
+
+.medical-officer-card {
+  .whatsapp-icon {
+    font-size: 15px;
+    color: $grey-mid;
+    margin-right: 4px;
+  }
+
+}
+.no-medical-officers {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  min-height: 150px;
+  border: 2px dashed $grey-light;
+  border-radius: 5px;
+  color: $grey-dark;
+
+  h5 { margin: auto; }
+}
+
+.tl-fixed { table-layout: fixed; }

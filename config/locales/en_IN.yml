@@ -1,0 +1,24 @@
+en_IN:
+  helpers:
+    label:
+      facility:
+        name: "Name"
+        facility_type: "Facility Type *"
+        size: "Size *"
+        street_address: "House number and street"
+        village_or_colony: "Colony, village or ward"
+        zone: "Block *"
+        district: "District *"
+        state: "State *"
+        country: "Country *"
+    submit:
+      facility:
+        create: "Save facility"
+        update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "HWC/SC"
+        small: "PHC"
+        medium: "CHC"
+        large: "SDH/DH"

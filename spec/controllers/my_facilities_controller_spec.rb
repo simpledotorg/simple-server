@@ -6,11 +6,7 @@ end
 
 RSpec.describe MyFacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:supervisor) do
-    create(:admin, :supervisor, facility_group: facility_group).tap do |user|
-      user.user_permissions.create!(permission_slug: "view_my_facilities")
-    end
-  end
+  let(:supervisor) { create(:admin, :manager, :with_access, resource: facility_group) }
 
   render_views
 
@@ -20,15 +16,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
   describe "GET #index" do
     it "returns a success response" do
+      create(:facility, facility_group: facility_group)
+
       get :index, params: {}
-
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET #ranked_facilities" do
-    it "returns a success response" do
-      get :ranked_facilities, params: {}
 
       expect(response).to be_successful
     end
@@ -36,6 +26,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
   describe "GET #blood_pressure_control" do
     it "returns a success response" do
+      create(:facility, facility_group: facility_group)
+
       get :blood_pressure_control, params: {}
 
       expect(response).to be_successful
@@ -57,13 +49,13 @@ RSpec.describe MyFacilitiesController, type: :controller do
       expect(response).to be_successful
     end
 
-    it "instantiates a MyFacilities::RegistrationsQuery object with the right arguments and calls the required methods" do
+    it "instantiates a RegistrationsQuery object with the right arguments and calls the required methods" do
       params = {period: :quarter}
-      query_object = MyFacilities::RegistrationsQuery.new
-      allow(MyFacilities::RegistrationsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
+      query_object = RegistrationsQuery.new
+      allow(RegistrationsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
         .and_return(query_object)
 
-      expect(MyFacilities::RegistrationsQuery).to receive(:new)
+      expect(RegistrationsQuery).to receive(:new)
         .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
 
       expect(query_object).to receive(:registrations).and_return(query_object.registrations)
@@ -88,13 +80,13 @@ RSpec.describe MyFacilitiesController, type: :controller do
       expect(response).to be_successful
     end
 
-    it "instantiates a MyFacilities::MissedVisitsQuery object with the right arguments and calls the required methods" do
+    it "instantiates a MissedVisitsQuery object with the right arguments and calls the required methods" do
       params = {period: :quarter}
-      query_object = MyFacilities::MissedVisitsQuery.new
-      allow(MyFacilities::MissedVisitsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
+      query_object = MissedVisitsQuery.new
+      allow(MissedVisitsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
         .and_return(query_object)
 
-      expect(MyFacilities::MissedVisitsQuery).to receive(:new)
+      expect(MissedVisitsQuery).to receive(:new)
         .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
 
       expect(query_object).to receive(:periods).and_return(query_object.periods)

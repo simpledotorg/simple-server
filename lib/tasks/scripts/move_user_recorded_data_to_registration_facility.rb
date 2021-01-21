@@ -1,5 +1,4 @@
 class MoveUserRecordedDataToRegistrationFacility
-
   attr_reader :user, :source_facility, :destination_facility
 
   def initialize(user, source_facility, destination_facility)
@@ -13,7 +12,8 @@ class MoveUserRecordedDataToRegistrationFacility
     fix_pbi_metadata(patients)
     fix_data_for_relation(
       patients,
-      registration_facility: destination_facility)
+      registration_facility: destination_facility
+    )
   end
 
   def fix_appointment_data
@@ -35,7 +35,7 @@ class MoveUserRecordedDataToRegistrationFacility
 
     fix_data_for_relation(
       Encounter.includes(:observations)
-               .where(observations: { observable_id: blood_pressures.pluck(:id) }),
+               .where(observations: {observable_id: blood_pressures.pluck(:id)}),
       facility: destination_facility
     )
 
@@ -50,7 +50,7 @@ class MoveUserRecordedDataToRegistrationFacility
 
     fix_data_for_relation(
       Encounter.includes(:observations)
-               .where(observations: { observable_id: blood_sugars.pluck(:id) }),
+               .where(observations: {observable_id: blood_sugars.pluck(:id)}),
       facility: destination_facility
     )
     fix_data_for_relation(
@@ -62,7 +62,7 @@ class MoveUserRecordedDataToRegistrationFacility
   private
 
   def fix_data_for_relation(relation, update_hash)
-    Rails.logger.info "Moving #{relation.count} #{relation.klass.to_s} records, for user: #{user.full_name},"\
+    Rails.logger.info "Moving #{relation.count} #{relation.klass} records, for user: #{user.full_name},"\
                       "to #{destination_facility.name}"
     updated_records = relation.update(update_hash)
     updated_records.count
@@ -70,14 +70,14 @@ class MoveUserRecordedDataToRegistrationFacility
 
   def fix_pbi_metadata(patients)
     patient_business_identifiers = patients.map(&:business_identifiers)
-                                           .flatten
-                                           .select { |pbi|
-                                             pbi.metadata == { 'assigning_user_id' => user.id,
-                                                               'assigning_facility_id' => source_facility.id }
-                                           }
+      .flatten
+      .select { |pbi|
+      pbi.metadata == {"assigning_user_id" => user.id,
+                       "assigning_facility_id" => source_facility.id}
+    }
     Rails.logger.info "Fixing metadata for #{patient_business_identifiers.count} PatientBusinessIdentifier records,"\
                       "for user: #{user.full_name}, changing assigning_facility_id to #{destination_facility.name}"
-    updated_metadata = { "assigning_user_id": user.id, "assigning_facility_id": destination_facility.id }
+    updated_metadata = {"assigning_user_id": user.id, "assigning_facility_id": destination_facility.id}
     patient_business_identifiers.each do |pbi|
       pbi.update(metadata: updated_metadata)
     end

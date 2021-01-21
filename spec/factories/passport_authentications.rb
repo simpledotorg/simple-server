@@ -5,7 +5,7 @@ FactoryBot.define do
     access_token { SecureRandom.hex(32) }
 
     patient_business_identifier do
-      create(:patient_business_identifier, identifier_type: 'simple_bp_passport')
+      create(:patient_business_identifier, identifier_type: "simple_bp_passport")
     end
   end
 end

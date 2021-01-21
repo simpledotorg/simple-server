@@ -1,34 +1,46 @@
+<% admin = AdminAccessPresenter.new(@admin) %>
+
 <div class="page-header">
   <nav class="breadcrumb">
-      <% if policy([:manage, :admin, User]).index? %><%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %><% end %> <i class="fas fa-chevron-right"></i> <%= @admin.full_name %>
+    <%= link_to "Admins", admins_path, class: "#{active_controller?("email_authentications")}" %>
+    <i class="fas fa-chevron-right"></i> <%= admin.full_name %>
   </nav>
-  
 </div>
 
-<div class="card">
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <h2><%= @admin.full_name %></h2>
-        </div>
-        <div class="col-md-4" style="text-align:right;">
-            <% if policy([:manage, :admin, @admin]).edit? %>
-              <%= link_to 'Edit admin', edit_admin_path(@admin), class: "btn btn-sm btn-primary" %>
-            <% end %>  
-        </div>
-    </div>
-    <p><strong>Email:</strong> <%= mail_to @admin.email %></p>
-    <p><strong>Role:</strong> <%= @admin.role %></p>
-    <p><strong>Permissions:</strong></p>
-    <ul>
-      <% @admin.user_permissions.group_by(&:permission_slug).each do |permission_slug, user_permissions| %>
-        <li><%= permission_slug.titleize %></li>
-        <ul>
-          <% user_permissions.each do |user_permission| %>
-            <% if user_permission.resource.present? %>
-              <li><%= link_to user_permission.resource.name, [:admin, user_permission.resource] %></li>
-            <% end %>
-          <% end %>
-        </ul>
-      <% end %>
-    </ul>
+<div class="row mt-2">
+  <div class="col-md-5">
+    <h2><%= admin.full_name %></h2>
+    <span class="user-role"><%= admin.role %> • </span>
+    <a class="user-email" href="mailto:<%= admin.email %>"><%= admin.email %></a>
+  </div>
+  <div class="col-md-7" style="text-align:right;">
+    <%= link_to 'Edit admin', edit_admin_path(admin), class: "btn btn-sm btn-primary" %>
+  </div>
 </div>
+
+<div class="card show-admin-info">
+  <div class="">
+    <h3 class="card-title"><%= admin.display_access_level.name %></h3>
+    <h6 class="card-subtitle mb-1 text-muted"><%= admin.display_access_level.description %></h6>
+  </div>
+</div>
+
+<div id="facility-access" data-page="show">
+  <div class="card access-tree show">
+    <div class="access-tree__section-header">
+      Facility access
+    </div>
+
+    <%= render_async(access_tree_admin_path(admin, :show), error_message: access_tree_load_error) do %>
+      <div class="spinner-wrapper">
+        <div class="spinner spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  new AdminAccess("facility-access").initialize()
+</script>

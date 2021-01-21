@@ -5,18 +5,21 @@ class Facility < ApplicationRecord
   include QuarterHelper
   include PgSearch::Model
   include LiberalEnum
+
   extend FriendlyId
+  extend RegionSource
 
-  before_save :clear_isd_code, unless: -> { teleconsultation_phone_number.present? }
-
-  attribute :import, :boolean, default: false
-  attribute :organization_name, :string
-  attribute :facility_group_name, :string
+  friendly_id :name, use: :slugged
 
   belongs_to :facility_group, optional: true
 
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
+  has_and_belongs_to_many :teleconsultation_medical_officers,
+    -> { distinct },
+    class_name: "User",
+    association_foreign_key: :user_id,
+    join_table: "facilities_teleconsultation_medical_officers"
 
   has_many :encounters
   has_many :blood_pressures, through: :encounters, source: :blood_pressures
@@ -24,6 +27,8 @@ class Facility < ApplicationRecord
   has_many :patients, -> { distinct }, through: :encounters
   has_many :prescription_drugs
   has_many :appointments
+  has_many :teleconsultations
+  has_many :drug_stocks
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -36,8 +41,20 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "registration_facility_id"
+  has_many :assigned_patients,
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
+  has_many :assigned_hypertension_patients,
+    -> { with_hypertension },
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
+  scope :with_block_region_id, -> {
+    joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
+      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
+      .select("block_region.id AS block_region_id, facilities.*")
+  }
 
   enum facility_size: {
     community: "community",
@@ -50,128 +67,131 @@ class Facility < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   auto_strip_attributes :district, squish: true, upcase_first: true
+  auto_strip_attributes :zone, squish: true, upcase_first: true
 
-  with_options if: :import do |facility|
-    facility.validates :organization_name, presence: true
-    facility.validates :facility_group_name, presence: true
-    facility.validate :facility_name_presence
-    facility.validate :organization_exists
-    facility.validate :facility_group_exists
-    facility.validate :facility_is_unique
-  end
+  attribute :organization_name, :string
+  attribute :facility_group_name, :string
 
-  with_options unless: :import do |facility|
-    facility.validates :name, presence: true
-  end
+  alias_attribute :block, :zone
 
+  validates :name, presence: true
   validates :district, presence: true
-  validates :state, presence: true
+  validates :slug, presence: true
+  # this validation (and the field) should go away from facility after regions become first-class
+  validates :state, presence: true, if: -> { facility_group.present? }
   validates :country, presence: true
+  validates :zone, presence: true, on: :create
   validates :pin, numericality: true, allow_blank: true
-
-  validates :facility_size, inclusion: {in: facility_sizes.values,
-                                        message: "not in #{facility_sizes.values.join(", ")}",
-                                        allow_blank: true}
+  validates :facility_size,
+    inclusion: {
+      in: facility_sizes.values,
+      message: "not in #{facility_sizes.values.join(", ")}",
+      allow_blank: true
+    }
   validates :enable_teleconsultation, inclusion: {in: [true, false]}
+  validates :teleconsultation_medical_officers,
+    presence: {
+      if: :enable_teleconsultation,
+      message: "must be added to enable teleconsultation"
+    }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :teleconsultation_phone_numbers_valid?, if: :teleconsultation_enabled?
+  validate :valid_block, if: -> { facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
-  delegate :organization, to: :facility_group, allow_nil: true
+  delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
-  delegate :diabetes_follow_ups_by_period, to: :patients
-  delegate :hypertension_follow_ups_by_period, to: :patients
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+  delegate :cache_key, :cache_version, to: :region
 
-  friendly_id :name, use: :slugged
+  def self.parse_facilities_from_file(file_contents)
+    Csv::FacilitiesParser.parse(file_contents)
+  end
 
-  def cohort_analytics(period, prev_periods)
-    query = CohortAnalyticsQuery.new(registered_hypertension_patients)
-    query.patient_counts_by_period(period, prev_periods)
+  # ----------------
+  # Region callbacks
+  #
+  # * These callbacks are medium-term temporary.
+  # * This class and the Region callbacks should ideally be totally superseded by the Region class.
+  # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
+  after_create :make_region
+  after_update :update_region
+
+  def make_region
+    return if region&.persisted?
+
+    create_region!(
+      name: name,
+      reparent_to: block_region,
+      region_type: Region.region_types[:facility]
+    )
+  end
+
+  def update_region
+    region.reparent_to = block_region
+    region.name = name
+    region.save!
+  end
+
+  def block_region
+    facility_group.region.block_regions.find_by(name: block)
+  end
+
+  private :update_region
+  # ----------------
+
+  def hypertension_follow_ups_by_period(*args)
+    patients
+      .hypertension_follow_ups_by_period(*args)
+      .where(blood_pressures: {facility: self})
+  end
+
+  def diabetes_follow_ups_by_period(*args)
+    patients
+      .diabetes_follow_ups_by_period(*args)
+      .where(blood_sugars: {facility: self})
+  end
+
+  # For compatibility w/ parent FacilityGroups
+  def facilities
+    [self]
+  end
+
+  def child_region_type
+    nil
+  end
+
+  def recent_blood_pressures
+    blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
+  end
+
+  def cohort_analytics(period:, prev_periods:)
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = FacilityAnalyticsQuery.new(self,
-      period,
-      prev_periods,
-      include_current_period: include_current_period)
-
-    results = [
-      query.registered_patients_by_period,
-      query.total_registered_patients,
-      query.follow_up_patients_by_period
-    ].compact
-
-    return {} if results.blank?
-    results.inject(&:deep_merge)
-  end
-
-  CSV_IMPORT_COLUMNS =
-    {organization_name: "organization",
-     facility_group_name: "facility_group",
-     name: "facility_name",
-     facility_type: "facility_type",
-     street_address: "street_address (optional)",
-     village_or_colony: "village_or_colony (optional)",
-     zone: "zone_or_block (optional)",
-     district: "district",
-     state: "state",
-     country: "country",
-     pin: "pin (optional)",
-     latitude: "latitude (optional)",
-     longitude: "longitude (optional)",
-     facility_size: "size (optional)",
-     enable_diabetes_management: "enable_diabetes_management (true/false)",
-     enable_teleconsultation: "enable_teleconsultation (true/false)",
-     teleconsultation_phone_number: "teleconsultation_phone_number",
-     teleconsultation_isd_code: "teleconsultation_isd_code"}
-
-  def self.parse_facilities(file_contents)
-    facilities = []
-    CSV.parse(file_contents, headers: true, converters: :strip_whitespace) do |row|
-      facility = CSV_IMPORT_COLUMNS.map { |attribute, column_name| [attribute, row[column_name]] }.to_h
-      next if facility.values.all?(&:blank?)
-
-      facilities << facility.merge(enable_diabetes_management: facility[:enable_diabetes] || false,
-                                   enable_teleconsultation: facility[:enable_teleconsultation] || false,
-                                   import: true)
-    end
-    facilities
-  end
-
-  def organization_exists
-    organization = Organization.find_by(name: organization_name)
-    errors.add(:organization, "doesn't exist") if organization_name.present? && organization.blank?
-  end
-
-  def facility_group_exists
-    organization = Organization.find_by(name: organization_name)
-    if organization.present?
-      facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                             organization_id: organization.id)
-    end
-    if organization.present? && facility_group_name.present? && facility_group.blank?
-      errors.add(:facility_group, "doesn't exist for the organization")
-    end
-  end
-
-  def facility_is_unique
-    organization = Organization.find_by(name: organization_name)
-    if organization.present?
-      facility_group = FacilityGroup.find_by(name: facility_group_name,
-                                             organization_id: organization.id)
-    end
-    facility = Facility.find_by(name: name, facility_group: facility_group.id) if facility_group.present?
-    errors.add(:facility, "already exists") if organization.present? && facility_group.present? && facility.present?
-  end
-
-  def facility_name_presence
-    if name.blank?
-      errors.add(:facility_name, "can't be blank")
-    end
+    FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def diabetes_enabled?
     enable_diabetes_management.present?
+  end
+
+  def opd_load_estimated?
+    monthly_estimated_opd_load.present?
+  end
+
+  def opd_load
+    monthly_estimated_opd_load || opd_load_for_facility_size
+  end
+
+  def opd_load_for_facility_size
+    case facility_size
+    when "community" then 450
+    when "small" then 1800
+    when "medium" then 3000
+    when "large" then 7500
+    else 450
+    end
   end
 
   def teleconsultation_enabled?
@@ -179,89 +199,34 @@ class Facility < ApplicationRecord
   end
 
   def teleconsultation_phone_number_with_isd
-    teleconsultation_phone_number = teleconsultation_phone_numbers.first
-    return if teleconsultation_phone_number.blank?
-
-    Phonelib.parse(teleconsultation_phone_number.isd_code + teleconsultation_phone_number.phone_number).full_e164
+    teleconsultation_phone_numbers_with_isd.first
   end
 
   def teleconsultation_phone_numbers_with_isd
-    teleconsultation_phone_numbers.map do |phone_number|
-      {phone_number: Phonelib.parse(phone_number.isd_code + phone_number.phone_number).full_e164}
+    teleconsultation_medical_officers.map(&:full_teleconsultation_phone_number)
+  end
+
+  def discardable?
+    registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
+  end
+
+  def valid_block
+    unless facility_group.region.block_regions.pluck(:name).include?(block)
+      errors.add(:zone, "not present in the facility group")
     end
   end
 
-  CSV::Converters[:strip_whitespace] = ->(value) {
-    begin
-      value.strip
-    rescue
-      value
-    end
-  }
-
-  def teleconsultation_phone_numbers
-    read_attribute(:teleconsultation_phone_numbers).map do |phone_number|
-      TeleconsultationPhoneNumber.new(phone_number["isd_code"], phone_number["phone_number"])
-    end
+  def prioritized_patients
+    registered_patients.with_discarded
   end
 
-  def teleconsultation_phone_numbers_attributes=(numbers)
-    phone_numbers = []
-    numbers.each do |_index, number|
-      number = number.with_indifferent_access
-      next if number[:_destroy] == "true" || number[:isd_code].blank? || number[:phone_number].blank?
-
-      phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
-    end
-    write_attribute(:teleconsultation_phone_numbers, phone_numbers)
+  def self.localized_facility_size(facility_size)
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 
-  def teleconsultation_phone_numbers=(numbers)
-    phone_numbers = []
-    numbers.each do |number|
-      number = number.with_indifferent_access
-      next if number[:isd_code].blank? || number[:phone_number].blank?
-
-      phone_numbers << TeleconsultationPhoneNumber.new(number[:isd_code], number[:phone_number])
-    end
-    write_attribute(:teleconsultation_phone_numbers, phone_numbers)
-  end
-
-  def build_teleconsultation_phone_number
-    numbers = teleconsultation_phone_numbers.dup
-    numbers << TeleconsultationPhoneNumber.new(Rails.application.config.country["sms_country_code"])
-    self[:teleconsultation_phone_numbers] = numbers
-  end
-
-  TeleconsultationPhoneNumber = Struct.new(:isd_code, :phone_number) {
-    def persisted?
-      false
-    end
-
-    def _destroy
-      false
-    end
-  }
-
-  private
-
-  def clear_isd_code
-    self.teleconsultation_isd_code = ""
-  end
-
-  def teleconsultation_phone_numbers_valid?
-    message = "At least one medical officer must be added to enable teleconsultation, all teleconsultation numbers"\
-      " must have a country code and a phone number"
-    if teleconsultation_phone_numbers.blank?
-      errors.add("teleconsultation_phone_numbers_attributes", message)
-      return
-    end
-
-    teleconsultation_phone_numbers.each do |mo|
-      if mo.isd_code.blank? || mo.phone_number.blank?
-        errors.add("teleconsultation_phone_numbers_attributes", message)
-        break
-      end
-    end
+  def localized_facility_size
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 end

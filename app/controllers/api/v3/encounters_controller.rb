@@ -1,7 +1,4 @@
 class Api::V3::EncountersController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
-
-  skip_before_action :instrument_process_token
   before_action :stub_syncing_from_user, only: [:sync_from_user]
   before_action :stub_syncing_to_user, only: [:sync_to_user]
 
@@ -33,8 +30,7 @@ class Api::V3::EncountersController < Api::V3::SyncController
   def merge_if_valid(encounter_params)
     validator = Api::V3::EncounterPayloadValidator.new(encounter_params)
     logger.debug "Encounter had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/Encounter/schema_invalid")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V3::EncounterTransformer

@@ -2,7 +2,7 @@ require "rails_helper"
 
 def login_user
   @request.env["devise.mapping"] = Devise.mappings[:admin]
-  admin = FactoryBot.create(:admin, :owner)
+  admin = FactoryBot.create(:admin, :power_user)
   sign_in admin.email_authentication
 end
 
@@ -54,6 +54,38 @@ RSpec.describe Admin::UsersController, type: :controller do
     end
   end
 
+  describe "GET #teleconsult_search" do
+    context ".json" do
+      render_views
+
+      it "fetches users in the facility group for search term" do
+        facility = create(:facility)
+        create(:user, full_name: "Doctor Jack", registration_facility: facility)
+        create(:user, full_name: "Jack", registration_facility: facility)
+
+        params = {search_query: "Doctor", facility_group_id: facility.facility_group_id}
+
+        get :teleconsult_search, format: :json, params: params
+
+        expect(response).to be_successful
+        expect(JSON(response.body).first["full_name"]).to eq "Doctor Jack"
+      end
+
+      it "should call teleconsult_search and return the results" do
+        search_query = "Search query"
+        facility = create(:facility)
+        user = create(:user)
+        params = {search_query: search_query, facility_group_id: facility.facility_group_id}
+
+        allow(User).to receive(:teleconsult_search).with(search_query).and_return([user])
+
+        get :teleconsult_search, format: :json, params: params
+
+        expect(JSON(response.body).first["full_name"]).to eq user.full_name
+      end
+    end
+  end
+
   describe "GET #show" do
     it "returns a success response" do
       user = create(:user)
@@ -96,7 +128,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       it "returns a success response (i.e. to display the 'edit' template)" do
         user = create(:user)
         put :update, params: {id: user.to_param, user: invalid_attributes, facility_id: facility.id}
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(200)
       end
     end
   end

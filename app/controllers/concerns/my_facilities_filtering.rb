@@ -2,50 +2,72 @@
 
 module MyFacilitiesFiltering
   extend ActiveSupport::Concern
-  NEW_FACILITY_THRESHOLD = 3.months.ago
 
   included do
-    before_action :populate_facility_sizes, :populate_zones,
-      :set_selected_sizes, :set_selected_zones, :set_only_new_facilities
+    before_action :populate_accessible_facilities
+    before_action :populate_facility_groups
+    before_action :set_selected_facility_group
+    before_action :populate_zones
+    before_action :set_selected_zones
+    before_action :populate_facility_sizes
+    before_action :set_selected_facility_sizes
 
-    def filter_facilities(scope_namespace = [])
-      facilities = policy_scope(scope_namespace.concat([Facility]))
-      filtered_facilities = facilities_by_size(facilities)
-      facilities_by_zone(filtered_facilities)
+    def filter_facilities
+      filtered_facilities = facilities_by_facility_group(@accessible_facilities)
+      filtered_facilities = facilities_by_zone(filtered_facilities)
+      facilities_by_size(filtered_facilities)
     end
 
     private
 
-    def populate_facility_sizes
-      @facility_sizes = Facility.facility_sizes.keys.reverse
+    def populate_accessible_facilities
+      @accessible_facilities = current_admin.accessible_facilities(:view_reports)
+    end
+
+    def populate_facility_groups
+      @facility_groups = FacilityGroup.where(id: @accessible_facilities.map(&:facility_group_id).uniq).order(:name)
     end
 
     def populate_zones
-      @zones = policy_scope([:manage, :facility, Facility]).pluck(:zone).uniq.compact.sort
+      @zones = @accessible_facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
     end
 
-    def set_selected_sizes
-      @selected_sizes = params[:size].present? ? params[:size] : @facility_sizes
+    def populate_facility_sizes
+      @facility_sizes = @accessible_facilities.where(facility_group: @selected_facility_group, zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
+      @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
+    end
+
+    def set_selected_facility_group
+      @selected_facility_group = params[:facility_group] ? @facility_groups.find_by(slug: params[:facility_group]) : @facility_groups.first
     end
 
     def set_selected_zones
       @selected_zones = params[:zone].present? ? [params[:zone]] : @zones
     end
 
-    def set_only_new_facilities
-      @only_new_facilities = params[:only_new_facilities] || false
+    def set_selected_facility_sizes
+      @selected_facility_sizes = params[:size].present? ? [params[:size]] : @facility_sizes
     end
 
-    def facilities_by_size(facilities)
-      facilities.where(facility_size: @selected_sizes)
+    def facilities_by_facility_group(facilities)
+      facilities.where(facility_group: @selected_facility_group)
     end
 
     def facilities_by_zone(facilities)
       facilities.where(zone: @selected_zones).or(facilities.where(zone: nil))
     end
 
-    def facilities_by_created_at(facilities)
-      @only_new_facilities ? facilities.where("created_at > ? ", NEW_FACILITY_THRESHOLD) : facilities
+    def facilities_by_size(facilities)
+      if (@facility_sizes - @selected_facility_sizes).empty?
+        facilities
+      else
+        facilities.where(facility_size: @selected_facility_sizes)
+      end
+    end
+
+    def sort_facility_sizes_by_size(facility_sizes)
+      sorted_facility_sizes = %w[large medium small community]
+      sorted_facility_sizes.select { |size| facility_sizes.include? size }
     end
   end
 end

@@ -56,9 +56,6 @@ Rails.application.configure do
   # when problems arise.
   config.log_level = :info
 
-  # Prepend all log lines with the following tags.
-  config.log_tags = [:request_id]
-
   # Use a different cache store in production.
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
     [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
@@ -67,9 +64,10 @@ Rails.application.configure do
   end
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
-  config.active_job.queue_adapter = :inline
+  config.active_job.queue_adapter = :sidekiq
   # config.active_job.queue_name_prefix = "simple-server_#{Rails.env}"
   config.action_mailer.perform_caching = false
+  config.action_mailer.deliver_later_queue_name = "default"
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -97,15 +95,8 @@ Rails.application.configure do
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
 
-  # Use default logging formatter so that PID and timestamp are not suppressed.
-  config.log_formatter = ::Logger::Formatter.new
-
-  # Use a different logger for distributed setups.
-  # require 'syslog/logger'
-  # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
-
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger = ActiveSupport::Logger.new(STDOUT)
+    logger = JsonLogger.new($stdout)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
   end

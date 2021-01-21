@@ -25,13 +25,11 @@ module PeriodHelper
           moy_to_date(*date)
         when :day
           doy_to_date(*date)
-        else
-          nil
       end
     end
   end
 
   def periods_as_sql_list(periods)
-    periods.map { |year, period| "('#{year}', '#{period}')" }.join(',')
+    periods.map { |year, period| "('#{year}', '#{period}')" }.join(",")
   end
 end

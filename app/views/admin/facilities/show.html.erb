@@ -8,7 +8,7 @@
     <%= @facility.name %>
   </h1>
   <nav class="page-nav">
-    <% if policy([:manage, :facility, @facility]).edit? %>
+    <% if current_admin.accessible_facilities(:manage).find_by_id(@facility) %>
       <%= link_to 'Edit facility', edit_admin_facility_group_facility_path(@facility_group, @facility), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
@@ -30,7 +30,8 @@
     <div class="card flex-fill">
       <h3>Latitude/longitude</h3>
       <% if @facility.latitude.present? && @facility.longitude.present? %>
-        <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %></div>
+        <div><i class="fas fa-map-marker-alt light mr-2"></i> <%= @facility.latitude %>, <%= @facility.longitude %>
+        </div>
       <% else %>
         <div><i class="fas fa-angle-left light"></i> None entered <i class="fas fa-angle-right light"></i></div>
       <% end %>
@@ -45,73 +46,65 @@
   <div class="col-md-3 d-flex">
     <div class="card flex-fill">
       <h3>Facility type &amp; size</h3>
-      <%= @facility.facility_type || "(No type set)" %> (<%= @facility.facility_size&.capitalize || "No size set" %>)
+      Type: <%= @facility.facility_type || "(No type set)" %>
+      <br>
+      Size: <%= @facility.localized_facility_size || "No size set" %>
     </div>
   </div>
   <div class="col-md-3 d-flex">
     <div class="card flex-fill">
       <h3>Features</h3>
-      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled"  %>
+      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled" %>
       Teleconsultation:    <%= @facility.teleconsultation_enabled? ? "Enabled" : "Disabled" %>
     </div>
   </div>
 </div>
 
-<% if policy([:manage, :user, User]).index? %>
-  <div class="card">
-    <h2>Users</h2>
-    <% if @facility.users.present? %>
-      <% @facility.users.order(:full_name).each do |user| %>
-        <div class="card-row row">
-          <div class="col">
-            <h5>
-              <%= link_to user.full_name, [:admin, user] %>
-              <% unless user.sync_approval_status == 'allowed' %>
-                <span class="badge badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
-              <% end %>
-            </h5>
-            <div class="mt-1 mb-1">
-              <%=
-                if (user.logged_in_at.present?)
-                  'Last login: ' + rounded_time_ago_in_words(user.logged_in_at)
-                else
-                  'Has not logged in yet'
-                end
-              %>
-              <div class="text-info mt-2 mb-2">Access: <%= user.sync_approval_status_reason %></div>
-            </div>
-            <div>
-              <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-phone btn-outline-primary"><i class="fas fa-phone"></i> <%= user.phone_number %>
-              </a>
-            </div>
-          </div>
-          <div class="col text-right">
-            <% if policy([:manage, :user, user]).edit? %>
-              <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
-            <% end %>
-
-            <% if policy([:manage, :user, user]).destroy? %>
-              <%= link_to 'Delete', [:admin, user], method: :delete, data: { confirm: "Are you sure you want to delete #{user.full_name}?" }, class: "btn btn-sm btn-outline-danger" %>
-            <% end %>
-
-            <% unless user.sync_approval_status == 'denied' %>
-              <% unless user.sync_approval_status == 'allowed' %>
-                <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
-              <% end %>
-            <% end %>
-
+<div class="card">
+  <h2>Users</h2>
+  <% if @facility_users.present? %>
+    <% @facility_users.order(:full_name).each do |user| %>
+      <div class="card-row row">
+        <div class="col">
+          <h5>
+            <%= link_to user.full_name, [:admin, user] %>
             <% unless user.sync_approval_status == 'allowed' %>
-              <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: { confirm: I18n.t('admin.enable_access_alert') }, class: "btn btn-sm btn-outline-success" %>
+              <span class="badge badge-primary <%= user.sync_approval_status %>"><%= user.sync_approval_status&.capitalize %></span>
             <% end %>
-
-            <%= render partial: "admin/users/deny_access_modal", locals: { user: user } %>
-
+          </h5>
+          <div class="mt-1 mb-1">
+            <%=
+              if (user.logged_in_at.present?)
+                'Last login: ' + rounded_time_ago_in_words(user.logged_in_at)
+              else
+                'Has not logged in yet'
+              end
+            %>
+            <div class="text-info mt-2 mb-2">Access: <%= user.sync_approval_status_reason %></div>
+          </div>
+          <div>
+            <a href="tel:<%= user.phone_number %>" class="btn btn-sm btn-phone btn-outline-primary"><i class="fas fa-phone"></i> <%= user.phone_number %>
+            </a>
           </div>
         </div>
+        <div class="col text-right">
+          <%= link_to 'Edit', edit_admin_user_path(user), class: "btn btn-sm btn-outline-primary" %>
+          <% unless user.sync_approval_status == 'denied' %>
+            <% unless user.sync_approval_status == 'allowed' %>
+              <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
+          <% end %>
 
-      <% end %>
-    <% else %>
-      <div><i class="fas fa-angle-left light"></i> No users <i class="fas fa-angle-right light"></i></div>
+          <% unless user.sync_approval_status == 'allowed' %>
+            <%= link_to 'Allow access', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: "btn btn-sm btn-outline-success" %>
+          <% end %>
+
+          <%= render partial: "admin/users/deny_access_modal", locals: {user: user} %>
+
+        </div>
+      </div>
     <% end %>
-  </div>
-<% end %>
+  <% else %>
+    <div><i class="fas fa-angle-left light"></i> No users <i class="fas fa-angle-right light"></i></div>
+  <% end %>
+</div>

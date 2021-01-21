@@ -1,6 +1,6 @@
 class CreateMasterUsers < ActiveRecord::Migration[5.1]
   def change
-    create_table :master_users , id: :uuid do |t|
+    create_table :master_users, id: :uuid do |t|
       t.string :full_name
 
       t.string :sync_approval_status, null: false

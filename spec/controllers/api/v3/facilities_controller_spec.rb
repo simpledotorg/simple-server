@@ -1,12 +1,11 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::FacilitiesController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
-
+  let(:request_user) { create(:user) }
   let(:model) { Facility }
 
   def create_record_list(n, _options = {})
-    FactoryBot.create_list(:facility, n, facility_group: request_user.facility.facility_group)
+    create_list(:facility, n, facility_group: request_user.facility.facility_group)
   end
 
   describe "a working Current sync controller sending records" do
@@ -28,15 +27,6 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
         expect(response_body[response_key].count).to eq model.count
         expect(response_body[response_key].map { |record| record["id"] }.to_set)
           .to eq(model.all.pluck(:id).to_set)
-      end
-
-      it "only sends facilities that belong to a facility group" do
-        facilities_without_group = FactoryBot.create_list(:facility, 2, facility_group: nil)
-        get :sync_to_user
-
-        response_body = JSON(response.body)
-        expect(response_body[response_key].map { |record| record["id"] }.to_set)
-          .not_to include(*facilities_without_group.map(&:id))
       end
 
       it "Returns new records added since last sync" do
@@ -92,6 +82,73 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
           expect(received_records.map { |record| record["id"] }.to_set)
             .to eq(model.all.pluck(:id).to_set)
+        end
+      end
+
+      context "region-level sync" do
+        context "sync_region_id" do
+          it "sets the sync_region_id to the facility group id when region level sync is disabled" do
+            get :sync_to_user
+
+            response_records = JSON(response.body)["facilities"]
+            response_records.each do |record|
+              expect(record["sync_region_id"]).to eq record["facility_group_id"]
+            end
+          end
+
+          context "when region level sync is enabled" do
+            it "sets the sync_region_id to the facility group id when user is not available" do
+              enable_flag(:block_level_sync, request_user)
+              get :sync_to_user
+
+              response_records = JSON(response.body)["facilities"]
+              response_records.each do |record|
+                expect(record["sync_region_id"]).to eq record["facility_group_id"]
+              end
+            end
+
+            it "sets the sync_region_id to the block id when user is available" do
+              request.env["HTTP_X_USER_ID"] = request_user.id
+              request.env["HTTP_X_FACILITY_ID"] = request_user.facility.id
+              request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+
+              enable_flag(:block_level_sync, request_user)
+              get :sync_to_user
+
+              response_records = JSON(response.body)["facilities"]
+              response_records.each do |record|
+                expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
+              end
+            end
+          end
+        end
+
+        context "for authenticated requests" do
+          def set_authentication_headers
+            request.env["HTTP_X_USER_ID"] = request_user.id
+            request.env["HTTP_X_FACILITY_ID"] = request_facility.id if defined? request_facility
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+            request.env["HTTP_X_SYNC_REGION_ID"] = request_facility.region.block_region.id
+          end
+
+          let(:request_user) { create(:user) }
+          let(:request_facility_group) { request_user.facility.facility_group }
+          let(:request_facility) { create(:facility, facility_group: request_facility_group) }
+
+          before do
+            set_authentication_headers
+          end
+
+          it "avoids resyncing when X_SYNC_REGION_ID doesn't match process token's sync_region_id" do
+            process_token = make_process_token(sync_region_id: "a-sync-region-uuid",
+                                               other_facilities_processed_since: Time.current)
+            facility_records = Timecop.travel(15.minutes.ago) { create_list(:facility, 5) }
+
+            get :sync_to_user, params: {process_token: process_token}
+
+            response_record_ids = JSON(response.body)["facilities"].map { |r| r["id"] }
+            expect(response_record_ids).not_to include(*facility_records.map(&:id))
+          end
         end
       end
     end

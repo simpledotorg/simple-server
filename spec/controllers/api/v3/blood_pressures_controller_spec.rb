@@ -1,34 +1,32 @@
 require "rails_helper"
 
 RSpec.describe Api::V3::BloodPressuresController, type: :controller do
-  let(:request_user) { FactoryBot.create(:user) }
-  let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
-  before :each do
-    request.env["X_USER_ID"] = request_user.id
-    request.env["X_FACILITY_ID"] = request_facility.id
-    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-  end
-
+  let(:request_user) { create(:user) }
+  let(:request_facility_group) { request_user.facility.facility_group }
+  let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { BloodPressure }
-
   let(:build_payload) { -> { build_blood_pressure_payload } }
   let(:build_invalid_payload) { -> { build_invalid_blood_pressure_payload } }
   let(:invalid_record) { build_invalid_payload.call }
   let(:update_payload) { ->(blood_pressure) { updated_blood_pressure_payload(blood_pressure) } }
   let(:number_of_schema_errors_in_invalid_payload) { 3 }
 
+  before :each do
+    request.env["X_USER_ID"] = request_user.id
+    request.env["X_FACILITY_ID"] = request_facility.id
+    request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+  end
+
   def create_record(options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    blood_pressure = FactoryBot.create(:blood_pressure, {facility: facility}.merge(options))
-    create(:encounter, :with_observables, observable: blood_pressure)
-    blood_pressure
+    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
+    patient = create(:patient, registration_facility: facility)
+    create(:blood_pressure, :with_encounter, {patient: patient}.merge(options))
   end
 
   def create_record_list(n, options = {})
-    facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
-    blood_pressures = create_list(:blood_pressure, n, {facility: facility}.merge(options))
-    blood_pressures.each { |record| create(:encounter, :with_observables, observable: record) }
-    blood_pressures
+    facility = options[:facility] || create(:facility, facility_group: request_facility_group)
+    patient = create(:patient, registration_facility: facility)
+    create_list(:blood_pressure, n, :with_encounter, {patient: patient}.merge(options))
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
@@ -68,7 +66,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
       end
 
       it "creates new blood pressures with associated patient" do
-        patient = FactoryBot.create(:patient)
+        patient = create(:patient)
         blood_pressures = (1..3).map {
           build_blood_pressure_payload(FactoryBot.build(:blood_pressure, patient: patient))
         }
@@ -91,7 +89,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
 
         it "does not modify the recorded_at for a patient if params have recorded_at" do
           patient_recorded_at = 4.months.ago
-          patient = FactoryBot.create(:patient, recorded_at: patient_recorded_at)
+          patient = create(:patient, recorded_at: patient_recorded_at)
           older_bp_recording_date = 5.months.ago
           blood_pressure = build_blood_pressure_payload(FactoryBot.build(:blood_pressure,
             patient: patient,
@@ -113,7 +111,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
 
         it "sets patient's recorded_at to bp's device_created_at if the bp is older" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
           older_bp_recording_date = 2.months.ago
           blood_pressure = build_blood_pressure_payload(
             FactoryBot.build(:blood_pressure,
@@ -127,7 +125,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
 
         it "sets patient's recorded_at to their oldest bp's device_created_at" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
           two_months_ago = 2.months.ago
           three_months_ago = 3.months.ago
           bp_recorded_two_months_ago = build_blood_pressure_payload(
@@ -153,7 +151,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
 
       context "creates encounters" do
         it "assumes the same encounter for the blood_pressures recorded on the same day" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
 
           blood_pressure_recording = Time.new(2019, 1, 1, 1, 1).utc
           encountered_on = blood_pressure_recording.to_date
@@ -177,7 +175,7 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
 
         it "should create different encounters for blood_pressures recorded on different days" do
-          patient = FactoryBot.create(:patient)
+          patient = create(:patient)
 
           day_1 = Time.new(2019, 1, 1, 1, 1).utc
           day_2 = Time.new(2019, 1, 2, 1, 1).utc
@@ -262,14 +260,34 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         end
       end
     end
+
+    context "for a discarded facility" do
+      before :each do
+        set_authentication_headers
+      end
+
+      it "returns an error and does not create the blood pressure" do
+        facility = create(:facility)
+        blood_pressures = [build_blood_pressure_payload(FactoryBot.build(:blood_pressure, facility: facility))]
+        facility.discard
+
+        post(:sync_from_user, params: {blood_pressures: blood_pressures}, as: :json)
+
+        expect(BloodPressure.count).to eq 0
+        expect(Encounter.count).to eq 0
+        expect(response).to have_http_status(200)
+        expect(JSON(response.body)["errors"]).not_to be_empty
+      end
+    end
   end
 
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
+    it_behaves_like "a working sync controller that supports region level sync"
 
-    describe "v3 facility prioritisation" do
-      it "syncs request facility's records first" do
-        request_2_facility = FactoryBot.create(:facility, facility_group: request_user.facility.facility_group)
+    describe "patient prioritisation" do
+      it "syncs records for patients in the request facility first" do
+        request_2_facility = create(:facility, facility_group: request_facility_group)
 
         create_record_list(2, facility: request_facility, updated_at: 3.minutes.ago)
         create_record_list(2, facility: request_facility, updated_at: 5.minutes.ago)
@@ -286,6 +304,8 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         expect(records.count).to eq 4
         expect(records.map(&:facility).to_set).to eq Set[request_facility]
 
+        reset_controller
+
         # GET request 2
         get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
         response_2_body = JSON(response.body)
@@ -294,30 +314,6 @@ RSpec.describe Api::V3::BloodPressuresController, type: :controller do
         records = model.where(id: record_ids)
         expect(records.count).to eq 4
         expect(records.map(&:facility).to_set).to eq Set[request_facility, request_2_facility]
-      end
-    end
-
-    describe "syncing within a facility group" do
-      let(:facility_in_same_group) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
-      let(:facility_in_another_group) { FactoryBot.create(:facility) }
-
-      before :each do
-        set_authentication_headers
-
-        create_record_list(2, facility: facility_in_another_group, updated_at: 3.minutes.ago)
-        create_record_list(2, facility: facility_in_same_group, updated_at: 5.minutes.ago)
-        create_record_list(2, facility: request_facility, updated_at: 7.minutes.ago)
-      end
-
-      it "only sends data for facilities belonging in the sync group of user's registration facility" do
-        get :sync_to_user, params: {limit: 6}
-
-        response_blood_pressures = JSON(response.body)["blood_pressures"]
-        response_facilities = response_blood_pressures.map { |blood_pressure| blood_pressure["facility_id"] }.to_set
-
-        expect(response_blood_pressures.count).to eq 4
-        expect(response_facilities).to match_array([request_facility.id, facility_in_same_group.id])
-        expect(response_facilities).not_to include(facility_in_another_group.id)
       end
     end
   end

@@ -1,12 +1,12 @@
 module AdminPage
   module Protocols
     class Show < ApplicationPage
-      SUCCESSFUL_MESSAGE = { css: 'div.alert-primary' }.freeze
-      MESSAGE_CROSS_BUTTON = { css: 'button.close' }.freeze
-      FOLLOW_UP_DAYS = { id: 'Follow up days' }.freeze
-      EDIT_PROTOCOL_BUTTON = { id: 'Edit protocol' }.freeze
-      NEW_PROTOCOL_DRUG_BUTTON = { id: 'New protocol drug' }.freeze
-      PROTOCOL_DRUG_NAME = { id: 'drug_name' }.freeze
+      SUCCESSFUL_MESSAGE = {css: "div.alert-primary"}.freeze
+      MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
+      FOLLOW_UP_DAYS = {id: "Follow up days"}.freeze
+      EDIT_PROTOCOL_BUTTON = {id: "Edit protocol"}.freeze
+      NEW_PROTOCOL_DRUG_BUTTON = {id: "New protocol drug"}.freeze
+      PROTOCOL_DRUG_NAME = {id: "drug_name"}.freeze
 
       def verify_successful_message(message)
         verify_text(SUCCESSFUL_MESSAGE, message)
@@ -34,20 +34,20 @@ module AdminPage
 
       def click_edit_protocol_drug_button(drug_name)
         within(:xpath, "//div[@name='" + drug_name + "']") do
-          find(:css, 'a.btn-outline-primary').click
+          find(:css, "a.btn-outline-primary").click
         end
       end
 
       def delete_protocol_drug(protocol_name)
         within(:xpath, "//div[@name='" + protocol_name + "']") do
           page.accept_alert do
-            find('a.btn-outline-danger').click
+            find("a.btn-outline-danger").click
           end
         end
 
         # assertion
         page.has_no_content?(protocol_name)
-        page.has_content?('Protocol was successfully deleted.')
+        page.has_content?("Protocol was successfully deleted.")
       end
     end
   end

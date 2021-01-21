@@ -1,0 +1,49 @@
+<div class="typeahead">
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text">
+        <i class="fa fa-search"></i>
+      </span>
+    </div>
+    <%= search_field_tag :search_query,
+                         nil,
+                         id: :search_query,
+                         class: "typeahead-input form-control",
+                         hide_label: true,
+                         placeholder: "Find medical officers by name or phone number",
+                         onkeyup: "debouncedUserSearch(this)",
+                         autocomplete: "off",
+                         data: { facility_group_id: facility_group_id } %>
+    <div class="typeahead-dropdown"></div>
+  </div>
+  <div class="typeahead-spinner">
+    <div class="spinner-border text-primary"></div>
+  </div>
+</div>
+
+<template id="user-search-no-results-found">
+  <span class="text-center">
+    <i class="fa fa-search text-grey mt-3"></i>
+    <p class="mb-2">No medical officer matches <span class="search-query"></span></p>
+    <p class="text-grey">
+      Approve medical officers in the
+      <%= link_to "Users to review list", my_facilities_overview_path, target: "_blank" %>
+      <br>to add them for teleconsultation
+    </p>
+  </span>
+</template>
+
+<template id="user-search-result-row">
+  <div class="typeahead-dropdown-row"
+       data-user-id=""
+       data-user-full-name=""
+       data-user-registration-facility=""
+       data-user-teleconsult-phone-number="">
+    <p class="mb-0"><span class="user-full-name"></span></p>
+    <p class="text-grey mb-0">Registered at <span class="user-registration-facility"></span></p>
+  </div>
+</template>
+
+<script>
+  let debouncedUserSearch = new UserTeleconsultSearch().debouncedSearch;
+</script>

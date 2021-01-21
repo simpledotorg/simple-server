@@ -1,9 +1,9 @@
 class Admin::ProtocolsController < AdminController
-  before_action :set_protocol, only: %i[show edit update destroy]
+  before_action :set_protocol, only: [:show, :edit, :update, :destroy]
 
   def index
-    authorize([:manage, Protocol])
-    @protocols = policy_scope([:manage, Protocol]).order(:name)
+    authorize { current_admin.accessible_organizations(:manage).any? }
+    @protocols = current_admin.accessible_protocols(:manage).order(:name)
   end
 
   def show
@@ -11,16 +11,16 @@ class Admin::ProtocolsController < AdminController
   end
 
   def new
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol = Protocol.new
-    authorize([:manage, @protocol])
   end
 
   def edit
   end
 
   def create
+    authorize { current_admin.accessible_organizations(:manage).any? }
     @protocol = Protocol.new(protocol_params)
-    authorize([:manage, @protocol])
 
     if @protocol.save
       redirect_to [:admin, @protocol], notice: "Protocol was successfully created."
@@ -45,8 +45,7 @@ class Admin::ProtocolsController < AdminController
   private
 
   def set_protocol
-    @protocol = Protocol.find(params[:id])
-    authorize([:manage, @protocol])
+    @protocol = authorize { current_admin.accessible_protocols(:manage).find(params[:id]) }
   end
 
   def protocol_params
