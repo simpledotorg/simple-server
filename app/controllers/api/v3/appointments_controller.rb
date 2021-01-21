@@ -24,7 +24,7 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
         .merge(metadata)
 
       appointment = Appointment.merge(record_params)
-      appointment&.update_patient_status
+      appointment.update_patient_status
       {record: appointment}
     end
   end
