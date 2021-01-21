@@ -2,21 +2,20 @@ RegionsSearch = function () {
   this.resultToRow = (searchQuery, result) => {
     const name = result["name"]
     const regex = new RegExp(searchQuery, "ig")
-    const highlightedName = name.replace(regex, "<strong>$&</strong>")
+    const highlightedName = name.replace(regex, "<strong class='bg-yellow-light'>$&</strong>")
 
-    let html = $("template#result-row").html();
+    let html = $("template.result-row").html();
     let $html = $(html)
 
-    $html.find(".ancestors").append(result["ancestors"])
     let link = $html.find("a")
-    link.append(highlightedName)
+    link.prepend(highlightedName)
+    $html.find(".ancestors").append(result["ancestors"])
     link.attr("href", result["link"])
-
     return $html
   }
 
   this.noResultsFound = (searchQuery) => {
-    let html = $("template#no-results-found").html();
+    let html = $("template.no-results-found").html();
     let $html = $(html);
     $html.find(".search-query").html(searchQuery);
 
@@ -40,17 +39,21 @@ RegionsSearch = function () {
       })
       this.populateDropdown(html);
     } else {
-      let html = $("template#no-results-found").html();
-      let $html = $(html);
-      $html.find(".search-query").html(searchQuery);
-      this.populateDropdown($html)
+      this.populateDropdown(this.noResultsFound(searchQuery))
     }
+  }
+
+  this.clearDropDown = () => {
+    $(".typeahead-dropdown").empty();
   }
 
   this.searchRequest = (e) => {
     let searchQuery = e.value;
-
-    if (searchQuery.length) {
+    if (searchQuery === "") {
+      this.clearDropDown()
+      return false
+    }
+    if (searchQuery && searchQuery.length) {
       this.showSpinner();
       $.ajax({
         url: e.form.action,
@@ -61,6 +64,9 @@ RegionsSearch = function () {
           this.populateSearchResults(searchQuery, res)
         }
       })
+    } else {
+      console.log("invalid or empty search query")
+      return false
     }
   }
 
