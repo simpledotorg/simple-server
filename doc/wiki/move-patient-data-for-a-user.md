@@ -27,7 +27,9 @@ bundle exec cap india:production deploy:rake task=data_fixes:move_user_data_from
 Fixing a. is tricky since the user's syncs would be failing (because facility is soft-deleted) and hence we can't recover their data. We can currently only fix this manually if we deem it important enough:
 
 * Un-delete the soft-deleted facility temporarily
-* Ask the user to sync the data back
+  * This may also require creating a Region for this facility
+  * Make sure you attach this new facility region to this facility as well
+* Ask the user to sync the data back to this, now, undeleted facility
 * Move the data into the correct facility using the aforementioned script
 * Reattach the user to the correct facility using the edit UI (as described above)
 * Soft-delete the facility again
