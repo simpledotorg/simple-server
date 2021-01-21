@@ -64,7 +64,13 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_stocks_params
-    params.permit(:for_end_of_month, drug_stocks: [:received, :in_stock, :protocol_drug_id])
+    params.permit(
+      :for_end_of_month,
+      drug_stocks:
+        [:received,
+          :in_stock,
+          :protocol_drug_id]
+    )
   end
 
   def drug_stocks_enabled?
