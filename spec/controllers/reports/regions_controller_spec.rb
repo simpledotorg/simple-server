@@ -122,7 +122,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "cohort" do
-    render_views
+    render_views_on_ci
 
     before do
       @facility_group = create(:facility_group, organization: organization)
@@ -130,7 +130,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     end
 
     it "retrieves monthly cohort data by default" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
@@ -141,12 +141,12 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       data = assigns(:cohort_data)
-      pending "need to change data output format"
-      expect(data[:controlled_patients][Period.month("June 1 2020")]).to eq(1)
+      dec_cohort = data.find { |hsh| hsh["patients_registered"] == "Dec-2019" }
+      expect(dec_cohort["registered"]).to eq(1)
     end
 
     it "can retrieve quarterly cohort data" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -2))
+      patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -2))
       create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
       refresh_views
 
