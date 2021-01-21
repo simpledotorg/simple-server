@@ -66,19 +66,15 @@ module Seed
       }))
     end
 
-    def self.status_index
-      @status_lookup ||= Patient::STATUSES.each_with_index.to_h
-    end
-
     # Return weights of patient statuses that are reasonably close to actual - the vast majority
     # of our patients are active
     def self.weighted_patient_statuses
       {
-        status_index["active"] => 0.96,
-        status_index["dead"] => 0.02,
-        status_index["migrated"] => 0.01,
-        status_index["unresponsive"] => 0.005,
-        status_index["inactive"] => 0.005
+        "active" => 0.96,
+        "dead" => 0.02,
+        "migrated" => 0.01,
+        "unresponsive" => 0.005,
+        "inactive" => 0.005
       }
     end
 

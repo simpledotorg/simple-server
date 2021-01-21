@@ -83,6 +83,20 @@ describe Patient, type: :model do
       patient.date_of_birth = 3.days.from_now
       expect(patient).to be_invalid
     end
+
+    it "validates status" do
+      patient = Patient.new
+
+      # valid statuses should not cause problems
+      patient.status = "active"
+      patient.status = "dead"
+      patient.status = "migrated"
+      patient.status = "unresponsive"
+      patient.status = "inactive"
+
+      # invalid statuses should raise errors
+      expect { patient.status = "something else" }.to raise_error(ArgumentError)
+    end
   end
 
   describe "Behavior" do

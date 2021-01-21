@@ -164,8 +164,6 @@ RSpec.describe UserAccess, type: :model do
         it "managers of a district have view_reports access to the districts' states" do
           facility_group_1 = create(:facility_group, name: "district 1")
           facility_group_2 = create(:facility_group, name: "district 2")
-          pp facility_group_1.state_region
-          pp facility_group_2.state_region
           district_1 = facility_group_1.region
           district_2 = facility_group_2.region
           viewer_reports_only.accesses.create!(resource: district_1.source)

@@ -17,18 +17,7 @@ end
 `git fetch --tags`
 last_release = `git describe --tags --abbrev=0 --match "release-*"`.strip
 
-changelog = `git log #{last_release}..HEAD --oneline --decorate=no`
-  .strip
-  .split("\n")
-  .map { |line| line.match(/\s(.*)/)&.captures&.last }
-  .reject { |line| line =~ /^Merge/ } # remove merge commits
-  .compact
-  .map { |line| "• #{line}" }
-  .join("\n")
-
-puts "CHANGELOG"
-puts "---------"
-puts changelog
+changelog = `bin/changelog #{last_release}`
 
 # ------------------
 # New release tag
@@ -43,6 +32,10 @@ if last_release.start_with?("release-#{today}")
 else
   release_tag = "release-#{today}-1"
 end
+
+puts "CHANGELOG for #{release_tag}"
+puts "---------"
+puts changelog
 
 # ------------------
 # Push release tag
