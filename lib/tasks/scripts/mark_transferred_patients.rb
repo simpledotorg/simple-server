@@ -16,6 +16,6 @@ class MarkTransferredPatient
     patients = Patient.where(id: migrated_patient_ids)
     Rails.logger.info "Status set to 'migrated' for #{patients.count}"
 
-    patients.update_all(status: "migrated")
+    patients.map { |patient| patient.update(status: "migrated") }
   end
 end
