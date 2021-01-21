@@ -41,5 +41,4 @@ class RegionAccess
   def memoized?
     @memoized == true
   end
-
 end
