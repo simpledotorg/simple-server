@@ -124,7 +124,7 @@ class Reports::RegionsController < AdminController
   def download_filename
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
-    "#{@region.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+    "#{@region.source.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
@@ -155,39 +155,23 @@ class Reports::RegionsController < AdminController
 
   def find_region
     report_scope = report_params[:report_scope]
-    @region ||= if current_admin.feature_enabled?(:region_reports)
-      authorize {
-        case report_scope
-        when "state"
-          current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
-        when "facility_district"
-          scope = current_admin.accessible_facilities(:view_reports)
-          FacilityDistrict.new(name: report_params[:id], scope: scope)
-        when "district"
-          current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
-        when "block"
-          current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
-        when "facility"
-          current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
-        else
-          raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
-        end
-      }
-    else
-      authorize {
-        case report_scope
-        when "facility_district"
-          scope = current_admin.accessible_facilities(:view_reports)
-          FacilityDistrict.new(name: report_params[:id], scope: scope)
-        when "district"
-          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
-        when "facility"
-          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
-        else
-          raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
-        end
-      }
-    end
+    @region ||= authorize {
+      case report_scope
+      when "state"
+        current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
+      when "facility_district"
+        scope = current_admin.accessible_facilities(:view_reports)
+        FacilityDistrict.new(name: report_params[:id], scope: scope)
+      when "district"
+        current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
+      when "block"
+        current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
+      when "facility"
+        current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
+      else
+        raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
+      end
+    }
   end
 
   def report_params
