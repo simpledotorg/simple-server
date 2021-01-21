@@ -11,19 +11,18 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :drug_stocks_enabled?
 
   def index
-    @facilities = filter_facilities()
-                    .includes(facility_group: :protocol_drugs)
-                    .where(protocol_drugs: { stock_tracked: true })
+    @facilities = filter_facilities
+      .includes(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
   end
 
   def new
     session[:index_url] ||= request.referer
     drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
-                               .where(facility_id: @facility.id, for_end_of_month: @for_end_of_month)
-                               .order(:protocol_drug_id, created_at: :desc)
-    @drug_stocks = drug_stock_list.inject({}) { |acc, drug_stock|
+      .where(facility_id: @facility.id, for_end_of_month: @for_end_of_month)
+      .order(:protocol_drug_id, created_at: :desc)
+    @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
       acc[drug_stock.protocol_drug.id] = drug_stock
-      acc
     }
   end
 
@@ -39,13 +38,12 @@ class MyFacilities::DrugStocksController < AdminController
       end
     end
 
-    case
-    when drug_stocks.empty?
-      redirect_to session[:index_url]
-    when drug_stocks.all?(&:valid?)
-      redirect_to session[:index_url], notice: "Saved drug stocks"
-    when drug_stocks.any?(&:invalid?)
-      redirect_to session[:index_url], alert: "Something went wrong, Drug Stocks were not saved."
+    if drug_stocks.empty?
+      redirect_to my_facilities_drug_stocks_path
+    elsif drug_stocks.all?(&:valid?)
+      redirect_to my_facilities_drug_stocks_path, notice: "Saved drug stocks"
+    elsif drug_stocks.any?(&:invalid?)
+      redirect_to my_facilities_drug_stocks_path, alert: "Something went wrong, Drug Stocks were not saved."
     end
   end
 
