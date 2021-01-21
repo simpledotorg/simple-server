@@ -7,6 +7,7 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :authorize_my_facilities
   after_action :verify_authorization_attempted
   before_action :set_facility, only: [:new, :create]
+  before_action :set_for_end_of_month, only: [:new, :create]
   before_action :drug_stocks_enabled?
 
   def index
@@ -16,7 +17,6 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def new
-    @for_end_of_month = parse_end_of_month(params[:for_end_of_month])
     drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
                                .where(facility_id: @facility.id, for_end_of_month: @for_end_of_month)
                                .order(:protocol_drug_id, created_at: :desc)
@@ -27,7 +27,6 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    for_end_of_month = parse_end_of_month(params[:for_end_of_month])
     drug_stocks = DrugStock.transaction do
       drug_stocks_reported.map do |drug_stock|
         DrugStock.create(facility: @facility,
@@ -35,7 +34,7 @@ class MyFacilities::DrugStocksController < AdminController
                          protocol_drug_id: drug_stock[:protocol_drug_id],
                          received: drug_stock[:received].presence,
                          in_stock: drug_stock[:in_stock].presence,
-                         for_end_of_month: for_end_of_month)
+                         for_end_of_month: @for_end_of_month)
       end
     end
 
@@ -75,7 +74,7 @@ class MyFacilities::DrugStocksController < AdminController
     end
   end
 
-  def parse_end_of_month(year_month_string)
-    Date.strptime(year_month_string, "%B %Y").end_of_month
+  def set_for_end_of_month
+    @for_end_of_month ||= Date.strptime(params[:for_end_of_month], "%B %Y").end_of_month
   end
 end
