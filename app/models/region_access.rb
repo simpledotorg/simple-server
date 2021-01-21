@@ -1,7 +1,12 @@
 class RegionAccess
+  include Memery
+  attr_reader :user_access
   attr_reader :user
-  def initialize(user)
+
+  def initialize(user, memoized: false)
+    @user_access = user.user_access
     @user = user
+    @memoized = memoized
   end
 
   def accessible_region?(region)
@@ -9,16 +14,25 @@ class RegionAccess
   end
 
   # An admin can view a state if they have view_reports access to any of the state's districts
-  def accessible_state?(region)
+  def accessible_state?(region, action)
     return true if user.power_user?
-    @accessible_state_ids ||= user.user_access.accessible_state_regions(:view_reports).pluck(:id)
-    @accessible_state_ids.include?(region.id)
+    accessible_region_ids(region.region_type, action).include?(region.id)
   end
 
-  def accessible_district?(region)
+  def accessible_region_ids(region_type, action)
+    meth = "accessible_#{region_type}_regions"
+    user_access.public_send(meth, action).pluck(:id)
+  end
+
+  memoize :accessible_region_ids, condition: -> { memoized? }
+
+  def memoized?
+    @memoized == true
+  end
+
+  def accessible_district?(region, action)
     return true if user.power_user?
-    @accessible_district_ids ||= user.accessible_district_regions(:view_reports).pluck(:id)
-    @accessible_district_ids.include?(region.id)
+    accessible_region_ids(region.region_type, action).include?(region.id)
   end
 
   def accessible_block?(region)
