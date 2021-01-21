@@ -83,6 +83,16 @@ describe Patient, type: :model do
       patient.date_of_birth = 3.days.from_now
       expect(patient).to be_invalid
     end
+
+    specify do
+      is_expected.to validate_inclusion_of(:status).in_array([
+        "active",
+        "dead",
+        "migrated",
+        "unresponsive",
+        "inactive"
+      ])
+    end
   end
 
   describe "Behavior" do
