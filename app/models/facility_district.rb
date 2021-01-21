@@ -69,6 +69,10 @@ class FacilityDistrict
     updated_at.utc.to_s(:usec)
   end
 
+  def source
+    self
+  end
+
   # For regions compatibility
   def facility_region?
     false

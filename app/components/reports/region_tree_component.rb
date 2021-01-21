@@ -11,12 +11,12 @@ class Reports::RegionTreeComponent < ViewComponent::Base
   # Note that we short circuit facility access checks because they are handled in the controller, as they are the
   # leaf nodes that are returned via our accessible region view_reports finder. This avoids the many extra authz checks for
   # index view, which could be in the thousands for users with a lot of access.
-  def accessible_region?(region)
+  def accessible_region?(region, action)
     case region.region_type
     when "facility"
       true
     else
-      helpers.accessible_region?(region)
+      helpers.accessible_region?(region, action)
     end
   end
 
