@@ -4,19 +4,18 @@ RegionsSearch = function () {
     const regex = new RegExp(searchQuery, "ig")
     const highlightedName = name.replace(regex, "<strong class='bg-yellow-light'>$&</strong>")
 
-    let html = $("template#result-row").html();
+    let html = $("template.result-row").html();
     let $html = $(html)
 
-    $html.find(".ancestors").append(result["ancestors"])
     let link = $html.find("a")
-    link.append(highlightedName)
+    link.prepend(highlightedName)
+    $html.find(".ancestors").append(result["ancestors"])
     link.attr("href", result["link"])
-
     return $html
   }
 
   this.noResultsFound = (searchQuery) => {
-    let html = $("template#no-results-found").html();
+    let html = $("template.no-results-found").html();
     let $html = $(html);
     $html.find(".search-query").html(searchQuery);
 

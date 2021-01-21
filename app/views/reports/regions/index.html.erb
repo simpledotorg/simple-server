@@ -25,13 +25,13 @@
         <script>
           const search = new RegionsSearch().search;
           const form = $("#search-form")
-          const input = form.find("#search_input")
           form.on("submit", function(event) {
+            input = $(event.target).find(".typeahead-input")
             search(input);
             return false;
           })
-          form.on("input", function(event) {
-            search(input);
+          form.on("keyup", function(event) {
+            search(event.target);
             return false;
           })
 
