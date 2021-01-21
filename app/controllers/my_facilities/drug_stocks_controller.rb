@@ -16,9 +16,9 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def new
-    for_end_of_month = parse_end_of_month(params[:for_end_of_month])
+    @for_end_of_month = parse_end_of_month(params[:for_end_of_month])
     drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
-                               .where(facility_id: @facility.id, for_end_of_month: for_end_of_month)
+                               .where(facility_id: @facility.id, for_end_of_month: @for_end_of_month)
                                .order(:protocol_drug_id, created_at: :desc)
     @drug_stocks = drug_stock_list.inject({}) { |acc, drug_stock|
       acc[drug_stock.protocol_drug.id] = drug_stock
