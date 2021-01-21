@@ -84,14 +84,18 @@ describe Patient, type: :model do
       expect(patient).to be_invalid
     end
 
-    specify do
-      is_expected.to validate_inclusion_of(:status).in_array([
-        "active",
-        "dead",
-        "migrated",
-        "unresponsive",
-        "inactive"
-      ])
+    it "validates status" do
+      patient = Patient.new
+
+      # valid statuses should not cause problems
+      patient.status = "active"
+      patient.status = "dead"
+      patient.status = "migrated"
+      patient.status = "unresponsive"
+      patient.status = "inactive"
+
+      # invalid statuses should raise errors
+      expect { patient.status = "something else" }.to raise_error(ArgumentError)
     end
   end
 

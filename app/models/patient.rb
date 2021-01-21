@@ -13,6 +13,8 @@ class Patient < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
   DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
 
+  enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
+
   enum reminder_consent: {
     granted: "granted",
     denied: "denied"
@@ -96,7 +98,6 @@ class Patient < ApplicationRecord
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
-  validates :status, inclusion: {in: STATUSES}
 
   validates_associated :address, if: :address
   validates_associated :phone_numbers, if: :phone_numbers
