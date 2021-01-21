@@ -17,7 +17,7 @@ Fixing b. can be automated by following these steps:
 * Move user data from source facility to destination facility
 
 ```bash
-bundle exec cap india:production deploy:rake task=data_fixes:move_user_data_from_source_to_destination_facility[<user-id>,<source-facility-id>,<destination-facility-id]
+bundle exec cap india:production deploy:rake task=data_fixes:move_user_data_from_source_to_destination_facility[<user-id>,<source-facility-id>,<destination-facility-id>]
 ```
 
 * Reattach the user to the correct facility using the edit UI (eg. https://api.simple.org/admin/users/user_id/edit) and picking the correct registration facility from the drop down:
