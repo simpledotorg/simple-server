@@ -28,7 +28,7 @@ Fixing a. is tricky since the user's syncs would be failing (because facility is
 
 * Un-delete the soft-deleted facility temporarily
   * This may also require creating a Region for this facility
-  * Make sure you attach this new facility region to this facility as well
+  * Make sure you attach this new facility region to this facility
 * Ask the user to sync the data back to this, now, undeleted facility
 * Move the data into the correct facility using the aforementioned script
 * Reattach the user to the correct facility using the edit UI (as described above)
