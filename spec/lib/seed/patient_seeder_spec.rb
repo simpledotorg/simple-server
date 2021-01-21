@@ -28,6 +28,6 @@ RSpec.describe Seed::PatientSeeder do
     end
     expect(facility.assigned_patients.count).to eq(4)
     expect(facility.assigned_patients.with_hypertension.count).to eq(4)
-    expect(facility.assigned_patients.with_hypertension.where(status: 0).count).to be >= 3
+    expect(facility.assigned_patients.with_hypertension.where(status: "active").count).to be >= 3
   end
 end
