@@ -17,6 +17,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def new
+    session[:index_url] ||= request.referer
     drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
                                .where(facility_id: @facility.id, for_end_of_month: @for_end_of_month)
                                .order(:protocol_drug_id, created_at: :desc)
@@ -40,11 +41,11 @@ class MyFacilities::DrugStocksController < AdminController
 
     case
     when drug_stocks.empty?
-      redirect_to my_facilities_drug_stocks_path
+      redirect_to session[:index_url]
     when drug_stocks.all?(&:valid?)
-      redirect_to my_facilities_drug_stocks_path, notice: "Saved drug stocks"
+      redirect_to session[:index_url], notice: "Saved drug stocks"
     when drug_stocks.any?(&:invalid?)
-      redirect_to my_facilities_drug_stocks_path, alert: "Something went wrong, Drug Stocks were not saved."
+      redirect_to session[:index_url], alert: "Something went wrong, Drug Stocks were not saved."
     end
   end
 
