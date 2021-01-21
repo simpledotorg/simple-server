@@ -57,8 +57,8 @@ class Region < ApplicationRecord
   end
 
   def cached_ancestors
-    cache.fetch("#{cache_key}/ancestors", version: "#{cache_version}/#{path}") do
-      ancestors
+    cache.fetch("#{cache_key}/ancestors", version: "#{cache_version}/#{path}/v3") do
+      ancestors.order(:path).all.to_a
     end
   end
 
