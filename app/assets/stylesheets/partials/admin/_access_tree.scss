@@ -169,13 +169,21 @@
       }
 
       .form-check {
-        margin-left: 10px;
+        margin-left: 8px;
+
+        @include media-breakpoint-down(sm) {
+          font-size: 16px;
+        }
 
         label {
           position: relative;
           top: 1px;
           font-weight: 100;
           margin-left: 4px;
+
+          @include media-breakpoint-down(sm) {
+            position: unset;
+          }
         }
 
         &.show {
