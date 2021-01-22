@@ -119,7 +119,12 @@ class Reports::RegionsController < AdminController
     current_admin.region_access(memoized: true).accessible_region?(region, action)
   end
 
+  def region_reports_enabled?
+    current_admin.feature_enabled?(:region_reports)
+  end
+
   helper_method :accessible_region?
+  helper_method :region_reports_enabled?
 
   def download_filename
     time = Time.current.to_s(:number)
@@ -208,9 +213,5 @@ class Reports::RegionsController < AdminController
   def percentage(numerator, denominator)
     return 0 if denominator == 0 || numerator == 0
     ((numerator.to_f / denominator) * 100).round(2)
-  end
-
-  def region_reports_enabled?
-    current_admin.feature_enabled?(:region_reports)
   end
 end

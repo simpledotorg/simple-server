@@ -104,12 +104,11 @@ class FacilityGroup < ApplicationRecord
     registered_patients.with_discarded
   end
 
-  private
-
-  # Remove me after region_reports is mainline
   def source
     self
   end
+
+  private
 
   def set_diabetes_management(value)
     facilities.each { |f| f.update!(enable_diabetes_management: value) }
