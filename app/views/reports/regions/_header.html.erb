@@ -1,7 +1,12 @@
 <% period_selector = local_assigns.fetch(:period_selector, true) %>
 
 <div class="dashboard">
-  <nav class="breadcrumb mb-0px">
+  <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+    <div class="mo-search">
+      <%= render "search" %>
+    <div>
+  <% end %>
+  <nav class="breadcrumb" style="margin-top: 24px; margin-bottom: 0px; padding-bottom: 8px;">
     <%= link_to "All reports", dashboard_districts_path %>
 
     <% # we can get rid of this check when FacilityDistrict goes away %>
