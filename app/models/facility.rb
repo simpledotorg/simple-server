@@ -229,4 +229,9 @@ class Facility < ApplicationRecord
     return unless facility_size
     I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
+
+  # Remove me after region_reports is mainline
+  def source
+    self
+  end
 end

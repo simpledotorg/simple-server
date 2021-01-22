@@ -106,6 +106,11 @@ class FacilityGroup < ApplicationRecord
 
   private
 
+  # Remove me after region_reports is mainline
+  def source
+    self
+  end
+
   def set_diabetes_management(value)
     facilities.each { |f| f.update!(enable_diabetes_management: value) }
   end
