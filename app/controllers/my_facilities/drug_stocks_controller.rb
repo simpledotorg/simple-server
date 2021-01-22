@@ -25,6 +25,9 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
+    report_url_with_filters = session[:report_url_with_filters]
+    session[:report_url_with_filters] = nil
+
     drug_stocks = DrugStock.transaction do
       drug_stocks_reported.map do |drug_stock|
         DrugStock.create!(facility: @facility,
@@ -36,8 +39,6 @@ class MyFacilities::DrugStocksController < AdminController
       end
     end
 
-    report_url_with_filters = session[:report_url_with_filters]
-    session[:report_url_with_filters] = nil
     if drug_stocks.empty?
       redirect_to report_url_with_filters
     elsif drug_stocks.all?(&:valid?)
@@ -45,6 +46,9 @@ class MyFacilities::DrugStocksController < AdminController
     elsif drug_stocks.any?(&:invalid?)
       redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
     end
+
+  rescue ActiveRecord::RecordInvalid
+    redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
   end
 
   private
