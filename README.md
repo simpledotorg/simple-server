@@ -19,6 +19,9 @@ This is the backend for the Simple app to help track hypertensive patients acros
 We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
 If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
 
+
+testing changes
+
 ```
 brew install rbenv ruby-build redis yarn
 ```
