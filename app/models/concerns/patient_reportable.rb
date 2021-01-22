@@ -3,12 +3,16 @@ module PatientReportable
   LTFU_PERIOD = 12.months
 
   included do
+    has_one :materialized_latest_blood_pressure,
+      class_name: "LatestBloodPressuresPerPatient",
+      foreign_key: :patient_id
+
     scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes).distinct }
     scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes).distinct }
 
     scope :excluding_dead, -> { where.not(status: :dead) }
     scope :excluding_ltfu, -> {
-      joins(:latest_blood_pressures_per_patient)
+      joins(:materialized_latest_blood_pressure)
         .where("latest_blood_pressures_per_patients.bp_recorded_at < ?", LTFU_PERIOD.ago)
         .where("latest_blood_pressures_per_patients.patient_recorded_at < ?", LTFU_PERIOD.ago)
     }
