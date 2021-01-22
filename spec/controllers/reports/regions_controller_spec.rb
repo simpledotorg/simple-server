@@ -192,6 +192,21 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_redirect
     end
 
+    it "finds a facility group if it has different slug compared to the region" do
+      other_fg = create(:facility_group, name: "other facility group", organization: organization)
+      region = other_fg.region
+      slug = region.slug
+      region.update!(slug: "#{slug}-district")
+      expect(region.slug).to_not eq(other_fg.slug)
+
+      other_fg.facilities << build(:facility, name: "other facility")
+      user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+      sign_in(user.email_authentication)
+      get :show, params: {id: other_fg.slug, report_scope: "district"}
+      expect(response).to be_successful
+    end
+
     it "renders successfully if report viewer has access to region" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
       other_fg.facilities << build(:facility, name: "other facility")
