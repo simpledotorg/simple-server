@@ -60,12 +60,8 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     end
 
     it "returns the latest drug stocks in a facility for a given month" do
-      drug_stock_1 = create(:drug_stock,
-        facility: facility,
-        protocol_drug: protocol_drug)
-      drug_stock_2 = create(:drug_stock,
-        facility: facility,
-        protocol_drug: protocol_drug_2)
+      drug_stock_1 = create(:drug_stock, facility: facility, protocol_drug: protocol_drug)
+      drug_stock_2 = create(:drug_stock, facility: facility, protocol_drug: protocol_drug_2)
 
       get :new, params: params
 
