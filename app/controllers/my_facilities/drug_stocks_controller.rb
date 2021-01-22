@@ -60,7 +60,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def set_facility
-    @facility = current_admin.accessible_facilities(:view_reports).find_by_id(params[:facility_id])
+    @facility = authorize { current_admin.accessible_facilities(:manage).find_by_id(params[:facility_id]) }
   end
 
   def drug_stocks_params
