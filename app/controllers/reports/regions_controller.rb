@@ -12,7 +12,7 @@ class Reports::RegionsController < AdminController
   delegate :cache, to: Rails
 
   def index
-    if current_admin.feature_enabled?(:region_reports)
+    if region_reports_enabled?
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
       cache_key = "#{current_admin.cache_key}/regions/index"
@@ -61,7 +61,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    region_source = current_admin.feature_enabled?(:region_reports) ? @region.source : @region
+    region_source = region_reports_enabled? ? @region.source : @region
     if region_source.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
     end
@@ -119,7 +119,12 @@ class Reports::RegionsController < AdminController
     current_admin.region_access(memoized: true).accessible_region?(region, action)
   end
 
+  def region_reports_enabled?
+    current_admin.feature_enabled?(:region_reports)
+  end
+
   helper_method :accessible_region?
+  helper_method :region_reports_enabled?
 
   def download_filename
     time = Time.current.to_s(:number)
@@ -163,11 +168,19 @@ class Reports::RegionsController < AdminController
         scope = current_admin.accessible_facilities(:view_reports)
         FacilityDistrict.new(name: report_params[:id], scope: scope)
       when "district"
-        current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
+        if region_reports_enabled?
+          current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
+        else
+          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
+        end
       when "block"
         current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
       when "facility"
-        current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
+        if region_reports_enabled?
+          current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
+        else
+          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
+        end
       else
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
       end
