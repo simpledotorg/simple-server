@@ -46,7 +46,6 @@ class MyFacilities::DrugStocksController < AdminController
     elsif drug_stocks.any?(&:invalid?)
       redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
     end
-
   rescue ActiveRecord::RecordInvalid
     redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
   end

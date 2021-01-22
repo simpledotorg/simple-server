@@ -25,7 +25,7 @@ describe DrugStock, type: :model do
 
     it "returns latest stocks for end of jan" do
       end_of_january = Date.strptime("January 2021", "%B %Y").end_of_month
-      jan_drug_1_stock_1 = create(:drug_stock,
+      _jan_drug_1_stock_1 = create(:drug_stock,
         facility: facility,
         protocol_drug: protocol_drug,
         for_end_of_month: end_of_january,
@@ -35,7 +35,7 @@ describe DrugStock, type: :model do
         protocol_drug: protocol_drug,
         for_end_of_month: end_of_january,
         created_at: 5.minute.ago)
-      jan_drug_2_stock_1 = create(:drug_stock,
+      _jan_drug_2_stock_1 = create(:drug_stock,
         facility: facility,
         protocol_drug: protocol_drug_2,
         for_end_of_month: end_of_january,
