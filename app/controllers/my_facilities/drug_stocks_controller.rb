@@ -17,10 +17,8 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def new
-    session[:index_url] ||= request.referer
-    drug_stock_list = DrugStock.select("DISTINCT ON (protocol_drug_id) *")
-      .where(facility_id: @facility.id, for_end_of_month: @for_end_of_month)
-      .order(:protocol_drug_id, created_at: :desc)
+    session[:report_url_with_filters] ||= request.referer
+    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month)
     @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
       acc[drug_stock.protocol_drug.id] = drug_stock
     }
@@ -38,12 +36,14 @@ class MyFacilities::DrugStocksController < AdminController
       end
     end
 
+    report_url_with_filters = session[:report_url_with_filters]
+    session[:report_url_with_filters] = nil
     if drug_stocks.empty?
-      redirect_to my_facilities_drug_stocks_path
+      redirect_to report_url_with_filters
     elsif drug_stocks.all?(&:valid?)
-      redirect_to my_facilities_drug_stocks_path, notice: "Saved drug stocks"
+      redirect_to report_url_with_filters, notice: "Saved drug stocks"
     elsif drug_stocks.any?(&:invalid?)
-      redirect_to my_facilities_drug_stocks_path, alert: "Something went wrong, Drug Stocks were not saved."
+      redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
     end
   end
 
