@@ -48,7 +48,8 @@ class MyFacilitiesController < AdminController
       @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
     else
       bp_query = BloodPressureControlQuery.new(facilities: @facilities,
-                                               cohort_period: @selected_cohort_period)
+                                               cohort_period: @selected_cohort_period,
+                                               with_exclusions: report_with_exclusions?)
 
       @totals = {cohort_patients: bp_query.cohort_patients.count,
                  controlled: bp_query.cohort_controlled_bps.count,
@@ -131,7 +132,8 @@ class MyFacilitiesController < AdminController
     else
       missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
                                                   period: @selected_period,
-                                                  last_n: PERIODS_TO_DISPLAY[@selected_period])
+                                                  last_n: PERIODS_TO_DISPLAY[@selected_period],
+                                                  with_exclusions: report_with_exclusions?)
 
       @display_periods = missed_visits_query.periods
       @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
@@ -178,5 +180,9 @@ class MyFacilitiesController < AdminController
 
   def force_cache?
     report_params[:force_cache].present?
+  end
+
+  def report_with_exclusions?
+    current_admin.feature_enabled?(:report_with_exclusions)
   end
 end

@@ -8,7 +8,7 @@ class MissedVisitsQuery
 
   attr_reader :facilities, :periods
 
-  def initialize(facilities: Facility.all, period: :quarter, last_n: 3)
+  def initialize(facilities: Facility.all, period: :quarter, last_n: 3, with_exclusions: false)
     # period can be :quarter, :month.
     # last_n is the number of quarters/months for which data is to be returned
     @facilities = Facility.where(id: facilities)
@@ -16,6 +16,7 @@ class MissedVisitsQuery
     @periods = period_list(period, last_n)
     @latest_period = @periods.first
     @last_n = last_n
+    @with_exclusions = with_exclusions
   end
 
   def calls_made
@@ -58,7 +59,7 @@ class MissedVisitsQuery
   def total_patients_per_facility
     @total_patients_per_facility ||=
       Patient
-        .with_hypertension
+        .for_reports(with_exclusions: @with_exclusions)
         .where(assigned_facility: facilities)
         .group(:assigned_facility_id)
         .count
@@ -73,7 +74,8 @@ class MissedVisitsQuery
                                                  cohort_period: {cohort_period: @period,
                                                                  registration_year: year,
                                                                  registration_month: period,
-                                                                 registration_quarter: period})
+                                                                 registration_quarter: period},
+                                                 with_exclusions: @with_exclusions)
         [[year, period], bp_query]
       }.to_h
   end

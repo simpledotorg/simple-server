@@ -1,3 +1,5 @@
+require "csv"
+
 class PatientsWithHistoryExporter < PatientsExporter
   DISPLAY_BLOOD_PRESSURES = 3
   DISPLAY_MEDICATION_COLUMNS = 5
@@ -14,12 +16,12 @@ class PatientsWithHistoryExporter < PatientsExporter
     [
       "Registration Date",
       "Registration Quarter",
-      "Patient died?",
       "Simple Patient ID",
       "BP Passport ID",
       "Patient Name",
       "Patient Age",
       "Patient Gender",
+      "Patient Status",
       "Patient Phone Number",
       "Patient Street Address",
       "Patient Village/Colony",
@@ -86,12 +88,12 @@ class PatientsWithHistoryExporter < PatientsExporter
     csv_fields = [
       registration_date(patient_summary),
       registration_quarter(patient_summary),
-      ("Died" if patient_summary.status == "dead"),
       patient_summary.id,
       patient_summary.latest_bp_passport&.shortcode,
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
+      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status],
       patient_summary.latest_phone_number,
       patient_summary.street_address,
       patient_summary.village_or_colony,

@@ -147,7 +147,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "can retrieve quarterly cohort data" do
       patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -2))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020, patient: patient, facility: @facility)
+      create(:blood_pressure, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: @facility)
       refresh_views
 
       Timecop.freeze("June 1 2020") do
