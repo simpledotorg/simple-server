@@ -158,11 +158,25 @@ describe Appointment, type: :model do
           expect(appointment.status).to eq("cancelled")
         end
       end
+    end
 
-      it "sets patient status if call indicated they died" do
-        appointment.mark_patient_as_dead
+    describe "#update_patient_status" do
+      it "updates patient status if appointment call result is marked as dead" do
+        appointment.update(cancel_reason: :dead)
+        appointment.update_patient_status
+        expect(appointment.patient.status).to eq "dead"
+      end
 
-        expect(appointment.patient.status).to eq("dead")
+      it "updates patient status if appointment call result is marked as moved_to_private" do
+        appointment.update(cancel_reason: :moved_to_private)
+        appointment.update_patient_status
+        expect(appointment.patient.status).to eq "migrated"
+      end
+
+      it "updates patient status if appointment call result is marked as public_hospital_transfer" do
+        appointment.update(cancel_reason: :public_hospital_transfer)
+        appointment.update_patient_status
+        expect(appointment.patient.status).to eq "migrated"
       end
     end
   end

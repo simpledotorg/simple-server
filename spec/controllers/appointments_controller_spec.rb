@@ -228,5 +228,40 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(response).to redirect_to(appointments_path)
       end
     end
+
+    it "marking the cancel reason as dead updates the patient" do
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: "dead"
+        }
+      }
+
+      overdue_appointment.reload
+
+      expect(overdue_appointment.cancel_reason).to eq "dead"
+      expect(overdue_appointment.patient.status).to eq "dead"
+      expect(response).to redirect_to(appointments_path)
+    end
+
+    it "marking the cancel reason as moved_to_private updates the patient" do
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: "moved_to_private"
+        }
+      }
+      expect(overdue_appointment.reload.patient.status).to eq "migrated"
+    end
+
+    it "marking the cancel reason as public_hospital_transfer updates the patient" do
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: "public_hospital_transfer"
+        }
+      }
+      expect(overdue_appointment.reload.patient.status).to eq "migrated"
+    end
   end
 end
