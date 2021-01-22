@@ -114,9 +114,19 @@ class Appointment < ApplicationRecord
     self.remind_on = nil
   end
 
-  def mark_patient_as_dead
-    patient.status = :dead
-    patient.save
+  def update_patient_status
+    return unless patient
+
+    case cancel_reason
+      when "dead"
+        patient.update(status: :dead)
+      when "moved_to_private"
+        patient.update(status: :migrated)
+      when "public_hospital_transfer"
+        patient.update(status: :migrated)
+      else
+        patient.update(status: :active)
+    end
   end
 
   def anonymized_data

@@ -13,7 +13,7 @@
         <strong>What to look for:</strong> Low percentages are good, and 20% or lower is ideal 
       </p>
       <p class="c-grey-dark c-print-black">
-        <strong>Numerator:</strong> Hypertension patients with no visit in the last 3 months, <%= render "denominator_footer" %>
+        <strong>Numerator:</strong> Patients with no visit in the last 3 months, <%= render "denominator_footer" %>
       </p>
       <div class="d-flex fw-wrap mb-16px">
         <%= render "shared/my_facilities_filters" %>
@@ -42,7 +42,7 @@
           </colgroup>
           <thead>
             <tr data-sort-method="thead" class="sorts">
-              <th class="row-label sort-label sort-label-small">
+              <th class="row-label sort-label sort-label-small" data-sort-default>
                 Facilities
               </th>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">

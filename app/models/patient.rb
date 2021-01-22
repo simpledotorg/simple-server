@@ -4,11 +4,6 @@ class Patient < ApplicationRecord
   include Hashable
   include PatientReportable
 
-  enum reminder_consent: {
-    granted: "granted",
-    denied: "denied"
-  }, _prefix: true
-
   GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
   RISK_PRIORITIES = {
@@ -18,6 +13,23 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
   DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
+
+  enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
+
+  enum reminder_consent: {
+    granted: "granted",
+    denied: "denied"
+  }, _prefix: true
+
+  enum could_not_contact_reasons: {
+    not_responding: "not_responding",
+    moved: "moved",
+    dead: "dead",
+    invalid_phone_number: "invalid_phone_number",
+    public_hospital_transfer: "public_hospital_transfer",
+    moved_to_private: "moved_to_private",
+    other: "other"
+  }
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: "PatientPhoneNumber"
@@ -81,6 +93,14 @@ class Patient < ApplicationRecord
       .merge(PatientPhoneNumber.phone_type_mobile)
   }
 
+  validate :past_date_of_birth
+
+  validates :device_created_at, presence: true
+  validates :device_updated_at, presence: true
+
+  validates_associated :address, if: :address
+  validates_associated :phone_numbers, if: :phone_numbers
+
   def self.follow_ups_with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
     table_name = model_name.table_name.to_sym
     time_column_with_table_name = "#{table_name}.#{time_column}"
@@ -97,24 +117,6 @@ class Patient < ApplicationRecord
 
     relation
   end
-
-  enum could_not_contact_reasons: {
-    not_responding: "not_responding",
-    moved: "moved",
-    dead: "dead",
-    invalid_phone_number: "invalid_phone_number",
-    public_hospital_transfer: "public_hospital_transfer",
-    moved_to_private: "moved_to_private",
-    other: "other"
-  }
-
-  validate :past_date_of_birth
-
-  validates :device_created_at, presence: true
-  validates :device_updated_at, presence: true
-
-  validates_associated :address, if: :address
-  validates_associated :phone_numbers, if: :phone_numbers
 
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current

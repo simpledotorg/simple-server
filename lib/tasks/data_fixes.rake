@@ -1,4 +1,5 @@
 require "tasks/scripts/move_user_recorded_data_to_registration_facility"
+require "tasks/scripts/discard_invalid_appointments"
 
 namespace :data_fixes do
   desc "Move all data recorded by a user from a source facility to a destination facility"
@@ -16,5 +17,18 @@ namespace :data_fixes do
          "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
+  end
+
+  desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
+  task discard_invalid_scheduled_appointments: :environment do
+    patients_ids = Appointment
+      .where(status: "scheduled")
+      .group(:patient_id).count
+      .select { |_k, v| v > 1 }
+      .keys
+
+    Patient.with_discarded.where(id: patients_ids).each do |patient|
+      DiscardInvalidAppointments.call(patient: patient, dry_run: true)
+    end
   end
 end

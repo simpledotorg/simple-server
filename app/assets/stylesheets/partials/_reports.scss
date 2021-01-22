@@ -53,6 +53,8 @@
 .mr-4px { margin-right: 4px; }
 .mr-8px { margin-right: 8px; }
 .pb-8px { padding-bottom: 8px; }
+.py-40px { padding-top: 40px; padding-bottom: 40px; }
+.ph-16px { padding-right: 16px; padding-left: 16px; }
 // Typography
 .fs-12px { font-size: 12px; }
 .fs-14px { font-size: 14px; }
@@ -64,6 +66,7 @@
 .fs-xxlarge { font-size: 48px; }
 .fw-bold { font-weight: 700; }
 .lh-1 { line-height: 1; }
+.lh-18px { line-height: 18px; }
 .ls-145 { letter-spacing: 1.45; }
 .ta-left { text-align: left; }
 .ta-center { text-align: center; }
@@ -106,6 +109,7 @@
 .bg-green-medium { background-color: $green-mid; }
 .bg-purple-medium { background-color: $purple-mid; }
 .bg-purple-light { background-color: $purple-light; }
+.bg-yellow-light { background-color: $yellow-light; }
 .bg-white { background-color: #ffffff; }
 .bg-grey-lightest { background-color: $grey-lightest; }
 .bg-grey-light { background-color: $grey-light; }

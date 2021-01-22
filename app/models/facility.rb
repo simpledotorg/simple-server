@@ -136,6 +136,11 @@ class Facility < ApplicationRecord
     facility_group.region.block_regions.find_by(name: block)
   end
 
+  # Remove me after region_reports is mainline
+  def source
+    self
+  end
+
   private :update_region
   # ----------------
 
