@@ -27,12 +27,12 @@ class MyFacilities::DrugStocksController < AdminController
   def create
     drug_stocks = DrugStock.transaction do
       drug_stocks_reported.map do |drug_stock|
-        DrugStock.create(facility: @facility,
-                         user: current_admin,
-                         protocol_drug_id: drug_stock[:protocol_drug_id],
-                         received: drug_stock[:received].presence,
-                         in_stock: drug_stock[:in_stock].presence,
-                         for_end_of_month: @for_end_of_month)
+        DrugStock.create!(facility: @facility,
+                          user: current_admin,
+                          protocol_drug_id: drug_stock[:protocol_drug_id],
+                          received: drug_stock[:received].presence,
+                          in_stock: drug_stock[:in_stock].presence,
+                          for_end_of_month: @for_end_of_month)
       end
     end
 
