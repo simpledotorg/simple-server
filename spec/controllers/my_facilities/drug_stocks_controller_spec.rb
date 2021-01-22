@@ -37,7 +37,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
 
       it "only include facilities with tracked protocol drugs" do
         sign_in(power_user.email_authentication)
-        get :index, params: {}
+        get :index, params: {facility_group: facility_group_with_stock_tracked.slug}
 
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
         expect(assigns(:facilities)).not_to include(*facility_group.facilities)
