@@ -6,6 +6,7 @@ class UserAccess
   attr_reader :user
   def initialize(user)
     @user = user
+    raise ArgumentError, "user does not have a access_level set!" unless user.access_level
   end
 
   LEVELS = {
@@ -252,6 +253,6 @@ class UserAccess
 
   def action_to_level(action)
     return ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
-    ACTION_TO_LEVEL[action]
+    ACTION_TO_LEVEL.fetch(action) { |key| raise ArgumentError, "unknown action #{action} - valid actions are #{ACTION_TO_LEVEL.keys}" }
   end
 end

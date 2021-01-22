@@ -4,6 +4,7 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const ACCESS_LEVEL_ID = "access-level"
 const ACCESS_LEVEL_POWER_USER = "power_user"
+const ACCESS_LIST_CLICK_ELEMENT = "access-item__dropdown"
 
 AdminAccess = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
@@ -40,7 +41,7 @@ AdminAccess.prototype = {
 
   resourceRowCollapseListener: function () {
     const collapsibleItems = [
-      document.getElementsByClassName("access-item")
+      document.getElementsByClassName(ACCESS_LIST_CLICK_ELEMENT)
     ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
     for (const item of collapsibleItems) {

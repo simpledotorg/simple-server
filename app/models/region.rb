@@ -1,6 +1,7 @@
 class Region < ApplicationRecord
   MAX_LABEL_LENGTH = 255
 
+  delegate :cache, to: Rails
   ltree :path
   extend FriendlyId
   friendly_id :slug_candidates, use: :slugged
@@ -49,6 +50,12 @@ class Region < ApplicationRecord
 
   def organization
     organization_region.source
+  end
+
+  def cached_ancestors
+    cache.fetch("#{cache_key}/ancestors", version: "#{cache_version}/#{path}/v3") do
+      ancestors.order(:path).all.to_a
+    end
   end
 
   def self.root

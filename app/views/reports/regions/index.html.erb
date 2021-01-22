@@ -1,8 +1,16 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-5 col-lg-7">
+
     <% if current_admin.feature_enabled?(:region_reports) %>
-        <div id="facility-access">
+      <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+        <div class="mo-search">
+          <%= render "search" %>
+        <div>
+      <% end %>
+
+
+       <div id="facility-access">
           <% @accessible_regions.each do |org, children| %>
             <div class="card show region-index">
               <div class="access-tree__section-header">
@@ -14,32 +22,44 @@
           <% end %>
         </div>
 
-    <script>
-      const async = false
-      new AdminAccess("facility-access").initialize(async)
-    </script>
+        <script>
+          const search = new RegionsSearch().search;
+          const form = $("#search-form")
+          form.on("submit", function(event) {
+            input = $(event.target).find(".typeahead-input")
+            search(input);
+            return false;
+          })
+          form.on("keyup", function(event) {
+            search(event.target);
+            return false;
+          })
 
-    <% else %>
-      <% @organizations.each do |organization| %>
-      <section>
-        <div class="card org-card">
-          <h2><%= organization.name %></h2>
-          <% current_admin.accessible_facilities(:view_reports)
-            .where(facility_groups: {organization: organization})
-            .flat_map(&:facility_group)
-            .uniq
-            .compact
-            .sort_by(&:name)
-            .each do |district| %>
-            <%= link_to(reports_region_path(district, report_scope: "district"), class: "link-row") do %>
-              <i class='fas fa-angle-right light'></i>
-              <%= district.name %>
+          const async = false
+          new AdminAccess("facility-access").initialize(async)
+        </script>
+
+      <% else %>
+        <% @organizations.each do |organization| %>
+        <section>
+          <div class="card org-card">
+            <h2><%= organization.name %></h2>
+            <% current_admin.accessible_facilities(:view_reports)
+              .where(facility_groups: {organization: organization})
+              .flat_map(&:facility_group)
+              .uniq
+              .compact
+              .sort_by(&:name)
+              .each do |district| %>
+              <%= link_to(reports_region_path(district, report_scope: "district"), class: "link-row") do %>
+                <i class='fas fa-angle-right light'></i>
+                <%= district.name %>
+              <% end %>
             <% end %>
-          <% end %>
-        </div>
-      </section>
+          </div>
+        </section>
+        <% end %>
       <% end %>
-
-    <% end %>
+    </div>
   </div>
 </div>

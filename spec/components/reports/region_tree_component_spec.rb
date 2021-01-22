@@ -7,14 +7,14 @@ RSpec.describe Reports::RegionTreeComponent, type: :component do
 
   it "always returns true for accessible facility checks" do
     region = build(:region, region_type: "facility")
-    expect(component.accessible_region?(region)).to be true
+    expect(component.accessible_region?(region, :view_reports)).to be true
   end
 
   it "delegates to helper methods for other accessible checks" do
     block_region = build(:region, region_type: "block")
     fake_helpers = double("helpers")
-    expect(fake_helpers).to receive(:accessible_region?).with(block_region).and_return(false)
+    expect(fake_helpers).to receive(:accessible_region?).with(block_region, :view_reports).and_return(false)
     allow(component).to receive(:helpers).and_return(fake_helpers)
-    expect(component.accessible_region?(block_region)).to be false
+    expect(component.accessible_region?(block_region, :view_reports)).to be false
   end
 end
