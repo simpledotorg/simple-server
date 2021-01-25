@@ -20,15 +20,16 @@ namespace :data_fixes do
   end
 
   desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
-  task discard_invalid_scheduled_appointments: :environment do
-    patients_ids = Appointment
-      .where(status: "scheduled")
-      .group(:patient_id).count
-      .select { |_k, v| v > 1 }
-      .keys
+  task :discard_invalid_scheduled_appointments, [:dry_run] => :environment do |_t, args|
+    dry_run =
+      args.dry_run == "true"
+
+    puts "This is a dry run" if dry_run
+
+    patients_ids = Appointment.where(status: "scheduled").group(:patient_id).count.select { |_k, v| v > 1 }.keys
 
     Patient.with_discarded.where(id: patients_ids).each do |patient|
-      DiscardInvalidAppointments.call(patient: patient, dry_run: true)
+      DiscardInvalidAppointments.call(patient: patient, dry_run: dry_run)
     end
   end
 end
