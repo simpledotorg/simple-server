@@ -5,6 +5,7 @@ class CountryConfig
     IN: {
       abbreviation: "IN",
       name: "India",
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["India"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_IN",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Kolkata",
@@ -16,6 +17,7 @@ class CountryConfig
     BD: {
       abbreviation: "BD",
       name: "Bangladesh",
+      extended_region_reports: false,
       states: COUNTRYWISE_STATES["Bangladesh"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_BD",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",

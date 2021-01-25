@@ -48,16 +48,28 @@ RSpec.describe Region, type: :model do
   end
 
   describe "children_for_reports" do
-    it "is everything for India"
-    fit "excludes states and blocks for other countries" do
+    it "is everything for India" do
+      expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
+
+      org = Seed.seed_org.region
+      state = FactoryBot.create(:region, :state, reparent_to: org)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      fg = FactoryBot.create(:facility_group, region: district)
+      facility = FactoryBot.create(:facility, facility_group: fg)
+      expect(district.children_for_reports).to match_array(district.block_regions)
+      expect(district.block_regions.first.children_for_reports).to match_array([facility.region])
+    end
+
+    it "excludes states and blocks for other countries" do
+      expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD)).at_least(:once)
+
       org = Seed.seed_org.region
       state = FactoryBot.create(:region, :state, reparent_to: org)
       district = FactoryBot.create(:region, :district, reparent_to: state)
       fg = FactoryBot.create(:facility_group, region: district)
       facility = FactoryBot.create(:facility, facility_group: fg)
       facility_region = facility.region
-      expect(district.children_for_reports).to contain_exactly([facility_region])
-
+      expect(district.children_for_reports).to contain_exactly(facility_region)
     end
   end
 

@@ -35,8 +35,20 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
+  def self.reportable_region_types
+    if CountryConfig.current[:extended_region_reports]
+      REGION_TYPES
+    else
+      %w[district facility]
+    end
+  end
+
   def children_for_reports
-    children
+    if CountryConfig.current[:extended_region_reports]
+      children
+    else
+      public_send("#{child_region_type}_regions")
+    end
   end
 
   def accessible_children(admin, region_type: child_region_type, access_level: :any)
@@ -47,9 +59,11 @@ class Region < ApplicationRecord
     superset & authorized_set
   end
 
+  delegate :reportable_region_types, to: self
+
   def child_region_type
-    index = REGION_TYPES.find_index { |type| type == region_type }
-    REGION_TYPES[index + 1]
+    current_index = reportable_region_types.find_index { |type| type == region_type }
+    reportable_region_types[current_index + 1]
   end
 
   def organization
