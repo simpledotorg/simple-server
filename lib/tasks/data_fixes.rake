@@ -21,13 +21,8 @@ namespace :data_fixes do
 
   desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
   task :discard_invalid_scheduled_appointments, [:dry_run] => :environment do |_t, args|
-
     dry_run =
-      if args.dry_run == "true"
-        true
-      else
-        false
-      end
+      args.dry_run == "true"
 
     puts "This is a dry run" if dry_run
 
