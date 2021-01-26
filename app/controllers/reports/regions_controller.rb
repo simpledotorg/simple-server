@@ -130,7 +130,7 @@ class Reports::RegionsController < AdminController
   def download_filename
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
-    "#{@region.source.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
@@ -172,7 +172,7 @@ class Reports::RegionsController < AdminController
         if region_reports_enabled?
           current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
         else
-          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
+          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id]).region
         end
       when "block"
         current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
@@ -180,7 +180,7 @@ class Reports::RegionsController < AdminController
         if region_reports_enabled?
           current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
         else
-          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
+          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id]).region
         end
       else
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
