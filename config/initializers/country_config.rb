@@ -29,6 +29,7 @@ class CountryConfig
     ET: {
       abbreviation: "ET",
       name: "Ethiopia",
+      extended_region_reports: false,
       states: COUNTRYWISE_STATES["Ethiopia"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_ET",
       faker_locale: "en-IND",
@@ -40,6 +41,7 @@ class CountryConfig
     US: {
       abbreviation: "US",
       name: "United States",
+      extended_region_reports: true,
       dashboard_locale: "en",
       faker_locale: "en-IND",
       time_zone: "America/New_York",
@@ -50,6 +52,7 @@ class CountryConfig
     UK: {
       abbreviation: "UK",
       name: "United Kingdom",
+      extended_region_reports: true,
       dashboard_locale: "en",
       faker_locale: "en-IND",
       time_zone: "Europe/London",
