@@ -45,13 +45,12 @@ class Reports::RegionsController < AdminController
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.respond_to?(:children)
-      @children_data = @region.children.each_with_object({}) { |child, hsh|
-        hsh[child.name] = Reports::RegionService.new(region: child,
-                                                     period: @period,
-                                                     with_exclusions: report_with_exclusions?).call
-      }
-    end
+    @children = @region.reportable_children(region_reports_enabled: region_reports_enabled?)
+    @children_data = @children.each_with_object({}) { |child, hsh|
+      hsh[child.name] = Reports::RegionService.new(region: child,
+                                                   period: @period,
+                                                   with_exclusions: report_with_exclusions?).call
+    }
   end
 
   def details
@@ -62,7 +61,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    region_source = region_reports_enabled? ? @region.source : @region
+    region_source = @region.source
     if region_source.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
     end
