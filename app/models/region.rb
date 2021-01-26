@@ -35,20 +35,24 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
-  def self.reportable_region_types
-    if CountryConfig.current[:extended_region_reports]
-      REGION_TYPES
-    else
-      %w[district facility]
+  delegate :reportable_region_types, to: self
+
+  def child_region_type
+    current_index = REGION_TYPES.find_index { |type| type == region_type }
+    REGION_TYPES[current_index + 1]
+  end
+
+  def legacy_children
+    case region_type
+    when "district" then facility_regions
+    when "facility" then []
+    else raise ArgumentError, "unsupported region_type #{region_type} for legacy_children"
     end
   end
 
-  def children_for_reports
-    if CountryConfig.current[:extended_region_reports]
-      children
-    else
-      public_send("#{child_region_type}_regions")
-    end
+  def reportable_children(region_reports_enabled: false)
+    return children if region_reports_enabled && CountryConfig.current[:extended_region_reports]
+    legacy_children
   end
 
   def accessible_children(admin, region_type: child_region_type, access_level: :any)
@@ -57,13 +61,6 @@ class Region < ApplicationRecord
     superset = public_send(region_method)
     authorized_set = admin.public_send(auth_method, access_level)
     superset & authorized_set
-  end
-
-  delegate :reportable_region_types, to: self
-
-  def child_region_type
-    current_index = reportable_region_types.find_index { |type| type == region_type }
-    reportable_region_types[current_index + 1]
   end
 
   def organization
