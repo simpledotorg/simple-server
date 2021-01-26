@@ -35,8 +35,6 @@ class Region < ApplicationRecord
     undef_method "#{type}_regions?"
   end
 
-  delegate :reportable_region_types, to: self
-
   def child_region_type
     current_index = REGION_TYPES.find_index { |type| type == region_type }
     REGION_TYPES[current_index + 1]
