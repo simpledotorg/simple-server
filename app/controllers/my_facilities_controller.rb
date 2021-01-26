@@ -87,17 +87,8 @@ class MyFacilitiesController < AdminController
     @facilities = filter_facilities
 
     if current_admin.feature_enabled?(:my_facilities_improvements)
-      @data_for_facility = {}
-      @scores_for_facility = {}
-
-      @facilities.each do |facility|
-        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-        @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
-                                                                            reports_result: @data_for_facility[facility.name],
-                                                                            period: @period)
-      end
-
-      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+      redirect_to my_facilities_overview_path(request.query_parameters)
+      return
     else
       registrations_query = RegistrationsQuery.new(facilities: @facilities,
                                                    period: @selected_period,
