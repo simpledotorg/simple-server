@@ -70,7 +70,6 @@ class MyFacilitiesController < AdminController
   def bp_not_controlled
     unless current_admin.feature_enabled?(:my_facilities_improvements)
       redirect_to my_facilities_overview_path(request.query_parameters)
-      return
     end
 
     @facilities = filter_facilities
