@@ -88,7 +88,7 @@ class MyFacilitiesController < AdminController
 
     if current_admin.feature_enabled?(:my_facilities_improvements)
       redirect_to my_facilities_overview_path(request.query_parameters)
-      && return
+      return
     else
       registrations_query = RegistrationsQuery.new(facilities: @facilities,
                                                    period: @selected_period,
