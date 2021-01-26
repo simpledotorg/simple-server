@@ -298,7 +298,7 @@
 <%= render "visit_details_card" %>
 
 <% if @children_data.any? %>
-  <%= render "child_data_tables", data: @children_data, region_type: @children_data.first.region_type %>
+  <%= render "child_data_tables", data: @children_data, region_type: @children.first.region_type %>
 <% end %>
 
 <div id="data-json" style="display: none;">
