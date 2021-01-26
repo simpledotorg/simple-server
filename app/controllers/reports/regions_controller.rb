@@ -130,7 +130,7 @@ class Reports::RegionsController < AdminController
   def download_filename
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
-    "#{@region.source.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
