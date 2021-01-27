@@ -59,18 +59,6 @@ class MyFacilitiesController < AdminController
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
-  def registrations
-    @facilities = filter_facilities
-
-    @data_for_facility = {}
-
-    @facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-    end
-
-    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
-  end
-
   def missed_visits
     @facilities = filter_facilities
 
