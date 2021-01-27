@@ -21,9 +21,6 @@
         <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
           Missed visits
         <% end %>
-        <%= link_to(my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("registrations")}") do %>
-          Registrations
-        <% end %>
       </div>
     </div>
   </div>
