@@ -3,30 +3,30 @@ module PatientReportable
   LTFU_PERIOD = 12.months
 
   included do
-    has_one :materialized_latest_blood_pressure,
-      class_name: "LatestBloodPressuresPerPatient",
-      foreign_key: :patient_id
-
     scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes).distinct }
     scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes).distinct }
 
     scope :excluding_dead, -> { where.not(status: :dead) }
-    scope :excluding_ltfu, -> {
-      joins(:materialized_latest_blood_pressure)
-        .where("latest_blood_pressures_per_patients.bp_recorded_at < ?", LTFU_PERIOD.ago)
-        .where("latest_blood_pressures_per_patients.patient_recorded_at < ?", LTFU_PERIOD.ago)
-    }
+    scope :excluding_ltfu, ->(ltfu_as_of: Date.today) do
+      where(id: latest_bp_within_ltfu_period(ltfu_as_of).select(:patient_id))
+    end
 
-    scope :for_reports, ->(with_exclusions: false, excluding_ltfu: true) do
+    # exclude_ltfu_as_of is the Date/Time at which patients are to be considered as LTFU.
+    # LTFU patients will be included if this is not passed.
+    scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: Time.new(0)) do
       if with_exclusions
-        if excluding_ltfu
-          with_hypertension.excluding_dead.excluding_ltfu
-        else
-          with_hypertension.excluding_dead
-        end
+        with_hypertension
+          .excluding_dead
+          .excluding_ltfu(ltfu_as_of: exclude_ltfu_as_of)
       else
         with_hypertension
       end
+    end
+
+    def self.latest_bp_within_ltfu_period(ltfu_as_of)
+      LatestBloodPressuresPerPatient
+        .where("bp_recorded_at > ? AND bp_recorded_at <= ?", ltfu_as_of - LTFU_PERIOD, ltfu_as_of)
+        .where("patient_recorded_at <= ?", ltfu_as_of)
     end
   end
 end
