@@ -1,5 +1,5 @@
 class PassportAnalytics
-  require 'squid'
+  require "squid"
   include Memery
 
   IDENTIFIER_TYPES = %w[simple_bp_passport]
@@ -7,7 +7,7 @@ class PassportAnalytics
     across_facilities: :duplicate_passports_count_across_facilities,
     same_facility: :duplicate_passports_in_same_facility,
     across_districts: :duplicate_passports_across_districts,
-    across_blocks: :duplicate_passports_across_blocks,
+    across_blocks: :duplicate_passports_across_blocks
   }
 
   # for continuously reporting metrics in an automated way
@@ -44,10 +44,8 @@ class PassportAnalytics
   end
 
   def trend(since, step, metrics)
-    now = Time.current
-
     metrics
-      .to_h { |metric| [metric, for_time_series(since, now, step).to_h { |time| make_trend(metric, time) }] }
+      .to_h { |name| make_trend(name, since, step) }
       .then { |data| make_chart(data) }
       .then { |data| send_email(data) }
   end
@@ -125,9 +123,9 @@ class PassportAnalytics
       find_age_thru_name_fn = ->(name) { dupe_patients.find { |p| p.full_name == name }&.age }
 
       name_combos.any? do |p1_name, p2_name|
-        age1 = find_age_thru_name_fn.(p1_name)
+        age1 = find_age_thru_name_fn.call(p1_name)
         age2 = find_age_thru_name_fn.(p2_name)
-        error_margin_in_name = ([p1_name.size, p2_name.size].max) / 2.0
+        error_margin_in_name = [p1_name.size, p2_name.size].max / 2.0
 
         if levenshtein_distance(p1_name, p2_name) > error_margin_in_name
           if age1 && age2
@@ -135,12 +133,10 @@ class PassportAnalytics
           else
             true
           end
+        elsif age1 && age2
+          age1 != age2
         else
-          if age1 && age2
-            age1 != age2
-          else
-            false
-          end
+          false
         end
       end
     end
@@ -175,13 +171,16 @@ class PassportAnalytics
     end
   end
 
-  def make_trend(metric, time)
+  def make_trend(metric, since, step)
     metric_fn = DEFAULT_REPORTABLE_METRICS.dig(metric)
     return if metric_fn.blank?
     display_time = time.strftime("%d-%b-%y")
+    now = Time.current
 
-    log "Building trend for #{metric} until #{display_time}..."
-    [display_time, public_send(metric_fn, time).size]
+    log "Building trend for #{metric}..."
+    for_time_series(since, now, step)
+      .to_h { |time| [display_time, public_send(metric_fn, time).size] }
+      .then { |timeseries| [metric, timeseries] }
   end
 
   def make_chart(data)
@@ -194,9 +193,9 @@ class PassportAnalytics
     log "Rendering chart for #{metric_names.join(",")}..."
     Prawn::Document
       .new {
-        metric_names.each { |metric|
+        metric_names.each do |metric|
           chart({metric => data[metric]}, chart_opts.merge(colors: [rand_color.()]))
-        } # new chart for every metric
+        end # new chart for every metric
       }.render
   end
 
