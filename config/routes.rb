@@ -165,7 +165,8 @@ Rails.application.routes.draw do
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
-    get "blood_pressure_control", to: "blood_pressure_control"
+    get "blood_pressure_controlled", to: redirect("/my_facilities/bp_controlled")
+    get "bp_controlled", to: "bp_controlled"
     get "bp_not_controlled", to: "bp_not_controlled"
     get "registrations", to: redirect("/my_facilities/")
     get "missed_visits", to: "missed_visits"

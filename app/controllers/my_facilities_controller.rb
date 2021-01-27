@@ -35,7 +35,7 @@ class MyFacilitiesController < AdminController
        last_month: overview_query.total_bps_in_last_n_days(n: 30)}
   end
 
-  def blood_pressure_control
+  def bp_controlled 
     @facilities = filter_facilities
 
     @data_for_facility = {}
