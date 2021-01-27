@@ -167,7 +167,7 @@ Rails.application.routes.draw do
     root to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: "blood_pressure_control"
     get "bp_not_controlled", to: "bp_not_controlled"
-    get "registrations", to: "registrations"
+    get "registrations", to: redirect("/my_facilities/")
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
