@@ -1,6 +1,7 @@
-class PassportAnalytics
+class DuplicatePassportAnalytics
   require "squid"
   include Memery
+  include ApplicationHelper
 
   IDENTIFIER_TYPES = %w[simple_bp_passport]
   DEFAULT_REPORTABLE_METRICS = {
@@ -15,7 +16,7 @@ class PassportAnalytics
     new.report
   end
 
-  # for finding out the trend of changes of dupes across time until now for the specified metric(s)
+  # for finding out the trend of changes of dupes across time (until now) for the specified metric(s)
   # it builds a pdf of the trends and emails it to the specified power_user email
   def self.trend(metric: :all, since: 3.months.ago, step: 1.month, send_to_power_user: nil)
     metrics =
@@ -100,6 +101,8 @@ class PassportAnalytics
       .pluck(:identifier)
   end
 
+  # this method isn't used for any automated reporting since it performs poorly
+  # it can be run manually to collect data in an ad-hoc way
   memoize def duplicate_passports_without_next_appointments(until_date = Time.current)
     duplicate_passports_count_across_facilities(until_date).select do |identifier|
       dupe_patients =
@@ -112,7 +115,9 @@ class PassportAnalytics
   end
 
   # this method isn't used for any automated reporting
-  # it's primarily used to find dupes using a best guess algorithm and to be scanned by a humans (humans are better)
+  #
+  # it's primarily used to find dupes using a best guess algorithm
+  # and to be scanned by humans manually (humans are better)
   memoize def duplicate_passports_with_actually_different_patients(until_date = Time.current)
     duplicate_passports_count_across_facilities(until_date).select do |identifier|
       dupe_patients =
@@ -124,7 +129,7 @@ class PassportAnalytics
 
       name_combos.any? do |p1_name, p2_name|
         age1 = find_age_thru_name_fn.call(p1_name)
-        age2 = find_age_thru_name_fn.(p2_name)
+        age2 = find_age_thru_name_fn.call(p2_name)
         error_margin_in_name = [p1_name.size, p2_name.size].max / 2.0
 
         if levenshtein_distance(p1_name, p2_name) > error_margin_in_name
@@ -144,31 +149,8 @@ class PassportAnalytics
 
   private
 
-  def log(msg)
-    Rails.logger.tagged(self.class.name) { Rails.logger.info msg: msg }
-  end
-
-  def gauge(stat, value)
-    Statsd.instance.gauge("#{self.class.name}.#{stat}", value)
-  end
-
   def passport_assigning_facility
     "COALESCE((metadata->>'assigning_facility_id'), (metadata->>'assigningFacilityUuid'))"
-  end
-
-  # rubygems implements levenshtein_distance for guessing typos
-  # source: https://github.com/rubygems/rubygems/blob/master/lib/rubygems/text.rb
-  def levenshtein_distance(s, t)
-    require "rubygems/text"
-    Class.new.extend(Gem::Text).levenshtein_distance(s, t)
-  end
-
-  def for_time_series(start_t, end_t, step)
-    Enumerator.new do |yielder|
-      (start_t.to_datetime.to_i..end_t.to_datetime.to_i).step(step) do |date|
-        yielder << Time.at(date)
-      end
-    end
   end
 
   def make_trend(metric, since, step)
@@ -178,13 +160,16 @@ class PassportAnalytics
 
     log "Building trend for #{metric}..."
     for_time_series(since, now, step)
-      .to_h { |time| [time.strftime("%d-%b-%y"), public_send(metric_fn, time).size] }
+      .to_h { |time| [display_date(time), public_send(metric_fn, time).size] }
       .then { |timeseries| [metric, timeseries] }
   end
 
   def make_chart(data)
     metric_names = data.keys
     chart_opts = {
+      border: true,
+      steps: 2,
+      legend: {right: 50, bottom: 50},
       labels: [true, true] # https://github.com/Fullscreen/squid/pull/57#issuecomment-327988967
     }
     rand_color = -> { "%06x" % (rand * 0xffffff) }
@@ -193,7 +178,7 @@ class PassportAnalytics
     log "Rendering chart for #{metric_names.join(",")}..."
     Prawn::Document
       .new {
-        text "Duplicate passports across different dimensions"
+        text "Duplicate passports across different dimensions\n\n\n"
 
         metric_names.each_slice(metrics_per_page) do |batch|
           batch.each do |metric|
@@ -216,7 +201,7 @@ class PassportAnalytics
     email_params = {
       from: "help@simple.org",
       to: report_email,
-      subject: "BP Passport Analytics [#{Time.current}]",
+      subject: "BP Passport Analytics [#{display_date(Time.current)}]",
       content_type: "multipart/mixed", # to allow both a body + attachment
       body: "Please find enclosed."
     }
@@ -227,5 +212,28 @@ class PassportAnalytics
       content: chart
     }
     email.deliver
+  end
+
+  def log(msg)
+    Rails.logger.tagged(self.class.name) { Rails.logger.info msg: msg }
+  end
+
+  def gauge(stat, value)
+    Statsd.instance.gauge("#{self.class.name}.#{stat}", value)
+  end
+
+  # rubygems implements levenshtein_distance for guessing typos
+  # source: https://github.com/rubygems/rubygems/blob/master/lib/rubygems/text.rb
+  def levenshtein_distance(s, t)
+    require "rubygems/text"
+    Class.new.extend(Gem::Text).levenshtein_distance(s, t)
+  end
+
+  def for_time_series(start_t, end_t, step)
+    Enumerator.new do |yielder|
+      (start_t.to_datetime.to_i..end_t.to_datetime.to_i).step(step) do |date|
+        yielder << Time.at(date)
+      end
+    end
   end
 end

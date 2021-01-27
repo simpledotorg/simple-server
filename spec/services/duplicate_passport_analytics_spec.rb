@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe PassportAnalytics do
+RSpec.describe DuplicatePassportAnalytics do
   describe ".duplicate_passports_count" do
     context "for passports with the same identifiers" do
       let!(:identifier) { SecureRandom.uuid }
