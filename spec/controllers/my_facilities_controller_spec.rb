@@ -36,19 +36,19 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it "returns a success response" do
       facility = create(:facility, facility_group: facility_group)
 
-      controlled = Timecop.freeze("August 15th 2020") { 
+      controlled = Timecop.freeze("August 15th 2020") {
         create_list(:patient, 2, full_name: "controlled", assigned_facility: facility, registration_user: supervisor)
-      } 
-
-      Timecop.freeze("September 20th 2020") {
-        controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
       }
+
+      Timecop.freeze("September 20th 2020") do
+        controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
+      end
 
       refresh_views
 
-      Timecop.freeze("January 15th 2021") {
+      Timecop.freeze("January 15th 2021") do
         get :bp_controlled, params: {}
-      }
+      end
 
       expect(response).to be_successful
 
@@ -71,9 +71,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       refresh_views
 
-      Timecop.freeze("January 15th 2021") {
-        get :bp_controlled, params: { facility_group: other_district.slug }
-      }
+      Timecop.freeze("January 15th 2021") do
+        get :bp_controlled, params: {facility_group: other_district.slug}
+      end
 
       expect(response).to be_successful
 
@@ -89,15 +89,15 @@ RSpec.describe MyFacilitiesController, type: :controller do
         create_list(:patient, 2, full_name: "uncontrolled", assigned_facility: facility, registration_user: supervisor)
       }
 
-      Timecop.freeze("September 20th 2020") {
+      Timecop.freeze("September 20th 2020") do
         controlled.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
-      }
+      end
 
       refresh_views
 
-      Timecop.freeze("January 15th 2021") {
+      Timecop.freeze("January 15th 2021") do
         get :bp_controlled, params: {}
-      }
+      end
 
       expect(response).to be_successful
 
@@ -112,9 +112,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
     it "returns a success response" do
       facility = create(:facility, facility_group: facility_group)
 
-      controlled = Timecop.freeze("August 15th 2020") do
+      controlled = Timecop.freeze("August 15th 2020") {
         create_list(:patient, 2, full_name: "controlled", assigned_facility: facility, registration_user: supervisor)
-      end
+      }      
 
       Timecop.freeze("September 20th 2020") do
         controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility) }
@@ -122,9 +122,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       refresh_views
 
-      Timecop.freeze("January 15th 2021") {
+      Timecop.freeze("January 15th 2021") do
         get :bp_controlled, params: {}
-      }
+      end
 
       expect(response).to be_successful
 
