@@ -17,7 +17,7 @@ class PassportAnalytics
 
   # for finding out the trend of changes of dupes across time until now for the specified metric(s)
   # it builds a pdf of the trends and emails it to the specified power_user email
-  def self.trend(since: 3.months.ago, step: 1.month, metric: :all, send_to_power_user: nil)
+  def self.trend(metric: :all, since: 3.months.ago, step: 1.month, send_to_power_user: nil)
     metrics =
       if metric.eql?(:all)
         DEFAULT_REPORTABLE_METRICS.keys
@@ -25,7 +25,7 @@ class PassportAnalytics
         metric.map(&:to_sym)
       end
 
-    new(report_email: send_to_power_user).trend(since, step, metrics)
+    new(report_email: send_to_power_user).trend(metrics, since, step)
   end
 
   attr_reader :report_email
@@ -43,7 +43,7 @@ class PassportAnalytics
     end
   end
 
-  def trend(since, step, metrics)
+  def trend(metrics, since, step)
     metrics
       .to_h { |name| make_trend(name, since, step) }
       .then { |data| make_chart(data) }
@@ -174,12 +174,11 @@ class PassportAnalytics
   def make_trend(metric, since, step)
     metric_fn = DEFAULT_REPORTABLE_METRICS.dig(metric)
     return if metric_fn.blank?
-    display_time = time.strftime("%d-%b-%y")
     now = Time.current
 
     log "Building trend for #{metric}..."
     for_time_series(since, now, step)
-      .to_h { |time| [display_time, public_send(metric_fn, time).size] }
+      .to_h { |time| [time.strftime("%d-%b-%y"), public_send(metric_fn, time).size] }
       .then { |timeseries| [metric, timeseries] }
   end
 
@@ -189,13 +188,20 @@ class PassportAnalytics
       labels: [true, true] # https://github.com/Fullscreen/squid/pull/57#issuecomment-327988967
     }
     rand_color = -> { "%06x" % (rand * 0xffffff) }
+    metrics_per_page = 2 # slicing by 2 ensures we can start a new page before we run out
 
     log "Rendering chart for #{metric_names.join(",")}..."
     Prawn::Document
       .new {
-        metric_names.each do |metric|
-          chart({metric => data[metric]}, chart_opts.merge(colors: [rand_color.()]))
-        end # new chart for every metric
+        text "Duplicate passports across different dimensions"
+
+        metric_names.each_slice(metrics_per_page) do |batch|
+          batch.each do |metric|
+            chart({metric => data[metric]}, chart_opts.merge(colors: [rand_color.call])) # new chart for every metric
+          end
+
+          start_new_page
+        end
       }.render
   end
 
