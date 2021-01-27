@@ -24,76 +24,33 @@ RSpec.describe MyFacilitiesController, type: :controller do
     end
   end
 
-  describe "GET #blood_pressure_control" do
+  describe "GET #bp_controlled" do
     it "returns a success response" do
       create(:facility, facility_group: facility_group)
 
-      get :blood_pressure_control, params: {}
+      get :bp_controlled, params: {}
 
       expect(response).to be_successful
     end
   end
 
-  describe "GET #registrations" do
-    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
-    let!(:facility_not_under_supervisor) { create(:facility) }
-    let!(:patients) do
-      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
-        create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
-      end
-    end
-
+  describe "GET #bp_not_controlled" do
     it "returns a success response" do
-      get :registrations, params: {}
+      create(:facility, facility_group: facility_group)
+
+      get :bp_not_controlled, params: {}
 
       expect(response).to be_successful
-    end
-
-    it "instantiates a RegistrationsQuery object with the right arguments and calls the required methods" do
-      params = {period: :quarter}
-      query_object = RegistrationsQuery.new
-      allow(RegistrationsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
-        .and_return(query_object)
-
-      expect(RegistrationsQuery).to receive(:new)
-        .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
-
-      expect(query_object).to receive(:registrations).and_return(query_object.registrations)
-      expect(query_object).to receive(:total_registrations).and_return(query_object.total_registrations)
-
-      get :registrations, params: params
     end
   end
 
   describe "GET #missed_visits" do
-    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
-    let!(:facility_not_under_supervisor) { create(:facility) }
-    let!(:patients) do
-      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
-        create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
-      end
-    end
-
     it "returns a success response" do
+      create(:facility, facility_group: facility_group)
+
       get :missed_visits, params: {}
 
       expect(response).to be_successful
-    end
-
-    it "instantiates a MissedVisitsQuery object with the right arguments and calls the required methods" do
-      params = {period: :quarter}
-      query_object = MissedVisitsQuery.new
-      allow(MissedVisitsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
-        .and_return(query_object)
-
-      expect(MissedVisitsQuery).to receive(:new)
-        .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
-
-      expect(query_object).to receive(:periods).and_return(query_object.periods)
-      expect(query_object).to receive(:missed_visits_by_facility).and_return(query_object.missed_visits_by_facility).at_least(:once)
-      expect(query_object).to receive(:missed_visit_totals).and_return(query_object.missed_visit_totals).at_least(:once)
-      expect(query_object).to receive(:calls_made).and_return(query_object.calls_made)
-      get :missed_visits, params: params
     end
   end
 end
