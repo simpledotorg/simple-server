@@ -38,42 +38,18 @@ class MyFacilitiesController < AdminController
   def blood_pressure_control
     @facilities = filter_facilities
 
-    if current_admin.feature_enabled?(:my_facilities_improvements)
-      @data_for_facility = {}
+    @data_for_facility = {}
 
-      @facilities.each do |facility|
-        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-      end
-
-      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
-    else
-      bp_query = BloodPressureControlQuery.new(facilities: @facilities,
-                                               cohort_period: @selected_cohort_period,
-                                               with_exclusions: report_with_exclusions?)
-
-      @totals = {cohort_patients: bp_query.cohort_patients.count,
-                 controlled: bp_query.cohort_controlled_bps.count,
-                 uncontrolled: bp_query.cohort_uncontrolled_bps.count,
-                 missed: bp_query.cohort_missed_visits_count,
-                 overall_patients: bp_query.overall_patients.count,
-                 overall_controlled_bps: bp_query.overall_controlled_bps.count}
-
-      @cohort_patients_per_facility = bp_query.cohort_patients_per_facility
-      @controlled_bps_per_facility = bp_query.cohort_controlled_bps_per_facility
-      @uncontrolled_bps_per_facility = bp_query.cohort_uncontrolled_bps_per_facility
-      @missed_visits_by_facility = bp_query.cohort_missed_visits_count_by_facility
-      @overall_patients_per_facility = bp_query.overall_patients_per_facility
-      @overall_controlled_bps_per_facility = bp_query.overall_controlled_bps_per_facility
+    @facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
     end
+
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   def bp_not_controlled
-    unless current_admin.feature_enabled?(:my_facilities_improvements)
-      redirect_to my_facilities_overview_path(request.query_parameters)
-      return
-    end
-
     @facilities = filter_facilities
+
     @data_for_facility = {}
 
     @facilities.each do |facility|
@@ -86,61 +62,25 @@ class MyFacilitiesController < AdminController
   def registrations
     @facilities = filter_facilities
 
-    if current_admin.feature_enabled?(:my_facilities_improvements)
-      @data_for_facility = {}
-      @scores_for_facility = {}
+    @data_for_facility = {}
 
-      @facilities.each do |facility|
-        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-        @scores_for_facility[facility.name] = Reports::PerformanceScore.new(region: facility,
-                                                                            reports_result: @data_for_facility[facility.name],
-                                                                            period: @period)
-      end
-
-      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
-    else
-      registrations_query = RegistrationsQuery.new(facilities: @facilities,
-                                                   period: @selected_period,
-                                                   last_n: PERIODS_TO_DISPLAY[@selected_period])
-
-      @registrations = registrations_query.registrations
-        .group(:facility_id, :year, @selected_period)
-        .sum(:registration_count)
-
-      @total_registrations = registrations_query.total_registrations_per_facility
-      @total_registrations_by_period =
-        @registrations.each_with_object({}) { |(key, registrations), total_registrations_by_period|
-          period = [key.second.to_i, key.third.to_i]
-          total_registrations_by_period[period] ||= 0
-          total_registrations_by_period[period] += registrations
-        }
-      @display_periods = registrations_query.periods
+    @facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
     end
+
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   def missed_visits
     @facilities = filter_facilities
 
-    if current_admin.feature_enabled?(:my_facilities_improvements)
-      @data_for_facility = {}
+    @data_for_facility = {}
 
-      @facilities.each do |facility|
-        @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-      end
-
-      @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
-    else
-      missed_visits_query = MissedVisitsQuery.new(facilities: @facilities,
-                                                  period: @selected_period,
-                                                  last_n: PERIODS_TO_DISPLAY[@selected_period],
-                                                  with_exclusions: report_with_exclusions?)
-
-      @display_periods = missed_visits_query.periods
-      @missed_visits_by_facility = missed_visits_query.missed_visits_by_facility
-      @calls_made = missed_visits_query.calls_made.count
-      @total_patients_per_facility = missed_visits_query.total_patients_per_facility
-      @totals_by_period = missed_visits_query.missed_visit_totals
+    @facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
     end
+
+    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
   end
 
   private
