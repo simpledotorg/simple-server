@@ -64,7 +64,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
       supervisor.accesses.create! resource: other_district
       facility_2 = create(:facility, facility_group: facility_group)
 
-      controlled = Timecop.freeze("August 15th 2020") {
+      Timecop.freeze("August 15th 2020") {
         create_list(:patient, 2, full_name: "controlled in facility_1", assigned_facility: facility_1, registration_user: supervisor)
         create_list(:patient, 2, full_name: "controlled in facility_2", assigned_facility: facility_2, registration_user: supervisor)
       }
