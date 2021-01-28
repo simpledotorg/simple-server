@@ -19,20 +19,15 @@ class MyFacilities::DrugStocksController < AdminController
     # handle no facilities
     for_end_of_month = Date.strptime("January 2021", "%B %Y").end_of_month
 
-    report = DrugStocksReport.new(facilities: @facilities, for_end_of_month: for_end_of_month).call
+    @report = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: for_end_of_month).call
   end
 
   def new
     session[:report_url_with_filters] ||= request.referer
-    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month)
-    @drug_stocks =
-      if drug_stock_list.present?
-        drug_stock_list.each_with_object({}) { |drug_stock, acc|
-          acc[drug_stock.protocol_drug.id] = drug_stock
-        }
-      else
-        {}
-      end
+    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month) || []
+    @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
+      acc[drug_stock.protocol_drug.id] = drug_stock
+    }
   end
 
   def create
