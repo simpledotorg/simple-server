@@ -5,11 +5,9 @@ class Admin::ErrorTracesController < AdminController
   end
 
   def index
-    authorize { "ok" }
   end
 
   def create
-    authorize { "ok" }
     if error_params.dig(:type) == "job"
       raise_error = true
       TracerJob.perform_async(Time.current.iso8601, raise_error)
