@@ -391,7 +391,7 @@ html, body {
   .card.support {
     display: none;
 
-    &.IN {
+    &.IN, &.BD, &.ET {
       display: block;
     }
   }
