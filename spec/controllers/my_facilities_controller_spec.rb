@@ -81,9 +81,9 @@ RSpec.describe MyFacilitiesController, type: :controller do
       controlled = Timecop.freeze("August 15th 2020") {
         create_list(:patient, 2, full_name: "uncontrolled", assigned_facility: facility, registration_user: supervisor)
       }
-      Timecop.freeze("September 20th 2020") {
+      Timecop.freeze("September 20th 2020") do
         controlled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility, user: supervisor) }
-      }
+      end
 
       Timecop.freeze("January 15th 2021") do
         refresh_views
