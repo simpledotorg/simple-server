@@ -86,7 +86,7 @@ class ExotelAPIService
   end
 
   def report_error(api_path, exception)
-    Raven.capture_message(
+    Sentry.capture_message(
       "Error while calling the Exotel API",
       logger: "logger",
       extra: {

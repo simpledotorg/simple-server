@@ -49,7 +49,7 @@ class Api::V3::LoginsController < APIController
   end
 
   def notify_sentry(result)
-    Raven.capture_message("Login Error",
+    Sentry.capture_message("Login Error",
       logger: "logger",
       extra: {
         login_params: login_params,

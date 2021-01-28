@@ -45,7 +45,7 @@ class AppointmentNotification::Worker
   end
 
   def report_error(e)
-    Raven.capture_message(
+    Sentry.capture_message(
       "Error while processing appointment notifications",
       logger: "logger",
       extra: {

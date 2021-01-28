@@ -69,7 +69,7 @@ class Api::V3::SyncController < APIController
   def capture_errors(params, errors)
     return unless errors.present?
 
-    Raven.capture_message(
+    Sentry.capture_message(
       "Validation Error",
       logger: "logger",
       extra: {
