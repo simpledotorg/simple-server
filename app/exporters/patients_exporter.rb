@@ -3,6 +3,10 @@ class PatientsExporter
   include QuarterHelper
 
   BATCH_SIZE = 1000
+  PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
+                                 migrated: "Transferred out",
+                                 dead: "Died"}.with_indifferent_access
+
   BLOOD_SUGAR_TYPES = {
     random: "Random",
     post_prandial: "Postprandial",
@@ -49,10 +53,10 @@ class PatientsExporter
     [
       "Registration Date",
       "Registration Quarter",
-      "Patient died?",
       "Patient Name",
       "Patient Age",
       "Patient Gender",
+      "Patient Status",
       "Patient Phone Number",
       "Patient Street Address",
       "Patient Village/Colony",
@@ -105,10 +109,10 @@ class PatientsExporter
     csv_fields = [
       registration_date(patient_summary),
       registration_quarter(patient_summary),
-      ("Died" if patient_summary.status == "dead"),
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
+      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status],
       patient_summary.latest_phone_number,
       patient_summary.street_address,
       patient_summary.village_or_colony,

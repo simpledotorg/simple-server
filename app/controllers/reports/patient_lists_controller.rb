@@ -26,7 +26,8 @@ class Reports::PatientListsController < AdminController
       recipient_email,
       region_class,
       download_params,
-      with_medication_history: with_medication_history?
+      with_medication_history: with_medication_history?,
+      with_exclusions: current_admin.feature_enabled?(:report_with_exclusions)
     )
     redirect_back(
       fallback_location: reports_region_path(@region, report_scope: params[:report_scope]),

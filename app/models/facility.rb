@@ -100,7 +100,7 @@ class Facility < ApplicationRecord
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
-  delegate :district_region?, :block_region?, :facility_region?, to: :region
+  delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
   delegate :cache_key, :cache_version, to: :region
 
   def self.parse_facilities_from_file(file_contents)
@@ -134,6 +134,11 @@ class Facility < ApplicationRecord
 
   def block_region
     facility_group.region.block_regions.find_by(name: block)
+  end
+
+  # Remove me after region_reports is mainline
+  def source
+    self
   end
 
   private :update_region
