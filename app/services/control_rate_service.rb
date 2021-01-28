@@ -47,9 +47,17 @@ class ControlRateService
     results.count_cumulative_registrations
     results.count_adjusted_registrations
 
-    results.full_data_range.each do |(period, count)|
-      results.controlled_patients[period] = controlled_patients(period).count
-      results.uncontrolled_patients[period] = uncontrolled_patients(period).count
+    legacy_control_counts = false
+    if legacy_control_counts
+      results.full_data_range.each do |(period, count)|
+        results.controlled_patients[period] = controlled_patients(period).count
+        results.uncontrolled_patients[period] = uncontrolled_patients(period).count
+      end
+    else
+      control_results = Reports::Repository.new(region, periods: results.full_data_range).controlled_patients_info
+      uncontrol_results = Reports::Repository.new(region, periods: results.full_data_range).uncontrolled_patients_info
+      results.controlled_patients = control_results[region.slug]
+      results.uncontrolled_patients = uncontrol_results[region.slug]
     end
 
     results.calculate_percentages(:controlled_patients)

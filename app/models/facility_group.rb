@@ -33,6 +33,10 @@ class FacilityGroup < ApplicationRecord
   delegate :district_region?, :block_region?, :facility_region?, to: :region
   delegate :cache_key, :cache_version, to: :region
 
+  def cache_key_v2
+    [model_name.cache_key, id, slug].join("/")
+  end
+
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
   attr_writer :state
