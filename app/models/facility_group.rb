@@ -105,6 +105,10 @@ class FacilityGroup < ApplicationRecord
     registered_patients.with_discarded
   end
 
+  def source
+    self
+  end
+
   private
 
   def set_diabetes_management(value)
