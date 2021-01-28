@@ -74,8 +74,7 @@ class Api::V3::SyncController < APIController
         params_with_errors: params_with_errors(params, errors),
         errors: errors
       },
-      tags: {type: "validation"}
-    )
+      tags: {type: "validation"})
   end
 
   def process_token
