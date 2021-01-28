@@ -26,3 +26,5 @@ agent:
 promotions:
   - name: India Production Deployment
     pipeline_file: india_production_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'
