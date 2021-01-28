@@ -208,6 +208,8 @@ Rails.application.routes.draw do
     # This is a temporary page to assist in clean up
     get "fix_zone_data", to: "fix_zone_data#show"
     post "update_zone", to: "fix_zone_data#update"
+
+    resources :error_traces, only: [:index, :create]
   end
 
   if FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")
