@@ -8,7 +8,6 @@ module Reports
       else
         periods.to_a
       end
-      pp @regions, @periods
     end
 
     attr_reader :regions, :periods
@@ -35,9 +34,9 @@ module Reports
 
     def uncontrolled_patients_info
       keys = cache_keys(:controlled_patients_info)
-      cached_results = cache.fetch_multi(*keys) do |key|
+      cached_results = cache.fetch_multi(*keys) { |key|
         uncontrolled_patients_count_for(key)
-      end
+      }
       results = {}
       cached_results.each do |key, result|
         cache_key = CacheKey.new(key)
@@ -54,9 +53,9 @@ module Reports
 
     def controlled_patients_info
       keys = cache_keys(:controlled_patients_info)
-      cached_results = cache.fetch_multi(*keys) do |key|
+      cached_results = cache.fetch_multi(*keys) { |key|
         controlled_patients_count_for(key)
-      end
+      }
       results = {}
       cached_results.each do |key, result|
         cache_key = CacheKey.new(key)
@@ -71,7 +70,7 @@ module Reports
       period = cache_key.period
       region = @regions.detect { |r| r.id == cache_key.region_id }
       control_range = period.blood_pressure_control_range
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(region, period), 
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(region, period),
         "latest_blood_pressures_per_patient_per_months").under_control.count
     end
 
@@ -97,6 +96,5 @@ module Reports
         .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
         .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
     end
-
   end
 end

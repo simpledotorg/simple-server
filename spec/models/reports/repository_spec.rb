@@ -88,7 +88,6 @@ RSpec.describe Reports::Repository, type: :model do
     repo = Reports::Repository.new(regions, periods: range)
     result = repo.controlled_patients_info
 
-    pp result
     facility_1_results = result[facility_1.slug]
     expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
     expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
