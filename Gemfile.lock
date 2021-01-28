@@ -96,6 +96,8 @@ GEM
     capistrano-rbenv (2.1.6)
       capistrano (~> 3.1)
       sshkit (~> 1.3)
+    capistrano-sentry (0.4.2)
+      capistrano (~> 3.1)
     capistrano-template (0.0.9)
       capistrano (~> 3.0)
     capybara (3.32.1)
@@ -469,8 +471,18 @@ GEM
     selenium-webdriver (3.142.7)
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
-    sentry-raven (3.0.0)
+    sentry-rails (4.1.6)
+      rails (>= 5.0)
+      sentry-ruby-core (~> 4.1.2)
+    sentry-ruby (4.1.5)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
       faraday (>= 1.0)
+      sentry-ruby-core (= 4.1.5)
+    sentry-ruby-core (4.1.5)
+      concurrent-ruby
+      faraday
+    sentry-sidekiq (4.1.3)
+      sentry-ruby-core (~> 4.1.2)
     shellany (0.0.1)
     shoulda-matchers (4.1.2)
       activesupport (>= 4.2.0)
@@ -577,6 +589,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rails-console
   capistrano-rbenv
+  capistrano-sentry
   capistrano-template
   capybara
   connection_pool
@@ -643,7 +656,9 @@ DEPENDENCIES
   rubyzip
   sassc-rails
   scenic
-  sentry-raven
+  sentry-rails
+  sentry-ruby
+  sentry-sidekiq
   shoulda-matchers (~> 4.1.2)
   sidekiq
   sidekiq-statsd
