@@ -46,6 +46,9 @@ class Reports::RegionsController < AdminController
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
     @children = @region.reportable_children(region_reports_enabled: region_reports_enabled?)
+    repo = Reports::Repository.new(@children, periods: @period)
+    control_info = repo.controlled_patients_info
+
     @children_data = @children.each_with_object({}) { |child, hsh|
       hsh[child.name] = Reports::RegionService.new(region: child,
                                                    period: @period,

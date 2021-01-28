@@ -179,6 +179,10 @@ class Region < ApplicationRecord
     [model_name.cache_key, region_type, id].join("/")
   end
 
+  def cache_key_v2
+    [model_name.cache_key, id, slug].join("/")
+  end
+
   def cache_version
     updated_at.utc.to_s(:usec)
   end
