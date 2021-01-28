@@ -97,7 +97,7 @@ class APIController < ApplicationController
   end
 
   def set_sentry_context
-    Sentry.user_context(
+    Sentry.set_user(
       id: request.headers["HTTP_X_USER_ID"],
       request_facility_id: request.headers["HTTP_X_FACILITY_ID"]
     )
