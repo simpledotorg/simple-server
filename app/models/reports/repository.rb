@@ -28,7 +28,6 @@ module Reports
       end
 
       def period
-        pp @parts[4]
         Period.new(type: @parts[3], value: @parts[4])
       end
     end
@@ -40,7 +39,6 @@ module Reports
       cached_results = cache.fetch_multi(*keys) do |key|
         controlled_patients_count_for(key)
       end
-      pp cached_results
       results = {}
       cached_results.each do |key, result|
         cache_key = CacheKey.new(key)
