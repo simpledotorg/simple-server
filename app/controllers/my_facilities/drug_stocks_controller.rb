@@ -21,57 +21,63 @@ class MyFacilities::DrugStocksController < AdminController
     patient_counts = Patient.where(assigned_facility: @facilities.map(&:id)).group(:assigned_facility).count
     latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, for_end_of_month)
     # assuming that all facilities on the page have the same protocol
+    # report = ReportObject.new(facilities, for_end_of_month, patient_counts latest_drug_stocks)
     protocol = @facilities.first.protocol
     drug_categories = protocol.protocol_drugs.where(stock_tracked: true).group_by(&:drug_category)
-    report = patient_counts.each_with_object({}) { |(facility, patient_count), report|
+    report = patient_counts.each_with_object({}) do |(facility, patient_count), report|
       report[facility.id] = {}
       report[facility.id][:patient_count] = patient_count
       next if latest_drug_stocks[facility.id].nil?
-      drug_categories.each do |drug_category|
+      drug_categories.each do |(drug_category, protocol_drugs)|
+        drug_stocks = latest_drug_stocks[facility.id].select { |drug_stock| drug_stock.protocol_drug.drug_category == drug_category }
         report[facility.id][drug_category] = {
           ## key this by name
-          latest_drug_stocks: latest_drug_stocks[facility.id].select { |drug_stock| drug_stock[:drug_category] },
-          patient_days: patient_days(latest_drug_stocks[facility.id], patient_count)
+          drug_stocks: drug_stocks,
+          patient_days: patient_days(facility, drug_category, protocol_drugs, key_by_rxnorm(drug_stocks), patient_count)
         }
       end
+    end
+  end
+
+  def key_by_rxnorm(latest_drug_stocks)
+    latest_drug_stocks.each_with_object({}) { |drug_stock, acc|
+      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock
     }
   end
 
-  def patient_days(latest_drug_stocks, patient_count)
-    100
-  end
-
-  def rxnorm_codes
-    {
-      "amLODIPine 5mg": "329528",
-      "amlo 10": "329526",
-      "telmi 40": "316764",
-      "telmi 80": "316765",
-      "losartan 50": "979467",
-      "chlorthalidone 12.5": "331132",
-      "chlorthalidone 25": "315655"
-    }
-
-    ProtocolDrug.find("ea1377c3-5c9b-42eb-8087-ad99cd80ce5a").update(stock_tracked: true, rxnorm_code: "329528", drug_category: "hypertension_ccb")
-    ProtocolDrug.find("b57bb05b-992f-4376-b353-9df56c2224c9").update(stock_tracked: true, rxnorm_code: "329526", drug_category: "hypertension_ccb")
-    ProtocolDrug.find("2c2b870f-eb1d-41f7-b803-4b5ae5b64e25").update(stock_tracked: true, rxnorm_code: "316764", drug_category: "hypertension_arb")
-    ProtocolDrug.find("0588c3c3-007f-4725-9def-60d49fd379ca").update(stock_tracked: true, rxnorm_code: "316765", drug_category: "hypertension_arb")
-    ProtocolDrug.find("893d2ee3-4a8a-45fd-9213-4d25788c556d").update(stock_tracked: true, rxnorm_code: "979467", drug_category: "hypertension_arb")
-    ProtocolDrug.find("4bf6e927-7c04-478f-95f8-22602a8adb20").update(stock_tracked: true, rxnorm_code: "331132", drug_category: "hypertension_diuretic")
-    ProtocolDrug.find("7ffcc130-88af-4290-a770-6b9ebe5eddfc").update(stock_tracked: true, rxnorm_code: "315655", drug_category: "hypertension_diuretic")
+  def patient_days(facility, drug_category, protocol_drugs, drug_stocks, patient_count)
+    begin
+      coefficients = patient_days_coefficients[facility.state]
+      numerator = protocol_drugs.map(&:rxnorm_code).map { |rxnorm_code|
+        drug_stocks[rxnorm_code].in_stock * coefficients[:drug_categories][drug_category][rxnorm_code]
+      }.reduce(:+)
+      denominator = patient_count * coefficients[:load_factor] * coefficients[:drug_categories][drug_category][:new_patient_coefficient]
+      (numerator / denominator).floor
+    rescue
+      # either drug stock is nil, or drug is not in formula
+      :error
+    end
   end
 
   def patient_days_coefficients
-    { "Punjab":
+    { "Karnataka":
         { load_factor: 1,
           drug_categories:
             { "hypertension_ccb":
                 { new_patient_coefficient: 1.4,
-                },
-              "hypertension_arb": {},
-              "hypertension_diuretic": {} }
+                  "329528": 1,
+                  "329526": 2 },
+              "hypertension_arb":
+                { new_patient_coefficient: 0.37,
+                  "316764": 1,
+                  "316765": 2,
+                  "979467": 1 },
+              "hypertension_diuretic":
+                { new_patient_coefficient: 0.06,
+                  "316049": 1,
+                  "331132": 1 }, }
         }
-    }
+    }.with_indifferent_access
   end
 
   def new

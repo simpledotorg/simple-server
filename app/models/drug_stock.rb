@@ -9,6 +9,7 @@ class DrugStock < ApplicationRecord
 
   def self.latest_for_facilities(facilities, for_end_of_month)
     DrugStock.select("DISTINCT ON (facility_id, protocol_drug_id) *")
+      .includes(:protocol_drug)
       .where(facility: facilities.pluck(:id), for_end_of_month: for_end_of_month)
       .order(:facility_id, :protocol_drug_id, created_at: :desc)
       .group_by(&:facility_id)
