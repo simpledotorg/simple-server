@@ -13,6 +13,7 @@ class Admin::ErrorTracesController < AdminController
     if error_params.dig(:type) == "job"
       raise_error = true
       TracerJob.perform_async(Time.current.iso8601, raise_error)
+      redirect_to admin_error_traces_path, notice: "Background job error tracer submitted"
     else
       raise Boom, "Error test created by #{current_admin.full_name}"
     end
