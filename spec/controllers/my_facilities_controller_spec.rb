@@ -88,21 +88,17 @@ RSpec.describe MyFacilitiesController, type: :controller do
       controlled = Timecop.freeze("August 15th 2020") {
         create_list(:patient, 2, full_name: "uncontrolled", assigned_facility: facility, registration_user: supervisor)
       }
-
-      Timecop.freeze("September 20th 2020") do
-        controlled.each { |patient| create(:blood_pressure, patient: patient, facility: facility) }
-      end
-
-      refresh_views
+      Timecop.freeze("September 20th 2020") {
+        controlled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility, user: supervisor) }
+      }
 
       Timecop.freeze("January 15th 2021") do
+        refresh_views
         get :bp_controlled, params: {}
       end
 
       expect(response).to be_successful
-
       facility_data = assigns(:data_for_facility)[facility.name]
-
       expect(facility_data[:adjusted_registrations][Period.month("December 2020")]).to eq(2)
       expect(facility_data[:uncontrolled_patients_rate][Period.month("November 2020")]).to eq(100)
     end
