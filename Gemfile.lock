@@ -96,6 +96,8 @@ GEM
     capistrano-rbenv (2.1.6)
       capistrano (~> 3.1)
       sshkit (~> 1.3)
+    capistrano-sentry (0.4.2)
+      capistrano (~> 3.1)
     capistrano-template (0.0.9)
       capistrano (~> 3.0)
     capybara (3.32.1)
@@ -587,6 +589,7 @@ DEPENDENCIES
   capistrano-rails
   capistrano-rails-console
   capistrano-rbenv
+  capistrano-sentry
   capistrano-template
   capybara
   connection_pool

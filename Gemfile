@@ -94,6 +94,7 @@ group :development, :test do
   gem "capistrano-rails"
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
+  gem "capistrano-sentry", require: false
   gem "capistrano-template", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"
