@@ -6,6 +6,9 @@ set :repo_url, "https://github.com/simpledotorg/simple-server.git"
 set :deploy_to, -> { "/home/deploy/apps/#{fetch(:application)}" }
 set :rbenv_ruby, File.read(".ruby-version").strip
 
+set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
+set :sentry_organization, "resolve-to-save-lives"
+
 set :default_env, {
   path: "/home/deploy/.rbenv/plugins/ruby-build/bin:/home/deploy/.rbenv/shims:/home/deploy/.rbenv/bin:$PATH",
   rbenv_root: "/home/deploy/.rbenv"
