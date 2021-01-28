@@ -3,6 +3,8 @@ name: India Production Deployment
 blocks:
   - name: Deploy to India Production
     task:
+      secrets:
+        - name: sentry-release-auth-token
       jobs:
         - name: Deploy to India Production
           commands:

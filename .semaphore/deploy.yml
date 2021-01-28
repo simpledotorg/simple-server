@@ -3,6 +3,8 @@ name: Development Deployment
 blocks:
   - name: Deploy to Sandbox
     task:
+      secrets:
+        - name: sentry-release-auth-token
       jobs:
         - name: Deploy to Sandbox
           commands:
