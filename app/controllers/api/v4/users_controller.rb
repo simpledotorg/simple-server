@@ -62,7 +62,6 @@ class Api::V4::UsersController < APIController
 
     if error_string.present?
       Sentry.capture_message("Login Error",
-        logger: "logger",
         extra: {activate_params: activate_params, errors: error_string},
         tags: {type: "login"})
       {user: [error_string]}

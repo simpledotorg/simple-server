@@ -156,7 +156,6 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
                 missing_regions: array_including(["B2", facility_groups[1].id], ["B1", facility_groups[0].id])
               }
           },
-          logger: "logger",
           tags: {type: "regions"}
         }
       ]

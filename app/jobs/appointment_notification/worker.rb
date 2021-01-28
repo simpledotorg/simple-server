@@ -47,7 +47,6 @@ class AppointmentNotification::Worker
   def report_error(e)
     Sentry.capture_message(
       "Error while processing appointment notifications",
-      logger: "logger",
       extra: {
         exception: e.to_s
       },
