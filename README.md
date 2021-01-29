@@ -248,6 +248,7 @@ Run the following command from the project root to create a new dashboard admin:
 $ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 ```
 
+
 ### View Sandbox data in your local environment
 
 1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
