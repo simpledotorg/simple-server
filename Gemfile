@@ -65,7 +65,9 @@ gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
 gem "scenic"
-gem "sentry-raven"
+gem "sentry-rails"
+gem "sentry-ruby"
+gem "sentry-sidekiq"
 gem "sidekiq"
 gem "sidekiq-statsd"
 gem "sidekiq-throttled"
@@ -92,6 +94,7 @@ group :development, :test do
   gem "capistrano-rails"
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
+  gem "capistrano-sentry", require: false
   gem "capistrano-template", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"

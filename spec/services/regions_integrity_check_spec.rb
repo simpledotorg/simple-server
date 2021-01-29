@@ -156,18 +156,17 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
                 missing_regions: array_including(["B2", facility_groups[1].id], ["B1", facility_groups[0].id])
               }
           },
-          logger: "logger",
           tags: {type: "regions"}
         }
       ]
 
-      expect(Raven).to receive(:capture_message).with(*expected_msg)
+      expect(Sentry).to receive(:capture_message).with(*expected_msg)
 
       RegionsIntegrityCheck.sweep
     end
 
     it "does not report errors if there are none" do
-      expect(Raven).to_not receive(:capture_message)
+      expect(Sentry).to_not receive(:capture_message)
 
       RegionsIntegrityCheck.sweep
     end
