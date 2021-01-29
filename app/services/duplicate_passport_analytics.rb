@@ -42,8 +42,8 @@ class DuplicatePassportAnalytics
   def report
     DEFAULT_REPORTABLE_METRICS.values.each do |fn_name|
       dupe_count = public_send(fn_name).size
-      gauge "#{fn_name}.size", dupe_count
       log "#{fn_name} are #{dupe_count}"
+      gauge "#{fn_name}.size", dupe_count
     end
 
     legacy_report
@@ -207,14 +207,13 @@ class DuplicatePassportAnalytics
     log "Sending email to power user: #{report_email}..."
 
     email_params = {
-      from: "help@simple.org",
       to: report_email,
       subject: "BP Passport Analytics [#{display_date(Time.current)}]",
       content_type: "multipart/mixed", # to allow both a body and an attachment
       body: "Please find enclosed."
     }
 
-    mailer = ActionMailer::Base.new
+    mailer = ApplicationMailer.new
     email = mailer.mail(email_params)
     email.attachments["bp-passport-analytics.pdf"] = {
       mime_type: "application/pdf",
