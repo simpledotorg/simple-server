@@ -388,18 +388,14 @@ html, body {
     }
   }
 
-  .card.support {
+  .card.support.BD {
     display: none;
-
-    &.IN, &.BD, &.ET {
-      display: block;
-    }
   }
 }
 
 .tos {
-    color: rgba(0,0,0,0.2);
-    padding: 24px 8px;
+  color: rgba(0,0,0,0.2);
+  padding: 24px 8px;
 }
 
 .help-subtitle {
