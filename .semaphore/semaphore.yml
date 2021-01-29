@@ -2,7 +2,7 @@ version: v1.0
 name: Test simple-server
 agent:
   machine:
-    type: e1-standard-2
+    type: e1-standard-8
     os_image: ubuntu1804
 auto_cancel:
   running:
@@ -20,7 +20,7 @@ blocks:
         - name: semaphore-deploy-key
       jobs:
         - name: RSpec
-          parallelism: 4
+          parallelism: 8
           commands:
             - checkout
             - sem-service start postgres 10
