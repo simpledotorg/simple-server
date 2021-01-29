@@ -354,7 +354,7 @@ RSpec.describe User, type: :model do
       expect(user.block_level_sync?).to eq false
     end
 
-    it "is false when the user enabled for teleconsulation" do
+    it "is false when the user is enabled for teleconsulation" do
       expect(mo.block_level_sync?).to eq false
     end
   end
