@@ -113,7 +113,7 @@ RSpec.describe Reports::RegionService, type: :model do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
 
-      _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
+      _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019 + 1.day, registration_facility: facility, registration_user: user)
 
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
