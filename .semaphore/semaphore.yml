@@ -18,6 +18,8 @@ blocks:
       secrets:
         - name: 
           - sentry-release-auth-token
+      secrets:
+        - name:
           - semaphore-deploy-key
       jobs:
         - name: RSpec
