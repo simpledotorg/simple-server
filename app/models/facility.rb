@@ -104,7 +104,6 @@ class Facility < ApplicationRecord
   delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
   delegate :cache_key, :cache_version, to: :region
 
-
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)
   end
