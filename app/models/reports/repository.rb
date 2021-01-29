@@ -46,13 +46,11 @@ module Reports
         region = lookup_region(cache_key.region_id)
         controlled_patients_for(region, period).count
       }
-      results = {}
-      cached_results.each do |key, result|
+      cached_results.each_with_object({}) do |(key, count), results|
         cache_key = CacheKey.new(key)
-        results[cache_key.slug] ||= {}
-        results[cache_key.slug][cache_key.period] = result
+        results[cache_key.slug] ||= Hash.new(0)
+        results[cache_key.slug][cache_key.period] = count
       end
-      results
     end
 
     def uncontrolled_patients_info
@@ -63,13 +61,11 @@ module Reports
         region = lookup_region(cache_key.region_id)
         uncontrolled_patients_for(region, period).count
       }
-      results = {}
-      cached_results.each do |key, result|
+      cached_results.each_with_object({}) do |(key, count), results|
         cache_key = CacheKey.new(key)
-        results[cache_key.slug] ||= {}
-        results[cache_key.slug][cache_key.period] = result
+        results[cache_key.slug] ||= Hash.new(0)
+        results[cache_key.slug][cache_key.period] = count
       end
-      results
     end
 
     def cache_keys(operation)
