@@ -16,11 +16,8 @@ blocks:
         - name: RAILS_ENV
           value: test
       secrets:
-        - name: 
-          - sentry-release-auth-token
-      secrets:
-        - name:
-          - semaphore-deploy-key
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
       jobs:
         - name: RSpec
           parallelism: 4
