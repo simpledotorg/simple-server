@@ -5,7 +5,7 @@ class DuplicatePassportAnalytics
 
   IDENTIFIER_TYPES = %w[simple_bp_passport]
   DEFAULT_REPORTABLE_METRICS = {
-    across_facilities: :duplicate_passports_count_across_facilities,
+    across_facilities: :duplicate_passports_across_facilities,
     same_facility: :duplicate_passports_in_same_facility,
     across_districts: :duplicate_passports_across_districts,
     across_blocks: :duplicate_passports_across_blocks
@@ -38,10 +38,19 @@ class DuplicatePassportAnalytics
   def report
     DEFAULT_REPORTABLE_METRICS.values.each do |fn_name|
       dupe_count = public_send(fn_name).size
-
       gauge "#{fn_name}.size", dupe_count
       log msg: "#{fn_name} are #{dupe_count}"
     end
+
+    legacy_report
+  end
+
+  # legacy reporting to avoid breaking existing dashboards
+  def legacy_report
+    across_facilities_dupes = duplicate_passports_across_facilities.size
+    Statsd.instance.gauge("ReportDuplicatePassports.size", across_facilities_dupes)
+    msg = "#{across_facilities_dupes} passports have duplicate patients across facilities"
+    Rails.logger.tagged("ReportDuplicatePassports") { Rails.logger.info msg: msg }
   end
 
   def trend(metrics, since, step)
@@ -51,7 +60,7 @@ class DuplicatePassportAnalytics
       .then { |data| send_email(data) }
   end
 
-  memoize def duplicate_passports_count_across_facilities(until_date = Time.current)
+  memoize def duplicate_passports_across_facilities(until_date = Time.current)
     PatientBusinessIdentifier
       .where.not(identifier: "")
       .where(identifier_type: IDENTIFIER_TYPES)
@@ -104,7 +113,7 @@ class DuplicatePassportAnalytics
   # this method isn't used for any automated reporting since it performs poorly
   # it can be run manually to collect data in an ad-hoc way
   memoize def duplicate_passports_without_next_appointments(until_date = Time.current)
-    duplicate_passports_count_across_facilities(until_date).select do |identifier|
+    duplicate_passports_across_facilities(until_date).select do |identifier|
       dupe_patients =
         Patient
           .includes(:latest_scheduled_appointments)
@@ -119,7 +128,7 @@ class DuplicatePassportAnalytics
   # it's primarily used to find dupes using a best guess algorithm
   # and to be scanned by humans manually (humans are better)
   memoize def duplicate_passports_with_actually_different_patients(until_date = Time.current)
-    duplicate_passports_count_across_facilities(until_date).select do |identifier|
+    duplicate_passports_across_facilities(until_date).select do |identifier|
       dupe_patients =
         Patient
           .where(id: PatientBusinessIdentifier.where(identifier: identifier).pluck(:patient_id))
@@ -133,11 +142,7 @@ class DuplicatePassportAnalytics
         error_margin_in_name = [p1_name.size, p2_name.size].max / 2.0
 
         if levenshtein_distance(p1_name, p2_name) > error_margin_in_name
-          if age1 && age2
-            age1 != age2
-          else
-            true
-          end
+          age1 && age2 ? age1 != age2  : true
         elsif age1 && age2
           age1 != age2
         else
@@ -149,7 +154,9 @@ class DuplicatePassportAnalytics
 
   private
 
+
   def passport_assigning_facility
+    # use ->> to fetch data as text so we can coerce as uuid or keep as text easily
     "COALESCE((metadata->>'assigning_facility_id'), (metadata->>'assigningFacilityUuid'))"
   end
 
