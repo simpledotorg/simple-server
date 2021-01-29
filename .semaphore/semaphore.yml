@@ -15,6 +15,10 @@ blocks:
           value: 'postgresql://postgres:@0.0.0.0:5432/myapp_test'
         - name: RAILS_ENV
           value: test
+      secrets:
+        - name: 
+          - sentry-release-auth-token
+          - semaphore-deploy-key
       jobs:
         - name: RSpec
           parallelism: 4
