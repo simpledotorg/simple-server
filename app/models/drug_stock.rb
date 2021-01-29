@@ -16,6 +16,6 @@ class DrugStock < ApplicationRecord
   end
 
   def self.latest_for_facility(facility, for_end_of_month)
-    self.latest_for_facilities([facility], for_end_of_month)[facility.id]
+    latest_for_facilities([facility], for_end_of_month)[facility.id]
   end
 end

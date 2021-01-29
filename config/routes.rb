@@ -165,9 +165,10 @@ Rails.application.routes.draw do
 
   namespace :my_facilities do
     root to: "/my_facilities#index", as: "overview"
-    get "blood_pressure_control", to: "blood_pressure_control"
+    get "blood_pressure_control", to: redirect("/my_facilities/bp_controlled")
+    get "bp_controlled", to: "bp_controlled"
     get "bp_not_controlled", to: "bp_not_controlled"
-    get "registrations", to: "registrations"
+    get "registrations", to: redirect("/my_facilities/")
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
@@ -207,6 +208,8 @@ Rails.application.routes.draw do
     # This is a temporary page to assist in clean up
     get "fix_zone_data", to: "fix_zone_data#show"
     post "update_zone", to: "fix_zone_data#update"
+
+    resources :error_traces, only: [:index, :create]
   end
 
   if FeatureToggle.enabled?("PURGE_ENDPOINT_FOR_QA")

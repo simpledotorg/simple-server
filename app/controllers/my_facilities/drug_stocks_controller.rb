@@ -12,10 +12,10 @@ class MyFacilities::DrugStocksController < AdminController
 
   def index
     @facilities = filter_facilities
-                    .includes(facility_group: :protocol_drugs)
-                    .where(protocol_drugs: { stock_tracked: true })
+      .includes(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
 
-    render and return if @facilities.empty?
+    render && return if @facilities.empty?
     # handle no facilities
     for_end_of_month = Date.strptime("January 2021", "%B %Y").end_of_month
 
