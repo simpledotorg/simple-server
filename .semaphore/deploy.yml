@@ -4,9 +4,8 @@ blocks:
   - name: Deploy to Sandbox
     task:
       secrets:
-        - name: 
-          - sentry-release-auth-token
-          - semaphore-deploy-key
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
       jobs:
         - name: Deploy to Sandbox
           commands:
@@ -26,6 +25,7 @@ blocks:
     dependencies: []
     task:
       secrets:
+        - name: sentry-release-auth-token
         - name: semaphore-deploy-key
       prologue:
         commands:
