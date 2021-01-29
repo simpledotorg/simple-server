@@ -15,7 +15,7 @@ class DrugStocksQuery
     drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
 
     @facilities.each_with_object({}) do |facility, report|
-      facility_patient_count = patient_counts[facility.id] || 0
+      facility_patient_count = patient_counts[facility] || 0
       report[facility.id] = drug_stock_for_facility(facility, facility_patient_count, drug_stocks[facility.id])
     end
   end
@@ -46,9 +46,9 @@ class DrugStocksQuery
     stocks_on_hand = stocks_on_hand(coefficients, drug_category, drug_stocks)
     new_patient_coefficient = coefficients[:drug_categories][drug_category][:new_patient_coefficient]
     estimated_patients = patient_count * coefficients[:load_factor] * new_patient_coefficient
-    {stocks_on_hand: stocks_on_hand,
-     estimated_patients: estimated_patients,
-     patient_days: (stocks_on_hand.map { |stock| stock[:in_stock] }.reduce(:+) / estimated_patients).floor}
+    { stocks_on_hand: stocks_on_hand,
+      estimated_patients: estimated_patients,
+      patient_days: (stocks_on_hand.map { |stock| stock[:in_stock] }.reduce(:+) / estimated_patients).floor }
   rescue
     # either drug stock is nil, or drug is not in formula
     :error
@@ -60,30 +60,46 @@ class DrugStocksQuery
       rxnorm_code = protocol_drug.rxnorm_code
       coefficient = coefficients[:drug_categories][drug_category][rxnorm_code]
       in_stock = stocks_by_rxnorm[rxnorm_code].in_stock
-      {protocol_drug: protocol_drug,
-       in_stock: in_stock,
-       coefficient: coefficient,
-       stock_on_hand: coefficient * in_stock}
+      { protocol_drug: protocol_drug,
+        in_stock: in_stock,
+        coefficient: coefficient,
+        stock_on_hand: coefficient * in_stock }
     end
   end
 
   def patient_days_coefficients
     # move this to config
-    {"Karnataka":
-        {load_factor: 1,
-         drug_categories:
-            {"hypertension_ccb":
-                {new_patient_coefficient: 1.4,
-                 "329528": 1,
-                 "329526": 2},
-             "hypertension_arb":
-                {new_patient_coefficient: 0.37,
-                 "316764": 1,
-                 "316765": 2,
-                 "979467": 1},
-             "hypertension_diuretic":
-                {new_patient_coefficient: 0.06,
-                 "316049": 1,
-                 "331132": 1}}}}.with_indifferent_access
+    { "Karnataka":
+        { load_factor: 1,
+          drug_categories:
+            { "hypertension_ccb":
+                { new_patient_coefficient: 1.4,
+                  "329528": 1,
+                  "329526": 2 },
+              "hypertension_arb":
+                { new_patient_coefficient: 0.37,
+                  "316764": 1,
+                  "316765": 2,
+                  "979467": 1 },
+              "hypertension_diuretic":
+                { new_patient_coefficient: 0.06,
+                  "316049": 1,
+                  "331132": 1 } } },
+      "Punjab":
+        { load_factor: 1,
+          drug_categories:
+            { "hypertension_ccb":
+                { new_patient_coefficient: 1.4,
+                  "329528": 1,
+                  "329526": 2 },
+              "hypertension_arb":
+                { new_patient_coefficient: 0.37,
+                  "316764": 1,
+                  "316765": 2,
+                  "979467": 1 },
+              "hypertension_diuretic":
+                { new_patient_coefficient: 0.06,
+                  "316049": 1,
+                  "331132": 1 } } } }.with_indifferent_access
   end
 end
