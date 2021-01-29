@@ -3,7 +3,55 @@ require "rails_helper"
 RSpec.describe DuplicatePassportAnalytics do
   xdescribe "#trend"
 
-  xdescribe "#report"
+  describe "#report" do
+    # across_facilities
+    before do
+      identifier_1 = SecureRandom.uuid
+      dupe_patients_across_facilities = create_list(:patient, 2, business_identifiers: [])
+      create(:patient_business_identifier, identifier: identifier_1, patient: dupe_patients_across_facilities[0], metadata: {assigningFacilityUuid: SecureRandom.uuid})
+      create(:patient_business_identifier, identifier: identifier_1, patient: dupe_patients_across_facilities[1], metadata: {assigningFacilityUuid: SecureRandom.uuid})
+    end
+
+    # same_facility
+    before do
+      facility_id = SecureRandom.uuid
+      identifier_2 = SecureRandom.uuid
+      dupe_patients_in_same_facility = create_list(:patient, 2, business_identifiers: [])
+      create_list(:patient_business_identifier, 2, identifier: identifier_2, patient: dupe_patients_in_same_facility[0], metadata: {assigningFacilityUuid: facility_id})
+      create_list(:patient_business_identifier, 2, identifier: identifier_2, patient: dupe_patients_in_same_facility[1], metadata: {assigningFacilityUuid: facility_id})
+    end
+
+    # across_blocks
+    before do
+      fg = create(:facility_group)
+      identifier_3 = SecureRandom.uuid
+      facility_1 = create(:facility, block: "Block A", facility_group: fg)
+      facility_2 = create(:facility, block: "Block B", facility_group: fg)
+      dupe_patients_across_blocks = create_list(:patient, 2, business_identifiers: [])
+      create(:patient_business_identifier, identifier: identifier_3, patient: dupe_patients_across_blocks[0], metadata: {assigningFacilityUuid: facility_1.id})
+      create(:patient_business_identifier, identifier: identifier_3, patient: dupe_patients_across_blocks[1], metadata: {assigningFacilityUuid: facility_2.id})
+    end
+
+    it "reports all reportable metrics on statsd" do
+      expect(Statsd.instance).to receive(:gauge).with("DuplicatePassportAnalytics.duplicate_passports_across_facilities.size", 2)
+      expect(Statsd.instance).to receive(:gauge).with("DuplicatePassportAnalytics.duplicate_passports_in_same_facility.size", 1)
+      expect(Statsd.instance).to receive(:gauge).with("DuplicatePassportAnalytics.duplicate_passports_across_districts.size", 0)
+      expect(Statsd.instance).to receive(:gauge).with("DuplicatePassportAnalytics.duplicate_passports_across_blocks.size", 1)
+      expect(Statsd.instance).to receive(:gauge).with("ReportDuplicatePassports.size", 2) # legacy
+
+      DuplicatePassportAnalytics.report
+    end
+
+    it "logs all reportable metrics" do
+      expect(Rails.logger).to receive(:info).with(msg: "duplicate_passports_across_facilities are 2")
+      expect(Rails.logger).to receive(:info).with(msg: "duplicate_passports_in_same_facility are 1")
+      expect(Rails.logger).to receive(:info).with(msg: "duplicate_passports_across_districts are 0")
+      expect(Rails.logger).to receive(:info).with(msg: "duplicate_passports_across_blocks are 1")
+      expect(Rails.logger).to receive(:info).with(msg: "2 passports have duplicate patients across facilities") # legacy
+
+      DuplicatePassportAnalytics.report
+    end
+  end
 
   describe "#duplicate_passports_across_facilities" do
     context "for passports with the same identifiers" do

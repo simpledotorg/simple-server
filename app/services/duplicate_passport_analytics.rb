@@ -39,7 +39,7 @@ class DuplicatePassportAnalytics
     DEFAULT_REPORTABLE_METRICS.values.each do |fn_name|
       dupe_count = public_send(fn_name).size
       gauge "#{fn_name}.size", dupe_count
-      log msg: "#{fn_name} are #{dupe_count}"
+      log "#{fn_name} are #{dupe_count}"
     end
 
     legacy_report
@@ -47,10 +47,11 @@ class DuplicatePassportAnalytics
 
   # legacy reporting to avoid breaking existing dashboards
   def legacy_report
-    across_facilities_dupes = duplicate_passports_across_facilities.size
-    Statsd.instance.gauge("ReportDuplicatePassports.size", across_facilities_dupes)
-    msg = "#{across_facilities_dupes} passports have duplicate patients across facilities"
-    Rails.logger.tagged("ReportDuplicatePassports") { Rails.logger.info msg: msg }
+    Rails.logger.tagged("ReportDuplicatePassports") do
+      Rails.logger.info msg: "#{duplicate_passports_across_facilities.size} passports have duplicate patients across facilities"
+    end
+
+    Statsd.instance.gauge("ReportDuplicatePassports.size", duplicate_passports_across_facilities.size)
   end
 
   def trend(metrics, since, step)
@@ -142,7 +143,7 @@ class DuplicatePassportAnalytics
         error_margin_in_name = [p1_name.size, p2_name.size].max / 2.0
 
         if levenshtein_distance(p1_name, p2_name) > error_margin_in_name
-          age1 && age2 ? age1 != age2  : true
+          age1 && age2 ? age1 != age2 : true
         elsif age1 && age2
           age1 != age2
         else
@@ -153,7 +154,6 @@ class DuplicatePassportAnalytics
   end
 
   private
-
 
   def passport_assigning_facility
     # use ->> to fetch data as text so we can coerce as uuid or keep as text easily
