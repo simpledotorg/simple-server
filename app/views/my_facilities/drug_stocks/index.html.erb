@@ -60,51 +60,35 @@
         <colgroup>
           <col>
           <col>
-          <col class="table-divider">
-          <col>
-          <col>
-          <col class="table-divider">
-          <col>
-          <col>
-          <col>
-          <col class="table-divider">
-          <col>
-          <col>
+          <% @drugs_by_category.map do |_drug_category, drugs| %>
+            <col class="table-divider">
+            <% drugs.map do |drug| %>
+              <col>
+            <% end %>
+          <% end %>
           <col class="mobile">
         </colgroup>
         <thead>
         <tr>
-          <th colspan="2">
-          <th colspan="3">CCB tablets</th>
-          <th colspan="4">ARB tablets</th>
-          <th colspan="3">Diuretic tablets</th>
+          <th colspan="2"></th>
+          <% @drugs_by_category.map do |drug_category, drugs| %>
+            <th colspan=<%= drugs.count.next.to_s %>><%= drug_category %></th>
+          <% end %>
+
         </tr>
         <tr data-sort-method="thead" class="sorts">
           <th class="row-label sort-label" colspan="2" data-sort-default>Facilities</th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="CCB1">Amlodipine<br>5
-            mg
-          </th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="CCB2">Amlodipine<br>10
-            mg
-          </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="CCB3">Patient<br>days</th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB1">Telmisartin<br>20
-            mg
-          </th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB2">Telmisartin<br>40
-            mg
-          </th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="ARB3">Losartan<br>50
-            mg
-          </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="ARB4">Patient<br>days</th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="D1">Hydrochlorothiazide<br>12.5
-            mg
-          </th>
-          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key="D2">Hydrochlorothiazide<br>25
-            mg
-          </th>
-          <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="D3">Patient<br>days</th>
+          <% @drugs_by_category.map do |drug_category, drugs| %>
+            <% drugs.map do |drug| %>
+              <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key=<%= drug.id %>>
+                <%= drug.name %><br> <%= drug.dosage %>
+              </th>
+            <% end %>
+            <th class="row-label sort-label" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+              Patient<br>days
+            </th>
+          <% end %>
+
           <th class="mobile"></th>
         </tr>
         </thead>
@@ -128,26 +112,32 @@
 
         <% @facilities.each do |facility| %>
           <tr>
-            <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="CHC Nectarine: 203 patients">
-              <a href="/analytics/facilities/hwc_carambolim_buzruco"> <%= facility.name %> </a></td>
+            <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
+                data-original-title='<%= "#{facility.name}: #{@report[facility.id][:patient_count]} patients" %>'>
+              <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+                <%= facility.name %>
+              <% end %>
+            </td>
             <td class="text-center">
               <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.id, for_end_of_month: Date.today.strftime("%B %Y")) %>>
                 <i class="fas fa-plus"></i>
               </a>
             </td>
-            <td class="type-number">700</td>
-            <td class="type-number">1,000</td>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="Show tooltip like in first row...">
-              <em class="bg-red">10</em></td>
-            <td class="type-number">400</td>
-            <td class="type-blank"><span>&#8212;</span></td>
-            <td class="type-blank"><span>&#8212;</span></td>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="Show tooltip like in first row...">
-              <em class="bg-red">5</em></td>
-            <td class="type-number">200</td>
-            <td class="type-number">200</td>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="Show tooltip like in first row...">
-              <em class="bg-orange">33</em></td>
+            <% @drugs_by_category.map do |drug_category, drugs| %>
+              <% drugs.map do |drug| %>
+                <% drug_stocks = @report.dig(facility.id, drug_category, :drug_stocks) %>
+                <% if drug_stocks.present? %>
+                  <td class="type-number">
+                    <%= drug_stocks.select { |drug_stock| drug.id == drug_stock.protocol_drug_id }&.first&.in_stock %>
+                  </td>
+                <% else %>
+                  <td class="type-blank"><span>&#8212;</span></td>
+                <% end %>
+              <% end %>
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="Show tooltip like in first row...">
+                <em class="bg-red"><%= @report.dig(facility.id, drug_category, :patient_days) %></em>
+              </td>
+            <% end %>
           </tr>
         <% end %>
         </tbody>

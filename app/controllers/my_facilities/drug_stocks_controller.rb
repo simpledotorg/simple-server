@@ -19,7 +19,9 @@ class MyFacilities::DrugStocksController < AdminController
     # handle no facilities
     for_end_of_month = Date.strptime("January 2021", "%B %Y").end_of_month
 
-    @report = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: for_end_of_month).call
+    query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: for_end_of_month)
+    @report = query.call
+    @drugs_by_category = query.protocol_drugs_by_category
   end
 
   def new
