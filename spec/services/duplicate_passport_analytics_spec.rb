@@ -1,7 +1,62 @@
 require "rails_helper"
 
 RSpec.describe DuplicatePassportAnalytics do
-  xdescribe "#trend"
+  describe ".trend" do
+    it "allows specifying metrics" do
+      Timecop.freeze do
+        expect_any_instance_of(described_class).to(
+          receive(:trend).with([:across_facilities], 4.months.ago, 2.weeks)
+        )
+
+        described_class.trend(metrics: [:across_facilities])
+      end
+    end
+
+    it "allows specifying all metrics" do
+      Timecop.freeze do
+        expect_any_instance_of(described_class).to(
+          receive(:trend).with(
+            [
+              :across_facilities,
+              :same_facility,
+              :across_districts,
+              :across_blocks
+            ], 4.months.ago, 2.weeks)
+        )
+
+        described_class.trend(metrics: :all)
+      end
+    end
+
+
+    it "throws an error if the wrong metrics are asked for" do
+      expect {
+        described_class.trend(metrics: [:across_states])
+      }.to raise_exception(ArgumentError, "Unknown metrics.")
+    end
+  end
+
+  describe "#trend" do
+    # across_facilities
+    before do
+      identifier_1 = SecureRandom.uuid
+      dupe_patients_across_facilities = create_list(:patient, 2, business_identifiers: [])
+      create(:patient_business_identifier, identifier: identifier_1, patient: dupe_patients_across_facilities[0], metadata: {assigningFacilityUuid: SecureRandom.uuid})
+      create(:patient_business_identifier, identifier: identifier_1, patient: dupe_patients_across_facilities[1], metadata: {assigningFacilityUuid: SecureRandom.uuid})
+    end
+
+    xit "generates a pdf and attaches it over an email" do
+      report_email = "test@simple.org"
+      create(:admin, email: report_email)
+      subject = described_class.new(report_email: report_email)
+
+      expect(subject).to receive(:make_trend)
+      expect(subject).to receive(:make_chart)
+      expect(subject).to receive(:send_email)
+
+      subject.trend([:across_facilities], 4.months.ago, 2.weeks)
+    end
+  end
 
   describe "#report" do
     # across_facilities
@@ -39,7 +94,7 @@ RSpec.describe DuplicatePassportAnalytics do
       expect(Statsd.instance).to receive(:gauge).with("DuplicatePassportAnalytics.duplicate_passports_across_blocks.size", 1)
       expect(Statsd.instance).to receive(:gauge).with("ReportDuplicatePassports.size", 2) # legacy
 
-      DuplicatePassportAnalytics.report
+      described_class.new.report
     end
 
     it "logs all reportable metrics" do
@@ -49,7 +104,7 @@ RSpec.describe DuplicatePassportAnalytics do
       expect(Rails.logger).to receive(:info).with(msg: "duplicate_passports_across_blocks are 1")
       expect(Rails.logger).to receive(:info).with(msg: "2 passports have duplicate patients across facilities") # legacy
 
-      DuplicatePassportAnalytics.report
+      described_class.new.report
     end
   end
 

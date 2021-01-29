@@ -19,12 +19,16 @@ class DuplicatePassportAnalytics
   # for finding out the trend of changes of dupes across time (until now) for the specified metric(s)
   # it builds a pdf of the trends and emails it to the specified power_user email
   def self.trend(metrics: :all, since: 4.months.ago, step: 2.weeks, send_to_power_user: nil)
+    default_reportable_keys = DEFAULT_REPORTABLE_METRICS.keys
+
     metrics =
       if metrics.eql?(:all)
-        DEFAULT_REPORTABLE_METRICS.keys
+        default_reportable_keys
       else
         metrics.map(&:to_sym)
       end
+
+    raise ArgumentError, "Unknown metrics." unless (default_reportable_keys & metrics) == metrics
 
     new(report_email: send_to_power_user).trend(metrics, since, step)
   end
@@ -213,7 +217,8 @@ class DuplicatePassportAnalytics
       body: "Please find enclosed."
     }
 
-    email = ActionMailer::Base.mail(email_params)
+    mailer = ActionMailer::Base.new
+    email = mailer.mail(email_params)
     email.attachments["bp-passport-analytics.pdf"] = {
       mime_type: "application/pdf",
       content: chart
