@@ -14,8 +14,11 @@ module Reports
       @data = data ||
         {
           adjusted_registrations: Hash.new(0),
-          controlled_patients_rate: Hash.new(0),
+          adjusted_registrations_with_ltfu: Hash.new(0),
           controlled_patients: Hash.new(0),
+          controlled_patients_with_ltfu: Hash.new(0),
+          controlled_patients_rate: Hash.new(0),
+          controlled_patients_with_ltfu_rate: Hash.new(0),
           cumulative_registrations: Hash.new(0),
           earliest_registration_period: nil,
           missed_visits_rate: {},
@@ -72,9 +75,11 @@ module Reports
     def fill_in_nil_registrations
       registrations.default = 0
       registrations_with_exclusions.default = 0
+      registrations_with_ltfu.default = 0
       full_data_range.each do |period|
         registrations[period] ||= 0
         registrations_with_exclusions[period] ||= 0
+        registrations_with_ltfu[period] ||= 0
       end
     end
 
@@ -91,10 +96,11 @@ module Reports
     end
 
     [:period_info, :earliest_registration_period,
-      :registrations, :registrations_with_exclusions,
-      :adjusted_registrations, :cumulative_registrations,
+      :registrations, :registrations_with_exclusions, :registrations_with_ltfu,
+      :adjusted_registrations, :adjusted_registrations_with_ltfu, :cumulative_registrations,
       :missed_visits, :missed_visits_rate,
-      :controlled_patients, :controlled_patients_rate,
+      :controlled_patients, :controlled_patients_with_ltfu,
+      :controlled_patients_rate, :controlled_patients_with_ltfu_rate,
       :uncontrolled_patients, :uncontrolled_patients_rate,
       :visited_without_bp_taken, :visited_without_bp_taken_rate].each do |key|
       define_method(key) do
@@ -118,14 +124,28 @@ module Reports
     # Adjusted registrations are the registrations as of three months ago - we use these for all the percentage
     # calculations to exclude recent registrations.
     def count_adjusted_registrations
-      adjusted_registration_counts = full_data_range.each_with_object(Hash.new(0)) { |period, adjusted_registration_counts|
+      adjusted_registration_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
         adjusted_period = period.advance(months: -3)
-        adjusted_registration_counts[period] = registrations_with_exclusions[adjusted_period]
+        counts[period] = registrations_with_exclusions[adjusted_period]
       }
 
       self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
         previous_registrations = running_totals[period.previous]
         current_registrations = adjusted_registration_counts[period]
+        total = current_registrations + previous_registrations
+        running_totals[period] = total
+      }
+    end
+
+    def count_adjusted_registrations_with_ltfu
+      adjusted_registration_with_ltfu_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
+        adjusted_period = period.advance(months: -3)
+        counts[period] = registrations_with_ltfu[adjusted_period]
+      }
+
+      self.adjusted_registrations_with_ltfu = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+        previous_registrations = running_totals[period.previous]
+        current_registrations = adjusted_registration_with_ltfu_counts[period]
         total = current_registrations + previous_registrations
         running_totals[period] = total
       }
@@ -173,9 +193,21 @@ module Reports
       end
     end
 
-    def registrations_for_percentage_calculation(period)
+    def registrations_for_percentage_calculation_with_ltfu(period)
       if quarterly_report?
-        self[:registrations][period.previous] || 0
+        self[:registrations_with_ltfu_for][period.previous] || 0
+      else
+        adjusted_registrations_with_ltfu_for(period)
+      end
+    end
+
+    def registrations_for_percentage_calculation(period, key)
+      if key == :controlled_patients_with_ltfu
+        return registrations_for_percentage_calculation_with_ltfu(period)
+      end
+
+      if quarterly_report?
+        self[:registrations_with_exclusions][period.previous] || 0
       else
         adjusted_registrations_for(period)
       end
@@ -184,7 +216,7 @@ module Reports
     def calculate_percentages(key)
       key_for_percentage_data = "#{key}_rate"
       self[key_for_percentage_data] = self[key].each_with_object(Hash.new(0)) { |(period, value), hsh|
-        hsh[period] = percentage(value, registrations_for_percentage_calculation(period))
+        hsh[period] = percentage(value, registrations_for_percentage_calculation(period, key))
       }
     end
 

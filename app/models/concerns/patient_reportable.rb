@@ -12,12 +12,16 @@ module PatientReportable
     end
 
     # exclude_ltfu_as_of is the Date/Time at which patients are to be considered as LTFU.
-    # LTFU patients will be included if this is not passed.
-    scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: Time.new(0)) do
+    scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: nil) do
       if with_exclusions
-        with_hypertension
-          .excluding_dead
-          .excluding_ltfu(ltfu_as_of: exclude_ltfu_as_of)
+        if exclude_ltfu_as_of
+          with_hypertension
+            .excluding_dead
+            .excluding_ltfu(ltfu_as_of: exclude_ltfu_as_of)
+        else
+          with_hypertension
+            .excluding_dead
+        end
       else
         with_hypertension
       end
@@ -25,8 +29,8 @@ module PatientReportable
 
     def self.latest_bp_within_ltfu_period(ltfu_as_of)
       LatestBloodPressuresPerPatient
-        .where("bp_recorded_at > ? AND bp_recorded_at <= ?", ltfu_as_of - LTFU_PERIOD, ltfu_as_of)
-        .where("patient_recorded_at <= ?", ltfu_as_of)
+        .where("bp_recorded_at > ? AND bp_recorded_at <= ?", ltfu_as_of.to_date - LTFU_PERIOD, ltfu_as_of.to_date)
+        .where("patient_recorded_at <= ?", ltfu_as_of.to_date)
     end
   end
 end

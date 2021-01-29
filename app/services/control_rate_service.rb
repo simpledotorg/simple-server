@@ -42,30 +42,23 @@ class ControlRateService
   def fetch_all_data
     results.registrations = registration_counts
     results.registrations_with_exclusions = registration_counts_with_exclusions
+    results.registrations_with_ltfu = registration_counts_with_ltfu
     results.earliest_registration_period = registration_counts.keys.first
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
     results.count_adjusted_registrations
+    results.count_adjusted_registrations_with_ltfu
 
     results.full_data_range.each do |(period, count)|
       results.controlled_patients[period] = controlled_patients(period).count
+      results.controlled_patients_with_ltfu[period] = controlled_patients_with_ltfu(period).count
       results.uncontrolled_patients[period] = uncontrolled_patients(period).count
     end
 
     results.calculate_percentages(:controlled_patients)
+    results.calculate_percentages(:controlled_patients_with_ltfu)
     results.calculate_percentages(:uncontrolled_patients)
     results
-  end
-
-  def registration_counts_with_exclusions
-    return @registration_counts_with_exclusions if defined? @registration_counts_with_exclusions
-    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-
-    @registration_counts_with_exclusions =
-      region.assigned_patients
-        .for_reports(with_exclusions: with_exclusions)
-        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
-        .count
   end
 
   def registration_counts
@@ -78,14 +71,74 @@ class ControlRateService
         .count
   end
 
+  def registration_counts_with_exclusions
+    return @registration_counts_with_exclusions if defined? @registration_counts_with_exclusions
+    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
+
+    @registration_counts_with_exclusions =
+      region.assigned_patients
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: Date.today)
+        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+        .count
+  end
+
+  def registration_counts_with_ltfu
+    return @registration_counts_with_ltfu if defined? @registration_counts_with_ltfu
+    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
+
+    @registration_counts_with_ltfu =
+      region.assigned_patients
+        .for_reports(with_exclusions: with_exclusions)
+        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+        .count
+  end
+
   def controlled_patients(period)
     if period.quarter?
-      bp_quarterly_query(period).under_control
+      bp_quarterly_query(period)
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
+        .under_control
     else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period),
-        "latest_blood_pressures_per_patient_per_months").under_control
+      LatestBloodPressuresPerPatientPerMonth
+        .with_discarded
+        .from(bp_monthly_query(period)
+                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
+          "latest_blood_pressures_per_patient_per_months")
+        .under_control
     end
   end
+
+  def controlled_patients_with_ltfu(period)
+    if period.quarter?
+      bp_quarterly_query(period)
+        .for_reports(with_exclusions: with_exclusions)
+        .under_control
+    else
+      LatestBloodPressuresPerPatientPerMonth
+        .with_discarded
+        .from(bp_monthly_query(period)
+                .for_reports(with_exclusions: with_exclusions),
+          "latest_blood_pressures_per_patient_per_months")
+        .under_control
+    end
+  end
+
+  def uncontrolled_patients(period)
+    if period.quarter?
+      bp_quarterly_query(period)
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
+        .hypertensive
+    else
+      LatestBloodPressuresPerPatientPerMonth
+        .with_discarded
+        .from(bp_monthly_query(period)
+                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
+          "latest_blood_pressures_per_patient_per_months")
+        .hypertensive
+    end
+  end
+
+  private
 
   def bp_monthly_query(period)
     control_range = period.blood_pressure_control_range
@@ -93,7 +146,6 @@ class ControlRateService
     # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
     LatestBloodPressuresPerPatientPerMonth
       .with_discarded
-      .for_reports(with_exclusions: with_exclusions)
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .where(assigned_facility_id: facilities)
       .where("patient_recorded_at < ?", control_range.begin) # TODO this doesn't seem right -- revisit this exclusion
@@ -101,20 +153,10 @@ class ControlRateService
       .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
   end
 
-  def uncontrolled_patients(period)
-    if period.quarter?
-      bp_quarterly_query(period).hypertensive
-    else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period),
-        "latest_blood_pressures_per_patient_per_months").hypertensive
-    end
-  end
-
   def bp_quarterly_query(period)
     quarter = period.value
     cohort_quarter = quarter.previous_quarter
     LatestBloodPressuresPerPatientPerQuarter
-      .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
       .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
