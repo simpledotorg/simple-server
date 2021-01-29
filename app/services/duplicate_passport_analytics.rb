@@ -59,6 +59,8 @@ class DuplicatePassportAnalytics
   end
 
   def trend(metrics, since, step)
+    return unless report_email_is_power_user?
+
     metrics
       .to_h { |name| make_trend(name, since, step) }
       .then { |data| make_chart(data) }
@@ -166,7 +168,7 @@ class DuplicatePassportAnalytics
 
   def make_trend(metric, since, step)
     metric_fn = DEFAULT_REPORTABLE_METRICS.dig(metric)
-    return if metric_fn.blank?
+    return {} if metric_fn.blank?
     now = Time.current
 
     log "Building trend for #{metric}..."
@@ -202,11 +204,6 @@ class DuplicatePassportAnalytics
   end
 
   def send_email(chart)
-    return if report_email.blank?
-    email_authentication = EmailAuthentication.find_by(email: report_email)
-    return if email_authentication.blank?
-    return unless email_authentication.user.power_user?
-
     log "Sending email to power user: #{report_email}..."
 
     email_params = {
@@ -253,5 +250,13 @@ class DuplicatePassportAnalytics
       # add the end date explicitly anyway
       yielder << Time.at(end_t_sec)
     end
+  end
+
+  def report_email_is_power_user?
+    return if report_email.blank?
+    email_authentication = EmailAuthentication.find_by(email: report_email)
+    return if email_authentication.blank?
+
+    email_authentication.user.power_user?
   end
 end

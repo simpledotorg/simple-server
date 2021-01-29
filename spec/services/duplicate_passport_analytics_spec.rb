@@ -21,13 +21,13 @@ RSpec.describe DuplicatePassportAnalytics do
               :same_facility,
               :across_districts,
               :across_blocks
-            ], 4.months.ago, 2.weeks)
+            ], 4.months.ago, 2.weeks
+          )
         )
 
         described_class.trend(metrics: :all)
       end
     end
-
 
     it "throws an error if the wrong metrics are asked for" do
       expect {
@@ -45,16 +45,30 @@ RSpec.describe DuplicatePassportAnalytics do
       create(:patient_business_identifier, identifier: identifier_1, patient: dupe_patients_across_facilities[1], metadata: {assigningFacilityUuid: SecureRandom.uuid})
     end
 
-    xit "generates a pdf and attaches it over an email" do
-      report_email = "test@simple.org"
-      create(:admin, email: report_email)
-      subject = described_class.new(report_email: report_email)
+    it "generates a pdf and attaches it over an email" do
+      Timecop.freeze do
+        report_email = "test@simple.org"
+        create(:admin, email: report_email)
+        subject = described_class.new(report_email: report_email)
 
-      expect(subject).to receive(:make_trend)
-      expect(subject).to receive(:make_chart)
-      expect(subject).to receive(:send_email)
+        expect_any_instance_of(Prawn::Document).to receive(:render)
+        expect_any_instance_of(Mail::Message).to receive(:deliver)
 
-      subject.trend([:across_facilities], 4.months.ago, 2.weeks)
+        subject.trend([:across_facilities], 4.months.ago, 2.weeks)
+      end
+    end
+
+    it "doesn't do anything when the email isn't a power_user" do
+      Timecop.freeze do
+        report_email = "test@simple.org"
+        create(:admin)
+        subject = described_class.new(report_email: report_email)
+
+        expect_any_instance_of(Prawn::Document).to_not receive(:render)
+        expect_any_instance_of(Mail::Message).to_not receive(:deliver)
+
+        subject.trend([:across_facilities], 4.months.ago, 2.weeks)
+      end
     end
   end
 
