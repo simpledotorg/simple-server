@@ -3,10 +3,6 @@ class LatestBloodPressuresPerPatientPerQuarter < ApplicationRecord
   include PatientReportable
 
   belongs_to :patient
-  has_one :materialized_latest_blood_pressure,
-    class_name: "LatestBloodPressuresPerPatient",
-    primary_key: :patient_id,
-    foreign_key: :patient_id
 
   def self.refresh
     Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
