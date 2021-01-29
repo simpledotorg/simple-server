@@ -49,10 +49,10 @@ RSpec.describe PatientsExporter, type: :model do
     [
       "Registration Date",
       "Registration Quarter",
-      "Patient died?",
       "Patient Name",
       "Patient Age",
       "Patient Gender",
+      "Patient Status",
       "Patient Phone Number",
       "Patient Street Address",
       "Patient Village/Colony",
@@ -103,10 +103,10 @@ RSpec.describe PatientsExporter, type: :model do
     [
       I18n.l(patient.recorded_at.to_date),
       quarter_string(patient.recorded_at),
-      "Died",
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
+      "Died",
       patient.phone_numbers.last&.number,
       patient.address.street_address,
       patient.address.village_or_colony,

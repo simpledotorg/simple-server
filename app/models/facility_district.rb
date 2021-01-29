@@ -19,6 +19,11 @@ class FacilityDistrict
 
   alias_method :children, :facilities
 
+  # FacilityDistrict ignores region_reports feature flag, and always returns child facilities
+  def reportable_children(region_reports_enabled: false)
+    children
+  end
+
   def organization
     facility_group_ids = facilities.pluck(:facility_group_id).uniq
     organization_ids = FacilityGroup.where(id: facility_group_ids).pluck(:organization_id).uniq
@@ -67,6 +72,16 @@ class FacilityDistrict
 
   def cache_version
     updated_at.utc.to_s(:usec)
+  end
+
+  # For regions compatibility
+  def source
+    self
+  end
+
+  # For regions compatibility
+  def region_type
+    "facility_district"
   end
 
   # For regions compatibility

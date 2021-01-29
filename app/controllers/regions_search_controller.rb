@@ -1,27 +1,24 @@
 class RegionsSearchController < AdminController
+  include ActiveSupport::Benchmarkable
   delegate :cache, to: Rails
   CACHE_VERSION = "V3"
 
   def show
-    accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
-    cache_key = "#{current_admin.cache_key}/regions/index"
-    cache_version = "#{accessible_facility_regions.cache_key}/#{CACHE_VERSION}"
-    @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
-      accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
-        state, district, block = ancestors.values_at("state", "district", "block")
-        result[state] ||= {}
-        result[state][district] ||= {}
-        result[state][district][block] ||= []
-        result[state][district][block] << facility
-      }
-    }
+    regions = []
+    benchmark("retrieving all accessible regions for search") do
+      authorize do
+        regions.concat current_admin.user_access.accessible_state_regions(:view_reports)
+        regions.concat current_admin.user_access.accessible_district_regions(:view_reports)
+        regions.concat current_admin.user_access.accessible_block_regions(:view_reports)
+        regions.concat current_admin.user_access.accessible_facility_regions(:view_reports)
+      end
+    end
     @query = params.permit(:query)[:query] || ""
     regex = /.*#{Regexp.escape(@query)}.*/i
-    results = search(@accessible_regions, regex)
+    results = search(regions, regex)
     json = results.sort_by(&:name).map { |region|
       {
-        ancestors: region.cached_ancestors.where.not(region_type: ["root", "organization"]).order(:path).map { |a| a.name }.join(" > "),
+        ancestors: region.cached_ancestors.reject { |r| r.region_type.in?(["root", "organization"]) }.map { |r| r.name }.join(" > "),
         id: region.id,
         name: region.name,
         slug: region.slug,
@@ -33,17 +30,7 @@ class RegionsSearchController < AdminController
 
   private
 
-  def search(hash, regex)
-    results = []
-    hash.each_pair do |parent, children|
-      results << parent if regex.match?(parent.name)
-
-      if children.is_a?(Hash)
-        results.concat search(children, regex)
-      else
-        results.concat children.find_all { |r| regex.match?(r.name) }
-      end
-    end
-    results.flatten
+  def search(regions, regex)
+    regions.select { |region| regex.match?(region.name) }
   end
 end

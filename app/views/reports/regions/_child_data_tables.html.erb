@@ -46,6 +46,7 @@
               </td>
             </tr>
             <% data.values.map(&:region).each do |region| %>
+              <% next if data[region.name].dig("controlled_patients_rate", @period).nil? %>
               <tr>
                 <td class="ta-left">
                   <%= link_to(reports_region_path(region, report_scope: region_type))do %>
@@ -113,6 +114,7 @@
               </td>
             </tr>
             <% data.values.map(&:region).each do |region| %>
+              <% next if data[region.name].dig("uncontrolled_patients_rate", @period).nil? %>
               <tr>
                 <td class="ta-left">
                   <%= link_to(reports_region_path(region, report_scope: region_type))do %>
@@ -180,6 +182,7 @@
               </td>
             </tr>
             <% data.values.map(&:region).each do |region| %>
+              <% next if data[region.name].dig("missed_visits_rate", @period).nil? %>
               <tr>
                 <td class="ta-left">
                   <%= link_to(reports_region_path(region, report_scope: region_type))do %>
@@ -247,6 +250,7 @@
               </td>
             </tr>
             <% data.values.map(&:region).each do |region| %>
+              <% next if data[region.name].dig("registrations", @period).nil? %>
               <tr>
                 <td class="ta-left">
                   <%= link_to(reports_region_path(region, report_scope: region_type))do %>

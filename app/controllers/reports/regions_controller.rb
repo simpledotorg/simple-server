@@ -12,7 +12,7 @@ class Reports::RegionsController < AdminController
   delegate :cache, to: Rails
 
   def index
-    if current_admin.feature_enabled?(:region_reports)
+    if region_reports_enabled?
       accessible_facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports) }
 
       cache_key = "#{current_admin.cache_key}/regions/index"
@@ -45,12 +45,12 @@ class Reports::RegionsController < AdminController
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
-    if @region.respond_to?(:children)
-      @children_data = @region.children.each_with_object({}) { |child, hsh|
-        hsh[child.name] = Reports::RegionService.new(region: child,
-                                                     period: @period).call
-      }
-    end
+    @children = @region.reportable_children(region_reports_enabled: region_reports_enabled?)
+    @children_data = @children.each_with_object({}) { |child, hsh|
+      hsh[child.name] = Reports::RegionService.new(region: child,
+                                                   period: @period,
+                                                   with_exclusions: report_with_exclusions?).call
+    }
   end
 
   def details
@@ -61,7 +61,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    region_source = current_admin.feature_enabled?(:region_reports) ? @region.source : @region
+    region_source = @region.source
     if region_source.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
     end
@@ -71,7 +71,7 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
     periods = @period.downto(5)
 
-    @cohort_data = CohortService.new(region: @region, periods: periods).call
+    @cohort_data = CohortService.new(region: @region, periods: periods, with_exclusions: report_with_exclusions?).call
   end
 
   def download
@@ -115,38 +115,21 @@ class Reports::RegionsController < AdminController
 
   private
 
-  def accessible_region?(region)
-    send "accessible_#{region.region_type}?", region
+  def accessible_region?(region, action)
+    current_admin.region_access(memoized: true).accessible_region?(region, action)
   end
 
-  # An admin can view a state if they have view_reports access to any of the state's districts
-  def accessible_state?(region)
-    return true if current_admin.power_user?
-    @accessible_state_ids = current_admin.user_access.accessible_state_regions(:view_reports).pluck(:id)
-    @accessible_state_ids.include?(region.id)
-  end
-
-  def accessible_district?(district)
-    return true if current_admin.power_user?
-    @accessible_district_ids ||= current_admin.accessible_district_regions(:view_reports).pluck(:id)
-    @accessible_district_ids.include?(district.id)
-  end
-
-  def accessible_block?(block)
-    return true if current_admin.power_user?
-    @accessible_block_ids ||= current_admin.accessible_block_regions(:view_reports).pluck(:id)
-    @accessible_block_ids.include?(block.id)
+  def region_reports_enabled?
+    current_admin.feature_enabled?(:region_reports)
   end
 
   helper_method :accessible_region?
-  helper_method :accessible_state?
-  helper_method :accessible_district?
-  helper_method :accessible_block?
+  helper_method :region_reports_enabled?
 
   def download_filename
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
-    "#{@region.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
@@ -176,56 +159,32 @@ class Reports::RegionsController < AdminController
   end
 
   def find_region
-    @region ||= if current_admin.feature_enabled?(:region_reports)
-      authorize {
-        case region_class
-        when "State"
-          current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
-        when "FacilityDistrict"
-          scope = current_admin.accessible_facilities(:view_reports)
-          FacilityDistrict.new(name: report_params[:id], scope: scope)
-        when "FacilityGroup"
+    report_scope = report_params[:report_scope]
+    @region ||= authorize {
+      case report_scope
+      when "state"
+        current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
+      when "facility_district"
+        scope = current_admin.accessible_facilities(:view_reports)
+        FacilityDistrict.new(name: report_params[:id], scope: scope)
+      when "district"
+        if region_reports_enabled?
           current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
-        when "Block"
-          current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
-        when "Facility"
+        else
+          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id]).region
+        end
+      when "block"
+        current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
+      when "facility"
+        if region_reports_enabled?
           current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
         else
-          raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
+          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id]).region
         end
-      }
-    else
-      authorize {
-        case region_class
-        when "FacilityDistrict"
-          scope = current_admin.accessible_facilities(:view_reports)
-          FacilityDistrict.new(name: report_params[:id], scope: scope)
-        when "FacilityGroup"
-          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
-        when "Facility"
-          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
-        else
-          raise ActiveRecord::RecordNotFound, "unknown region_class #{region_class}"
-        end
-      }
-    end
-  end
-
-  def region_class
-    @region_class ||= case report_params[:report_scope]
-    when "state"
-      "state"
-    when "facility_district"
-      "facility_district"
-    when "district"
-      "facility_group"
-    when "block"
-      "block"
-    when "facility"
-      "facility"
-    else
-      raise ActiveRecord::RecordNotFound, "unknown report scope #{report_params[:report_scope]}"
-    end.classify
+      else
+        raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
+      end
+    }
   end
 
   def report_params
@@ -243,6 +202,10 @@ class Reports::RegionsController < AdminController
 
     Time.use_zone(time_zone) { yield }
     Groupdate.time_zone = "UTC"
+  end
+
+  def report_with_exclusions?
+    current_admin.feature_enabled?(:report_with_exclusions)
   end
 
   def log_cache_metrics

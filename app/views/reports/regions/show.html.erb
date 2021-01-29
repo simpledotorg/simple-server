@@ -297,8 +297,8 @@
 
 <%= render "visit_details_card" %>
 
-<% if @region.child_region_type.in?(["district", "block", "facility"]) %>
-  <%= render "child_data_tables", data: @children_data, region_type: @region.child_region_type %>
+<% if @children_data.any? %>
+  <%= render "child_data_tables", data: @children_data, region_type: @children.first.region_type %>
 <% end %>
 
 <div id="data-json" style="display: none;">

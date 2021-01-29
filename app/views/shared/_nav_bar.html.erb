@@ -73,6 +73,11 @@
                   <i class="fas fa-flag main-menu-icon"></i> Flipper
                 <% end %>
               <% end %>
+              <% if current_admin.power_user? %>
+                <%= link_to admin_error_traces_path, class: "dropdown-item #{active_controller?("admin/error_traces")}" do %>
+                  <i class="fas fa-wrench main-menu-icon"></i> Error Traces
+                <% end %>
+              <% end %>
             <% end %>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">

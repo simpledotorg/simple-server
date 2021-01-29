@@ -1,12 +1,11 @@
 class SentryJob < ActiveJob::Base
   queue_as :default
 
-  def perform(event)
-    Raven.send_event(event)
+  def perform(event, hint)
+    Sentry.send_event(event, hint)
   end
 end
 
-Raven.configure do |config|
-  config.sanitize_fields = Rails.application.config.filter_parameters.map(&:to_s)
-  config.async = ->(event) { SentryJob.perform_later(event) }
+Sentry.init do |config|
+  config.async = ->(event, hint) { SentryJob.perform_later(event, hint) }
 end
