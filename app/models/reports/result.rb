@@ -195,7 +195,7 @@ module Reports
 
     def registrations_for_percentage_calculation_with_ltfu(period)
       if quarterly_report?
-        self[:registrations_with_ltfu_for][period.previous] || 0
+        self[:registrations_with_ltfu][period.previous] || 0
       else
         adjusted_registrations_with_ltfu_for(period)
       end

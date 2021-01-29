@@ -18,6 +18,7 @@ RSpec.describe ControlRateService, type: :model do
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
+      LatestBloodPressuresPerPatient.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
   end
@@ -200,6 +201,7 @@ RSpec.describe ControlRateService, type: :model do
 
       result_with_exclusions =
         ControlRateService.new(facility_group_1, periods: report_range, with_exclusions: true).call
+
       expect(result_with_exclusions[:cumulative_registrations][report_month]).to eq(2)
       expect(result_with_exclusions[:adjusted_registrations][report_month]).to eq(1)
       expect(result_with_exclusions[:controlled_patients][report_month]).to eq(1)

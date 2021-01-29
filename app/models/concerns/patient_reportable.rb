@@ -11,7 +11,6 @@ module PatientReportable
       where(id: latest_bp_within_ltfu_period(ltfu_as_of).select(:patient_id))
     end
 
-    # exclude_ltfu_as_of is the Date/Time at which patients are to be considered as LTFU.
     scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: nil) do
       if with_exclusions
         if exclude_ltfu_as_of
