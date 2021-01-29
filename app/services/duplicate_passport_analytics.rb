@@ -18,12 +18,12 @@ class DuplicatePassportAnalytics
 
   # for finding out the trend of changes of dupes across time (until now) for the specified metric(s)
   # it builds a pdf of the trends and emails it to the specified power_user email
-  def self.trend(metric: :all, since: 3.months.ago, step: 1.month, send_to_power_user: nil)
+  def self.trend(metrics: :all, since: 4.months.ago, step: 2.weeks, send_to_power_user: nil)
     metrics =
-      if metric.eql?(:all)
+      if metrics.eql?(:all)
         DEFAULT_REPORTABLE_METRICS.keys
       else
-        metric.map(&:to_sym)
+        metrics.map(&:to_sym)
       end
 
     new(report_email: send_to_power_user).trend(metrics, since, step)
@@ -202,7 +202,7 @@ class DuplicatePassportAnalytics
       from: "help@simple.org",
       to: report_email,
       subject: "BP Passport Analytics [#{display_date(Time.current)}]",
-      content_type: "multipart/mixed", # to allow both a body + attachment
+      content_type: "multipart/mixed", # to allow both a body and an attachment
       body: "Please find enclosed."
     }
 
@@ -222,7 +222,7 @@ class DuplicatePassportAnalytics
     Statsd.instance.gauge("#{self.class.name}.#{stat}", value)
   end
 
-  # rubygems implements levenshtein_distance for guessing typos
+  # rubygems implements levenshtein_distance for guessing typos, we can reuse it
   # source: https://github.com/rubygems/rubygems/blob/master/lib/rubygems/text.rb
   def levenshtein_distance(s, t)
     require "rubygems/text"
@@ -230,10 +230,16 @@ class DuplicatePassportAnalytics
   end
 
   def for_time_series(start_t, end_t, step)
+    start_t_sec = start_t.to_datetime.to_i
+    end_t_sec = end_t.to_datetime.to_i
+
     Enumerator.new do |yielder|
-      (start_t.to_datetime.to_i..end_t.to_datetime.to_i).step(step) do |date|
+      (start_t_sec..end_t_sec).step(step) do |date|
         yielder << Time.at(date)
       end
+
+      # add the end date explicitly anyway
+      yielder << Time.at(end_t_sec)
     end
   end
 end
