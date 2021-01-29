@@ -21,6 +21,13 @@ set :db_local_clean, false
 set :db_remote_clean, true
 set :disallow_pushing, true
 
+set :sentry_api_token, ENV["SENTRY_AUTH_TOKEN"]
+set :sentry_organization, "resolve-to-save-lives"
+set :sentry_repo, "simpledotorg/simple-server"
+# Fire off release notifications to Sentry after successful deploys
+before "deploy:starting", "sentry:validate_config"
+after "deploy:published", "sentry:notice_deployment"
+
 append :linked_dirs, ".bundle"
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"

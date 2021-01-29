@@ -15,6 +15,7 @@
 //= require popper
 //= require bootstrap-sprockets
 //= require bootstrap-select
+//= require bootstrap-datepicker
 //= require lodash
 //= require tablesort
 //= require numeral

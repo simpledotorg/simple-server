@@ -15,6 +15,9 @@ blocks:
           value: 'postgresql://postgres:@0.0.0.0:5432/myapp_test'
         - name: RAILS_ENV
           value: test
+      secrets:
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
       jobs:
         - name: RSpec
           parallelism: 4
@@ -35,7 +38,7 @@ blocks:
             - 'bundle exec rake db:test:prepare'
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
-  - name: Deploy to dev environments
-    pipeline_file: development_deployment.yml
+  - name: Deploy
+    pipeline_file: deploy.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
