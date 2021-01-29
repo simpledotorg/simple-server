@@ -246,7 +246,7 @@ class User < ApplicationRecord
   end
 
   def block_level_sync?
-    feature_enabled?(:block_level_sync)
+    feature_enabled?(:block_level_sync) && !can_teleconsult?
   end
 
   def flipper_id
