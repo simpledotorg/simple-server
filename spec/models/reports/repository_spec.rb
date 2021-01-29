@@ -27,26 +27,34 @@ RSpec.describe Reports::Repository, type: :model do
     facility_1, facility_2, facility_3 = *facilities.take(3)
     regions = facilities.map(&:region)
 
-    controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-    uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-    patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+    facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
 
     Timecop.freeze(jan_2020) do
-      controlled_in_jan.map do |patient|
-        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
-        create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient, recorded_at: 35.days.ago, user: user)
+      (facility_1_controlled << facility_2_controlled).map do |patient|
+        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.months.ago, user: user)
       end
-      uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago) }
-      create(:blood_pressure, :under_control, facility: facility_3, patient: patient_from_other_facility, recorded_at: 2.days.ago)
+      facility_1_uncontrolled.map do |patient|
+        create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 2.months.ago)
+      end
     end
 
     refresh_views
 
-    repo = Reports::Repository.new(regions, periods: Period.month(jan_2020))
-    result = repo.controlled_patients_info
+    jan = Period.month(jan_2020)
+    repo = Reports::Repository.new(regions, periods: Period.month(jan))
+    controlled = repo.controlled_patients_info
+    uncontrolled = repo.uncontrolled_patients_info
+    expect(controlled["facility-1"].fetch(jan)).to eq(2)
+    expect(controlled["facility-2"].fetch(jan)).to eq(1)
+    expect(controlled["facility-3"].fetch(jan)).to eq(0)
+    expect(uncontrolled["facility-1"].fetch(jan)).to eq(2)
+    expect(uncontrolled["facility-2"].fetch(jan)).to eq(0)
+    expect(uncontrolled["facility-3"].fetch(jan)).to eq(0)
   end
 
-  fit "gets controlled info for range of month periods" do
+  it "gets controlled info for range of month periods" do
     facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
     facility_1, facility_2, facility_3 = *facilities.take(3)
     regions = facilities.map(&:region)

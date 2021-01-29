@@ -2,6 +2,7 @@ module Reports
   class Repository
     def initialize(regions, periods:)
       @regions = Array(regions)
+      @regions_by_id = @regions.map { |r| [r.id, r] }.to_h
 
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods).to_a
@@ -11,6 +12,7 @@ module Reports
     end
 
     attr_reader :regions, :periods
+    attr_reader :regions_by_id
     delegate :cache, :logger, to: Rails
 
     class CacheKey
@@ -32,10 +34,34 @@ module Reports
       end
     end
 
-    def uncontrolled_patients_info
+    def lookup_region(id)
+      @regions_by_id.fetch(id)
+    end
+
+    def controlled_patients_info
       keys = cache_keys(:controlled_patients_info)
       cached_results = cache.fetch_multi(*keys) { |key|
-        uncontrolled_patients_count_for(key)
+        cache_key = CacheKey.new(key)
+        period = cache_key.period
+        region = lookup_region(cache_key.region_id)
+        controlled_patients_for(region, period).count
+      }
+      results = {}
+      cached_results.each do |key, result|
+        cache_key = CacheKey.new(key)
+        results[cache_key.slug] ||= {}
+        results[cache_key.slug][cache_key.period] = result
+      end
+      results
+    end
+
+    def uncontrolled_patients_info
+      keys = cache_keys(:uncontrolled_patients_info)
+      cached_results = cache.fetch_multi(*keys) { |key|
+        cache_key = CacheKey.new(key)
+        period = cache_key.period
+        region = lookup_region(cache_key.region_id)
+        uncontrolled_patients_for(region, period).count
       }
       results = {}
       cached_results.each do |key, result|
@@ -51,34 +77,12 @@ module Reports
       combinations.map { |region_key, period_key| [region_key, period_key, operation].join("/") }
     end
 
-    def controlled_patients_info
-      keys = cache_keys(:controlled_patients_info)
-      cached_results = cache.fetch_multi(*keys) { |key|
-        controlled_patients_count_for(key)
-      }
-      results = {}
-      cached_results.each do |key, result|
-        cache_key = CacheKey.new(key)
-        results[cache_key.slug] ||= {}
-        results[cache_key.slug][cache_key.period] = result
-      end
-      results
-    end
-
-    def controlled_patients_count_for(key)
-      cache_key = CacheKey.new(key)
-      period = cache_key.period
-      region = @regions.detect { |r| r.id == cache_key.region_id }
-      control_range = period.blood_pressure_control_range
+    def controlled_patients_for(region, period)
       LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(region, period),
-        "latest_blood_pressures_per_patient_per_months").under_control.count
+        "latest_blood_pressures_per_patient_per_months").under_control
     end
 
-    def uncontrolled_patients_count_for(key)
-      cache_key = CacheKey.new(key)
-      period = cache_key.period
-      region = @regions.detect { |r| r.id == cache_key.region_id }
-      control_range = period.blood_pressure_control_range
+    def uncontrolled_patients_for(region, period)
       LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(region, period),
         "latest_blood_pressures_per_patient_per_months").hypertensive
     end
