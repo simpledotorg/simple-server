@@ -55,6 +55,8 @@ class ControlRateService
       end
     else
       control_results = Reports::Repository.new(region, periods: results.full_data_range).controlled_patients_info
+      pp control_results
+      pp results.full_data_range
       uncontrol_results = Reports::Repository.new(region, periods: results.full_data_range).uncontrolled_patients_info
       results.controlled_patients = control_results[region.slug]
       results.uncontrolled_patients = uncontrol_results[region.slug]

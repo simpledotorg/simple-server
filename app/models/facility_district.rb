@@ -1,4 +1,5 @@
 class FacilityDistrict
+  include Reports::CacheKeyV2
   attr_reader :name, :scope
 
   alias_method :id, :name

@@ -5,6 +5,7 @@ class Facility < ApplicationRecord
   include QuarterHelper
   include PgSearch::Model
   include LiberalEnum
+  include Reports::CacheKeyV2
 
   extend FriendlyId
   extend RegionSource
@@ -103,9 +104,6 @@ class Facility < ApplicationRecord
   delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
   delegate :cache_key, :cache_version, to: :region
 
-  def cache_key_v2
-    [model_name.cache_key, id, slug].join("/")
-  end
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)

@@ -198,12 +198,12 @@ RSpec.describe Reports::RegionsController, type: :controller do
       slug = region.slug
       region.update!(slug: "#{slug}-district")
       expect(region.slug).to_not eq(other_fg.slug)
-
       other_fg.facilities << build(:facility, name: "other facility")
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
       get :show, params: {id: other_fg.slug, report_scope: "district"}
+
       expect(response).to be_successful
     end
 

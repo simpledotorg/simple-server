@@ -34,6 +34,7 @@ module Reports
 
       start_period = [result.earliest_registration_period, range.begin].compact.max
       calc_range = (start_period..range.end)
+      pp result
       result.calculate_missed_visits(calc_range)
       result.calculate_missed_visits_percentages(calc_range)
       result.calculate_period_info(calc_range)
