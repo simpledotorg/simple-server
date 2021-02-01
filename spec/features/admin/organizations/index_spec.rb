@@ -11,9 +11,6 @@ RSpec.feature "Organization management", type: :feature do
   organization_page = AdminPage::Organizations::Index.new
 
   describe "test organization screen" do
-    before { Flipper.enable(:new_permissions_system_aug_2020) }
-    after { Flipper.disable(:new_permissions_system_aug_2020) }
-
     it "Verify organisation is displayed in ManageOrganisation" do
       visit root_path
       login.do_login(owner.email, owner.password)
