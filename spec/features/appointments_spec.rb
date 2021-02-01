@@ -60,21 +60,9 @@ RSpec.feature "Overdue appointments", type: :feature do
       it "shows all overdue patients" do
         expect(page).to have_content(overdue_patient_in_facility_1.full_name)
         expect(page).to have_content(overdue_patient_in_facility_2.full_name)
-      end
-
-      it "shows registration date for overdue patients" do
         expect(page).to have_content("Registered on")
-      end
-
-      it "does not show non-overdue patients" do
         expect(page).not_to have_content(non_overdue_patient_in_facility_1.full_name)
-      end
-
-      it "does not show overdue patients in unauthorized facilities" do
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
-      end
-
-      it "does not allow you to download the overdue list for all facilities" do
         expect(page).to have_content(/select a facility/i)
         expect(page).not_to have_selector("a", text: "Download Overdue List")
       end
