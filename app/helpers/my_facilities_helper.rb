@@ -18,4 +18,9 @@ module MyFacilitiesHelper
       facility.monthly_estimated_opd_load
     end
   end
+
+  # def drug_stock_tooltip(report)
+  #   ERB.new("")
+  #   "<span class='math'>886,915</span>Telmisartin 20 mg<br><span class='math'>+1,000,000*2</span>Amlodipine 10 mg<br><span class='math'>+128,760</span>Losartan 50 mg<br><span class='math'>/23,489*0.37</span>Patients<br><span class='math'>=117 days</span>Patient days"
+  # end
 end
