@@ -14,63 +14,44 @@ module Reports
     attr_reader :regions, :periods
     attr_reader :regions_by_id
     delegate :cache, :logger, to: Rails
-
-    class CacheKey
-      def initialize(key)
-        @key = key
-        @parts = key.split("/")
+    class Item
+      attr_reader :region, :period, :calculation
+      def initialize(region, period, calculation)
+        @region = region
+        @period = period
+        @calculation = calculation
       end
 
-      def region_id
-        @parts[1]
+      def cache_key
+        [region.cache_key_v2, period.cache_key, calculation].join("/")
       end
-
-      def slug
-        @parts[2]
-      end
-
-      def period
-        Period.new(type: @parts[3], value: @parts[4])
-      end
-    end
-
-    def lookup_region(id)
-      @regions_by_id.fetch(id)
     end
 
     def controlled_patients_info
-      keys = cache_keys(:controlled_patients_info)
-      cached_results = cache.fetch_multi(*keys) { |key|
-        cache_key = CacheKey.new(key)
-        period = cache_key.period
-        region = lookup_region(cache_key.region_id)
-        controlled_patients_for(region, period).count
+      items = cache_keys(:controlled_patients_info)
+      cached_results = cache.fetch_multi(*items) { |item|
+        controlled_patients_for(item.region, item.period).count
       }
-      cached_results.each_with_object({}) do |(key, count), results|
-        cache_key = CacheKey.new(key)
-        results[cache_key.slug] ||= Hash.new(0)
-        results[cache_key.slug][cache_key.period] = count
+      cached_results.each_with_object({}) do |(item, count), results|
+        results[item.region.slug] ||= Hash.new(0)
+        results[item.region.slug][item.period] = count
       end
     end
 
     def uncontrolled_patients_info
-      keys = cache_keys(:uncontrolled_patients_info)
-      cached_results = cache.fetch_multi(*keys) { |key|
-        cache_key = CacheKey.new(key)
-        period = cache_key.period
-        region = lookup_region(cache_key.region_id)
-        uncontrolled_patients_for(region, period).count
+      items = cache_keys(:uncontrolled_patients_info)
+      cached_results = cache.fetch_multi(*items) { |item|
+        uncontrolled_patients_for(item.region, item.period).count
       }
-      cached_results.each_with_object({}) do |(key, count), results|
-        cache_key = CacheKey.new(key)
-        results[cache_key.slug] ||= Hash.new(0)
-        results[cache_key.slug][cache_key.period] = count
+      cached_results.each_with_object({}) do |(item, count), results|
+        results[item.region.slug] ||= Hash.new(0)
+        results[item.region.slug][item.period] = count
       end
     end
 
-    def cache_keys(operation)
-      combinations = regions.to_a.map(&:cache_key_v2).product(periods.map(&:cache_key))
-      combinations.map { |region_key, period_key| [region_key, period_key, operation].join("/") }
+    def cache_keys(calculation)
+      combinations = regions.to_a.product(periods)
+      combinations.map { |region, period| Item.new(region, period, calculation) }
     end
 
     def controlled_patients_for(region, period)
