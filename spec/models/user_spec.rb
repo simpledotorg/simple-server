@@ -330,4 +330,32 @@ RSpec.describe User, type: :model do
       expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
     end
   end
+
+  describe "#block_level_sync?" do
+    let(:user) { create(:user) }
+    let(:mo) { create(:teleconsultation_medical_officer) }
+
+    before do
+      Flipper.enable(:block_level_sync, user)
+      Flipper.enable(:block_level_sync, mo)
+    end
+
+    after do
+      Flipper.disable(:block_level_sync, mo)
+      Flipper.disable(:block_level_sync, user)
+    end
+
+    it "is true when the flipper flag is on" do
+      expect(user.block_level_sync?).to eq true
+    end
+
+    it "is false when the flipper flag is off" do
+      Flipper.disable(:block_level_sync, user)
+      expect(user.block_level_sync?).to eq false
+    end
+
+    it "is false when the user is enabled for teleconsulation" do
+      expect(mo.block_level_sync?).to eq false
+    end
+  end
 end
