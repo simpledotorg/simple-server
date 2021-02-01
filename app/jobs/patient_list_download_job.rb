@@ -25,6 +25,6 @@ class PatientListDownloadJob < ApplicationJob
     exporter = with_medication_history ? PatientsWithHistoryExporter : PatientsExporter
     patients_csv = exporter.csv(patients)
 
-    PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_later
+    PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_now
   end
 end

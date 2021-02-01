@@ -441,7 +441,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
       expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
-      expect(response.headers["Content-Disposition"]).to include('filename="facility_group-quarterly-cohort-report_')
+      expect(response.headers["Content-Disposition"]).to include('filename="district-quarterly-cohort-report_')
     end
 
     it "retrieves cohort data for a facility district" do

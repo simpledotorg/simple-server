@@ -211,6 +211,6 @@ class RegionsIntegrityCheck
   end
 
   def sentry(args)
-    Raven.capture_message(SENTRY_ERROR_TITLE, logger: "logger", extra: args, tags: {type: "regions"})
+    Sentry.capture_message(SENTRY_ERROR_TITLE, extra: args, tags: {type: "regions"})
   end
 end
