@@ -1,10 +1,10 @@
 require "features_helper"
 
 RSpec.feature "To test overdue appointment functionality", type: :feature do
-  let!(:ihmi) { create(:organization, name: "IHMI") }
-  let!(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
-  let!(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
-  let!(:owner) { create(:admin, :power_user) }
+  let(:ihmi) { create(:organization, name: "IHMI") }
+  let(:ihmi_facility_group) { create(:facility_group, organization: ihmi, name: "Bathinda") }
+  let(:test_facility) { create(:facility, facility_group: ihmi_facility_group, name: "test_facility") }
+  let(:owner) { create(:admin, :power_user) }
 
   login = AdminPage::Sessions::New.new
   appoint_page = AppointmentsPage::Index.new
@@ -26,6 +26,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     end
 
     it "landing page -Facility and page dropdown " do
+      _test_facility # we need this fixture in place for this one spec to work
       create_list(:facility, 5)
       nav_page.click_main_menu_tab("Overdue")
       appoint_page.select_facility_drop_down
