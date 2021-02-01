@@ -19,9 +19,6 @@
         <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
           Missed visits
         <% end %>
-        <%= link_to(my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("registrations")}") do %>
-          Registrations
-        <% end %>
         <% if current_admin.feature_enabled?(:drug_stocks) %>
           <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_controller?("my_facilities/drug_stocks")}") do %>
             Drug stock
