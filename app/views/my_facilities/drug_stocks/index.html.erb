@@ -123,6 +123,7 @@
               </a>
             </td>
             <% @drugs_by_category.map do |drug_category, drugs| %>
+              <% patient_days = facility_report.dig(drug_category, :patient_days) %>
               <% drugs.map do |drug| %>
                 <% drug_stock = facility_report.dig(drug_category, :drug_stocks, drug.id) %>
                 <% if drug_stock.present? %>
@@ -133,9 +134,15 @@
                   <td class="type-blank"><span>&#8212;</span></td>
                 <% end %>
               <% end %>
-              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title= "<%= drug_stock_tooltip(facility_report[drug_category]) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-                <em class="bg-red"><%= facility_report.dig(drug_category, :patient_days) %></em>
-              </td>
+              <% if patient_days.present? %>
+                <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= drug_stock_tooltip(facility_report[drug_category]) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+                  <em class="<%= patient_days_bg_color(patient_days) %>">
+                    <%= patient_days %>
+                  </em>
+                </td>
+              <% else %>
+                <td class="type-blank"><span>&#8212;</span></td>
+              <% end %>
             <% end %>
           </tr>
         <% end %>

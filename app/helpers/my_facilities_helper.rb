@@ -37,4 +37,16 @@ module MyFacilitiesHelper
     EOF
     tooltip_template.result(binding)
   end
+
+  def patient_days_bg_color(patient_days)
+    return if patient_days.nil?
+    return "bg-red" if patient_days == "error"
+    case
+    when patient_days < 30 then "bg-red"
+    when patient_days < 60 then "bg-orange"
+    when patient_days < 90 then "bg-yellow"
+    else
+      "bg-green"
+    end
+  end
 end

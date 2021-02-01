@@ -7,7 +7,13 @@ class DrugStocksQuery
   end
 
   def protocol_drugs_by_category
-    @drug_categories ||= @protocol.protocol_drugs.where(stock_tracked: true).group_by(&:drug_category)
+    @drug_categories ||= @protocol.protocol_drugs
+      .where(stock_tracked: true)
+      .order(:name, :dosage)
+      .sort_by {|protocol_drug| [protocol_drug.name, protocol_drug.dosage.to_i]}
+      .group_by(&:drug_category)
+      .sort_by {|(drug_category, _) | drug_category}
+      .to_h
   end
 
   def call
