@@ -9,11 +9,6 @@ RSpec.feature "Overdue appointments", type: :feature do
   before do
     call_center.accesses.create(resource: ihmi)
     ENV["IHCI_ORGANIZATION_UUID"] = ihmi.id
-    enable_flag(:new_permissions_system_aug_2020, call_center)
-  end
-
-  after do
-    disable_flag(:new_permissions_system_aug_2020, call_center)
   end
 
   describe "index" do

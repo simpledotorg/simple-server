@@ -26,7 +26,7 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     end
 
     it "landing page -Facility and page dropdown " do
-      _test_facility # we need this fixture in place for this one spec to work
+      _facility = test_facility # we need this fixture in place for this one spec to work
       create_list(:facility, 5)
       nav_page.click_main_menu_tab("Overdue")
       appoint_page.select_facility_drop_down
