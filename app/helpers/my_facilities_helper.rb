@@ -19,8 +19,22 @@ module MyFacilitiesHelper
     end
   end
 
-  # def drug_stock_tooltip(report)
-  #   ERB.new("")
-  #   "<span class='math'>886,915</span>Telmisartin 20 mg<br><span class='math'>+1,000,000*2</span>Amlodipine 10 mg<br><span class='math'>+128,760</span>Losartan 50 mg<br><span class='math'>/23,489*0.37</span>Patients<br><span class='math'>=117 days</span>Patient days"
-  # end
+  def drug_stock_tooltip(report)
+    return nil if report.nil? || report[:patient_days] == "error"
+    tooltip_template = ERB.new <<-EOF
+      <% report[:stocks_on_hand].each_with_index do |stock_on_hand, i| %>
+        <span class='math'><%= '+' unless i == 0 %><%= stock_on_hand[:in_stock] %>*<%= stock_on_hand[:coefficient] %></span>
+        <%= stock_on_hand[:protocol_drug].name %> <%= stock_on_hand[:protocol_drug].dosage %>
+        <br>
+      <% end %>
+      <span class='math'>
+        /<%= report[:patient_count] %>*<%= report[:load_factor] %>*<%= report[:new_patient_coefficient] %>
+      </span>
+      Patients
+      <br>
+      <span class='math'>=<%= report[:patient_days] %> days</span>
+      Patient days
+    EOF
+    tooltip_template.result(binding)
+  end
 end

@@ -133,7 +133,7 @@
                   <td class="type-blank"><span>&#8212;</span></td>
                 <% end %>
               <% end %>
-              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title=<%= drug_stock_tooltip(facility_report[drug_category]) %> data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title= "<%= drug_stock_tooltip(facility_report[drug_category]) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
                 <em class="bg-red"><%= facility_report.dig(drug_category, :patient_days) %></em>
               </td>
             <% end %>

@@ -52,8 +52,11 @@ class DrugStocksQuery
     new_patient_coefficient = coefficients[:drug_categories][drug_category][:new_patient_coefficient]
     estimated_patients = patient_count * coefficients[:load_factor] * new_patient_coefficient
     {stocks_on_hand: stocks_on_hand,
+     patient_count: patient_count,
+     load_factor: coefficients[:load_factor],
+     new_patient_coefficient: new_patient_coefficient,
      estimated_patients: estimated_patients,
-     patient_days: (stocks_on_hand.map { |stock| stock[:in_stock] }.reduce(:+) / estimated_patients).floor}
+     patient_days: (stocks_on_hand.map { |stock| stock[:stock_on_hand] }.reduce(:+) / estimated_patients).floor}
   rescue
     # either drug stock is nil, or drug is not in formula
     {patient_days: "error"}
