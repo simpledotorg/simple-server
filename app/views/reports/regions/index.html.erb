@@ -21,6 +21,10 @@
             </div>
           <% end %>
         </div>
+        <script>
+          const async = false;
+          new AdminAccess("facility-access").initialize(async);
+        </script>
       <% else %>
         <% @organizations.each do |organization| %>
         <section>
