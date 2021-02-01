@@ -149,7 +149,8 @@ module Reports
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
         visited_without_bp_taken = visited_without_bp_taken_for(period)
-        hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
+        missed_visits = registrations - visited_without_bp_taken - controlled - uncontrolled
+        hsh[period] = missed_visits.try(:floor) || 0
       }
     end
 
