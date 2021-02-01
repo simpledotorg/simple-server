@@ -44,12 +44,5 @@ RSpec.feature "test protocol screen functionality", type: :feature do
         expect(page).to have_content("40")
       end
     end
-
-    skip "JS specs are currently disabled" do
-      it "delete protocol", js: true do
-        protocol_page.delete_protocol(var_protocol.name)
-        protocol_page.click_on_message_close_button
-      end
-    end
   end
 end
