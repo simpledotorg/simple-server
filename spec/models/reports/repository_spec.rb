@@ -46,12 +46,12 @@ RSpec.describe Reports::Repository, type: :model do
     repo = Reports::Repository.new(regions, periods: Period.month(jan))
     controlled = repo.controlled_patients_count
     uncontrolled = repo.uncontrolled_patients_count
-    expect(controlled["facility-1"].fetch(jan)).to eq(2)
-    expect(controlled["facility-2"].fetch(jan)).to eq(1)
-    expect(controlled["facility-3"].fetch(jan)).to eq(0)
-    expect(uncontrolled["facility-1"].fetch(jan)).to eq(2)
-    expect(uncontrolled["facility-2"].fetch(jan)).to eq(0)
-    expect(uncontrolled["facility-3"].fetch(jan)).to eq(0)
+    expect(controlled[facility_1.slug].fetch(jan)).to eq(2)
+    expect(controlled[facility_2.slug].fetch(jan)).to eq(1)
+    expect(controlled[facility_3.slug].fetch(jan)).to eq(0)
+    expect(uncontrolled[facility_1.slug].fetch(jan)).to eq(2)
+    expect(uncontrolled[facility_2.slug].fetch(jan)).to eq(0)
+    expect(uncontrolled[facility_3.slug].fetch(jan)).to eq(0)
   end
 
   it "gets controlled info for range of month periods" do
