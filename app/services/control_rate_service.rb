@@ -47,8 +47,8 @@ class ControlRateService
     results.count_cumulative_registrations
     results.count_adjusted_registrations
 
-    control_results = Reports::Repository.new(region, periods: results.full_data_range).controlled_patients_count
-    uncontrol_results = Reports::Repository.new(region, periods: results.full_data_range).uncontrolled_patients_count
+    control_results = Reports::Repository.new(region, periods: results.full_data_range, with_exclusions: with_exclusions).controlled_patients_count
+    uncontrol_results = Reports::Repository.new(region, periods: results.full_data_range, with_exclusions: with_exclusions).uncontrolled_patients_count
     results.controlled_patients = control_results[region.slug]
     results.uncontrolled_patients = uncontrol_results[region.slug]
 
@@ -76,15 +76,6 @@ class ControlRateService
       region.assigned_patients
         .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
         .count
-  end
-
-  def controlled_patients(period)
-    if period.quarter?
-      bp_quarterly_query(period).under_control
-    else
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(period),
-        "latest_blood_pressures_per_patient_per_months").under_control
-    end
   end
 
   def bp_monthly_query(period)

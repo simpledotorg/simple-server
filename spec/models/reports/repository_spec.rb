@@ -100,4 +100,43 @@ RSpec.describe Reports::Repository, type: :model do
     expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
     expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
   end
+
+  it "excludes dead patients with_exclusions" do
+    facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
+    facility_1_controlled = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_1_controlled_dead = create_list(:patient, 1, status: :dead, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+
+    Timecop.freeze(jan_2020) do
+      facility_1_controlled.concat(facility_1_controlled_dead).map do |patient|
+        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+      end
+    end
+
+    refresh_views
+    jan = Period.month(jan_2020)
+    repo = Reports::Repository.new(facility_1, periods: Period.month(jan), with_exclusions: true)
+    controlled = repo.controlled_patients_count
+    uncontrolled = repo.uncontrolled_patients_count
+
+    region = facility_1.region
+    expect(controlled[region.slug].fetch(jan)).to eq(1)
+    expect(uncontrolled[region.slug].fetch(jan)).to eq(0)
+  end
+
+  it "incorporates optional args into the cache keys" do
+    facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
+
+    with_exclusions_repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"), with_exclusions: true)
+    cache_keys = with_exclusions_repo.cache_keys(:controlled).map(&:cache_key)
+    cache_keys.each do |key|
+      expect(key).to include("controlled/with_exclusions/true")
+    end
+
+    without_exclusions_repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"), with_exclusions: false)
+    cache_keys = without_exclusions_repo.cache_keys(:controlled).map(&:cache_key)
+    cache_keys.each do |key|
+      expect(key).to include("controlled/with_exclusions/false")
+    end
+  end
+
 end
