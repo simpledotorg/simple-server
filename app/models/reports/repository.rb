@@ -30,7 +30,7 @@ module Reports
     def controlled_patients_info
       items = cache_keys(:controlled_patients_info)
       cached_results = cache.fetch_multi(*items) { |item|
-        controlled_patients_for(item.region, item.period).count
+        query.controlled(item.region, item.period).count
       }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
@@ -41,7 +41,7 @@ module Reports
     def uncontrolled_patients_info
       items = cache_keys(:uncontrolled_patients_info)
       cached_results = cache.fetch_multi(*items) { |item|
-        uncontrolled_patients_for(item.region, item.period).count
+        query.uncontrolled(item.region, item.period).count
       }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
@@ -54,28 +54,9 @@ module Reports
       combinations.map { |region, period| Item.new(region, period, calculation) }
     end
 
-    def controlled_patients_for(region, period)
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(region, period),
-        "latest_blood_pressures_per_patient_per_months").under_control
+    def query
+      @query ||= ControlRateQuery.new
     end
 
-    def uncontrolled_patients_for(region, period)
-      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(bp_monthly_query(region, period),
-        "latest_blood_pressures_per_patient_per_months").hypertensive
-    end
-
-    def bp_monthly_query(region, period)
-      control_range = period.blood_pressure_control_range
-      # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
-      # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
-      LatestBloodPressuresPerPatientPerMonth
-        .with_discarded
-        .for_reports(with_exclusions: false)
-        .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
-        .where(assigned_facility_id: region.facilities)
-        .where("patient_recorded_at < ?", control_range.begin) # TODO this doesn't seem right -- revisit this exclusion
-        .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
-        .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
-    end
   end
 end
