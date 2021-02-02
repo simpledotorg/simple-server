@@ -57,6 +57,5 @@ module Reports
     def query
       @query ||= ControlRateQuery.new
     end
-
   end
 end

@@ -114,5 +114,4 @@ RSpec.describe ControlRateQuery do
       expect(query.uncontrolled(facility_group_1, q4_2020).count).to eq(0)
     end
   end
-
 end
