@@ -1,7 +1,6 @@
 class FacilityGroup < ApplicationRecord
   extend FriendlyId
   extend RegionSource
-  include Reports::CacheKeyV2
   default_scope -> { kept }
 
   belongs_to :organization

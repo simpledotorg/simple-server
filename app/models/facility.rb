@@ -5,7 +5,6 @@ class Facility < ApplicationRecord
   include QuarterHelper
   include PgSearch::Model
   include LiberalEnum
-  include Reports::CacheKeyV2
 
   extend FriendlyId
   extend RegionSource

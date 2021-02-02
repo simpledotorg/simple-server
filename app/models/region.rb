@@ -1,6 +1,5 @@
 class Region < ApplicationRecord
   MAX_LABEL_LENGTH = 255
-  include Reports::CacheKeyV2
 
   delegate :cache, to: Rails
   ltree :path
