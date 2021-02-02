@@ -20,7 +20,9 @@ module Reports
           controlled_patients_rate: Hash.new(0),
           controlled_patients_with_ltfu_rate: Hash.new(0),
           cumulative_registrations: Hash.new(0),
+          denominator_registrations: Hash.new(0),
           earliest_registration_period: nil,
+          ltfu_patients: Hash.new(0),
           missed_visits_rate: {},
           missed_visits: {},
           period_info: {},
@@ -74,12 +76,10 @@ module Reports
 
     def fill_in_nil_registrations
       registrations.default = 0
-      registrations_with_exclusions.default = 0
-      registrations_with_ltfu.default = 0
+      denominator_registrations.default = 0
       full_data_range.each do |period|
         registrations[period] ||= 0
-        registrations_with_exclusions[period] ||= 0
-        registrations_with_ltfu[period] ||= 0
+        denominator_registrations[period] ||= 0
       end
     end
 
@@ -96,8 +96,9 @@ module Reports
     end
 
     [:period_info, :earliest_registration_period,
-      :registrations, :registrations_with_exclusions, :registrations_with_ltfu,
-      :adjusted_registrations, :adjusted_registrations_with_ltfu, :cumulative_registrations,
+      :registrations, :denominator_registrations,
+      :ltfu_patients, :cumulative_registrations,
+      :adjusted_registrations, :adjusted_registrations_with_ltfu,
       :missed_visits, :missed_visits_rate,
       :controlled_patients, :controlled_patients_with_ltfu,
       :controlled_patients_rate, :controlled_patients_with_ltfu_rate,
@@ -121,15 +122,15 @@ module Reports
       end
     end
 
-    # Adjusted registrations are the registrations as of three months ago - we use these for all the percentage
-    # calculations to exclude recent registrations.
-    def count_adjusted_registrations
+    # Adjusted registrations are the cumulative registrations (with exclusions) as of three months ago.
+    # We use these for all the percentage calculations to exclude recent registrations.
+    def count_adjusted_registrations_with_ltfu
       adjusted_registration_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
         adjusted_period = period.advance(months: -3)
-        counts[period] = registrations_with_exclusions[adjusted_period]
+        counts[period] = denominator_registrations[adjusted_period]
       }
 
-      self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+      self.adjusted_registrations_with_ltfu = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
         previous_registrations = running_totals[period.previous]
         current_registrations = adjusted_registration_counts[period]
         total = current_registrations + previous_registrations
@@ -137,18 +138,11 @@ module Reports
       }
     end
 
-    def count_adjusted_registrations_with_ltfu
-      adjusted_registration_with_ltfu_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
+    def count_adjusted_registrations
+      self.adjusted_registrations = adjusted_registrations_with_ltfu.map do |period, counts|
         adjusted_period = period.advance(months: -3)
-        counts[period] = registrations_with_ltfu[adjusted_period]
-      }
-
-      self.adjusted_registrations_with_ltfu = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_registrations = running_totals[period.previous]
-        current_registrations = adjusted_registration_with_ltfu_counts[period]
-        total = current_registrations + previous_registrations
-        running_totals[period] = total
-      }
+        [period, counts - ltfu_patients[adjusted_period]]
+      end.to_h
     end
 
     def count_cumulative_registrations

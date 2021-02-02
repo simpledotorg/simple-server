@@ -41,13 +41,15 @@ class ControlRateService
 
   def fetch_all_data
     results.registrations = registration_counts
-    results.registrations_with_exclusions = registration_counts_with_exclusions
-    results.registrations_with_ltfu = registration_counts_with_ltfu
+    results.denominator_registrations = denominator_registration_counts
     results.earliest_registration_period = registration_counts.keys.first
+    results.full_data_range.each do |(period, count)|
+      results.ltfu_patients[period] = ltfu_patients(period).count
+    end
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
-    results.count_adjusted_registrations
     results.count_adjusted_registrations_with_ltfu
+    results.count_adjusted_registrations
 
     results.full_data_range.each do |(period, count)|
       results.controlled_patients[period] = controlled_patients(period).count
@@ -63,46 +65,37 @@ class ControlRateService
 
   def registration_counts
     return @registration_counts if defined? @registration_counts
-    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
 
     @registration_counts =
       region.assigned_patients
-        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+        .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
         .count
   end
 
-  def registration_counts_with_exclusions
-    return @registration_counts_with_exclusions if defined? @registration_counts_with_exclusions
-    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
+  def denominator_registration_counts
+    return @denominator_registration_counts if defined? @denominator_registration_counts
 
-    @registration_counts_with_exclusions =
-      region.assigned_patients
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: Date.today)
-        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
-        .count
-  end
-
-  def registration_counts_with_ltfu
-    return @registration_counts_with_ltfu if defined? @registration_counts_with_ltfu
-    formatter = lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
-
-    @registration_counts_with_ltfu =
+    @denominator_registration_counts =
       region.assigned_patients
         .for_reports(with_exclusions: with_exclusions)
-        .group_by_period(report_range.begin.type, :recorded_at, {format: formatter})
+        .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
         .count
+  end
+
+  def ltfu_patients(period)
+    Patient.ltfu_as_of(period.to_date)
   end
 
   def controlled_patients(period)
     if period.quarter?
       bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period)
         .under_control
     else
       LatestBloodPressuresPerPatientPerMonth
         .with_discarded
         .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
+                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period),
           "latest_blood_pressures_per_patient_per_months")
         .under_control
     end
@@ -126,13 +119,13 @@ class ControlRateService
   def uncontrolled_patients(period)
     if period.quarter?
       bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period)
         .hypertensive
     else
       LatestBloodPressuresPerPatientPerMonth
         .with_discarded
         .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
+                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period),
           "latest_blood_pressures_per_patient_per_months")
         .hypertensive
     end
@@ -181,5 +174,9 @@ class ControlRateService
 
   def force_cache?
     RequestStore.store[:force_cache]
+  end
+
+  def group_date_formatter
+    lambda { |v| quarterly_report? ? Period.quarter(v) : Period.month(v) }
   end
 end
