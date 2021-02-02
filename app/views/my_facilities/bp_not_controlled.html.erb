@@ -13,7 +13,7 @@
         <strong>What to look for:</strong> Low percentages are good, and 10% or lower is ideal 
       </p>
       <p class="c-grey-dark c-print-black">
-        <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months, <%= render "denominator_footer" %>
+        <strong>Numerator:</strong> <%= CopyHelper::BP_NOT_CONTROLLED_NUMERATOR_COPY %>, <strong>Denominator:</strong> <%= CopyHelper::DENOMINATOR_COPY %>
       </p>
       <div class="d-flex fw-wrap mb-16px">
         <%= render "shared/my_facilities_filters" %>
