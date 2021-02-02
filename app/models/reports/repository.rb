@@ -35,7 +35,7 @@ module Reports
 
     def controlled_patients_count
       items = cache_keys(:controlled_patients_count)
-      cached_results = cache.fetch_multi(*items) { |item|
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
         query.controlled(item.region, item.period, with_exclusions: with_exclusions).count
       }
       cached_results.each_with_object({}) do |(item, count), results|
@@ -46,7 +46,7 @@ module Reports
 
     def uncontrolled_patients_count
       items = cache_keys(:uncontrolled_patients_count)
-      cached_results = cache.fetch_multi(*items) { |item|
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
         query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
       }
       cached_results.each_with_object({}) do |(item, count), results|
@@ -62,6 +62,10 @@ module Reports
 
     def query
       @query ||= ControlRateQuery.new
+    end
+
+    def force_cache?
+      RequestStore.store[:force_cache]
     end
   end
 end

@@ -47,7 +47,8 @@ class ControlRateService
     results.count_cumulative_registrations
     results.count_adjusted_registrations
 
-    repo = Reports::Repository.new(region, periods: results.full_data_range, with_exclusions: with_exclusions)
+    repo = Reports::Repository.new(region, periods: results.full_data_range,
+                                           with_exclusions: with_exclusions)
     control_results = repo.controlled_patients_count
     uncontrol_results = repo.uncontrolled_patients_count
     results.controlled_patients = control_results[region.slug]
