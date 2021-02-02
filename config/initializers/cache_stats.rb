@@ -9,7 +9,7 @@ ActiveSupport::Notifications.subscribe(/cache_read\.active_support/) do |name, s
     RequestStore[:cache_stats][:hits] += 1
   else
     RequestStore[:cache_stats][:misses] += 1
-    RequestStore[:cache_stats][:missed_keys] << payload[:key]
+    RequestStore[:cache_stats][:missed_keys] << payload[:key].to_s
   end
 end
 
@@ -25,5 +25,5 @@ ActiveSupport::Notifications.subscribe(/cache_read_multi\.active_support/) do |n
   end
   RequestStore[:cache_stats][:hits] += hits
   RequestStore[:cache_stats][:misses] += missed_keys.size
-  RequestStore[:cache_stats][:missed_keys] << missed_keys
+  RequestStore[:cache_stats][:missed_keys] << missed_keys.map(&:to_s)
 end

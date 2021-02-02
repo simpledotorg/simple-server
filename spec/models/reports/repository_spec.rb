@@ -24,7 +24,7 @@ RSpec.describe Reports::Repository, type: :model do
 
   it "gets controlled info for one month" do
     facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
-    facility_1, facility_2 = *facilities.take(2)
+    facility_1, facility_2, facility_3 = *facilities.take(3)
     regions = facilities.map(&:region)
 
     facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
@@ -138,5 +138,4 @@ RSpec.describe Reports::Repository, type: :model do
       expect(key).to include("controlled/with_exclusions/false")
     end
   end
-
 end

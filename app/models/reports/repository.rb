@@ -29,6 +29,8 @@ module Reports
       def cache_key
         [region.cache_key, period.cache_key, calculation, @options].join("/")
       end
+
+      alias_method :to_s, :cache_key
     end
 
     def controlled_patients_count
