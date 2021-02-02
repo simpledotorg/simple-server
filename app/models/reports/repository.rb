@@ -23,7 +23,7 @@ module Reports
       end
 
       def cache_key
-        [region.cache_key_v2, period.cache_key, calculation].join("/")
+        [region.cache_key, period.cache_key, calculation].join("/")
       end
     end
 
