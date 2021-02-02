@@ -45,6 +45,12 @@ en:
     requested: 'As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}.'
     confidential: 'Please note that this information is confidential and should be kept private.'
     unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
+  numerator_copy:
+    bp_controlled: "Patients with BP <140/90 at their most recent visit in the last 3 months"
+    bp_not_controlled: "Patients with BP ≥140/90 at their most recent visit in the last 3 months"
+    missed_visits: "Patients with no visit in >3 months"
+    visited_but_no_bp_taken: "Patients with a visit in the last 3 months but no BP taken"
+  denominator_copy: "Assigned hypertension patients registered before the last 3 months"
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
