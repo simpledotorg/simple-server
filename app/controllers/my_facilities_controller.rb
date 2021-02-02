@@ -46,37 +46,7 @@ class MyFacilitiesController < AdminController
 
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
 
-    monthly_stats
-  end
-
-  private def monthly_stats
-    sizes = @facilities_by_size.keys
-    @period_stats = {}
-    sizes.each do |size|
-      @period_stats[size] = {}
-      relevant_periods.each do |current_period|
-        period_key = current_period.to_s
-        @period_stats[size][period_key] = {
-          'controlled_patients' => 0,
-          'adjusted_registrations' => 0,
-          'cumulative_registrations' => 0,
-        }
-        @facilities_by_size[size].each do |facility|
-          facility_data = @data_for_facility[facility.name]
-          @period_stats[size][period_key]['controlled_patients'] += facility_data.controlled_patients.select {|month| month.value == current_period.value }[current_period]
-          @period_stats[size][period_key]['adjusted_registrations'] += facility_data.adjusted_registrations.select {|month| month.value == current_period.value }[current_period]
-          @period_stats[size][period_key]['cumulative_registrations'] += facility_data.cumulative_registrations.select {|month| month.value == current_period.value }[current_period]
-        end
-      end
-
-      cumulative_controlled = @period_stats[size].map{|_, aggregates| aggregates['controlled_patients'] }.sum
-      cumulative_adjusted = @period_stats[size].map{|_, aggregates| aggregates['adjusted_registrations'] }.sum
-      @period_stats[size]['control_rate'] = (cumulative_controlled.to_f / cumulative_adjusted.to_f * 100).round
-    end
-  end
-
-  private def relevant_periods
-    @relevant_periods ||= @period.downto(5)
+    @period_stats = stats_by_size('controlled_patients')
   end
 
   def bp_not_controlled
@@ -89,6 +59,8 @@ class MyFacilitiesController < AdminController
     end
 
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+
+    @period_stats = stats_by_size('uncontrolled_patients')
   end
 
   def missed_visits
@@ -101,6 +73,8 @@ class MyFacilitiesController < AdminController
     end
 
     @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+
+    @period_stats = stats_by_size('missed_visits')
   end
 
   private
@@ -145,4 +119,44 @@ class MyFacilitiesController < AdminController
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
   end
+
+  def stats_by_size(numerator)
+    @facility_sizes.reduce({}) do |stats, size|
+      stats[size] = {}
+      periods.each do |current_period|
+        stats[size][current_period.to_s] = period_data(numerator, current_period, size)
+      end
+
+      period_numerator = stats[size].map{|_, aggregates| aggregates[numerator] }.sum
+      period_registrations = stats[size].map{|_, aggregates| aggregates['adjusted_registrations'] }.sum
+      stats[size]['control_rate'] = (period_numerator.to_f / period_registrations.to_f * 100).round
+      stats
+    end
+  end
+
+  def periods
+    @periods ||= @period.downto(5)
+  end
+
+  def period_data(numerator, current_period, size)
+    period_data = {
+      numerator => 0,
+      'adjusted_registrations' => 0,
+      'cumulative_registrations' => 0,
+    }
+    # this can also be done without using facilities_by_size like so: @data_for_facility.first.last.region.facility_size
+    # which might be useful if we want to extract this from the controller
+    @facilities_by_size[size].each do |facility|
+      facility_data = @data_for_facility[facility.name]
+      period_data[numerator] += find_stat_by_period(facility_data[numerator], current_period)
+      period_data['adjusted_registrations'] += find_stat_by_period(facility_data['adjusted_registrations'], current_period)
+      period_data['cumulative_registrations'] += find_stat_by_period(facility_data['cumulative_registrations'], current_period)
+    end
+    period_data
+  end
+
+  def find_stat_by_period(data, period)
+    data.select {|month| month == period }[period]
+  end
+
 end
