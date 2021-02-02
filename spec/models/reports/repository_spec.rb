@@ -33,10 +33,10 @@ RSpec.describe Reports::Repository, type: :model do
 
     Timecop.freeze(jan_2020) do
       (facility_1_controlled << facility_2_controlled).map do |patient|
-        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.months.ago, user: user)
+        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
       end
       facility_1_uncontrolled.map do |patient|
-        create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 2.months.ago)
+        create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
       end
     end
 
@@ -44,8 +44,8 @@ RSpec.describe Reports::Repository, type: :model do
 
     jan = Period.month(jan_2020)
     repo = Reports::Repository.new(regions, periods: Period.month(jan))
-    controlled = repo.controlled_patients_info
-    uncontrolled = repo.uncontrolled_patients_info
+    controlled = repo.controlled_patients_count
+    uncontrolled = repo.uncontrolled_patients_count
     expect(controlled["facility-1"].fetch(jan)).to eq(2)
     expect(controlled["facility-2"].fetch(jan)).to eq(1)
     expect(controlled["facility-3"].fetch(jan)).to eq(0)
@@ -94,7 +94,7 @@ RSpec.describe Reports::Repository, type: :model do
     start_range = july_2020.advance(months: -24)
     range = (Period.month(start_range)..Period.month(july_2020))
     repo = Reports::Repository.new(regions, periods: range)
-    result = repo.controlled_patients_info
+    result = repo.controlled_patients_count
 
     facility_1_results = result[facility_1.slug]
     expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)

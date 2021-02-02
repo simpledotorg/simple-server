@@ -27,8 +27,8 @@ module Reports
       end
     end
 
-    def controlled_patients_info
-      items = cache_keys(:controlled_patients_info)
+    def controlled_patients_count
+      items = cache_keys(:controlled_patients_count)
       cached_results = cache.fetch_multi(*items) { |item|
         query.controlled(item.region, item.period).count
       }
@@ -38,8 +38,8 @@ module Reports
       end
     end
 
-    def uncontrolled_patients_info
-      items = cache_keys(:uncontrolled_patients_info)
+    def uncontrolled_patients_count
+      items = cache_keys(:uncontrolled_patients_count)
       cached_results = cache.fetch_multi(*items) { |item|
         query.uncontrolled(item.region, item.period).count
       }
