@@ -49,7 +49,12 @@ class ControlRateService
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
     results.count_adjusted_registrations_with_ltfu
-    results.count_adjusted_registrations
+
+    if with_exclusions
+      results.count_adjusted_registrations
+    else
+      results.adjusted_registrations = results.adjusted_registrations_with_ltfu
+    end
 
     results.full_data_range.each do |(period, count)|
       results.controlled_patients[period] = controlled_patients(period).count
