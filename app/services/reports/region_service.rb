@@ -11,11 +11,12 @@ module Reports
       new(*args).call
     end
 
-    def initialize(region:, period:, with_exclusions: false)
+    def initialize(region:, period:, with_exclusions: false, total_months_requested: nil)
       @current_user = current_user
       @region = region
       @period = period
-      start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
+      total_months_requested = total_months_requested || MAX_MONTHS_OF_DATA
+      start_period = period.advance(months: -(total_months_requested - 1))
       @range = Range.new(start_period, @period)
       @with_exclusions = with_exclusions
     end
