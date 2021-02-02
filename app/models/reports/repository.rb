@@ -17,26 +17,11 @@ module Reports
     attr_reader :with_exclusions
 
     delegate :cache, :logger, to: Rails
-    class Item
-      attr_reader :region, :period, :calculation
-      def initialize(region, period, calculation, **options)
-        @region = region
-        @period = period
-        @calculation = calculation
-        @options = options.to_a
-      end
-
-      def cache_key
-        [region.cache_key, period.cache_key, calculation, @options].join("/")
-      end
-
-      alias_method :to_s, :cache_key
-    end
 
     def controlled_patients_count
       items = cache_keys(:controlled_patients_count)
       cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
-        query.controlled(item.region, item.period, with_exclusions: with_exclusions).count
+        control_rate_query.controlled(item.region, item.period, with_exclusions: with_exclusions).count
       }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
@@ -47,7 +32,19 @@ module Reports
     def uncontrolled_patients_count
       items = cache_keys(:uncontrolled_patients_count)
       cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
-        query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
+        control_rate_query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
+      }
+      cached_results.each_with_object({}) do |(item, count), results|
+        results[item.region.slug] ||= Hash.new(0)
+        results[item.region.slug][item.period] = count
+      end
+    end
+
+    def no_bp_measure_count
+      query = NoBPMeasureQuery.new
+      items = cache_keys(:no_bp_measure_count)
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
+        query.call(item.region, item.period, with_exclusions: with_exclusions).count
       }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
@@ -57,11 +54,11 @@ module Reports
 
     def cache_keys(calculation)
       combinations = regions.to_a.product(periods)
-      combinations.map { |region, period| Item.new(region, period, calculation, with_exclusions: with_exclusions) }
+      combinations.map { |region, period| Reports::Item.new(region, period, calculation, with_exclusions: with_exclusions) }
     end
 
-    def query
-      @query ||= ControlRateQuery.new
+    def control_rate_query
+      @control_rate_query ||= ControlRateQuery.new
     end
 
     def force_cache?
