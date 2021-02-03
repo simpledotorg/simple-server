@@ -6,6 +6,7 @@ require "ruby-progressbar"
 module Seed
   class Runner
     include ActiveSupport::Benchmarkable
+    include ConsoleLogger
     SIZES = Facility.facility_sizes
 
     attr_reader :config
@@ -18,7 +19,7 @@ module Seed
       new(*args).call
     end
 
-    delegate :scale_factor, to: :config
+    delegate :scale_factor, :stdout, to: :config
     delegate :distance_of_time_in_words, to: Seed::Helpers
 
     def initialize(config: Seed::Config.new)
@@ -27,7 +28,7 @@ module Seed
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
       @start_time = Time.current
-      puts "Starting #{self.class} with #{config.type} configuration"
+      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     def call
@@ -35,7 +36,7 @@ module Seed
       total_counts[:facility] = result&.ids&.size || 0
       UserSeeder.call(config: config)
 
-      puts "Starting to seed patient data for #{Facility.count} facilities..."
+      announce "Starting to seed patient data for #{Facility.count} facilities..."
 
       progress = create_progress_bar
 
@@ -44,9 +45,7 @@ module Seed
       hsh = sum_facility_totals
       total_counts.merge!(hsh)
 
-      msg = "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
-      puts msg
-      logger.info msg: msg, counts: counts
+      announce "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
       [counts, total_counts]
     end
 

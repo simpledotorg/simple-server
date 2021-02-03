@@ -1,6 +1,8 @@
 module Seed
   class UserSeeder
     include ActiveSupport::Benchmarkable
+    include ConsoleLogger
+
     def self.call(*args)
       new(*args).call
     end
@@ -11,13 +13,14 @@ module Seed
       @logger = Rails.logger.child(class: self.class.name)
       @number_of_users_per_facility = config.max_number_of_users_per_facility
       @organization = Seed.seed_org
-      puts "Starting #{self.class} with #{config.type} configuration"
+      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
     attr_reader :logger
     attr_reader :number_of_users_per_facility
     attr_reader :organization
+    delegate :stdout, to: :config
 
     def call
       facility_ids = Facility.pluck(:id)
