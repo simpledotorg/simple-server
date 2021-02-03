@@ -18,7 +18,7 @@ unless changes_from_remote.match?(/nothing to commit, working tree clean/)
   puts "--"
   puts changes_from_remote
   puts "--"
-  puts "Please fetch the latest to make sure you are deploying from the latest changes"
+  puts "Please fetch and merge the latest into #{current_branch} to make sure you are deploying the latest changes."
   abort
 end
 
