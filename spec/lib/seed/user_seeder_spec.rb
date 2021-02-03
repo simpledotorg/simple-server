@@ -30,7 +30,6 @@ RSpec.describe Seed::UserSeeder do
   it "creates Users for each facility" do
     create_list(:facility, 5, facility_size: "community")
 
-    facility_count = Facility.count
     expected_dashboard_users = 2
     expected_users_per_facility = config.max_number_of_users_per_facility
     expected_phone_sync_users = expected_users_per_facility * Facility.count

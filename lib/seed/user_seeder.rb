@@ -25,7 +25,6 @@ module Seed
     def call
       create_dashboard_admins
       create_mobile_users
-
     end
 
     private
@@ -69,7 +68,6 @@ module Seed
       time = 30.minutes.from_now
       device_created_at = 3.months.ago
       users, auths = [], []
-      existing_authentications = UserAuthentication.where(authenticatable_type: "PhoneNumberAuthentication").group(:authenticatable_id).count
       facility_ids.each do |facility_id|
         number_of_users_per_facility.times do
           auths << {
