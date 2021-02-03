@@ -44,7 +44,7 @@ class Reports::RegionsController < AdminController
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
-    @with_ltfu = current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
+    @with_ltfu = with_ltfu?
 
     if @region.respond_to?(:children)
       @children_data = @region.children.each_with_object({}) { |child, hsh|
@@ -208,6 +208,10 @@ class Reports::RegionsController < AdminController
 
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
+  end
+
+  def with_ltfu?
+    current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
   end
 
   def log_cache_metrics
