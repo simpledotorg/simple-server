@@ -30,7 +30,6 @@ RSpec.describe AppointmentsController, type: :controller do
     let!(:overdue_appointments_in_facility_2) do
       appointments = facility_2_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
-        pp [appointment.facility.slug, appointment.creation_facility.slug]
         create(:blood_pressure, patient: appointment.patient, facility: facility_2, user: manager)
         create(:blood_pressure, patient: appointment.patient, facility: facility_2, user: manager)
       end
