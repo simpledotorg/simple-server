@@ -8,13 +8,6 @@
 
 require_relative "../lib/tasks/scripts/create_admin_user"
 
-ADMIN_USER_NAME = "Admin User"
-ADMIN_USER_EMAIL = "admin@simple.org"
-
-unless EmailAuthentication.find_by_email(ADMIN_USER_EMAIL)
-  CreateAdminUser.create_owner(ADMIN_USER_NAME, ADMIN_USER_EMAIL, ENV["SEED_GENERATED_ADMIN_PASSWORD"])
-end
-
 Seed::Runner.call
 
 # TODO move over this protocal drug data to new seed lib
