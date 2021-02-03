@@ -8,12 +8,13 @@ module PatientReportable
     scope :excluding_dead, -> { where.not(status: :dead) }
 
     scope :ltfu_as_of, ->(date) do
-      where.not(id: latest_bp_within_ltfu_period(date).select(:patient_id).distinct)
+      where.not(id: latest_bps_within_ltfu_period(date).select(:patient_id).distinct)
         .where("recorded_at < ?", date - LTFU_PERIOD)
     end
 
     scope :not_ltfu_as_of, ->(date) do
-      where(id: latest_bp_within_ltfu_period(date).select(:patient_id).distinct)
+      where(id: latest_bps_within_ltfu_period(date).select(:patient_id).distinct)
+        .or(where("patients.recorded_at > ?", date - LTFU_PERIOD))
     end
 
     scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: nil) do
@@ -31,9 +32,9 @@ module PatientReportable
       end
     end
 
-    def self.latest_bp_within_ltfu_period(ltfu_as_of)
+    def self.latest_bps_within_ltfu_period(ltfu_as_of)
       LatestBloodPressuresPerPatientPerMonth
-        .where("bp_recorded_at > ? AND bp_recorded_at <= ?", ltfu_as_of.to_date - LTFU_PERIOD, ltfu_as_of.to_date)
+        .where("bp_recorded_at > ? AND bp_recorded_at <= ?", ltfu_as_of - LTFU_PERIOD, ltfu_as_of)
     end
   end
 end

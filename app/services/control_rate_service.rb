@@ -88,19 +88,19 @@ class ControlRateService
   end
 
   def ltfu_patients(period)
-    Patient.where(assigned_facility: facilities).ltfu_as_of(period.to_date)
+    Patient.where(assigned_facility: facilities).ltfu_as_of(period.start_date)
   end
 
   def controlled_patients(period)
     if period.quarter?
       bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period)
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
         .under_control
     else
       LatestBloodPressuresPerPatientPerMonth
         .with_discarded
         .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period),
+                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
           "latest_blood_pressures_per_patient_per_months")
         .under_control
     end
@@ -124,13 +124,13 @@ class ControlRateService
   def uncontrolled_patients(period)
     if period.quarter?
       bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period)
+        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
         .hypertensive
     else
       LatestBloodPressuresPerPatientPerMonth
         .with_discarded
         .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period),
+                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
           "latest_blood_pressures_per_patient_per_months")
         .hypertensive
     end

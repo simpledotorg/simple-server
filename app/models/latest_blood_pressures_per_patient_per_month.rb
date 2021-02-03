@@ -20,5 +20,6 @@ class LatestBloodPressuresPerPatientPerMonth < ApplicationRecord
 
   scope :not_ltfu_as_of, ->(date) do
     where("bp_recorded_at > ? AND bp_recorded_at <= ?", date.to_date - LTFU_PERIOD, date.to_date)
+      .or(where("patient_recorded_at > ?", date - LTFU_PERIOD))
   end
 end
