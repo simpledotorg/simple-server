@@ -10,39 +10,66 @@ class DrugStocksQuery
     @drug_categories ||= @protocol.protocol_drugs
       .where(stock_tracked: true)
       .order(:name, :dosage)
-      .sort_by {|protocol_drug| [protocol_drug.name, protocol_drug.dosage.to_i]}
+      .sort_by { |protocol_drug| [protocol_drug.name, protocol_drug.dosage.to_i] }
       .group_by(&:drug_category)
-      .sort_by {|(drug_category, _) | drug_category}
+      .sort_by { |(drug_category, _)| drug_category }
       .to_h
   end
 
   def call
-    patient_counts = Patient.where(assigned_facility: @facilities.map(&:id)).group(:assigned_facility).count
-    drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
+    {all: totals,
+     facilities: report_for_facilities}
+  end
 
-    @facilities.each_with_object({}) do |facility, report|
+  def patient_counts
+    @patient_counts ||= Patient.where(assigned_facility: @facilities.map(&:id)).group(:assigned_facility).count
+  end
+
+  def drug_stocks
+    @drug_stocks ||= DrugStock.latest_for_facilities(@facilities, @for_end_of_month).group_by(&:facility_id)
+  end
+
+  def report_for_facilities
+    @report_for_facilities ||= @facilities.each_with_object({}) { |facility, report|
       facility_patient_count = patient_counts[facility] || 0
       report[facility.id] = drug_stock_for_facility(facility, facility_patient_count, drug_stocks[facility.id])
-                              .merge(facility: facility)
-    end
+    }
   end
 
   def drug_stock_for_facility(facility, patient_count, facility_drug_stocks)
-    facility_report = {}
-    facility_report[:patient_count] = patient_count
+    facility_report = {facility: facility, patient_count: patient_count}
     return facility_report if facility_drug_stocks.nil?
 
     drug_stocks = facility_drug_stocks.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
-      patient_days = patient_days(facility, drug_category, drug_stocks[drug_category], patient_count)
+      stocks = stocks_by_rxnorm_code(drug_stocks[drug_category])
+      patient_days = patient_days_calculations(drug_category, stocks, patient_count)
       facility_report[drug_category] = patient_days.merge(drug_stocks: drug_stocks_by_drug_id(drug_stocks[drug_category]))
     end
     facility_report
   end
 
-  def drug_stocks_by_rxnorm_code(drug_stocks)
+  def drug_stock_totals
+    DrugStock.latest_for_facilities(@facilities, @for_end_of_month).group_by(&:protocol_drug).map { |(protocol_drug, drug_stocks)|
+      [protocol_drug, drug_stocks&.map(&:in_stock)&.compact.sum]
+    }.to_h
+  end
+
+  def totals
+    total_patient_count = report_for_facilities.map { |(_, facility_report)| facility_report[:patient_count] }.sum
+    report_all = {patient_count: total_patient_count}
+    protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
+      drug_stock_by_rxnorm_code = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
+      drug_stock_by_id = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
+      patient_days = patient_days_calculations(drug_category, drug_stock_by_rxnorm_code, total_patient_count)
+      report_all[drug_category] = patient_days.merge(drug_stocks: drug_stock_by_id)
+    end
+    report_all
+  end
+
+  def stocks_by_rxnorm_code(drug_stocks)
     drug_stocks.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock
+      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock.in_stock
     }
   end
 
@@ -52,9 +79,13 @@ class DrugStocksQuery
     }
   end
 
-  def patient_days(facility, drug_category, drug_stocks, patient_count)
-    coefficients = patient_days_coefficients[facility.state]
-    stocks_on_hand = stocks_on_hand(coefficients, drug_category, drug_stocks)
+  def state
+    @facilities.first.state
+  end
+
+  def patient_days_calculations(drug_category, stocks_by_rxnorm_code, patient_count)
+    coefficients = patient_days_coefficients[state]
+    stocks_on_hand = stocks_on_hand(coefficients, drug_category, stocks_by_rxnorm_code)
     new_patient_coefficient = coefficients[:drug_categories][drug_category][:new_patient_coefficient]
     estimated_patients = patient_count * coefficients[:load_factor] * new_patient_coefficient
     {stocks_on_hand: stocks_on_hand,
@@ -68,12 +99,11 @@ class DrugStocksQuery
     {patient_days: "error"}
   end
 
-  def stocks_on_hand(coefficients, drug_category, drug_stocks)
-    stocks_by_rxnorm = drug_stocks_by_rxnorm_code(drug_stocks)
+  def stocks_on_hand(coefficients, drug_category, stocks_by_rxnorm_code)
     protocol_drugs_by_category[drug_category].map do |protocol_drug|
       rxnorm_code = protocol_drug.rxnorm_code
       coefficient = coefficients[:drug_categories][drug_category][rxnorm_code]
-      in_stock = stocks_by_rxnorm[rxnorm_code].in_stock
+      in_stock = stocks_by_rxnorm_code[rxnorm_code]
       {protocol_drug: protocol_drug,
        in_stock: in_stock,
        coefficient: coefficient,

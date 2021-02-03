@@ -93,22 +93,36 @@
         </tr>
         </thead>
         <tbody>
-          <tr class="row-total" data-sort-method="none">
-            <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: 23,489 patients">
-              All
-            </td>
-          <% @drugs_by_category.map do |_drug_category, drugs| %>
+        <tr class="row-total" data-sort-method="none">
+          <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: 23,489 patients">
+            All
+          </td>
+          <% @drugs_by_category.map do |drug_category, drugs| %>
+            <% patient_days = @report.dig(:all, drug_category, :patient_days) %>
             <% drugs.map do |drug| %>
-                <td class="type-number">-</td>
+              <% drug_stock = @report.dig(:all, drug_category, :drug_stocks, drug.id) %>
+              <% if drug_stock.present? %>
+                <td class="type-number" data-sort-column-key=<%= drug.id %>>
+                  <%= drug_stock %>
+                </td>
+              <% else %>
+                <td class="type-blank"><span>&#8212;</span></td>
+              <% end %>
             <% end %>
-              <%  %>
-              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<span class='math'>886,915</span>Telmisartin 20 mg<br><span class='math'>+1,000,000*2</span>Amlodipine 10 mg<br><span class='math'>+128,760</span>Losartan 50 mg<br><span class='math'>/23,489*0.37</span>Patients<br><span class='math'>=117 days</span>Patient days">
-                <em class="bg-green">-</em>
+            <% %>
+              <% if patient_days.present? %>
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= drug_stock_tooltip(@report.dig(:all, drug_category)) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+                <em class="<%= patient_days_bg_color(patient_days) %>">
+                  <%= patient_days %>
+                </em>
               </td>
+            <% else %>
+              <td class="type-blank"><span>&#8212;</span></td>
+            <% end %>
           <% end %>
-          </tr>
+        </tr>
 
-        <% @report.each do |(_facility_id, facility_report)| %>
+        <% @report[:facilities].each do |(_facility_id, facility_report)| %>
           <tr>
             <% facility = facility_report[:facility] %>
             <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
