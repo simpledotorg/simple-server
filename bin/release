@@ -11,6 +11,17 @@ unless current_branch == MAIN_BRANCH
   abort unless gets.chomp.downcase == "y"
 end
 
+changes_from_remote = `git remote update && git status`.chomp
+unless changes_from_remote.match?(/nothing to commit, working tree clean/)
+  puts
+  puts "Your local git repo has differences from whats on GitHub:"
+  puts "--"
+  puts changes_from_remote
+  puts "--"
+  puts "Please fetch the latest to make sure you are deploying from the latest changes"
+  abort
+end
+
 # ------------------
 # Changelog
 # ------------------
