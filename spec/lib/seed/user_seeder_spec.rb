@@ -4,18 +4,20 @@ RSpec.describe Seed::UserSeeder do
   let(:config) { Seed::Config.new }
   let(:expected_admins) { 5 }
 
-  it "creates standard user types" do
+  it "creates standard admin users" do
     create_list(:facility_group, 2)
     Seed::UserSeeder.call(config: config)
 
     power_user = User.search_by_email("power_user@simple.org").first
     expect(power_user).to_not be_nil
     expect(power_user.access_level).to eq("power_user")
+    expect(power_user.email_authentication.valid_password?(config.admin_password)).to be_truthy
 
     cvho = User.search_by_email("cvho@simple.org").first
     expect(cvho).to_not be_nil
     expect(cvho.access_level).to eq("manager")
     expect(cvho.accesses.count).to eq(2)
+    expect(cvho.email_authentication.valid_password?(config.admin_password)).to be_truthy
   end
 
   it "doesnt recreate dashboard users on multiple runs" do
