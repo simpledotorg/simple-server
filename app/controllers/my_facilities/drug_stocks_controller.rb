@@ -16,11 +16,10 @@ class MyFacilities::DrugStocksController < AdminController
                     .where(protocol_drugs: { stock_tracked: true })
 
     render && return if @facilities.empty?
-    # handle no facilities
-
     query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
     @report = query.call
     @drugs_by_category = query.protocol_drugs_by_category
+    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
   end
 
   def new
@@ -91,7 +90,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def set_for_end_of_month
     if params[:for_end_of_month]
-      @for_end_of_month ||= Date.strptime(params[:for_end_of_month], "%B %Y").end_of_month
+      @for_end_of_month ||= Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
     else
       @for_end_of_month ||= Date.today.end_of_month
     end

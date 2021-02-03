@@ -4,7 +4,7 @@
       <div>
         <div class="d-flex align-baseline jc-between">
           <h3>
-            Drug stock on hand: end of Dec-2020
+            Drug stock on hand: end of <%= @for_end_of_month_display %>
           </h3>
           <p class="c-grey-dark">
             Last updated: <%= @last_updated_at %>
@@ -24,13 +24,13 @@
         <%= render "shared/my_facilities_filters" %>
         <div class="dropdown show mb-8px mr-8px">
           <a id="dropdownMenuLink" class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
-            <%= @for_end_of_month.strftime("%b-%Y") %>
+            <%= @for_end_of_month_display %>
           </a>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
             <% last_n_months(n: 6, inclusive: true).each do |month| %>
               <% button_class = "dropdown-item query-filter-size filter-by-size" %>
               <% button_class = "dropdown-item active " if month.end_of_month == @for_end_of_month %>
-              <button class="<%= button_class %>" value="<%= month.strftime("%B %Y") %>" name="for_end_of_month" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
                 <%= month.strftime("%b-%Y") %>
               </button>
             <% end %>
@@ -42,7 +42,7 @@
           </button>
           <div class="dropdown-menu">
             <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Download XLS
-              for Dec-2020
+              for <%= @for_end_of_month_display %>
             </button>
           </div>
         </div>

@@ -74,7 +74,7 @@
         <% end %>
       </td>
       <td class="text-center">
-        <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.id, for_end_of_month: Date.today.strftime("%B %Y")) %>>
+        <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.id, for_end_of_month: @for_end_of_month_display) %>>
           <i class="fas fa-plus"></i>
         </a>
       </td>

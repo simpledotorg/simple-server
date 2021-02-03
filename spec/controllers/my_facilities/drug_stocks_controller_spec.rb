@@ -69,7 +69,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:params) {
         {
           facility_id: facility.id,
-          for_end_of_month: Date.today.strftime("%B %Y")
+          for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
@@ -112,7 +112,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:params) {
         {
           facility_id: facility.id,
-          for_end_of_month: Date.today.strftime("%B %Y")
+          for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
@@ -136,7 +136,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:params) {
         {
           facility_id: facility.id,
-          for_end_of_month: Date.today.strftime("%B %Y")
+          for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
@@ -155,7 +155,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     let(:params) {
       {
         facility_id: facility_group_with_stock_tracked.facilities.first.id,
-        for_end_of_month: Date.today.strftime("%B %Y"),
+        for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
           received: 10,
