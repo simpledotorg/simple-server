@@ -12,8 +12,8 @@ class MyFacilities::DrugStocksController < AdminController
 
   def index
     @facilities = filter_facilities
-                    .includes(facility_group: :protocol_drugs)
-                    .where(protocol_drugs: { stock_tracked: true })
+      .includes(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
 
     render && return if @facilities.empty?
     query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
@@ -89,10 +89,10 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def set_for_end_of_month
-    if params[:for_end_of_month]
-      @for_end_of_month ||= Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
+    @for_end_of_month ||= if params[:for_end_of_month]
+      Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
     else
-      @for_end_of_month ||= Date.today.end_of_month
+      Date.today.end_of_month
     end
   end
 end

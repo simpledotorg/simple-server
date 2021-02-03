@@ -36,7 +36,7 @@
   </thead>
   <tbody>
   <tr class="row-total" data-sort-method="none">
-    <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: 23,489 patients">
+    <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= @report[:all][:patient_count] %>">
       All
     </td>
     <% @drugs_by_category.map do |drug_category, drugs| %>
