@@ -8,7 +8,6 @@ WebMock.allow_net_connect!
 
 RSpec.configure do |config|
   SimpleCov.start if ENV["CI"]
-
   config.include FlipperHelpers
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true
