@@ -88,7 +88,7 @@ class ControlRateService
   end
 
   def ltfu_patients(period)
-    Patient.ltfu_as_of(period.to_date)
+    Patient.where(assigned_facility: facilities).ltfu_as_of(period.to_date)
   end
 
   def controlled_patients(period)
