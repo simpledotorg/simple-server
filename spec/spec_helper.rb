@@ -8,6 +8,7 @@ WebMock.allow_net_connect!
 
 RSpec.configure do |config|
   SimpleCov.start if ENV["CI"]
+  abort "fail fast"
 
   config.include FlipperHelpers
   config.filter_run focus: true
