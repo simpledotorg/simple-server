@@ -62,6 +62,7 @@ class DrugStocksQuery
       drug_stock_by_rxnorm_code = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
       drug_stock_by_id = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
       patient_days = patient_days_calculations(drug_category, drug_stock_by_rxnorm_code, total_patient_count)
+      next if patient_days.nil?
       report_all[drug_category] = patient_days.merge(drug_stocks: drug_stock_by_id)
     end
     report_all
@@ -86,6 +87,7 @@ class DrugStocksQuery
   def patient_days_calculations(drug_category, stocks_by_rxnorm_code, patient_count)
     coefficients = patient_days_coefficients[state]
     stocks_on_hand = stocks_on_hand(coefficients, drug_category, stocks_by_rxnorm_code)
+    return nil if stocks_on_hand.nil? || stocks_on_hand.compact.empty?
     new_patient_coefficient = coefficients[:drug_categories][drug_category][:new_patient_coefficient]
     estimated_patients = patient_count * coefficients[:load_factor] * new_patient_coefficient
     {stocks_on_hand: stocks_on_hand,
@@ -104,6 +106,7 @@ class DrugStocksQuery
       rxnorm_code = protocol_drug.rxnorm_code
       coefficient = coefficients[:drug_categories][drug_category][rxnorm_code]
       in_stock = stocks_by_rxnorm_code[rxnorm_code]
+      next if in_stock.nil?
       {protocol_drug: protocol_drug,
        in_stock: in_stock,
        coefficient: coefficient,
