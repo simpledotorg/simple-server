@@ -29,9 +29,13 @@ function getChartDataNode() {
 function initializeCharts() {
   const data = getReportingData();
 
+  const controlRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+  const adjustedRegistrations = window.withLtfu ? data.adjustedRegistrationsWithLtfu : data.adjustedRegistrations;
+  const controlledPatients = window.withLtfu ? data.controlledPatientsWithLtfu : data.controlledPatients;
+
   const controlledGraphConfig = createBaseGraphConfig();
   controlledGraphConfig.data = {
-    labels: Object.keys(data.controlRate),
+    labels: Object.keys(controlRate),
     datasets: [{
       label: "BP controlled",
       backgroundColor: lightGreenColor,
@@ -40,7 +44,7 @@ function initializeCharts() {
       pointBackgroundColor: whiteColor,
       hoverBackgroundColor: whiteColor,
       hoverBorderWidth: 2,
-      data: Object.values(data.controlRate),
+      data: Object.values(controlRate),
       type: "line",
     }],
   };
@@ -104,14 +108,14 @@ function initializeCharts() {
         label = mostRecentPeriod;
       }
       const period = data.periodInfo[label];
-      const adjustedRegistrations = data.adjustedRegistrations[label];
-      const totalPatients = data.controlledPatients[label];
+      const adjustedRegistrationsa = adjustedRegistrations[label];
+      const totalPatients = controlledPatients[label];
 
       rateNode.innerHTML = rate;
       totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
       periodStartNode.innerHTML = period.bp_control_start_date;
       periodEndNode.innerHTML = period.bp_control_end_date;
-      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrations);
+      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrationsa);
       registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
     }
   };
@@ -601,11 +605,14 @@ function getReportingData() {
 
   return {
     controlRate: jsonData.controlled_patients_rate,
+    controlWithLtfuRate: jsonData.controlled_patients_with_ltfu_rate,
     controlledPatients: jsonData.controlled_patients,
+    controlledPatientsWithLtfu: jsonData.controlled_patients_with_ltfu,
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
     monthlyRegistrations: jsonData.registrations,
     adjustedRegistrations: jsonData.adjusted_registrations,
+    adjustedRegistrationsWithLtfu: jsonData.adjusted_registrations_with_ltfu,
     cumulativeRegistrations: jsonData.cumulative_registrations,
     uncontrolledRate: jsonData.uncontrolled_patients_rate,
     uncontrolledPatients: jsonData.uncontrolled_patients,
