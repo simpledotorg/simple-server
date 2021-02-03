@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :appointment do
     id { SecureRandom.uuid }
     facility
-    association :creation_facility, factory: :facility
+    creation_facility { facility }
     association :patient, strategy: :build
     scheduled_date { 30.days.from_now }
     status { :scheduled }

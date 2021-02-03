@@ -12,9 +12,13 @@ blocks:
     task:
       env_vars:
         - name: DATABASE_URL
-          value: 'postgresql://postgres:@0.0.0.0:5432/myapp_test'
+          value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
         - name: RAILS_ENV
           value: test
+        - name: TB_RSPEC_OPTIONS
+          value: "--profile"
+        - name: TB_RSPEC_FORMATTER
+          value: progress
       secrets:
         - name: sentry-release-auth-token
         - name: semaphore-deploy-key
