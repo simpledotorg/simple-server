@@ -49,6 +49,10 @@ module Seed
       end
     end
 
+    def admin_password
+      ENV["SEED_ADMIN_PASSWORD"]
+    end
+
     def seed_generated_active_user_role
       ENV["SEED_GENERATED_ACTIVE_USER_ROLE"]
     end

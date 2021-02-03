@@ -23,6 +23,13 @@ module Seed
     delegate :stdout, to: :config
 
     def call
+      power_user = FactoryBot.create(:admin, :power_user, full_name: "Power User", email: "power_user@simple.org", password: config.admin_password)
+
+      fg_1, fg_2 = *FacilityGroup.take(2)
+      user = FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org")
+      user.accesses.create! resource_id: fg_1.id, resource_type: "FacilityGroup"
+      user.accesses.create! resource_id: fg_2.id, resource_type: "FacilityGroup"
+
       facility_ids = Facility.pluck(:id)
       users, auths = benchmark("build phone number auths and users for #{facility_ids.size} facilities") do
         build_user_and_phone_number_auth_attributes(facility_ids)
