@@ -40,8 +40,8 @@ module Seed
         FactoryBot.create(:admin, :power_user, full_name: "Power User", email: "power_user@simple.org", password: config.admin_password)
       end
 
-      cvho = EmailAuthentication.find_by(email: "cvho@simple.org")
-      unless cvho && cvho.user.accesses.where(resource_type: "FacilityGroup").count == DISTRICTS_MANAGED_BY_CVHO
+      cvho = User.find_by_email("cvho@simple.org")
+      unless cvho && cvho.accesses.where(resource_type: "FacilityGroup").count == DISTRICTS_MANAGED_BY_CVHO
         districts = *FacilityGroup.take(DISTRICTS_MANAGED_BY_CVHO)
         user = cvho || FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org", password: config.admin_password)
         districts.each do |district|
@@ -49,8 +49,8 @@ module Seed
         end
       end
 
-      sts = User.find_by_email(email: "sts@simple.org")
-      unless sts && sts.user.accesses.where(resource_type: "FacilityGroup").count == DISTRICTS_FOR_STS
+      sts = User.find_by_email("sts@simple.org")
+      unless sts && sts.accesses.where(resource_type: "FacilityGroup").count == DISTRICTS_FOR_STS
         districts = *FacilityGroup.order("name desc").take(DISTRICTS_FOR_STS)
         user = sts || FactoryBot.create(:admin, :viewer_all, full_name: "STS", email: "sts@simple.org", password: config.admin_password)
         districts.each do |district|
@@ -58,8 +58,8 @@ module Seed
         end
       end
 
-      district_official = EmailAuthentication.find_by(email: "district_official@simple.org")
-      unless district_official && district_official.user.accesses.where(resource_type: "FacilityGroup").count == DISTRICTS_FOR_DISTRICT_OFFICIAL
+      district_official = User.find_by_email("district_official@simple.org")
+      unless district_official && district_official.accesses.where(resource_type: "FacilityGroup").count == DISTRICTS_FOR_DISTRICT_OFFICIAL
         districts = *FacilityGroup.take(DISTRICTS_FOR_DISTRICT_OFFICIAL)
         user = district_official || FactoryBot.create(:admin, :viewer_reports_only, full_name: "District Official", email: "district_official@simple.org", password: config.admin_password)
         districts.each do |district|
@@ -67,8 +67,8 @@ module Seed
         end
       end
 
-      medical_officer = EmailAuthentication.find_by(email: "medical_officer@simple.org")
-      unless medical_officer && medical_officer.user.accesses.where(resource_type: "FacilityGroup").count == FACILITIES_FOR_MED_OFFICER
+      medical_officer = User.find_by_email("medical_officer@simple.org")
+      unless medical_officer && medical_officer.accesses.where(resource_type: "Facility").count == FACILITIES_FOR_MED_OFFICER
         facilities = *Facility.take(FACILITIES_FOR_MED_OFFICER)
         user = medical_officer || FactoryBot.create(:admin, :viewer_all, full_name: "Medical Officer", email: "medical_officer@simple.org", password: config.admin_password)
         facilities.each do |facility|
