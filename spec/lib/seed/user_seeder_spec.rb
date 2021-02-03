@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Seed::UserSeeder do
   let(:config) { Seed::Config.new }
-  let(:expected_admins) { 5 }
+  let(:expected_admins) { 6 }
 
   it "creates standard admin users" do
     create_list(:facility_group, 2)

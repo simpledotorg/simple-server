@@ -35,6 +35,10 @@ module Seed
     private
 
     def create_dashboard_admins
+      unless EmailAuthentication.exists?(email: "admin@simple.org")
+        FactoryBot.create(:admin, :power_user, full_name: "Admin User", email: "admin@simple.org", password: config.admin_password)
+      end
+
       unless EmailAuthentication.exists?(email: "power_user@simple.org")
         FactoryBot.create(:admin, :power_user, full_name: "Power User", email: "power_user@simple.org", password: config.admin_password)
       end
