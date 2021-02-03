@@ -10,8 +10,20 @@
           </h3>
           <% if current_admin.feature_enabled?(:report_with_exclusions) %>
             <div class="align-right custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" <% if @with_ltfu %>checked<% end %>>
-              <span class="font-weight-normal <% if !@with_ltfu %>c-grey-dark<% end %> custom-control-label">Include LTFU</span>
+              <form method="get">
+                <input type="checkbox"
+                       onChange="this.form.submit()"
+                       name="with_ltfu"
+                       class="custom-control-input"
+                       id="controlGraphltfuSwitch"
+                       <% if @with_ltfu %>checked<% end %>>
+                <label class="font-weight-normal
+                              <% unless @with_ltfu %>c-grey-dark<% end %>
+                              custom-control-label"
+                       for="controlGraphltfuSwitch">
+                  Include LTFU
+                </label>
+              </form>
             </div>
           <% end %>
         </div>
