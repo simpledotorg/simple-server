@@ -72,7 +72,7 @@
         <tr>
           <th colspan="2"></th>
           <% @drugs_by_category.map do |drug_category, drugs| %>
-            <th colspan=<%= drugs.count.next.to_s %>><%= drug_category.humanize %></th>
+            <th colspan=<%= drugs.count.next.to_s %>><%= protocol_drug_labels[drug_category] %></th>
           <% end %>
 
         </tr>

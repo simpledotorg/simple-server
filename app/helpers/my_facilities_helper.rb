@@ -49,4 +49,13 @@ module MyFacilitiesHelper
       "bg-green"
     end
   end
+
+  def protocol_drug_labels
+    { hypertension_ccb: "CCB Tablets",
+      hypertension_arb: "ARB Tablets",
+      hypertension_diuretic: "Diuretic Tablets",
+      hypertension_other: "Other Tablets",
+      diabetes: "Diabetes Tablets",
+      other: "Other Tablets" }.with_indifferent_access
+  end
 end
