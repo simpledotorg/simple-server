@@ -29,13 +29,13 @@ function getChartDataNode() {
 function initializeCharts() {
   const data = getReportingData();
 
-  const controlRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
-  const adjustedRegistrations = window.withLtfu ? data.adjustedRegistrationsWithLtfu : data.adjustedRegistrations;
-  const controlledPatients = window.withLtfu ? data.controlledPatientsWithLtfu : data.controlledPatients;
+  const controlledGraphControlRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+  const controlledGraphAdjustedRegistrations = window.withLtfu ? data.adjustedRegistrationsWithLtfu : data.adjustedRegistrations;
+  const controlledGraphControlledPatients = window.withLtfu ? data.controlledPatientsWithLtfu : data.controlledPatients;
 
   const controlledGraphConfig = createBaseGraphConfig();
   controlledGraphConfig.data = {
-    labels: Object.keys(controlRate),
+    labels: Object.keys(controlledGraphControlRate),
     datasets: [{
       label: "BP controlled",
       backgroundColor: lightGreenColor,
@@ -44,7 +44,7 @@ function initializeCharts() {
       pointBackgroundColor: whiteColor,
       hoverBackgroundColor: whiteColor,
       hoverBorderWidth: 2,
-      data: Object.values(controlRate),
+      data: Object.values(controlledGraphControlRate),
       type: "line",
     }],
   };
@@ -108,14 +108,14 @@ function initializeCharts() {
         label = mostRecentPeriod;
       }
       const period = data.periodInfo[label];
-      const adjustedRegistrationsa = adjustedRegistrations[label];
-      const totalPatients = controlledPatients[label];
+      const adjustedRegistrations = controlledGraphAdjustedRegistrations[label];
+      const totalPatients = controlledGraphControlledPatients[label];
 
       rateNode.innerHTML = rate;
       totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
       periodStartNode.innerHTML = period.bp_control_start_date;
       periodEndNode.innerHTML = period.bp_control_end_date;
-      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrationsa);
+      registrationsNode.innerHTML = formatNumberWithCommas(adjustedRegistrations);
       registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
     }
   };
