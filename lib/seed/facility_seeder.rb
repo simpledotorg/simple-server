@@ -156,7 +156,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      Region.import(facility_regions)
+      Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end
 end
