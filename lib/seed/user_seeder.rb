@@ -23,6 +23,14 @@ module Seed
     delegate :stdout, to: :config
 
     def call
+      create_dashboard_admins
+      create_mobile_users
+
+    end
+
+    private
+
+    def create_dashboard_admins
       unless EmailAuthentication.exists?(email: "power_user@simple.org")
         FactoryBot.create(:admin, :power_user, full_name: "Power User", email: "power_user@simple.org", password: config.admin_password)
       end
@@ -33,7 +41,9 @@ module Seed
         user.accesses.create! resource_id: fg_1.id, resource_type: "FacilityGroup"
         user.accesses.create! resource_id: fg_2.id, resource_type: "FacilityGroup"
       end
+    end
 
+    def create_mobile_users
       facility_ids = Facility.pluck(:id)
       users, auths = benchmark("build phone number auths and users for #{facility_ids.size} facilities") do
         build_user_and_phone_number_auth_attributes(facility_ids)
@@ -52,8 +62,6 @@ module Seed
         UserAuthentication.import(auths)
       end
     end
-
-    private
 
     # We are not using FactoryBot to keep this fast -- FactoryBot slows this down dramatically, even
     # if we use `attributes_for`
