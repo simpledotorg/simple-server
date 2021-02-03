@@ -23,12 +23,16 @@ module Seed
     delegate :stdout, to: :config
 
     def call
-      power_user = FactoryBot.create(:admin, :power_user, full_name: "Power User", email: "power_user@simple.org", password: config.admin_password)
+      unless EmailAuthentication.exists?(email: "power_user@simple.org")
+        FactoryBot.create(:admin, :power_user, full_name: "Power User", email: "power_user@simple.org", password: config.admin_password)
+      end
 
-      fg_1, fg_2 = *FacilityGroup.take(2)
-      user = FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org")
-      user.accesses.create! resource_id: fg_1.id, resource_type: "FacilityGroup"
-      user.accesses.create! resource_id: fg_2.id, resource_type: "FacilityGroup"
+      unless EmailAuthentication.exists?(email: "cvho@simple.org")
+        fg_1, fg_2 = *FacilityGroup.take(2)
+        user = FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org")
+        user.accesses.create! resource_id: fg_1.id, resource_type: "FacilityGroup"
+        user.accesses.create! resource_id: fg_2.id, resource_type: "FacilityGroup"
+      end
 
       facility_ids = Facility.pluck(:id)
       users, auths = benchmark("build phone number auths and users for #{facility_ids.size} facilities") do
@@ -57,6 +61,7 @@ module Seed
       time = 30.minutes.from_now
       device_created_at = 3.months.ago
       users, auths = [], []
+      existing_authentications = UserAuthentication.where(authenticatable_type: "PhoneNumberAuthentication").group(:authenticatable_id).count
       facility_ids.each do |facility_id|
         number_of_users_per_facility.times do
           auths << {

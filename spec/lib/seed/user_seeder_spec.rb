@@ -17,6 +17,16 @@ RSpec.describe Seed::UserSeeder do
     expect(cvho.accesses.count).to eq(2)
   end
 
+  it "doesnt recreate dashboard users on multiple runs" do
+    create_list(:facility, 2)
+    expect {
+      Seed::UserSeeder.call(config: config)
+    }.to change { User.admins.count }.by(2)
+    expect {
+      Seed::UserSeeder.call(config: config)
+    }.to change { User.admins.count }.by(0)
+  end
+
   it "creates Users for each facility" do
     create_list(:facility, 5, facility_size: "community")
 
