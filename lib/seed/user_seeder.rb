@@ -74,9 +74,7 @@ module Seed
           user.accesses.create! resource: facility
         end
       end
-
     end
-
 
     def create_mobile_users
       facility_ids = Facility.pluck(:id)
