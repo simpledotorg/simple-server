@@ -36,7 +36,7 @@ module Seed
 
       unless EmailAuthentication.exists?(email: "cvho@simple.org")
         fg_1, fg_2 = *FacilityGroup.take(2)
-        user = FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org")
+        user = FactoryBot.create(:admin, :manager, full_name: "CVHO", email: "cvho@simple.org", password: config.admin_password)
         user.accesses.create! resource_id: fg_1.id, resource_type: "FacilityGroup"
         user.accesses.create! resource_id: fg_2.id, resource_type: "FacilityGroup"
       end
