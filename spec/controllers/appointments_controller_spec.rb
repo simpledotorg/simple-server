@@ -1,8 +1,10 @@
 require "rails_helper"
 
 RSpec.describe AppointmentsController, type: :controller do
-  let(:facility_group) { create(:facility_group) }
+  let(:organization) { create(:organization, name: "org-1") }
+  let(:facility_group) { create(:facility_group, organization: organization) }
   let(:counsellor) { create(:admin, :call_center, :with_access, resource: facility_group) }
+  let(:manager) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   before do
     sign_in(counsellor.email_authentication)
@@ -13,23 +15,23 @@ RSpec.describe AppointmentsController, type: :controller do
 
     let!(:appointment_facility) { create(:facility, facility_group: facility_group) }
     let!(:facility_1) { create(:facility, facility_group: facility_group) }
-    let!(:facility_1_patients) { create_list(:patient, 3, assigned_facility: facility_1) }
+    let!(:facility_1_patients) { create_list(:patient, 3, assigned_facility: facility_1, registration_user: manager) }
     let!(:overdue_appointments_in_facility_1) do
       appointments = facility_1_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
-        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
-        create(:blood_pressure, patient: appointment.patient, facility: facility_1)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_1, user: manager)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_1, user: manager)
       end
       appointments
     end
 
     let!(:facility_2) { create(:facility, facility_group: facility_group) }
-    let!(:facility_2_patients) { create_list(:patient, 3, assigned_facility: facility_2) }
+    let!(:facility_2_patients) { create_list(:patient, 3, assigned_facility: facility_2, registration_user: manager) }
     let!(:overdue_appointments_in_facility_2) do
       appointments = facility_2_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
-        create(:blood_pressure, patient: appointment.patient, facility: facility_2)
-        create(:blood_pressure, patient: appointment.patient, facility: facility_2)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_2, user: manager)
+        create(:blood_pressure, patient: appointment.patient, facility: facility_2, user: manager)
       end
       appointments
     end

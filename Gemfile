@@ -17,6 +17,7 @@ gem "bcrypt", "~> 3.1", ">= 3.1.11"
 gem "bootsnap", require: false
 gem "bootstrap", "~> 4.5.0"
 gem "bootstrap_form", ">= 4.5.0"
+gem "bootstrap-datepicker-rails", "~> 1.9"
 gem "connection_pool"
 gem "data-anonymization", require: false
 gem "data_migrate"
@@ -64,7 +65,9 @@ gem "ruby-progressbar", require: false
 gem "rubyzip"
 gem "sassc-rails"
 gem "scenic"
-gem "sentry-raven"
+gem "sentry-rails"
+gem "sentry-ruby"
+gem "sentry-sidekiq"
 gem "sidekiq"
 gem "sidekiq-statsd"
 gem "sidekiq-throttled"
@@ -81,6 +84,7 @@ gem "memery"
 gem "bootstrap-select-rails"
 gem "render_async"
 gem "rack-attack"
+gem "squid"
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
@@ -91,6 +95,7 @@ group :development, :test do
   gem "capistrano-rails"
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
+  gem "capistrano-sentry", require: false
   gem "capistrano-template", require: false
   gem "parallel_tests", group: %i[development test]
   gem "rails-controller-testing"

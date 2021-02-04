@@ -48,6 +48,8 @@ module Reports
       @data
     end
 
+    delegate :dig, to: :@data
+
     # Return a new Result limited to just the report data range requested
     # We do this because we cache all the data, but clients may be expecting just the range of data that they
     # care to expose to the view or API consumers.
@@ -161,7 +163,8 @@ module Reports
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
         visited_without_bp_taken = visited_without_bp_taken_for(period)
-        hsh[period] = registrations - visited_without_bp_taken - controlled - uncontrolled
+        missed_visits = registrations - visited_without_bp_taken - controlled - uncontrolled
+        hsh[period] = missed_visits.try(:floor) || 0
       }
     end
 

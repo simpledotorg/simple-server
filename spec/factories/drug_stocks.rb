@@ -4,7 +4,7 @@ FactoryBot.define do
     association :facility, strategy: :create
     association :user, strategy: :create
     association :protocol_drug, strategy: :create
-    recorded_at { Time.current }
+    for_end_of_month { Date.today.end_of_month }
     in_stock { 500 }
     received { 100 }
   end

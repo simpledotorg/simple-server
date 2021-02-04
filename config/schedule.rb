@@ -35,12 +35,8 @@ every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
-every :month, at: local("04:00 am"), roles: [:seed_data] do
-  rake "db:purge_and_reseed"
-end
-
 every :day, at: local("05:00 am"), roles: [:cron] do
-  runner "ReportDuplicatePassports.report"
+  runner "DuplicatePassportAnalytics.report"
 end
 
 every :monday, at: local("6:00 am"), roles: [:cron] do
@@ -50,7 +46,7 @@ every :monday, at: local("6:00 am"), roles: [:cron] do
 end
 
 every 2.minutes, roles: [:cron] do
-  runner "TracerJob.perform_later(Time.current.iso8601)"
+  runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
 
 every 30.minutes, roles: [:cron] do

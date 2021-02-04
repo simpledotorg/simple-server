@@ -1,0 +1,49 @@
+<div class="page-header">
+  <h1>Error Traces</h2>
+</div>
+
+<div class="alert alert-info mb-3" role="alert">
+  These buttons are provided to verify error alerting integrations are setup correctly.
+  If you don't know what that is, you can safely ignore this page. 😀
+</div>
+
+<div class="card">
+  <div class="row">
+    <div class="col-6">
+
+      <div class="card-body">
+        <h4 class="card-title">
+          Create web request error
+        </h4>
+
+        <div class="form-group">
+          <div class="form-text text-muted mb-2">
+            This will raise an error directly from the action, so you will see a 500 page after clicking the button.
+          </div>
+
+          <%= button_to "Create error", admin_error_traces_path, class: "btn btn-outline-danger" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <div class="col-6">
+      <div class="card-body">
+        <h4 class="card-title">
+          Create background job error
+        </h4>
+
+        <div class="form-group">
+          <div class="form-text text-muted mb-2">
+            This will raise an error from a sidekiq job.
+          </div>
+
+          <%= button_to "Create error", admin_error_traces_path(type: :job), class: "btn btn-outline-danger" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

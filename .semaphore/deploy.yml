@@ -3,6 +3,9 @@ name: Development Deployment
 blocks:
   - name: Deploy to Sandbox
     task:
+      secrets:
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
       jobs:
         - name: Deploy to Sandbox
           commands:
@@ -13,8 +16,6 @@ blocks:
             - bundle install --deployment --path vendor/bundle
             - cache store
             - BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap sandbox deploy
-      secrets:
-        - name: semaphore-deploy-key
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
@@ -24,6 +25,7 @@ blocks:
     dependencies: []
     task:
       secrets:
+        - name: sentry-release-auth-token
         - name: semaphore-deploy-key
       prologue:
         commands:

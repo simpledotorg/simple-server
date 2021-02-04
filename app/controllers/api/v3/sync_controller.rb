@@ -39,6 +39,7 @@ class Api::V3::SyncController < APIController
   end
 
   def log_block_level_sync_metrics(response_key)
+    return unless current_facility
     Rails.logger.tagged("Block Sync") do
       if resync_token_modified?
         Rails.logger.info msg: "Resync token modified", resource: response_key
@@ -69,15 +70,12 @@ class Api::V3::SyncController < APIController
   def capture_errors(params, errors)
     return unless errors.present?
 
-    Raven.capture_message(
-      "Validation Error",
-      logger: "logger",
+    Sentry.capture_message("Validation Error",
       extra: {
         params_with_errors: params_with_errors(params, errors),
         errors: errors
       },
-      tags: {type: "validation"}
-    )
+      tags: {type: "validation"})
   end
 
   def process_token

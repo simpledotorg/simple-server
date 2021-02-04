@@ -419,13 +419,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
+      result = nil
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :download, params: {id: @facility.slug, report_scope: "facility", period: "month", format: "csv"}
+        result = get :download, params: {id: @facility.slug, report_scope: "facility", period: "month", format: "csv"}
       end
       expect(response).to be_successful
       expect(response.body).to include("CHC Barnagar Monthly Cohort Report")
       expect(response.headers["Content-Disposition"]).to include('filename="facility-monthly-cohort-report_CHC-Barnagar')
+      expect(result).to render_template("cohort.csv.erb")
     end
 
     it "retrieves cohort data for a facility group" do
@@ -435,13 +437,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
+      result = nil
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :download, params: {id: facility_group.slug, report_scope: "district", period: "quarter", format: "csv"}
+        result = get :download, params: {id: facility_group.slug, report_scope: "district", period: "quarter", format: "csv"}
       end
       expect(response).to be_successful
       expect(response.body).to include("#{facility_group.name} Quarterly Cohort Report")
-      expect(response.headers["Content-Disposition"]).to include('filename="facility_group-quarterly-cohort-report_')
+      expect(response.headers["Content-Disposition"]).to include('filename="district-quarterly-cohort-report_')
+      expect(result).to render_template("facility_group_cohort.csv.erb")
     end
 
     it "retrieves cohort data for a facility district" do
@@ -450,13 +454,16 @@ RSpec.describe Reports::RegionsController, type: :controller do
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
+      result = nil
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :download, params: {id: @facility.district, report_scope: "facility_district", period: "quarter", format: "csv"}
+        result = get :download, params: {id: @facility.district, report_scope: "facility_district", period: "quarter", format: "csv"}
       end
+
       expect(response).to be_successful
       expect(response.body).to include("#{@facility.district} Quarterly Cohort Report")
       expect(response.headers["Content-Disposition"]).to include('filename="facility_district-quarterly-cohort-report_')
+      expect(result).to render_template("facility_group_cohort.csv.erb")
     end
   end
 

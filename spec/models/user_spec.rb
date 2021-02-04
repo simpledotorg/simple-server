@@ -194,8 +194,8 @@ RSpec.describe User, type: :model do
       include_examples "full_name search", :search_by_name_or_phone
 
       context "searches against phone_number" do
-        let!(:user_1) { create(:user, full_name: "Sri Priyanka John") }
-        let!(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
+        let(:user_1) { create(:user, full_name: "Sri Priyanka John") }
+        let(:user_2) { create(:user, full_name: "Priya Sri Gupta") }
 
         it "matches a user with a phone number" do
           expect(User.search_by_name_or_phone(user_1.phone_number)).to match_array(user_1)
@@ -231,36 +231,41 @@ RSpec.describe User, type: :model do
       include_examples "full_name search", :search_by_name_or_email
 
       context "searches against email" do
-        let!(:admin_1) { create(:admin, full_name: "Sri Priyanka John") }
-        let!(:admin_2) { create(:admin, full_name: "Priya Sri Gupta") }
+        let(:admin_1) { create(:admin, full_name: "Sri Priyanka John") }
+        let(:admin_2) { create(:admin, full_name: "Priya Sri Gupta") }
 
         it "matches an admin with an email" do
           expect(User.search_by_name_or_email(admin_1.email)).to match_array(admin_1)
         end
 
         it "returns nothing for combinations that don't match" do
-          expect(User.search_by_name_or_email(admin_1.email + admin_2.email))
-            .to be_empty
+          expect(User.search_by_name_or_email(admin_1.email + admin_2.email)).to be_empty
 
-          expect(User.search_by_name_or_email(""))
-            .to be_empty
+          expect(User.search_by_name_or_email("")).to be_empty
         end
 
         it "matches a combination of name and email from the same admin" do
-          expect(User.search_by_name_or_email(admin_1.email + " " + "John"))
-            .to match_array(admin_1)
+          expect(User.search_by_name_or_email(admin_1.email + " " + "John")).to match_array(admin_1)
 
-          expect(User.search_by_name_or_email("Gupta" + " " + admin_2.email))
-            .to match_array(admin_2)
+          expect(User.search_by_name_or_email("Gupta" + " " + admin_2.email)).to match_array(admin_2)
         end
 
         it "matches multiple users against multiple emails" do
-          expect(User.search_by_name_or_email("Priya Sri" + " " + admin_1.email))
-            .to match_array([admin_1, admin_2])
+          expect(User.search_by_name_or_email("Priya Sri" + " " + admin_1.email)).to match_array([admin_1, admin_2])
 
-          expect(User.search_by_name_or_email(admin_1.email + " " + admin_2.email))
-            .to match_array([admin_1, admin_2])
+          expect(User.search_by_name_or_email(admin_1.email + " " + admin_2.email)).to match_array([admin_1, admin_2])
         end
+      end
+    end
+
+    describe ".find_by_email" do
+      it "finds user by email" do
+        admin = create(:admin, full_name: "Jane Doe", email: "jane@example.com")
+        expect(User.find_by_email("jane@example.com")).to eq(admin)
+      end
+
+      it "returns nil for no user found" do
+        expect(User.find_by_email("jane@example.com")).to be_nil
       end
     end
 
@@ -328,6 +333,34 @@ RSpec.describe User, type: :model do
 
       expect(EmailAuthentication.exists?(id: email_authentication_ids)).to eq(false)
       expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
+    end
+  end
+
+  describe "#block_level_sync?" do
+    let(:user) { create(:user) }
+    let(:mo) { create(:teleconsultation_medical_officer) }
+
+    before do
+      Flipper.enable(:block_level_sync, user)
+      Flipper.enable(:block_level_sync, mo)
+    end
+
+    after do
+      Flipper.disable(:block_level_sync, mo)
+      Flipper.disable(:block_level_sync, user)
+    end
+
+    it "is true when the flipper flag is on" do
+      expect(user.block_level_sync?).to eq true
+    end
+
+    it "is false when the flipper flag is off" do
+      Flipper.disable(:block_level_sync, user)
+      expect(user.block_level_sync?).to eq false
+    end
+
+    it "is false when the user is enabled for teleconsulation" do
+      expect(mo.block_level_sync?).to eq false
     end
   end
 end

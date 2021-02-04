@@ -61,8 +61,7 @@ class Api::V4::UsersController < APIController
     end
 
     if error_string.present?
-      Raven.capture_message("Login Error",
-        logger: "logger",
+      Sentry.capture_message("Login Error",
         extra: {activate_params: activate_params, errors: error_string},
         tags: {type: "login"})
       {user: [error_string]}

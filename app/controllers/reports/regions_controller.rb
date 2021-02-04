@@ -46,13 +46,12 @@ class Reports::RegionsController < AdminController
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
     @with_ltfu = with_ltfu?
 
-    if @region.respond_to?(:children)
-      @children_data = @region.children.each_with_object({}) { |child, hsh|
-        hsh[child.name] = Reports::RegionService.new(region: child,
-                                                     period: @period,
-                                                     with_exclusions: report_with_exclusions?).call
-      }
-    end
+    @children = @region.reportable_children(region_reports_enabled: region_reports_enabled?)
+    @children_data = @children.each_with_object({}) { |child, hsh|
+      hsh[child.name] = Reports::RegionService.new(region: child,
+                                                   period: @period,
+                                                   with_exclusions: report_with_exclusions?).call
+    }
   end
 
   def details
@@ -63,7 +62,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
-    region_source = region_reports_enabled? ? @region.source : @region
+    region_source = @region.source
     if region_source.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
     end
@@ -88,7 +87,7 @@ class Reports::RegionsController < AdminController
 
     respond_to do |format|
       format.csv do
-        if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)
+        if @region.district_region?
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
@@ -131,7 +130,7 @@ class Reports::RegionsController < AdminController
   def download_filename
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
-    "#{@region.source.class.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
@@ -173,7 +172,7 @@ class Reports::RegionsController < AdminController
         if region_reports_enabled?
           current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
         else
-          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id])
+          current_admin.accessible_facility_groups(:view_reports).find_by!(slug: report_params[:id]).region
         end
       when "block"
         current_admin.accessible_block_regions(:view_reports).find_by!(slug: report_params[:id])
@@ -181,7 +180,7 @@ class Reports::RegionsController < AdminController
         if region_reports_enabled?
           current_admin.accessible_facility_regions(:view_reports).find_by!(slug: report_params[:id])
         else
-          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id])
+          current_admin.accessible_facilities(:view_reports).find_by!(slug: report_params[:id]).region
         end
       else
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"

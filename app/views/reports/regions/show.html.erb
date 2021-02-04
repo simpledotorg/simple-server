@@ -117,14 +117,10 @@
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="mb-8px fs-14px c-grey-dark c-print-black">
-              <strong>Numerator:</strong> Patients with BP &lt;140/90 at their most recent visit in the last 3 months
+              <strong>Numerator:</strong> <%= t("numerator_copy.bp_controlled") %>
             </p>
             <p class="fs-14px c-grey-dark c-print-black">
-              <% if @region.is_a?(Facility) %>
-                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
-              <% else %>
-                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
-              <% end %>
+              <strong>Denominator:</strong> <%= t("denominator_copy") %>
             </p>
           </div>
         </div>
@@ -196,14 +192,10 @@
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="mb-8px fs-14px c-grey-dark c-print-black">
-              <strong>Numerator:</strong> Patients with BP &ge;140/90 at their most recent visit in the last 3 months
+              <strong>Numerator:</strong> <%= t("numerator_copy.bp_not_controlled") %>
             </p>
             <p class="fs-14px c-grey-dark c-print-black">
-              <% if @region.is_a?(Facility) %>
-                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
-              <% else %>
-                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
-              <% end %>
+              <strong>Denominator:</strong> <%= t("denominator_copy") %>
             </p>
           </div>
         </div>
@@ -266,14 +258,10 @@
         <div class="px-20px pb-8px pb-lg-0">
           <div class="mb-2">
             <p class="mb-8px fs-14px c-grey-dark c-print-black">
-              <strong>Numerator:</strong> Patients with no visit in >3 months
+              <strong>Numerator:</strong> <%= t("numerator_copy.missed_visits") %>
             </p>
             <p class="fs-14px c-grey-dark c-print-black">
-              <% if @region.is_a?(Facility) %>
-                <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before the last 3 months
-              <% else %>
-                <strong>Denominator:</strong> All hypertensive patients registered in <%= @region.name %> before the last 3 months
-              <% end %>
+              <strong>Denominator:</strong> <%= t("denominator_copy") %>
             </p>
           </div>
         </div>
@@ -348,8 +336,8 @@
 
 <%= render "visit_details_card" %>
 
-<% if @region.child_region_type.in?(["district", "block", "facility"]) %>
-  <%= render "child_data_tables", data: @children_data, region_type: @region.child_region_type %>
+<% if @children_data.any? %>
+  <%= render "child_data_tables", data: @children_data, region_type: @children.first.region_type %>
 <% end %>
 
 <div id="data-json" style="display: none;">
