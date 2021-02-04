@@ -1,6 +1,6 @@
 module PatientReportableMatview
   extend ActiveSupport::Concern
-  extend PatientReportable
+  include PatientReportable
   TIME_TO_CONSIDER_LTFU = PatientReportable::TIME_TO_CONSIDER_LTFU
 
   included do
@@ -13,7 +13,7 @@ module PatientReportableMatview
 
     scope :ltfu_as_of, ->(date) do
       where.not("bp_recorded_at > ? AND bp_recorded_at <= ?", date.to_date - TIME_TO_CONSIDER_LTFU, date.to_date)
-           .where("patient_recorded_at < ?", date - TIME_TO_CONSIDER_LTFU)
+        .where("patient_recorded_at < ?", date - TIME_TO_CONSIDER_LTFU)
     end
 
     scope :not_ltfu_as_of, ->(date) do
