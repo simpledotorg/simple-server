@@ -189,7 +189,7 @@ module Reports
 
     def registrations_for_percentage_calculation_with_ltfu(period)
       if quarterly_report?
-        self[:registrations_with_ltfu][period.previous] || 0
+        self[:denominator_registrations][period.previous] || 0
       else
         adjusted_registrations_with_ltfu_for(period)
       end
@@ -201,7 +201,7 @@ module Reports
       end
 
       if quarterly_report?
-        self[:registrations_with_exclusions][period.previous] || 0
+        self[:denominator_registrations][period.previous] || 0
       else
         adjusted_registrations_for(period)
       end
