@@ -15,7 +15,6 @@ RSpec.describe Reports::RegionService, type: :model do
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
       LatestBloodPressuresPerPatientPerQuarter.refresh
-      LatestBloodPressuresPerPatient.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
   end
