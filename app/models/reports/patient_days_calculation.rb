@@ -69,6 +69,8 @@ module Reports
       drug_stock_config = Rails.application.config.drug_stock_config
       env = ENV.fetch("SIMPLE_SERVER_ENV")
 
+      # This is a hack for convenience in envs with generated data
+      # Once we make formula coefficients a first class model, we can get rid of this
       if env != "production" && drug_stock_config[state].nil?
         drug_stock_config.values.first
       else
