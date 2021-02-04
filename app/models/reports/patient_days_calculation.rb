@@ -14,16 +14,16 @@ module Reports
 
     def calculate
       return nil if stocks_on_hand.nil? || stocks_on_hand.empty?
-      { stocks_on_hand: stocks_on_hand,
-        patient_count: @patient_count,
-        load_coefficient: @coefficients[:load_coefficient],
-        new_patient_coefficient: new_patient_coefficient,
-        estimated_patients: estimated_patients,
-        patient_days: patient_days }
+      {stocks_on_hand: stocks_on_hand,
+       patient_count: @patient_count,
+       load_coefficient: @coefficients[:load_coefficient],
+       new_patient_coefficient: new_patient_coefficient,
+       estimated_patients: estimated_patients,
+       patient_days: patient_days}
     rescue
       # either drug stock is nil, or drug is not in formula
       # Raise sentry error
-      { patient_days: "error" }
+      {patient_days: "error"}
     end
 
     def stocks_on_hand
@@ -33,10 +33,10 @@ module Reports
         next if in_stock.nil?
         coefficient = drug_coefficient(rxnorm_code)
 
-        { protocol_drug: protocol_drug,
-          in_stock: in_stock,
-          coefficient: coefficient,
-          stock_on_hand: coefficient * in_stock }
+        {protocol_drug: protocol_drug,
+         in_stock: in_stock,
+         coefficient: coefficient,
+         stock_on_hand: coefficient * in_stock}
       end&.compact
     end
 
@@ -58,38 +58,38 @@ module Reports
 
     def patient_days_coefficients
       # move this to config
-      { "Karnataka":
-          { load_coefficient: 1,
-            drug_categories:
-              { "hypertension_ccb":
-                  { new_patient_coefficient: 1.4,
-                    "329528": 1,
-                    "329526": 2 },
-                "hypertension_arb":
-                  { new_patient_coefficient: 0.37,
-                    "316764": 1,
-                    "316765": 2,
-                    "979467": 1 },
-                "hypertension_diuretic":
-                  { new_patient_coefficient: 0.06,
-                    "316049": 1,
-                    "331132": 1 } } },
-        "Punjab":
-          { load_coefficient: 1,
-            drug_categories:
-              { "hypertension_ccb":
-                  { new_patient_coefficient: 1.4,
-                    "329528": 1,
-                    "329526": 2 },
-                "hypertension_arb":
-                  { new_patient_coefficient: 0.37,
-                    "316764": 1,
-                    "316765": 2,
-                    "979467": 1 },
-                "hypertension_diuretic":
-                  { new_patient_coefficient: 0.06,
-                    "316049": 1,
-                    "331132": 1 } } } }.with_indifferent_access
+      {"Karnataka":
+          {load_coefficient: 1,
+           drug_categories:
+              {"hypertension_ccb":
+                  {new_patient_coefficient: 1.4,
+                   "329528": 1,
+                   "329526": 2},
+               "hypertension_arb":
+                  {new_patient_coefficient: 0.37,
+                   "316764": 1,
+                   "316765": 2,
+                   "979467": 1},
+               "hypertension_diuretic":
+                  {new_patient_coefficient: 0.06,
+                   "316049": 1,
+                   "331132": 1}}},
+       "Punjab":
+          {load_coefficient: 1,
+           drug_categories:
+              {"hypertension_ccb":
+                  {new_patient_coefficient: 1.4,
+                   "329528": 1,
+                   "329526": 2},
+               "hypertension_arb":
+                  {new_patient_coefficient: 0.37,
+                   "316764": 1,
+                   "316765": 2,
+                   "979467": 1},
+               "hypertension_diuretic":
+                  {new_patient_coefficient: 0.06,
+                   "316049": 1,
+                   "331132": 1}}}}.with_indifferent_access
     end
   end
 end
