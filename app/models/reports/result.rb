@@ -23,6 +23,7 @@ module Reports
           denominator_registrations: Hash.new(0),
           earliest_registration_period: nil,
           ltfu_patients: Hash.new(0),
+          ltfu_patients_rate: Hash.new(0),
           missed_visits_rate: {},
           missed_visits: {},
           period_info: {},
@@ -198,15 +199,30 @@ module Reports
       end
     end
 
-    def registrations_for_percentage_calculation(period, key)
-      if key == :controlled_patients_with_ltfu
-        return registrations_for_percentage_calculation_with_ltfu(period)
+    def registrations_for_percentage_calculation_absolute(period)
+      if quarterly_report?
+        self[:cumulative_registrations][period.previous] || 0
+      else
+        cumulative_registrations_for(period)
       end
+    end
 
+    def registrations_for_percentage_calculation_denominator(period)
       if quarterly_report?
         self[:denominator_registrations][period.previous] || 0
       else
         adjusted_registrations_for(period)
+      end
+
+    end
+
+    def registrations_for_percentage_calculation(period, key)
+      if key == :controlled_patients_with_ltfu
+        registrations_for_percentage_calculation_with_ltfu(period)
+      elsif key == :ltfu_patients
+        registrations_for_percentage_calculation_absolute(period)
+      else
+        registrations_for_percentage_calculation_denominator(period)
       end
     end
 

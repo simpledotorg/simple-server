@@ -62,6 +62,20 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
 
+    @data = {
+      dead: Patient.where(assigned_facility: @region.facilities).status_dead.count,
+      total_patients: Patient.where(assigned_facility: @region.facilities).count,
+      ltfu_trend: Reports::RegionService.new(region: @region,
+                                             period: @period,
+                                             with_exclusions: report_with_exclusions?).call,
+      not_ltfu_patients: Patient
+                           .for_reports(with_exclusions: report_with_exclusions?)
+                           .where(assigned_facility: @region.facilities)
+                           .not_ltfu_as_of(@period.to_date)
+                           .count,
+      transferred: Patient.where(assigned_facility: @region.facilities).status_migrated.count
+    }
+
     region_source = @region.source
     if region_source.respond_to?(:recent_blood_pressures)
       @recent_blood_pressures = paginate(region_source.recent_blood_pressures)
