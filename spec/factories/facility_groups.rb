@@ -10,7 +10,7 @@ FactoryBot.define do
     description { Faker::Company.catch_phrase }
     organization { org }
     state { state_name }
-    protocol
+    protocol { build(:protocol, :with_tracked_drugs) }
 
     transient do
       create_parent_region { true }

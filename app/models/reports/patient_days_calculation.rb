@@ -5,7 +5,7 @@ module Reports
       @drug_category = drug_category
       @stocks_by_rxnorm_code = stocks_by_rxnorm_code
       @patient_count = patient_count
-      @coefficients = patient_days_coefficients[state]
+      @coefficients = patient_days_coefficients(state)
     end
 
     def protocol_drugs_by_category
@@ -65,40 +65,15 @@ module Reports
       @new_patient_coefficient ||= @coefficients.dig(:drug_categories, @drug_category, :new_patient_coefficient)
     end
 
-    def patient_days_coefficients
-      # move this to config
-      {"Karnataka":
-          {load_coefficient: 1,
-           drug_categories:
-              {"hypertension_ccb":
-                  {new_patient_coefficient: 1.4,
-                   "329528": 1,
-                   "329526": 2},
-               "hypertension_arb":
-                  {new_patient_coefficient: 0.37,
-                   "316764": 1,
-                   "316765": 2,
-                   "979467": 1},
-               "hypertension_diuretic":
-                  {new_patient_coefficient: 0.06,
-                   "316049": 1,
-                   "331132": 1}}},
-       "Punjab":
-          {load_coefficient: 1,
-           drug_categories:
-              {"hypertension_ccb":
-                  {new_patient_coefficient: 1.4,
-                   "329528": 1,
-                   "329526": 2},
-               "hypertension_arb":
-                  {new_patient_coefficient: 0.37,
-                   "316764": 1,
-                   "316765": 2,
-                   "979467": 1},
-               "hypertension_diuretic":
-                  {new_patient_coefficient: 0.06,
-                   "316049": 1,
-                   "331132": 1}}}}.with_indifferent_access
+    def patient_days_coefficients(state)
+      drug_stock_config = Rails.application.config.drug_stock_config
+      env = ENV.fetch("SIMPLE_SERVER_ENV")
+
+      if env != "production" && drug_stock_config[state].nil?
+        drug_stock_config.values.first
+      else
+        drug_stock_config[state]
+      end
     end
   end
 end
