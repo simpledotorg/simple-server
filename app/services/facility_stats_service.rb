@@ -1,11 +1,12 @@
 class FacilityStatsService
 
-  attr_reader :facilities, :ending_period, :rate_numerator, :facilities_data, :stats_by_size
+  attr_reader :facilities_data, :stats_by_size
 
   def initialize(facilities, ending_period, rate_numerator)
     @facilities = facilities
     @ending_period = ending_period
     @rate_numerator = rate_numerator
+    @rate_name = "#{rate_numerator}_rate"
     @facilities_data = {}
     @stats_by_size = {}
   end
@@ -20,6 +21,8 @@ class FacilityStatsService
   end
 
   private
+
+  attr_reader :facilities, :ending_period, :rate_numerator, :rate_name
 
   def add_facility_stats(facility_data)
     size = facility_data.region.facility_size
@@ -37,7 +40,7 @@ class FacilityStatsService
       period_sets.each_pair do |_, period_stats|
         adjusted_registrations = period_stats['adjusted_registrations']
         next if adjusted_registrations == 0
-        period_stats['control_rate'] = (period_stats[rate_numerator].to_f / adjusted_registrations.to_f * 100).round
+        period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_registrations.to_f * 100).round
       end
     end
   end
@@ -51,7 +54,7 @@ class FacilityStatsService
   end
 
   def size_data_template
-    periods.reduce({}) do |hsh, period|
+    periods.reverse.reduce({}) do |hsh, period|
       hsh[period] = month_data_template
       hsh
     end
@@ -62,7 +65,7 @@ class FacilityStatsService
       rate_numerator => 0,
       'adjusted_registrations' => 0,
       'cumulative_registrations' => 0,
-      'control_rate' => 0,
+      rate_name => 0,
     }
   end
 end
