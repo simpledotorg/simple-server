@@ -20,9 +20,18 @@ module Reports
        new_patient_coefficient: new_patient_coefficient,
        estimated_patients: estimated_patients,
        patient_days: patient_days}
-    rescue
-      # either drug stock is nil, or drug is not in formula
-      # Raise sentry error
+    rescue => e
+      # drug is not in formula, or other configuration error
+      Sentry.capture_message("Patient Days Calculation Error",
+        extra: {
+          coefficients: @coefficients,
+          drug_category: @drug_category,
+          stocks_by_rxnorm_code: @stocks_by_rxnorm_code,
+          patient_count: @patient_count,
+          protocol: @protocol,
+          exception: e
+        },
+        tags: {type: "reports"})
       {patient_days: "error"}
     end
 
