@@ -23,7 +23,7 @@ class DrugStocksQuery
   end
 
   def patient_counts
-    @patient_counts ||= Patient.where(assigned_facility_id: @facilities).group(:assigned_facility_id).count
+    @patient_counts ||= Patient.where(assigned_facility_id: @facilities).group(:assigned_facility).count
   end
 
   def drug_stocks

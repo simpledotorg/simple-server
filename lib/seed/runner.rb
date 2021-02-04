@@ -35,6 +35,8 @@ module Seed
       result = FacilitySeeder.call(config: config)
       total_counts[:facility] = result&.ids&.size || 0
       UserSeeder.call(config: config)
+      announce "Seeding drug stocks..."
+      seed_drug_stocks
 
       announce "Starting to seed patient data for #{Facility.count} facilities..."
 
@@ -67,6 +69,15 @@ module Seed
         results.concat batch_result
       end
       results
+    end
+
+    def seed_drug_stocks
+      Facility.all.each do |facility|
+        user = facility.users.first
+        facility.protocol.protocol_drugs.where(stock_tracked: true).each do |protocol_drug|
+          FactoryBot.create(:drug_stock, facility: facility, user: user, protocol_drug: protocol_drug)
+        end
+      end
     end
 
     def parallel_options(progress)
