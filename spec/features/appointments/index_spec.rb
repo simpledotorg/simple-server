@@ -26,25 +26,24 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     end
 
     it "landing page -Facility and page dropdown " do
-      _facility = test_facility # we need this fixture in place for this one spec to work
-      create_list(:facility, 5)
+      create_list(:facility, 2, facility_group: ihmi_facility_group)
       nav_page.click_main_menu_tab("Overdue")
       appoint_page.select_facility_drop_down
-      expect(appoint_page.get_all_facility_count).to eq(7)
+      expect(appoint_page.get_all_facility_count).to eq(2)
 
       appoint_page.select_page_dropdown
       expect(appoint_page.get_all_page_dropdown).to eq(2)
     end
 
     it "landing page -patient list - with all facility category" do
-      patients = create_list(:patient, 2, registration_facility: test_facility)
+      patients = create_list(:patient, 2, registration_facility: test_facility, registration_user: owner)
 
       patients.each do |patient|
-        create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
+        create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago, user: owner)
       end
 
       patients.each do |patient|
-        create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+        create(:blood_pressure, :critical, facility: test_facility, patient: patient, user: owner)
       end
 
       nav_page.click_main_menu_tab("Overdue")
@@ -52,14 +51,14 @@ RSpec.feature "To test overdue appointment functionality", type: :feature do
     end
 
     it "landing page -pagination" do
-      patients = create_list(:patient, 22, registration_facility: test_facility)
+      patients = create_list(:patient, 22, registration_facility: test_facility, registration_user: owner)
 
       patients.each do |patient|
-        create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago)
+        create(:appointment, :overdue, facility: test_facility, patient: patient, scheduled_date: 10.days.ago, user: owner)
       end
 
       patients.each do |patient|
-        create(:blood_pressure, :critical, facility: test_facility, patient: patient)
+        create(:blood_pressure, :critical, facility: test_facility, patient: patient, user: owner)
       end
 
       nav_page.click_main_menu_tab("Overdue")

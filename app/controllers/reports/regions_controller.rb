@@ -86,7 +86,7 @@ class Reports::RegionsController < AdminController
 
     respond_to do |format|
       format.csv do
-        if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)
+        if @region.district_region?
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
