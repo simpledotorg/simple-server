@@ -71,6 +71,44 @@
             </tr>
           </thead>
           <tbody>
+            <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size], "control_rate") %>
+            <tr class="row-total" data-row="<%= size %>" data-trend-color="<% if facility_size_six_month_rate_change > 0 %>green<% elsif facility_size_six_month_rate_change < 0 %>red<% else %>grey<% end %>">
+              <td class="type-title">
+                All <%= Facility.localized_facility_size(size) %>s
+              </td>
+              <td>
+                <%= number_or_zero_with_delimiter(@stats_by_size[size][@period]["adjusted_registrations"]) %>
+              </td>
+              <td>
+                <%= number_or_zero_with_delimiter(@stats_by_size[size][@period]["cumulative_registrations"]) %>
+              </td>
+              <td>
+                <div class="w-90px h-20px">
+                  <canvas id="<%= size %>"></canvas>
+                </div>
+              </td>
+              <td
+                class="fw-bold ta-center <% if facility_size_six_month_rate_change > 0 %>c-green-dark<% elsif facility_size_six_month_rate_change < 0 %>c-red-dark<% else %>c-grey-dark<% end %>"
+                data-sort-column-key="6-month-change"
+                data-sort="<%= facility_size_six_month_rate_change %>"
+              >
+                <%= number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0) %>
+              </td>
+              <% @stats_by_size[size].each_pair do |period, data| %>
+                <% control_rate = data["control_rate"] %>
+                <td
+                  class="type-percent"
+                  data-sort-column-key="total-patients-<%= period %>"
+                  data-sort="<%= control_rate %>"
+                  data-toggle="tooltip"
+                  title="<%= data["controlled_patients"] %> / <%= data["adjusted_registrations"] %> patients"
+                >
+                  <em data-rate="<%= control_rate %>">
+                    <%= number_to_percentage(control_rate || 0, precision: 0) %>
+                  </em>
+                </td>
+              <% end %>
+            </tr>
             <% @data_for_facility.each do |_, facility_data| %>
               <% facility = facility_data.region %>
               <% next if facility.facility_size != size %>
