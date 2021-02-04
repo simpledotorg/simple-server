@@ -16,8 +16,6 @@ class MyFacilitiesController < AdminController
   before_action :set_selected_period, only: [:registrations, :missed_visits]
   before_action :set_last_updated_at
 
-  attr_reader :numerator
-
   def index
     @facilities = current_admin.accessible_facilities(:view_reports)
     users = current_admin.accessible_users(:manage)
@@ -39,38 +37,28 @@ class MyFacilitiesController < AdminController
 
   def bp_controlled
     facilities = filter_facilities
-    @data_for_facility = {}
-    @numerator = 'controlled_patients'
-    facilities.each do |facility|
-      facility_data = Reports::RegionService.new(region: facility, period: @period).call
-      add_facility_stats(facility_data)
-      @data_for_facility[facility.name] = facility_data
-    end
-    calculate_control_rate
+    stats_service = FacilityStatsService.new(facilities, @period, 'controlled_patients')
+    stats_service.call
+    @data_for_facility = stats_service.facilities_data
+    @stats_by_size = stats_service.stats_by_size
   end
 
   def bp_not_controlled
     facilities = filter_facilities
     @data_for_facility = {}
-    @numerator = 'uncontrolled_patients'
-    facilities.each do |facility|
-      facility_data = Reports::RegionService.new(region: facility, period: @period).call
-      add_facility_stats(facility_data)
-      @data_for_facility[facility.name] = facility_data
-    end
-    calculate_control_rate
+    stats_service = FacilityStatsService.new(facilities, @period, 'uncontrolled_patients')
+    stats_service.call
+    @data_for_facility = stats_service.facilities_data
+    @stats_by_size = stats_service.stats_by_size
   end
 
   def missed_visits
     facilities = filter_facilities
     @data_for_facility = {}
-    @numerator = 'missed_visits'
-    facilities.each do |facility|
-      facility_data = Reports::RegionService.new(region: facility, period: @period).call
-      add_facility_stats(facility_data)
-      @data_for_facility[facility.name] = facility_data
-    end
-    calculate_control_rate
+    stats_service = FacilityStatsService.new(facilities, @period, 'missed_visits')
+    stats_service.call
+    @data_for_facility = stats_service.facilities_dataa
+    @stats_by_size = stats_service.stats_by_size
   end
 
   private
@@ -114,57 +102,6 @@ class MyFacilitiesController < AdminController
 
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
-  end
-
-  def add_facility_stats(facility_data)
-    size = facility_data.region.facility_size
-    add_size_section(size) unless stats_by_size[size]
-    months.each do |month|
-      current_month = stats_by_size[size][month.to_s]
-      current_month[numerator] += find_stat_by_month(facility_data, numerator, month)
-      current_month['adjusted_registrations'] += find_stat_by_month(facility_data, 'adjusted_registrations', month)
-      current_month['cumulative_registrations'] += find_stat_by_month(facility_data, 'cumulative_registrations', month)
-    end
-  end
-
-  def calculate_control_rate
-    stats_by_size.each_pair do |size, month_data|
-      month_numerator = month_data.map{|_, aggregates| aggregates[numerator] }.sum
-      month_registratrions = month_data.map{|_, aggregates| aggregates['adjusted_registrations'] }.sum
-      rate = (month_registratrions == 0) ? 0 : (month_numerator.to_f / month_registratrions.to_f * 100).round
-      stats_by_size[size]['control_rate'] = rate
-    end
-  end
-
-  def months
-    @months ||= @period.downto(5)
-  end
-
-  def stats_by_size
-      @stats_by_size ||= {}
-  end
-
-  def add_size_section(size)
-    stats_by_size[size] = size_data_template
-  end
-
-  def size_data_template
-    months.reduce({}) do |hsh, month|
-      hsh[month.to_s] = month_data_template
-      hsh
-    end
-  end
-
-  def month_data_template
-    {
-      numerator => 0,
-      'adjusted_registrations' => 0,
-      'cumulative_registrations' => 0,
-    }
-  end
-
-  def find_stat_by_month(facility_data, key, month)
-    facility_data[key].select {|period| period == month }[month]
   end
 
 end
