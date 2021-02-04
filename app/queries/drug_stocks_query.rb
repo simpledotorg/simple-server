@@ -7,7 +7,7 @@ class DrugStocksQuery
   end
 
   def protocol_drugs_by_category
-    @drug_categories ||= @protocol.protocol_drugs
+    @protocol_drugs_by_category ||= @protocol.protocol_drugs
       .where(stock_tracked: true)
       .order(:name, :dosage)
       .sort_by { |protocol_drug| [protocol_drug.name, protocol_drug.dosage.to_i] }
@@ -86,7 +86,7 @@ class DrugStocksQuery
 
   def patient_days_calculations(drug_category, stocks_by_rxnorm_code, patient_count)
     coefficients = patient_days_coefficients[state]
-    stocks_on_hand = stocks_on_hand(coefficients, drug_category, stocks_by_rxnorm_code)
+    stocks_on_hand = stocks_on_hand(coefficients, drug_category, stocks_by_rxnorm_code).compact
     return nil if stocks_on_hand.nil? || stocks_on_hand.compact.empty?
     new_patient_coefficient = coefficients[:drug_categories][drug_category][:new_patient_coefficient]
     estimated_patients = patient_count * coefficients[:load_factor] * new_patient_coefficient
