@@ -8,7 +8,7 @@
           <h3 class="mb-0px w-75">
             BP controlled
           </h3>
-          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+          <% if current_admin.feature_enabled?(:report_with_exclusions) && current_admin.power_user? %>
             <div class="align-right custom-control custom-switch">
               <form method="get">
                 <input type="checkbox"
