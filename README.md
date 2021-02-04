@@ -175,7 +175,7 @@ into the codebase.
 
 ### Running the application locally
 
-Foreman is used to run the application locally. First, install foreman.
+Foreman can be used to run the application locally. First, install foreman.
 
 ```bash
 $ gem install foreman
