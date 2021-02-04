@@ -334,3 +334,4 @@ bundle exec cap india:staging deploy:rake task=db:seed
 ### Deployment Resources
 
 The infrastructure setup including the ansible and terraform scripts are documented in the [deployment repository](https://github.com/simpledotorg/deployment).
+
