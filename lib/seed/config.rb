@@ -17,6 +17,14 @@ module Seed
       Dotenv.load!(".env.seed.#{type}")
     end
 
+    def stdout
+      @stdout ||= if SimpleServer.env == "test"
+        StringIO.new
+      else
+        $stdout
+      end
+    end
+
     attr_reader :type
 
     # This is the overall percentage to scale the dataset size by - a factor of 1.0
@@ -39,6 +47,10 @@ module Seed
       else
         rand(range)
       end
+    end
+
+    def admin_password
+      ENV["SEED_ADMIN_PASSWORD"]
     end
 
     def seed_generated_active_user_role

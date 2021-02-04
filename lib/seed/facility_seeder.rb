@@ -2,6 +2,8 @@ require_dependency "seed/config"
 
 module Seed
   class FacilitySeeder
+    include ConsoleLogger
+
     FACILITY_SIZE_WEIGHTS = {
       community: 0.50,
       small: 0.30,
@@ -27,12 +29,13 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      puts "Starting #{self.class} with #{config.type} configuration"
+      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
+    attr_reader :logger
 
-    delegate :scale_factor, to: :config
+    delegate :scale_factor, :stdout, to: :config
 
     def number_of_facility_groups
       config.number_of_facility_groups
@@ -60,10 +63,10 @@ module Seed
       organization = Seed.seed_org
 
       if number_of_facility_groups <= FacilityGroup.count
-        puts "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"
+        announce "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"
         return
       end
-      puts "Creating #{number_of_facility_groups} FacilityGroups..."
+      announce "Creating #{number_of_facility_groups} FacilityGroups..."
 
       # Create state Regions
       state_names = Seed::FakeNames.instance.states.sample(number_of_states)
@@ -156,7 +159,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      Region.import(facility_regions)
+      Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end
 end
