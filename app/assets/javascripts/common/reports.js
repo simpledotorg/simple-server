@@ -309,6 +309,96 @@ function initializeCharts() {
     new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
   }
 
+  const ltfuGraphConfig = createBaseGraphConfig();
+  ltfuGraphConfig.data = {
+    labels: Object.keys(data.ltfuPatientsRate),
+    datasets: [{
+      label: "Lost to follow up",
+      backgroundColor: lightPurpleColor,
+      borderColor: darkPurpleColor,
+      borderWidth: 2,
+      pointBackgroundColor: whiteColor,
+      hoverBackgroundColor: whiteColor,
+      hoverBorderWidth: 2,
+      data: Object.values(data.ltfuPatientsRate),
+      type: "line",
+    }],
+  };
+  ltfuGraphConfig.options.scales = {
+    xAxes: [{
+      stacked: false,
+      display: true,
+      gridLines: {
+        display: false,
+        drawBorder: true,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+      },
+    }],
+    yAxes: [{
+      stacked: false,
+      display: true,
+      gridLines: {
+        display: true,
+        drawBorder: false,
+      },
+      ticks: {
+        autoSkip: false,
+        fontColor: darkGreyColor,
+        fontSize: 12,
+        fontFamily: "Roboto Condensed",
+        padding: 8,
+        min: 0,
+        beginAtZero: true,
+        stepSize: 25,
+        max: 100,
+      },
+    }],
+  };
+  ltfuGraphConfig.options.tooltips = {
+    enabled: false,
+    custom: function (tooltip) {
+      const cardNode = document.getElementById("ltfu-trend");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
+      let label = null;
+      let rate = null;
+      if (tooltip.dataPoints) {
+        rate = tooltip.dataPoints[0].value + "%";
+        label = tooltip.dataPoints[0].label;
+      }
+      else {
+        rate = rateNode.getAttribute("data-rate");
+        label = mostRecentPeriod;
+      }
+      const period = data.periodInfo[label];
+      const cumulativeRegistrations = data.cumulativeRegistrations[label];
+      const totalPatients = data.ltfuPatients[label];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = period.bp_control_start_date;
+      registrationsNode.innerHTML = formatNumberWithCommas(cumulativeRegistrations);
+      registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
+    }
+  };
+
+  const ltfuGraphCanvas = document.getElementById("ltfuPatients");
+  if (ltfuGraphCanvas) {
+    new Chart(ltfuGraphCanvas.getContext("2d"), ltfuGraphConfig);
+  }
+
   const cumulativeRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeRegistrations);
   const monthlyRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyRegistrations);
 
@@ -608,6 +698,8 @@ function getReportingData() {
     controlWithLtfuRate: jsonData.controlled_patients_with_ltfu_rate,
     controlledPatients: jsonData.controlled_patients,
     controlledPatientsWithLtfu: jsonData.controlled_patients_with_ltfu,
+    ltfuPatients: jsonData.ltfu_patients,
+    ltfuPatientsRate: jsonData.ltfu_patients_rate,
     missedVisits: jsonData.missed_visits,
     missedVisitsRate: jsonData.missed_visits_rate,
     monthlyRegistrations: jsonData.registrations,
