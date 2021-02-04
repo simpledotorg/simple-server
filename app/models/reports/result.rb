@@ -139,10 +139,10 @@ module Reports
     end
 
     def count_adjusted_registrations
-      self.adjusted_registrations = adjusted_registrations_with_ltfu.map do |period, counts|
+      self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) do |period, running_totals|
         adjusted_period = period.advance(months: -3)
-        [period, counts - ltfu_patients[adjusted_period]]
-      end.to_h
+        running_totals[period] = adjusted_registrations_with_ltfu[period] - ltfu_patients[adjusted_period]
+      end
     end
 
     def count_cumulative_registrations

@@ -499,7 +499,8 @@ RSpec.describe BloodPressureControlQuery do
               patient_without_recent_bp,
               patients_with_uncontrolled_bp,
               patients_with_missed_visit,
-              old_patient)
+              old_patient,
+              ltfu_patient)
           end
 
           context "when with_exclusions is true" do

@@ -39,9 +39,9 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   it "warms the cache for all regions" do
     _facilities = FactoryBot.create_list(:facility, 5, block: "Block 1", facility_group: facility_group_1)
 
-    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Region))).exactly(2).times
-    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(FacilityGroup))).exactly(1).times
-    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Facility))).exactly(5).times
+    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Region))).exactly(4).times
+    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(FacilityGroup))).exactly(2).times
+    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Facility))).exactly(10).times
     Reports::RegionCacheWarmer.call
   end
 end
