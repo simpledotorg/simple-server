@@ -14,9 +14,6 @@ RSpec.feature "Verify Dashboard", type: :feature do
   dashboard_navigation = Navigations::DashboardPageNavigation.new
   org_page = AdminPage::Organizations::Index.new
 
-  before { enable_flag(:new_permissions_system_aug_2020, owner) }
-  after { disable_flag(:new_permissions_system_aug_2020, owner) }
-
   it "Verify organization is displayed in dashboard" do
     visit reports_regions_path
     login_page.do_login(owner.email, owner.password)
