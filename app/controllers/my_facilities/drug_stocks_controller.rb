@@ -9,6 +9,7 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
   before_action :drug_stocks_enabled?
+  before_action :set_force_cache, only: [:index]
 
   def index
     @facilities = filter_facilities

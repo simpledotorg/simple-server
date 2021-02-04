@@ -1,4 +1,6 @@
 class DrugStocksQuery
+  CACHE_VERSION = 1
+
   def initialize(facilities:, for_end_of_month:)
     @facilities = facilities
     @for_end_of_month = for_end_of_month
@@ -17,9 +19,25 @@ class DrugStocksQuery
       .to_h
   end
 
+  def cache_key
+    [
+      self.class.name,
+      @facilities.map(&:id).sort,
+      @for_end_of_month,
+      @protocol,
+      @state,
+      CACHE_VERSION
+    ].join("/")
+  end
+
   def call
-    {all: totals,
-     facilities: report_for_facilities}
+    Rails.cache.fetch(cache_key,
+      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
+      force: RequestStore.store[:force_cache]) do
+        {all: totals,
+         facilities: report_for_facilities,
+         last_updated_at: Time.now}
+    end
   end
 
   def patient_counts
