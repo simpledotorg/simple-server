@@ -23,7 +23,7 @@ class DrugStocksQuery
   end
 
   def patient_counts
-    @patient_counts ||= Patient.where(assigned_facility: @facilities.map(&:id)).group(:assigned_facility).count
+    @patient_counts ||= Patient.where(assigned_facility_id: @facilities).group(:assigned_facility_id).count
   end
 
   def drug_stocks
@@ -70,13 +70,13 @@ class DrugStocksQuery
   end
 
   def stocks_by_rxnorm_code(drug_stocks)
-    drug_stocks.each_with_object({}) { |drug_stock, acc|
+    drug_stocks&.each_with_object({}) { |drug_stock, acc|
       acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock.in_stock
     }
   end
 
   def drug_stocks_by_drug_id(drug_stocks)
-    drug_stocks.each_with_object({}) { |drug_stock, acc|
+    drug_stocks&.each_with_object({}) { |drug_stock, acc|
       acc[drug_stock.protocol_drug.id] = drug_stock
     }
   end
