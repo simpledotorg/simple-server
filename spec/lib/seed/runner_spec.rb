@@ -20,6 +20,7 @@ RSpec.describe Seed::Runner do
       .and change { BloodPressure.count }.by(expected_bps)
       .and change { Encounter.count }.by(expected_bps)
       .and change { Observation.count }.by(expected_bps)
+      .and change { Organization.count }.by(1)
     Patient.all.each do |patient|
       expect(patient).to be_valid
       expect(patient.medical_history).to be_valid
