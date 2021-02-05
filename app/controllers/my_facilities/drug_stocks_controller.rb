@@ -55,7 +55,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   private
 
-  def redirect_url(query_params={})
+  def redirect_url(query_params = {})
     report_url_with_filters = session[:report_url_with_filters]
     session[:report_url_with_filters] = nil
 

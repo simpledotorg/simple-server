@@ -34,9 +34,9 @@ class DrugStocksQuery
     Rails.cache.fetch(cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:force_cache]) do
-        {all: totals,
-         facilities: report_for_facilities,
-         last_updated_at: Time.now}
+      {all: totals,
+       facilities: report_for_facilities,
+       last_updated_at: Time.now}
     end
   end
 
