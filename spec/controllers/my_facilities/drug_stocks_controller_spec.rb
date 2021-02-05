@@ -168,7 +168,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       sign_in(power_user.email_authentication)
 
       expect { post :create, params: params, session: session }.to change { DrugStock.count }.by(1)
-      expect(response).to redirect_to(redirect_url)
+      expect(response).to redirect_to(redirect_url + "?force_cache=true")
       expect(flash[:notice]).to eq "Saved drug stocks"
     end
 

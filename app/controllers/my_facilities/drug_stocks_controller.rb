@@ -58,7 +58,7 @@ class MyFacilities::DrugStocksController < AdminController
   def redirect_url(query_params = {})
     report_url_with_filters = session[:report_url_with_filters]
     session[:report_url_with_filters] = nil
-
+    return report_url_with_filters if query_params.empty?
     url = Addressable::URI.parse(report_url_with_filters)
     url.query_values = (url.query_values || {}).merge(query_params.with_indifferent_access)
     url.to_s
