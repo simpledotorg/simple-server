@@ -7,7 +7,7 @@
             Drug stock on hand: end of <%= @for_end_of_month_display %>
           </h3>
           <p class="c-grey-dark">
-            Last updated: <%= @report[:last_updated_at] %>
+            Last updated: <%= @report&.fetch(:last_updated_at) %>
           </p>
         </div>
 

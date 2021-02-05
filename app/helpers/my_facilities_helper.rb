@@ -28,7 +28,7 @@ module MyFacilitiesHelper
         <br>
       <% end %>
       <span class='math'>
-        /<%= report[:patient_count] %>*<%= report[:load_factor] %>*<%= report[:new_patient_coefficient] %>
+        /<%= report[:patient_count] %>*<%= report[:load_coefficient] %>*<%= report[:new_patient_coefficient] %>
       </span>
       Patients
       <br>

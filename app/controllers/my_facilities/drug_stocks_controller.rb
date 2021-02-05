@@ -31,9 +31,6 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    report_url_with_filters = session[:report_url_with_filters]
-    session[:report_url_with_filters] = nil
-
     drug_stocks = DrugStock.transaction do
       drug_stocks_reported.map do |drug_stock|
         DrugStock.create!(facility: @facility,
@@ -46,17 +43,26 @@ class MyFacilities::DrugStocksController < AdminController
     end
 
     if drug_stocks.empty?
-      redirect_to report_url_with_filters
+      redirect_to redirect_url
     elsif drug_stocks.all?(&:valid?)
-      redirect_to report_url_with_filters, notice: "Saved drug stocks"
+      redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks"
     elsif drug_stocks.any?(&:invalid?)
-      redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
+      redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
     end
   rescue ActiveRecord::RecordInvalid
-    redirect_to report_url_with_filters, alert: "Something went wrong, Drug Stocks were not saved."
+    redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
   end
 
   private
+
+  def redirect_url(query_params={})
+    report_url_with_filters = session[:report_url_with_filters]
+    session[:report_url_with_filters] = nil
+
+    url = Addressable::URI.parse(report_url_with_filters)
+    url.query_values = (url.query_values || {}).merge(query_params.with_indifferent_access)
+    url.to_s
+  end
 
   def drug_stocks_reported
     drug_stocks_params[:drug_stocks].reject do |drug_stock|
