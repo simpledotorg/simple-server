@@ -148,9 +148,9 @@ RSpec.describe Reports::RegionsController, type: :controller do
     before do
       @facility_group = create(:facility_group, organization: organization)
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
+      @facility_region = @facility.region
     end
 
-    # TODO this should be a 404 error
     it "redirects if matching region slug not found" do
       sign_in(cvho.email_authentication)
       get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
@@ -158,19 +158,18 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response).to be_redirect
     end
 
-    # TODO this should be a 404 error
     it "raises error if user does not have authorization to region" do
       other_fg = create(:facility_group, name: "other facility group")
       other_fg.facilities << build(:facility, name: "other facility")
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
-      get :show, params: {id: @facility.slug, report_scope: "facility"}
+      get :show, params: {id: @facility_region.slug, report_scope: "facility"}
       expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       expect(response).to be_redirect
     end
 
-    it "finds a facility group if it has different slug compared to the region" do
+    it "finds a district region if it has different slug compared to the facility group" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
       region = other_fg.region
       slug = region.slug
@@ -181,7 +180,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
-      get :show, params: {id: other_fg.slug, report_scope: "district"}
+      get :show, params: {id: region.slug, report_scope: "district"}
       expect(response).to be_successful
     end
 
@@ -191,14 +190,14 @@ RSpec.describe Reports::RegionsController, type: :controller do
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
-      get :show, params: {id: other_fg.slug, report_scope: "district"}
+      get :show, params: {id: other_fg.region.slug, report_scope: "district"}
       expect(response).to be_successful
     end
 
     it "returns period info for every month" do
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
+        get :show, params: {id: @facility.facility_group.region.slug, report_scope: "district"}
       end
       data = assigns(:data)
       period_hash = {
@@ -247,7 +246,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.slug, report_scope: "facility"}
+        get :show, params: {id: @facility_region.slug, report_scope: "facility"}
       end
       expect(response).to be_successful
       data = assigns(:data)
@@ -269,73 +268,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       data = assigns(:data)
       expect(data[:controlled_patients].size).to eq(10) # sanity check
       expect(data[:controlled_patients][dec_2019_period]).to eq(1)
-    end
-  end
-
-  context "show v2" do
-    render_views_on_ci
-
-    before do
-      @facility_group = create(:facility_group, organization: organization)
-      @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
-    end
-
-    it "raises error if matching region slug not found" do
-      sign_in(cvho.email_authentication)
-      get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-      expect(response).to be_redirect
-    end
-
-    it "returns period info for every month" do
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
-      end
-      data = assigns(:data)
-      period_hash = {
-        "name" => "Dec-2019",
-        "bp_control_start_date" => "1-Oct-2019",
-        "bp_control_end_date" => "31-Dec-2019"
-      }
-      expect(data[:period_info][dec_2019_period]).to eq(period_hash)
-    end
-
-    it "retrieves district data" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
-      refresh_views
-
-      fg = @facility.facility_group
-      expect(fg.region).to_not be_nil
-      expect(fg.slug).to eq(fg.region.slug)
-      expect(fg.region.facilities).to contain_exactly(@facility)
-
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.facility_group.slug, report_scope: "district"}
-      end
-      expect(response).to be_successful
-      data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(10) # sanity check
-      expect(data[:controlled_patients][dec_2019_period]).to eq(1)
-    end
-
-    it "retrieves facility data" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
-      refresh_views
-
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.slug, report_scope: "facility"}
-      end
-      expect(response).to be_successful
-      data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(10) # sanity check
-      expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
 
     it "retrieves block data" do
@@ -363,22 +295,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:uncontrolled_patients_rate][Period.month("Feb 2020")]).to eq(50)
       expect(data[:missed_visits][Period.month("September 2019")]).to eq(1)
       expect(data[:missed_visits][Period.month("May 2020")]).to eq(2)
-    end
-
-    it "retrieves facility district data" do
-      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
-      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
-      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
-      refresh_views
-
-      Timecop.freeze("June 1 2020") do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: @facility.district, report_scope: "facility_district"}
-      end
-      expect(response).to be_successful
-      data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq(10) # sanity check
-      expect(data[:controlled_patients][dec_2019_period]).to eq(1)
     end
   end
 
