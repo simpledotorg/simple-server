@@ -5,17 +5,21 @@ RSpec.describe FacilityStatsService do
   let(:small_facility1) { create(:facility, name: 'small1', facility_size: 'small') }
   let(:small_facility2) { create(:facility, name: 'small2', facility_size: 'small') }
   let(:december) { Date.parse('1-12-2020').beginning_of_month }
-  let(:august) { 'August 15th 2020' }
   let(:period) { Period.month(december) }
 
-  def setup_for_size(size)
-    Timecop.freeze(august) do
+  def setup_for_size(size, month=december)
+    Timecop.freeze(month) do
       facility1 = create(:facility, name: "#{size}_1", facility_size: size)
       facility2 = create(:facility, name: "#{size}_2", facility_size: size)
       controlled = create_list(:patient, 2, full_name: "#{size}_controlled", assigned_facility: facility1)
       uncontrolled = create_list(:patient, 1, full_name: "#{size}_uncontrolled", assigned_facility: facility2)
-      controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: Date.today + 1.month) }
-      uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility, recorded_at: Date.today + 1.month) }
+      # recorded_at needs to be in a month after registration in order to appear in control rate data
+      controlled.each do |patient|
+        create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: month + 1.month)
+      end
+      uncontrolled.each do |patient|
+        create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility, recorded_at: month + 1.month)
+      end
       [facility1, facility2]
     end
   end
@@ -28,22 +32,20 @@ RSpec.describe FacilityStatsService do
     end
   end
 
-  def stats_of_type(stats, size, type)
-    months.map {|month| stats[size][month][type] }
+  def stats_of_type(stats, type)
+    stats.map {|_, v| v[type] }
   end
 
   describe '#call' do
-    context 'with no facilities provided' do
-      it 'sets default values for facilities_data and stats_by_size' do
-        subject = FacilityStatsService.new(accessible_facilities: [], retain_facilities: [],
-                                           ending_period: period, rate_numerator: 'controlled_patients')
-        subject.call
-        expect(subject.facilities_data).to eq({})
-        expect(subject.stats_by_size).to eq({})
-      end
+    it 'sets default values for facilities_data and stats_by_size when no facilities are provided' do
+      subject = FacilityStatsService.new(accessible_facilities: [], retain_facilities: [],
+                                          ending_period: period, rate_numerator: 'controlled_patients')
+      subject.call
+      expect(subject.facilities_data).to eq({})
+      expect(subject.stats_by_size).to eq({})
     end
 
-    it 'sets data for past six periods' do
+    it 'sets data for the past six periods' do
       facilities = [small_facility1]
       subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
                                          ending_period: period, rate_numerator: 'controlled_patients')
@@ -65,15 +67,42 @@ RSpec.describe FacilityStatsService do
     end
 
     it 'accurately tallies stats for facilities by size and period' do
-      small_facilities = setup_for_size('small')
-      medium_facilities = setup_for_size('medium')
-      large_facilities = setup_for_size('large')
+      small_facilities = setup_for_size('small', december - 5.months)
+      medium_facilities = setup_for_size('medium', december - 4.months,)
+      large_facilities = setup_for_size('large', december - 3.months)
       refresh_views
       all_facilities = small_facilities + medium_facilities + large_facilities
       subject = FacilityStatsService.new(accessible_facilities: all_facilities, retain_facilities: all_facilities,
-                                         ending_period: period, rate_numerator: 'uncontrolled_patients')
+                                         ending_period: period, rate_numerator: 'controlled_patients')
       subject.call
-      
+
+      # all numbers except cumulative_registrations appear in data 3 months after they're recorded
+      small_controlled = [0, 0, 0, 2, 0, 0]
+      small_adjusted = [0, 0, 0, 3, 3, 3]
+      small_cumulative = [3, 3, 3, 3, 3, 3]
+      small_rate = [0, 0, 0, 67, 0, 0]
+      expect(stats_of_type(subject.stats_by_size['small'], 'controlled_patients')).to eq small_controlled
+      expect(stats_of_type(subject.stats_by_size['small'], 'adjusted_registrations')).to eq small_adjusted
+      expect(stats_of_type(subject.stats_by_size['small'], 'cumulative_registrations')).to eq small_cumulative
+      expect(stats_of_type(subject.stats_by_size['small'], 'controlled_patients_rate')).to eq small_rate
+
+      medium_controlled = [0, 0, 0, 0, 2, 0]
+      medium_adjusted = [0, 0, 0, 0, 3, 3]
+      medium_cumulative = [0, 3, 3, 3, 3, 3]
+      medium_rate = [0, 0, 0, 0, 67, 0]
+      expect(stats_of_type(subject.stats_by_size['medium'], 'controlled_patients')).to eq medium_controlled
+      expect(stats_of_type(subject.stats_by_size['medium'], 'adjusted_registrations')).to eq medium_adjusted
+      expect(stats_of_type(subject.stats_by_size['medium'], 'cumulative_registrations')).to eq medium_cumulative
+      expect(stats_of_type(subject.stats_by_size['medium'], 'controlled_patients_rate')).to eq medium_rate
+
+      large_controlled = [0, 0, 0, 0, 0, 2]
+      large_adjusted = [0, 0, 0, 0, 0, 3]
+      large_cumulative = [0, 0, 3, 3, 3, 3]
+      large_rate = [0, 0, 0, 0, 0, 67]
+      expect(stats_of_type(subject.stats_by_size['large'], 'controlled_patients')).to eq large_controlled
+      expect(stats_of_type(subject.stats_by_size['large'], 'adjusted_registrations')).to eq large_adjusted
+      expect(stats_of_type(subject.stats_by_size['large'], 'cumulative_registrations')).to eq large_cumulative
+      expect(stats_of_type(subject.stats_by_size['large'], 'controlled_patients_rate')).to eq large_rate
     end
 
     it 'sets stats for all accessible facilities but only sets facilities data for retained facilities' do
@@ -117,7 +146,7 @@ RSpec.describe FacilityStatsService do
       expect(period_keys & missed_visits_keys).to match_array(missed_visits_keys)
     end
 
-    it 'handles invalid rate_numerator by setting keys to zero' do
+    it 'handles invalid rate_numerator by setting values to zero' do
       facilities = setup_for_size('small')
       subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
                                          ending_period: period, rate_numerator: 'womp')

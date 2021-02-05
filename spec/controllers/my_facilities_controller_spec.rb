@@ -72,6 +72,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
       expect(response).to be_successful
       expect(assigns(:data_for_facility)[facility_1.name]).to_not be_nil
       expect(assigns(:data_for_facility)[facility_2.name]).to be_nil
+      expect(assigns(:stats_by_size).keys).to eq(["small"])
+      expect(assigns(:display_sizes)).to eq(["small"])
     end
   end
 
@@ -94,6 +96,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
       facility_data = assigns(:data_for_facility)[facility.name]
       expect(facility_data[:adjusted_registrations][Period.month("December 2020")]).to eq(2)
       expect(facility_data[:uncontrolled_patients_rate][Period.month("November 2020")]).to eq(100)
+      expect(assigns(:stats_by_size).keys).to eq(["small"])
+      expect(assigns(:display_sizes)).to eq(["small"])
     end
   end
 
@@ -116,6 +120,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
       facility_data = assigns(:data_for_facility)[facility.name]
       expect(facility_data[:adjusted_registrations][Period.month("December 2020")]).to eq(2)
       expect(facility_data[:missed_visits_rate][Period.month("December 2020")]).to eq(100)
+      expect(assigns(:stats_by_size).keys).to eq(["small"])
+      expect(assigns(:display_sizes)).to eq(["small"])
     end
   end
 end
