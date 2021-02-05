@@ -46,10 +46,10 @@ class Reports::RegionsController < AdminController
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
     @children = @region.reportable_children(region_reports_enabled: region_reports_enabled?)
-    @children_data = @children.each_with_object({}) { |child, hsh|
-      hsh[child.name] = Reports::RegionService.new(region: child,
-                                                   period: @period,
-                                                   with_exclusions: report_with_exclusions?).call
+    @children_data = @children.map { |child|
+      Reports::RegionService.new(region: child,
+                                 period: @period,
+                                 with_exclusions: report_with_exclusions?).call
     }
   end
 
