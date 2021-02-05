@@ -66,6 +66,10 @@ module Seed
         announce "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"
         return
       end
+
+      announce "Creating protocol and protocol drugs..."
+      protocol = Seed::ProtocolSeeder.call
+
       announce "Creating #{number_of_facility_groups} FacilityGroups..."
 
       # Create state Regions
@@ -84,6 +88,7 @@ module Seed
           generating_seed_data: true,
           name: district_names[i],
           organization_id: organization.id,
+          protocol_id: protocol.id,
           state: nil)
       }
       fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
