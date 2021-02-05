@@ -21,4 +21,13 @@ RSpec.describe Protocol, type: :model do
       expect(protocol.name).to eq("Protocol name 1")
     end
   end
+
+  describe "#as_json" do
+    it "includes protocol drugs sorted by name, and dosage" do
+      protocol = FactoryBot.create(:protocol, :with_tracked_drugs)
+      expect(protocol.as_json["protocol_drugs"]).not_to be_empty
+      rxnorm_codes = protocol.as_json["protocol_drugs"].map { |protocol_drug| protocol_drug["rxnorm_code"] }
+      expect(rxnorm_codes).to eq(%w[329528 329526 331132 316049 979467 316764 316765])
+    end
+  end
 end
