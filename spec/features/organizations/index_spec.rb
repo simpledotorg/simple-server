@@ -30,7 +30,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
 
     # total number of organization present in dashboard
     visit reports_regions_path
-    original_org_count = dashboard.all_elements(css: ".card.org-card").count
+    original_org_count = dashboard.all_elements(css: ".card.organization").count
 
     dashboard_navigation.click_manage_option("#nav-organizations-link")
 
