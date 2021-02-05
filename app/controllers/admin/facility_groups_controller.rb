@@ -58,6 +58,8 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Sentry.capture_exception(e)
   end
 
   # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
@@ -69,6 +71,8 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Sentry.capture_exception(e)
   end
 
   def set_organizations

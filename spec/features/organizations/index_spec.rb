@@ -42,7 +42,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
     org_page.is_organization_name_present("Test")
 
     # Dashboard doesn't show Organizations without any facilities
-    fg = create(:facility_group, organization: Organization.find_by_name("Test"))
+    fg = create(:facility_group, organization: Organization.find_by!(name: "Test"))
     create(:facility, facility_group: fg)
 
     dashboard_navigation.click_main_menu_tab("Reports")
