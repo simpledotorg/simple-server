@@ -1,5 +1,4 @@
 class FacilityStatsService
-
   attr_reader :facilities_data, :stats_by_size
 
   def initialize(accessible_facilities:, retain_facilities:, ending_period:, rate_numerator:)
@@ -32,15 +31,15 @@ class FacilityStatsService
     periods.each do |period|
       current_period = stats_by_size[size][period]
       current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
-      current_period['adjusted_registrations'] += facility_data['adjusted_registrations'][period]
-      current_period['cumulative_registrations'] += facility_data['cumulative_registrations'][period]
+      current_period["adjusted_registrations"] += facility_data["adjusted_registrations"][period]
+      current_period["cumulative_registrations"] += facility_data["cumulative_registrations"][period]
     end
   end
 
   def add_control_rates
     stats_by_size.each_pair do |_, period_sets|
       period_sets.each_pair do |_, period_stats|
-        adjusted_registrations = period_stats['adjusted_registrations']
+        adjusted_registrations = period_stats["adjusted_registrations"]
         next if adjusted_registrations == 0
         period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_registrations.to_f * 100).round
       end
@@ -48,7 +47,7 @@ class FacilityStatsService
   end
 
   def retain_facility?(facility)
-    retain_facilities.detect {|rf| rf.name == facility.name }
+    retain_facilities.detect { |rf| rf.name == facility.name }
   end
 
   def add_size_section(size)
@@ -56,18 +55,17 @@ class FacilityStatsService
   end
 
   def size_data_template
-    periods.reverse.reduce({}) do |hsh, period|
+    periods.reverse.each_with_object({}) do |period, hsh|
       hsh[period] = month_data_template
-      hsh
     end
   end
 
   def month_data_template
     {
       rate_numerator => 0,
-      'adjusted_registrations' => 0,
-      'cumulative_registrations' => 0,
-      rate_name => 0,
+      "adjusted_registrations" => 0,
+      "cumulative_registrations" => 0,
+      rate_name => 0
     }
   end
 end
