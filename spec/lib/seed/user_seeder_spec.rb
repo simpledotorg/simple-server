@@ -4,6 +4,12 @@ RSpec.describe Seed::UserSeeder do
   let(:config) { Seed::Config.new }
   let(:expected_admins) { 6 }
 
+  it "does not create unnecessary orgs" do
+    expect {
+      Seed::UserSeeder.call(config: config)
+    }.to change { Organization.count }.by(1)
+  end
+
   it "creates standard admin users" do
     create_list(:facility_group, 2)
     Seed::UserSeeder.call(config: config)
