@@ -1,6 +1,12 @@
 require "rails_helper"
 
 RSpec.describe Seed::FacilitySeeder do
+  it "creates a protocol" do
+    config = Seed::Config.new
+    expect(Seed::ProtocolSeeder).to receive(:call).with(config: config).and_call_original
+    Seed::FacilitySeeder.call(config: config)
+  end
+
   it "creates facility groups and facilities" do
     expect {
       Seed::FacilitySeeder.call(config: Seed::Config.new)
