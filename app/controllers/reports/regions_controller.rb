@@ -46,10 +46,10 @@ class Reports::RegionsController < AdminController
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
     @children = @region.reportable_children(region_reports_enabled: region_reports_enabled?)
-    @children_data = @children.each_with_object({}) { |child, hsh|
-      hsh[child.name] = Reports::RegionService.new(region: child,
-                                                   period: @period,
-                                                   with_exclusions: report_with_exclusions?).call
+    @children_data = @children.map { |child|
+      Reports::RegionService.new(region: child,
+                                 period: @period,
+                                 with_exclusions: report_with_exclusions?).call
     }
   end
 
@@ -86,7 +86,7 @@ class Reports::RegionsController < AdminController
 
     respond_to do |format|
       format.csv do
-        if @region.is_a?(FacilityGroup) || @region.is_a?(FacilityDistrict)
+        if @region.district_region?
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
