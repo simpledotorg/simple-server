@@ -26,7 +26,7 @@ class FacilityStatsService
   attr_reader :facilities, :retain_facilities, :ending_period, :rate_numerator, :rate_name, :periods
 
   def add_facility_stats(facility_data)
-    size = facility_data.region.facility_size
+    size = facility_data.region.source.facility_size
     add_size_section(size) unless stats_by_size[size]
     periods.each do |period|
       current_period = stats_by_size[size][period]

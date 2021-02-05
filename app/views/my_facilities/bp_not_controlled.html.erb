@@ -71,7 +71,7 @@
           </thead>
           <tbody>
             <% @data_for_facility.each do |_, facility_data| %>
-              <% facility = facility_data.region %>
+              <% facility = facility_data.region.source %>
               <% next if facility.facility_size != size %>
               <% six_month_rate_change = six_month_rate_change(facility, "uncontrolled_patients_rate") %>
               <tr data-row="<%= facility.slug %>" data-trend-color="<% if six_month_rate_change > 0 %>red<% elsif six_month_rate_change < 0 %>green<% else %>grey<% end %>">
