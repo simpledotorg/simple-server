@@ -37,17 +37,17 @@ class MyFacilitiesController < AdminController
 
   def bp_controlled
     facilities = filter_facilities
-    process_facility_stats(facilities, 'controlled_patients')
+    process_facility_stats(facilities, "controlled_patients")
   end
 
   def bp_not_controlled
     facilities = filter_facilities
-    process_facility_stats(facilities, 'uncontrolled_patients')
+    process_facility_stats(facilities, "uncontrolled_patients")
   end
 
   def missed_visits
     facilities = filter_facilities
-    process_facility_stats(facilities, 'missed_visits')
+    process_facility_stats(facilities, "missed_visits")
   end
 
   private
