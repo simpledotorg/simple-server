@@ -60,7 +60,7 @@ class MyFacilitiesController < AdminController
     stats_service = FacilityStatsService.new(accessible_facilities: @accessible_facilities, retain_facilities: facilities,
                                              ending_period: @period, rate_numerator: "missed_visits")
     stats_service.call
-    @data_for_facility = stats_service.facilities_dataa
+    @data_for_facility = stats_service.facilities_data
     @stats_by_size = stats_service.stats_by_size
     @display_sizes = @data_for_facility.map { |_, facility| facility.region.facility_size }.uniq
   end
