@@ -55,7 +55,6 @@ class Region < ApplicationRecord
     end
   end
 
-
   def accessible_children(admin, region_type: child_region_type, access_level: :any)
     auth_method = "accessible_#{region_type}_regions"
     region_method = "#{region_type}_regions"
