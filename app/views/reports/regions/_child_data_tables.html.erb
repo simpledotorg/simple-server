@@ -44,19 +44,19 @@
                 <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
               </td>
             </tr>
-            <% data.values.map(&:region).each do |region| %>
-              <% next if data[region.name].dig("controlled_patients_rate", @period).nil? %>
+            <% data.each do |result| %>
+              <% next if result.dig("controlled_patients_rate", @period).nil? %>
               <tr>
                 <td class="ta-left">
-                  <%= link_to(reports_region_path(region, report_scope: region_type))do %>
-                    <%= region.name %>
+                  <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                    <%= result.region.name %>
                   <% end %>
                 </td>
                 <td class="ta-left">
-                  <%= number_to_percentage(data[region.name]["controlled_patients_rate"].values.last, precision: 0) %>
+                  <%= number_to_percentage(result["controlled_patients_rate"].values.last, precision: 0) %>
                 </td>
                 <td class="ta-left">
-                  <%= number_with_delimiter(data[region.name]["controlled_patients"].values.last) %>
+                  <%= number_with_delimiter(result["controlled_patients"].values.last) %>
                 </td>
               </tr>
             <% end %>
@@ -112,19 +112,19 @@
                 <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
               </td>
             </tr>
-            <% data.values.map(&:region).each do |region| %>
-              <% next if data[region.name].dig("uncontrolled_patients_rate", @period).nil? %>
+            <% data.each do |result| %>
+              <% next if result.dig("uncontrolled_patients_rate", @period).nil? %>
               <tr>
                 <td class="ta-left">
-                  <%= link_to(reports_region_path(region, report_scope: region_type))do %>
-                    <%= region.name %>
+                  <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                    <%= result.region.name %>
                   <% end %>
                 </td>
                 <td class="ta-left">
-                  <%= number_to_percentage(data[region.name]["uncontrolled_patients_rate"].values.last, precision: 0) %>
+                  <%= number_to_percentage(result["uncontrolled_patients_rate"].values.last, precision: 0) %>
                 </td>
                 <td class="ta-left">
-                  <%= number_with_delimiter(data[region.name]["uncontrolled_patients"].values.last) %>
+                  <%= number_with_delimiter(result["uncontrolled_patients"].values.last) %>
                 </td>
               </tr>
             <% end %>
@@ -180,19 +180,19 @@
                 <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
               </td>
             </tr>
-            <% data.values.map(&:region).each do |region| %>
-              <% next if data[region.name].dig("missed_visits_rate", @period).nil? %>
+            <% data.each do |result| %>
+              <% next if result.dig("missed_visits_rate", @period).nil? %>
               <tr>
                 <td class="ta-left">
-                  <%= link_to(reports_region_path(region, report_scope: region_type))do %>
-                    <%= region.name %>
+                  <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                    <%= result.region.name %>
                   <% end %>
                 </td>
                 <td class="ta-left">
-                  <%= data[region.name]["missed_visits_rate"].values.last %>%
+                  <%= result["missed_visits_rate"].values.last %>%
                 </td>
                 <td class="ta-left">
-                  <%= data[region.name]["missed_visits"].values.last %>
+                  <%= result["missed_visits"].values.last %>
                 </td>
               </tr>
             <% end %>
@@ -248,19 +248,19 @@
                 <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
               </td>
             </tr>
-            <% data.values.map(&:region).each do |region| %>
-              <% next if data[region.name].dig("registrations", @period).nil? %>
+            <% data.each do |result| %>
+              <% next if result.dig("registrations", @period).nil? %>
               <tr>
                 <td class="ta-left">
-                  <%= link_to(reports_region_path(region, report_scope: region_type))do %>
-                    <%= region.name %>
+                  <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                    <%= result.region.name %>
                   <% end %>
                 </td>
                 <td class="ta-left">
-                  <%= number_with_delimiter(data[region.name]["registrations"].values.last || 0) %>
+                  <%= number_with_delimiter(result["registrations"].values.last || 0) %>
                 </td>
                 <td class="ta-left">
-                  <%= number_with_delimiter(data[region.name]["cumulative_registrations"].values.last) %>
+                  <%= number_with_delimiter(result["cumulative_registrations"].values.last) %>
                 </td>
               </tr>
             <% end %>
