@@ -22,7 +22,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
 
-    it "has all drug stocks, and protocol and formula are cohesive" do
+    it "calculates correctly when it has all drug stocks, and protocol and formula are cohesive" do
       result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
       expect(result).to match_array [
         {protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
@@ -36,13 +36,13 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
       ]
     end
 
-    it "drug in protocol is not in formula" do
+    it "ignores a drug in protocol that is not in formula" do
       FactoryBot.create(:protocol_drug, protocol: protocol, drug_category: drug_category, stock_tracked: true)
       result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329528", "329526"]
     end
 
-    it "drug not in protocol is in formula" do
+    it "ignores a drug in formula that is not in protocol" do
       drug_stock_config = punjab_drug_stock_config
       drug_stock_config["drug_categories"]["hypertension_ccb"] = {
         "new_patient_coefficient" => 1.4,
@@ -55,20 +55,26 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329528", "329526"]
     end
 
-    pending it "stock not available for an rxnorm" do
-
+    it "ignores a drug for which the stock is unknown" do
+      stocks_by_rxnorm.except!('329528')
+      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
+      expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329526"]
     end
 
-    pending it "stock not available for all drugs" do
-
+    it "returns a empty list when stock is not available for any drug" do
+      result = described_class.new(state, protocol, drug_category, {}, patient_count).stocks_on_hand
+      expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array []
     end
 
-    pending it "stock is 0" do
-
+    it "computes stock as 0 when all stocks are 0" do
+      result = described_class.new(state, protocol, drug_category, {'329526'=>0, '329528' =>0}, patient_count).stocks_on_hand
+      expect(result.map { |stock_on_hand| stock_on_hand[:stock_on_hand] }).to match_array [0, 0]
     end
 
-    pending it "no formula for a state" do
-
+    it "errors out when there is no formula for a state" do
+      allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(nil)
+      instance = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count)
+      expect{instance.stocks_on_hand}.to raise_error(NoMethodError)
     end
 
   end

@@ -13,7 +13,7 @@ module Reports
     end
 
     def calculate
-      return nil if stocks_on_hand.nil? || stocks_on_hand.empty?
+      return nil if stocks_on_hand.empty?
       {stocks_on_hand: stocks_on_hand,
        patient_count: @patient_count,
        load_coefficient: @coefficients[:load_coefficient],
