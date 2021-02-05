@@ -31,7 +31,6 @@ module Reports
             Statsd.instance.increment("region_cache_warmer.states.cache")
           end
         end
-
       }
       notify "finished", duration: duration
     ensure
