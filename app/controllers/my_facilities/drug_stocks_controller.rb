@@ -32,7 +32,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def create
     drug_stocks = DrugStock.transaction do
-      drug_stocks_reported.map do |drug_stock|
+      drug_stocks_params[:drug_stocks].map do |drug_stock|
         DrugStock.create!(facility: @facility,
                           user: current_admin,
                           protocol_drug_id: drug_stock[:protocol_drug_id],
@@ -41,14 +41,7 @@ class MyFacilities::DrugStocksController < AdminController
                           for_end_of_month: @for_end_of_month)
       end
     end
-
-    if drug_stocks.empty?
-      redirect_to redirect_url
-    elsif drug_stocks.all?(&:valid?)
-      redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks"
-    elsif drug_stocks.any?(&:invalid?)
-      redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
-    end
+    redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks" if drug_stocks.all?(&:valid?)
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
   end
@@ -62,12 +55,6 @@ class MyFacilities::DrugStocksController < AdminController
     url = Addressable::URI.parse(report_url_with_filters)
     url.query_values = (url.query_values || {}).merge(query_params.with_indifferent_access)
     url.to_s
-  end
-
-  def drug_stocks_reported
-    drug_stocks_params[:drug_stocks].reject do |drug_stock|
-      drug_stock[:in_stock].blank? && drug_stock[:received].blank?
-    end
   end
 
   def authorize_my_facilities

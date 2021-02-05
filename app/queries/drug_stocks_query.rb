@@ -63,6 +63,7 @@ class DrugStocksQuery
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
       stocks = stocks_by_rxnorm_code(drug_stocks[drug_category])
       patient_days = Reports::PatientDaysCalculation.new(@state, @protocol, drug_category, stocks, patient_count).calculate
+      next if patient_days.nil?
       facility_report[drug_category] = patient_days.merge(drug_stocks: drug_stocks_by_drug_id(drug_stocks[drug_category]))
     end
     facility_report

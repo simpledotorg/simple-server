@@ -187,7 +187,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       expect(flash[:alert]).to eq "Something went wrong, Drug Stocks were not saved."
     end
 
-    it "redirects without an error message if no valid drug stocks are submitted" do
+    it "allows saving empty drug stock values" do
       sign_in(power_user.email_authentication)
 
       expect {
@@ -196,10 +196,10 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
                                               in_stock: nil,
                                               received: nil}]),
           session: session
-      }.not_to change { DrugStock.count }
+      }.to change { DrugStock.count }.by(1)
 
-      expect(response).to redirect_to(redirect_url)
-      expect(flash[:notice]).to be_nil
+      expect(response).to redirect_to(redirect_url + "?force_cache=true")
+      expect(flash[:notice]).to eq "Saved drug stocks"
     end
   end
 end
