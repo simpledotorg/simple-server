@@ -278,16 +278,16 @@ RSpec.describe Reports::RegionService, type: :model do
     end
   end
 
-  context 'without months_request' do
-    it 'returns data for the default limit of 24 months ' do
+  context "without months_request" do
+    it "returns data for the default limit of 24 months " do
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
       expect(result[:period_info].count).to eq 24
     end
   end
 
-  context 'with months_request' do
-    it 'returns data for the requested number of months' do
+  context "with months_request" do
+    it "returns data for the requested number of months" do
       month_limit = 6
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1), months_request: month_limit)
       result = service.call
