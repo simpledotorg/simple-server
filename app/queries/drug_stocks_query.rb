@@ -24,7 +24,7 @@ class DrugStocksQuery
       self.class.name,
       @facilities.map(&:id).sort,
       @for_end_of_month,
-      @protocol,
+      @protocol.id,
       @state,
       CACHE_VERSION
     ].join("/")
