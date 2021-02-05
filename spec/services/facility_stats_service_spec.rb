@@ -1,67 +1,22 @@
 require 'rails_helper'
 
 RSpec.describe FacilityStatsService do
-  let(:december) { Date.parse('1-12-2020').beginning_of_month }
-  let(:september) { 'September 20th 2020' }
-  let(:august) { 'August 15th 2020' }
-  let(:july) { 'July 25th 2020' }
 
-  let(:organization) { create(:organization, name: "org-1") }
-  let(:supervisor) { create(:admin, :manager, :with_access, resource: organization) }
-  let(:facility_group) { create(:facility_group, organization: organization) }
-  let(:small_facility1) { create(:facility, name: 'small1', facility_size: 'small', facility_group: facility_group) }
-  let(:small_facility2) { create(:facility, name: 'small2', facility_size: 'small', facility_group: facility_group) }
-  let(:medium_facility1) { create(:facility, name: 'medium1', facility_size: 'medium', facility_group: facility_group) }
-  let(:medium_facility2) { create(:facility, name: 'medium2', facility_size: 'medium', facility_group: facility_group) }
-  let(:large_facility1) { create(:facility, name: 'large1', facility_size: 'large', facility_group: facility_group) }
-  let(:large_facility2) { create(:facility, name: 'large2', facility_size: 'large', facility_group: facility_group) }
-  let(:all_facilities) { [small_facility1, small_facility2, medium_facility1, medium_facility2, large_facility1, large_facility2] }
+  let(:small_facility1) { create(:facility, name: 'small1', facility_size: 'small') }
+  let(:small_facility2) { create(:facility, name: 'small2', facility_size: 'small') }
+  let(:december) { Date.parse('1-12-2020').beginning_of_month }
+  let(:august) { 'August 15th 2020' }
   let(:period) { Period.month(december) }
 
-  # def facility_only_setup
-  #   Timecop.freeze(september) do
-  #     small_controlled = create_list(:patient, 2, full_name: 'small_controlled', assigned_facility: small_facility1)
-  #     small_uncontrolled = create_list(:patient, 1, full_name: 'small_uncontrolled', assigned_facility: small_facility2)
-  #     small_controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility) }
-  #     small_uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility) }
-  #   end
-  # end
-
-  def small_data_setup
-    Timecop.freeze(september) do
-      small_controlled = create_list(:patient, 2, full_name: 'small_controlled', assigned_facility: small_facility1)
-      small_uncontrolled = create_list(:patient, 1, full_name: 'small_uncontrolled', assigned_facility: small_facility2)
-      small_controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility) }
-      small_uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility) }
-    end
-  end
-
-  def all_sizes_data_setup
-    small_controlled = nil
-    small_uncontrolled = nil
-    medium_controlled = nil
-    medium_uncontrolled = nil
-    large_controlled = nil
-    large_uncontrolled = nil
-    Timecop.freeze(six_months_ago) do
-      large_controlled = create_list(:patient, 3, full_name: 'large_controlled', assigned_facility: large_facility1)
-    end
-    Timecop.freeze(five_months_ago) do
-      small_controlled = create_list(:patient, 2, full_name: 'small_controlled', assigned_facility: small_facility1, registration_user: supervisor)
-      small_uncontrolled = create_list(:patient, 1, full_name: 'small_uncontrolled', assigned_facility: small_facility2, registration_user: supervisor)
-      medium_uncontrolled = create_list(:patient, 2, full_name: 'medium_uncontrolled', assigned_facility: medium_facility1)
-      large_uncontrolled = create_list(:patient, 1, full_name: 'large_uncontrolled', assigned_facility: large_facility2)
-
-      medium_uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility) }
-      large_controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility) }
-    end
-    Timecop.freeze(four_months_ago) do
-      medium_controlled = create_list(:patient, 2, full_name: 'medium_uncontrolled', assigned_facility: medium_facility1)
-
-      medium_controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility) }
-      small_controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, user: supervisor) }
-      small_uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility, user: supervisor) }
-      large_uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility) }
+  def setup_for_size(size)
+    Timecop.freeze(august) do
+      facility1 = create(:facility, name: "#{size}_1", facility_size: size)
+      facility2 = create(:facility, name: "#{size}_2", facility_size: size)
+      controlled = create_list(:patient, 2, full_name: "#{size}_controlled", assigned_facility: facility1)
+      uncontrolled = create_list(:patient, 1, full_name: "#{size}_uncontrolled", assigned_facility: facility2)
+      controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: Date.today + 1.month) }
+      uncontrolled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility, recorded_at: Date.today + 1.month) }
+      [facility1, facility2]
     end
   end
 
@@ -110,18 +65,30 @@ RSpec.describe FacilityStatsService do
     end
 
     it 'accurately tallies stats for facilities by size and period' do
+      small_facilities = setup_for_size('small')
+      medium_facilities = setup_for_size('medium')
+      large_facilities = setup_for_size('large')
+      refresh_views
+      all_facilities = small_facilities + medium_facilities + large_facilities
       subject = FacilityStatsService.new(accessible_facilities: all_facilities, retain_facilities: all_facilities,
-                                         ending_period: period, rate_numerator: 'controlled_patients')
+                                         ending_period: period, rate_numerator: 'uncontrolled_patients')
       subject.call
+      
     end
 
-    it 'does not include a size if no facilities of that size were queried' do
-      # unclear if this is really what we want to do
+    it 'sets stats for all accessible facilities but only sets facilities data for retained facilities' do
+      small_facilities = setup_for_size('small')
+      large_facilities = setup_for_size('large')
+      accessible_facilities = small_facilities + large_facilities
+      subject = FacilityStatsService.new(accessible_facilities: accessible_facilities, retain_facilities: large_facilities,
+                                         ending_period: period, rate_numerator: 'controlled_patients')
+      subject.call
+      expect(subject.stats_by_size.keys).to match_array(['small', 'large'])
+      expect(subject.facilities_data.keys).to match_array(large_facilities.map(&:name))
     end
 
     it 'processes data for controlled_patients' do
-      small_data_setup
-      facilities = [small_facility1, small_facility2]
+      facilities = setup_for_size('small')
       subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
                                          ending_period: period, rate_numerator: 'controlled_patients')
       subject.call
@@ -131,8 +98,7 @@ RSpec.describe FacilityStatsService do
     end
 
     it 'processes data for missed_visits' do
-      small_data_setup
-      facilities = [small_facility1, small_facility2]
+      facilities = setup_for_size('small')
       subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
                                          ending_period: period, rate_numerator: 'uncontrolled_patients')
       subject.call
@@ -142,8 +108,7 @@ RSpec.describe FacilityStatsService do
     end
 
     it 'processes data for missed_visits' do
-      small_data_setup
-      facilities = [small_facility1, small_facility2]
+      facilities = setup_for_size('small')
       subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
                                          ending_period: period, rate_numerator: 'missed_visits')
       subject.call
@@ -152,8 +117,16 @@ RSpec.describe FacilityStatsService do
       expect(period_keys & missed_visits_keys).to match_array(missed_visits_keys)
     end
 
-    it 'raises error when given an invalid key' do
-
+    it 'handles invalid rate_numerator by setting keys to zero' do
+      facilities = setup_for_size('small')
+      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+                                         ending_period: period, rate_numerator: 'womp')
+      subject.call
+      stat_keys = subject.stats_by_size['small'].values.first.keys
+      stat_values = subject.stats_by_size['small'].values.first.values
+      expected_keys = ['womp', 'adjusted_registrations', 'cumulative_registrations', 'womp_rate']
+      expect(stat_keys).to match_array(expected_keys)
+      expect(stat_values).to match_array([0, 0, 0, 0])
     end
   end
 end

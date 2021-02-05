@@ -31,7 +31,7 @@ class FacilityStatsService
     add_size_section(size) unless stats_by_size[size]
     periods.each do |period|
       current_period = stats_by_size[size][period]
-      current_period[rate_numerator] += facility_data[rate_numerator][period]
+      current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
       current_period['adjusted_registrations'] += facility_data['adjusted_registrations'][period]
       current_period['cumulative_registrations'] += facility_data['cumulative_registrations'][period]
     end
