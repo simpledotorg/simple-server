@@ -7,7 +7,6 @@ FactoryBot.define do
     end
 
     full_name { Faker::Name.name }
-    organization
     device_created_at { Time.current }
     device_updated_at { Time.current }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
