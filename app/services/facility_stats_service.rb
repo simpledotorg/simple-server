@@ -2,11 +2,13 @@ class FacilityStatsService
 
   attr_reader :facilities_data, :stats_by_size
 
-  def initialize(facilities, ending_period, rate_numerator)
-    @facilities = facilities
+  def initialize(accessible_facilities:, retain_facilities:, ending_period:, rate_numerator:)
+    @facilities = accessible_facilities
+    @retain_facilities = retain_facilities
     @ending_period = ending_period
     @rate_numerator = rate_numerator
     @rate_name = "#{rate_numerator}_rate"
+    @periods = ending_period.downto(5)
     @facilities_data = {}
     @stats_by_size = {}
   end
@@ -15,14 +17,14 @@ class FacilityStatsService
     facilities.each do |facility|
       facility_data = Reports::RegionService.new(region: facility, period: ending_period).call
       add_facility_stats(facility_data)
-      @facilities_data[facility.name] = facility_data
+      @facilities_data[facility.name] = facility_data if retain_facility?(facility)
     end
     add_control_rates
   end
 
   private
 
-  attr_reader :facilities, :ending_period, :rate_numerator, :rate_name
+  attr_reader :facilities, :retain_facilities, :ending_period, :rate_numerator, :rate_name, :periods
 
   def add_facility_stats(facility_data)
     size = facility_data.region.facility_size
@@ -45,8 +47,8 @@ class FacilityStatsService
     end
   end
 
-  def periods
-    @periods ||= ending_period.downto(5)
+  def retain_facility?(facility)
+    retain_facilities.detect {|rf| rf.name == facility.name }
   end
 
   def add_size_section(size)

@@ -80,7 +80,8 @@ RSpec.describe FacilityStatsService do
   describe '#call' do
     context 'with no facilities provided' do
       it 'sets default values for facilities_data and stats_by_size' do
-        subject = FacilityStatsService.new([], period, 'controlled_patients')
+        subject = FacilityStatsService.new(accessible_facilities: [], retain_facilities: [],
+                                           ending_period: period, rate_numerator: 'controlled_patients')
         subject.call
         expect(subject.facilities_data).to eq({})
         expect(subject.stats_by_size).to eq({})
@@ -89,7 +90,8 @@ RSpec.describe FacilityStatsService do
 
     it 'sets data for past six periods' do
       facilities = [small_facility1]
-      subject = FacilityStatsService.new(facilities, period, 'controlled_patients')
+      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+                                         ending_period: period, rate_numerator: 'controlled_patients')
       subject.call
       small = subject.stats_by_size['small']
       periods = (1..5).inject([period]) do |periods, number|
@@ -100,14 +102,16 @@ RSpec.describe FacilityStatsService do
 
     it 'sets facilities data for all provided facilities' do
       facilities = [small_facility1, small_facility2]
-      subject = FacilityStatsService.new(facilities, period, 'controlled_patients')
+      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+                                         ending_period: period, rate_numerator: 'controlled_patients')
       subject.call
       expect(subject.facilities_data.keys).to match_array([small_facility1.name, small_facility2.name])
       expect(subject.facilities_data.values.map(&:class).uniq).to eq([Reports::Result])
     end
 
     it 'accurately tallies stats for facilities by size and period' do
-      subject = FacilityStatsService.new(all_facilities, period, 'controlled_patients')
+      subject = FacilityStatsService.new(accessible_facilities: all_facilities, retain_facilities: all_facilities,
+                                         ending_period: period, rate_numerator: 'controlled_patients')
       subject.call
     end
 
@@ -118,7 +122,8 @@ RSpec.describe FacilityStatsService do
     it 'processes data for controlled_patients' do
       small_data_setup
       facilities = [small_facility1, small_facility2]
-      subject = FacilityStatsService.new(facilities, period, 'controlled_patients')
+      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+                                         ending_period: period, rate_numerator: 'controlled_patients')
       subject.call
       period_keys = subject.stats_by_size['small'].values.map(&:keys).flatten.uniq
       controlled_patient_keys = ['controlled_patients', 'controlled_patients_rate']
@@ -128,7 +133,8 @@ RSpec.describe FacilityStatsService do
     it 'processes data for missed_visits' do
       small_data_setup
       facilities = [small_facility1, small_facility2]
-      subject = FacilityStatsService.new(facilities, period, 'uncontrolled_patients')
+      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+                                         ending_period: period, rate_numerator: 'uncontrolled_patients')
       subject.call
       period_keys = subject.stats_by_size['small'].values.map(&:keys).flatten.uniq
       uncontrolled_patient_keys = ['uncontrolled_patients', 'uncontrolled_patients_rate']
@@ -138,7 +144,8 @@ RSpec.describe FacilityStatsService do
     it 'processes data for missed_visits' do
       small_data_setup
       facilities = [small_facility1, small_facility2]
-      subject = FacilityStatsService.new(facilities, period, 'missed_visits')
+      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+                                         ending_period: period, rate_numerator: 'missed_visits')
       subject.call
       period_keys = subject.stats_by_size['small'].values.map(&:keys).flatten.uniq
       missed_visits_keys = ['missed_visits', 'missed_visits_rate']

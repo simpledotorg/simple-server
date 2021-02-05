@@ -37,28 +37,32 @@ class MyFacilitiesController < AdminController
 
   def bp_controlled
     facilities = filter_facilities
-    stats_service = FacilityStatsService.new(facilities, @period, 'controlled_patients')
+    stats_service = FacilityStatsService.new(accessible_facilities: @accessible_facilities, retain_facilities: facilities,
+                                             ending_period: @period, rate_numerator: 'controlled_patients')
     stats_service.call
     @data_for_facility = stats_service.facilities_data
     @stats_by_size = stats_service.stats_by_size
+    @display_sizes = @data_for_facility.map {|_, facility| facility.region.facility_size }.uniq
   end
 
   def bp_not_controlled
     facilities = filter_facilities
-    @data_for_facility = {}
-    stats_service = FacilityStatsService.new(facilities, @period, 'uncontrolled_patients')
+    stats_service = FacilityStatsService.new(accessible_facilities: @accessible_facilities, retain_facilities: facilities,
+                                             ending_period: @period, rate_numerator: 'uncontrolled_patients')
     stats_service.call
     @data_for_facility = stats_service.facilities_data
     @stats_by_size = stats_service.stats_by_size
+    @display_sizes = @data_for_facility.map {|_, facility| facility.region.facility_size }.uniq
   end
 
   def missed_visits
     facilities = filter_facilities
-    @data_for_facility = {}
-    stats_service = FacilityStatsService.new(facilities, @period, 'missed_visits')
+    stats_service = FacilityStatsService.new(accessible_facilities: @accessible_facilities, retain_facilities: facilities,
+                                             ending_period: @period, rate_numerator: 'missed_visits')
     stats_service.call
     @data_for_facility = stats_service.facilities_dataa
     @stats_by_size = stats_service.stats_by_size
+    @display_sizes = @data_for_facility.map {|_, facility| facility.region.facility_size }.uniq
   end
 
   private
