@@ -7,7 +7,6 @@ FactoryBot.define do
     end
 
     full_name { Faker::Name.name }
-    organization
     device_created_at { Time.current }
     device_updated_at { Time.current }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
@@ -69,7 +68,6 @@ FactoryBot.define do
     device_updated_at { Time.current }
     sync_approval_status { User.sync_approval_statuses[:denied] }
     email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
-    organization
     role { "power user" }
     access_level { :power_user }
 
