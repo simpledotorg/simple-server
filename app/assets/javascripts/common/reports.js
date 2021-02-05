@@ -388,9 +388,9 @@ function initializeCharts() {
 
       rateNode.innerHTML = rate;
       totalPatientsNode.innerHTML = formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = period.bp_control_start_date;
+      periodStartNode.innerHTML = period.start_date;
       registrationsNode.innerHTML = formatNumberWithCommas(cumulativeRegistrations);
-      registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
+      registrationsPeriodEndNode.innerHTML = period.start_date;
     }
   };
 

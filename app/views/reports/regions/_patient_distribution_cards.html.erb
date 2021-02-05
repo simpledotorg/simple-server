@@ -22,8 +22,8 @@
                   <%= number_with_delimiter(@data[:ltfu_trend].last_value(:ltfu_patients)) %>
                 </span>
                 patients with no BP taken after
-                <span data-period-start="<%= @data[:ltfu_trend].last_value(:period_info)["bp_control_start_date"] %>">
-                  <%= @data[:ltfu_trend].last_value(:period_info)["bp_control_start_date"] %>
+                <span data-period-start="<%= @data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
+                  <%= @data[:ltfu_trend].last_value(:period_info)["start_date"] %>
                 </span>
               </p>
               <p class="m-0px c-grey-dark c-print-black">
@@ -32,8 +32,8 @@
                   <%= number_with_delimiter(@data[:ltfu_trend].last_value(:cumulative_registrations)) %>
                 </span>
                 patients till
-                <span data-registrations-period-end="<%= @data[:ltfu_trend].last_value(:period_info)["bp_control_start_date"] %>">
-                  <%= @data[:ltfu_trend].last_value(:period_info)["bp_control_start_date"] %>
+                <span data-registrations-period-end="<%= @data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
+                  <%= @data[:ltfu_trend].last_value(:period_info)["start_date"] %>
                 </span>
               </p>
             <% else %>

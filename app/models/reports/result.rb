@@ -185,6 +185,8 @@ module Reports
         bp_control_range = period.blood_pressure_control_range
         hsh[period] = {
           name: period.to_s,
+          start_date: period.start_date.strftime(DATE_FORMAT),
+          end_date: period.end_date.strftime(DATE_FORMAT),
           bp_control_start_date: bp_control_range.begin.next_day.strftime(DATE_FORMAT),
           bp_control_end_date: bp_control_range.end.strftime(DATE_FORMAT)
         }
