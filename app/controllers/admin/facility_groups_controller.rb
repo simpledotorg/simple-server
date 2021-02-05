@@ -25,7 +25,7 @@ class Admin::FacilityGroupsController < AdminController
     if create_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
-      render :new, status: :bad_request
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -33,7 +33,7 @@ class Admin::FacilityGroupsController < AdminController
     if update_facility_group
       redirect_to admin_facilities_url, notice: "Facility group was successfully updated."
     else
-      render :edit, status: :bad_request
+      render :edit, status: :unprocessable_entity
     end
   end
 
