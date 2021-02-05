@@ -68,7 +68,7 @@ module Seed
       end
 
       announce "Creating protocol and protocol drugs..."
-      protocol = Seed::ProtocolSeeder.call
+      protocol = Seed::ProtocolSeeder.call(config: config)
 
       announce "Creating #{number_of_facility_groups} FacilityGroups..."
 
