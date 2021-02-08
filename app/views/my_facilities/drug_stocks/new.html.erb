@@ -21,7 +21,7 @@
       </div>
       <h3 class="pt-4">Tablets</h3>
       <p>Leave blank if unknown. Enter "0" if stock is empty.</p>
-      <% protocol_drugs = @facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by { |protocol_drug| [protocol_drug.name, protocol_drug.dosage.to_i] } %>
+      <% protocol_drugs = @facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key) %>
       <% protocol_drugs.each do |protocol_drug| %>
         <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
           <div class="form-group mt-4 protocol-drug-stock-inputs">
