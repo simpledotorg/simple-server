@@ -3,7 +3,7 @@
     <%= bootstrap_form_with(model: [:admin, facility_group], local: true, autocomplete: "off", label_errors: true, html: {id: "facility-group-form"}) do |form| %>
       <% if @facility_group.errors.any? %>
         <div id="errors">
-          <%= form.label "Saving the FacilityGroup failed, please fix the following errors: #{@facility_group.errors.full_messages.to_sentence}", class: "text-danger" %>
+          <%= form.label "Saving the Facility Group failed, please fix the following errors: #{@facility_group.errors.full_messages.to_sentence}", class: "text-danger" %>
         </div>
       <% end %>
       <% if @facility_group.facilities.map(&:invalid?).any? %>
