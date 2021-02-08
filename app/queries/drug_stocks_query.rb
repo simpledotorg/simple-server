@@ -78,9 +78,10 @@ class DrugStocksQuery
   def totals
     total_patient_count = report_for_facilities.map { |(_, facility_report)| facility_report[:patient_count] }.sum
     report_all = {patient_count: total_patient_count}
+    drug_stock_by_rxnorm_code = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
+    drug_stock_by_id = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
+
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
-      drug_stock_by_rxnorm_code = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
-      drug_stock_by_id = drug_stock_totals.map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
       patient_days = Reports::PatientDaysCalculation.new(@state, @protocol, drug_category, drug_stock_by_rxnorm_code, total_patient_count).calculate
       next if patient_days.nil?
       report_all[drug_category] = patient_days.merge(drug_stocks: drug_stock_by_id)
