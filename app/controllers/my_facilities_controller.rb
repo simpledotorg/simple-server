@@ -98,16 +98,8 @@ class MyFacilitiesController < AdminController
     @start_period = @period.advance(months: -5)
   end
 
-  def set_force_cache
-    RequestStore.store[:force_cache] = true if force_cache?
-  end
-
   def report_params
     params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
-  end
-
-  def force_cache?
-    report_params[:force_cache].present?
   end
 
   def report_with_exclusions?
