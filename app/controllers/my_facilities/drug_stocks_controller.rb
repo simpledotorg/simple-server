@@ -31,7 +31,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    drug_stocks = DrugStock.transaction do
+    DrugStock.transaction do
       drug_stocks_params[:drug_stocks].map do |drug_stock|
         DrugStock.create!(facility: @facility,
                           user: current_admin,
@@ -41,7 +41,7 @@ class MyFacilities::DrugStocksController < AdminController
                           for_end_of_month: @for_end_of_month)
       end
     end
-    redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks" if drug_stocks.all?(&:valid?)
+    redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
   end
