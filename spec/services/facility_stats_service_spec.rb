@@ -104,8 +104,7 @@ RSpec.describe FacilityStatsService do
     end
 
     it "processes data for controlled_patients" do
-      facilities = setup_for_size("small")
-      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+      subject = FacilityStatsService.new(accessible_facilities: [small_facility1], retain_facilities: [small_facility1],
                                          ending_period: period, rate_numerator: "controlled_patients")
       subject.call
       period_keys = subject.stats_by_size["small"].values.map(&:keys).flatten.uniq
@@ -114,8 +113,7 @@ RSpec.describe FacilityStatsService do
     end
 
     it "processes data for missed_visits" do
-      facilities = setup_for_size("small")
-      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+      subject = FacilityStatsService.new(accessible_facilities: [small_facility1], retain_facilities: [small_facility1],
                                          ending_period: period, rate_numerator: "uncontrolled_patients")
       subject.call
       period_keys = subject.stats_by_size["small"].values.map(&:keys).flatten.uniq
@@ -124,8 +122,7 @@ RSpec.describe FacilityStatsService do
     end
 
     it "processes data for missed_visits" do
-      facilities = setup_for_size("small")
-      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+      subject = FacilityStatsService.new(accessible_facilities: [small_facility1], retain_facilities: [small_facility1],
                                          ending_period: period, rate_numerator: "missed_visits")
       subject.call
       period_keys = subject.stats_by_size["small"].values.map(&:keys).flatten.uniq
@@ -134,8 +131,7 @@ RSpec.describe FacilityStatsService do
     end
 
     it "handles invalid rate_numerator by setting values to zero" do
-      facilities = setup_for_size("small")
-      subject = FacilityStatsService.new(accessible_facilities: facilities, retain_facilities: facilities,
+      subject = FacilityStatsService.new(accessible_facilities: [small_facility1], retain_facilities: [small_facility1],
                                          ending_period: period, rate_numerator: "womp")
       subject.call
       stat_keys = subject.stats_by_size["small"].values.first.keys
