@@ -20,11 +20,11 @@ class RegionsSearchController < AdminController
     json = results.sort_by(&:name).map { |region|
       subtitle = "#{region.region_type.humanize} in #{region.parent.name} #{region.parent.region_type.humanize}"
       {
-        ancestors: subtitle,
         id: region.id,
+        link: reports_region_url(region, report_scope: region.region_type),
         name: region.name,
         slug: region.slug,
-        link: reports_region_url(region, report_scope: region.region_type)
+        subtitle: subtitle
       }
     }
     render json: json
