@@ -36,18 +36,15 @@ class MyFacilitiesController < AdminController
   end
 
   def bp_controlled
-    facilities = filter_facilities
-    process_facility_stats(facilities, "controlled_patients")
+    process_facility_stats(:controlled_patients)
   end
 
   def bp_not_controlled
-    facilities = filter_facilities
-    process_facility_stats(facilities, "uncontrolled_patients")
+    process_facility_stats(:uncontrolled_patients)
   end
 
   def missed_visits
-    facilities = filter_facilities
-    process_facility_stats(facilities, "missed_visits")
+    process_facility_stats(:missed_visits)
   end
 
   private
@@ -93,12 +90,12 @@ class MyFacilitiesController < AdminController
     current_admin.feature_enabled?(:report_with_exclusions)
   end
 
-  def process_facility_stats(facilities, type)
-    stats_service = FacilityStatsService.new(accessible_facilities: @accessible_facilities, retain_facilities: facilities,
-                                             ending_period: @period, rate_numerator: type)
-    stats_service.call
-    @data_for_facility = stats_service.facilities_data
-    @stats_by_size = stats_service.stats_by_size
+  def process_facility_stats(type)
+    @data_for_facility = {}
+    filter_facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+    end
     @display_sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, ending_period: @period, rate_numerator: type)
   end
 end
