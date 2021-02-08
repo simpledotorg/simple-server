@@ -48,26 +48,15 @@ RSpec.describe Region, type: :model do
   end
 
   describe "reportable_children" do
-    it "is everything for India when region_reports are enabled" do
+    it "is everything for India" do
       expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
 
       state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
       district = FactoryBot.create(:region, :district, reparent_to: state)
       fg = FactoryBot.create(:facility_group, region: district)
       facility = FactoryBot.create(:facility, facility_group: fg)
-      expect(district.reportable_children(region_reports_enabled: true)).to match_array(district.block_regions)
-      expect(district.block_regions.first.reportable_children(region_reports_enabled: true)).to match_array([facility.region])
-    end
-
-    it "is just district and facility for India when region_reports are disabled" do
-      allow(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
-
-      state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
-      district = FactoryBot.create(:region, :district, reparent_to: state)
-      fg = FactoryBot.create(:facility_group, region: district)
-      facility = FactoryBot.create(:facility, facility_group: fg)
-      expect(district.reportable_children(region_reports_enabled: false)).to match_array([facility.region])
-      expect(facility.region.reportable_children(region_reports_enabled: false)).to eq([])
+      expect(district.reportable_children).to match_array(district.block_regions)
+      expect(district.block_regions.first.reportable_children).to match_array([facility.region])
     end
 
     it "excludes states and blocks for other countries" do

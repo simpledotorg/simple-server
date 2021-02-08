@@ -2,6 +2,8 @@ require_dependency "seed/config"
 
 module Seed
   class FacilitySeeder
+    include ConsoleLogger
+
     FACILITY_SIZE_WEIGHTS = {
       community: 0.50,
       small: 0.30,
@@ -27,12 +29,34 @@ module Seed
       @counts = {}
       @config = config
       @logger = Rails.logger.child(class: self.class.name)
-      puts "Starting #{self.class} with #{config.type} configuration"
+      announce "Starting #{self.class} with #{config.type} configuration"
     end
 
     attr_reader :config
+    attr_reader :logger
 
-    delegate :scale_factor, to: :config
+    delegate :scale_factor, :stdout, to: :config
+
+    def call
+      Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
+
+      if number_of_facility_groups <= FacilityGroup.count
+        announce "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"
+        return
+      end
+
+      announce "Creating protocol and protocol drugs..."
+      protocol = Seed::ProtocolSeeder.call(config: config)
+
+      announce "Creating #{number_of_facility_groups} FacilityGroups..."
+
+      state_results = create_state_regions
+      facility_group_results = create_facility_groups(protocol)
+      district_region_results = create_district_regions(state_results, facility_group_results)
+      create_block_regions(district_region_results)
+      facility_results = create_facilities(facility_group_results)
+      create_facility_regions(facility_results)
+    end
 
     def number_of_facility_groups
       config.number_of_facility_groups
@@ -55,24 +79,19 @@ module Seed
       config.rand_or_max(1..max_number_facilities_per_block)
     end
 
-    def call
-      Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-      organization = Seed.seed_org
+    def organization
+      @organization ||= Seed.seed_org
+    end
 
-      if number_of_facility_groups <= FacilityGroup.count
-        puts "Not creating FacilityGroups or Facilities, we already have max # (#{number_of_facility_groups}) of FacilityGroups"
-        return
-      end
-      puts "Creating #{number_of_facility_groups} FacilityGroups..."
-
-      # Create state Regions
+    def create_state_regions
       state_names = Seed::FakeNames.instance.states.sample(number_of_states)
       states = number_of_states.times.each_with_index.map { |i|
         FactoryBot.build(:region, :state, id: nil, name: state_names[i], parent_path: organization.region.path)
       }
-      state_results = Region.import(states, returning: [:path])
+      Region.import(states, returning: [:path])
+    end
 
-      # Create FacilityGroups
+    def create_facility_groups(protocol)
       district_names = Seed::FakeNames.instance.districts.sample(number_of_facility_groups)
       facility_groups = number_of_facility_groups.times.each_with_index.map { |i|
         FactoryBot.build(:facility_group,
@@ -81,12 +100,14 @@ module Seed
           generating_seed_data: true,
           name: district_names[i],
           organization_id: organization.id,
+          protocol_id: protocol.id,
           state: nil)
       }
-      fg_result = FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
+      FacilityGroup.import(facility_groups, returning: [:id, :name], on_duplicate_key_ignore: true)
+    end
 
-      # Create district Regions
-      district_regions = fg_result.results.map { |row|
+    def create_district_regions(state_results, facility_group_results)
+      district_regions = facility_group_results.results.map { |row|
         facility_group_id, facility_group_name = *row
         attrs = {
           id: nil,
@@ -98,12 +119,13 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      district_regions_results = Region.import(district_regions, returning: [:id, :name, :path])
+      Region.import(district_regions, returning: [:id, :name, :path])
+    end
 
-      # Create block Regions
-      block_count = district_regions_results.ids.size
+    def create_block_regions(district_region_results)
+      block_count = district_region_results.ids.size
       block_names = Seed::FakeNames.instance.blocks.sample(block_count)
-      block_regions = district_regions_results.results.each_with_index.map { |row, i|
+      block_regions = district_region_results.results.each_with_index.map { |row, i|
         _id, _name, path = *row
         attrs = {
           id: nil,
@@ -114,10 +136,11 @@ module Seed
         FactoryBot.build(:region, attrs)
       }
       Region.import(block_regions, returning: [:id, :name, :path])
+    end
 
-      # Create Facilities
+    def create_facilities(facility_group_results)
       facility_attrs = []
-      fg_result.results.each do |row|
+      facility_group_results.results.each do |row|
         facility_group_id, facility_group_name = *row
         facility_group_region = Region.find_by!(source_id: facility_group_id)
         number_facilities = number_of_facilities_per_facility_group
@@ -141,8 +164,10 @@ module Seed
         }
       end
 
-      facility_results = Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
-      # Create Facility Regions
+      Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
+    end
+
+    def create_facility_regions(facility_results)
       facility_regions = facility_results.results.map { |row|
         id, name, block_name = *row
         block = Region.find_by!(name: block_name)
@@ -156,7 +181,7 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      Region.import(facility_regions)
+      Region.import(facility_regions, on_duplicate_key_ignore: true)
     end
   end
 end

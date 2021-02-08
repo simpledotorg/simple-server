@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "help@simple.org"
+  default from: ENV["MAILERS_FROM"].presence || "help@simple.org"
   layout "mailer"
 
   helper SimpleServerEnvHelper
