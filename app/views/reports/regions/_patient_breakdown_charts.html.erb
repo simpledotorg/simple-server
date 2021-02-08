@@ -77,22 +77,29 @@
           <h3 class="mb-9px">
             Assigned hypertension patients
           </h3>
-          <p class="mb-0px c-grey-dark mr-lg-12px"><%=number_with_delimiter(@total_patients) %> hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
+          <p class="mb-0px c-grey-dark mr-lg-12px"><%=number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %> hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
         </div>
       </div>
-
-      <div>
-        <div class="p-relative mb-16px">
-          <div class="h-300px mr-16px mb-12px ml-13px">
-            <canvas id="patientsBreakdownCanvas"></canvas>
-          </div>
-          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-            <% unless @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
-              <p class="c-grey-medium">
-                No data available
-              </p>
-            <% end %>
-          </div>
+      <div class="p-relative mb-16px d-lg-flex">
+        <div class="h-300px mr-16px mb-12px ml-13px w-lg-75">
+          <canvas id="patientBreakdownCanvas"></canvas>
+        </div>
+        <div class="h-300px mr-16px mb-12px ml-13px w-lg-25">
+          <strong>Add legend here</strong>
+          <br/>
+          <br/>
+          Red: Not lost to follow-up
+          <br/>
+          Green: Lost to follow-up
+          <br/>
+          Blue: Died
+        </div>
+        <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+          <% if @chart_data[:patient_breakdown][:total_patients] == 0 %>
+            <p class="c-grey-medium">
+              No data available
+            </p>
+          <% end %>
         </div>
       </div>
     </div>

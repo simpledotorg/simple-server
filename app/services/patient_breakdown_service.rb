@@ -26,7 +26,8 @@ class PatientBreakdownService
       ltfu_patients: patients.ltfu_as_of(period.to_date).count,
       not_ltfu_patients: patients.not_ltfu_as_of(period.to_date).count,
       ltfu_transferred_patients: patients.ltfu_as_of(period.to_date).status_migrated.count,
-      not_ltfu_transferred_patients: patients.not_ltfu_as_of(period.to_date).status_migrated.count
+      not_ltfu_transferred_patients: patients.not_ltfu_as_of(period.to_date).status_migrated.count,
+      total_patients: patients.count
     }
   end
 end

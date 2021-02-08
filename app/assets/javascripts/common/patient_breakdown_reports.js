@@ -17,9 +17,13 @@ PatientBreakdownReports = function () {
   }
 
   this.getPatientBreakdownData = () => {
-    const jsonData = JSON.parse(reports.getChartDataNode().textContent);
+    const jsonData = JSON.parse(reports.getChartDataNode().textContent)["patient_breakdown"];
 
-    return jsonData["patient_breakdown"];
+    return {
+      "Lost to follow-up" : jsonData["ltfu_patients"],
+      "Not lost to follow-up" : jsonData["not_ltfu_patients"],
+      "Died": jsonData["dead"]
+    }
   }
 
   this.initializeCharts = () => {
@@ -139,7 +143,7 @@ PatientBreakdownReports = function () {
       }]
     };
 
-    const breakdownChartCanvas = document.getElementById("patientsBreakdownCanvas");
+    const breakdownChartCanvas = document.getElementById("patientBreakdownCanvas");
     if (breakdownChartCanvas) {
       new Chart(breakdownChartCanvas.getContext("2d"), breakdownChartConfig);
     }
