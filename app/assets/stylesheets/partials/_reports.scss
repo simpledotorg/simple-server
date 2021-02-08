@@ -35,6 +35,7 @@
 .w-40px { width: 40px; }
 .w-48px { width: 48px; }
 .w-90px { width: 90px; }
+.w-240px { width: 164px; }
 .w-100pt { width: 100%; }
 .mw-100pt { max-width: 100%; }
 // Height
@@ -53,6 +54,9 @@
 .mr-4px { margin-right: 4px; }
 .mr-8px { margin-right: 8px; }
 .pb-8px { padding-bottom: 8px; }
+.pl-16px { padding-left: 16px; }
+.pl-24px { padding-left: 24px; }
+.pt-16px { padding-top: 16px; }
 .py-40px { padding-top: 40px; padding-bottom: 40px; }
 .ph-16px { padding-right: 16px; padding-left: 16px; }
 // Typography
@@ -92,6 +96,7 @@
 .bb-2px { border-bottom: 2px solid; }
 .bl-1px { border-left: 1px solid; }
 .bc-purple { border-color: $purple; }
+.bc-grey-light { border-color: $grey-light; }
 .bt-grey-light { border-top-color: $grey-light; }
 .bb-grey-light { border-bottom-color: $grey-light; }
 .bb-grey-medium { border-bottom-color: $grey-mid; }
@@ -167,6 +172,7 @@
   .mb-lg-24px { margin-bottom: 24px; }
   .ml-lg-8px { margin-left: 8px; }
   .ml-lg-24px { margin-left: 24px; }
+  .p-16px { padding: 16px; }
   .pt-lg-16px { padding-top: 16px; }
   .pr-lg-20px { padding-right: 20px; }
   .pl-lg-0px { padding-left: 0px; }
