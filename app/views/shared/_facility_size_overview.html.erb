@@ -1,8 +1,14 @@
-<div style="display: flex;">
-  <% @facility_sizes.each do |size| %>
-    <div style="flex: 1;">
-      <p>
-        <%= Facility.localized_facility_size(size) %>
+<div class="d-lg-flex mb-24px">
+  <% @facility_sizes.each_with_index do |size, i| %>
+    <div class="mb-24px mb-lg-0px flex-lg-1 <% if i != 0 %>pl-lg-16px bl-lg bc-lg-grey-light<% end %>">
+      <p class="mb-4px fw-bold c-grey-dark">
+        All <%= Facility.localized_facility_size(size) %>s
+      </p>
+      <p class="mb-4px fw-bold fs-24px">
+        32%
+      </p>
+      <p class="mb-0px fs-14px c-grey-dark">
+        <span class="fw-bold c-red">-1%</span> in the last 6 months
       </p>
     </div>
   <% end %>

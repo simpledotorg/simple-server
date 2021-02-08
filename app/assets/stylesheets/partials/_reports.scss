@@ -60,7 +60,7 @@
 .fs-14px { font-size: 14px; }
 .fs-16px { font-size: 16px; }
 .fs-20px { font-size: 20px; }
-.fs-xlarge { font-size: 24px; }
+.fs-24px { font-size: 24px; }
 .fs-28px { font-size: 28px; }
 .fs-32px { font-size: 32px; }
 .fs-xxlarge { font-size: 48px; }
@@ -171,6 +171,7 @@
   .pr-lg-20px { padding-right: 20px; }
   .pl-lg-0px { padding-left: 0px; }
   .pl-lg-12px { padding-left: 12px; }
+  .pl-lg-16px { padding-left: 16px; }
   .pl-lg-20px { padding-left: 20px; }
   .pb-lg-0 { padding-bottom: 0; }
   .py-lg-20px { padding-top: 20px; padding-bottom: 20px; }
@@ -184,5 +185,7 @@
   // Borders
   .br-lg { border-right: 1px solid; }
   .br-lg-grey-light { border-right-color: $grey-light; }
+  .bl-lg { border-left: 1px solid; }
+  .bc-lg-grey-light { border-color: $grey-light; }
   .bb-lg-none { border-bottom: none; }
 }
