@@ -19,7 +19,7 @@ class PatientBreakdownService
       now = Time.current
 
       {
-        dead: patients.status_dead.count,
+        dead_patients: patients.status_dead.count,
         ltfu_patients: patients.ltfu_as_of(now).count,
         not_ltfu_patients: patients.not_ltfu_as_of(now).count,
         ltfu_transferred_patients: patients.ltfu_as_of(now).status_migrated.count,

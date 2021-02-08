@@ -19,11 +19,7 @@ PatientBreakdownReports = function () {
   this.getPatientBreakdownData = () => {
     const jsonData = JSON.parse(reports.getChartDataNode().textContent)["patient_breakdown"];
 
-    return {
-      "Lost to follow-up" : jsonData["ltfu_patients"],
-      "Not lost to follow-up" : jsonData["not_ltfu_patients"],
-      "Died": jsonData["dead"]
-    }
+    return jsonData;
   }
 
   this.initializeCharts = () => {
@@ -47,6 +43,7 @@ PatientBreakdownReports = function () {
         hoverBorderWidth: 2,
         data: Object.values(data.ltfuPatientsRate),
         type: "line",
+        datalabels: {labels: {title: null}}
       }],
     };
     ltfuGraphConfig.options.scales = {
@@ -127,19 +124,33 @@ PatientBreakdownReports = function () {
   this.initializePatientBreakdownChart = () => {
     const data = this.getPatientBreakdownData();
 
+    const chartSegments = ["ltfu_patients", "not_ltfu_patients", "dead_patients"]
+    const chartLabels = ["Lost to follow-up", "Not lost to follow-up", "Died"]
+    let chartData = chartSegments.map(el => data[el])
+    let total = data["total_patients"]
+    let percentLabels = {
+      "Lost to follow-up": "10%",
+      "Not lost to follow-up": "40%",
+      "Died": "50%"
+    }
+
     const breakdownChartConfig = reports.createBaseGraphConfig();
     breakdownChartConfig.type = "pie";
     breakdownChartConfig.data = {
-      labels: Object.keys(data),
+      labels: chartLabels,
       datasets: [{
         borderColor: this.whiteColor,
         borderWidth: 1,
-        data: Object.values(data),
+        data: chartData,
         backgroundColor: [
           reports.mediumRedColor,
           reports.mediumGreenColor,
           reports.mediumBlueColor
-        ]
+        ],
+        datalabels: {
+          anchor: "end",
+          align: "end",
+        }
       }]
     };
 
