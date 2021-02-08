@@ -9,7 +9,7 @@ RegionsSearch = function () {
 
     let link = $html.find("a")
     link.prepend(highlightedName)
-    $html.find(".ancestors").append(result["ancestors"])
+    $html.find(".subtitle").append(result["subtitle"])
     link.attr("href", result["link"])
     return $html
   }
