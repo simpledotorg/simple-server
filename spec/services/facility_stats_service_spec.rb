@@ -47,7 +47,7 @@ RSpec.describe FacilityStatsService do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]), ending_period: period,
                                                 rate_numerator: "controlled_patients")
       small = stats_by_size["small"]
-      periods = (1..5).inject([period]) { |periods, number|
+      periods = (1..5).inject([period]) { |periods|
         periods << periods.last.previous
       }
       expect(small.keys).to match_array(periods)
@@ -90,7 +90,7 @@ RSpec.describe FacilityStatsService do
       expect(period_keys & controlled_patient_keys).to match_array(controlled_patient_keys)
     end
 
-    it "processes data for missed_visits" do
+    it "processes data for uncontrolled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
                                                 ending_period: period, rate_numerator: "uncontrolled_patients")
       period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
