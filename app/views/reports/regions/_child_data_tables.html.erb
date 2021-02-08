@@ -2,7 +2,7 @@
   <%= region_type.capitalize.pluralize %> in <%= @region.name %>
 </h3>
 <p class="mb-24px fs-16px c-grey-dark c-print-black">
-  <span class="fw-bold">Total:</span> <%= @region.facilities.length %> facilities
+  <span class="fw-bold">Total:</span> <%= pluralize(data.count, region_type, locale: :en) %>
 </p>
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
