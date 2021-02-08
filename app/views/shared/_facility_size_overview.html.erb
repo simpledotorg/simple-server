@@ -1,0 +1,9 @@
+<div style="display: flex;">
+  <% @facility_sizes.each do |size| %>
+    <div style="flex: 1;">
+      <p>
+        <%= Facility.localized_facility_size(size) %>
+      </p>
+    </div>
+  <% end %>
+</div>
