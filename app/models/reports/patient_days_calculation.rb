@@ -38,7 +38,7 @@ module Reports
     def stocks_on_hand
       @stocks_on_hand ||= protocol_drugs_by_category[@drug_category].map do |protocol_drug|
         rxnorm_code = protocol_drug.rxnorm_code
-        in_stock = @stocks_by_rxnorm_code && @stocks_by_rxnorm_code[rxnorm_code]
+        in_stock = @stocks_by_rxnorm_code&.dig(rxnorm_code)
         next if in_stock.nil?
         coefficient = drug_coefficient(rxnorm_code)
 
