@@ -14,7 +14,7 @@ module PatientReportable
 
     scope :not_ltfu_as_of, ->(date) do
       where(id: latest_bps_within_ltfu_period(date).select(:patient_id).distinct)
-        .or(where("patients.recorded_at > ?", date - TIME_TO_CONSIDER_LTFU))
+        .or(where("patients.recorded_at >= ?", date - TIME_TO_CONSIDER_LTFU))
     end
 
     scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: nil) do
@@ -34,7 +34,7 @@ module PatientReportable
 
     def self.latest_bps_within_ltfu_period(ltfu_as_of)
       LatestBloodPressuresPerPatientPerMonth
-        .where("bp_recorded_at > ? AND bp_recorded_at <= ?", ltfu_as_of - TIME_TO_CONSIDER_LTFU, ltfu_as_of)
+        .where("bp_recorded_at >= ? AND bp_recorded_at <= ?", ltfu_as_of - TIME_TO_CONSIDER_LTFU, ltfu_as_of)
     end
   end
 end

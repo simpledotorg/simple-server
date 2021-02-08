@@ -12,13 +12,13 @@ module PatientReportableMatview
     scope :excluding_dead, -> { where.not(patient_status: :dead) }
 
     scope :ltfu_as_of, ->(date) do
-      where.not("bp_recorded_at > ? AND bp_recorded_at <= ?", date.to_date - TIME_TO_CONSIDER_LTFU, date.to_date)
+      where.not("bp_recorded_at > ? AND bp_recorded_at < ?", date.to_date - TIME_TO_CONSIDER_LTFU, date.to_date)
         .where("patient_recorded_at < ?", date - TIME_TO_CONSIDER_LTFU)
     end
 
     scope :not_ltfu_as_of, ->(date) do
-      where("bp_recorded_at > ? AND bp_recorded_at <= ?", date.to_date - TIME_TO_CONSIDER_LTFU, date.to_date)
-        .or(where("patient_recorded_at > ?", date - TIME_TO_CONSIDER_LTFU))
+      where("bp_recorded_at >= ? AND bp_recorded_at <= ?", date.to_date - TIME_TO_CONSIDER_LTFU, date.to_date)
+        .or(where("patient_recorded_at >= ?", date - TIME_TO_CONSIDER_LTFU))
     end
   end
 end
