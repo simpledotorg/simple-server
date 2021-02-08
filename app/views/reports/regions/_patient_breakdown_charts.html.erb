@@ -1,0 +1,113 @@
+<div class="d-lg-flex flex-lg-wrap">
+  <div class="d-lg-flex w-lg-50">
+    <div id="ltfu-trend" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+      <div class="pt-20px px-20px">
+        <div class="mb-16px">
+          <h3 class="mb-9px">
+            Lost to follow-up
+          </h3>
+        </div>
+        <div class="mb-12px d-lg-flex align-lg-center">
+          <p class="mb-0px fs-32px fw-bold <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-purple<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
+            <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
+              <%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>
+            <% else %>
+              No data
+            <% end %>
+          </p>
+          <div>
+            <% if @chart_data[:ltfu_trend].last_value(:uncontrolled_patients_rate) %>
+              <p class="m-0px c-black">
+                <span data-total-patients="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %>">
+                  <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %>
+                </span>
+                patients with no BP taken after
+                <span data-period-start="<%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
+                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>
+                </span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-registrations="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_registrations)) %>">
+                  <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_registrations)) %>
+                </span>
+                patients till
+                <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
+                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>
+                </span>
+              </p>
+            <% else %>
+              <p class="m-0px c-grey-medium c-print-black">
+                No lost to follow-up data available
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="p-relative mb-16px">
+          <div class="h-200px mr-16px mb-12px ml-13px">
+            <canvas id="ltfuPatients"></canvas>
+          </div>
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+            <% unless @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
+              <p class="c-grey-medium">
+                No data available
+              </p>
+            <% end %>
+          </div>
+        </div>
+        <div class="px-20px pb-8px pb-lg-0">
+          <div class="mb-2">
+            <p class="mb-8px fs-14px c-grey-dark c-print-black">
+              <strong>Numerator:</strong> Patients with no BP recorded in the last 12 months
+            </p>
+            <p class="fs-14px c-grey-dark c-print-black">
+              <strong>Denominator:</strong> Hypertensive patients in <%= @region.name %> till the current month. Dead patients are excluded.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
+    <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+      <div class="pt-20px px-20px">
+        <div class="mb-16px">
+          <h3 class="mb-9px">
+            Assigned hypertension patients
+          </h3>
+          <p class="mb-0px c-grey-dark mr-lg-12px"><%=number_with_delimiter(@total_patients) %> hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
+        </div>
+      </div>
+
+      <div>
+        <div class="p-relative mb-16px">
+          <div class="h-300px mr-16px mb-12px ml-13px">
+            <canvas id="patientsBreakdownCanvas"></canvas>
+          </div>
+          <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
+            <% unless @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
+              <p class="c-grey-medium">
+                No data available
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="data-json" style="display: none;">
+  <%= raw @chart_data.to_json %>
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    new PatientBreakdownReports().listen();
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>

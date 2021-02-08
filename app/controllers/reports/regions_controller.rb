@@ -61,19 +61,13 @@ class Reports::RegionsController < AdminController
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
                                                        prev_periods: 6,
                                                        include_current_period: true)
-
-    @data = {
-      dead: Patient.where(assigned_facility: @region.facilities).status_dead.count,
-      total_patients: Patient.where(assigned_facility: @region.facilities).count,
+    @chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region,
+                                                      period: @period,
+                                                      with_exclusions: report_with_exclusions?),
       ltfu_trend: Reports::RegionService.new(region: @region,
                                              period: @period,
-                                             with_exclusions: report_with_exclusions?).call,
-      not_ltfu_patients: Patient
-                           .for_reports(with_exclusions: report_with_exclusions?)
-                           .where(assigned_facility: @region.facilities)
-                           .not_ltfu_as_of(@period.to_date)
-                           .count,
-      transferred: Patient.where(assigned_facility: @region.facilities).status_migrated.count
+                                             with_exclusions: report_with_exclusions?).call
     }
 
     region_source = @region.source

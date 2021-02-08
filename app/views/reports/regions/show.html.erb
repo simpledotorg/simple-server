@@ -346,4 +346,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script>
   window.withLtfu = <%= @with_ltfu %>;
+  window.addEventListener("DOMContentLoaded", () => {
+    new Reports().listen();
+  });
 </script>
