@@ -16,9 +16,11 @@ class RegionsSearchController < AdminController
     @query = params.permit(:query)[:query] || ""
     regex = /.*#{Regexp.escape(@query)}.*/i
     results = search(regions, regex)
+
     json = results.sort_by(&:name).map { |region|
+      subtitle = "#{region.region_type.humanize} in #{region.parent.name} #{region.parent.region_type.humanize}"
       {
-        ancestors: region.cached_ancestors.reject { |r| r.region_type.in?(["root", "organization"]) }.map { |r| r.name }.join(" > "),
+        ancestors: subtitle,
         id: region.id,
         name: region.name,
         slug: region.slug,
