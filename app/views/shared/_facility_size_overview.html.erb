@@ -1,6 +1,6 @@
 <div class="pl-16px d-lg-flex" style="overflow-x: scroll; overflow-y: hidden; white-space: nowrap;">
   <% @facility_sizes.each_with_index do |size, i| %>
-    <div class="w-240px mb-24px flex-lg-1 <% if i != 0 %>pl-24px pl-lg-16px bl-1px bc-grey-light<% end %>" style="display: inline-block;">
+    <div class="w-200px mb-24px flex-lg-1 <% if i != 0 %>pl-24px pl-lg-16px bl-1px bc-grey-light<% end %>" style="display: inline-block;">
       <p class="mb-4px fw-bold c-grey-dark">
         All <%= Facility.localized_facility_size(size) %>s
       </p>
