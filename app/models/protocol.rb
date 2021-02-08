@@ -11,9 +11,8 @@ class Protocol < ApplicationRecord
   auto_strip_attributes :name, squish: true, upcase_first: true
 
   def as_json
-    sorted_protocol_drugs = protocol_drugs.sort_by(&:sort_key)
     protocol_json = super
-    protocol_json["protocol_drugs"] = sorted_protocol_drugs.map { |protocol_drug| protocol_drug.as_json }
+    protocol_json["protocol_drugs"] = protocol_drugs.sort_by(&:sort_key).map(&:as_json)
     protocol_json
   end
 
