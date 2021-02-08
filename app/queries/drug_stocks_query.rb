@@ -50,12 +50,12 @@ class DrugStocksQuery
 
   def report_for_facilities
     @report_for_facilities ||= @facilities.each_with_object({}) { |facility, report|
-      facility_patient_count = patient_counts[facility] || 0
-      report[facility.id] = drug_stock_for_facility(facility, facility_patient_count, drug_stocks[facility.id])
+      report[facility.id] = drug_stock_for_facility(facility, drug_stocks[facility.id])
     }
   end
 
-  def drug_stock_for_facility(facility, patient_count, facility_drug_stocks)
+  def drug_stock_for_facility(facility, facility_drug_stocks)
+    patient_count = patient_counts[facility] || 0
     facility_report = {facility: facility, patient_count: patient_count}
     return facility_report if facility_drug_stocks.nil?
 
