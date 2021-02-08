@@ -76,32 +76,20 @@ RSpec.describe FacilityStatsService do
       subject.call
 
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
-      small_controlled = [0, 0, 0, 2, 0, 0]
-      small_adjusted = [0, 0, 0, 3, 3, 3]
-      small_cumulative = [3, 3, 3, 3, 3, 3]
-      small_rate = [0, 0, 0, 67, 0, 0]
-      expect(stats_of_type(subject.stats_by_size["small"], "controlled_patients")).to eq small_controlled
-      expect(stats_of_type(subject.stats_by_size["small"], "adjusted_registrations")).to eq small_adjusted
-      expect(stats_of_type(subject.stats_by_size["small"], "cumulative_registrations")).to eq small_cumulative
-      expect(stats_of_type(subject.stats_by_size["small"], "controlled_patients_rate")).to eq small_rate
+      expect(stats_of_type(subject.stats_by_size["small"], "controlled_patients")).to eq [0, 0, 0, 2, 0, 0]
+      expect(stats_of_type(subject.stats_by_size["small"], "adjusted_registrations")).to eq [0, 0, 0, 3, 3, 3]
+      expect(stats_of_type(subject.stats_by_size["small"], "cumulative_registrations")).to eq [3, 3, 3, 3, 3, 3]
+      expect(stats_of_type(subject.stats_by_size["small"], "controlled_patients_rate")).to eq [0, 0, 0, 67, 0, 0]
 
-      medium_controlled = [0, 0, 0, 0, 2, 0]
-      medium_adjusted = [0, 0, 0, 0, 3, 3]
-      medium_cumulative = [0, 3, 3, 3, 3, 3]
-      medium_rate = [0, 0, 0, 0, 67, 0]
-      expect(stats_of_type(subject.stats_by_size["medium"], "controlled_patients")).to eq medium_controlled
-      expect(stats_of_type(subject.stats_by_size["medium"], "adjusted_registrations")).to eq medium_adjusted
-      expect(stats_of_type(subject.stats_by_size["medium"], "cumulative_registrations")).to eq medium_cumulative
-      expect(stats_of_type(subject.stats_by_size["medium"], "controlled_patients_rate")).to eq medium_rate
+      expect(stats_of_type(subject.stats_by_size["medium"], "controlled_patients")).to eq [0, 0, 0, 0, 2, 0]
+      expect(stats_of_type(subject.stats_by_size["medium"], "adjusted_registrations")).to eq [0, 0, 0, 0, 3, 3]
+      expect(stats_of_type(subject.stats_by_size["medium"], "cumulative_registrations")).to eq [0, 3, 3, 3, 3, 3]
+      expect(stats_of_type(subject.stats_by_size["medium"], "controlled_patients_rate")).to eq [0, 0, 0, 0, 67, 0]
 
-      large_controlled = [0, 0, 0, 0, 0, 2]
-      large_adjusted = [0, 0, 0, 0, 0, 3]
-      large_cumulative = [0, 0, 3, 3, 3, 3]
-      large_rate = [0, 0, 0, 0, 0, 67]
-      expect(stats_of_type(subject.stats_by_size["large"], "controlled_patients")).to eq large_controlled
-      expect(stats_of_type(subject.stats_by_size["large"], "adjusted_registrations")).to eq large_adjusted
-      expect(stats_of_type(subject.stats_by_size["large"], "cumulative_registrations")).to eq large_cumulative
-      expect(stats_of_type(subject.stats_by_size["large"], "controlled_patients_rate")).to eq large_rate
+      expect(stats_of_type(subject.stats_by_size["large"], "controlled_patients")).to eq [0, 0, 0, 0, 0, 2]
+      expect(stats_of_type(subject.stats_by_size["large"], "adjusted_registrations")).to eq [0, 0, 0, 0, 0, 3]
+      expect(stats_of_type(subject.stats_by_size["large"], "cumulative_registrations")).to eq [0, 0, 3, 3, 3, 3]
+      expect(stats_of_type(subject.stats_by_size["large"], "controlled_patients_rate")).to eq [0, 0, 0, 0, 0, 67]
     end
 
     it "sets stats for all accessible facilities but only sets facilities data for retained facilities" do

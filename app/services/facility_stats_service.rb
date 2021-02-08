@@ -47,7 +47,7 @@ class FacilityStatsService
   end
 
   def retain_facility?(facility)
-    retain_facilities.detect { |rf| rf.name == facility.name }
+    retain_facilities.find { |rf| rf.name == facility.name }
   end
 
   def add_size_section(size)
