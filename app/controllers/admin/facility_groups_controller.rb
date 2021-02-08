@@ -25,7 +25,7 @@ class Admin::FacilityGroupsController < AdminController
     if create_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
-      render :new, status: :bad_request
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -33,7 +33,7 @@ class Admin::FacilityGroupsController < AdminController
     if update_facility_group
       redirect_to admin_facilities_url, notice: "Facility group was successfully updated."
     else
-      render :edit, status: :bad_request
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -58,6 +58,8 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Sentry.capture_exception(e)
   end
 
   # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
@@ -69,6 +71,8 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Sentry.capture_exception(e)
   end
 
   def set_organizations

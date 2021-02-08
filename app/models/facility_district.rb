@@ -19,8 +19,8 @@ class FacilityDistrict
 
   alias_method :children, :facilities
 
-  # FacilityDistrict ignores region_reports feature flag, and always returns child facilities
-  def reportable_children(region_reports_enabled: false)
+  # FacilityDistrict always returns child facilities for reports
+  def reportable_children
     children
   end
 

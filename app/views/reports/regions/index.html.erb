@@ -2,50 +2,29 @@
   <div class="row">
     <div class="col-sm-5 col-lg-7">
 
-    <% if region_reports_enabled? %>
       <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
         <div class="mo-search">
           <%= render "search" %>
         <div>
       <% end %>
 
-
-       <div id="facility-access">
-          <% @accessible_regions.each do |org, children| %>
-            <div class="card show region-index">
-              <div class="access-tree__section-header">
-                <%= org.name %>
-              </div>
-
-              <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
+      <div id="facility-access">
+        <% @accessible_regions.each do |org, children| %>
+          <div class="card organization show region-index">
+            <div class="access-tree__section-header">
+              <%= org.name %>
             </div>
-          <% end %>
-        </div>
-        <script>
-          const async = false;
-          new AdminAccess("facility-access").initialize(async);
-        </script>
-      <% else %>
-        <% @organizations.each do |organization| %>
-        <section>
-          <div class="card org-card">
-            <h2><%= organization.name %></h2>
-            <% current_admin.accessible_facilities(:view_reports)
-              .where(facility_groups: {organization: organization})
-              .flat_map(&:facility_group)
-              .uniq
-              .compact
-              .sort_by(&:name)
-              .each do |district| %>
-              <%= link_to(reports_region_path(district, report_scope: "district"), class: "link-row") do %>
-                <i class='fas fa-angle-right light'></i>
-                <%= district.name %>
-              <% end %>
-            <% end %>
+
+            <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
           </div>
-        </section>
         <% end %>
-      <% end %>
+      </div>
+
+      <script>
+        const async = false;
+        new AdminAccess("facility-access").initialize(async);
+      </script>
+
     </div>
   </div>
 </div>
