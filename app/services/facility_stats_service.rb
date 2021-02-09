@@ -7,7 +7,7 @@ class FacilityStatsService
     @rate_numerator = rate_numerator
     @rate_name = "#{rate_numerator}_rate"
     @periods = ending_period.downto(5)
-    @stats_by_size = {}
+    @stats_by_size = {}.with_indifferent_access
   end
 
   def self.call(facilities:, ending_period:, rate_numerator:)
@@ -56,7 +56,7 @@ class FacilityStatsService
         "adjusted_registrations" => 0,
         "cumulative_registrations" => 0,
         rate_name => 0
-      }
+      }.with_indifferent_access
     end
   end
 end
