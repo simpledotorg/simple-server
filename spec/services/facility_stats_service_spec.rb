@@ -38,13 +38,13 @@ RSpec.describe FacilityStatsService do
 
   describe "self.call" do
     it "sets default values for facilities_data and stats_by_size when no facilities are provided" do
-      stats_by_size = FacilityStatsService.call(facilities: {}, ending_period: period,
+      stats_by_size = FacilityStatsService.call(facilities: {}, period: period,
                                                 rate_numerator: "controlled_patients")
       expect(stats_by_size).to eq({})
     end
 
     it "sets data for the past six periods" do
-      stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]), ending_period: period,
+      stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]), period: period,
                                                 rate_numerator: "controlled_patients")
       small = stats_by_size["small"]
       periods = (1..5).inject([period]) { |periods|
@@ -60,7 +60,7 @@ RSpec.describe FacilityStatsService do
       refresh_views
       all_facilities = small_facilities + medium_facilities + large_facilities
       stats_by_size = FacilityStatsService.call(facilities: facilities_data(all_facilities),
-                                                ending_period: period, rate_numerator: "controlled_patients")
+                                                period: period, rate_numerator: "controlled_patients")
 
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
       small = stats_by_size["small"]
@@ -84,7 +84,7 @@ RSpec.describe FacilityStatsService do
 
     it "processes data for controlled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "controlled_patients")
+                                                period: period, rate_numerator: "controlled_patients")
       period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
       controlled_patient_keys = ["controlled_patients", "controlled_patients_rate"]
       expect(period_keys & controlled_patient_keys).to match_array(controlled_patient_keys)
@@ -92,7 +92,7 @@ RSpec.describe FacilityStatsService do
 
     it "processes data for uncontrolled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "uncontrolled_patients")
+                                                period: period, rate_numerator: "uncontrolled_patients")
       period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
       uncontrolled_patient_keys = ["uncontrolled_patients", "uncontrolled_patients_rate"]
       expect(period_keys & uncontrolled_patient_keys).to match_array(uncontrolled_patient_keys)
@@ -100,7 +100,7 @@ RSpec.describe FacilityStatsService do
 
     it "processes data for missed_visits" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "missed_visits")
+                                                period: period, rate_numerator: "missed_visits")
       period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
       missed_visits_keys = ["missed_visits", "missed_visits_rate"]
       expect(period_keys & missed_visits_keys).to match_array(missed_visits_keys)
@@ -108,7 +108,7 @@ RSpec.describe FacilityStatsService do
 
     it "handles invalid rate_numerator by setting values to zero" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "womp")
+                                                period: period, rate_numerator: "womp")
       stat_keys = stats_by_size["small"].values.first.keys
       stat_values = stats_by_size["small"].values.first.values
       expected_keys = ["womp", "adjusted_registrations", "cumulative_registrations", "womp_rate"]

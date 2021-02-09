@@ -94,12 +94,13 @@ class MyFacilitiesController < AdminController
     display_facilities = filter_facilities
     @data_for_facility = {}
     data_for_stats = {}
-    facilities_for_group.each do |facility|
+    facilities_for_totals = facilities_by_facility_group(@accessible_facilities)
+    facilities_for_totals.each do |facility|
       result = Reports::RegionService.new(region: facility, period: @period).call
       @data_for_facility[facility.name] = result if display_facilities.include?(facility)
       data_for_stats[facility.name] = result
     end
     @display_sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
-    @stats_by_size = FacilityStatsService.call(facilities: data_for_stats, ending_period: @period, rate_numerator: type)
+    @stats_by_size = FacilityStatsService.call(facilities: data_for_stats, period: @period, rate_numerator: type)
   end
 end

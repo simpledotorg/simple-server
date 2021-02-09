@@ -1,17 +1,17 @@
 class FacilityStatsService
   attr_reader :stats_by_size
 
-  def initialize(facilities:, ending_period:, rate_numerator:)
+  def initialize(facilities:, period:, rate_numerator:)
     @facilities = facilities
-    @ending_period = ending_period
+    @period = period
     @rate_numerator = rate_numerator
     @rate_name = "#{rate_numerator}_rate"
-    @periods = ending_period.downto(5)
+    @periods = period.downto(5)
     @stats_by_size = {}.with_indifferent_access
   end
 
-  def self.call(facilities:, ending_period:, rate_numerator:)
-    new(facilities: facilities, ending_period: ending_period, rate_numerator: rate_numerator).call
+  def self.call(facilities:, period:, rate_numerator:)
+    new(facilities: facilities, period: period, rate_numerator: rate_numerator).call
   end
 
   def call
@@ -22,7 +22,7 @@ class FacilityStatsService
 
   private
 
-  attr_reader :facilities, :ending_period, :rate_numerator, :rate_name, :periods
+  attr_reader :facilities, :rate_numerator, :rate_name, :periods
 
   def add_facility_stats(facility_data)
     size = facility_data.region.source.facility_size

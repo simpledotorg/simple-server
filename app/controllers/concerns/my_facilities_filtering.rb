@@ -18,10 +18,6 @@ module MyFacilitiesFiltering
       facilities_by_size(filtered_facilities)
     end
 
-    def facilities_for_group
-      facilities_by_facility_group(@accessible_facilities)
-    end
-
     private
 
     def populate_accessible_facilities
