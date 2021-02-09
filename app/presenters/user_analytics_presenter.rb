@@ -11,6 +11,7 @@ class UserAnalyticsPresenter
   end
 
   attr_reader :current_facility
+  attr_reader :with_exclusions
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
@@ -210,7 +211,7 @@ class UserAnalyticsPresenter
 
   def cohort_stats
     periods = Period.quarter(Date.current).previous.downto(3)
-    CohortService.new(region: current_facility, periods: periods, with_exclusions: @with_exclusions).call
+    CohortService.new(region: current_facility, periods: periods, with_exclusions: with_exclusions).call
   end
 
   #
@@ -279,7 +280,7 @@ class UserAnalyticsPresenter
       ControlRateService.new(
         current_facility,
         periods: control_rate_start..control_rate_end,
-        with_exclusions: @with_exclusions
+        with_exclusions: with_exclusions
       ).call.to_hash
 
     {
