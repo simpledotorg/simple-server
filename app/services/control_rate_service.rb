@@ -39,6 +39,10 @@ class ControlRateService
     }
   end
 
+  def repository
+    @repository ||= Reports::Repository.new(region, periods: results.full_data_range, with_exclusions: with_exclusions)
+  end
+
   def fetch_all_data
     results.registrations = registration_counts
     results.registrations_with_exclusions = registration_counts_with_exclusions
@@ -47,10 +51,8 @@ class ControlRateService
     results.count_cumulative_registrations
     results.count_adjusted_registrations
 
-    repo = Reports::Repository.new(region, periods: results.full_data_range,
-                                           with_exclusions: with_exclusions)
-    results.controlled_patients = repo.controlled_patients_count[region.slug]
-    results.uncontrolled_patients = repo.uncontrolled_patients_count[region.slug]
+    results.controlled_patients = repository.controlled_patients_count[region.slug]
+    results.uncontrolled_patients = repository.uncontrolled_patients_count[region.slug]
 
     results.calculate_percentages(:controlled_patients)
     results.calculate_percentages(:uncontrolled_patients)
