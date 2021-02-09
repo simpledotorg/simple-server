@@ -175,6 +175,7 @@ Rails.application.routes.draw do
     get "drug_stocks", to: "drug_stocks#index"
     post "drug_stocks", to: "drug_stocks#create"
     get "drug_stocks/:facility_id/new", to: "drug_stocks#new", as: :drug_stock_form
+    get "drug_consumption", to: "drug_consumption#index"
   end
 
   scope :resources do
