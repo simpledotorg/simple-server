@@ -19,32 +19,34 @@ module Reports
     delegate :cache, :logger, to: Rails
 
     def controlled_patients_count
-      items = cache_keys(:controlled_patients_count)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
+      cached_query(:controlled_patients_count) do |item|
         control_rate_query.controlled(item.region, item.period, with_exclusions: with_exclusions).count
-      }
-      cached_results.each_with_object({}) do |(item, count), results|
-        results[item.region.slug] ||= Hash.new(0)
-        results[item.region.slug][item.period] = count
       end
     end
 
     def uncontrolled_patients_count
-      items = cache_keys(:uncontrolled_patients_count)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
+      cached_query(:uncontrolled_patients_count) do |item|
         control_rate_query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
-      }
-      cached_results.each_with_object({}) do |(item, count), results|
-        results[item.region.slug] ||= Hash.new(0)
-        results[item.region.slug][item.period] = count
       end
     end
 
     def no_bp_measure_count
-      query = NoBPMeasureQuery.new
-      items = cache_keys(:no_bp_measure_count)
+      cached_query(:no_bp_measure_count) do |item|
+        no_bp_measure_query.call(item.region, item.period, with_exclusions: with_exclusions)
+      end
+    end
+
+    # Generate all necessary cache keys for a calculation, then yield to the block with every Item.
+    # Once all results are returned via fetch_multi, return the data in a standard format of:
+    #   {
+    #     region_1_slug: { period_1: value, period_2: value }
+    #     region_2_slug: { period_1: value, period_2: value }
+    #   }
+    #
+    def cached_query(calculation, &block)
+      items = cache_keys(calculation)
       cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
-        query.call(item.region, item.period, with_exclusions: with_exclusions).count
+        block.call(item)
       }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
@@ -55,6 +57,10 @@ module Reports
     def cache_keys(calculation)
       combinations = regions.to_a.product(periods)
       combinations.map { |region, period| Reports::Item.new(region, period, calculation, with_exclusions: with_exclusions) }
+    end
+
+    def no_bp_measure_query
+      @query ||= NoBPMeasureQuery.new
     end
 
     def control_rate_query

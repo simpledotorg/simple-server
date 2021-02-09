@@ -123,6 +123,25 @@ RSpec.describe Reports::Repository, type: :model do
     expect(uncontrolled[region.slug].fetch(jan)).to eq(0)
   end
 
+  it "gets no bp measure counts" do
+    facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
+    facility_1_no_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_1_with_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+
+    Timecop.freeze(jan_2020) do
+      create(:appointment, patient: facility_1_no_bp.first)
+      facility_1_with_bp.map do |patient|
+        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+      end
+    end
+
+    refresh_views
+    jan = Period.month(jan_2020)
+    repo = Reports::Repository.new(facility_1, periods: (Period.month(jan.advance(months: -3))..Period.month(jan)), with_exclusions: true)
+    expect(repo.no_bp_measure_count[facility_1.region.slug][Period.month(jan.advance(months: -1))]).to eq(0)
+    expect(repo.no_bp_measure_count[facility_1.region.slug][Period.month(jan)]).to eq(1)
+  end
+
   it "incorporates optional args into the cache keys" do
     facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
 
