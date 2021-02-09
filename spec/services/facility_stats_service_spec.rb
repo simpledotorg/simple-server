@@ -9,8 +9,8 @@ RSpec.describe FacilityStatsService do
     Timecop.freeze(month) do
       facility1 = create(:facility, name: "#{size}_1", facility_size: size)
       facility2 = create(:facility, name: "#{size}_2", facility_size: size)
-      controlled = create_list(:patient, 2, full_name: "#{size}_controlled", assigned_facility: facility1)
-      uncontrolled = create_list(:patient, 1, full_name: "#{size}_uncontrolled", assigned_facility: facility2)
+      controlled = create_list(:patient, 2, :without_hypertension, full_name: "#{size}_controlled", registration_facility: facility1, recorded_at: month)
+      uncontrolled = create_list(:patient, 1, :hypertension, full_name: "#{size}_uncontrolled", registration_facility: facility2, recorded_at: month)
       # recorded_at needs to be in a month after registration in order to appear in control rate data
       controlled.each do |patient|
         create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: month + 1.month)
@@ -39,14 +39,14 @@ RSpec.describe FacilityStatsService do
   describe "self.call" do
     it "sets default values for facilities_data and stats_by_size when no facilities are provided" do
       stats_by_size = FacilityStatsService.call(facilities: {}, ending_period: period,
-                                                rate_numerator: "controlled_patients")
+                                                rate_numerator: :controlled_patients)
       expect(stats_by_size).to eq({})
     end
 
     it "sets data for the past six periods" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]), ending_period: period,
-                                                rate_numerator: "controlled_patients")
-      small = stats_by_size["small"]
+                                                rate_numerator: :controlled_patients)
+      small = stats_by_size[:small][:periods]
       periods = (1..5).inject([period]) { |periods|
         periods << periods.last.previous
       }
@@ -60,60 +60,71 @@ RSpec.describe FacilityStatsService do
       refresh_views
       all_facilities = small_facilities + medium_facilities + large_facilities
       stats_by_size = FacilityStatsService.call(facilities: facilities_data(all_facilities),
-                                                ending_period: period, rate_numerator: "controlled_patients")
+                                                ending_period: period, rate_numerator: :controlled_patients)
 
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
-      small = stats_by_size["small"]
-      expect(small.map { |_, v| v["controlled_patients"] }).to eq [0, 0, 0, 2, 0, 0]
-      expect(small.map { |_, v| v["adjusted_registrations"] }).to eq [0, 0, 0, 3, 3, 3]
-      expect(small.map { |_, v| v["cumulative_registrations"] }).to eq [3, 3, 3, 3, 3, 3]
-      expect(small.map { |_, v| v["controlled_patients_rate"] }).to eq [0, 0, 0, 67, 0, 0]
+      small = stats_by_size[:small][:periods]
+      expect(small.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 2, 0, 0]
+      expect(small.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 3, 3, 3]
+      expect(small.map { |_, v| v[:cumulative_registrations] }).to eq [3, 3, 3, 3, 3, 3]
+      expect(small.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 67, 0, 0]
 
-      medium = stats_by_size["medium"]
-      expect(medium.map { |_, v| v["controlled_patients"] }).to eq [0, 0, 0, 0, 2, 0]
-      expect(medium.map { |_, v| v["adjusted_registrations"] }).to eq [0, 0, 0, 0, 3, 3]
-      expect(medium.map { |_, v| v["cumulative_registrations"] }).to eq [0, 3, 3, 3, 3, 3]
-      expect(medium.map { |_, v| v["controlled_patients_rate"] }).to eq [0, 0, 0, 0, 67, 0]
+      medium = stats_by_size[:medium][:periods]
+      expect(medium.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 2, 0]
+      expect(medium.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 3, 3]
+      expect(medium.map { |_, v| v[:cumulative_registrations] }).to eq [0, 3, 3, 3, 3, 3]
+      expect(medium.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 67, 0]
 
-      large = stats_by_size["large"]
-      expect(large.map { |_, v| v["controlled_patients"] }).to eq [0, 0, 0, 0, 0, 2]
-      expect(large.map { |_, v| v["adjusted_registrations"] }).to eq [0, 0, 0, 0, 0, 3]
-      expect(large.map { |_, v| v["cumulative_registrations"] }).to eq [0, 0, 3, 3, 3, 3]
-      expect(large.map { |_, v| v["controlled_patients_rate"] }).to eq [0, 0, 0, 0, 0, 67]
+      large = stats_by_size[:large][:periods]
+      expect(large.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 0, 2]
+      expect(large.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 0, 3]
+      expect(large.map { |_, v| v[:cumulative_registrations] }).to eq [0, 0, 3, 3, 3, 3]
+      expect(large.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 0, 67]
     end
 
     it "processes data for controlled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "controlled_patients")
-      period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
+                                                ending_period: period, rate_numerator: :controlled_patients)
+      period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
       controlled_patient_keys = ["controlled_patients", "controlled_patients_rate"]
       expect(period_keys & controlled_patient_keys).to match_array(controlled_patient_keys)
     end
 
     it "processes data for uncontrolled_patients" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "uncontrolled_patients")
-      period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
+                                                ending_period: period, rate_numerator: :uncontrolled_patients)
+      period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
       uncontrolled_patient_keys = ["uncontrolled_patients", "uncontrolled_patients_rate"]
       expect(period_keys & uncontrolled_patient_keys).to match_array(uncontrolled_patient_keys)
     end
 
     it "processes data for missed_visits" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "missed_visits")
-      period_keys = stats_by_size["small"].values.map(&:keys).flatten.uniq
+                                                ending_period: period, rate_numerator: :missed_visits)
+      period_keys = stats_by_size[:small][:periods].values.map(&:keys).flatten.uniq
       missed_visits_keys = ["missed_visits", "missed_visits_rate"]
       expect(period_keys & missed_visits_keys).to match_array(missed_visits_keys)
     end
 
     it "handles invalid rate_numerator by setting values to zero" do
       stats_by_size = FacilityStatsService.call(facilities: facilities_data([small_facility]),
-                                                ending_period: period, rate_numerator: "womp")
-      stat_keys = stats_by_size["small"].values.first.keys
-      stat_values = stats_by_size["small"].values.first.values
+                                                ending_period: period, rate_numerator: :womp)
+      stat_keys = stats_by_size[:small][:periods].values.first.keys
+      stat_values = stats_by_size[:small][:periods].values.first.values
       expected_keys = ["womp", "adjusted_registrations", "cumulative_registrations", "womp_rate"]
       expect(stat_keys).to match_array(expected_keys)
       expect(stat_values).to match_array([0, 0, 0, 0])
+    end
+
+    it "sets total_registered_patients for each size" do
+      small_facility
+      medium_facilities = setup_for_size("medium", december - 5.months)
+      refresh_views
+      all_facilities = facilities_data([small_facility] + medium_facilities)
+      stats_by_size = FacilityStatsService.call(facilities: all_facilities,
+                                                ending_period: period, rate_numerator: :controlled_patients)
+      expect(stats_by_size[:small][:total_registered_patients]).to eq 0
+      expect(stats_by_size[:medium][:total_registered_patients]).to eq 1
     end
   end
 end

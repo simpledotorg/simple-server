@@ -91,7 +91,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         expect(assigns(:display_sizes)).to eq(["small"])
         stats = assigns(:stats_by_size)
         patient_count = facility_2.assigned_patients.count + facility_3.assigned_patients.count
-        expect(stats["small"][december]["cumulative_registrations"]).to eq(patient_count)
+        expect(stats[:small][:periods][december][:cumulative_registrations]).to eq(patient_count)
       end
     end
   end
