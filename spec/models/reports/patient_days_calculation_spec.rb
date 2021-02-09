@@ -176,7 +176,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
       expect(result).to eq(patient_days: "error")
     end
 
-    it "sentry" do
+    it "reports error to sentry" do
       allow(Sentry).to receive(:capture_message)
       result = described_class.new(
         state: state,
