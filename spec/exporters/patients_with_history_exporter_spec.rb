@@ -149,7 +149,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       patient.id,
       patient.latest_bp_passport&.shortcode,
       patient.full_name,
-      patient.current_age,
+      patient.current_age.to_i,
       patient.gender.capitalize,
       "Died",
       patient.phone_numbers.last&.number,

@@ -24,24 +24,12 @@ module Reports
           return
         end
 
-        notify "starting facility_group caching"
+        notify "starting region caching"
         Statsd.instance.time("region_cache_warmer.states") do
-          cache_states
-        end
-
-        notify "starting facility_group caching"
-        Statsd.instance.time("region_cache_warmer.facility_groups") do
-          cache_facility_groups
-        end
-
-        notify "starting block caching"
-        Statsd.instance.time("region_cache_warmer.blocks") do
-          cache_blocks
-        end
-
-        notify "starting facility caching"
-        Statsd.instance.time("region_cache_warmer.facilities") do
-          cache_facilities
+          Region.where.not(region_type: ["root", "organization"]).find_each(batch_size: BATCH_SIZE) do |region|
+            RegionService.call(region: region, period: period)
+            Statsd.instance.increment("region_cache_warmer.states.cache")
+          end
         end
       }
       notify "finished", duration: duration
@@ -50,34 +38,6 @@ module Reports
     end
 
     private
-
-    def cache_states
-      Region.state_regions.each do |region|
-        RegionService.call(region: region, period: period)
-        Statsd.instance.increment("region_cache_warmer.states.cache")
-      end
-    end
-
-    def cache_facility_groups
-      FacilityGroup.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.call(region: region, period: period)
-        Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
-      end
-    end
-
-    def cache_blocks
-      Region.block_regions.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.call(region: region, period: period)
-        Statsd.instance.increment("region_cache_warmer.blocks.cache")
-      end
-    end
-
-    def cache_facilities
-      Facility.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.call(region: region, period: period)
-        Statsd.instance.increment("region_cache_warmer.facilities.cache")
-      end
-    end
 
     def notify(msg, extra = {})
       data = {

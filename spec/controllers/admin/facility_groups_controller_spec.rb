@@ -47,6 +47,8 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   end
 
   describe "POST #create" do
+    render_views
+
     before do
       admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
       sign_in(admin.email_authentication)
@@ -74,9 +76,17 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(facility_group.region.state_region.name).to eq("California")
     end
 
-    it "returns a 400 response for invalid attributes" do
+    it "returns a 422 response for invalid attributes" do
       post :create, params: {facility_group: invalid_attributes, organization_id: organization.id}
-      expect(response).to have_http_status(:bad_request)
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "returns a 422 response for record invalid" do
+      attributes = valid_attributes.except(:protocol_id)
+      post :create, params: {facility_group: attributes, organization_id: organization.id}
+      expect(assigns(:facility_group).errors[:protocol]).to eq(["must exist"])
+      expect(response.body).to match(/fix the following errors: protocol must exist/)
+      expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it "creates the children blocks" do
@@ -91,6 +101,8 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
   end
 
   describe "PUT #update" do
+    render_views
+
     before do
       admin = create(:admin, :manager, :with_access, resource: organization, organization: organization)
       sign_in(admin.email_authentication)
@@ -138,11 +150,11 @@ RSpec.describe Admin::FacilityGroupsController, type: :controller do
       expect(response).to redirect_to(admin_facilities_url)
     end
 
-    it "returns a bad request response with invalid attributes (i.e. against the 'edit' template)" do
+    it "returns a 422 response with invalid attributes (i.e. against the 'edit' template)" do
       facility_group = create(:facility_group, valid_attributes)
       put :update, params: {id: facility_group.to_param, facility_group: invalid_attributes, organization_id: organization.id}
 
-      expect(response).to have_http_status(:bad_request)
+      expect(response).to have_http_status(:unprocessable_entity)
     end
 
     it "disallows updating state" do
