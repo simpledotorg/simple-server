@@ -41,7 +41,7 @@ class ControlRateService
 
   def fetch_all_data
     results.registrations = registration_counts
-    results.assigned_patients_with_ltfu = assigned_patients_with_ltfu_counts
+    results.assigned_patients = assigned_patients_counts
     results.earliest_registration_period = registration_counts.keys.first
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period).count
@@ -77,10 +77,10 @@ class ControlRateService
         .count
   end
 
-  def assigned_patients_with_ltfu_counts
-    return @assigned_patients_with_ltfu_counts if defined? @assigned_patients_with_ltfu_counts
+  def assigned_patients_counts
+    return @assigned_patients_counts if defined? @assigned_patients_counts
 
-    @assigned_patients_with_ltfu_counts =
+    @assigned_patients_counts =
       region.assigned_patients
         .for_reports(with_exclusions: with_exclusions)
         .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
