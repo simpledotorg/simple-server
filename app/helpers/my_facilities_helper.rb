@@ -19,25 +19,6 @@ module MyFacilitiesHelper
     end
   end
 
-  def drug_stock_tooltip(report)
-    return nil if report.nil? || report[:patient_days] == "error"
-    tooltip_template = ERB.new <<-EOF
-      <% report[:stocks_on_hand].each_with_index do |stock_on_hand, i| %>
-        <span class='math'><%= '+' unless i == 0 %><%= stock_on_hand[:in_stock] %>*<%= stock_on_hand[:coefficient] %></span>
-        <%= stock_on_hand[:protocol_drug].name %> <%= stock_on_hand[:protocol_drug].dosage %>
-        <br>
-      <% end %>
-      <span class='math'>
-        /<%= report[:patient_count] %>*<%= report[:load_coefficient] %>*<%= report[:new_patient_coefficient] %>
-      </span>
-      Patients
-      <br>
-      <span class='math'>=<%= report[:patient_days] %></span>
-      Patient days
-    EOF
-    tooltip_template.result(binding)
-  end
-
   def patient_days_bg_color(patient_days)
     return if patient_days.nil?
     return "bg-red" if patient_days == "error"
