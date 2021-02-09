@@ -34,7 +34,7 @@ module PatientReportable
 
     def self.latest_bps_within_ltfu_period(ltfu_as_of)
       LatestBloodPressuresPerPatientPerMonth
-        .where("bp_recorded_at >= ? AND bp_recorded_at <= ?", ltfu_as_of - LTFU_TIME, ltfu_as_of)
+        .where("bp_recorded_at > ? AND bp_recorded_at < ?", ltfu_as_of - LTFU_TIME, ltfu_as_of)
     end
   end
 end
