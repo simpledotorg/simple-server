@@ -36,15 +36,15 @@ class MyFacilitiesController < AdminController
   end
 
   def bp_controlled
-    process_facility_stats(:controlled_patients)
+    process_facility_stats('controlled_patients')
   end
 
   def bp_not_controlled
-    process_facility_stats(:uncontrolled_patients)
+    process_facility_stats('uncontrolled_patients')
   end
 
   def missed_visits
-    process_facility_stats(:missed_visits)
+    process_facility_stats('missed_visits')
   end
 
   private
