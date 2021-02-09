@@ -2,7 +2,7 @@ module Reports
   class Repository
     def initialize(regions, periods:, with_exclusions: false)
       @regions = Array(regions)
-      @regions_by_id = @regions.map { |r| [r.id, r] }.to_h
+      @regions_by_id = @regions.group_by { |r| r.id }
       @with_exclusions = with_exclusions
 
       @periods = if periods.is_a?(Period)
