@@ -1,6 +1,6 @@
 module Reports
   class PatientDaysCalculation
-    def initialize(state, protocol, drug_category, stocks_by_rxnorm_code, patient_count)
+    def initialize(state:, protocol:, drug_category:, stocks_by_rxnorm_code:, patient_count:)
       @protocol = protocol
       @drug_category = drug_category
       @stocks_by_rxnorm_code = stocks_by_rxnorm_code

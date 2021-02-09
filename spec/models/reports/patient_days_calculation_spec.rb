@@ -25,7 +25,14 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
     end
 
     it "calculates correctly when it has all drug stocks, and protocol and formula are cohesive" do
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      ).stocks_on_hand
+
       expect(result).to match_array [
         {protocol_drug: protocol.protocol_drugs.find_by(rxnorm_code: "329528"),
          in_stock: 10000,
@@ -40,7 +47,13 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
 
     it "ignores a drug in protocol that is not in formula" do
       FactoryBot.create(:protocol_drug, protocol: protocol, drug_category: drug_category, stock_tracked: true)
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329528", "329526"]
     end
 
@@ -53,29 +66,59 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
         "unknown_rx_norm" => 19
       }.with_indifferent_access
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(drug_stock_config)
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329528", "329526"]
     end
 
     it "ignores a drug for which the stock is unknown" do
       stocks_by_rxnorm.except!("329528")
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).stocks_on_hand
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array ["329526"]
     end
 
     it "returns a empty list when stock is not available for any drug" do
-      result = described_class.new(state, protocol, drug_category, {}, patient_count).stocks_on_hand
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: {},
+        patient_count: patient_count
+      ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:protocol_drug].rxnorm_code }).to match_array []
     end
 
     it "computes stock as 0 when all stocks are 0" do
-      result = described_class.new(state, protocol, drug_category, {"329526" => 0, "329528" => 0}, patient_count).stocks_on_hand
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: {"329526" => 0, "329528" => 0},
+        patient_count: patient_count
+      ).stocks_on_hand
       expect(result.map { |stock_on_hand| stock_on_hand[:stock_on_hand] }).to match_array [0, 0]
     end
 
     it "errors out when there is no formula for a state" do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(nil)
-      instance = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count)
+      instance = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      )
       expect { instance.stocks_on_hand }.to raise_error(NoMethodError)
     end
   end
@@ -85,7 +128,13 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
     it "works correctly when all inputs are present" do
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).calculate
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      ).calculate
       expect(result[:load_coefficient]).to eq 1
       expect(result[:new_patient_coefficient]).to eq 1.4
       expect(result[:patient_count]).to eq patient_count
@@ -94,24 +143,48 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
     end
 
     it "patient count is nil" do
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, nil).calculate
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: nil
+      ).calculate
       expect(result).to eq(patient_days: "error")
     end
 
     it "patient count is 0" do
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, 0).calculate
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: 0
+      ).calculate
       expect(result).to eq(patient_days: "error")
     end
 
     it "returns an error for patient days when there is no formula for a state" do
       allow_any_instance_of(described_class).to receive(:patient_days_coefficients).and_return(nil)
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, patient_count).calculate
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: patient_count
+      ).calculate
       expect(result).to eq(patient_days: "error")
     end
 
     it "sentry" do
       allow(Sentry).to receive(:capture_message)
-      result = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, 0).calculate
+      result = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: 0
+      ).calculate
       expect(result).to eq(patient_days: "error")
       expect(Sentry).to have_received(:capture_message)
     end
@@ -121,14 +194,26 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
     it "returns the first available config when not in production" do
       allow(ENV).to receive(:fetch).and_return("some_other_env")
       allow(Rails.application.config).to receive(:drug_stock_config).and_return({"some_state" => "first config"})
-      instance = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, 0)
+      instance = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: 0
+      )
       expect(instance.patient_days_coefficients("state_that_does_not_exist")).to eq "first config"
     end
 
     it "returns the correct config even if nil when in production" do
       allow(ENV).to receive(:fetch).and_return("production")
       allow(Rails.application.config).to receive(:drug_stock_config).and_return({"some_state" => "first config"})
-      instance = described_class.new(state, protocol, drug_category, stocks_by_rxnorm, 0)
+      instance = described_class.new(
+        state: state,
+        protocol: protocol,
+        drug_category: drug_category,
+        stocks_by_rxnorm_code: stocks_by_rxnorm,
+        patient_count: 0
+      )
       expect(instance.patient_days_coefficients("state_that_does_not_exist")).to eq nil
     end
   end
