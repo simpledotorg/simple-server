@@ -12,7 +12,6 @@ class DrugStocksQuery
   def protocol_drugs_by_category
     @protocol_drugs_by_category ||= @protocol.protocol_drugs
       .where(stock_tracked: true)
-      .order(:name, :dosage)
       .sort_by(&:sort_key)
       .group_by(&:drug_category)
       .sort_by { |(drug_category, _)| drug_category }
@@ -71,7 +70,7 @@ class DrugStocksQuery
 
   def drug_stock_totals
     DrugStock.latest_for_facilities(@facilities, @for_end_of_month).group_by(&:protocol_drug).map { |(protocol_drug, drug_stocks)|
-      [protocol_drug, drug_stocks&.map(&:in_stock)&.compact.sum]
+      [protocol_drug, drug_stocks&.map(&:in_stock)&.compact&.sum]
     }.to_h
   end
 

@@ -21,6 +21,6 @@ class ProtocolDrug < ApplicationRecord
   end
 
   def sort_key
-    [name, dosage.to_i]
+    [name, dosage.to_f]
   end
 end
