@@ -38,4 +38,13 @@ module MyFacilitiesHelper
      diabetes: "Diabetes Tablets",
      other: "Other Tablets"}.with_indifferent_access
   end
+
+  def protocol_drug_short_labels
+    {hypertension_ccb: "CCB",
+     hypertension_arb: "ARB",
+     hypertension_diuretic: "Diuretic",
+     hypertension_other: "Other(H)",
+     diabetes: "Diabetes",
+     other: "Other"}.with_indifferent_access
+  end
 end
