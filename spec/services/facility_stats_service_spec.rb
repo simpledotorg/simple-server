@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe FacilityStatsService do
   let(:small_facility) { create(:facility, name: "small1", facility_size: "small") }
-  let(:december) { Date.parse("1-12-2020").beginning_of_month }
+  let(:december) { Date.parse("12-01-2020").beginning_of_month }
   let(:period) { Period.month(december) }
 
   def setup_for_size(size, month = december)

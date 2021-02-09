@@ -56,33 +56,41 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
     context "when admin has access to multiple facilities" do
       let(:other_district) { create(:facility_group, name: "other district") }
-      let(:facility_2) { create(:facility, facility_group: other_district) }
+      let(:facility_2) { create(:facility, facility_group: other_district, zone: "foo") }
+      let(:facility_3) { create(:facility, facility_group: other_district, zone: "oof") }
 
       before :each do
         supervisor.accesses.create! resource: other_district
         Timecop.freeze("August 15th 2020") do
           create_list(:patient, 2, full_name: "controlled in facility", assigned_facility: facility, registration_user: supervisor)
           create_list(:patient, 2, full_name: "controlled in facility_2", assigned_facility: facility_2, registration_user: supervisor)
+          create_list(:patient, 1, full_name: "controlled in facility_3", assigned_facility: facility_3, registration_user: supervisor)
         end
         refresh_views
       end
 
-      it "only returns data for the selected district" do
+      it "sets data_for_facility all facilities in the selected district" do
         Timecop.freeze("January 15th 2021") do
           get :bp_controlled, params: {facility_group: other_district.slug}
         end
         expect(response).to be_successful
         expect(assigns(:data_for_facility)[facility_2.name]).to_not be_nil
+        expect(assigns(:data_for_facility)[facility_3.name]).to_not be_nil
         expect(assigns(:data_for_facility)[facility.name]).to be_nil
         expect(assigns(:display_sizes)).to eq(["small"])
       end
 
-      it "sets stats_by_size for all facilities accessible by the admin" do
+      it "sets data_for_facility for the selected facility zone but sets stats_by_size for all facilities in the group" do
         Timecop.freeze("January 15th 2021") do
-          get :bp_controlled, params: {facility_group: other_district.slug}
+          get :bp_controlled, params: {facility_group: other_district.slug, zone: facility_2.zone}
         end
+        expect(response).to be_successful
+        expect(assigns(:data_for_facility)[facility_2.name]).to_not be_nil
+        expect(assigns(:data_for_facility)[facility_3.name]).to be_nil
+        expect(assigns(:data_for_facility)[facility.name]).to be_nil
+        expect(assigns(:display_sizes)).to eq(["small"])
         stats = assigns(:stats_by_size)
-        patient_count = facility.assigned_patients.count + facility_2.assigned_patients.count
+        patient_count = facility_2.assigned_patients.count + facility_3.assigned_patients.count
         expect(stats["small"][december]["cumulative_registrations"]).to eq(patient_count)
       end
     end
