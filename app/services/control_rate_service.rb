@@ -49,10 +49,8 @@ class ControlRateService
 
     repo = Reports::Repository.new(region, periods: results.full_data_range,
                                            with_exclusions: with_exclusions)
-    control_results = repo.controlled_patients_count
-    uncontrol_results = repo.uncontrolled_patients_count
-    results.controlled_patients = control_results[region.slug]
-    results.uncontrolled_patients = uncontrol_results[region.slug]
+    results.controlled_patients = repo.controlled_patients_count[region.slug]
+    results.uncontrolled_patients = repo.uncontrolled_patients_count[region.slug]
 
     results.calculate_percentages(:controlled_patients)
     results.calculate_percentages(:uncontrolled_patients)
