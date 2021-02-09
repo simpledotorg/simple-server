@@ -43,7 +43,7 @@ FactoryBot.define do
             drug_category: "hypertension_arb",
             protocol_id: id),
           build(:protocol_drug,
-            name: "Hydrochlorthiazide",
+            name: "Hydrochlorothiazide",
             dosage: "25 mg",
             rxnorm_code: "316049",
             stock_tracked: true,

@@ -11,7 +11,7 @@ RSpec.describe Seed::ProtocolSeeder do
       "Amlodipine",
       "Telmisartan",
       "Losartan",
-      "Hydrochlorthiazide",
+      "Hydrochlorothiazide",
       "Chlorthalidone"
     )
   end
