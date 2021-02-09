@@ -60,17 +60,21 @@ class DrugStocksQuery
 
     drug_stocks = facility_drug_stocks.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
-      patient_days = Reports::PatientDaysCalculation.new(
-        state: @state,
-        protocol: @protocol,
-        drug_category: drug_category,
-        stocks_by_rxnorm_code: stocks_by_rxnorm_code(drug_stocks[drug_category]),
-        patient_count: patient_count
-      ).calculate
-      next if patient_days.nil?
-      facility_report[drug_category] = patient_days.merge(drug_stocks: drug_stocks_by_drug_id(drug_stocks[drug_category]))
+      facility_report[drug_category] = drug_stock_for_category(drug_category, drug_stocks, patient_count)
     end
     facility_report
+  end
+
+  def drug_stock_for_category(drug_category, drug_stocks, patient_count)
+    patient_days = Reports::PatientDaysCalculation.new(
+      state: @state,
+      protocol: @protocol,
+      drug_category: drug_category,
+      stocks_by_rxnorm_code: stocks_by_rxnorm_code(drug_stocks[drug_category]),
+      patient_count: patient_count
+    ).calculate
+    return if patient_days.nil?
+    patient_days.merge(drug_stocks: drug_stocks_by_drug_id(drug_stocks[drug_category]))
   end
 
   def drug_stock_totals
