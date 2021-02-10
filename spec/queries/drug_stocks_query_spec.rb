@@ -30,7 +30,7 @@ RSpec.describe DrugStocksQuery do
     }
 
     before do
-      allow_any_instance_of(Reports::PatientDaysCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
+      allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
 
     it "computes the report for a given facility" do
@@ -91,7 +91,7 @@ RSpec.describe DrugStocksQuery do
     }
 
     before do
-      allow_any_instance_of(Reports::PatientDaysCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
+      allow_any_instance_of(Reports::DrugStockCalculation).to receive(:patient_days_coefficients).and_return(punjab_drug_stock_config)
     end
 
     it "computes totals correctly for a given list of facilities" do

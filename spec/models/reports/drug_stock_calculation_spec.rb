@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Reports::PatientDaysCalculation, type: :model do
+RSpec.describe Reports::DrugStockCalculation, type: :model do
   let(:state) { "Punjab" }
   let(:protocol) { FactoryBot.create(:protocol, :with_tracked_drugs) }
   let(:facility_group) { FactoryBot.create(:facility_group, protocol: protocol) }
@@ -134,7 +134,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
         drug_category: drug_category,
         stocks_by_rxnorm_code: stocks_by_rxnorm,
         patient_count: patient_count
-      ).calculate
+      ).patient_days
       expect(result[:load_coefficient]).to eq 1
       expect(result[:new_patient_coefficient]).to eq 1.4
       expect(result[:patient_count]).to eq patient_count
@@ -149,7 +149,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
         drug_category: drug_category,
         stocks_by_rxnorm_code: stocks_by_rxnorm,
         patient_count: nil
-      ).calculate
+      ).patient_days
       expect(result).to eq(patient_days: "error")
     end
 
@@ -160,7 +160,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
         drug_category: drug_category,
         stocks_by_rxnorm_code: stocks_by_rxnorm,
         patient_count: 0
-      ).calculate
+      ).patient_days
       expect(result).to eq(patient_days: "error")
     end
 
@@ -172,7 +172,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
         drug_category: drug_category,
         stocks_by_rxnorm_code: stocks_by_rxnorm,
         patient_count: patient_count
-      ).calculate
+      ).patient_days
       expect(result).to eq(patient_days: "error")
     end
 
@@ -184,7 +184,7 @@ RSpec.describe Reports::PatientDaysCalculation, type: :model do
         drug_category: drug_category,
         stocks_by_rxnorm_code: stocks_by_rxnorm,
         patient_count: 0
-      ).calculate
+      ).patient_days
       expect(result).to eq(patient_days: "error")
       expect(Sentry).to have_received(:capture_message)
     end

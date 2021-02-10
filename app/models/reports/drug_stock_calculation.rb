@@ -1,5 +1,5 @@
 module Reports
-  class PatientDaysCalculation
+  class DrugStockCalculation
     def initialize(state:, protocol:, drug_category:, stocks_by_rxnorm_code:, patient_count:)
       @protocol = protocol
       @drug_category = drug_category
@@ -12,28 +12,42 @@ module Reports
       @protocol_drugs_by_category ||= @protocol.protocol_drugs.where(stock_tracked: true).group_by(&:drug_category)
     end
 
-    def calculate
+    def patient_days
       return nil if stocks_on_hand.empty?
-      {stocks_on_hand: stocks_on_hand,
-       patient_count: @patient_count,
-       load_coefficient: @coefficients[:load_coefficient],
-       new_patient_coefficient: new_patient_coefficient,
-       estimated_patients: estimated_patients,
-       patient_days: patient_days}
+      { stocks_on_hand: stocks_on_hand,
+        patient_count: @patient_count,
+        load_coefficient: @coefficients[:load_coefficient],
+        new_patient_coefficient: new_patient_coefficient,
+        estimated_patients: estimated_patients,
+        patient_days: patient_days_calculation }
     rescue => e
       # drug is not in formula, or other configuration error
       Sentry.capture_message("Patient Days Calculation Error",
-        extra: {
-          coefficients: @coefficients,
-          drug_category: @drug_category,
-          stocks_by_rxnorm_code: @stocks_by_rxnorm_code,
-          patient_count: @patient_count,
-          protocol: @protocol,
-          exception: e
-        },
-        tags: {type: "reports"})
-      {patient_days: "error"}
+                             extra: {
+                               coefficients: @coefficients,
+                               drug_category: @drug_category,
+                               stocks_by_rxnorm_code: @stocks_by_rxnorm_code,
+                               patient_count: @patient_count,
+                               protocol: @protocol,
+                               exception: e
+                             },
+                             tags: { type: "reports" })
+      { patient_days: "error" }
     end
+
+    # def consumption
+    #   return nil if stocks_on_hand.empty?
+    #   {}
+    # rescue => e
+    #   # drug is not in formula, or other configuration error
+    #   Sentry.capture_message("Patient Days Calculation Error",
+    #                          extra: {
+    #                            protocol: @protocol,
+    #                            exception: e
+    #                          },
+    #                          tags: { type: "reports" })
+    #   { consumption: "error" }
+    # end
 
     def stocks_on_hand
       @stocks_on_hand ||= protocol_drugs_by_category[@drug_category].map do |protocol_drug|
@@ -42,10 +56,10 @@ module Reports
         next if in_stock.nil?
         coefficient = drug_coefficient(rxnorm_code)
 
-        {protocol_drug: protocol_drug,
-         in_stock: in_stock,
-         coefficient: coefficient,
-         stock_on_hand: coefficient * in_stock}
+        { protocol_drug: protocol_drug,
+          in_stock: in_stock,
+          coefficient: coefficient,
+          stock_on_hand: coefficient * in_stock }
       end&.compact
     end
 
@@ -53,7 +67,7 @@ module Reports
       @coefficients.dig(:drug_categories, @drug_category, rxnorm_code)
     end
 
-    def patient_days
+    def patient_days_calculation
       (stocks_on_hand.map { |stock| stock[:stock_on_hand] }.reduce(:+) / estimated_patients).floor
     end
 
