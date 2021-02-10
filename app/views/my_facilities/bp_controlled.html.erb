@@ -27,11 +27,11 @@
         <% if @facility_sizes.empty? %>
           <%= render "shared/my_facilities_table_empty_state" %>
         <% end %>
-        <% @display_sizes.each do |size| %>
-          <p class="mt-20px mb-0px fw-bold">
+        <% @facility_sizes.each do |size| %>
+          <p class="mt-24px mb-0px fw-bold">
             <%= Facility.localized_facility_size(size) %>
           </p>
-          <table class="mt-3 mt-lg-4 table table-compact table-responsive-md table-hover analytics-table tl-fixed">
+          <table class="mt-12px table table-compact table-responsive-md table-hover analytics-table tl-fixed">
             <colgroup>
               <col style="width: 14%;">
               <col style="width: 10%;">
