@@ -62,5 +62,5 @@ exit unless gets.chomp.downcase == "y"
 # ------------------
 puts
 puts "Successfully created release #{release_tag}."
-puts "Visit https://resolvetosavelives.semaphoreci.com/projects/simple-server to deploy the release to production."
+puts "Visit https://simple.semaphoreci.com/projects/simple-server to deploy the release to production."
 puts "Publish the changelog to the #releases channel."

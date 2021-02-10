@@ -6,7 +6,7 @@ class AppointmentNotification::Worker
 
   DEFAULT_LOCALE = :en
 
-  def perform(appointment_id, communication_type, locale = DEFAULT_LOCALE)
+  def perform(appointment_id, communication_type, locale = nil)
     appointment = Appointment.find(appointment_id)
 
     return if appointment.previously_communicated_via?(communication_type)
@@ -40,8 +40,12 @@ class AppointmentNotification::Worker
     I18n.t(
       "sms.appointment_reminders.#{communication_type}",
       facility_name: appointment.facility.name,
-      locale: locale
+      locale: appointment_locale(appointment, locale)
     )
+  end
+
+  def appointment_locale(appointment, locale)
+    locale || appointment.patient.address&.locale || DEFAULT_LOCALE
   end
 
   def report_error(e)
