@@ -11,6 +11,7 @@ module ParameterFiltering
     controller
     created_at
     deleted_at
+    force_cache
     limit
     metadata_version
     process_token

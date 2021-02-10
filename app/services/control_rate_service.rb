@@ -39,6 +39,10 @@ class ControlRateService
     }
   end
 
+  def repository
+    @repository ||= Reports::Repository.new(region, periods: results.full_data_range, with_exclusions: with_exclusions)
+  end
+
   def fetch_all_data
     results.registrations = registration_counts
     results.assigned_patients = assigned_patients_counts
@@ -56,11 +60,9 @@ class ControlRateService
       results.adjusted_registrations = results.adjusted_registrations_with_ltfu
     end
 
-    results.full_data_range.each do |(period, count)|
-      results.controlled_patients[period] = controlled_patients(period).count
-      results.controlled_patients_with_ltfu[period] = controlled_patients(period).count
-      results.uncontrolled_patients[period] = uncontrolled_patients(period).count
-    end
+    results.controlled_patients = repository.controlled_patients_count[region.slug]
+    results.controlled_patients_with_ltfu = repository.controlled_patients_count[region.slug]
+    results.uncontrolled_patients = repository.uncontrolled_patients_count[region.slug]
 
     results.calculate_percentages(:controlled_patients)
     results.calculate_percentages(:controlled_patients_with_ltfu)
@@ -92,57 +94,6 @@ class ControlRateService
       .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility: facilities)
       .ltfu_as_of(period.start_date)
-  end
-
-  def controlled_patients(period)
-    if period.quarter?
-      bp_quarterly_query(period).under_control
-    else
-      LatestBloodPressuresPerPatientPerMonth
-        .with_discarded
-        .from(bp_monthly_query(period),
-          "latest_blood_pressures_per_patient_per_months")
-        .under_control
-    end
-  end
-
-  def uncontrolled_patients(period)
-    if period.quarter?
-      bp_quarterly_query(period).hypertensive
-    else
-      LatestBloodPressuresPerPatientPerMonth
-        .with_discarded
-        .from(bp_monthly_query(period),
-          "latest_blood_pressures_per_patient_per_months")
-        .hypertensive
-    end
-  end
-
-  private
-
-  def bp_monthly_query(period)
-    control_range = period.blood_pressure_control_range
-    # We need to avoid the default scope to avoid ambiguous column errors, hence the `with_discarded`
-    # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
-    LatestBloodPressuresPerPatientPerMonth
-      .with_discarded
-      .for_reports(with_exclusions: with_exclusions)
-      .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
-      .where(assigned_facility_id: facilities)
-      .where("patient_recorded_at < ?", control_range.begin) # TODO this doesn't seem right -- revisit this exclusion
-      .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
-      .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
-  end
-
-  def bp_quarterly_query(period)
-    quarter = period.value
-    cohort_quarter = quarter.previous_quarter
-    LatestBloodPressuresPerPatientPerQuarter
-      .for_reports(with_exclusions: with_exclusions)
-      .where(assigned_facility_id: facilities)
-      .where(year: quarter.year, quarter: quarter.number)
-      .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
-      .order("patient_id, bp_recorded_at DESC, bp_id")
   end
 
   def quarterly_report?
