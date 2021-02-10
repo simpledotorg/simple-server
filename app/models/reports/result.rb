@@ -15,12 +15,12 @@ module Reports
         {
           adjusted_registrations: Hash.new(0),
           adjusted_registrations_with_ltfu: Hash.new(0),
+          assigned_patients: Hash.new(0),
           controlled_patients: Hash.new(0),
           controlled_patients_with_ltfu: Hash.new(0),
           controlled_patients_rate: Hash.new(0),
           controlled_patients_with_ltfu_rate: Hash.new(0),
           cumulative_registrations: Hash.new(0),
-          denominator_registrations: Hash.new(0),
           earliest_registration_period: nil,
           ltfu_patients: Hash.new(0),
           ltfu_patients_rate: Hash.new(0),
@@ -79,10 +79,10 @@ module Reports
 
     def fill_in_nil_registrations
       registrations.default = 0
-      denominator_registrations.default = 0
+      assigned_patients.default = 0
       full_data_range.each do |period|
         registrations[period] ||= 0
-        denominator_registrations[period] ||= 0
+        assigned_patients[period] ||= 0
       end
     end
 
@@ -99,8 +99,8 @@ module Reports
     end
 
     [:period_info, :earliest_registration_period,
-      :registrations, :denominator_registrations,
-      :ltfu_patients, :cumulative_registrations,
+      :registrations, :cumulative_registrations,
+      :assigned_patients, :ltfu_patients,
       :adjusted_registrations, :adjusted_registrations_with_ltfu,
       :missed_visits, :missed_visits_rate,
       :controlled_patients, :controlled_patients_with_ltfu,
@@ -130,7 +130,7 @@ module Reports
     def count_adjusted_registrations_with_ltfu
       adjusted_registration_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
         adjusted_period = period.advance(months: -3)
-        counts[period] = denominator_registrations[adjusted_period]
+        counts[period] = assigned_patients[adjusted_period]
       }
 
       self.adjusted_registrations_with_ltfu = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
@@ -193,45 +193,38 @@ module Reports
       end
     end
 
-    def registrations_for_percentage_calculation_with_ltfu(period)
-      if quarterly_report?
-        self[:denominator_registrations][period.previous] || 0
-      else
-        adjusted_registrations_with_ltfu_for(period)
-      end
+    def registrations_for_quarterly_percentage
+      {
+        controlled_patients: :assigned_patients,
+        uncontrolled_patients: :assigned_patients,
+        controlled_patients_with_ltfu: :assigned_patients,
+        visited_without_bp_taken: :assigned_patients,
+        ltfu_patients: :cumulative_registrations
+      }
     end
 
-    def registrations_for_percentage_calculation_absolute(period)
-      if quarterly_report?
-        self[:cumulative_registrations][period.previous] || 0
-      else
-        cumulative_registrations_for(period)
-      end
+    def registrations_for_monthly_percentage
+      {
+        controlled_patients: :adjusted_registrations,
+        uncontrolled_patients: :adjusted_registrations,
+        controlled_patients_with_ltfu: :adjusted_registrations_with_ltfu,
+        visited_without_bp_taken: :adjusted_registrations,
+        ltfu_patients: :cumulative_registrations
+      }
     end
 
-    def registrations_for_percentage_calculation_denominator(period)
+    def denominator_for_percentage_calculation(period, key)
       if quarterly_report?
-        self[:denominator_registrations][period.previous] || 0
+        self[registrations_for_quarterly_percentage[key]][period.previous] || 0
       else
-        adjusted_registrations_for(period)
-      end
-
-    end
-
-    def registrations_for_percentage_calculation(period, key)
-      if key == :controlled_patients_with_ltfu
-        registrations_for_percentage_calculation_with_ltfu(period)
-      elsif key == :ltfu_patients
-        registrations_for_percentage_calculation_absolute(period)
-      else
-        registrations_for_percentage_calculation_denominator(period)
+        self[registrations_for_monthly_percentage[key]][period]
       end
     end
 
     def calculate_percentages(key)
       key_for_percentage_data = "#{key}_rate"
       self[key_for_percentage_data] = self[key].each_with_object(Hash.new(0)) { |(period, value), hsh|
-        hsh[period] = percentage(value, registrations_for_percentage_calculation(period, key))
+        hsh[period] = percentage(value, denominator_for_percentage_calculation(period, key))
       }
     end
 

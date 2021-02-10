@@ -24,36 +24,15 @@ module Reports
           return
         end
 
-        notify "starting state caching"
-        Statsd.instance.time("region_cache_warmer.states") do
-          cache_states
-        end
-        Statsd.instance.time("region_cache_warmer.with_exclusions.states") do
-          cache_states(with_exclusions: true)
-        end
+        notify "starting region caching"
+        Statsd.instance.time("region_cache_warmer") do
+          Region.where.not(region_type: ["root", "organization"]).find_each(batch_size: BATCH_SIZE) do |region|
+            RegionService.call(region: region, period: period)
+            Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
 
-        notify "starting facility_group caching"
-        Statsd.instance.time("region_cache_warmer.facility_groups") do
-          cache_facility_groups
-        end
-        Statsd.instance.time("region_cache_warmer.with_exclusions.facility_groups") do
-          cache_facility_groups(with_exclusions: true)
-        end
-
-        notify "starting block caching"
-        Statsd.instance.time("region_cache_warmer.blocks") do
-          cache_blocks
-        end
-        Statsd.instance.time("region_cache_warmer.with_exclusions.blocks") do
-          cache_blocks(with_exclusions: true)
-        end
-
-        notify "starting facility caching"
-        Statsd.instance.time("region_cache_warmer.facilities") do
-          cache_facilities
-        end
-        Statsd.instance.time("region_cache_warmer.with_exclusions.facilities") do
-          cache_facilities(with_exclusions: true)
+            RegionService.call(region: region, period: period, with_exclusions: true)
+            Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
+          end
         end
       }
       notify "finished", duration: duration
@@ -62,34 +41,6 @@ module Reports
     end
 
     private
-
-    def cache_states(with_exclusions: false)
-      Region.state_regions.each do |region|
-        RegionService.call(region: region, period: period, with_exclusions: with_exclusions)
-        Statsd.instance.increment("region_cache_warmer.states.cache")
-      end
-    end
-
-    def cache_facility_groups(with_exclusions: false)
-      FacilityGroup.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.call(region: region, period: period, with_exclusions: with_exclusions)
-        Statsd.instance.increment("region_cache_warmer.facility_groups.cache")
-      end
-    end
-
-    def cache_blocks(with_exclusions: false)
-      Region.block_regions.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.call(region: region, period: period, with_exclusions: with_exclusions)
-        Statsd.instance.increment("region_cache_warmer.blocks.cache")
-      end
-    end
-
-    def cache_facilities(with_exclusions: false)
-      Facility.find_each(batch_size: BATCH_SIZE).each do |region|
-        RegionService.call(region: region, period: period, with_exclusions: with_exclusions)
-        Statsd.instance.increment("region_cache_warmer.facilities.cache")
-      end
-    end
 
     def notify(msg, extra = {})
       data = {

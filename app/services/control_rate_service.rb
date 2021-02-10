@@ -41,7 +41,7 @@ class ControlRateService
 
   def fetch_all_data
     results.registrations = registration_counts
-    results.denominator_registrations = denominator_registration_counts
+    results.assigned_patients = assigned_patients_counts
     results.earliest_registration_period = registration_counts.keys.first
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period).count
@@ -58,7 +58,7 @@ class ControlRateService
 
     results.full_data_range.each do |(period, count)|
       results.controlled_patients[period] = controlled_patients(period).count
-      results.controlled_patients_with_ltfu[period] = controlled_patients_with_ltfu(period).count
+      results.controlled_patients_with_ltfu[period] = controlled_patients(period).count
       results.uncontrolled_patients[period] = uncontrolled_patients(period).count
     end
 
@@ -78,10 +78,10 @@ class ControlRateService
         .count
   end
 
-  def denominator_registration_counts
-    return @denominator_registration_counts if defined? @denominator_registration_counts
+  def assigned_patients_counts
+    return @assigned_patients_counts if defined? @assigned_patients_counts
 
-    @denominator_registration_counts =
+    @assigned_patients_counts =
       region.assigned_patients
         .for_reports(with_exclusions: with_exclusions)
         .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
@@ -97,29 +97,11 @@ class ControlRateService
 
   def controlled_patients(period)
     if period.quarter?
-      bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
-        .under_control
+      bp_quarterly_query(period).under_control
     else
       LatestBloodPressuresPerPatientPerMonth
         .with_discarded
-        .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
-          "latest_blood_pressures_per_patient_per_months")
-        .under_control
-    end
-  end
-
-  def controlled_patients_with_ltfu(period)
-    if period.quarter?
-      bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions)
-        .under_control
-    else
-      LatestBloodPressuresPerPatientPerMonth
-        .with_discarded
-        .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions),
+        .from(bp_monthly_query(period),
           "latest_blood_pressures_per_patient_per_months")
         .under_control
     end
@@ -127,14 +109,11 @@ class ControlRateService
 
   def uncontrolled_patients(period)
     if period.quarter?
-      bp_quarterly_query(period)
-        .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
-        .hypertensive
+      bp_quarterly_query(period).hypertensive
     else
       LatestBloodPressuresPerPatientPerMonth
         .with_discarded
-        .from(bp_monthly_query(period)
-                .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date),
+        .from(bp_monthly_query(period),
           "latest_blood_pressures_per_patient_per_months")
         .hypertensive
     end
@@ -148,6 +127,7 @@ class ControlRateService
     # Note that the deleted_at scoping piece is applied when the SQL view is created, so we don't need to worry about it here
     LatestBloodPressuresPerPatientPerMonth
       .with_discarded
+      .for_reports(with_exclusions: with_exclusions)
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .where(assigned_facility_id: facilities)
       .where("patient_recorded_at < ?", control_range.begin) # TODO this doesn't seem right -- revisit this exclusion
@@ -159,6 +139,7 @@ class ControlRateService
     quarter = period.value
     cohort_quarter = quarter.previous_quarter
     LatestBloodPressuresPerPatientPerQuarter
+      .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility_id: facilities)
       .where(year: quarter.year, quarter: quarter.number)
       .where("patient_recorded_at >= ? and patient_recorded_at <= ?", cohort_quarter.beginning_of_quarter, cohort_quarter.end_of_quarter)
