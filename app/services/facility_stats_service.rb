@@ -15,7 +15,7 @@ class FacilityStatsService
   end
 
   def call
-    facilities.each_pair do |_, facility_data|
+    facilities.values.each do |facility_data|
       add_facility_stats(facility_data)
       add_registrations_count(facility_data.region.source)
     end
@@ -39,8 +39,8 @@ class FacilityStatsService
   end
 
   def calculate_percentages
-    stats_by_size.each_pair do |_size, size_data|
-      size_data[:periods].each_pair do |_period, period_stats|
+    stats_by_size.values.each do |size_data|
+      size_data[:periods].values.each do |period_stats|
         adjusted_registrations = period_stats["adjusted_registrations"]
         next if adjusted_registrations == 0 || period_stats[rate_numerator] == 0
         period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_registrations.to_f * 100).round
