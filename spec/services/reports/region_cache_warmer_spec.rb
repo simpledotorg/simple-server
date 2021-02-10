@@ -40,7 +40,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     _facilities = FactoryBot.create_list(:facility, 5, block: "Block 1", facility_group: facility_group_1)
     # we don't cache the Root or Organization regions
     regions_to_cache = Region.count - 2
-    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Region))).exactly(regions_to_cache).times
+    expect(Reports::RegionService).to receive(:call).with(hash_including(region: instance_of(Region))).exactly(2 * regions_to_cache).times
     Reports::RegionCacheWarmer.call
   end
 end
