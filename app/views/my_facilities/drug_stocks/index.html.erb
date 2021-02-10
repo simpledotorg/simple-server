@@ -30,7 +30,7 @@
             <% last_n_months(n: 6, inclusive: true).each do |month| %>
               <% button_class = "dropdown-item query-filter-size filter-by-size" %>
               <% button_class = "dropdown-item active " if month.end_of_month == @for_end_of_month %>
-              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters">
                 <%= month.strftime("%b-%Y") %>
               </button>
             <% end %>
