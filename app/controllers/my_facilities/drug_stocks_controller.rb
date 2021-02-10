@@ -9,16 +9,26 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
   before_action :drug_stocks_enabled?
-  before_action :set_force_cache, only: [:index]
+  before_action :set_force_cache, only: [:drug_stocks, :drug_consumption]
 
-  def index
+  def drug_stocks
     @facilities = filter_facilities
       .includes(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true})
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     render && return if @facilities.empty?
     query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
-    @report = query.call
+    @report = query.drug_stocks_report
+    @drugs_by_category = query.protocol_drugs_by_category
+  end
+
+  def drug_consumption
+    @facilities = filter_facilities
+                    .includes(facility_group: :protocol_drugs)
+                    .where(protocol_drugs: {stock_tracked: true})
+    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
+    render && return if @facilities.empty?
+    query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
     @drugs_by_category = query.protocol_drugs_by_category
   end
 

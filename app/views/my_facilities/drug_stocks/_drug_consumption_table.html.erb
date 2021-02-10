@@ -1,5 +1,4 @@
 <table class="mt-3 table table-compact table-responsive-md table-hover analytics-table">
-
   <colgroup>
     <col>
     <% @drugs_by_category.map do |_drug_category, drugs| %>
@@ -71,7 +70,7 @@
           <td class="type-blank"><span>&#8212;</span></td>
         <% end %>
       <% end %>
-      <% @drugs_by_category.map do |drug_category, _drugs| %>
+      <% @drugs_by_category.map do |_drug_category, _drugs| %>
         <td class="type-blank"><span>&#8212;</span></td>
       <% end %>
       <td class="mobile"></td>

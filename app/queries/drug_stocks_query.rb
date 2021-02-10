@@ -18,21 +18,20 @@ class DrugStocksQuery
       .to_h
   end
 
-  def cache_key
-    [
-      self.class.name,
-      @facilities.map(&:id).sort,
-      @for_end_of_month,
-      @protocol.id,
-      @state,
-      CACHE_VERSION
-    ].join("/")
-  end
-
-  def call
-    Rails.cache.fetch(cache_key,
+  def drug_stocks_report
+    Rails.cache.fetch(drug_stocks_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
       force: RequestStore.store[:force_cache]) do
+      {all: totals,
+       facilities: report_for_facilities,
+       last_updated_at: Time.now}
+    end
+  end
+
+  def drug_consumption_report
+    Rails.cache.fetch(drug_consumption_cache_key,
+                      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
+                      force: RequestStore.store[:force_cache]) do
       {all: totals,
        facilities: report_for_facilities,
        last_updated_at: Time.now}
@@ -113,5 +112,27 @@ class DrugStocksQuery
     drug_stocks&.each_with_object({}) { |drug_stock, acc|
       acc[drug_stock.protocol_drug.id] = drug_stock
     }
+  end
+
+  def drug_stocks_cache_key
+    [
+      "#{self.class.name}#drug_stocks",
+      @facilities.map(&:id).sort,
+      @for_end_of_month,
+      @protocol.id,
+      @state,
+      CACHE_VERSION
+    ].join("/")
+  end
+
+  def drug_consumption_cache_key
+    [
+      "#{self.class.name}#drug_consumption",
+      @facilities.map(&:id).sort,
+      @for_end_of_month,
+      @protocol.id,
+      @state,
+      CACHE_VERSION
+    ].join("/")
   end
 end

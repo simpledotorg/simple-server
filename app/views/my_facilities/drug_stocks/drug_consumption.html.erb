@@ -4,7 +4,7 @@
       <div>
         <div class="d-flex align-baseline jc-between">
           <h3>
-            Drug stock on hand: end of <%= @for_end_of_month_display %>
+            Drug consumption during <%= @for_end_of_month_display %>
           </h3>
           <p class="c-grey-dark">
             Last updated: <%= @report&.fetch(:last_updated_at) %>
@@ -12,9 +12,12 @@
         </div>
 
         <p class="mb-4">
-          <!--a href="#" type="button" class="float-right ml-4 btn btn-sm btn-primary" data-toggle="modal" data-target="#DrugReportModal"><i class="fas fa-plus-circle mr-2"></i> Drug stock report</a-->
-          Patient days is calculated by comparing assigned patients against current stock on hand, normalized by
-          estimated patients at each step of the hypertension protocol. Hover over cells to see calculation.
+          Consumption is calculated by:
+          <span class="badge badge-light text-muted">CLOSING BALANCE OF PREVIOUS MONTH</span>
+          <small><i class="fas fa-plus"></i></small>
+          <span class="badge badge-light text-muted">STOCK RECEIVED THIS MONTH</span>
+          <small><i class="fas fa-minus"></i></small>
+          <span class="badge badge-light text-muted">CLOSING BALANCE OF THIS MONTH</span>
         </p>
         <p>
 
@@ -30,25 +33,15 @@
             <% last_n_months(n: 6, inclusive: true).each do |month| %>
               <% button_class = "dropdown-item query-filter-size filter-by-size" %>
               <% button_class = "dropdown-item active " if month.end_of_month == @for_end_of_month %>
-              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters" onclick="$('#selected-size').remove()">
+              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters">
                 <%= month.strftime("%b-%Y") %>
               </button>
             <% end %>
           </div>
         </div>
-        <div class="d-flex fw-wrap mb-16px">
-          <button class="btn btn-sm btn-link dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Download
-          </button>
-          <div class="dropdown-menu">
-            <button type="submit" name="period" value="May-2020" class="dropdown-item" form="query-filters">Download XLS
-              for <%= @for_end_of_month_display %>
-            </button>
-          </div>
-        </div>
       </div>
       <% if @facilities.present? %>
-        <%= render "table" %>
+        <%= render "drug_consumption_table" %>
       <% else %>
         <p>There is no data for this selection.</p>
       <% end %>
