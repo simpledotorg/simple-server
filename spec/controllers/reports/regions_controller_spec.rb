@@ -308,7 +308,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
                           period: {type: :month, value: one_month_before}}
       expect(response).to be_successful
       data = assigns(:data)
-      expect(data[:controlled_patients].size).to eq({})
+      expect(data[:controlled_patients]).to eq({})
       expect(data[:period_info]).to eq({})
     end
 
