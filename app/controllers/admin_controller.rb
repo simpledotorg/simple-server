@@ -5,14 +5,6 @@ class AdminController < ApplicationController
 
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
-  rescue_from ActiveRecord::RecordInvalid do
-    head :bad_request
-  end
-
-  rescue_from ActionController::ParameterMissing do
-    head :bad_request
-  end
-
   def switch_locale(&action)
     locale =
       Rails.application.config.country[:dashboard_locale].presence ||

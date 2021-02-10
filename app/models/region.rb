@@ -40,17 +40,19 @@ class Region < ApplicationRecord
     REGION_TYPES[current_index + 1]
   end
 
+  def reportable_children
+    return children if CountryConfig.current[:extended_region_reports]
+    legacy_children
+  end
+
+  # Legacy children are used for countries where we _don't_ want to display every level of the region hiearchy,
+  # like in Bangladesh for example.
   def legacy_children
     case region_type
     when "district" then facility_regions
     when "facility" then []
     else raise ArgumentError, "unsupported region_type #{region_type} for legacy_children"
     end
-  end
-
-  def reportable_children(region_reports_enabled: false)
-    return children if region_reports_enabled && CountryConfig.current[:extended_region_reports]
-    legacy_children
   end
 
   def accessible_children(admin, region_type: child_region_type, access_level: :any)

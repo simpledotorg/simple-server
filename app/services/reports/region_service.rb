@@ -29,7 +29,7 @@ module Reports
 
     def call
       result = ControlRateService.new(region, periods: range, with_exclusions: with_exclusions).call
-      result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range, with_exclusions: with_exclusions).call
+      result.visited_without_bp_taken = repository.no_bp_measure_count[region.slug]
       result.calculate_percentages(:visited_without_bp_taken)
 
       start_period = [result.earliest_registration_period, range.begin].compact.max
@@ -42,6 +42,10 @@ module Reports
     end
 
     private
+
+    def repository
+      @repository ||= Reports::Repository.new(region, periods: range, with_exclusions: with_exclusions)
+    end
 
     # We want the current quarter and then the previous four
     def last_five_quarters
