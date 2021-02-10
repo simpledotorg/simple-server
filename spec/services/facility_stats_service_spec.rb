@@ -5,23 +5,6 @@ RSpec.describe FacilityStatsService do
   let(:december) { Date.parse("12-01-2020").beginning_of_month }
   let(:period) { Period.month(december) }
 
-  def setup_for_size(size, month = december)
-    Timecop.freeze(month) do
-      facility1 = create(:facility, name: "#{size}_1", facility_size: size)
-      facility2 = create(:facility, name: "#{size}_2", facility_size: size)
-      controlled = create_list(:patient, 2, :without_hypertension, full_name: "#{size}_controlled", registration_facility: facility1, recorded_at: month)
-      uncontrolled = create_list(:patient, 1, :hypertension, full_name: "#{size}_uncontrolled", registration_facility: facility2, recorded_at: month)
-      # recorded_at needs to be in a month after registration in order to appear in control rate data
-      controlled.each do |patient|
-        create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility, recorded_at: month + 1.month)
-      end
-      uncontrolled.each do |patient|
-        create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility, recorded_at: month + 1.month)
-      end
-      [facility1, facility2]
-    end
-  end
-
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
@@ -54,11 +37,48 @@ RSpec.describe FacilityStatsService do
     end
 
     it "accurately tallies stats for facilities by size and period" do
-      small_facilities = setup_for_size("small", december - 5.months)
-      medium_facilities = setup_for_size("medium", december - 4.months)
-      large_facilities = setup_for_size("large", december - 3.months)
+      small_facility1 = create(:facility, name: "small_1", facility_size: "small")
+      small_facility2 = create(:facility, name: "small_2", facility_size: "small")
+      small_controlled = create_list(:patient, 2, full_name: "small_controlled",
+                                                  registration_facility: small_facility1, recorded_at: december - 5.months)
+      small_uncontrolled = create(:patient, full_name: "small_uncontrolled", registration_facility: small_facility2,
+                                            recorded_at: december - 5.months)
+      # recorded_at needs to be in a month after registration in order to appear in control rate data
+      small_controlled.each do |patient|
+        create(:blood_pressure, :under_control, patient: patient, facility: patient.assigned_facility,
+                                                recorded_at: december - 4.months)
+      end
+      create(:blood_pressure, :hypertensive, patient: small_uncontrolled, facility: small_uncontrolled.assigned_facility,
+                                             recorded_at: december - 4.months)
+
+      medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium")
+      medium_facility2 = create(:facility, name: "medium_2", facility_size: "medium")
+      medium_controlled = create(:patient, full_name: "medium_controlled", registration_facility: medium_facility1,
+                                           recorded_at: december - 4.months)
+      medium_uncontrolled = create(:patient, full_name: "medium_uncontrolled", registration_facility: medium_facility2,
+                                             recorded_at: december - 4.months)
+      create(:blood_pressure, :under_control, patient: medium_controlled,
+                                              facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
+      create(:blood_pressure, :hypertensive, patient: medium_uncontrolled,
+                                             facility: medium_controlled.assigned_facility, recorded_at: december - 3.months)
+
+      large_facility1 = create(:facility, name: "large_1", facility_size: "large")
+      large_facility2 = create(:facility, name: "large_2", facility_size: "large")
+      large_controlled = create(:patient, full_name: "large_controlled", registration_facility: large_facility1,
+                                          recorded_at: december - 3.months)
+      large_uncontrolled = create_list(:patient, 2, full_name: "large_uncontrolled",
+                                                    registration_facility: large_facility2, recorded_at: december - 3.months)
+      create(:blood_pressure, :under_control, patient: large_controlled, facility: large_controlled.assigned_facility,
+                                              recorded_at: december - 2.months)
+      large_uncontrolled.each do |patient|
+        create(:blood_pressure, :hypertensive, patient: patient, facility: patient.assigned_facility,
+                                               recorded_at: december - 2.months)
+      end
+
+      all_facilities = [small_facility1, small_facility2, medium_facility1,
+        medium_facility2, large_facility1, large_facility2]
       refresh_views
-      all_facilities = small_facilities + medium_facilities + large_facilities
+
       stats_by_size = FacilityStatsService.call(facilities: facilities_data(all_facilities),
                                                 ending_period: period, rate_numerator: :controlled_patients)
 
@@ -70,16 +90,16 @@ RSpec.describe FacilityStatsService do
       expect(small.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 67, 0, 0]
 
       medium = stats_by_size[:medium][:periods]
-      expect(medium.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 2, 0]
-      expect(medium.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 3, 3]
-      expect(medium.map { |_, v| v[:cumulative_registrations] }).to eq [0, 3, 3, 3, 3, 3]
-      expect(medium.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 67, 0]
+      expect(medium.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 1, 0]
+      expect(medium.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 2, 2]
+      expect(medium.map { |_, v| v[:cumulative_registrations] }).to eq [0, 2, 2, 2, 2, 2]
+      expect(medium.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 50, 0]
 
       large = stats_by_size[:large][:periods]
-      expect(large.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 0, 2]
+      expect(large.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 0, 1]
       expect(large.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 0, 3]
       expect(large.map { |_, v| v[:cumulative_registrations] }).to eq [0, 0, 3, 3, 3, 3]
-      expect(large.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 0, 67]
+      expect(large.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 0, 33]
     end
 
     it "processes data for controlled_patients" do
@@ -116,15 +136,22 @@ RSpec.describe FacilityStatsService do
       expect(stat_values).to match_array([0, 0, 0, 0])
     end
 
-    it "sets total_registered_patients for each size" do
+    it "sets total_registered_hypertensive_patients for each size" do
       small_facility
-      medium_facilities = setup_for_size("medium", december - 5.months)
+      month = december - 4.months
+      medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium")
+      medium_facility2 = create(:facility, name: "medium_2", facility_size: "medium")
+      create_list(:patient, 2, :hypertension, full_name: "medium_uncontrolled",
+                                              registration_facility: medium_facility1, recorded_at: month)
+      create_list(:patient, 1, :without_hypertension, full_name: "medium_controlled",
+                                                      registration_facility: medium_facility2, recorded_at: month)
+      facilities = [small_facility, medium_facility1, medium_facility2]
       refresh_views
-      all_facilities = facilities_data([small_facility] + medium_facilities)
-      stats_by_size = FacilityStatsService.call(facilities: all_facilities,
+      facilities_reports = facilities_data(facilities)
+      stats_by_size = FacilityStatsService.call(facilities: facilities_reports,
                                                 ending_period: period, rate_numerator: :controlled_patients)
-      expect(stats_by_size[:small][:total_registered_patients]).to eq 0
-      expect(stats_by_size[:medium][:total_registered_patients]).to eq 1
+      expect(stats_by_size[:small][:total_registered_hypertensive_patients]).to eq 0
+      expect(stats_by_size[:medium][:total_registered_hypertensive_patients]).to eq 2
     end
   end
 end

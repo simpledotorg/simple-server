@@ -16,8 +16,8 @@ class FacilityStatsService
 
   def call
     facilities.each_pair do |_, facility_data|
-       add_facility_stats(facility_data)
-       add_registrations_count(facility_data.region.source)
+      add_facility_stats(facility_data)
+      add_registrations_count(facility_data.region.source)
     end
     calculate_percentages
     stats_by_size
@@ -35,7 +35,6 @@ class FacilityStatsService
       current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
       current_period[:adjusted_registrations] += facility_data[:adjusted_registrations][period]
       current_period["cumulative_registrations"] += facility_data["cumulative_registrations"][period]
-# binding.pry
     end
   end
 
@@ -50,22 +49,24 @@ class FacilityStatsService
   end
 
   def add_registrations_count(facility)
-    stats_by_size[facility.facility_size][:total_registered_patients] += facility.registered_hypertension_patients.count
+    hypertensive_count = facility.registered_hypertension_patients.count
+    stats_by_size[facility.facility_size][:total_registered_hypertensive_patients] += hypertensive_count
   end
 
   def add_size_section(size)
-    stats_by_size[size] = { periods: period_data_template, total_registered_patients: 0 }.with_indifferent_access
+    stats_by_size[size] = {
+      periods: period_data_template, total_registered_hypertensive_patients: 0
+    }.with_indifferent_access
   end
 
   def period_data_template
-    periods.reverse.inject({}) do |hsh, period|
+    periods.reverse.each_with_object({}) do |period, hsh|
       hsh[period] = {
         rate_numerator => 0,
         "adjusted_registrations" => 0,
         "cumulative_registrations" => 0,
         rate_name => 0
       }.with_indifferent_access
-      hsh
     end
   end
 end
