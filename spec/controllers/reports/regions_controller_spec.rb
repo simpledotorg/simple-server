@@ -143,7 +143,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
   end
 
   context "show" do
-    render_views_on_ci
+    render_views
 
     before do
       @facility_group = create(:facility_group, organization: organization)
@@ -294,6 +294,27 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:uncontrolled_patients_rate][Period.month("Feb 2020")]).to eq(50)
       expect(data[:missed_visits][Period.month("September 2019")]).to eq(1)
       expect(data[:missed_visits][Period.month("May 2020")]).to eq(2)
+    end
+
+    it "works when a user requests data before the earliest registration date" do
+      Time.parse("January 1 2020")
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+      one_month_before = patient.recorded_at.advance(months: -1)
+      pp patient.recorded_at
+      pp one_month_before
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                            period: {type: :month, value: one_month_before}}
+      end
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients].size).to eq(10) # sanity check
+      expect(data[:controlled_patients][Date.parse("Dec 2019").to_period]).to eq(1)
     end
   end
 
