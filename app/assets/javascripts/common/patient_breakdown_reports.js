@@ -168,7 +168,34 @@ PatientBreakdownReports = function () {
         }
       }
     }
+    breakdownChartConfig.options.layout.padding.left = 30;
+    breakdownChartConfig.options.layout.padding.right = 30;
 
+    breakdownChartConfig.options.tooltips = {
+      caretSize: 0,
+      backgroundColor: "rgba(0,0,0,0.6)",
+      xPadding: 10,
+      yPadding: 10,
+      displayColors: false,
+      titleFontSize: 15,
+      titleFontFamily: "Roboto Condensed",
+      bodyFontSize: 14,
+      bodyFontFamily: "Roboto Condensed",
+      callbacks: {
+        title: ([tooltipItem], tooltipData) => {
+          const label = tooltipData.labels[tooltipItem.index];
+          return chartLabelDescriptions[label];
+        },
+        label: (tooltipItem, tooltipData) => {
+          const label = tooltipData.labels[tooltipItem.index];
+          let tooltipBody = [`Total: ${data[label]}`];
+          if(transferredPatients[label]) {
+            tooltipBody.push(`Transferred: ${transferredPatients[label]}`)
+          }
+          return tooltipBody;
+        },
+      }
+    }
 
     const breakdownChartCanvas = document.getElementById("patientBreakdownCanvas");
     if (breakdownChartCanvas) {
