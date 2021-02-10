@@ -27,7 +27,7 @@
         <% if @facility_sizes.empty? %>
           <%= render "shared/my_facilities_table_empty_state" %>
         <% end %>
-        <% @facility_sizes.each do |size| %>
+        <% @display_sizes.each do |size| %>
           <p class="mt-18px mb-0px fw-bold mt-lg-24px">
             <%= Facility.localized_facility_size(size) %>
           </p>
