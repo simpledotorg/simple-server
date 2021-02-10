@@ -124,14 +124,22 @@ PatientBreakdownReports = function () {
   this.initializePatientBreakdownChart = () => {
     const data = this.getPatientBreakdownData();
 
-    const chartSegments = ["ltfu_patients", "not_ltfu_patients", "dead_patients"]
-    const chartLabels = ["Lost to follow-up", "Not lost to follow-up", "Died"]
-    let chartData = chartSegments.map(el => data[el])
-    let total = data["total_patients"]
-    let percentLabels = {
-      "Lost to follow-up": "10%",
-      "Not lost to follow-up": "40%",
-      "Died": "50%"
+    const chartLabelDescriptions = {
+      "ltfu_patients": "Lost to follow-up",
+      "not_ltfu_patients": "Not lost to follow-up",
+      "dead_patients": "Died"
+    }
+    const chartLabels = Object.keys(chartLabelDescriptions)
+    const chartData = chartLabels.map(el => data[el])
+
+    let percentLabels = {}
+    for(label of chartLabels){
+      percentLabels[label] = this.percentage(data[label], data["total_patients"])
+    }
+
+    const transferredPatients = {
+      ltfu_patients: data["ltfu_transferred_patients"],
+      not_ltfu_patients: data["not_ltfu_transferred_patients"],
     }
 
     const breakdownChartConfig = reports.createBaseGraphConfig();
@@ -153,10 +161,22 @@ PatientBreakdownReports = function () {
         }
       }]
     };
+    breakdownChartConfig.options.plugins = {
+      datalabels: {
+        formatter: (value, context) => {
+          return percentLabels[context.chart.data.labels[context.dataIndex]];
+        }
+      }
+    }
+
 
     const breakdownChartCanvas = document.getElementById("patientBreakdownCanvas");
     if (breakdownChartCanvas) {
       new Chart(breakdownChartCanvas.getContext("2d"), breakdownChartConfig);
     }
+  }
+
+  this.percentage = (numerator, denominator) => {
+    return `${((numerator/denominator)*100).toFixed(1)}%`
   }
 }
