@@ -29,7 +29,7 @@ class CountryConfig
     ET: {
       abbreviation: "ET",
       name: "Ethiopia",
-      extended_region_reports: false,
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["Ethiopia"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_ET",
       faker_locale: "en-IND",
