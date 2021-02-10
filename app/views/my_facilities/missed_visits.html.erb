@@ -6,8 +6,8 @@
           <h3 class="mb-8px mb-lg-0">
             Missed visits
           </h3>
-          <p class="fs-italic c-grey-dark">
-            Last updated: <%= @last_updated_at %>
+          <p class="c-grey-medium">
+            Last updated on <%= @last_updated_at %>
           </p>
         </div>
         <p class="mb-4px c-grey-dark">
@@ -20,15 +20,15 @@
       <div class="d-flex fw-wrap mb-16px ph-16px">
         <%= render "shared/my_facilities_filters" %>
       </div>
+      <%= render "shared/facility_size_overview",
+            rate_name: "missed_visits_rate",
+            is_increase_positive: false %>
       <div class="ph-16px pb-16px">
-        <%= render "shared/facility_size_overview",
-              rate_name: "missed_visits_rate",
-              is_increase_positive: false %>
         <% if @facility_sizes.empty? %>
           <%= render "shared/my_facilities_table_empty_state" %>
         <% end %>
         <% @facility_sizes.each do |size| %>
-          <p class="mt-24px mb-0px fw-bold">
+          <p class="mt-18px mb-0px fw-bold mt-lg-24px">
             <%= Facility.localized_facility_size(size) %>
           </p>
           <table class="mt-12px table table-compact table-responsive-md table-hover analytics-table tl-fixed">
