@@ -1,7 +1,7 @@
 <% positive_number_color = is_increase_positive ? "c-green-dark" : "c-red-dark" %>
 <% negative_number_color = is_increase_positive ? "c-red-dark" : "c-green-dark" %>
 <div class="ox-scroll oy-hidden ws-nowrap d-lg-flex">
-  <% @facility_sizes.each_with_index do |size, i| %>
+  <% @display_sizes.each_with_index do |size, i| %>
     <div class="d-inline-block w-200px flex-lg-1 mb-8px mb-lg-0 <% if i == 0 %>pl-16px<% elsif i != 0 %>pl-24px pl-lg-16px bl-1px bc-grey-light<% end %>">
       <p class="mb-4px fw-bold c-grey-dark">
         All <%= Facility.localized_facility_size(size) %>s
