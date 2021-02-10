@@ -101,7 +101,7 @@ class MyFacilitiesController < AdminController
       data_for_stats[facility.name] = result
     end
     sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
-    @display_sizes = @facility_sizes.select {|size| sizes.include? size }
+    @display_sizes = @facility_sizes.select { |size| sizes.include? size }
     @stats_by_size = FacilityStatsService.call(facilities: data_for_stats, period: @period, rate_numerator: type)
   end
 end
