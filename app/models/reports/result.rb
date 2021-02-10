@@ -85,7 +85,7 @@ module Reports
     end
 
     def last_value(key)
-      self[key].values.last || 0
+      self[key].values.last
     end
 
     def last_key(key)
