@@ -26,18 +26,18 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     Flipper.disable(:drug_stocks)
   end
 
-  describe "GET #index" do
+  describe "GET #drug_stocks" do
     context "as power_user" do
       it "returns a success response" do
         sign_in(power_user.email_authentication)
 
-        get :index, params: {}
+        get :drug_stocks, params: {}
         expect(response).to be_successful
       end
 
       it "only include facilities with tracked protocol drugs" do
         sign_in(power_user.email_authentication)
-        get :index, params: {facility_group: facility_group_with_stock_tracked.slug}
+        get :drug_stocks, params: {facility_group: facility_group_with_stock_tracked.slug}
 
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
         expect(assigns(:facilities)).not_to include(*facility_group.facilities)
@@ -47,7 +47,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     context "as manager" do
       it "only include facilities with tracked protocol drugs, and manager has access" do
         sign_in(manager.email_authentication)
-        get :index, params: {}
+        get :drug_stocks, params: {}
 
         expect(assigns(:facilities)).to contain_exactly(allowed_facility_for_manager)
       end
@@ -56,7 +56,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     context "as viewer_reports_only" do
       it "only include facilities with tracked protocol drugs, and viewer has access" do
         sign_in(report_viewer.email_authentication)
-        get :index, params: {}
+        get :drug_stocks, params: {}
 
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
       end

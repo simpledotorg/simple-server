@@ -128,12 +128,12 @@ RSpec.describe DrugStocksQuery do
     it "caches for a given set of facilities and month" do
       facilities = create_list(:facility, 3, facility_group: facility_group)
 
-      ck_this_month = described_class.new(facilities: facilities, for_end_of_month: Date.today.end_of_month).cache_key
-      ck_next_month = described_class.new(facilities: facilities, for_end_of_month: 1.month.from_now.end_of_month).cache_key
+      ck_this_month = described_class.new(facilities: facilities, for_end_of_month: Date.today.end_of_month).drug_stocks_cache_key
+      ck_next_month = described_class.new(facilities: facilities, for_end_of_month: 1.month.from_now.end_of_month).drug_stocks_cache_key
       expect(ck_this_month).not_to eq(ck_next_month)
 
       facility = create(:facility, facility_group: facility_group)
-      ck_this_month_with_facility = described_class.new(facilities: facilities << facility, for_end_of_month: Date.today.end_of_month).cache_key
+      ck_this_month_with_facility = described_class.new(facilities: facilities << facility, for_end_of_month: Date.today.end_of_month).drug_stocks_cache_key
       expect(ck_this_month).not_to eq(ck_this_month_with_facility)
     end
   end
