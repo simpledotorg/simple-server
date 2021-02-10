@@ -10,7 +10,7 @@ RSpec.describe PatientBreakdownService do
   let!(:not_hypertensive_patient) { create(:patient, :without_hypertension, assigned_facility: facility) }
   let!(:blood_pressures) {
     [create(:blood_pressure, recorded_at: 1.day.ago, patient: not_ltfu_patient),
-     create(:blood_pressure, recorded_at: 1.day.ago, patient: not_ltfu_transferred_patient)]
+      create(:blood_pressure, recorded_at: 1.day.ago, patient: not_ltfu_transferred_patient)]
   }
 
   let!(:memory_store) { ActiveSupport::Cache.lookup_store(:redis_store) }

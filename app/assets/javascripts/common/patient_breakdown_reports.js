@@ -17,9 +17,7 @@ PatientBreakdownReports = function () {
   }
 
   this.getPatientBreakdownData = () => {
-    const jsonData = JSON.parse(reports.getChartDataNode().textContent)["patient_breakdown"];
-
-    return jsonData;
+    return JSON.parse(reports.getChartDataNode().textContent)["patient_breakdown"];
   }
 
   this.initializeCharts = () => {
@@ -170,7 +168,6 @@ PatientBreakdownReports = function () {
     }
     breakdownChartConfig.options.layout.padding.left = 30;
     breakdownChartConfig.options.layout.padding.right = 30;
-
     breakdownChartConfig.options.tooltips = {
       caretSize: 0,
       backgroundColor: "rgba(0,0,0,0.6)",
