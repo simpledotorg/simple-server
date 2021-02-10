@@ -26,7 +26,7 @@
                   <span data-missed-visits-patients="<%= number_with_delimiter(@data.last_value(:missed_visits)) %>">
                     <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
                   </span>
-                  patients with no visit from 
+                  patients with no visit from
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
                     <%= @data.last_value(:period_info)["bp_control_start_date"] %>
                   </span>
@@ -38,7 +38,7 @@
                 <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
                   </span>
                   patients registered till
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
@@ -72,22 +72,22 @@
                     <%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>
                   </span>
                   patients with a visit but no BP taken from
-                  <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
-                    <%= @data.last_value(:period_info)["bp_control_start_date"] %>
+                  <span data-period-start="<%= @period.bp_control_range_start_date %>">
+                    <%= @period.bp_control_range_start_date %>
                   </span>
                   to
-                  <span data-period-end="<%= @data.last_value(:period_info)["bp_control_end_date"] %>">
-                    <%= @data.last_value(:period_info)["bp_control_end_date"] %>
+                  <span data-period-end="<%= @period.bp_control_range_end_date %>">
+                    <%= @period.bp_control_range_end_date %>
                   </span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
                   </span>
                   patients registered till
-                  <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
-                    <%= @data.last_value(:period_info)["bp_control_start_date"] %>
+                  <span data-period-start="<%= @period.bp_control_range_start_date %>">
+                    <%= @period.bp_control_range_start_date %>
                   </span>
                 </p>
               <% else %>
@@ -128,7 +128,7 @@
                 <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
                   </span>
                   patients registered till
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">
@@ -173,7 +173,7 @@
                 <p class="m-0px c-grey-dark c-print-black">
                   of
                   <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %> 
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
                   </span>
                   patients registered till
                   <span data-period-start="<%= @data.last_value(:period_info)["bp_control_start_date"] %>">

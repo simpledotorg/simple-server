@@ -230,8 +230,8 @@
           </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:cumulative_registrations).zero? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>">
-            <% if @data.last_value(:cumulative_registrations).zero? %>
+          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>">
+            <% if @data.last_value(:cumulative_registrations).blank? %>
               No data
             <% else %>
               <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
