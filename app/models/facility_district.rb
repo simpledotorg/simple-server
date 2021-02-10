@@ -70,6 +70,10 @@ class FacilityDistrict
     ["facility_districts", id].join("/")
   end
 
+  def slug
+    name.parameterize
+  end
+
   def cache_version
     updated_at.utc.to_s(:usec)
   end

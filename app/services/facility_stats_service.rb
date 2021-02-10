@@ -55,11 +55,11 @@ class FacilityStatsService
 
   def add_size_section(size)
     stats_by_size[size] = {
-      periods: period_data_template, total_registered_hypertensive_patients: 0
+      periods: size_data_template, total_registered_hypertensive_patients: 0
     }.with_indifferent_access
   end
 
-  def period_data_template
+  def size_data_template
     periods.reverse.each_with_object({}) do |period, hsh|
       hsh[period] = {
         rate_numerator => 0,
