@@ -20,8 +20,8 @@ class PatientBreakdownService
 
       {
         dead_patients: patients.status_dead.count,
-        ltfu_patients: patients.ltfu_as_of(now).count,
-        not_ltfu_patients: patients.not_ltfu_as_of(now).count,
+        ltfu_patients: patients.excluding_dead.ltfu_as_of(now).count,
+        not_ltfu_patients: patients.excluding_dead.not_ltfu_as_of(now).count,
         ltfu_transferred_patients: patients.ltfu_as_of(now).status_migrated.count,
         not_ltfu_transferred_patients: patients.not_ltfu_as_of(now).status_migrated.count,
         total_patients: patients.count
