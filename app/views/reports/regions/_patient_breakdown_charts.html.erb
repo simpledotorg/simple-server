@@ -8,7 +8,7 @@
           </h3>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-purple<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
+          <p class="mb-0px fs-32px fw-bold <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-blue-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
             <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
               <%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>
             <% else %>
@@ -84,15 +84,21 @@
         <div class="h-300px w-250px mb-12px ml-13px mr-13px">
           <canvas id="patientBreakdownCanvas"></canvas>
         </div>
-        <div class="h-300px mr-16px mb-12px ml-13px w-lg-25">
-          <strong>Add legend here</strong>
-          <br/>
-          <br/>
-          Red: Not lost to follow-up
-          <br/>
-          Green: Lost to follow-up
-          <br/>
-          Blue: Died
+        <div class="d-flex fd-column justify-center">
+          <div class="h-100px mr-16px mb-12px ml-lg-5 ml-2 w-lg-25">
+            <p class="mb-1">
+              <span class="legend-label legend-green"></span>
+              Not lost to follow-up
+            </p>
+            <p class="mb-1">
+              <span class="legend-label legend-blue"></span>
+              Lost to follow-up
+            </p>
+            <p class="mb-1">
+              <span class="legend-label legend-red"></span>
+              Died
+            </p>
+          </div>
         </div>
         <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
           <% if @chart_data[:patient_breakdown][:total_patients] == 0 %>

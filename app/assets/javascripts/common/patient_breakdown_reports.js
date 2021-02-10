@@ -35,8 +35,8 @@ PatientBreakdownReports = function () {
       labels: Object.keys(data.ltfuPatientsRate),
       datasets: [{
         label: "Lost to follow up",
-        backgroundColor: reports.lightPurpleColor,
-        borderColor: reports.darkPurpleColor,
+        backgroundColor: reports.lightBlueColor,
+        borderColor: reports.darkBlueColor,
         borderWidth: 2,
         pointBackgroundColor: reports.whiteColor,
         hoverBackgroundColor: reports.whiteColor,
@@ -143,9 +143,9 @@ PatientBreakdownReports = function () {
         borderWidth: 1,
         data: chartData,
         backgroundColor: [
-          reports.mediumRedColor,
+          reports.darkBlueColor,
           reports.mediumGreenColor,
-          reports.mediumBlueColor
+          reports.mediumRedColor
         ],
         datalabels: {
           anchor: "end",

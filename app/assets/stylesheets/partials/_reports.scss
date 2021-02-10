@@ -41,6 +41,7 @@
 .h-12px { height: 12px; }
 .h-10pt { height: 10%; }
 .h-20px { height: 20px; }
+.h-100px { height: 100px; }
 .h-100pt { height: 100%; }
 .h-200px { height: 200px; }
 .h-300px { height: 300px; } 
@@ -79,6 +80,7 @@
 .c-red { color: $red; }
 .c-red-dark { color: $red-dark; }
 .c-blue { color: $blue; }
+.c-blue-dark { color: $blue-dark; }
 .c-black { color: $black; }
 .c-transparent { color: transparent; }
 .c-grey-dark:hover { color: $grey-dark; }
@@ -187,3 +189,16 @@
   .br-lg-grey-light { border-right-color: $grey-light; }
   .bb-lg-none { border-bottom: none; }
 }
+.legend-label {
+  display: inline-block;
+  height: 15px;
+  width: 15px;
+  border-radius: 3px;
+  vertical-align: text-top;
+  position: relative;
+  top: 1px;
+  margin-right: 4px;
+}
+.legend-red { background-color: $red }
+.legend-green { background-color: $green }
+.legend-blue { background-color: $blue-dark; }
