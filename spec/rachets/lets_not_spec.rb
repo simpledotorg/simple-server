@@ -4,7 +4,7 @@ RSpec.describe "Rachet down usage of let!" do
   expected_usages = 698
 
   it "ratchets down let!" do
-    command = %{grep -rn "let\!(:" spec}
+    command = %{grep -rn "\slet\!(:" spec}
     offending_lines = `#{command}`
     actual_usages = offending_lines.split("\n").count
 
