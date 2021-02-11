@@ -3,11 +3,29 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bp-controlled" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <div class="pt-20px px-20px pr-0">
+      <div class="pt-20px px-20px">
         <div class="mb-16px d-flex">
-          <h3 class="mb-0px w-75">
-            BP controlled
-          </h3>
+          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+            <div class="d-flex flex-1">
+              <h3 class="mb-0px mr-8px">
+                BP controlled 
+              </h3>
+              <span class="p-relative t-1px">
+                <i
+                  class="fas fa-question-circle fs-14px c-grey-dark"
+                  data-toggle="tooltip"
+                  data-placement="right"
+                  data-trigger="hover click"
+                  title="Numerator: <%= t("numerator_copy.bp_controlled") %>"
+                >
+                </i>
+              </span>
+            </div>
+          <% else %>
+            <h3 class="mb-0px w-75">
+              BP controlled
+            </h3>
+          <% end %>
           <% if current_admin.feature_enabled?(:report_with_exclusions) && current_admin.power_user? %>
             <div class="align-right custom-control custom-switch">
               <form method="get">
