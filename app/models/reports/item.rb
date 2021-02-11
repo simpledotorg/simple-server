@@ -15,4 +15,5 @@ module Reports
 
     alias_method :to_s, :cache_key
   end
+
 end

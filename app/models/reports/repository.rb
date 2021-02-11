@@ -18,6 +18,32 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
+    class RegionItem
+      def initialize(region, calculation, **options)
+        @region = region
+        @calculation = calculation
+        @options = options.to_a
+      end
+
+      def cache_key
+        [@region.cache_key, @calculation, @options].join("/")
+      end
+
+      alias_method :to_s, :cache_key
+      attr_reader :region
+    end
+
+    def assigned_patients_count
+      items = regions.map { |region| RegionItem.new(region, :assigned_patients_count, with_exclusions: with_exclusions) }
+
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
+        AssignedPatientsQuery.new.count(item.region, :month, with_exclusions: with_exclusions)
+      }
+      cached_results.each_with_object({}) do |(item, result), results|
+        results[item.region.slug] = result
+      end
+    end
+
     def controlled_patients_count
       cached_query(:controlled_patients_count) do |item|
         control_rate_query.controlled(item.region, item.period, with_exclusions: with_exclusions).count

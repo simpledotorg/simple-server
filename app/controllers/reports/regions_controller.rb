@@ -36,10 +36,22 @@ class Reports::RegionsController < AdminController
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
 
     @children = @region.reportable_children
+
+    repository = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
+
     @children_data = @children.map { |child|
-      Reports::RegionService.new(region: child,
-                                 period: @period,
-                                 with_exclusions: report_with_exclusions?).call
+      result = Reports::Result.new(region: child, period_type: @period.type)
+      result.registrations = repository.assigned_patients_count[child.slug]
+      result.registrations_with_exclusions = repository.assigned_patients_count[child.slug]
+      result.earliest_registration_period = result.registrations.keys.first
+      result.fill_in_nil_registrations
+      result.count_cumulative_registrations
+      result.count_adjusted_registrations
+      result.controlled_patients = repository.controlled_patients_count[child.slug]
+      result.uncontrolled_patients = repository.uncontrolled_patients_count[child.slug]
+      result.calculate_percentages(:controlled_patients)
+      result.calculate_percentages(:uncontrolled_patients)
+      result
     }
   end
 

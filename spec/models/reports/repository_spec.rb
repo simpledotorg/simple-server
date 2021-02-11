@@ -22,6 +22,47 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
+  it "gets registration counts for single region" do
+    facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+    facility_1, facility_2 = facilities.take(2)
+
+    _facility_1_registered = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+
+    repo = Reports::Repository.new(facility_1.region, periods: jan_2019.to_period)
+    expected = {
+      facility_1.slug => {
+        jan_2019.to_period => 2
+      }
+    }
+    expect(repo.assigned_patients_count).to eq(expected)
+  end
+
+  it "gets controlled counts for single region" do
+    facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+    facility_1, facility_2 = facilities.take(2)
+    facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_1_uncontrolled = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_2_controlled = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+    Timecop.freeze(jan_2020) do
+      (facility_1_controlled << facility_2_controlled).map do |patient|
+        create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
+      end
+      facility_1_uncontrolled.map do |patient|
+        create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
+      end
+    end
+    refresh_views
+
+    expected = {
+      facility_1.slug => {
+        jan_2020.to_period => 2
+      }
+    }
+    repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
+    expect(repo.controlled_patients_count).to eq(expected)
+  end
+
   it "gets controlled info for one month" do
     facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1).sort_by(&:slug)
     facility_1, facility_2, facility_3 = *facilities.take(3)
