@@ -13,7 +13,7 @@ RSpec.describe PatientBreakdownService do
       create(:blood_pressure, recorded_at: 1.day.ago, patient: not_ltfu_transferred_patient)]
   }
 
-  let!(:memory_store) { ActiveSupport::Cache.lookup_store(:redis_store) }
+  let!(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
   let!(:cache) { Rails.cache }
 
   before do
