@@ -57,17 +57,20 @@
 // Spacing
 .mt-12px { margin-top: 12px; }
 .mt-18px { margin-top: 18px; }
+.mt-20px { margin-top: 20px; }
 .mt-24px { margin-top: 24px; }
 .mb-0px { margin-bottom: 0px; }
 .mb-8px { margin-bottom: 8px; }
 .mb-20px { margin-bottom: 20px; }
 .mx-20px { margin-right: 20px; margin-left: 20px; }
 .mr-4px { margin-right: 4px; }
+.mr-6px { margin-right: 6px; }
 .mr-8px { margin-right: 8px; }
 .pb-8px { padding-bottom: 8px; }
 .pb-16px { padding-bottom: 16px; }
 .pl-16px { padding-left: 16px; }
 .pl-24px { padding-left: 24px; }
+.pt-8px { padding-top: 8px; }
 .pt-16px { padding-top: 16px; }
 .py-40px { padding-top: 40px; padding-bottom: 40px; }
 .ph-16px { padding-right: 16px; padding-left: 16px; }
@@ -115,6 +118,7 @@
 .bb-grey-light { border-bottom-color: $grey-light; }
 .bb-grey-medium { border-bottom-color: $grey-mid; }
 .bb-red { border-bottom-color: $red; }
+.bt-grey-light { border-top-color: $grey-light; }
 .bt-grey-medium { border-top-color: $grey-mid; }
 .bt-purple-dark { border-top-color: $purple; }
 .bl-grey-medium { border-left-color: $grey-mid; }
