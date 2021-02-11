@@ -112,7 +112,7 @@ class PatientsExporter
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
-      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status],
+      status(patient_summary),
       patient_summary.latest_phone_number,
       patient_summary.street_address,
       patient_summary.village_or_colony,
@@ -190,5 +190,18 @@ class PatientsExporter
   def latest_blood_sugar_type(patient_summary)
     patient_summary.latest_blood_sugar_type.presence &&
       BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type]
+  end
+
+  def status(patient_summary)
+    if ltfu?(patient_summary)
+      "Lost to follow-up"
+    else
+      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status]
+    end
+  end
+
+  def ltfu?(patient_summary)
+    !(patient_summary.latest_blood_pressure_recorded_at > Patient::LTFU_TIME.ago ||
+      patient_summary.recorded_at > Patient::LTFU_TIME.ago)
   end
 end
