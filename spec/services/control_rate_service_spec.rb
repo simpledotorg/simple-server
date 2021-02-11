@@ -358,51 +358,5 @@ RSpec.describe ControlRateService, type: :model do
         expect(service_3.send(:cache_key)).to match(/regions\/district\/#{region.id}\/quarter/)
       end
     end
-
-    it "caches ALL data, regardless of periods asked for" do
-      facility = FactoryBot.create(:facility, facility_group: facility_group_1)
-      Timecop.freeze("January 1st 2018") do
-        create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
-      end
-      Timecop.freeze("May 30th 2018") do
-        patient = create(:patient, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: "September 3rd, 2018".to_time, user: user)
-      end
-      Timecop.freeze(june_1_2018) do
-        create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
-      end
-      Timecop.freeze("August 15th 2020") do
-        patient = create(:patient, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
-        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: "November 15th, 2020".to_time, user: user)
-      end
-      Timecop.freeze("October 15th 2020") do
-        create_list(:patient, 2, recorded_at: Time.current, assigned_facility: facility, registration_user: user)
-      end
-
-      periods = Period.month("September 1 2018")..Period.month("September 1 2020")
-      result = Timecop.travel("November 1st 2020") {
-        refresh_views
-        service = ControlRateService.new(facility_group_1, periods: periods)
-        service.call
-      }
-      pending "this spec would now have to dig into the cache itself to verify things...not sure its worth it"
-      expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
-      expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(5)
-      expect(result[:controlled_patients]["September 1 2018".to_date.to_period]).to eq(1)
-      expect(result[:registrations]["August 1 2020".to_date.to_period]).to eq(1)
-      expect(result[:controlled_patients]["November 1 2020".to_date.to_period]).to eq(1)
-
-      result = Timecop.travel("November 1st 2020") {
-        periods = Period.month("March 1 2019")..Period.month("March 1 2020")
-        service = ControlRateService.new(facility_group_1, periods: periods)
-        expect(service).to_not receive(:uncached_fetch)
-        result = service.call
-      }
-      expect(result[:registrations][june_1_2018.to_date.to_period]).to eq(2)
-      expect(result[:cumulative_registrations][june_1_2018.to_date.to_period]).to eq(5)
-      expect(result[:controlled_patients]["September 1 2018".to_date.to_period]).to eq(1)
-      expect(result[:registrations]["August 1 2020".to_date.to_period]).to eq(1)
-      expect(result[:controlled_patients]["November 1 2020".to_date.to_period]).to eq(1)
-    end
   end
 end
