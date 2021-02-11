@@ -121,7 +121,8 @@ class DrugStocksQuery
   end
 
   def drug_consumption_for_facility(facility, facility_drug_stocks, facility_previous_month_drug_stocks)
-    facility_report = { facility: facility }
+    patient_count = patient_counts[facility] || 0
+    facility_report = { facility: facility, patient_count: patient_count }
 
     drug_stocks = facility_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
     previous_month_drug_stocks = facility_previous_month_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
