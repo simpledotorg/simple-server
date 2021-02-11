@@ -89,7 +89,8 @@ class DrugStocksQuery
       opening_balance = previous_month_drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
       received = drug_stocks_by_id&.dig(protocol_drug.id)&.received
       closing_balance = drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
-      return {consumed: nil} if opening_balance.nil? && received.nil? && closing_balance.nil?
+      consumption[protocol_drug.id] = {consumed: nil}
+      return if opening_balance.nil? && received.nil? && closing_balance.nil?
 
       consumption[protocol_drug.id] = {
         opening_balance: opening_balance,
@@ -109,7 +110,7 @@ class DrugStocksQuery
                                  exception: e
                                },
                                tags: { type: "reports" })
-        { consumed: "error" }
+        consumption[protocol_drug.id] = { consumed: "error" }
     end
   end
 
