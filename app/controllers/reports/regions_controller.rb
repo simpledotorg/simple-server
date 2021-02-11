@@ -38,6 +38,20 @@ class Reports::RegionsController < AdminController
     @children = @region.reportable_children
 
     repository = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
+    @children_data_derp = @children.map { |child|
+      fetcher = repository.for_region_and_period(child, @period)
+      {
+        region: child,
+        controlled_patients: fetch.controlled_patients_count,
+        controlled_patients_rate: fetch.controlled_patients_rate,
+        uncontrolled_patients: fetch.uncontrolled_patients,
+        uncontrolled_patients_rate: fetch.uncontrolled_patients_rate,
+        missed_visits: fetch.missed_visits,
+        missed_visits_percentage: fetch.fetch.missed_visits_rate,
+        registrations: fetch.assigned_patients_count,
+        cumulative_patients: fetch.cumulative_registrations
+      }
+    }
 
     @children_data = @children.map { |child|
       result = Reports::Result.new(region: child, period_type: @period.type)

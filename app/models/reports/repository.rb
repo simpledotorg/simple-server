@@ -33,6 +33,20 @@ module Reports
       attr_reader :region
     end
 
+    class Fetcher < SimpleDelegator
+      def initialize(region, period)
+        @region = region
+        @period = period
+      end
+
+
+    end
+
+    # Returns assigned_patient counts in the shape of
+    # {
+    #    region_slug: { period: value },
+    #    region_slug: { period: value }
+    # }
     def assigned_patients_count
       items = regions.map { |region| RegionItem.new(region, :assigned_patients_count, with_exclusions: with_exclusions) }
 
@@ -61,6 +75,8 @@ module Reports
         no_bp_measure_query.call(item.region, item.period, with_exclusions: with_exclusions)
       end
     end
+
+    private
 
     # Generate all necessary cache keys for a calculation, then yield to the block with every Item.
     # Once all results are returned via fetch_multi, return the data in a standard format of:
