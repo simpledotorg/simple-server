@@ -96,7 +96,7 @@ class MyFacilitiesController < AdminController
     data_for_stats = {}
     facilities_for_totals = facilities_by_facility_group(@accessible_facilities)
     facilities_for_totals.each do |facility|
-      result = Reports::RegionService.new(region: facility, period: @period).call
+      result = Reports::RegionService.new(region: facility, period: @period, with_exclusions: report_with_exclusions?).call
       @data_for_facility[facility.name] = result if display_facilities.include?(facility)
       data_for_stats[facility.name] = result
     end
