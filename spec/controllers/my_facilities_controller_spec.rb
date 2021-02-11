@@ -69,7 +69,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         refresh_views
       end
 
-      it "sets data_for_facility all facilities in the selected district" do
+      it "sets data_for_facility for all facilities in the selected district" do
         Timecop.freeze("January 15th 2021") do
           get :bp_controlled, params: {facility_group: other_district.slug}
         end
@@ -77,21 +77,8 @@ RSpec.describe MyFacilitiesController, type: :controller do
         expect(assigns(:data_for_facility)[facility_2.name]).to_not be_nil
         expect(assigns(:data_for_facility)[facility_3.name]).to_not be_nil
         expect(assigns(:data_for_facility)[facility.name]).to be_nil
+        expect(assigns(:stats_by_size).keys).to eq(["small"])
         expect(assigns(:display_sizes)).to eq(["small"])
-      end
-
-      it "sets data_for_facility for the selected facility zone but sets stats_by_size for all facilities in the group" do
-        Timecop.freeze("January 15th 2021") do
-          get :bp_controlled, params: {facility_group: other_district.slug, zone: facility_2.zone}
-        end
-        expect(response).to be_successful
-        expect(assigns(:data_for_facility)[facility_2.name]).to_not be_nil
-        expect(assigns(:data_for_facility)[facility_3.name]).to be_nil
-        expect(assigns(:data_for_facility)[facility.name]).to be_nil
-        expect(assigns(:display_sizes)).to eq(["small"])
-        stats = assigns(:stats_by_size)
-        patient_count = facility_2.assigned_patients.count + facility_3.assigned_patients.count
-        expect(stats[:small][:periods][december][:cumulative_registrations]).to eq(patient_count)
       end
     end
   end

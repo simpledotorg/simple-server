@@ -69,7 +69,7 @@ RSpec.describe Csv::FacilitiesValidator do
           facility_group: facility_group,
           organization_name: "O",
           state: "state",
-          zone: block.name,
+          zone: block.name
         }
 
         facilities = [

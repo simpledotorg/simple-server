@@ -142,23 +142,5 @@ RSpec.describe FacilityStatsService do
       expect(stat_keys).to match_array(expected_keys)
       expect(stat_values).to match_array([0, 0, 0, 0])
     end
-
-    it "sets total_registered_hypertensive_patients for each size" do
-      small_facility
-      month = december - 4.months
-      medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium")
-      medium_facility2 = create(:facility, name: "medium_2", facility_size: "medium")
-      create_list(:patient, 2, :hypertension, full_name: "medium_uncontrolled", registration_user: user,
-                                              registration_facility: medium_facility1, recorded_at: month)
-      create_list(:patient, 1, :without_hypertension, full_name: "medium_controlled", registration_user: user,
-                                                      registration_facility: medium_facility2, recorded_at: month)
-      facilities = [small_facility, medium_facility1, medium_facility2]
-      refresh_views
-      facilities_reports = facilities_data(facilities)
-      stats_by_size = FacilityStatsService.call(facilities: facilities_reports,
-                                                period: period, rate_numerator: :controlled_patients)
-      expect(stats_by_size[:small][:total_registered_hypertensive_patients]).to eq 0
-      expect(stats_by_size[:medium][:total_registered_hypertensive_patients]).to eq 2
-    end
   end
 end

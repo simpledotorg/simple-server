@@ -17,7 +17,6 @@ class FacilityStatsService
   def call
     facilities.values.each do |facility_data|
       add_facility_stats(facility_data)
-      add_registrations_count(facility_data.region.source)
     end
     calculate_percentages
     stats_by_size
@@ -34,7 +33,7 @@ class FacilityStatsService
       current_period = stats_by_size[size][:periods][period]
       current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
       current_period[:adjusted_registrations] += facility_data[:adjusted_registrations][period]
-      current_period["cumulative_registrations"] += facility_data["cumulative_registrations"][period]
+      current_period[:cumulative_registrations] += facility_data[:cumulative_registrations][period]
     end
   end
 
@@ -48,14 +47,9 @@ class FacilityStatsService
     end
   end
 
-  def add_registrations_count(facility)
-    hypertensive_count = facility.registered_hypertension_patients.count
-    stats_by_size[facility.facility_size][:total_registered_hypertensive_patients] += hypertensive_count
-  end
-
   def add_size_section(size)
     stats_by_size[size] = {
-      periods: size_data_template, total_registered_hypertensive_patients: 0
+      periods: size_data_template
     }.with_indifferent_access
   end
 
