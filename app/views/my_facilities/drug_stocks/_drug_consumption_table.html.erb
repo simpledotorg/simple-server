@@ -49,9 +49,18 @@
     <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= @report[:all][:patient_count] %>">
       All
     </td>
-    <% @drugs_by_category.map do |_drug_category, drugs| %>
+    <% @drugs_by_category.map do |drug_category, drugs| %>
       <% drugs.map do |drug| %>
-        <td class="type-blank"><span>&#8212;</span></td>
+        <% consumed = @report[:all].dig(drug_category, drug, :consumed) %>
+        <% if consumed == "error" %>
+          <td class="type-blank"><span>?</span></td>
+        <% elsif consumed.nil? %>
+          <td class="type-blank"><span>&#8212;</span></td>
+        <% else %>
+          <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: @report.dig(:all, drug_category, drug) %>" data-sort-column-key=<%= drug.id %>>
+            <%= consumed %>
+          </td>
+        <% end %>
       <% end %>
     <% end %>
     <% @drugs_by_category.map do |drug_category, _drugs| %>

@@ -32,8 +32,7 @@ class DrugStocksQuery
     Rails.cache.fetch(drug_consumption_cache_key,
                       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
                       force: RequestStore.store[:force_cache]) do
-      # replace these values with the consumption equivalents
-      { all: drug_stock_totals,
+      { all: drug_consumption_totals,
         facilities: drug_consumption_report_for_facilities,
         last_updated_at: Time.now }
     end
@@ -89,28 +88,7 @@ class DrugStocksQuery
       opening_balance = previous_month_drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
       received = drug_stocks_by_id&.dig(protocol_drug.id)&.received
       closing_balance = drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
-      consumption[protocol_drug.id] = {consumed: nil}
-      return if opening_balance.nil? && received.nil? && closing_balance.nil?
-
-      consumption[protocol_drug.id] = {
-        opening_balance: opening_balance,
-        received: received,
-        closing_balance: closing_balance,
-        consumed: opening_balance + received - closing_balance
-      }
-
-      rescue => e
-        # drug is not in formula, or other configuration error
-        Sentry.capture_message("Consumption Calculation Error",
-                               extra: {
-                                 protocol: @protocol,
-                                 opening_balance: opening_balance,
-                                 received: received,
-                                 closing_balance: closing_balance,
-                                 exception: e
-                               },
-                               tags: { type: "reports" })
-        consumption[protocol_drug.id] = { consumed: "error" }
+      consumption[protocol_drug.id] = consumption_calculation(opening_balance, received, closing_balance)
     end
   end
 
@@ -133,17 +111,18 @@ class DrugStocksQuery
     facility_report
   end
 
-  def drug_stock_sum
-    DrugStock.latest_for_facilities(@facilities, @for_end_of_month).group_by(&:protocol_drug).map { |(protocol_drug, drug_stocks)|
-      [protocol_drug, drug_stocks&.map(&:in_stock)&.compact&.sum]
-    }.to_h
+  def drug_stock_sum(for_end_of_month, attribute)
+    drug_stocks = DrugStock.latest_for_facilities(@facilities, for_end_of_month)
+
+    # remove the pluck here
+    DrugStock.where({ drug_stocks: { id: drug_stocks.pluck(:id) } }).group(:protocol_drug).sum(attribute)
   end
 
   def drug_stock_totals
-    total_patient_count = drug_stock_report_for_facilities.map { |(_, facility_report)| facility_report[:patient_count] }&.sum
+    total_patient_count = patient_counts.values&.sum
     report_all = { patient_count: total_patient_count }
-    drug_stock_by_rxnorm_code = drug_stock_sum.map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
-    drug_stock_by_id = drug_stock_sum.map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
+    drug_stock_by_rxnorm_code = drug_stock_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
+    drug_stock_by_id = drug_stock_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
 
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
       patient_days = Reports::DrugStockCalculation.new(
@@ -160,22 +139,20 @@ class DrugStocksQuery
   end
 
   def drug_consumption_totals
-    total_patient_count = drug_stock_report_for_facilities.map { |(_, facility_report)| facility_report[:patient_count] }&.sum
+    total_patient_count = patient_counts.values&.sum
     report_all = { patient_count: total_patient_count }
-    # drug_stock_by_rxnorm_code = drug_stock_sum.map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
-    # drug_stock_by_id = drug_stock_sum.map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
-    #
-    # protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
-    #   patient_days = Reports::DrugStockCalculation.new(
-    #     state: @state,
-    #     protocol: @protocol,
-    #     drug_category: drug_category,
-    #     stocks_by_rxnorm_code: drug_stock_by_rxnorm_code,
-    #     patient_count: total_patient_count
-    #   ).patient_days
-    #   next if patient_days.nil?
-    #   report_all[drug_category] = patient_days.merge(drug_stocks: drug_stock_by_id)
-    # end
+    opening_balances = drug_stock_sum(end_of_previous_month, :in_stock)
+    received = drug_stock_sum(@for_end_of_month, :received)
+    closing_balances = drug_stock_sum(@for_end_of_month, :in_stock)
+
+    protocol_drugs_by_category.each do |(drug_category, protocol_drugs)|
+      report_all[drug_category] = {}
+      protocol_drugs.each do |protocol_drug|
+        report_all[drug_category][protocol_drug] = consumption_calculation(opening_balances[protocol_drug],
+                                                                           received[protocol_drug],
+                                                                           closing_balances[protocol_drug])
+      end
+    end
     report_all
   end
 
@@ -215,5 +192,29 @@ class DrugStocksQuery
       @state,
       CACHE_VERSION
     ].join("/")
+  end
+
+  def consumption_calculation(opening_balance, received, closing_balance)
+    return { consumed: nil } if [opening_balance, received, closing_balance].all?(&:nil?)
+
+    {
+      opening_balance: opening_balance,
+      received: received,
+      closing_balance: closing_balance,
+      consumed: opening_balance + received - closing_balance
+    }
+
+  rescue => e
+    # drug is not in formula, or other configuration error
+    Sentry.capture_message("Consumption Calculation Error",
+                           extra: {
+                             protocol: @protocol,
+                             opening_balance: opening_balance,
+                             received: received,
+                             closing_balance: closing_balance,
+                             exception: e
+                           },
+                           tags: { type: "reports" })
+    { consumed: "error" }
   end
 end
