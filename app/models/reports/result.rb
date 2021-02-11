@@ -90,7 +90,7 @@ module Reports
     end
 
     def last_value(key)
-      self[key].values.last || 0
+      self[key].values.last
     end
 
     def last_key(key)
@@ -181,11 +181,10 @@ module Reports
     DATE_FORMAT = "%-d-%b-%Y"
     def calculate_period_info(range)
       self.period_info = range.each_with_object({}) do |period, hsh|
-        bp_control_range = period.blood_pressure_control_range
         hsh[period] = {
           name: period.to_s,
-          bp_control_start_date: bp_control_range.begin.next_day.strftime(DATE_FORMAT),
-          bp_control_end_date: bp_control_range.end.strftime(DATE_FORMAT)
+          bp_control_start_date: period.bp_control_range_start_date,
+          bp_control_end_date: period.bp_control_range_end_date
         }
       end
     end
