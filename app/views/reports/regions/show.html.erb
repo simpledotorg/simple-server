@@ -438,6 +438,10 @@
   <%= render "child_data_tables", data: @children_data, region_type: @children.first.region_type %>
 <% end %>
 
+<% if current_admin.feature_enabled?(:report_with_exclusions) %>
+  <%= render "overview_footnotes" %>
+<% end %>
+
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>

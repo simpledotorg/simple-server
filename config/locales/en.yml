@@ -54,7 +54,7 @@ en:
   missed_visits_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 3 months"
     numerator: "Patients with no visit within the last 3 months."
-  visited_but_no_bp_taken_copy:
+  visit_but_no_bp_taken_copy:
     numerator: "Patients with a visit in the last 3 months but no BP taken."
   lost_to_follow_up_copy:
     numerator: "Patients with no BP taken in the last 12 months."
