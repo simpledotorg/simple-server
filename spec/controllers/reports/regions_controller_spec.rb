@@ -295,6 +295,52 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(data[:missed_visits][Period.month("September 2019")]).to eq(1)
       expect(data[:missed_visits][Period.month("May 2020")]).to eq(2)
     end
+
+    it "works when a user requests data just before the earliest registration date" do
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+      one_month_before = patient.recorded_at.advance(months: -1)
+
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                          period: {type: :month, value: one_month_before}}
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients]).to eq({})
+      expect(data[:period_info]).to eq({})
+    end
+
+    it "works for very old dates" do
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      refresh_views
+      ten_years_ago = patient.recorded_at.advance(years: -10)
+
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                          period: {type: :month, value: ten_years_ago}}
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients]).to eq({})
+      expect(data[:period_info]).to eq({})
+    end
+
+    it "works for far future dates" do
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      refresh_views
+      ten_years_from_now = patient.recorded_at.advance(years: -10)
+
+      sign_in(cvho.email_authentication)
+      get :show, params: {id: @facility_region.slug, report_scope: "facility",
+                          period: {type: :month, value: ten_years_from_now}}
+      expect(response).to be_successful
+      data = assigns(:data)
+      expect(data[:controlled_patients]).to eq({})
+      expect(data[:period_info]).to eq({})
+    end
   end
 
   context "download" do

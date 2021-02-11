@@ -57,6 +57,16 @@ class Period
     (three_months_ago..end_date)
   end
 
+  alias_method :bp_control_range, :blood_pressure_control_range
+
+  def bp_control_range_start_date
+    bp_control_range.begin.next_day.to_s(:day_mon_year)
+  end
+
+  def bp_control_range_end_date
+    bp_control_range.end.to_s(:day_mon_year)
+  end
+
   def quarter?
     type == :quarter
   end
