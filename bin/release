@@ -55,7 +55,7 @@ puts "Creating release #{release_tag}. Continue? (y/N):"
 exit unless gets.chomp.downcase == "y"
 
 system(%Q{git tag -a #{release_tag} -m "#{changelog.shellescape}"}) || abort("Error creating git tag #{release_tag}")
-system("git push origin refs/tags/#{release_tag}") || abort("Error pushing tags to origin")
+system("git push origin refs/tags/#{release_tag}") || abort("Error pushing git tags to origin")
 
 # ------------------
 # Conclusion
