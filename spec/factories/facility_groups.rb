@@ -1,14 +1,13 @@
 FactoryBot.define do
   factory :facility_group do
     transient do
-      org { create(:organization) }
       state_name { Faker::Address.state }
     end
 
     id { SecureRandom.uuid }
     name { Seed::FakeNames.instance.district }
     description { Faker::Company.catch_phrase }
-    organization { org }
+    organization
     state { state_name }
     protocol
 
