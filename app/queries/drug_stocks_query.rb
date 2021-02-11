@@ -169,7 +169,7 @@ class DrugStocksQuery
   end
 
   def end_of_previous_month
-    (@for_end_of_month - 1.month).end_of_month
+    @end_of_previous_month ||= (@for_end_of_month - 1.month).end_of_month
   end
 
   def drug_stocks_cache_key
