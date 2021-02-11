@@ -129,19 +129,13 @@ PatientBreakdownReports = function () {
     }
     const chartLabels = Object.keys(chartLabelDescriptions)
     const chartData = chartLabels.map(el => data[el])
-
-    let percentLabels = {}
-    for(label of chartLabels){
-      percentLabels[label] = this.percentage(data[label], data["total_patients"])
-    }
-
     const transferredPatients = {
       ltfu_patients: data["ltfu_transferred_patients"],
       not_ltfu_patients: data["not_ltfu_transferred_patients"],
     }
 
     const breakdownChartConfig = reports.createBaseGraphConfig();
-    breakdownChartConfig.type = "pie";
+    breakdownChartConfig.type = "outlabeledPie";
     breakdownChartConfig.data = {
       labels: chartLabels,
       datasets: [{
@@ -152,22 +146,12 @@ PatientBreakdownReports = function () {
           reports.darkBlueColor,
           reports.mediumGreenColor,
           reports.mediumRedColor
-        ],
-        datalabels: {
-          anchor: "end",
-          align: "end",
-        }
+        ]
       }]
     };
-    breakdownChartConfig.options.plugins = {
-      datalabels: {
-        formatter: (value, context) => {
-          return percentLabels[context.chart.data.labels[context.dataIndex]];
-        }
-      }
-    }
     breakdownChartConfig.options.layout.padding.left = 30;
     breakdownChartConfig.options.layout.padding.right = 30;
+    breakdownChartConfig.options.zoomOutPercentage = 7;
     breakdownChartConfig.options.tooltips = {
       caretSize: 0,
       backgroundColor: "rgba(0,0,0,0.6)",
@@ -193,14 +177,27 @@ PatientBreakdownReports = function () {
         },
       }
     }
+    breakdownChartConfig.options.plugins = {
+      outlabels: {
+        text: '%p',
+        backgroundColor: "rgba(255, 255, 255, 1)",
+        color: "black",
+        stretch: 15,
+        lineColor: "#ADB2B8",
+        padding: 1,
+        lineWidth: 1,
+        font: {
+          family: "Roboto Condensed",
+          resizable: true,
+          minSize: 13,
+          maxSize: 18
+        }
+      }
+    }
 
     const breakdownChartCanvas = document.getElementById("patientBreakdownCanvas");
     if (breakdownChartCanvas) {
       new Chart(breakdownChartCanvas.getContext("2d"), breakdownChartConfig);
     }
-  }
-
-  this.percentage = (numerator, denominator) => {
-    return `${((numerator/denominator)*100).toFixed(1)}%`
   }
 }
