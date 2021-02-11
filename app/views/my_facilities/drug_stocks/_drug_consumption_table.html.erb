@@ -70,12 +70,15 @@
       </td>
       <% @drugs_by_category.map do |drug_category, drugs| %>
         <% drugs.map do |drug| %>
-          <% if facility_report.dig(drug_category, drug.id, :consumed) %>
-            <td class="type-number" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: facility_report[drug_category][drug.id] %>" data-sort-column-key=<%= drug.id %>>
+          <% consumed = facility_report.dig(drug_category, drug.id, :consumed) %>
+          <% if consumed == "error" %>
+            <td class="type-blank"><span>?</span></td>
+          <% elsif consumed.nil? %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% else %>
+            <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: facility_report[drug_category][drug.id] %>" data-sort-column-key=<%= drug.id %>>
               <%= facility_report[drug_category][drug.id][:consumed] %>
             </td>
-          <% else %>
-            <td class="type-blank"><span>&#8212;</span></td>
           <% end %>
         <% end %>
       <% end %>

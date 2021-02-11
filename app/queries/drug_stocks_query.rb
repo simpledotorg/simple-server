@@ -82,21 +82,34 @@ class DrugStocksQuery
   end
 
   def drug_consumption_for_category(drug_category, drug_stocks, previous_month_drug_stocks)
-    return if drug_stocks.nil? || previous_month_drug_stocks.nil?
-
     drug_stocks_by_id = drug_stocks_by_drug_id(drug_stocks)
     previous_month_drug_stocks_by_id = drug_stocks_by_drug_id(previous_month_drug_stocks)
     protocol_drugs = protocol_drugs_by_category[drug_category]
     protocol_drugs.each_with_object({}) do |protocol_drug, consumption|
-      opening_balance = previous_month_drug_stocks_by_id[protocol_drug.id][:in_stock] || 0
-      received = drug_stocks_by_id[protocol_drug.id][:received] || 0
-      closing_balance = drug_stocks_by_id[protocol_drug.id][:in_stock] || 0
+      opening_balance = previous_month_drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
+      received = drug_stocks_by_id&.dig(protocol_drug.id)&.received
+      closing_balance = drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
+      return {consumed: nil} if opening_balance.nil? && received.nil? && closing_balance.nil?
+
       consumption[protocol_drug.id] = {
         opening_balance: opening_balance,
         received: received,
         closing_balance: closing_balance,
         consumed: opening_balance + received - closing_balance
       }
+
+      rescue => e
+        # drug is not in formula, or other configuration error
+        Sentry.capture_message("Consumption Calculation Error",
+                               extra: {
+                                 protocol: @protocol,
+                                 opening_balance: opening_balance,
+                                 received: received,
+                                 closing_balance: closing_balance,
+                                 exception: e
+                               },
+                               tags: { type: "reports" })
+        { consumed: "error" }
     end
   end
 
@@ -108,13 +121,12 @@ class DrugStocksQuery
 
   def drug_consumption_for_facility(facility, facility_drug_stocks, facility_previous_month_drug_stocks)
     facility_report = { facility: facility }
-    return facility_report if facility_drug_stocks.nil? || facility_previous_month_drug_stocks.nil?
 
-    drug_stocks = facility_drug_stocks.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
-    previous_month_drug_stocks = facility_previous_month_drug_stocks.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
+    drug_stocks = facility_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
+    previous_month_drug_stocks = facility_previous_month_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
 
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
-      facility_report[drug_category] = drug_consumption_for_category(drug_category, drug_stocks[drug_category], previous_month_drug_stocks[drug_category])
+      facility_report[drug_category] = drug_consumption_for_category(drug_category, drug_stocks&.dig(drug_category), previous_month_drug_stocks&.dig(drug_category))
     end
     facility_report
   end
