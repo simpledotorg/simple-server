@@ -37,6 +37,7 @@ class MyFacilitiesController < AdminController
 
   def bp_controlled
     process_facility_stats(:controlled_patients)
+binding.pry
   end
 
   def bp_not_controlled
