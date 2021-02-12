@@ -80,7 +80,10 @@ class BloodPressureControlQuery
   def overall_patients
     @overall_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports(
+          with_exclusions: @with_exclusions,
+          exclude_ltfu_as_of: Date.today
+        )
         .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end

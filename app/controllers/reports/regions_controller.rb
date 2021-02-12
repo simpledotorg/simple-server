@@ -30,10 +30,11 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period).call
+    @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
     @last_registration_value = @data[:cumulative_registrations].values&.last || 0
     @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
     @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
+    @with_ltfu = with_ltfu?
 
     @children = @region.reportable_children
     @children_data = @children.map { |child|
@@ -139,10 +140,6 @@ class Reports::RegionsController < AdminController
     @period = Period.new(period_params)
   end
 
-  def set_force_cache
-    RequestStore.store[:force_cache] = true if force_cache?
-  end
-
   def find_region
     report_scope = report_params[:report_scope]
     @region ||= authorize {
@@ -168,10 +165,6 @@ class Reports::RegionsController < AdminController
     params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
   end
 
-  def force_cache?
-    report_params[:force_cache].present?
-  end
-
   def set_time_zone
     time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
 
@@ -183,6 +176,10 @@ class Reports::RegionsController < AdminController
 
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
+  end
+
+  def with_ltfu?
+    current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
   end
 
   def log_cache_metrics
