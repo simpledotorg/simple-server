@@ -2,7 +2,7 @@ module Reports
   class RegionAndPeriodFetcher
     attr_reader :repository
 
-    def initialize(repository)
+    def initialize(repository, region, period)
       @repository = repository
       @region = region
       @period = period
@@ -13,8 +13,7 @@ module Reports
     end
 
     def method_missing(method, *args, &block)
-      repository.send(method)[region][period]
+      repository.send(method)[@region.slug][@period]
     end
-
   end
 end

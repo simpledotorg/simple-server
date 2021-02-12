@@ -32,6 +32,12 @@ module Reports
       attr_reader :region
     end
 
+    def for_region_and_period(region, period)
+      raise ArgumentError, "Repository does not include region #{region.slug}" unless regions.include?(region)
+      raise ArgumentError, "Repository does not include period #{period}" unless periods.include?(period)
+      RegionAndPeriodFetcher.new(self, region, period)
+    end
+
     # Returns assigned_patient counts in the shape of
     # {
     #    region_slug: { period: value },
