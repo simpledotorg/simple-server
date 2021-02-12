@@ -59,9 +59,9 @@ en:
   lost_to_follow_up_copy:
     numerator: "Patients with no BP taken in the last 12 months."
   assigned_patients_copy:
-    reports_card_subtitle: "Monthly and total hypertension patients assigned to %{region_name}."
-    monthly_assigned_patients: "Hypertension patients registered in a month assigned to %{region_name}."
-    total_assigned_patients: "Hypertension patients assigned to %{region_name}. %{region_name} is responsible for controlling the patient’s hypertension."
+    reports_card_subtitle: "Monthly and total patients assigned to %{region_name}"
+    monthly_assigned_patients: "Diabetic and hypertension patients registered in a month assigned to %{region_name}."
+    total_assigned_patients: "Diabetic and hypertension patients assigned to %{region_name}."
   no_ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Died and lost to follow-up patients are excluded."
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Died patients are excluded."
   new_registered_patients_copy: "Hypertension patients registered during a month in %{region_name}."
