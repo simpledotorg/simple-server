@@ -405,7 +405,7 @@
                 <% end %>
               </div>
             </div>
-            <div class="flex-1 d-lg-flex align-lg-center">
+            <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
               <p
                 class="mb-0px fs-32px fw-bold <% if @data.last_value(:registrations).blank? %>c-grey-medium<% else %>c-purple-medium<% end %> mr-lg-12px"
                 data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>"

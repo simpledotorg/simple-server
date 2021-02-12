@@ -2,11 +2,25 @@
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="ltfu-trend" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
-        <div class="mb-16px">
-          <h3 class="mb-9px">
+        <div class="d-flex flex-1 mb-8px">
+          <h3 class="mb-0px mr-8px">
             Lost to follow-up
           </h3>
+          <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("ltfu_denominator_copy") %></p>"
+            >
+            </i>
+          </span>
         </div>
+        <p class="c-grey-dark">
+          <%= t("lost_to_follow_up_copy.reports_card_subtitle") %>
+        </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-blue-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
             <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
@@ -46,7 +60,7 @@
       </div>
       <div>
         <div class="p-relative mb-16px">
-          <div class="h-200px mr-16px mb-12px ml-13px">
+          <div class="h-320px mr-16px mb-12px ml-13px">
             <canvas id="ltfuPatients"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
@@ -57,35 +71,36 @@
             <% end %>
           </div>
         </div>
-        <div class="px-20px pb-8px pb-lg-0">
-          <div class="mb-2">
-            <p class="mb-8px fs-14px c-grey-dark c-print-black">
-              <strong>Numerator:</strong> Patients with no BP recorded in the last 12 months
-            </p>
-            <p class="fs-14px c-grey-dark c-print-black">
-              <strong>Denominator:</strong> Hypertensive patients in <%= @region.name %> till the current month. Dead patients are excluded.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
     <div id="patient-breakdown" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
-        <div class="mb-16px">
-          <h3 class="mb-9px">
-            Assigned hypertension patients
+        <div class="d-flex flex-1 mb-8px">
+          <h3 class="mb-0px mr-8px">
+            Assigned patients breakdown
           </h3>
-          <p class="mb-0px c-grey-dark mr-lg-12px"><%=number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %> hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
+          <span class="p-relative t-1px">
+            <i
+              class="fas fa-question-circle fs-14px c-grey-dark"
+              data-toggle="tooltip"
+              data-placement="right"
+              data-trigger="hover click"
+              data-html="true"
+              title="<p class='mb-4px'><strong>Not lost to follow-up:</strong> <%= t("not_lost_to_follow_up_copy") %></p><p class='mb-0px'><strong>Lost to follow-up:</strong> <%= t("lost_to_follow_up_copy.reports_card_subtitle") %></p>"
+            >
+            </i>
+          </span>
         </div>
+        <p class="mb-0px c-grey-dark mr-lg-12px"><%=number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %> hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
       </div>
       <div class="p-relative mb-16px d-lg-flex">
-        <div class="h-300px w-300px mb-12px ml-13px">
+        <div class="w-360px h-360px">
           <canvas id="patientBreakdownCanvas"></canvas>
         </div>
         <div class="d-flex fd-column justify-center">
-          <div class="h-100px mr-16px mb-12px ml-lg-5 ml-2 w-lg-25">
+          <div class="mr-16px mb-12px">
             <p class="mb-1">
               <span class="legend-label bg-green"></span>
               Not lost to follow-up
