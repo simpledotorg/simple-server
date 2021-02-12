@@ -66,5 +66,4 @@ RSpec.describe Reports::RegionAndPeriodFetcher, type: :model do
     }
     expect(repo.assigned_patients_count).to eq(expected)
   end
-
 end
