@@ -87,6 +87,7 @@ gem "rack-attack"
 gem "squid"
 
 group :development, :test do
+  gem "active_record_query_trace", require: false
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
   gem "capistrano", "3.11.0"
   gem "capistrano-db-tasks", require: false
@@ -105,7 +106,6 @@ group :development, :test do
 end
 
 group :development do
-  gem "active_record_query_trace"
   gem "guard-rspec", require: false
   gem "listen", ">= 3.0.5", "< 3.2"
   gem "rails-erd"
