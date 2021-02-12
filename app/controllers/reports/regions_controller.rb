@@ -38,34 +38,19 @@ class Reports::RegionsController < AdminController
     @children = @region.reportable_children
 
     repository = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
-    @children_data_derp = @children.map { |child|
+    @children_data = @children.map { |child|
       fetcher = repository.for_region_and_period(child, @period)
       {
         region: child,
-        controlled_patients: fetch.controlled_patients_count,
-        controlled_patients_rate: fetch.controlled_patients_rate,
-        uncontrolled_patients: fetch.uncontrolled_patients,
-        uncontrolled_patients_rate: fetch.uncontrolled_patients_rate,
-        missed_visits: fetch.missed_visits,
-        missed_visits_percentage: fetch.fetch.missed_visits_rate,
-        registrations: fetch.assigned_patients_count,
-        cumulative_patients: fetch.cumulative_registrations
+        controlled_patients: fetcher.controlled_patients_count,
+        controlled_patients_rate: fetcher.controlled_patients_rate,
+        uncontrolled_patients: fetcher.uncontrolled_patients,
+        uncontrolled_patients_rate: fetcher.uncontrolled_patients_rate,
+        missed_visits: fetcher.missed_visits,
+        missed_visits_percentage: fetcher.missed_visits_rate,
+        registrations: fetcher.assigned_patients_count,
+        cumulative_patients: fetcher.cumulative_registrations
       }
-    }
-
-    @children_data = @children.map { |child|
-      result = Reports::Result.new(region: child, period_type: @period.type)
-      result.registrations = repository.assigned_patients_count[child.slug]
-      result.registrations_with_exclusions = repository.assigned_patients_count[child.slug]
-      result.earliest_registration_period = result.registrations.keys.first
-      result.fill_in_nil_registrations
-      result.count_cumulative_registrations
-      result.count_adjusted_registrations
-      result.controlled_patients = repository.controlled_patients_count[child.slug]
-      result.uncontrolled_patients = repository.uncontrolled_patients_count[child.slug]
-      result.calculate_percentages(:controlled_patients)
-      result.calculate_percentages(:uncontrolled_patients)
-      result
     }
   end
 

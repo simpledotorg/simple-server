@@ -17,21 +17,6 @@ module Reports
     attr_reader :with_exclusions
 
     delegate :cache, :logger, to: Rails
-    class RegionItem
-      def initialize(region, calculation, **options)
-        @region = region
-        @calculation = calculation
-        @options = options.to_a
-      end
-
-      def cache_key
-        [@region.cache_key, @calculation, @options].join("/")
-      end
-
-      alias_method :to_s, :cache_key
-      attr_reader :region
-    end
-
     def for_region_and_period(region, period)
       raise ArgumentError, "Repository does not include region #{region.slug}" unless regions.include?(region)
       raise ArgumentError, "Repository does not include period #{period}" unless periods.include?(period)

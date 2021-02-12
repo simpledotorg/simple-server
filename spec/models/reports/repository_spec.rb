@@ -187,13 +187,13 @@ RSpec.describe Reports::Repository, type: :model do
     facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
 
     with_exclusions_repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"), with_exclusions: true)
-    cache_keys = with_exclusions_repo.cache_keys(:controlled).map(&:cache_key)
+    cache_keys = with_exclusions_repo.send(:cache_keys, :controlled).map(&:cache_key)
     cache_keys.each do |key|
       expect(key).to include("controlled/with_exclusions/true")
     end
 
     without_exclusions_repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"), with_exclusions: false)
-    cache_keys = without_exclusions_repo.cache_keys(:controlled).map(&:cache_key)
+    cache_keys = without_exclusions_repo.send(:cache_keys, :controlled).map(&:cache_key)
     cache_keys.each do |key|
       expect(key).to include("controlled/with_exclusions/false")
     end
