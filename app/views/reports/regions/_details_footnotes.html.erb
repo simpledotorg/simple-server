@@ -40,11 +40,8 @@
       New registered patients
     </p>
     <div class="pl-16px">
-      <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("missed_vists_copy.numerator") %>
-      </p>
       <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator</strong> <%= t("no_ltfu_denominator_copy", region_name: @region.name) %>
+        <%= t("new_registered_patients_copy", region_name: @region.name) %>
       </p>
     </div>
   </div>
