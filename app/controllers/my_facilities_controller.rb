@@ -36,39 +36,15 @@ class MyFacilitiesController < AdminController
   end
 
   def bp_controlled
-    @facilities = filter_facilities
-
-    @data_for_facility = {}
-
-    @facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-    end
-
-    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+    process_facility_stats(:controlled_patients)
   end
 
   def bp_not_controlled
-    @facilities = filter_facilities
-
-    @data_for_facility = {}
-
-    @facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-    end
-
-    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+    process_facility_stats(:uncontrolled_patients)
   end
 
   def missed_visits
-    @facilities = filter_facilities
-
-    @data_for_facility = {}
-
-    @facilities.each do |facility|
-      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
-    end
-
-    @facilities_by_size = @facilities.group_by { |facility| facility.facility_size }
+    process_facility_stats(:missed_visits)
   end
 
   private
@@ -104,5 +80,16 @@ class MyFacilitiesController < AdminController
 
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
+  end
+
+  def process_facility_stats(type)
+    facilities = filter_facilities
+    @data_for_facility = {}
+    facilities.each do |facility|
+      @data_for_facility[facility.name] = Reports::RegionService.new(region: facility, period: @period).call
+    end
+    sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
+    @display_sizes = @facility_sizes.select { |size| sizes.include? size }
+    @stats_by_size = FacilityStatsService.call(facilities: @data_for_facility, period: @period, rate_numerator: type)
   end
 end

@@ -58,7 +58,7 @@ class DrugStocksQuery
 
   def drug_stock_for_facility(facility, facility_drug_stocks)
     patient_count = patient_counts[facility] || 0
-    facility_report = { facility: facility, patient_count: patient_count }
+    facility_report = {facility: facility, patient_count: patient_count}
     return facility_report if facility_drug_stocks.nil?
 
     drug_stocks = facility_drug_stocks.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }

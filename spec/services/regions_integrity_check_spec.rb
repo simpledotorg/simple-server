@@ -20,15 +20,13 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
     it "tracks missing state" do
       missing_state = "Goa"
-      facilities_without_region =
-        build_list(:facility, 2, state: missing_state, block: block_1.name, facility_group: facility_groups[0])
-          .yield_self { |facilities| Facility.import(facilities) }
-          .ids
+      facilities_without_region = create_list(:facility, 2, state: missing_state, block: block_1.name, facility_group: facility_groups[0])
+      facilities_without_region.each { |facility| facility.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
       expect(swept.inconsistencies.dig(:states, :missing_regions)).to match_array([[missing_state, organization.id]])
-      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
+      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region.map(&:id))
     end
 
     it "tracks missing facility_groups" do
@@ -49,14 +47,12 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
     end
 
     it "tracks missing facilities" do
-      facilities_without_region =
-        build_list(:facility, 2, state: state.name, block: block_1.name, facility_group: facility_groups[0])
-          .yield_self { |facilities| Facility.import(facilities) }
-          .ids
+      facilities_without_region = create_list(:facility, 2, state: state.name, block: block_1.name, facility_group: facility_groups[0])
+      facilities_without_region.each { |facility| facility.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
+      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region.map(&:id))
     end
   end
 

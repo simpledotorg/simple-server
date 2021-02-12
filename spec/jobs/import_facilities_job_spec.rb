@@ -9,8 +9,10 @@ RSpec.describe ImportFacilitiesJob, type: :job do
     let(:block) { create(:region, :block, name: "Block1", reparent_to: facility_group.region) }
     let(:facilities) do
       [
-        attributes_for(:facility, block: block.name, organization_name: organization.name, facility_group_name: facility_group.name).except(:id),
-        attributes_for(:facility, block: block.name, organization_name: organization.name, facility_group_name: facility_group.name).except(:id)
+        attributes_for(:facility, block: block.name, organization_name: organization.name,
+                                  facility_group_name: facility_group.name, district: facility_group, state: "nirvana").except(:id),
+        attributes_for(:facility, block: block.name, organization_name: organization.name,
+                                  facility_group_name: facility_group.name, district: facility_group, state: "nirvana").except(:id)
       ]
     end
     let(:job) { ImportFacilitiesJob.perform_later(facilities) }
@@ -32,15 +34,7 @@ RSpec.describe ImportFacilitiesJob, type: :job do
     end
 
     context "regions" do
-      let!(:organization) { create(:organization, name: "OrgOne") }
-      let!(:facility_group) { create(:facility_group, name: "FGTwo", organization_id: organization.id) }
-      let!(:block) { create(:region, :block, name: "Block1", reparent_to: facility_group.region) }
-      let!(:facilities) do
-        [
-          attributes_for(:facility, block: block.name, organization_name: organization.name, facility_group_name: facility_group.name).except(:id),
-          attributes_for(:facility, block: block.name, organization_name: organization.name, facility_group_name: facility_group.name).except(:id)
-        ]
-      end
+      before { facilities }
 
       it "creates regions after importing facilities" do
         expect {
