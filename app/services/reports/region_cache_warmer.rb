@@ -25,10 +25,13 @@ module Reports
         end
 
         notify "starting region caching"
-        Statsd.instance.time("region_cache_warmer.states") do
+        Statsd.instance.time("region_cache_warmer") do
           Region.where.not(region_type: ["root", "organization"]).find_each(batch_size: BATCH_SIZE) do |region|
             RegionService.call(region: region, period: period)
-            Statsd.instance.increment("region_cache_warmer.states.cache")
+            Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
+
+            RegionService.call(region: region, period: period, with_exclusions: true)
+            Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
           end
         end
       }

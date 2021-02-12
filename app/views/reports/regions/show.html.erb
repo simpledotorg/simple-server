@@ -3,26 +3,63 @@
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bp-controlled" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
-      <div class="pt-20px px-20px">
-        <div class="mb-16px">
-          <h3 class="mb-0px">
+      <div class="pt-20px px-20px pr-0">
+        <div class="mb-16px d-flex">
+          <h3 class="mb-0px w-75">
             BP controlled
           </h3>
+          <% if current_admin.feature_enabled?(:report_with_exclusions) && current_admin.power_user? %>
+            <div class="align-right custom-control custom-switch">
+              <form method="get">
+                <input type="checkbox"
+                       onChange="this.form.submit()"
+                       name="with_ltfu"
+                       class="custom-control-input"
+                       id="controlGraphltfuSwitch"
+                       <% if @with_ltfu %>checked<% end %>>
+                <label class="font-weight-normal
+                              <% unless @with_ltfu %>c-grey-dark<% end %>
+                              custom-control-label"
+                       for="controlGraphltfuSwitch">
+                  Include LTFU
+                </label>
+              </form>
+            </div>
+          <% end %>
         </div>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>">
-            <% if @data.last_value(:controlled_patients_rate) %>
-              <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px"
+             data-rate="<% if @with_ltfu %>
+                          <%= number_to_percentage(@data.last_value(:controlled_patients_with_ltfu_rate), precision: 0) %>
+                        <% else %>
+                          <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+                        <% end %>">
+            <% if @with_ltfu %>
+              <% if @data.last_value(:controlled_patients_with_ltfu_rate) %>
+                <%= number_to_percentage(@data.last_value(:controlled_patients_with_ltfu_rate), precision: 0) %>
+              <% else %>
+                No data
+              <% end %>
             <% else %>
-              No data
+              <% if @data.last_value(:controlled_patients_rate) %>
+                <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+              <% else %>
+                No data
+              <% end %>
             <% end %>
           </p>
           <div>
             <% if @data.last_value(:controlled_patients_rate) %>
               <p class="m-0px c-black">
-                <span data-total-patients="<%= @data.last_value(:controlled_patients) %>">
-                  <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
-                </span>
+                <% if @with_ltfu %>
+                  <span data-total-patients="<%= @data.last_value(:controlled_patients_with_ltfu) %>">
+                    <%= number_with_delimiter(@data.last_value(:controlled_patients_with_ltfu)) %>
+                  </span>
+                <% else %>
+                  <span data-total-patients="<%= @data.last_value(:controlled_patients) %>">
+                    <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
+                  </span>
+                <% end %>
                 patients with controlled BP from
                 <span data-period-start="<%= @period.bp_control_range_start_date %>">
                   <%= @period.bp_control_range_start_date %>
@@ -34,9 +71,15 @@
               </p>
               <p class="m-0px c-grey-dark c-print-black">
                 of
-                <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
-                  <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
-                </span>
+                <% if @with_ltfu %>
+                  <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations_with_ltfu)) %>">
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations_with_ltfu)) %>
+                  </span>
+                <% else %>
+                  <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>">
+                    <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
+                  </span>
+                <% end %>
                 patients registered till
                 <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
                   <%= @period.bp_control_range_start_date %>
@@ -56,10 +99,18 @@
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
           <div class="p-absolute t-0 l-0 pe-none d-flex align-center justify-center w-100pt h-100pt">
-            <% unless @data.last_value(:controlled_patients_rate) %>
-              <p class="c-grey-medium">
-                No data available
-              </p>
+            <% if @with_ltfu %>
+              <% unless @data.last_value(:controlled_patients_with_ltfu_rate) %>
+                <p class="c-grey-medium">
+                  No data available
+                </p>
+              <% end %>
+            <% else %>
+              <% unless @data.last_value(:controlled_patients_rate) %>
+                <p class="c-grey-medium">
+                  No data available
+                </p>
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -293,3 +344,6 @@
   <%= raw @data.to_json %>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+  window.withLtfu = <%= @with_ltfu %>;
+</script>
