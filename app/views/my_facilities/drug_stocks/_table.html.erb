@@ -1,0 +1,126 @@
+<div>
+  <table class="mt-4 table table-compact table-responsive-md table-hover analytics-table">
+    <colgroup>
+      <col>
+      <col>
+      <% @drugs_by_category.map do |_drug_category, drugs| %>
+        <col class="table-divider">
+        <% drugs.map do |_drug| %>
+          <col>
+        <% end %>
+      <% end %>
+      <col class="mobile">
+    </colgroup>
+    <thead>
+    <tr>
+      <th colspan="2"></th>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <th colspan=<%= drugs.count.next.to_s %>><%= protocol_drug_labels[drug_category] %></th>
+      <% end %>
+
+    </tr>
+    <tr data-sort-method="thead" class="sorts">
+      <th class="row-label sort-label" colspan="2" data-sort-default>Facilities</th>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <% drugs.map do |drug| %>
+          <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key=<%= drug.id %>>
+            <%= drug.name %><br> <%= drug.dosage %>
+          </th>
+        <% end %>
+        <th class="row-label sort-label" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+          Patient<br>days
+        </th>
+      <% end %>
+
+      <th class="mobile"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="row-total" data-sort-method="none">
+      <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= @report[:all][:patient_count] %>">
+        All
+      </td>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <% patient_days = @report.dig(:all, drug_category, :patient_days) %>
+        <% drugs.map do |drug| %>
+          <% drug_stock = @report.dig(:all, drug_category, :drug_stocks, drug.id) %>
+          <% if drug_stock.present? %>
+            <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
+              <%= drug_stock %>
+            </td>
+          <% else %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% end %>
+        <% end %>
+        <% %>
+        <% if patient_days.present? %>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "tooltip", report: @report.dig(:all, drug_category) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+            <em class="<%= patient_days_bg_color(patient_days) %>">
+              <%= patient_days %>
+            </em>
+          </td>
+        <% else %>
+          <td class="type-blank"><span>&#8212;</span></td>
+        <% end %>
+      <% end %>
+    </tr>
+
+    <% @report[:facilities].each do |(_facility_id, facility_report)| %>
+      <tr>
+        <% facility = facility_report[:facility] %>
+        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
+            data-original-title='<%= "#{facility.name}: #{facility_report[:patient_count]} patients" %>'>
+          <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+            <%= facility.name %>
+          <% end %>
+        </td>
+        <td class="text-center">
+          <a id=<%= "form_button_#{facility.id}" %> href=<%= my_facilities_drug_stock_form_path(facility.id, for_end_of_month: @for_end_of_month_display) %>>
+            <i class="fas fa-plus"></i>
+          </a>
+        </td>
+        <% @drugs_by_category.map do |drug_category, drugs| %>
+          <% patient_days = facility_report.dig(drug_category, :patient_days) %>
+          <% drugs.map do |drug| %>
+            <% drug_stock = facility_report.dig(drug_category, :drug_stocks, drug.id) %>
+            <% if drug_stock&.in_stock&.present? %>
+              <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
+                <%= drug_stock.in_stock %>
+              </td>
+            <% else %>
+              <td class="type-blank"><span>&#8212;</span></td>
+            <% end %>
+          <% end %>
+          <% if patient_days.present? %>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "tooltip", report: facility_report[drug_category] %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+              <em class="<%= patient_days_bg_color(patient_days) %>">
+                <%= patient_days %>
+              </em>
+            </td>
+          <% else %>
+            <td class="type-blank"><span>&#8212;</span></td>
+          <% end %>
+        <% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <div class="d-flex mt-4">
+    <em class="h-12px w-12px mr-8px b-2px bg-red br-6px"></em>
+    <p class="fs-12px lh-1 c-grey-dark">
+      &lt;30 patients days of stock
+    </p>
+  </div>
+  <div class="d-flex">
+    <em class="h-12px w-12px mr-8px b-2px bg-orange br-6px"></em>
+    <p class="fs-12px lh-1 c-grey-dark">
+      &lt;60 patients days of stock
+    </p>
+  </div>
+  <div class="d-flex">
+    <em class="h-12px w-12px mr-8px b-2px bg-yellow br-6px"></em>
+    <p class="fs-12px lh-1 c-grey-dark">
+      &lt;90 patients days of stock
+    </p>
+  </div>
+</div>

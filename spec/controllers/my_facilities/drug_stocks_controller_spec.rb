@@ -69,7 +69,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:params) {
         {
           facility_id: facility.id,
-          for_end_of_month: Date.today.strftime("%B %Y")
+          for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
@@ -112,7 +112,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:params) {
         {
           facility_id: facility.id,
-          for_end_of_month: Date.today.strftime("%B %Y")
+          for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
@@ -136,7 +136,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       let(:params) {
         {
           facility_id: facility.id,
-          for_end_of_month: Date.today.strftime("%B %Y")
+          for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
@@ -155,7 +155,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     let(:params) {
       {
         facility_id: facility_group_with_stock_tracked.facilities.first.id,
-        for_end_of_month: Date.today.strftime("%B %Y"),
+        for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
           received: 10,
@@ -168,7 +168,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       sign_in(power_user.email_authentication)
 
       expect { post :create, params: params, session: session }.to change { DrugStock.count }.by(1)
-      expect(response).to redirect_to(redirect_url)
+      expect(response).to redirect_to(redirect_url + "?force_cache=true")
       expect(flash[:notice]).to eq "Saved drug stocks"
     end
 
@@ -187,7 +187,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       expect(flash[:alert]).to eq "Something went wrong, Drug Stocks were not saved."
     end
 
-    it "redirects without an error message if no valid drug stocks are submitted" do
+    it "allows saving empty drug stock values" do
       sign_in(power_user.email_authentication)
 
       expect {
@@ -196,10 +196,10 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
                                               in_stock: nil,
                                               received: nil}]),
           session: session
-      }.not_to change { DrugStock.count }
+      }.to change { DrugStock.count }.by(1)
 
-      expect(response).to redirect_to(redirect_url)
-      expect(flash[:notice]).to be_nil
+      expect(response).to redirect_to(redirect_url + "?force_cache=true")
+      expect(flash[:notice]).to eq "Saved drug stocks"
     end
   end
 end
