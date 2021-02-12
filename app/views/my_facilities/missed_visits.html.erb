@@ -76,16 +76,16 @@
               </tr>
             </thead>
             <tbody>
-              <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size], "missed_visits_rate") %>
+              <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "missed_visits_rate") %>
               <tr class="row-total" data-row="<%= size %>" data-trend-color="<% if facility_size_six_month_rate_change > 0 %>red<% elsif facility_size_six_month_rate_change < 0 %>green<% else %>grey<% end %>">
                 <td class="type-title">
                   All <%= Facility.localized_facility_size(size) %>s
                 </td>
                 <td>
-                  <%= number_or_zero_with_delimiter(@stats_by_size[size][@period]["adjusted_registrations"]) %>
+                  <%= number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_registrations]) %>
                 </td>
                 <td>
-                  <%= number_or_zero_with_delimiter(@stats_by_size[size][@period]["cumulative_registrations"]) %>
+                  <%= number_or_zero_with_delimiter(@stats_by_size[size][:total_registered_hypertensive_patients]) %>
                 </td>
                 <td>
                   <div class="w-90px h-20px">
@@ -99,7 +99,7 @@
                 >
                   <%= number_to_percentage_with_symbol(facility_size_six_month_rate_change, precision: 0) %>
                 </td>
-                <% @stats_by_size[size].each_pair do |period, data| %>
+                <% @stats_by_size[size][:periods].each_pair do |period, data| %>
                   <% missed_visits_rate = data["missed_visits_rate"] %>
                   <td
                     class="type-percent"
@@ -125,10 +125,10 @@
                     <% end %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["adjusted_registrations"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility.registered_hypertension_patients.count) %>
                   </td>
                   <td>
                     <div class="w-90px h-20px">
