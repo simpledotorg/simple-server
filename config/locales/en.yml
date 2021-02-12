@@ -65,9 +65,11 @@ en:
     total_assigned_patients: "Diabetic and hypertension patients assigned to %{region_name}."
   no_ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
+  total_registered_patients_copy: "All hypertension patients registered in %{region_name}."
   new_registered_patients_copy: "Hypertension patients registered during a month in %{region_name}."
   follow_up_patients_copy: "Hypertension patients with a BP measure taken during a month in %{region_name}."
-  not_lost_to_follow_up_copy: "Hypertension patients with a BP taken in the last 12 months."
+  not_lost_to_follow_up_copy: "Hypertension patients with a BP taken in the last 12 months assigned to %{region_name}."
+  bp_measures_taken_copy: "All BP measures taken during a month by healthcare workers at %{region_name}."
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
