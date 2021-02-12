@@ -22,11 +22,12 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
-  it "gets registration counts for single region" do
+  it "gets assigned patient counts for single region" do
     facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
     facility_1, facility_2 = facilities.take(2)
 
     _facility_1_registered = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019.advance(months: -4), assigned_facility: facility_1, registration_user: user)
     _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
 
     repo = Reports::Repository.new(facility_1.region, periods: jan_2019.to_period)

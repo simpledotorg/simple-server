@@ -23,10 +23,14 @@ module Reports
       RegionAndPeriodFetcher.new(self, region, period)
     end
 
-    # Returns assigned_patient counts in the shape of
+    # Returns assigned patients for a region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
+    # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
+    # to conform to the same interface as all the other queries here.
+
+    # Returns a Hash in the shape of:
     # {
-    #    region_slug: { period: value },
-    #    region_slug: { period: value }
+    #    region_slug: { period: value, period: value },
+    #    region_slug: { period: value, period: value }
     # }
     def assigned_patients_count
       items = regions.map { |region| RegionItem.new(region, :assigned_patients_count, with_exclusions: with_exclusions) }
