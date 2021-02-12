@@ -15,7 +15,9 @@ class FacilityStatsService
   end
 
   def call
-    facilities.each_pair { |_, facility_data| add_facility_stats(facility_data) }
+    facilities.values.each do |facility_data|
+      add_facility_stats(facility_data)
+    end
     calculate_percentages
     stats_by_size
   end
@@ -30,14 +32,14 @@ class FacilityStatsService
     periods.each do |period|
       current_period = stats_by_size[size][period]
       current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
-      current_period["adjusted_registrations"] += facility_data["adjusted_registrations"][period]
-      current_period["cumulative_registrations"] += facility_data["cumulative_registrations"][period]
+      current_period[:adjusted_registrations] += facility_data[:adjusted_registrations][period]
+      current_period[:cumulative_registrations] += facility_data[:cumulative_registrations][period]
     end
   end
 
   def calculate_percentages
-    stats_by_size.each_pair do |_, period_sets|
-      period_sets.each_pair do |_, period_stats|
+    stats_by_size.values.each do |size_data|
+      size_data.values.each do |period_stats|
         adjusted_registrations = period_stats["adjusted_registrations"]
         next if adjusted_registrations == 0 || period_stats[rate_numerator] == 0
         period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_registrations.to_f * 100).round

@@ -4,17 +4,23 @@ FactoryBot.define do
     sequence(:name) { |n| "Facility #{n}" }
     sequence(:street_address) { |n| "#{n} Gandhi Road" }
     sequence(:village_or_colony) { |n| "Colony #{n}" }
-    district { facility_group.name }
-    state { facility_group.state }
     country { Region.root.name }
     pin { "123456" }
     zone { Faker::Address.community }
     facility_type { "PHC" }
     facility_size { Facility.facility_sizes[:small] }
-    facility_group { create(:facility_group) }
+    facility_group
     enable_diabetes_management { [true, false].sample }
     enable_teleconsultation { false }
     monthly_estimated_opd_load { 300 }
+
+    before(:create) do |facility|
+      if facility.facility_group
+        fg = facility.facility_group
+        facility.district ||= fg.name
+        facility.state ||= fg.state
+      end
+    end
 
     trait :with_teleconsultation do
       enable_teleconsultation { true }

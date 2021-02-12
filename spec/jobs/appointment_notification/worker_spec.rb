@@ -2,9 +2,9 @@ require "rails_helper"
 require "sidekiq/testing"
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
-  let!(:facility_name) { "Simple Facility" }
-  let!(:appointment_scheduled_date) { Date.new(2018, 1, 1) }
-  let!(:appointment) do
+  let(:facility_name) { "Simple Facility" }
+  let(:appointment_scheduled_date) { Date.new(2018, 1, 1) }
+  let(:appointment) do
     create(:appointment,
       facility: create(:facility, name: facility_name),
       scheduled_date: appointment_scheduled_date)
@@ -48,6 +48,13 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.perform_async(appointment.id, communication_type, locale)
         described_class.drain
       }.to change { Communication.count }.by(1)
+    end
+
+    it "does not send if Appointment is missing" do
+      expect {
+        described_class.perform_async("12345", communication_type, locale)
+        described_class.drain
+      }.not_to change { Communication.count }
     end
 
     it "does not send if Communication already sent" do

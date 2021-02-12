@@ -22,6 +22,14 @@ class AdminController < ApplicationController
     end
   end
 
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def force_cache?
+    params[:force_cache].present?
+  end
+
   helper_method :current_admin
 
   private

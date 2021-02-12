@@ -19,4 +19,8 @@ class ProtocolDrug < ApplicationRecord
   def assign_id
     self.id = SecureRandom.uuid
   end
+
+  def sort_key
+    [name, dosage.to_f]
+  end
 end
