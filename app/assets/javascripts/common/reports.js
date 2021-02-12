@@ -568,13 +568,36 @@ Reports = function () {
   }
 
   this.initializeTables = () => {
-    const tableSortAscending = { descending: false };
+    const tableSortAscending = {descending: false};
+    const tableSortDescending = {descending: true};
 
     const regionComparisonTable = document.getElementById("region-comparison-table");
+
+    // Start: Remove with :report_with_exclusions feature flag
+    const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
+    const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
+    const noBPMeasureTable = document.getElementById("no-bp-measure-table");
+    const htnControlledTable = document.getElementById("htn-controlled-table");
+    // End: Remove with :report_with_exclusions feature flag
 
     if (regionComparisonTable) {
       new Tablesort(regionComparisonTable, tableSortAscending);
     }
+
+    // Start: Remove with :report_with_exclusions feature flag
+    if (htnControlledTable) {
+      new Tablesort(htnControlledTable, tableSortAscending);
+    }
+    if (noBPMeasureTable) {
+      new Tablesort(noBPMeasureTable, tableSortDescending);
+    }
+    if (htnNotUnderControlTable) {
+      new Tablesort(htnNotUnderControlTable, tableSortDescending);
+    }
+    if (cumulativeRegistrationsTable) {
+      new Tablesort(cumulativeRegistrationsTable, tableSortAscending);
+    }
+    // End: Remove with :report_with_exclusions feature flag
   };
 
   this.getReportingData = () => {
