@@ -3,13 +3,6 @@ require "rails_helper"
 RSpec.describe Protocol, type: :model do
   describe "Associations" do
     it { should have_many(:protocol_drugs) }
-    it "lists protocol drugs in ascending order of updated_at" do
-      protocol = create :protocol
-      10.times { create :protocol_drug, protocol: protocol }
-
-      expect(protocol.protocol_drugs.each_cons(2).all? { |drug1, drug2| drug1.updated_at <= drug2.updated_at })
-        .to be_truthy
-    end
   end
 
   describe "Validations" do
@@ -26,6 +19,15 @@ RSpec.describe Protocol, type: :model do
     it "squishes and upcases the first letter of the name" do
       protocol = FactoryBot.create(:protocol, name: " protocol  name 1  ")
       expect(protocol.name).to eq("Protocol name 1")
+    end
+  end
+
+  describe "#as_json" do
+    it "includes protocol drugs sorted by name, and dosage" do
+      protocol = FactoryBot.create(:protocol, :with_tracked_drugs)
+      expect(protocol.as_json["protocol_drugs"]).not_to be_empty
+      rxnorm_codes = protocol.as_json["protocol_drugs"].map { |protocol_drug| protocol_drug["rxnorm_code"] }
+      expect(rxnorm_codes).to eq(%w[329528 329526 331132 316049 979467 316764 316765])
     end
   end
 end
