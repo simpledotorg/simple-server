@@ -139,10 +139,6 @@ class Reports::RegionsController < AdminController
     @period = Period.new(period_params)
   end
 
-  def set_force_cache
-    RequestStore.store[:force_cache] = true if force_cache?
-  end
-
   def find_region
     report_scope = report_params[:report_scope]
     @region ||= authorize {
@@ -166,10 +162,6 @@ class Reports::RegionsController < AdminController
 
   def report_params
     params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
-  end
-
-  def force_cache?
-    report_params[:force_cache].present?
   end
 
   def set_time_zone

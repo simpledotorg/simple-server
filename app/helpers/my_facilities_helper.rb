@@ -18,4 +18,24 @@ module MyFacilitiesHelper
       facility.monthly_estimated_opd_load
     end
   end
+
+  def patient_days_bg_color(patient_days)
+    return if patient_days.nil?
+    return "bg-red" if patient_days == "error"
+    if patient_days < 30 then "bg-red"
+    elsif patient_days < 60 then "bg-orange"
+    elsif patient_days < 90 then "bg-yellow"
+    else
+      "bg-green"
+    end
+  end
+
+  def protocol_drug_labels
+    {hypertension_ccb: "CCB Tablets",
+     hypertension_arb: "ARB Tablets",
+     hypertension_diuretic: "Diuretic Tablets",
+     hypertension_other: "Other Tablets",
+     diabetes: "Diabetes Tablets",
+     other: "Other Tablets"}.with_indifferent_access
+  end
 end

@@ -28,7 +28,7 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   end
 
   def transform_to_response(protocol)
-    protocol.as_json(include: :protocol_drugs)
+    protocol.as_json
   end
 
   def response_process_token
