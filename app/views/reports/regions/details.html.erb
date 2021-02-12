@@ -322,12 +322,21 @@
           <tr>
             <th></th>
             <th></th>
-            <th colspan="6">
-              New registered patients<sup>2</sup>
-            </th>
-            <th colspan="6">
-              Follow-up patients<sup>3</sup>
-            </th>
+            <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+              <th colspan="6">
+                New registered patients
+              </th>
+              <th colspan="6">
+                Follow-up patients
+              </th>
+            <% else %>
+              <th colspan="6">
+                New registrations<sup>2</sup>
+              </th>
+              <th colspan="6">
+                Follow-up patients<sup>3</sup>
+              </th>
+            <% end %>
           </tr>
           <tr class="sorts" data-sort-method="thead">
             <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
@@ -400,10 +409,10 @@
     <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Total registered patients:</strong> <%= t("total_registered_patients_copy", region_name: @region.name) %>
+          <strong>1. Cumulative registrations:</strong> <%= t("total_registered_patients_copy", region_name: @region.name) %>
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. New registered patients:</strong> <%= t("new_registered_patients_copy", region_name: @region.name) %>
+          <strong>2. New registrations:</strong> <%= t("new_registered_patients_copy", region_name: @region.name) %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
           <strong>3. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
