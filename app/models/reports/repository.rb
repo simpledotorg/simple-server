@@ -17,7 +17,6 @@ module Reports
     attr_reader :with_exclusions
 
     delegate :cache, :logger, to: Rails
-
     class RegionItem
       def initialize(region, calculation, **options)
         @region = region
@@ -31,15 +30,6 @@ module Reports
 
       alias_method :to_s, :cache_key
       attr_reader :region
-    end
-
-    class Fetcher < SimpleDelegator
-      def initialize(region, period)
-        @region = region
-        @period = period
-      end
-
-
     end
 
     # Returns assigned_patient counts in the shape of
