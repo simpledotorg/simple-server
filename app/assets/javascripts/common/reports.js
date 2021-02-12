@@ -568,28 +568,12 @@ Reports = function () {
   }
 
   this.initializeTables = () => {
-    const tableSortAscending = {descending: false};
-    const tableSortDescending = {descending: true};
+    const tableSortAscending = { descending: false };
 
-    const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
-    const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
-    const noBPMeasureTable = document.getElementById("no-bp-measure-table");
-    const htnControlledTable = document.getElementById("htn-controlled-table");
+    const regionComparisonTable = document.getElementById("region-comparison-table");
 
-    if (htnControlledTable) {
-      new Tablesort(htnControlledTable, tableSortAscending);
-    }
-
-    if (noBPMeasureTable) {
-      new Tablesort(noBPMeasureTable, tableSortDescending);
-    }
-
-    if (htnNotUnderControlTable) {
-      new Tablesort(htnNotUnderControlTable, tableSortDescending);
-    }
-
-    if (cumulativeRegistrationsTable) {
-      new Tablesort(cumulativeRegistrationsTable, tableSortAscending);
+    if (regionComparisonTable) {
+      new Tablesort(regionComparisonTable, tableSortAscending);
     }
   };
 
