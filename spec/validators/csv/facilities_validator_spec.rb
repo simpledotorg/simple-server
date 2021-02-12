@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe Csv::FacilitiesValidator do
   describe "#validate" do
     context "when no facilities are passed in" do
-      let!(:validator) { described_class.new([]) }
-      before { validator.validate }
-
-      specify { expect(validator.errors).to eq ["Uploaded file doesn't contain any valid facilities"] }
+      it "returns an error about no facilities" do
+        validator = described_class.new([])
+        expect(validator.validate.errors).to eq(["Uploaded file doesn't contain any valid facilities"])
+      end
     end
 
     context "when there are duplicate rows" do
@@ -20,9 +20,9 @@ RSpec.describe Csv::FacilitiesValidator do
     end
 
     context "per-facility validations" do
-      let!(:organization) { create(:organization, name: "O") }
-      let!(:facility_group) { create(:facility_group, name: "FG", organization_id: organization.id) }
-      let!(:block) { create(:region, :block, name: "Zone 42", reparent_to: facility_group.region) }
+      let(:organization) { create(:organization, name: "O") }
+      let(:facility_group) { create(:facility_group, name: "FG", organization: organization) }
+      let(:block) { create(:region, :block, name: "Zone 42", reparent_to: facility_group.region) }
       let(:facility) do
         build(:facility,
           organization_name: "O",
@@ -63,16 +63,18 @@ RSpec.describe Csv::FacilitiesValidator do
 
       it "adds an error when attributes are invalid" do
         valid_params = {
-          organization_name: "O",
+          district: "district",
+          enable_teleconsultation: false,
           facility_group_name: "FG",
           facility_group: facility_group,
-          zone: block.name,
-          enable_teleconsultation: false
+          organization_name: "O",
+          state: "state",
+          zone: block.name
         }
 
         facilities = [
-          build(:facility, valid_params.merge(district: nil)),
-          build(:facility, valid_params.merge(state: nil)),
+          build(:facility, valid_params.merge(district: nil, state: "state")),
+          build(:facility, valid_params.merge(district: "district", state: nil)),
           build(:facility, valid_params.merge(country: nil)),
           build(:facility, valid_params.merge(facility_size: "invalid size")),
           build(:facility, valid_params.merge(enable_diabetes_management: nil, organization_name: nil)),
