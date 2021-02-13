@@ -8,7 +8,11 @@ RSpec.describe DrugStocksQuery do
   let!(:for_end_of_month) { Date.today.end_of_month }
   let!(:drug_category) { "hypertension_ccb" }
   let!(:stocks_by_rxnorm) {
-    {"329528" => 10000, "329526" => 20000, "316764" => 10000, "316765" => 20000, "979467" => 10000}
+    {"329528" => {in_stock: 10000},
+     "329526" => {in_stock: 20000},
+     "316764" => {in_stock: 10000},
+     "316765" => {in_stock: 20000},
+     "979467" => {in_stock: 10000}}
   }
   let!(:punjab_drug_stock_config) {
     {"load_coefficient" => 1,
@@ -23,9 +27,9 @@ RSpec.describe DrugStocksQuery do
     let!(:patients) { create_list(:patient, 3, registration_facility: facility, registration_user: user) }
 
     let!(:drug_stocks) {
-      stocks_by_rxnorm.map do |(rxnorm_code, in_stock)|
+      stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
         protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-        create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: in_stock)
+        create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
       end
     }
 
@@ -72,7 +76,7 @@ RSpec.describe DrugStocksQuery do
     end
   end
 
-  describe "#totals" do
+  describe "#drug_stock_totals" do
     let!(:facilities) { create_list(:facility, 3, facility_group: facility_group, state: state) }
 
     let!(:patients) {
@@ -83,9 +87,9 @@ RSpec.describe DrugStocksQuery do
 
     let!(:drug_stocks) {
       facilities.map { |facility|
-        stocks_by_rxnorm.map do |(rxnorm_code, in_stock)|
+        stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-          create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: in_stock)
+          create(:drug_stock, user: user, facility: facility, protocol_drug: protocol_drug, in_stock: drug_stock[:in_stock])
         end
       }.flatten
     }
@@ -96,7 +100,7 @@ RSpec.describe DrugStocksQuery do
 
     it "computes totals correctly for a given list of facilities" do
       instance = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month)
-      result = instance.totals
+      result = instance.drug_stock_totals
       expect(result[:patient_count]).to eq(patients.count)
       expect(result["hypertension_ccb"][:patient_days]).to eq(12380)
       expect(result["hypertension_arb"][:patient_days]).to eq(54054)
@@ -110,7 +114,7 @@ RSpec.describe DrugStocksQuery do
 
         rxnorm_codes.each do |rxnorm_code|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
-          expected_total_stock = stocks_by_rxnorm[rxnorm_code] * facilities.count
+          expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * facilities.count
           expect(result[drug_category][:drug_stocks][protocol_drug.id]).to eq(expected_total_stock)
         end
       end
@@ -118,7 +122,7 @@ RSpec.describe DrugStocksQuery do
 
     it "computes totals correctly for facilities without drug stock" do
       instance = described_class.new(facilities: facilities, for_end_of_month: for_end_of_month)
-      result = instance.totals
+      result = instance.drug_stock_totals
       expect(result[:patient_count]).to eq(patients.count)
       expect(result["hypertension_diuretic"]).to be_nil
     end

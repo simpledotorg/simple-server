@@ -81,10 +81,17 @@ class DrugStocksQuery
   end
 
   def drug_consumption_for_category(drug_category, drug_stocks, previous_month_drug_stocks)
+    # consumption = Reports::DrugStockCalculation.new(
+    #   state: @state,
+    #   protocol: @protocol,
+    #   drug_category: drug_category,
+    #   )
+    # consumption[:base_doses] =
     drug_stocks_by_id = drug_stocks_by_drug_id(drug_stocks)
     previous_month_drug_stocks_by_id = drug_stocks_by_drug_id(previous_month_drug_stocks)
     protocol_drugs = protocol_drugs_by_category[drug_category]
-    protocol_drugs.each_with_object({}) do |protocol_drug, consumption|
+    consumption = {}
+    protocol_drugs.each_with_object(consumption) do |protocol_drug, consumption|
       opening_balance = previous_month_drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
       received = drug_stocks_by_id&.dig(protocol_drug.id)&.received
       closing_balance = drug_stocks_by_id&.dig(protocol_drug.id)&.in_stock
@@ -121,7 +128,7 @@ class DrugStocksQuery
   def drug_stock_totals
     total_patient_count = patient_counts.values&.sum
     report_all = { patient_count: total_patient_count }
-    drug_stock_by_rxnorm_code = drug_stock_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, in_stock] }.to_h
+    drug_stock_by_rxnorm_code = drug_stock_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
     drug_stock_by_id = drug_stock_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
 
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
@@ -158,7 +165,7 @@ class DrugStocksQuery
 
   def stocks_by_rxnorm_code(drug_stocks)
     drug_stocks&.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock.in_stock
+      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock
     }
   end
 
