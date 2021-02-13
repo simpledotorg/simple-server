@@ -6,7 +6,7 @@ module Reports
       @with_exclusions = with_exclusions
 
       @periods = if periods.is_a?(Period)
-        Range.new(periods, periods).to_a
+        Range.new(periods, periods)
       else
         periods.to_a
       end
@@ -33,13 +33,29 @@ module Reports
     #    region_slug: { period: value, period: value }
     # }
     def assigned_patients_count
-      items = regions.map { |region| RegionItem.new(region, :assigned_patients_count, with_exclusions: with_exclusions) }
+      full_assigned_patients_counts.each_with_object({}) do |(item, result), results|
+        values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] }
+        results[item.region.slug] = values
+      end
+    end
 
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
+    def full_assigned_patients_counts
+      items = regions.map { |region| RegionItem.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
+      cache.fetch_multi(*items, force: force_cache?) { |item|
         AssignedPatientsQuery.new.count(item.region, :month, with_exclusions: with_exclusions)
       }
-      cached_results.each_with_object({}) do |(item, result), results|
-        results[item.region.slug] = result
+    end
+
+    def cumulative_assigned_patients_count
+      full_assigned_patients_counts.each_with_object({}) do |(region_slug, region_values), totals|
+        totals[region_slug] = Hash.new(0)
+        first_period = region_values.keys.first
+        full_range = (first_period..periods.end)
+        full_range.each do |period|
+          previous_total = totals[region_slug][period.previous]
+          current_amount = region_values[period] || 0
+          totals[region_slug][period] += previous_total + current_amount
+        end
       end
     end
 
@@ -47,6 +63,22 @@ module Reports
       cached_query(:controlled_patients_count) do |item|
         control_rate_query.controlled(item.region, item.period, with_exclusions: with_exclusions).count
       end
+    end
+
+    def controlled_patient_rates
+      cached_query(:controlled_patient_rates) do |item|
+        controlled = controlled_patients_count[item.region.slug][item.period]
+        pp "cum", cumulative_assigned_patients_count
+        total = cumulative_assigned_patients_count[item.region.slug].fetch(item.period)
+        pp controlled, total
+        percentage(controlled, total)
+      end
+    end
+
+    def percentage(numerator, denominator)
+
+      return 0 if denominator == 0 || numerator == 0
+      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
 
     def uncontrolled_patients_count
@@ -82,7 +114,7 @@ module Reports
     end
 
     def cache_keys(calculation)
-      combinations = regions.to_a.product(periods)
+      combinations = regions.to_a.product(periods.to_a)
       combinations.map { |region, period| Reports::Item.new(region, period, calculation, with_exclusions: with_exclusions) }
     end
 
