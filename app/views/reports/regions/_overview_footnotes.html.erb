@@ -10,15 +10,14 @@
       <p class="mb-8px fs-14px c-grey-dark">
         <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
       </p>
-      <% if @with_ltfu %>
-        <p class="mb-0px fs-14px c-grey-dark">
-          <strong>Denominator:</strong> <%= t("denominator_copy", region_name: @region.name) %>
-        </p>
-      <% else %>
-        <p class="mb-0px fs-14px c-grey-dark">
-          <strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
-        </p>
-      <% end %>
+      <p class="mb-0px fs-14px c-grey-dark">
+        <strong>Denominator:</strong>
+        <% if @with_ltfu %>
+          <%= t("denominator_copy", region_name: @region.name) %>
+        <% else %>
+          <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
+        <% end %>
+      </p>
     </div>
   </div>
   <div class="mb-24px">
