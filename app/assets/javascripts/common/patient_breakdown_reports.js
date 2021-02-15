@@ -170,7 +170,9 @@ PatientBreakdownReports = function () {
         label: (tooltipItem, tooltipData) => {
           const label = tooltipData.labels[tooltipItem.index];
           let tooltipBody = [`Total: ${data[label]}`];
-          tooltipBody.push(`Transferred-out: ${transferredPatients[label]}`)
+          if (transferredPatients[label] == undefined) {
+            tooltipBody.push(`Transferred-out: ${transferredPatients[label]}`)
+          }
           return tooltipBody;
         },
       }
