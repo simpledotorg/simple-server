@@ -8,13 +8,14 @@ module PatientReportable
     scope :excluding_dead, -> { where.not(status: :dead) }
 
     scope :ltfu_as_of, ->(date) do
-      where.not(id: latest_bps_within_ltfu_period(date).select(:patient_id).distinct)
+      joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
+        .where("NOT (bp_recorded_at > ? AND bp_recorded_at < ?) OR bp_recorded_at IS NULL", date - LTFU_TIME, date)
         .where("recorded_at < ?", date - LTFU_TIME)
     end
 
     scope :not_ltfu_as_of, ->(date) do
-      where(id: latest_bps_within_ltfu_period(date).select(:patient_id).distinct)
-        .or(where("patients.recorded_at >= ?", date - LTFU_TIME))
+      joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
+        .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?", date - LTFU_TIME, date, date - LTFU_TIME)
     end
 
     scope :for_reports, ->(with_exclusions: false, exclude_ltfu_as_of: nil) do
@@ -30,11 +31,6 @@ module PatientReportable
       else
         with_hypertension
       end
-    end
-
-    def self.latest_bps_within_ltfu_period(ltfu_as_of)
-      LatestBloodPressuresPerPatientPerMonth
-        .where("bp_recorded_at > ? AND bp_recorded_at < ?", ltfu_as_of - LTFU_TIME, ltfu_as_of)
     end
   end
 end
