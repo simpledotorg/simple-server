@@ -10,17 +10,31 @@
               <h3 class="mb-0px mr-8px">
                 BP controlled 
               </h3>
-              <span class="p-relative t-1px">
-                <i
-                  class="fas fa-question-circle fs-14px c-grey-dark"
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  data-trigger="hover click"
-                  data-html="true"
-                  title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>"
-                >
-                </i>
-              </span>
+              <% if @with_ltfu %>
+                <span class="p-relative t-1px">
+                  <i
+                    class="fas fa-question-circle fs-14px c-grey-dark"
+                    data-toggle="tooltip"
+                    data-placement="right"
+                    data-trigger="hover click"
+                    data-html="true"
+                    title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_copy", region_name: @region.name) %>"
+                  >
+                  </i>
+                </span>
+              <% else %>
+                <span class="p-relative t-1px">
+                  <i
+                    class="fas fa-question-circle fs-14px c-grey-dark"
+                    data-toggle="tooltip"
+                    data-placement="right"
+                    data-trigger="hover click"
+                    data-html="true"
+                    title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>"
+                  >
+                  </i>
+                </span>
+              <% end %>
             </div>
           <% else %>
             <h3 class="mb-0px w-75">
