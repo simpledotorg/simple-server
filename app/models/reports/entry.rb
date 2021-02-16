@@ -1,6 +1,6 @@
-# An Item is a specific calculation for a Region at a specific Period
+# An Entry is a specific calculation for a Region at a specific Period
 module Reports
-  class Item
+  class Entry
     attr_reader :region, :period, :calculation
     def initialize(region, period, calculation, **options)
       @region = region

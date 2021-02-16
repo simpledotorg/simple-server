@@ -19,6 +19,7 @@ module Reports
     attr_reader :with_exclusions
 
     delegate :cache, :logger, to: Rails
+
     def for_region_and_period(region, period)
       raise ArgumentError, "Repository does not include region #{region.slug}" unless regions.include?(region)
       raise ArgumentError, "Repository does not include period #{period}" unless periods.include?(period)
@@ -35,22 +36,22 @@ module Reports
     #    region_slug: { period: value, period: value }
     # }
     def assigned_patients_count
-      full_assigned_patients_counts.each_with_object({}) do |(item, result), results|
+      full_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] }
-        results[item.region.slug] = values
+        results[entry.region.slug] = values
       end
     end
 
     def full_assigned_patients_counts
-      items = regions.map { |region| RegionItem.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
-      cache.fetch_multi(*items, force: force_cache?) { |item|
-        AssignedPatientsQuery.new.count(item.region, :month, with_exclusions: with_exclusions)
+      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
+      cache.fetch_multi(*items, force: force_cache?) { |entry|
+        AssignedPatientsQuery.new.count(entry.region, :month, with_exclusions: with_exclusions)
       }
     end
 
     def cumulative_assigned_patients_count
-      full_assigned_patients_counts.each_with_object({}) do |(region_item, region_values), totals|
-        region_slug = region_item.region.slug
+      full_assigned_patients_counts.each_with_object({}) do |(region_entry, region_values), totals|
+        region_slug = region_entry.region.slug
         totals[region_slug] = Hash.new(0)
         first_period = region_values.keys.first
         full_range = (first_period..periods.end)
@@ -63,42 +64,42 @@ module Reports
     end
 
     def controlled_patients_count
-      cached_query(:controlled_patients_count) do |item|
-        control_rate_query.controlled(item.region, item.period, with_exclusions: with_exclusions).count
+      cached_query(:controlled_patients_count) do |entry|
+        control_rate_query.controlled(entry.region, entry.period, with_exclusions: with_exclusions).count
       end
     end
 
     def uncontrolled_patients_count
-      cached_query(:uncontrolled_patients_count) do |item|
-        control_rate_query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
+      cached_query(:uncontrolled_patients_count) do |entry|
+        control_rate_query.uncontrolled(entry.region, entry.period, with_exclusions: with_exclusions).count
       end
     end
 
     def controlled_patient_rates
-      cached_query(:controlled_patient_rates) do |item|
-        controlled = controlled_patients_count[item.region.slug][item.period]
-        total = cumulative_assigned_patients_count[item.region.slug].fetch(item.period)
+      cached_query(:controlled_patient_rates) do |entry|
+        controlled = controlled_patients_count[entry.region.slug][entry.period]
+        total = cumulative_assigned_patients_count[entry.region.slug].fetch(entry.period)
         percentage(controlled, total)
       end
     end
 
     def uncontrolled_patient_rates
-      cached_query(:uncontrolled_patient_rates) do |item|
-        controlled = uncontrolled_patients_count[item.region.slug][item.period]
-        total = cumulative_assigned_patients_count[item.region.slug].fetch(item.period)
+      cached_query(:uncontrolled_patient_rates) do |entry|
+        controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
+        total = cumulative_assigned_patients_count[entry.region.slug].fetch(entry.period)
         percentage(controlled, total)
       end
     end
 
     def missed_visits_count
-      cached_query(:missed_visits_count) do |item|
-        no_bp_measure_query.call(item.region, item.period, with_exclusions: with_exclusions)
+      cached_query(:missed_visits_count) do |entry|
+        no_bp_measure_query.call(entry.region, entry.period, with_exclusions: with_exclusions)
       end
     end
 
     private
 
-    # Generate all necessary cache keys for a calculation, then yield to the block with every Item.
+    # Generate all necessary cache keys for a calculation, then yield to the block with every Entry.
     # Once all results are returned via fetch_multi, return the data in a standard format of:
     #   {
     #     region_1_slug: { period_1: value, period_2: value }
@@ -106,19 +107,19 @@ module Reports
     #   }
     #
     def cached_query(calculation, &block)
-      items = cache_keys(calculation)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
-        block.call(item)
+      items = cache_entries(calculation)
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |entry|
+        block.call(entry)
       }
-      cached_results.each_with_object({}) do |(item, count), results|
-        results[item.region.slug] ||= Hash.new(0)
-        results[item.region.slug][item.period] = count
+      cached_results.each_with_object({}) do |(entry, count), results|
+        results[entry.region.slug] ||= Hash.new(0)
+        results[entry.region.slug][entry.period] = count
       end
     end
 
-    def cache_keys(calculation)
+    def cache_entries(calculation)
       combinations = regions.to_a.product(periods.to_a)
-      combinations.map { |region, period| Reports::Item.new(region, period, calculation, with_exclusions: with_exclusions) }
+      combinations.map { |region, period| Reports::Entry.new(region, period, calculation, with_exclusions: with_exclusions) }
     end
 
     def percentage(numerator, denominator)
@@ -126,9 +127,8 @@ module Reports
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
 
-
     def no_bp_measure_query
-      @query ||= NoBPMeasureQuery.new
+      @no_bp_measure_query ||= NoBPMeasureQuery.new
     end
 
     def control_rate_query

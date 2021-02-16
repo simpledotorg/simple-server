@@ -1,5 +1,5 @@
 module Reports
-  class RegionItem
+  class RegionEntry
     def initialize(region, calculation, **options)
       @region = region
       @calculation = calculation
