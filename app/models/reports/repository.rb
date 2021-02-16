@@ -1,5 +1,7 @@
 module Reports
   class Repository
+    PERCENTAGE_PRECISION = 0
+
     def initialize(regions, periods:, with_exclusions: false)
       @regions = Array(regions)
       @regions_by_id = @regions.group_by { |r| r.id }
@@ -66,6 +68,12 @@ module Reports
       end
     end
 
+    def uncontrolled_patients_count
+      cached_query(:uncontrolled_patients_count) do |item|
+        control_rate_query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
+      end
+    end
+
     def controlled_patient_rates
       cached_query(:controlled_patient_rates) do |item|
         controlled = controlled_patients_count[item.region.slug][item.period]
@@ -74,21 +82,16 @@ module Reports
       end
     end
 
-    PERCENTAGE_PRECISION = 0
-
-    def percentage(numerator, denominator)
-      return 0 if denominator == 0 || numerator == 0
-      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
-    end
-
-    def uncontrolled_patients_count
-      cached_query(:uncontrolled_patients_count) do |item|
-        control_rate_query.uncontrolled(item.region, item.period, with_exclusions: with_exclusions).count
+    def uncontrolled_patient_rates
+      cached_query(:uncontrolled_patient_rates) do |item|
+        controlled = uncontrolled_patients_count[item.region.slug][item.period]
+        total = cumulative_assigned_patients_count[item.region.slug].fetch(item.period)
+        percentage(controlled, total)
       end
     end
 
-    def no_bp_measure_count
-      cached_query(:no_bp_measure_count) do |item|
+    def missed_visits_count
+      cached_query(:missed_visits_count) do |item|
         no_bp_measure_query.call(item.region, item.period, with_exclusions: with_exclusions)
       end
     end
@@ -117,6 +120,12 @@ module Reports
       combinations = regions.to_a.product(periods.to_a)
       combinations.map { |region, period| Reports::Item.new(region, period, calculation, with_exclusions: with_exclusions) }
     end
+
+    def percentage(numerator, denominator)
+      return 0 if denominator == 0 || numerator == 0
+      ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
+    end
+
 
     def no_bp_measure_query
       @query ||= NoBPMeasureQuery.new

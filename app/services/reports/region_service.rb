@@ -29,7 +29,7 @@ module Reports
 
     def call
       result = ControlRateService.new(region, periods: range, with_exclusions: with_exclusions).call
-      result.visited_without_bp_taken = repository.no_bp_measure_count[region.slug]
+      result.visited_without_bp_taken = repository.missed_visits_count[region.slug]
       result.calculate_percentages(:visited_without_bp_taken)
 
       start_period = [result.earliest_registration_period, range.begin].compact.max

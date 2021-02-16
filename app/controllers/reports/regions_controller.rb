@@ -45,9 +45,9 @@ class Reports::RegionsController < AdminController
         region: child,
         controlled_patients: fetcher.controlled_patients_count,
         controlled_patients_rate: fetcher.controlled_patient_rates,
-        uncontrolled_patients: fetcher.uncontrolled_patients,
-        uncontrolled_patients_rate: fetcher.uncontrolled_patients_rate,
-        missed_visits: fetcher.missed_visits,
+        uncontrolled_patients: fetcher.uncontrolled_patients_count,
+        uncontrolled_patients_rate: fetcher.uncontrolled_patient_rates,
+        missed_visits: fetcher.missed_visits_count,
         missed_visits_percentage: fetcher.missed_visits_rate,
         registrations: fetcher.assigned_patients_count,
         cumulative_patients: fetcher.cumulative_registrations

@@ -193,8 +193,8 @@ RSpec.describe Reports::Repository, type: :model do
     refresh_views
     jan = Period.month(jan_2020)
     repo = Reports::Repository.new(facility_1, periods: (Period.month(jan.advance(months: -3))..Period.month(jan)), with_exclusions: true)
-    expect(repo.no_bp_measure_count[facility_1.region.slug][Period.month(jan.advance(months: -1))]).to eq(0)
-    expect(repo.no_bp_measure_count[facility_1.region.slug][Period.month(jan)]).to eq(1)
+    expect(repo.missed_visits_count[facility_1.region.slug][Period.month(jan.advance(months: -1))]).to eq(0)
+    expect(repo.missed_visits_count[facility_1.region.slug][Period.month(jan)]).to eq(1)
   end
 
   it "incorporates optional args into the cache keys" do
