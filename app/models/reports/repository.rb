@@ -68,7 +68,6 @@ module Reports
     def controlled_patient_rates
       cached_query(:controlled_patient_rates) do |item|
         controlled = controlled_patients_count[item.region.slug][item.period]
-        pp "cum", cumulative_assigned_patients_count
         total = cumulative_assigned_patients_count[item.region.slug].fetch(item.period)
         pp controlled, total
         percentage(controlled, total)

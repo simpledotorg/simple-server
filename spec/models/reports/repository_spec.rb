@@ -39,7 +39,7 @@ RSpec.describe Reports::Repository, type: :model do
     expect(repo.assigned_patients_count).to eq(expected)
   end
 
-  fit "gets controlled counts and rates for single region" do
+  it "gets controlled counts and rates for single region" do
     facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
     facility_1, facility_2 = facilities.take(2)
     facility_1_controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)

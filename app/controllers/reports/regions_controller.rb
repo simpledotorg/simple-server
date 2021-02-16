@@ -44,7 +44,7 @@ class Reports::RegionsController < AdminController
       {
         region: child,
         controlled_patients: fetcher.controlled_patients_count,
-        controlled_patients_rate: fetcher.controlled_patients_rate,
+        controlled_patients_rate: fetcher.controlled_patient_rates,
         uncontrolled_patients: fetcher.uncontrolled_patients,
         uncontrolled_patients_rate: fetcher.uncontrolled_patients_rate,
         missed_visits: fetcher.missed_visits,
