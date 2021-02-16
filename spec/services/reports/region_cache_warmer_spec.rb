@@ -25,12 +25,6 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
     Reports::RegionCacheWarmer.call
   end
 
-  it "sets force_cache to true on creation" do
-    expect(RequestStore.store[:force_cache]).to be_nil
-    Reports::RegionCacheWarmer.new
-    expect(RequestStore.store[:force_cache]).to be true
-  end
-
   it "completes successfully" do
     _facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
     Reports::RegionCacheWarmer.call
