@@ -15,7 +15,7 @@ RSpec.describe RegionCacheWarmerJob, type: :job do
     Rails.cache.clear
   end
 
-  it "queues the job on the low queue" do
+  it "queues the job on the default queue" do
     expect {
       RegionCacheWarmerJob.perform_async(region.id, period.attributes)
     }.to change(Sidekiq::Queues["default"], :size).by(1)

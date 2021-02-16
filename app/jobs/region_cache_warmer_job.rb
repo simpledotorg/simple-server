@@ -17,7 +17,6 @@ class RegionCacheWarmerJob
       Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
     end
     notify "finished region caching for region #{region_id}"
-
   end
 
   private
