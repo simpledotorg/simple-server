@@ -65,9 +65,7 @@ RSpec.describe Reports::Repository, type: :model do
         jan_2020.to_period => 0.50
       }
     }
-    pp facility_1.region.assigned_patients.count
     repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
-    pp "cum", repo.cumulative_assigned_patients_count
     expect(repo.controlled_patients_count).to eq(expected_counts)
     expect(repo.controlled_patient_rates).to eq(expected_rates)
 
