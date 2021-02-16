@@ -362,7 +362,7 @@
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <div class="d-flex flex-1 mb-8px">
             <h3 class="mb-0px mr-8px">
-              Assigned patients
+              Registrations
             </h3>
             <span class="p-relative t-1px">
               <i
@@ -371,13 +371,13 @@
                 data-placement="right"
                 data-trigger="hover click"
                 data-html="true"
-                title="<p class='mb-4px'><strong>Total assigned patients:</strong> <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Monthly assigned patients:</strong> <%= t("assigned_patients_copy.monthly_assigned_patients", region_name: @region.name) %>"
+                title="<p class='mb-4px'><strong>Total registered patients:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Monthly registered patients:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>"
               >
               </i>
             </span>
           </div>
           <p class="c-grey-dark">
-            <%= t("assigned_patients_copy.reports_card_subtitle", region_name: @region.name) %>
+            <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
           </p>
         <% else %>
           <div class="mb-16px">
@@ -406,7 +406,7 @@
               <div>
                 <% if @data.last_value(:cumulative_registrations) %>
                   <p class="m-0px c-black">
-                    total patients<br>till
+                    total registrations<br>till
                     <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
                       <%= @period.bp_control_range_end_date %>
                     </span>
@@ -429,8 +429,7 @@
               <div>
                 <% if @data.last_value(:registrations) %>
                   <p class="m-0px c-black">
-                    <%= "patient".pluralize(@data.last_value(:registrations)) %> registered<br>
-                    in
+                    new registrations<br>in
                     <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
                       <%= @data.last_key(:registrations) %>
                     </span>

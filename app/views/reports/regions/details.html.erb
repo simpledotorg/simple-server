@@ -18,7 +18,7 @@
             data-placement="right"
             data-trigger="hover click"
             data-html="true"
-            title="<p class='mb-4px'><strong>New registered patients:</strong> <%= t("new_registered_patients_copy", region_name: @region.name) %></p><p class='mb-0px'><strong>Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %></p>"
+            title="<p class='mb-4px'><strong>Monthly registered patients:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %></p>"
           >
           </i>
         </span>
@@ -52,7 +52,7 @@
             <th></th>
             <% if current_admin.feature_enabled?(:report_with_exclusions) %>
               <th colspan="6">
-                New registered patients
+                Monthly registered patients
               </th>
               <th colspan="6">
                 Follow-up patients
@@ -195,7 +195,7 @@
             <th></th>
             <% if current_admin.feature_enabled?(:report_with_exclusions) %>
               <th colspan="6">
-                New registered patients
+                Monthly registered patients
               </th>
               <th colspan="6">
                 BP measures taken
@@ -290,7 +290,7 @@
             data-placement="right"
             data-trigger="hover click"
             data-html="true"
-            title="<p class='mb-4px'><strong>New registered patients:</strong> <%= t("new_registered_patients_copy", region_name: @region.name) %></p><p class='mb-0px'><strong>Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %></p>"
+            title="<p class='mb-4px'><strong>Monthly registered patients:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %></p>"
           >
           </i>
         </span>
@@ -324,7 +324,7 @@
             <th></th>
             <% if current_admin.feature_enabled?(:report_with_exclusions) %>
               <th colspan="6">
-                New registered patients
+                Monthly registered patients
               </th>
               <th colspan="6">
                 Follow-up patients
