@@ -333,7 +333,7 @@ RSpec.describe ControlRateService, type: :model do
   end
 
   context "caching" do
-    let(:memory_store) { ActiveSupport::Cache.lookup_store(:redis_store) }
+    let(:memory_store) { ActiveSupport::Cache.lookup_store(:redis_cache_store) }
     let(:cache) { Rails.cache }
 
     before do

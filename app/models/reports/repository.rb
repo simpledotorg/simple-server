@@ -36,6 +36,14 @@ module Reports
       end
     end
 
+    def fetch_or_write_multi(items, force: false, &blk)
+      if force
+        cache.write_multi(*items, &blk)
+      else
+        cache.fetch_multi(*items, &blk)
+      end
+    end
+
     # Generate all necessary cache keys for a calculation, then yield to the block with every Item.
     # Once all results are returned via fetch_multi, return the data in a standard format of:
     #   {
@@ -45,7 +53,7 @@ module Reports
     #
     def cached_query(calculation, &block)
       items = cache_keys(calculation)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
+      cached_results = fetch_or_write_multi(items, force: force_cache?) { |item|
         block.call(item)
       }
       cached_results.each_with_object({}) do |(item, count), results|
