@@ -97,6 +97,14 @@ module Reports
       end
     end
 
+    def missed_visits_rate
+      cached_query(:missed_visits_rate) do |entry|
+        controlled = missed_visits_count[entry.region.slug][entry.period]
+        total = cumulative_assigned_patients_count[entry.region.slug].fetch(entry.period)
+        percentage(controlled, total)
+      end
+    end
+
     private
 
     # Generate all necessary cache keys for a calculation, then yield to the block with every Entry.
