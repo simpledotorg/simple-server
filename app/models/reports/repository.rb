@@ -47,7 +47,8 @@ module Reports
     end
 
     def cumulative_assigned_patients_count
-      full_assigned_patients_counts.each_with_object({}) do |(region_slug, region_values), totals|
+      full_assigned_patients_counts.each_with_object({}) do |(region_item, region_values), totals|
+        region_slug = region_item.region.slug
         totals[region_slug] = Hash.new(0)
         first_period = region_values.keys.first
         full_range = (first_period..periods.end)
@@ -69,13 +70,13 @@ module Reports
       cached_query(:controlled_patient_rates) do |item|
         controlled = controlled_patients_count[item.region.slug][item.period]
         total = cumulative_assigned_patients_count[item.region.slug].fetch(item.period)
-        pp controlled, total
         percentage(controlled, total)
       end
     end
 
-    def percentage(numerator, denominator)
+    PERCENTAGE_PRECISION = 0
 
+    def percentage(numerator, denominator)
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end

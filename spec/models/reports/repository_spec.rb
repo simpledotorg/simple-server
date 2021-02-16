@@ -62,13 +62,15 @@ RSpec.describe Reports::Repository, type: :model do
     }
     expected_rates = {
       facility_1.slug => {
-        jan_2020.to_period => 0.50
+        jan_2020.to_period => 50
       }
     }
     repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
+    (jan_2019.to_period..jan_2020.to_period).each do |period|
+      expect(repo.cumulative_assigned_patients_count[facility_1.region.slug][period]).to eq(4)
+    end
     expect(repo.controlled_patients_count).to eq(expected_counts)
     expect(repo.controlled_patient_rates).to eq(expected_rates)
-
   end
 
   it "gets controlled info for one month" do
