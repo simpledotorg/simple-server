@@ -13,9 +13,9 @@ Rails.application.configure do
   config.consider_all_requests_local = true
 
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
-    [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
+    [:redis_cache_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
   else
-    [:redis_store, ENV["REDIS_URL"]]
+    [:redis_cache_store, ENV["REDIS_URL"]]
   end
 
   # Enable/disable caching. By default caching is disabled.
