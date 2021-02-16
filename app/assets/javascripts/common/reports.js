@@ -6,7 +6,7 @@ Reports = function () {
   this.mediumRedColor = "rgba(255, 51, 85, 1)";
   this.lightRedColor = "rgba(255, 235, 238, 0.9)";
   this.darkPurpleColor = "rgba(83, 0, 224, 1)";
-  this.lightPurpleColor = "rgba(238, 229, 252, 0.9)";
+  this.lightPurpleColor = "rgba(169, 128, 239, 1)";
   this.darkBlueColor = "rgba(12, 57, 102, 1)";
   this.mediumBlueColor = "rgba(0, 117, 235, 1)";
   this.lightBlueColor = "rgba(233, 243, 255, 0.9)";
@@ -571,26 +571,33 @@ Reports = function () {
     const tableSortAscending = {descending: false};
     const tableSortDescending = {descending: true};
 
+    const regionComparisonTable = document.getElementById("region-comparison-table");
+
+    // Start: Remove with :report_with_exclusions feature flag
     const cumulativeRegistrationsTable = document.getElementById("cumulative-registrations-table");
     const htnNotUnderControlTable = document.getElementById("htn-not-under-control-table");
     const noBPMeasureTable = document.getElementById("no-bp-measure-table");
     const htnControlledTable = document.getElementById("htn-controlled-table");
+    // End: Remove with :report_with_exclusions feature flag
 
+    if (regionComparisonTable) {
+      new Tablesort(regionComparisonTable, tableSortAscending);
+    }
+
+    // Start: Remove with :report_with_exclusions feature flag
     if (htnControlledTable) {
       new Tablesort(htnControlledTable, tableSortAscending);
     }
-
     if (noBPMeasureTable) {
       new Tablesort(noBPMeasureTable, tableSortDescending);
     }
-
     if (htnNotUnderControlTable) {
       new Tablesort(htnNotUnderControlTable, tableSortDescending);
     }
-
     if (cumulativeRegistrationsTable) {
       new Tablesort(cumulativeRegistrationsTable, tableSortAscending);
     }
+    // End: Remove with :report_with_exclusions feature flag
   };
 
   this.getReportingData = () => {
