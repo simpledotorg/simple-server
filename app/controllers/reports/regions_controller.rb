@@ -118,6 +118,7 @@ class Reports::RegionsController < AdminController
   private
 
   def accessible_region?(region, action)
+    return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
   end
 
