@@ -50,7 +50,7 @@ class Reports::RegionsController < AdminController
         missed_visits: fetcher.missed_visits_count,
         missed_visits_percentage: fetcher.missed_visits_rate,
         registrations: fetcher.assigned_patients_count,
-        cumulative_patients: fetcher.cumulative_registrations
+        cumulative_patients: fetcher.cumulative_assigned_patients_count
       }
     }
   end
