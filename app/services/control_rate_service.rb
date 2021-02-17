@@ -52,6 +52,7 @@ class ControlRateService
     end
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
+    results.count_cumulative_assigned_patients
     results.count_adjusted_registrations_with_ltfu
 
     if with_exclusions

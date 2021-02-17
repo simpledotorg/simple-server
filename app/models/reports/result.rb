@@ -21,6 +21,7 @@ module Reports
           controlled_patients_rate: Hash.new(0),
           controlled_patients_with_ltfu_rate: Hash.new(0),
           cumulative_registrations: Hash.new(0),
+          cumulative_assigned_patients: Hash.new(0),
           earliest_registration_period: nil,
           ltfu_patients: Hash.new(0),
           ltfu_patients_rate: Hash.new(0),
@@ -100,8 +101,9 @@ module Reports
 
     [:period_info, :earliest_registration_period,
       :registrations, :cumulative_registrations,
-      :assigned_patients, :ltfu_patients,
-      :adjusted_registrations, :adjusted_registrations_with_ltfu,
+      :assigned_patients, :cumulative_assigned_patients,
+      :ltfu_patients,
+      :adjusted_registrations_with_ltfu, :adjusted_registrations,
       :missed_visits, :missed_visits_rate,
       :controlled_patients, :controlled_patients_with_ltfu,
       :controlled_patients_rate, :controlled_patients_with_ltfu_rate,
@@ -146,6 +148,15 @@ module Reports
         adjusted_period = period.advance(months: -3)
         running_totals[period] = adjusted_registrations_with_ltfu[period] - ltfu_patients[adjusted_period]
       end
+    end
+
+    def count_cumulative_assigned_patients
+      self.cumulative_assigned_patients = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+        previous_registrations = running_totals[period.previous]
+        current_registrations = assigned_patients[period]
+        total = current_registrations + previous_registrations
+        running_totals[period] = total
+      }
     end
 
     def count_cumulative_registrations

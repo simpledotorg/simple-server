@@ -11,7 +11,7 @@ PatientBreakdownReports = function () {
     return {
       ltfuPatients: jsonData.ltfu_patients,
       ltfuPatientsRate: jsonData.ltfu_patients_rate,
-      cumulativeRegistrations: jsonData.cumulative_registrations,
+      cumulativeAssignedPatients: jsonData.cumulative_assigned_patients,
       periodInfo: jsonData.period_info
     }
   }
@@ -102,13 +102,13 @@ PatientBreakdownReports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const cumulativeRegistrations = data.cumulativeRegistrations[label];
+        const cumulativeAssignedPatients = data.cumulativeAssignedPatients[label];
         const totalPatients = data.ltfuPatients[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = reports.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.start_date;
-        registrationsNode.innerHTML = reports.formatNumberWithCommas(cumulativeRegistrations);
+        registrationsNode.innerHTML = reports.formatNumberWithCommas(cumulativeAssignedPatients);
         registrationsPeriodEndNode.innerHTML = period.start_date;
       }
     };
@@ -170,7 +170,7 @@ PatientBreakdownReports = function () {
         label: (tooltipItem, tooltipData) => {
           const label = tooltipData.labels[tooltipItem.index];
           let tooltipBody = [`Total: ${data[label]}`];
-          if (transferredPatients[label] == undefined) {
+          if (transferredPatients[label] !== undefined) {
             tooltipBody.push(`Transferred-out: ${transferredPatients[label]}`)
           }
           return tooltipBody;
