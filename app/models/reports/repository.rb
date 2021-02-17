@@ -20,12 +20,6 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
-    def for_region_and_period(region, period)
-      raise ArgumentError, "Repository does not include region #{region.slug}" unless regions.include?(region)
-      raise ArgumentError, "Repository does not include period #{period}" unless periods.include?(period)
-      RegionAndPeriodFetcher.new(self, region, period)
-    end
-
     # Returns assigned patients for a region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
     # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
     # to conform to the same interface as all the other queries here.
@@ -107,7 +101,7 @@ module Reports
 
     private
 
-    # Generate all necessary cache keys for a calculation, then yield to the block with every Entry.
+    # Generate all necessary cache keys for a calculation, then yield to the block with every entry.
     # Once all results are returned via fetch_multi, return the data in a standard format of:
     #   {
     #     region_1_slug: { period_1: value, period_2: value }
@@ -127,7 +121,7 @@ module Reports
 
     def cache_entries(calculation)
       combinations = regions.to_a.product(periods.to_a)
-      combinations.map { |region, period| Reports::Entry.new(region, period, calculation, with_exclusions: with_exclusions) }
+      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, with_exclusions: with_exclusions) }
     end
 
     def percentage(numerator, denominator)
