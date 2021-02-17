@@ -75,7 +75,8 @@ class ControlRateService
     return @registration_counts if defined? @registration_counts
 
     @registration_counts =
-      region.assigned_patients
+      region.registered_patients
+        .with_hypertension
         .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
         .count
   end
