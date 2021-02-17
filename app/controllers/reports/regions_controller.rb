@@ -31,9 +31,6 @@ class Reports::RegionsController < AdminController
 
   def show
     @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
-    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
-    @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
-    @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
     @with_ltfu = with_ltfu?
 
     @children = @region.reportable_children
