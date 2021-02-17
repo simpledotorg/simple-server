@@ -28,13 +28,4 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
-
-  config.before(:each) do
-    RequestStore.clear!
-  end
-
-  config.before :all do
-    # create a root region and persist across all tests (the root region is effectively a singleton)
-    Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-  end
 end
