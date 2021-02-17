@@ -60,7 +60,7 @@ en:
     reports_card_subtitle: "Hypertension patients with no BP taken in the last 12 months"
     numerator: "Patients with no BP taken in the last 12 months."
   registered_patients_copy:
-    reports_card_subtitle: "Monthly and total hypertension patient registrations in %{region_name}"
+    reports_card_subtitle: "Monthly and total hypertension patients registered in %{region_name}"
     monthly_registered_patients: "Hypertension patients registered during a month in %{region_name}."
     total_registered_patients: "Total hypertension patients registered in %{region_name}."
   assigned_patients_copy:
