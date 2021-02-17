@@ -71,7 +71,7 @@ class CountryConfig
   end
 
   def self.country_environment_file
-    ".env.production.#{current[:abbreviation]}"
+    ".env.#{current[:abbreviation]}"
   end
 end
 
