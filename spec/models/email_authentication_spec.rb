@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe EmailAuthentication, type: :model do
-
   describe "Associations" do
     it { should have_one(:user_authentication) }
     it { should have_one(:user).through(:user_authentication) }
@@ -58,7 +57,7 @@ RSpec.describe EmailAuthentication, type: :model do
 
   describe "updating" do
     it "does not allow password to be an nil" do
-      auth = build(:email_authentication, password: 'V4lid8me!!!')
+      auth = build(:email_authentication, password: "V4lid8me!!!")
       expect(auth).to be_valid
       auth.password = nil
       expect(auth).to_not be_valid
