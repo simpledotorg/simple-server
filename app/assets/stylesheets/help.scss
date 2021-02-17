@@ -260,15 +260,16 @@ html, body {
       display: inline-block;
     }
 
-    .IN-button {
-      background: #dfffec;
-      color: #007A31;
-    }
+  }
 
-    .ET-button {
-      background-color: #e1f2ff;
-      color: #1f5177;
-    }
+  .IN-button, .BD-button {
+    background: #dfffec;
+    color: #007A31;
+  }
+
+  .ET-button {
+    background-color: #e1f2ff;
+    color: #1f5177;
   }
 
   .app-button {
