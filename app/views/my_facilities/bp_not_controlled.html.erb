@@ -77,7 +77,12 @@
             </thead>
             <tbody>
               <% facility_size_six_month_rate_change = facility_size_six_month_rate_change(@stats_by_size[size][:periods], "uncontrolled_patients_rate") %>
-              <tr class="row-total" data-row="<%= size %>" data-trend-color="<% if facility_size_six_month_rate_change > 0 %>red<% elsif facility_size_six_month_rate_change < 0 %>green<% else %>grey<% end %>">
+              <tr
+                class="row-total"
+                data-sort-method="none"
+                data-row="<%= size %>"
+                data-trend-color="<% if facility_size_six_month_rate_change > 0 %>red<% elsif facility_size_six_month_rate_change < 0 %>green<% else %>grey<% end %>"
+              >
                 <td class="type-title">
                   All <%= Facility.localized_facility_size(size) %>s
                 </td>
