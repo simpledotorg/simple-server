@@ -72,7 +72,6 @@ gem "sidekiq"
 gem "sidekiq-statsd"
 gem "sidekiq-throttled"
 gem "slack-notifier"
-gem "strong_password", "~> 0.0.8"
 gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.10", ">= 5.10.3"
 gem "uglifier", ">= 1.3.0"
