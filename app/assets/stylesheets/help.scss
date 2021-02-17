@@ -231,7 +231,7 @@ html, body {
     margin-top: 0.2em;
   }
 
-  a.whatsapp-button, a.telegram-button {
+  a.support-button {
     display: block;
     margin: 16px 0 0 0;
     padding: 14px 0 10px 0;
@@ -259,16 +259,16 @@ html, body {
     .svg-container {
       display: inline-block;
     }
-  }
 
-  a.whatsapp-button {
-    background: #dfffec;
-    color: #007A31;
-  }
+    .IN-button {
+      background: #dfffec;
+      color: #007A31;
+    }
 
-  a.telegram-button {
-    background-color: #e1f2ff;
-    color: #1f5177;
+    .ET-button {
+      background-color: #e1f2ff;
+      color: #1f5177;
+    }
   }
 
   .app-button {
