@@ -11,9 +11,11 @@ class EmailAuthentication < ApplicationRecord
 
   delegate :full_name, :resources, :role, :organization, to: :user, allow_nil: true
 
-  validates :password, password_strength: {use_dictionary: true, min_entropy: 17}, allow_nil: true
-
-  after_validation :strip_unnecessary_errors
+  validates :password, presence: true
+  validates_length_of :password, minimum: 10, message: "must be at least 10 characters"
+  validates :password, format: { with: /(?=.*[a-z])/, message: "must contain at least one lower case letter" }
+  validates :password, format: { with: /(?=.*[A-Z])/, message: "must contain at least one upper case letter" }
+  validates :password, format: { with: /(?=.*\d)/, message: "must contain at least one number" }
 
   private
 
