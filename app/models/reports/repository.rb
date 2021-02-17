@@ -45,13 +45,7 @@ module Reports
     #
     def cached_query(calculation, &block)
       items = cache_keys(calculation)
-      cached_results = if force_cache? # fetch_multi does not support force, so we do it manually here
-        cached_results = items.each_with_object({}) { |item, hsh| hsh[item] = block.call(item) }
-        cache.write_multi(cached_results)
-        cached_results
-      else
-        cache.fetch_multi(*items) { |item| block.call(item) }
-      end
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item| block.call(item) }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
         results[item.region.slug][item.period] = count
