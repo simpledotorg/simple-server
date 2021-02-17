@@ -46,7 +46,7 @@ class ControlRateService
   def fetch_all_data
     results.registrations = registration_counts
     results.assigned_patients = assigned_patients_counts
-    results.earliest_registration_period = registration_counts.keys.first
+    results.earliest_registration_period = registration_counts.keys.first, assigned_patients_counts.keys.first
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period).count
     end
