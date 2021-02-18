@@ -28,7 +28,7 @@ RSpec.describe ControlRateService, type: :model do
       create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, assigned_facility: facility, registration_user: user)
     end
     Timecop.freeze("May 30th 2018") do
-      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility,  assigned_facility: facility, registration_user: user)
+      create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, assigned_facility: facility, registration_user: user)
     end
     Timecop.freeze(june_1_2018) do
       create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, assigned_facility: facility, registration_user: user)
@@ -275,11 +275,11 @@ RSpec.describe ControlRateService, type: :model do
     facility = facilities.first
 
     controlled = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019,
-                             registration_facility: facility, registration_user: user)
+                                          registration_facility: facility, registration_user: user)
     uncontrolled = create_list(:patient, 4, full_name: "uncontrolled", recorded_at: jan_2019,
-                               registration_facility: facility, registration_user: user)
+                                            registration_facility: facility, registration_user: user)
     patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019,
-                                         registration_facility: facilities.last, registration_user: user)
+                                                   registration_facility: facilities.last, registration_user: user)
 
     Timecop.freeze(jan_2020) do
       controlled.map do |patient|
