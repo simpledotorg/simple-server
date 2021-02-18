@@ -69,6 +69,11 @@ class CountryConfig
   def self.current
     Rails.application.config.country
   end
+
+  def self.country_environment_file
+    ".env.#{current[:abbreviation]}"
+  end
 end
 
 Rails.application.config.country = CountryConfig.for(ENV.fetch("DEFAULT_COUNTRY"))
+Dotenv.overload(CountryConfig.country_environment_file)
