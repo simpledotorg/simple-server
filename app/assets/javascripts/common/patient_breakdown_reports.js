@@ -128,7 +128,7 @@ PatientBreakdownReports = function () {
       "dead_patients": "Died"
     }
     const chartLabels = Object.keys(chartLabelDescriptions)
-    const chartData = chartLabels.map(el => data[el])
+    const chartData = chartLabels.map(el => data[el]).filter(el => el !== 0)
     const transferredPatients = {
       ltfu_patients: data["ltfu_transferred_patients"],
       not_ltfu_patients: data["not_ltfu_transferred_patients"],
