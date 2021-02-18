@@ -2,7 +2,7 @@
   <h3 class="mb-0px pl-20px">
     Visit details of all assigned hypertension patients
   </h3>
-  <% if @last_registration_value %>
+  <% if @data[:cumulative_assigned_patients].values&.last %>
     <div class="d-flex fd-column fd-lg-row">
       <div class="pl-lg-12px w-lg-50 h-lg-auto h-print-12cm">
         <canvas id="missedVisitDetails"></canvas>
@@ -267,13 +267,13 @@
         <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
           <div class="d-flex fd-column align-baseline mt-20px pt-8px bt-1px bt-grey-light mb-8px mb-lg-16px">
             <p class="mb-8px fs-14px c-grey-dark c-print-black">
-              <strong>Visit but no BP taken numerator:</strong> <%= t("numerator_copy.visit_but_no_bp_taken") %>
+              <strong>Visit but no BP taken numerator:</strong> <%= t("visit_but_no_bp_taken_copy.numerator") %>
             </p>
             <p class="mb-8px fs-14px c-grey-dark c-print-black">
               <strong>All other numerators:</strong> Same numerators as cards above
             </p>
             <p class="mb-0px fs-14px c-grey-dark c-print-black">
-              <strong>Denominator:</strong> <%= t("denominator_copy") %>
+              <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
             </p>
           </div>
         <% end %>

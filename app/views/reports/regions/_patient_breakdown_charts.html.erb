@@ -42,8 +42,8 @@
               </p>
               <p class="m-0px c-grey-dark c-print-black">
                 of
-                <span data-registrations="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_registrations)) %>">
-                  <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_registrations)) %>
+                <span data-registrations="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>">
+                  <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>
                 </span>
                 patients till
                 <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>">

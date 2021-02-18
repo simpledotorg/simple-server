@@ -156,10 +156,10 @@
           <div class="px-20px pb-8px pb-lg-0">
             <div class="mb-2">
               <p class="mb-8px fs-14px c-grey-dark c-print-black">
-                <strong>Numerator:</strong> <%= t("numerator_copy.bp_controlled") %>
+                <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
               </p>
               <p class="fs-14px c-grey-dark c-print-black">
-                <strong>Denominator:</strong> <%= t("denominator_copy") %>
+                <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
               </p>
             </div>
           </div>
@@ -255,10 +255,10 @@
           <div class="px-20px pb-8px pb-lg-0">
             <div class="mb-2">
               <p class="mb-8px fs-14px c-grey-dark c-print-black">
-                <strong>Numerator:</strong> <%= t("numerator_copy.bp_not_controlled") %>
+                <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
               </p>
               <p class="fs-14px c-grey-dark c-print-black">
-                <strong>Denominator:</strong> <%= t("denominator_copy") %>
+                <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
               </p>
             </div>
           </div>
@@ -345,10 +345,10 @@
           <div class="px-20px pb-8px pb-lg-0">
             <div class="mb-2">
               <p class="mb-8px fs-14px c-grey-dark c-print-black">
-                <strong>Numerator:</strong> <%= t("numerator_copy.missed_visits") %>
+                <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
               </p>
               <p class="fs-14px c-grey-dark c-print-black">
-                <strong>Denominator:</strong> <%= t("denominator_copy") %>
+                <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
               </p>
             </div>
           </div>
@@ -362,7 +362,7 @@
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <div class="d-flex flex-1 mb-8px">
             <h3 class="mb-0px mr-8px">
-              Assigned patients
+              Registrations
             </h3>
             <span class="p-relative t-1px">
               <i
@@ -371,22 +371,18 @@
                 data-placement="right"
                 data-trigger="hover click"
                 data-html="true"
-                title="<p class='mb-4px'><strong>Total assigned patients:</strong> <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Monthly assigned patients:</strong> <%= t("assigned_patients_copy.monthly_assigned_patients", region_name: @region.name) %>"
+                title="<p class='mb-4px'><strong>Total registered patients:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Monthly registered patients:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>"
               >
               </i>
             </span>
           </div>
           <p class="c-grey-dark">
-            <%= t("assigned_patients_copy.reports_card_subtitle", region_name: @region.name) %>
+            <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
           </p>
         <% else %>
           <div class="mb-16px">
             <h3 class="mb-0px">
-              <% if @region.is_a?(Facility) %>
-                Monthly and cumulative patients
-              <% else %>
-                Monthly and cumulative registrations
-              <% end %>
+              Monthly and cumulative registrations
             </h3>
           </div>
         <% end %>
@@ -405,15 +401,15 @@
               </p>
               <div>
                 <% if @data.last_value(:cumulative_registrations) %>
-                  <p class="m-0px c-black">
-                    total patients<br>till
+                  <p class="m-0px c-black c-print-black">
+                    total <%= "registrations".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
                     <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
                       <%= @period.bp_control_range_end_date %>
                     </span>
                   </p>
                 <% else %>
                   <p class="m-0px c-grey-medium c-print-black">
-                    No total assigned patients<br>
+                    No total registered patients<br>
                     data available
                   </p>
                 <% end %>
@@ -428,14 +424,17 @@
               </p>
               <div>
                 <% if @data.last_value(:registrations) %>
-                  <p class="m-0px c-black">
-                    <%= "patient".pluralize(@data.last_value(:registrations)) %> registered<br>
-                    in
+                  <p class="m-0px c-black c-print-black">
+                    new <%= "registrations".pluralize(@data.last_value(:registrations)) %><br>in
                     <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
                       <%= @data.last_key(:registrations) %>
                     </span>
                   </p>
                 <% else %>
+                  <p class="m-0px c-grey-medium c-print-black">
+                    No monthly registered patients<br>
+                    data available
+                  </p>
                 <% end %>
               </div>
             </div>

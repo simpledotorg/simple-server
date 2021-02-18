@@ -43,12 +43,12 @@
               a missed visit
             </th>
             <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-              Total assigned<br>
+              Total registered<br>
               patients
             </th>
             <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-              Monthly assigned<br>
-              patients
+              Patients registered<br>
+              in <%= @period.to_s %>
             </th>
           </tr>
         </thead>
@@ -191,10 +191,10 @@
         </div>
         <div class="pt-12px">
           <p class="mb-8px fs-14px c-grey-dark c-print-black ">
-            <strong>Numerator:</strong> <%= t("numerator_copy.bp_controlled") %>
+            <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
           </p>
           <p class="mb-0px fs-14px c-grey-dark c-print-black ">
-            <strong>Denominator:</strong> <%= t("denominator_copy") %>
+            <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
           </p>
         </div>
       </div>
@@ -259,10 +259,10 @@
         </div>
         <div class="pt-12px">
           <p class="mb-8px fs-14px c-grey-dark c-print-black ">
-            <strong>Numerator:</strong> <%= t("numerator_copy.bp_not_controlled") %>
+            <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
           </p>
           <p class="mb-0px fs-14px c-grey-dark c-print-black ">
-            <strong>Denominator:</strong> <%= t("denominator_copy") %>
+            <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
           </p>
         </div>
       </div>
@@ -327,10 +327,10 @@
         </div>
         <div class="pt-12px">
           <p class="mb-8px fs-14px c-grey-dark c-print-black ">
-            <strong>Numerator:</strong> <%= t("numerator_copy.missed_visits") %>
+            <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
           </p>
           <p class="mb-0px fs-14px c-grey-dark c-print-black ">
-            <strong>Denominator:</strong> <%= t("denominator_copy") %>
+            <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
           </p>
         </div>
       </div>
@@ -339,7 +339,7 @@
       <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
         <div class="mb-2">
           <h3 class="c-black">
-            Monthly and cumulative patients
+            Monthly and cumulative registrations
           </h3>
         </div>
         <div class="table-responsive">
@@ -358,7 +358,7 @@
                   Patients registered in <%= @period.to_s %>
                 </th>
                 <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-                  Cumulative patients
+                  Total registered patients
                 </th>
               </tr>
             </thead>
@@ -395,7 +395,8 @@
         </div>
         <div class="mb-2 pt-12px">
           <p class="us-none fs-14px c-transparent">
-            <strong>Denominator:</strong> <%= t("denominator_copy") %>
+            <br>
+            <br>
           </p>
         </div>
       </div>
