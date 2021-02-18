@@ -1,20 +1,33 @@
 class MergeDuplicatePatients
-  def initialize
-    super
+  def initialize(patients)
+    @patients = patients.sort_by(&:recorded_at)
   end
 
-  def merge_patients(patients)
-    new_patient = create_new_patient_from(patients)
-    # in a tx, do the following
-    new_patient.save
-    mark_patients_as_merged(patients)
+  def earliest_patient
+    @patients.first
   end
 
-  def create_new_patient_from(patients)
-    sorted_patients = patients.sort_by(&:recorded_at)
-    earliest_patient = sorted_patients.first
-    latest_patient = sorted_patients.last
+  def latest_patient
+    @patients.last
+  end
+
+  def merge
+    ActiveRecord::Base.transaction do
+      new_patient = build_patient
+      new_patient.save
+      prescription_drugs = build_prescription_drugs(new_patient)
+      # in a tx, do the following
+      new_patient.save
+    end
+  end
+
+  def mark_as_merged
+    nil
+  end
+
+  def build_patient
     Patient.new(
+      id: SecureRandom.uuid,
       recorded_at: earliest_patient.recorded_at,
       registration_facility: earliest_patient.registration_facility,
       registration_user: earliest_patient.registration_user,
@@ -24,7 +37,9 @@ class MergeDuplicatePatients
     )
   end
 
-  def mark_patients_as_merged(patients)
-    nil
+  def build_prescription_drugs(patient)
+    @patients.map(&:prescription_drugs).flatten.map do |prescription_drug|
+      PrescriptionDrug.new(prescription_drug.attributes.merge(patient_id: patient))
+    end
   end
 end

@@ -147,6 +147,6 @@ def create_regular_patient(registration_time: Time.now, facility: create(:facili
     device_created_at: registration_time,
     device_updated_at: registration_time)
   passport = create(:patient_business_identifier, patient: patient)
-  add_some_visits(patient, facility: facility, user: user)
+  #add_some_visits(patient, facility: facility, user: user)
   return patient
 end
