@@ -44,14 +44,15 @@ module Reports
     end
 
     def cumulative_assigned_patients_count
-      full_assigned_patients_counts.each_with_object({}) do |(region_entry, region_values), totals|
+      full_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         region_slug = region_entry.region.slug
         totals[region_slug] = Hash.new(0)
-        first_period = region_values.keys.first
+        next if patient_counts.empty?
+        first_period = patient_counts.keys.first
         full_range = (first_period..periods.end)
         full_range.each do |period|
           previous_total = totals[region_slug][period.previous]
-          current_amount = region_values[period] || 0
+          current_amount = patient_counts[period] || 0
           totals[region_slug][period] += previous_total + current_amount
         end
       end
@@ -72,7 +73,7 @@ module Reports
     def controlled_patient_rates
       cached_query(:controlled_patient_rates) do |entry|
         controlled = controlled_patients_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug].fetch(entry.period)
+        total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
       end
     end
@@ -80,7 +81,7 @@ module Reports
     def uncontrolled_patient_rates
       cached_query(:uncontrolled_patient_rates) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug].fetch(entry.period)
+        total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
       end
     end
@@ -94,7 +95,7 @@ module Reports
     def missed_visits_rate
       cached_query(:missed_visits_rate) do |entry|
         controlled = missed_visits_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug].fetch(entry.period)
+        total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
       end
     end
