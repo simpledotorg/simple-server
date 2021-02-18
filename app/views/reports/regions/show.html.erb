@@ -11,29 +11,13 @@
                 BP controlled 
               </h3>
               <% if @with_ltfu %>
-                <span class="p-relative t-1px">
-                  <i
-                    class="fas fa-question-circle fs-14px c-grey-dark"
-                    data-toggle="tooltip"
-                    data-placement="right"
-                    data-trigger="hover click"
-                    data-html="true"
-                    title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_copy", region_name: @region.name) %>"
-                  >
-                  </i>
-                </span>
+                <%= render "definition_tooltip",
+                           definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
+                                          "Denominator" => t("denominator_copy", region_name: @region.name) } %>
               <% else %>
-                <span class="p-relative t-1px">
-                  <i
-                    class="fas fa-question-circle fs-14px c-grey-dark"
-                    data-toggle="tooltip"
-                    data-placement="right"
-                    data-trigger="hover click"
-                    data-html="true"
-                    title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>"
-                  >
-                  </i>
-                </span>
+                <%= render "definition_tooltip",
+                           definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
+                                          "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
               <% end %>
             </div>
           <% else %>
@@ -175,17 +159,9 @@
             <h3 class="mb-0px mr-8px">
               BP not controlled 
             </h3>
-            <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>"
-              >
-              </i>
-            </span>
+            <%= render "definition_tooltip",
+                       definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
+                                      "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
           </div>          
           <p class="c-grey-dark">
             <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
@@ -274,17 +250,9 @@
             <h3 class="mb-0px mr-8px">
               Missed visits
             </h3>
-            <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>"
-              >
-              </i>
-            </span>
+            <%= render "definition_tooltip",
+                       definitions: { "Numerator" => t("missed_visits_copy.numerator"),
+                                      "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
           </div>
           <p class="c-grey-dark">
             <%= t("missed_visits_copy.reports_card_subtitle") %>
@@ -364,17 +332,9 @@
             <h3 class="mb-0px mr-8px">
               Registrations
             </h3>
-            <span class="p-relative t-1px">
-              <i
-                class="fas fa-question-circle fs-14px c-grey-dark"
-                data-toggle="tooltip"
-                data-placement="right"
-                data-trigger="hover click"
-                data-html="true"
-                title="<p class='mb-4px'><strong>Total registered patients:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %></p><p class='mb-0px'><strong>Monthly registered patients:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>"
-              >
-              </i>
-            </span>
+            <%= render "definition_tooltip",
+                       definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
+                                      "Monthly registered patients:" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
           </div>
           <p class="c-grey-dark">
             <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
