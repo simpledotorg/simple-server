@@ -28,6 +28,15 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Warden::Test::Helpers
 
+  config.before(:all) do
+    # create a root region and persist across all tests (the root region is effectively a singleton)
+    Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
+  end
+
+  config.before(:each) do
+    RequestStore.clear!
+  end
+
   Shoulda::Matchers.configure do |config|
     config.integrate do |with|
       with.test_framework :rspec

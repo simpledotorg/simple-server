@@ -40,6 +40,11 @@ class Region < ApplicationRecord
     REGION_TYPES[current_index + 1]
   end
 
+  def reportable_region?
+    return true if CountryConfig.current[:extended_region_reports]
+    region_type.in?(["district", "facility"])
+  end
+
   def reportable_children
     return children if CountryConfig.current[:extended_region_reports]
     legacy_children

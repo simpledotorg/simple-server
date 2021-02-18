@@ -10,9 +10,13 @@ class ControlRateQuery
   end
 
   def uncontrolled(region, period, with_exclusions: false)
-    LatestBloodPressuresPerPatientPerMonth.with_discarded.from(
-      bp_monthly_query(region, period, with_exclusions), "latest_blood_pressures_per_patient_per_months"
-    ).hypertensive
+    if period.quarter?
+      bp_quarterly_query(region, period, with_exclusions).hypertensive
+    else
+      LatestBloodPressuresPerPatientPerMonth.with_discarded.from(
+        bp_monthly_query(region, period, with_exclusions), "latest_blood_pressures_per_patient_per_months"
+      ).hypertensive
+    end
   end
 
   private

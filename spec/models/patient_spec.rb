@@ -1,6 +1,10 @@
 require "rails_helper"
 
 describe Patient, type: :model do
+  def refresh_views
+    LatestBloodPressuresPerPatientPerMonth.refresh
+  end
+
   subject(:patient) { build(:patient) }
 
   it "picks up available genders from country config" do
@@ -359,6 +363,54 @@ describe Patient, type: :model do
         expect(described_class.for_sync.first.association(:address).loaded?).to eq true
         expect(described_class.for_sync.first.association(:phone_numbers).loaded?).to eq true
         expect(described_class.for_sync.first.association(:business_identifiers).loaded?).to eq true
+      end
+    end
+
+    describe ".ltfu_as_of" do
+      it "includes patient who is LTFU" do
+        ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).to include(ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they were registered recently" do
+        not_ltfu_patient = Timecop.freeze(6.months.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they had a BP recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+    end
+
+    describe ".not_ltfu_as_of" do
+      it "excludes patient who is LTFU" do
+        ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).not_to include(ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they were registered recently" do
+        not_ltfu_patient = Timecop.freeze(6.months.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they had a BP recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
       end
     end
   end

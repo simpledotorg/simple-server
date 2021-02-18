@@ -24,7 +24,7 @@ describe DrugStock, type: :model do
     let!(:facility) { create(:facility, facility_group: facility_group) }
 
     it "returns latest stocks for end of jan" do
-      end_of_january = Date.strptime("January 2021", "%B %Y").end_of_month
+      end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month
       _jan_drug_1_stock_1 = create(:drug_stock,
         facility: facility,
         protocol_drug: protocol_drug,

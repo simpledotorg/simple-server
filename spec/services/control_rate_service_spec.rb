@@ -169,7 +169,7 @@ RSpec.describe ControlRateService, type: :model do
   end
 
   context "when with_exclusions is true" do
-    it "excludes patients who are dead" do
+    it "excludes patients who are dead or LTFU" do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       patients = [
         create(:patient, recorded_at: jan_2019, assigned_facility: facility, registration_user: user),
@@ -200,10 +200,13 @@ RSpec.describe ControlRateService, type: :model do
 
       result_with_exclusions =
         ControlRateService.new(facility_group_1, periods: report_range, with_exclusions: true).call
+
       expect(result_with_exclusions[:cumulative_registrations][report_month]).to eq(2)
-      expect(result_with_exclusions[:adjusted_registrations][report_month]).to eq(1)
+      expect(result_with_exclusions[:adjusted_registrations_with_ltfu][report_month]).to eq(1)
+      expect(result_with_exclusions[:adjusted_registrations][report_month]).to eq(0)
       expect(result_with_exclusions[:controlled_patients][report_month]).to eq(1)
-      expect(result_with_exclusions[:controlled_patients_rate][report_month]).to eq(100.0)
+      expect(result_with_exclusions[:controlled_patients_rate][report_month]).to eq(0)
+      expect(result_with_exclusions[:controlled_patients_with_ltfu_rate][report_month]).to eq(100.0)
       expect(result_with_exclusions[:uncontrolled_patients][report_month]).to eq(0)
       expect(result_with_exclusions[:uncontrolled_patients_rate][report_month]).to eq(0)
     end
