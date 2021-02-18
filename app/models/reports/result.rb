@@ -135,12 +135,7 @@ module Reports
         counts[period] = assigned_patients[adjusted_period]
       }
 
-      self.adjusted_registrations_with_ltfu = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_registrations = running_totals[period.previous]
-        current_registrations = adjusted_registration_counts[period]
-        total = current_registrations + previous_registrations
-        running_totals[period] = total
-      }
+      self.adjusted_registrations_with_ltfu = running_totals(adjusted_registration_counts)
     end
 
     def count_adjusted_registrations
@@ -151,21 +146,11 @@ module Reports
     end
 
     def count_cumulative_assigned_patients
-      self.cumulative_assigned_patients = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_registrations = running_totals[period.previous]
-        current_registrations = assigned_patients[period]
-        total = current_registrations + previous_registrations
-        running_totals[period] = total
-      }
+      self.cumulative_assigned_patients = running_totals(assigned_patients)
     end
 
     def count_cumulative_registrations
-      self.cumulative_registrations = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_registrations = running_totals[period.previous]
-        current_registrations = registrations[period]
-        total = current_registrations + previous_registrations
-        running_totals[period] = total
-      }
+      self.cumulative_registrations = running_totals(registrations)
     end
 
     # "Missed visits" is the remaining registered patients when we subtract out the other three groups.
@@ -245,6 +230,15 @@ module Reports
     def percentage(numerator, denominator)
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
+    end
+
+    def running_totals(periodwise_counts)
+      full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+        previous_total = running_totals[period.previous]
+        current_count = periodwise_counts[period]
+        total = previous_total + current_count
+        running_totals[period] = total
+      }
     end
   end
 end
