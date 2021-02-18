@@ -1,9 +1,15 @@
 module Reports
   class DrugStockCalculation
-    def initialize(state:, protocol:, drug_category:, stocks_by_rxnorm_code:, patient_count:)
+    def initialize(state:,
+                   protocol:,
+                   drug_category:,
+                   stocks_by_rxnorm_code:,
+                   patient_count: nil,
+                   previous_month_stocks_by_rxnorm_code: nil)
       @protocol = protocol
       @drug_category = drug_category
       @stocks_by_rxnorm_code = stocks_by_rxnorm_code
+      @previous_month_stocks_by_rxnorm_code = previous_month_stocks_by_rxnorm_code
       @patient_count = patient_count
       @coefficients = patient_days_coefficients(state)
     end
@@ -35,19 +41,30 @@ module Reports
       { patient_days: "error" }
     end
 
-    # def consumption
-    #   return nil if stocks_on_hand.empty?
-    #   {}
-    # rescue => e
-    #   # drug is not in formula, or other configuration error
-    #   Sentry.capture_message("Patient Days Calculation Error",
-    #                          extra: {
-    #                            protocol: @protocol,
-    #                            exception: e
-    #                          },
-    #                          tags: { type: "reports" })
-    #   { consumption: "error" }
-    # end
+    def consumption
+      consumption = {}
+      protocol_drugs = protocol_drugs_by_category[@drug_category]
+      protocol_drugs.each_with_object(consumption) do |protocol_drug, consumption|
+        opening_balance = @previous_month_stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)&.in_stock
+        received = @stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)&.received
+        closing_balance = @stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code)&.in_stock
+        consumption[protocol_drug.id] = consumption_calculation(opening_balance, received, closing_balance)
+      end
+    rescue => e
+      # drug is not in formula, or other configuration error
+      Sentry.capture_message("Consumption Calculation Error",
+                             extra: {
+                               coefficients: @coefficients,
+                               drug_category: @drug_category,
+                               stocks_by_rxnorm_code: @stocks_by_rxnorm_code,
+                               previous_month_stocks_by_rxnorm_code: @previous_month_stocks_by_rxnorm_code,
+                               patient_count: @patient_count,
+                               protocol: @protocol,
+                               exception: e
+                             },
+                             tags: { type: "reports" })
+      { consumption: "error" }
+    end
 
     def stocks_on_hand
       @stocks_on_hand ||= protocol_drugs_by_category[@drug_category].map do |protocol_drug|
@@ -70,6 +87,34 @@ module Reports
 
     def patient_days_calculation
       (stocks_on_hand.map { |stock| stock[:stock_on_hand] }.reduce(:+) / estimated_patients).floor
+    end
+
+    def consumption_calculation(opening_balance, received, closing_balance)
+      return { consumed: nil } if [opening_balance, received, closing_balance].all?(&:nil?)
+
+      {
+        opening_balance: opening_balance,
+        received: received,
+        closing_balance: closing_balance,
+        consumed: opening_balance + received - closing_balance
+      }
+
+    rescue => e
+      # drug is not in formula, or other configuration error
+      Sentry.capture_message("Consumption Calculation Error",
+                             extra: {
+                               protocol: @protocol,
+                               opening_balance: opening_balance,
+                               received: received,
+                               closing_balance: closing_balance,
+                               exception: e
+                             },
+                             tags: { type: "reports" })
+      { consumed: "error" }
+    end
+
+    def category_consumption_calculation
+      {}
     end
 
     def estimated_patients

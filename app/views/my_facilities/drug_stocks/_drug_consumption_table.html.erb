@@ -80,19 +80,24 @@
       <% @drugs_by_category.map do |drug_category, drugs| %>
         <% drugs.map do |drug| %>
           <% consumed = facility_report.dig(drug_category, drug.id, :consumed) %>
-          <% if consumed == "error" %>
+          <% if consumed.nil? || consumed == "error" %>
             <td class="type-blank"><span>?</span></td>
-          <% elsif consumed.nil? %>
-            <td class="type-blank"><span>&#8212;</span></td>
           <% else %>
             <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: facility_report[drug_category][drug.id] %>" data-sort-column-key=<%= drug.id %>>
-              <%= facility_report[drug_category][drug.id][:consumed] %>
+              <%= consumed %>
             </td>
           <% end %>
         <% end %>
       <% end %>
-      <% @drugs_by_category.map do |_drug_category, _drugs| %>
-        <td class="type-blank"><span>&#8212;</span></td>
+      <% @drugs_by_category.map do |drug_category, _drugs| %>
+        <% consumed = facility_report.dig(drug_category, :consumed) %>
+        <% if consumed.nil? || consumed == "error" %>
+          <td class="type-blank"><span>?</span></td>
+        <% else %>
+          <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: facility_report[drug_category] %>" data-sort-column-key=<%= drug_category %>>
+            <%= consumed %>
+          </td>
+        <% end %>
       <% end %>
       <td class="mobile"></td>
     </tr>
