@@ -73,7 +73,7 @@ RSpec.describe EmailAuthentication, type: :model do
     end
 
     it "allows email to be updated even if the EmailAuthentication has an invalid password" do
-      weak_password_error = "Password must be 10 characters long and contain a lower case letter, an upper case letter, and a number."
+      weak_password_error = "Password must be at least 10 characters long and contain a lower case letter, an upper case letter, and a number."
       auth = build(:email_authentication, password: "1234567890")
       auth.save(validate: false)
       auth = EmailAuthentication.find(auth.id)
