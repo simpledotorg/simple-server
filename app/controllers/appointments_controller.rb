@@ -41,9 +41,9 @@ class AppointmentsController < AdminController
     search_filters = appointment_params[:search_filters]&.split || []
 
     if set_appointment_status_from_call_result(@appointment, call_result)
-      redirect_to appointments_url(
-        params: {facility_id: selected_facility_id, page: page, search_filters: search_filters}
-      ), notice: "Saved. #{@appointment.patient.full_name} marked as \"#{call_result.to_s.humanize}\""
+      appt_params = {facility_id: selected_facility_id, page: page, search_filters: search_filters}
+      notice = %Q{Saved. #{@appointment.patient.full_name} marked as "#{call_result.to_s.humanize}"}
+      redirect_to appointments_url(params: appt_params), notice: notice
     else
       redirect_back fallback_location: root_path, alert: "Something went wrong!"
     end
