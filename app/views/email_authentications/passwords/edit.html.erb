@@ -8,7 +8,7 @@
     <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
       <%= f.hidden_field :reset_password_token %>
 
-      <%= f.password_field :password, id: "p  assword", autofocus: true, autocomplete: "off", "data-toggle": "password" %>
+      <%= f.password_field :password, id: "password", autofocus: true, autocomplete: "off", "data-toggle": "password" %>
 
       <%= f.primary "Change my password" %>
     <% end %>
@@ -18,8 +18,6 @@
 <div class="actions mt-4">
   <%= render "email_authentications/shared/links" %>
 </div>
-
-
 
 <script type="text/javascript">
 	$("#password").password('toggle');
