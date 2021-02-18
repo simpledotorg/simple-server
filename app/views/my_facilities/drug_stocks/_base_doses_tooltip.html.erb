@@ -1,7 +1,10 @@
 <div>
-  <% return nil if report.nil? || report[:base_doses] == "error" %>
-  <span class='math'>1,000</span>Telmisartin 20 mg<br>
-  <span class='math'>+6,000*2</span>Telmisartin 40mg<br>
-  <span class='math'>+4,000</span>Losartin 50 mg<br>
-  <span class='math'>=17,000</span>Base doses
+  <% return nil if report.nil? || report[:total] == "error" %>
+
+  <% report[:drugs].each_with_index do |drug, i| %>
+    <span class='math'><%= '+' unless i == 0 %><%= drug[:consumption] %>*<%= drug[:coefficient] %></span>
+    <%= drug[:name] %>
+    <br>
+  <% end %>
+  <span class='math'>=<%= report[:total] %></span>Base doses
 </div>

@@ -11,30 +11,30 @@ class DrugStocksQuery
 
   def protocol_drugs_by_category
     @protocol_drugs_by_category ||= @protocol.protocol_drugs
-                                             .where(stock_tracked: true)
-                                             .sort_by(&:sort_key)
-                                             .group_by(&:drug_category)
-                                             .sort_by { |(drug_category, _)| drug_category }
-                                             .to_h
+      .where(stock_tracked: true)
+      .sort_by(&:sort_key)
+      .group_by(&:drug_category)
+      .sort_by { |(drug_category, _)| drug_category }
+      .to_h
   end
 
   def drug_stocks_report
     Rails.cache.fetch(drug_stocks_cache_key,
-                      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
-                      force: RequestStore.store[:force_cache]) do
-      { all: drug_stock_totals,
-        facilities: drug_stock_report_for_facilities,
-        last_updated_at: Time.now }
+      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
+      force: RequestStore.store[:force_cache]) do
+      {all: drug_stock_totals,
+       facilities: drug_stock_report_for_facilities,
+       last_updated_at: Time.now}
     end
   end
 
   def drug_consumption_report
     Rails.cache.fetch(drug_consumption_cache_key,
-                      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
-                      force: RequestStore.store[:force_cache]) do
-      { all: drug_consumption_totals,
-        facilities: drug_consumption_report_for_facilities,
-        last_updated_at: Time.now }
+      expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
+      force: RequestStore.store[:force_cache]) do
+      {all: drug_consumption_totals,
+       facilities: drug_consumption_report_for_facilities,
+       last_updated_at: Time.now}
     end
   end
 
@@ -98,7 +98,7 @@ class DrugStocksQuery
 
   def drug_consumption_for_facility(facility, facility_drug_stocks, facility_previous_month_drug_stocks)
     patient_count = patient_counts[facility] || 0
-    facility_report = { facility: facility, patient_count: patient_count }
+    facility_report = {facility: facility, patient_count: patient_count}
 
     drug_stocks = facility_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
     previous_month_drug_stocks = facility_previous_month_drug_stocks&.group_by { |drug_stock| drug_stock.protocol_drug.drug_category }
@@ -113,13 +113,13 @@ class DrugStocksQuery
     drug_stocks = DrugStock.latest_for_facilities(@facilities, for_end_of_month)
 
     # remove the pluck here
-    DrugStock.where({ drug_stocks: { id: drug_stocks.pluck(:id) } }).group(:protocol_drug).sum(attribute)
+    DrugStock.where({drug_stocks: {id: drug_stocks.pluck(:id)}}).group(:protocol_drug).sum(attribute)
   end
 
   def drug_stock_totals
     total_patient_count = patient_counts.values&.sum
-    report_all = { patient_count: total_patient_count }
-    total_drug_stocks_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, { in_stock: in_stock}] }.to_h
+    report_all = {patient_count: total_patient_count}
+    total_drug_stocks_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
     total_drug_stocks_by_id = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
 
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
@@ -138,9 +138,9 @@ class DrugStocksQuery
 
   def drug_consumption_totals
     report_all = {}
-    total_previous_month_drug_stocks_by_rxnorm_code = drug_attribute_sum(end_of_previous_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, { in_stock: in_stock}] }.to_h
-    total_drug_stocks_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, { in_stock: in_stock}] }.to_h
-    total_drug_received_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :received).map { |(protocol_drug, received)| [protocol_drug.rxnorm_code, { received: received}] }.to_h
+    total_previous_month_drug_stocks_by_rxnorm_code = drug_attribute_sum(end_of_previous_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
+    total_drug_stocks_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
+    total_drug_received_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :received).map { |(protocol_drug, received)| [protocol_drug.rxnorm_code, {received: received}] }.to_h
 
     total_previous_month_drug_stocks_by_rxnorm_code = total_previous_month_drug_stocks_by_rxnorm_code.deep_merge(total_drug_received_by_rxnorm_code)
 
