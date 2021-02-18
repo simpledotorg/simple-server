@@ -362,7 +362,7 @@
               <div>
                 <% if @data.last_value(:cumulative_registrations) %>
                   <p class="m-0px c-black c-print-black">
-                    total <%= "registrations".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
+                    total <%= "registration".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
                     <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
                       <%= @period.bp_control_range_end_date %>
                     </span>
@@ -385,7 +385,7 @@
               <div>
                 <% if @data.last_value(:registrations) %>
                   <p class="m-0px c-black c-print-black">
-                    new <%= "registrations".pluralize(@data.last_value(:registrations)) %><br>in
+                    new <%= "registration".pluralize(@data.last_value(:registrations)) %><br>in
                     <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
                       <%= @data.last_key(:registrations) %>
                     </span>
