@@ -121,3 +121,32 @@ def updated_patient_payload(existing_patient)
     )]
   )
 end
+
+def create_visit(patient, facility: patient.registration_facility, user: patient.registration_user, visited_at: Time.now)
+  create(:blood_pressure, :with_encounter, :critical, recorded_at: visited_at, facility: facility, patient: patient, user: user)
+  create(:blood_sugar, :fasting, :with_encounter, recorded_at: visited_at, facility: facility, patient: patient, user: user)
+  create_list(:prescription_drug, 4, :protocol, device_created_at: visited_at, facility: facility, patient: patient)
+  create_list(:prescription_drug, 2, device_created_at: visited_at, facility: facility, patient: patient)
+  create(:appointment, :overdue, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, patient: patient, user: user)
+end
+
+def add_some_visits(patient, visit_count, facility: patient.registration_facility, user: patient.registration_user)
+  visit_months = (1..24).to_a.sample(visit_count)
+  visit_months.each do |num_months|
+    create_visit(patient, facility: facility, user: user, visited_at: num_months.months.ago)
+  end
+end
+
+def create_regular_patient(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
+  # Creates a "regular" patient with a passport, some history, visits, etc
+  patient = create(:patient,
+    :with_appointments,
+    recorded_at: registration_time,
+    registration_facility: facility,
+    registration_user: user,
+    device_created_at: registration_time,
+    device_updated_at: registration_time)
+  passport = create(:patient_business_identifier, patient: patient)
+  add_some_visits(patient, facility: facility, user: user)
+  return patient
+end
