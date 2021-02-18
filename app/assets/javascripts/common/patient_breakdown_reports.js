@@ -107,7 +107,7 @@ PatientBreakdownReports = function () {
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = reports.formatNumberWithCommas(totalPatients);
-        periodStartNode.innerHTML = period.start_date;
+        periodStartNode.innerHTML = period.ltfu_since_date;
         registrationsNode.innerHTML = reports.formatNumberWithCommas(cumulativeAssignedPatients);
         registrationsPeriodEndNode.innerHTML = period.start_date;
       }
