@@ -1,3 +1,6 @@
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-show-password/1.0.3/bootstrap-show-password.min.js"></script>
+
 <h1><%= t 'devise.invitations.edit.header' %></h1>
 
 <div class="row">
@@ -6,11 +9,15 @@
       <%= f.hidden_field :invitation_token, readonly: true %>
 
       <% if f.object.class.require_password_on_accepting %>
-        <%= f.password_field :password %>
-        <%= f.password_field :password_confirmation %>
+        <%= f.password_field :password, class: "form-control", "data-toggle": "password"%>
       <% end %>
+      <% binding.pry if resource.errors.any? %>
 
       <%= f.primary t("devise.invitations.edit.submit_button") %>
     <% end %>
   </div>
 </div>
+
+<script type="text/javascript">
+	$("#password").password('toggle');
+</script>

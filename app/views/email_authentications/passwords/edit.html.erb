@@ -1,3 +1,6 @@
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-show-password/1.0.3/bootstrap-show-password.min.js"></script>
+
 <h2>Change your password</h2>
 
 <div class="row">
@@ -5,8 +8,7 @@
     <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, label_errors: false) do |f| %>
       <%= f.hidden_field :reset_password_token %>
 
-      <%= f.password_field :password, autofocus: true, autocomplete: "off" %>
-      <%= f.password_field :password_confirmation, autocomplete: "off", label: "Confirm new password" %>
+      <%= f.password_field :password, id: "p  assword", autofocus: true, autocomplete: "off", "data-toggle": "password" %>
 
       <%= f.primary "Change my password" %>
     <% end %>
@@ -16,3 +18,9 @@
 <div class="actions mt-4">
   <%= render "email_authentications/shared/links" %>
 </div>
+
+
+
+<script type="text/javascript">
+	$("#password").password('toggle');
+</script>
