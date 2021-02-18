@@ -42,7 +42,7 @@ class AppointmentsController < AdminController
 
     if set_appointment_status_from_call_result(@appointment, call_result)
       appt_params = {facility_id: selected_facility_id, page: page, search_filters: search_filters}
-      notice = %Q{Saved. #{@appointment.patient.full_name} marked as "#{call_result.to_s.humanize}"}
+      notice = %(Saved. #{@appointment.patient.full_name} marked as "#{call_result.to_s.humanize}")
       redirect_to appointments_url(params: appt_params), notice: notice
     else
       redirect_back fallback_location: root_path, alert: "Something went wrong!"
