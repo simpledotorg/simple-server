@@ -5,14 +5,6 @@ class AdminController < ApplicationController
 
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
-  rescue_from ActiveRecord::RecordInvalid do
-    head :bad_request
-  end
-
-  rescue_from ActionController::ParameterMissing do
-    head :bad_request
-  end
-
   def switch_locale(&action)
     locale =
       Rails.application.config.country[:dashboard_locale].presence ||
@@ -30,12 +22,23 @@ class AdminController < ApplicationController
     end
   end
 
+  def set_force_cache
+    RequestStore.store[:force_cache] = true if force_cache?
+  end
+
+  def force_cache?
+    params[:force_cache].present?
+  end
+
   helper_method :current_admin
 
   private
 
   def current_admin
-    current_email_authentication.user
+    return @current_admin if defined?(@current_admin)
+    admin = current_email_authentication.user
+    admin.email_authentications.load
+    @current_admin = admin
   end
 
   def pundit_user

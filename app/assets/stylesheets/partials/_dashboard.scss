@@ -33,7 +33,7 @@ sup {
 .tooltip-inner {
   text-align: left;
   font-size: 90%;
-  
+
   span.math {
     min-width: 6.5em;
     display: inline-block;
@@ -104,7 +104,7 @@ th sup {
       color: $blue;
       height: 100%;
       padding: 16px 12px;
-      vertical-align: middle;
+      vertical-align: top;
       text-align: left;
       margin: 0;
       word-break: break-word;
@@ -146,7 +146,14 @@ th sup {
       padding: 8px;
       min-width: 40px;
     }
-    
+
+    .row-medicine {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 6em;
+      white-space: nowrap;
+    }
+
     .row-medicine {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -172,11 +179,20 @@ th sup {
       }
     }
   }
-  
+
   td.type-blank {
     text-align: center;
     color: $grey-mid;
-    
+
+    &.type-title {
+      text-align: left;
+    }
+  }
+
+  td.type-blank {
+    text-align: center;
+    color: $grey-mid;
+
     &.type-title {
       text-align: left;
     }
@@ -258,7 +274,7 @@ th sup {
     .dropdown-menu {
       max-height: 350px;
       overflow:
-      hidden;
+              hidden;
       overflow: scroll;
     }
 
@@ -441,7 +457,7 @@ th[role=columnheader]:not(.no-sort):after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
-  margin: 0 0 0 4px;
+  margin: 0;
   vertical-align: middle;
 }
 
@@ -528,3 +544,5 @@ em.bg-orange {
   color: $orange-dark !important;
   border-color: $orange-light !important;
 }
+
+.tl-fixed { table-layout: fixed; }

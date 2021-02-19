@@ -1,0 +1,65 @@
+<div class="card col-7" style="text-align: left">
+  <div class="modal-header">
+    <h2 class="modal-title">Drug stock report</h2>
+  </div>
+  <%= bootstrap_form_with(url: my_facilities_drug_stocks_url,
+                          method: 'POST',
+                          local: true,
+                          autocomplete: "off",
+                          label_errors: true,
+                          id: "drug_report_form_#{@facility.id}") do |form| %>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label> Facility: </label>
+        <span> <%= @facility.name %> </span>
+        <%= form.hidden_field :facility_id, value: @facility.id %>
+      </div>
+
+      <div class="form-group">
+        <%= form.text_field :for_end_of_month, id: "for_end_of_month", label: "For end of month:", value: @for_end_of_month.strftime("%b-%Y"), required: true %>
+      </div>
+      <h3 class="pt-4">Tablets</h3>
+      <p>Leave blank if unknown. Enter "0" if stock is empty.</p>
+      <% protocol_drugs = @facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key) %>
+      <% protocol_drugs.each do |protocol_drug| %>
+        <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
+          <div class="form-group mt-4 protocol-drug-stock-inputs">
+            <label>
+              <%= "#{protocol_drug.name} #{protocol_drug.dosage}" %>
+            </label>
+            <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
+            <div class="form-row">
+              <div class="col">
+                <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received during the month" %>
+              </div>
+              <div class="col">
+                <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, help: "Stock at end of the month" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="modal-footer">
+      <%= form.primary "Save Report", class: "btn btn-primary btn-block" %>
+    </div>
+  <% end %>
+
+  <script type="text/javascript" charset="utf-8">
+      $(document).ready(function () {
+          $('#for_end_of_month').datepicker({
+              format: "M-yyyy",
+              startView: "months",
+              minViewMode: "months",
+              autoclose: true,
+          }).on('changeDate', function (e) {
+              window.location.href = location.origin
+                  + location.pathname
+                  + '?for_end_of_month='
+                  + encodeURIComponent(e.format());
+          });
+      })
+  </script>
+</div>
+

@@ -28,6 +28,7 @@ class Facility < ApplicationRecord
   has_many :prescription_drugs
   has_many :appointments
   has_many :teleconsultations
+  has_many :drug_stocks
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -99,6 +100,8 @@ class Facility < ApplicationRecord
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
+  delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
+  delegate :cache_key, :cache_version, to: :region
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)
@@ -131,6 +134,11 @@ class Facility < ApplicationRecord
 
   def block_region
     facility_group.region.block_regions.find_by(name: block)
+  end
+
+  # Remove me after region_reports is mainline
+  def source
+    self
   end
 
   private :update_region
@@ -207,12 +215,14 @@ class Facility < ApplicationRecord
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
-  delegate :district_region?, :block_region?, :facility_region?, to: :region
-
   def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
     end
+  end
+
+  def prioritized_patients
+    registered_patients.with_discarded
   end
 
   def self.localized_facility_size(facility_size)

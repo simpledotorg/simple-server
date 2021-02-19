@@ -2,27 +2,35 @@ version: v1.0
 name: Test simple-server
 agent:
   machine:
-    type: e1-standard-2
+    type: e1-standard-8
     os_image: ubuntu1804
+auto_cancel:
+  running:
+    when: "true"
 blocks:
   - name: Tests
     task:
       env_vars:
         - name: DATABASE_URL
-          value: 'postgresql://postgres:@0.0.0.0:5432/myapp_test'
+          value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
         - name: RAILS_ENV
           value: test
+        - name: TB_RSPEC_OPTIONS
+          value: "--profile"
+        - name: TB_RSPEC_FORMATTER
+          value: progress
+      secrets:
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
       jobs:
         - name: RSpec
-          parallelism: 4
+          parallelism: 8
           commands:
             - checkout
             - sem-service start postgres 10
-            - sem-version ruby 2.5.1
+            - sem-version ruby 2.6.6
             - 'wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb'
             - sudo dpkg -i /tmp/libpng12.deb
-            - sudo touch /etc/apt/sources.list.d/google-chrome-source.list
-            - install-package --update-new google-chrome-stable
             - gem install semaphore_test_boosters
             - cache restore
             - yarn install
@@ -32,7 +40,7 @@ blocks:
             - 'bundle exec rake db:test:prepare'
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
 promotions:
-  - name: Deploy to dev environments
-    pipeline_file: development_deployment.yml
+  - name: Deploy
+    pipeline_file: deploy.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')

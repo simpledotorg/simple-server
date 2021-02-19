@@ -11,24 +11,24 @@ unless current_branch == MAIN_BRANCH
   abort unless gets.chomp.downcase == "y"
 end
 
+changes_from_remote = `git remote update && git status`.chomp
+unless changes_from_remote.match?(/nothing to commit, working tree clean/)
+  puts
+  puts "Your local git repo has differences from whats on GitHub:"
+  puts "--"
+  puts changes_from_remote
+  puts "--"
+  puts "Please fetch and merge the latest into #{current_branch} to make sure you are deploying the latest changes."
+  abort
+end
+
 # ------------------
 # Changelog
 # ------------------
 `git fetch --tags`
 last_release = `git describe --tags --abbrev=0 --match "release-*"`.strip
 
-changelog = `git log #{last_release}..HEAD --oneline --decorate=no`
-  .strip
-  .split("\n")
-  .map { |line| line.match(/\s(.*)/)&.captures&.last }
-  .reject { |line| line =~ /^Merge/ } # remove merge commits
-  .compact
-  .map { |line| "• #{line}" }
-  .join("\n")
-
-puts "CHANGELOG"
-puts "---------"
-puts changelog
+changelog = `bin/changelog #{last_release}`
 
 # ------------------
 # New release tag
@@ -44,19 +44,23 @@ else
   release_tag = "release-#{today}-1"
 end
 
+puts "CHANGELOG for #{release_tag}"
+puts "---------"
+puts changelog
+
 # ------------------
 # Push release tag
 # ------------------
 puts "Creating release #{release_tag}. Continue? (y/N):"
 exit unless gets.chomp.downcase == "y"
 
-`git tag -a #{release_tag} -m "#{changelog.shellescape}"`
-`git push origin refs/tags/#{release_tag}`
+system(%Q{git tag -a #{release_tag} -m "#{changelog.shellescape}"}) || abort("Error creating git tag #{release_tag}")
+system("git push origin refs/tags/#{release_tag}") || abort("Error pushing git tags to origin")
 
 # ------------------
 # Conclusion
 # ------------------
 puts
 puts "Successfully created release #{release_tag}."
-puts "Visit https://resolvetosavelives.semaphoreci.com/projects/simple-server to deploy the release to production."
+puts "Visit https://simple.semaphoreci.com/projects/simple-server to deploy the release to production."
 puts "Publish the changelog to the #releases channel."

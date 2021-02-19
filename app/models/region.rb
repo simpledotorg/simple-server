@@ -1,6 +1,7 @@
 class Region < ApplicationRecord
   MAX_LABEL_LENGTH = 255
 
+  delegate :cache, to: Rails
   ltree :path
   extend FriendlyId
   friendly_id :slug_candidates, use: :slugged
@@ -35,12 +36,46 @@ class Region < ApplicationRecord
   end
 
   def child_region_type
-    index = REGION_TYPES.find_index { |type| type == region_type }
-    REGION_TYPES[index + 1]
+    current_index = REGION_TYPES.find_index { |type| type == region_type }
+    REGION_TYPES[current_index + 1]
+  end
+
+  def reportable_region?
+    return true if CountryConfig.current[:extended_region_reports]
+    region_type.in?(["district", "facility"])
+  end
+
+  def reportable_children
+    return children if CountryConfig.current[:extended_region_reports]
+    legacy_children
+  end
+
+  # Legacy children are used for countries where we _don't_ want to display every level of the region hiearchy,
+  # like in Bangladesh for example.
+  def legacy_children
+    case region_type
+    when "district" then facility_regions
+    when "facility" then []
+    else raise ArgumentError, "unsupported region_type #{region_type} for legacy_children"
+    end
+  end
+
+  def accessible_children(admin, region_type: child_region_type, access_level: :any)
+    auth_method = "accessible_#{region_type}_regions"
+    region_method = "#{region_type}_regions"
+    superset = public_send(region_method)
+    authorized_set = admin.public_send(auth_method, access_level)
+    superset & authorized_set
   end
 
   def organization
     organization_region.source
+  end
+
+  def cached_ancestors
+    cache.fetch("#{cache_key}/ancestors", version: "#{cache_version}/#{path}/v3") do
+      ancestors.order(:path).all.to_a
+    end
   end
 
   def self.root
@@ -81,17 +116,21 @@ class Region < ApplicationRecord
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    if facility_region?
+      FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    else
+      DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
+    end
   end
 
   def syncable_patients
     case region_type
       when "block"
         registered_patients.with_discarded
-          .union(assigned_patients.with_discarded)
+          .or(assigned_patients.with_discarded)
           .union(appointed_patients.with_discarded)
       else
-        registered_patients
+        registered_patients.with_discarded
     end
   end
 
@@ -141,6 +180,14 @@ class Region < ApplicationRecord
 
   def region
     self
+  end
+
+  def cache_key
+    [model_name.cache_key, region_type, id].join("/")
+  end
+
+  def cache_version
+    updated_at.utc.to_s(:usec)
   end
 
   private

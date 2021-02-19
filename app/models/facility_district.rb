@@ -19,6 +19,11 @@ class FacilityDistrict
 
   alias_method :children, :facilities
 
+  # FacilityDistrict always returns child facilities for reports
+  def reportable_children
+    children
+  end
+
   def organization
     facility_group_ids = facilities.pluck(:facility_group_id).uniq
     organization_ids = FacilityGroup.where(id: facility_group_ids).pluck(:organization_id).uniq
@@ -59,6 +64,28 @@ class FacilityDistrict
 
   def region
     self
+  end
+
+  def cache_key
+    ["facility_districts", id].join("/")
+  end
+
+  def slug
+    name.parameterize
+  end
+
+  def cache_version
+    updated_at.utc.to_s(:usec)
+  end
+
+  # For regions compatibility
+  def source
+    self
+  end
+
+  # For regions compatibility
+  def region_type
+    "facility_district"
   end
 
   # For regions compatibility

@@ -34,7 +34,7 @@ class Period
     self.value = if quarter?
       self.class.cast_to_quarter(value)
     else
-      value.to_date
+      value.to_date.beginning_of_month
     end
   end
 
@@ -55,6 +55,16 @@ class Period
   def blood_pressure_control_range
     three_months_ago = end_date.advance(months: -3)
     (three_months_ago..end_date)
+  end
+
+  alias_method :bp_control_range, :blood_pressure_control_range
+
+  def bp_control_range_start_date
+    bp_control_range.begin.next_day.to_s(:day_mon_year)
+  end
+
+  def bp_control_range_end_date
+    bp_control_range.end.to_s(:day_mon_year)
   end
 
   def quarter?
@@ -110,6 +120,10 @@ class Period
   # https://api.rubyonrails.org/classes/Date.html#method-i-advance
   def advance(options)
     Period.new(type: type, value: value.advance(options))
+  end
+
+  def cache_key
+    "#{type}/#{self}"
   end
 
   def hash

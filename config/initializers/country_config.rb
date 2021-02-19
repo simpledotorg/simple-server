@@ -5,6 +5,7 @@ class CountryConfig
     IN: {
       abbreviation: "IN",
       name: "India",
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["India"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_IN",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Kolkata",
@@ -16,6 +17,7 @@ class CountryConfig
     BD: {
       abbreviation: "BD",
       name: "Bangladesh",
+      extended_region_reports: false,
       states: COUNTRYWISE_STATES["Bangladesh"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_BD",
       time_zone: ENV["DEFAULT_TIME_ZONE"] || "Asia/Dhaka",
@@ -27,6 +29,7 @@ class CountryConfig
     ET: {
       abbreviation: "ET",
       name: "Ethiopia",
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["Ethiopia"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en_ET",
       faker_locale: "en-IND",
@@ -38,6 +41,7 @@ class CountryConfig
     US: {
       abbreviation: "US",
       name: "United States",
+      extended_region_reports: true,
       dashboard_locale: "en",
       faker_locale: "en-IND",
       time_zone: "America/New_York",
@@ -48,6 +52,7 @@ class CountryConfig
     UK: {
       abbreviation: "UK",
       name: "United Kingdom",
+      extended_region_reports: true,
       dashboard_locale: "en",
       faker_locale: "en-IND",
       time_zone: "Europe/London",
@@ -64,6 +69,11 @@ class CountryConfig
   def self.current
     Rails.application.config.country
   end
+
+  def self.country_environment_file
+    ".env.#{current[:abbreviation]}"
+  end
 end
 
 Rails.application.config.country = CountryConfig.for(ENV.fetch("DEFAULT_COUNTRY"))
+Dotenv.overload(CountryConfig.country_environment_file)

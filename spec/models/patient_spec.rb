@@ -1,10 +1,25 @@
 require "rails_helper"
 
 describe Patient, type: :model do
+  def refresh_views
+    LatestBloodPressuresPerPatientPerMonth.refresh
+  end
+
   subject(:patient) { build(:patient) }
 
   it "picks up available genders from country config" do
     expect(described_class::GENDERS).to eq(Rails.application.config.country[:supported_genders])
+  end
+
+  describe "factory fixtures" do
+    it "can create a valid patient" do
+      expect {
+        patient = create(:patient)
+        expect(patient).to be_valid
+      }.to change { Patient.count }.by(1)
+        .and change { PatientBusinessIdentifier.count }.by(1)
+        .and change { MedicalHistory.count }.by(1)
+    end
   end
 
   describe "Associations" do
@@ -72,6 +87,20 @@ describe Patient, type: :model do
       patient.date_of_birth = 3.days.from_now
       expect(patient).to be_invalid
     end
+
+    it "validates status" do
+      patient = Patient.new
+
+      # valid statuses should not cause problems
+      patient.status = "active"
+      patient.status = "dead"
+      patient.status = "migrated"
+      patient.status = "unresponsive"
+      patient.status = "inactive"
+
+      # invalid statuses should raise errors
+      expect { patient.status = "something else" }.to raise_error(ArgumentError)
+    end
   end
 
   describe "Behavior" do
@@ -90,8 +119,16 @@ describe Patient, type: :model do
 
     describe ".with_hypertension" do
       it "only includes patients with diagnosis of hypertension" do
-        htn_patients = create_list(:patient, 2)
-        _non_htn_patient = create(:patient, :without_hypertension)
+        htn_patients = [
+          create(:patient),
+          create(:patient).tap { |patient| create(:medical_history, :hypertension_yes, patient: patient) }
+        ]
+
+        _non_htn_patients = [
+          create(:patient, :without_hypertension),
+          create(:patient).tap { |patient| patient.medical_history.discard },
+          create(:patient).tap { |patient| patient.medical_history.destroy }
+        ]
 
         expect(Patient.with_hypertension).to match_array(htn_patients)
       end
@@ -313,27 +350,67 @@ describe Patient, type: :model do
       end
     end
 
-    describe ".syncable_to_region" do
-      it "returns all patients registered in the region" do
-        facility_group = create(:facility_group)
-        other_facility_group = create(:facility_group)
+    describe ".for_sync" do
+      it "includes discarded patients" do
+        discarded_patient = create(:patient, deleted_at: Time.now)
 
-        facility = create(:facility, facility_group: facility_group)
-        other_facility = create(:facility, facility_group: other_facility_group)
+        expect(described_class.for_sync).to include(discarded_patient)
+      end
 
-        patients = [
-          create(:patient, registration_facility: facility),
-          create(:patient, registration_facility: facility).tap(&:discard),
-          create(:patient, registration_facility: facility, assigned_facility: other_facility)
-        ]
+      it "includes nested sync resources" do
+        _discarded_patient = create(:patient, deleted_at: Time.now)
 
-        _other_patients = [
-          create(:patient, registration_facility: other_facility),
-          create(:patient, registration_facility: other_facility).tap(&:discard),
-          create(:patient, registration_facility: other_facility, assigned_facility: facility)
-        ]
+        expect(described_class.for_sync.first.association(:address).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:phone_numbers).loaded?).to eq true
+        expect(described_class.for_sync.first.association(:business_identifiers).loaded?).to eq true
+      end
+    end
 
-        expect(Patient.syncable_to_region(facility_group)).to contain_exactly(*patients)
+    describe ".ltfu_as_of" do
+      it "includes patient who is LTFU" do
+        ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).to include(ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they were registered recently" do
+        not_ltfu_patient = Timecop.freeze(6.months.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+
+      it "excludes patient who is not LTFU because they had a BP recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.ltfu_as_of(Time.current)).not_to include(not_ltfu_patient)
+      end
+    end
+
+    describe ".not_ltfu_as_of" do
+      it "excludes patient who is LTFU" do
+        ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).not_to include(ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they were registered recently" do
+        not_ltfu_patient = Timecop.freeze(6.months.ago) { create(:patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
+      end
+
+      it "includes patient who is not LTFU because they had a BP recently" do
+        not_ltfu_patient = Timecop.freeze(2.years.ago) { create(:patient) }
+        Timecop.freeze(6.months.ago) { create(:blood_pressure, patient: not_ltfu_patient) }
+        refresh_views
+
+        expect(described_class.not_ltfu_as_of(Time.current)).to include(not_ltfu_patient)
       end
     end
   end

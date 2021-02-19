@@ -18,6 +18,7 @@ class FacilityGroup < ApplicationRecord
   has_many :teleconsultations, through: :facilities
   has_many :medical_histories, through: :patients
   has_many :communications, through: :appointments
+  has_many :protocol_drugs, through: :protocol
 
   alias_method :registered_patients, :patients
 
@@ -28,6 +29,10 @@ class FacilityGroup < ApplicationRecord
 
   auto_strip_attributes :name, squish: true, upcase_first: true
   attribute :enable_diabetes_management, :boolean
+
+  # For Regions compatibility
+  delegate :district_region?, :block_region?, :facility_region?, to: :region
+  delegate :cache_key, :cache_version, to: :region
 
   # FacilityGroups don't actually have a state
   # This virtual attr exists simply to simulate the State -> FG/District hierarchy for Regions.
@@ -58,9 +63,6 @@ class FacilityGroup < ApplicationRecord
 
     Region.state_regions.create!(name: state, reparent_to: organization.region)
   end
-
-  # For Regions compatibility
-  delegate :district_region?, :block_region?, :facility_region?, to: :region
 
   def child_region_type
     "facility"
@@ -101,6 +103,10 @@ class FacilityGroup < ApplicationRecord
 
   def syncable_patients
     registered_patients.with_discarded
+  end
+
+  def source
+    self
   end
 
   private

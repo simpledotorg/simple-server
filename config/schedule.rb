@@ -31,19 +31,22 @@ every :day, at: local("01:00 am"), roles: [:cron] do
   runner "MarkPatientMobileNumbers.call"
 end
 
-every :day, at: local("02:00 am"), roles: [:cron] do
+every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
-every :month, at: local("04:00 am"), roles: [:seed_data] do
-  rake "db:purge_users_data"
-  rake "db:seed_users_data"
+every :day, at: local("05:00 am"), roles: [:cron] do
+  runner "DuplicatePassportAnalytics.report"
 end
 
 every :monday, at: local("6:00 am"), roles: [:cron] do
   if Flipper.enabled?(:weekly_telemed_report)
     rake "reports:telemedicine"
   end
+end
+
+every 2.minutes, roles: [:cron] do
+  runner "TracerJob.perform_async(Time.current.iso8601, false)"
 end
 
 every 30.minutes, roles: [:cron] do

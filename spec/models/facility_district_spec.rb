@@ -8,6 +8,16 @@ RSpec.describe FacilityDistrict, type: :model do
   let!(:mansa_facility) { create(:facility, district: "Mansa", facility_group: facility_group) }
   let!(:other_bathinda_facility) { create(:facility, district: "Bathinda", facility_group: other_facility_group) }
 
+  it "has a cache_key" do
+    facility_district = FacilityDistrict.new(name: "Bathinda")
+    expect(facility_district.cache_key).to eq("facility_districts/Bathinda")
+  end
+
+  it "has a slug" do
+    facility_district = FacilityDistrict.new(name: "New York State")
+    expect(facility_district.slug).to eq("new-york-state")
+  end
+
   describe "#facilities" do
     it "returns facilities with matching district name" do
       facility_district = FacilityDistrict.new(name: "Bathinda")

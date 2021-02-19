@@ -2,37 +2,48 @@ module Api::V3::SyncToUser
   extend ActiveSupport::Concern
 
   included do
-    def region_records
-      model = controller_name.classify.constantize
-      model.syncable_to_region(current_sync_region)
-    end
-
     def current_facility_records
-      region_records
-        .where(patient: prioritized_patients)
-        .updated_on_server_since(current_facility_processed_since, limit)
+      time(__method__) do
+        @current_facility_records ||=
+          model_sync_scope
+            .where(patient: current_facility.prioritized_patients.select(:id))
+            .updated_on_server_since(current_facility_processed_since, limit)
+      end
     end
 
+    # this is performance-critical code, be careful while refactoring it
     def other_facility_records
-      other_facilities_limit = limit - current_facility_records.count
-
-      region_records
-        .where.not(patient: prioritized_patients)
-        .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      time(__method__) do
+        other_facilities_limit = limit - current_facility_records.size
+        @other_facility_records ||=
+          model_sync_scope
+            .where("patient_id = ANY (array(?))",
+              current_sync_region
+                .syncable_patients
+                .where.not(registration_facility: current_facility)
+                .select(:id))
+            .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+      end
     end
 
     private
 
-    def records_to_sync
-      current_facility_records + other_facility_records
+    def model_sync_scope
+      model.for_sync
     end
 
-    def prioritized_patients
-      current_facility.registered_patients.with_discarded
+    def model
+      controller_name.classify.constantize
+    end
+
+    def records_to_sync
+      time(__method__) do
+        current_facility_records + other_facility_records
+      end
     end
 
     def processed_until(records)
-      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.present?
+      records.last.updated_at.strftime(APIController::TIME_WITHOUT_TIMEZONE_FORMAT) if records.any?
     end
 
     def response_process_token
@@ -68,8 +79,6 @@ module Api::V3::SyncToUser
     end
 
     def force_resync?
-      Rails.logger.info "[force_resync] Resync token modified in resource #{controller_name}" if resync_token_modified?
-      Rails.logger.info "[force_resync] Sync region modified in resource #{controller_name}" if sync_region_modified?
       resync_token_modified? || sync_region_modified?
     end
 
@@ -82,6 +91,14 @@ module Api::V3::SyncToUser
       return if requested_sync_region_id.blank?
       return if process_token[:sync_region_id].blank?
       process_token[:sync_region_id] != requested_sync_region_id
+    end
+
+    def time(method_name, &block)
+      raise ArgumentError, "You must supply a block" unless block
+
+      Statsd.instance.time("#{method_name}.#{model.name}") do
+        yield(block)
+      end
     end
   end
 end

@@ -11,12 +11,15 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    AuditLog.create_logs_async(current_user, records_to_sync, "fetch", Time.current) unless disable_audit_logs?
+    records = records_to_sync
+
+    AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
+    log_block_level_sync_metrics(response_key)
     render(
-      json: {
-        response_key => records_to_sync.map { |record| transform_to_response(record) },
+      json: Oj.dump({
+        response_key => records.map { |record| transform_to_response(record) },
         "process_token" => encode_process_token(response_process_token)
-      },
+      }, mode: :compat),
       status: :ok
     )
   end
@@ -35,6 +38,28 @@ class Api::V3::SyncController < APIController
     false
   end
 
+  def log_block_level_sync_metrics(response_key)
+    return unless current_facility
+    Rails.logger.tagged("Block Sync") do
+      if resync_token_modified?
+        Rails.logger.info msg: "Resync token modified", resource: response_key
+      end
+
+      if current_user
+        if sync_region_modified?
+          Rails.logger.info msg: "Sync region ID modified",
+                            region_type: current_sync_region.class.name,
+                            region_id: current_sync_region.id,
+                            resource: response_key
+        end
+
+        if block_level_sync?
+          Rails.logger.info msg: "The current_sync_region set to block", block_id: current_block.id
+        end
+      end
+    end
+  end
+
   def params_with_errors(params, errors)
     error_ids = errors.map { |error| error[:id] }
     params
@@ -45,15 +70,12 @@ class Api::V3::SyncController < APIController
   def capture_errors(params, errors)
     return unless errors.present?
 
-    Raven.capture_message(
-      "Validation Error",
-      logger: "logger",
+    Sentry.capture_message("Validation Error",
       extra: {
         params_with_errors: params_with_errors(params, errors),
         errors: errors
       },
-      tags: {type: "validation"}
-    )
+      tags: {type: "validation"})
   end
 
   def process_token

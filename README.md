@@ -13,31 +13,33 @@ This is the backend for the Simple app to help track hypertensive patients acros
 * [Contributing](#contributing)
 
 ## Development
+### Caveat for Apple Silicon M1 macs
+
+If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). See [here](https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/) for how to create a Rosetta specific Terminal.
+
+We have some rubygems that don't work under the native ARM architecture, so a fully ARM native setup does not work yet. For details you can follow [this issue](https://github.com/simpledotorg/simple-server/issues/1969).
 
 ### Dependencies
 
-Make sure you have the following dependencies installed:
-
-- Ruby 2.5.1
-- PostgreSQL 10
-- Redis
-- Yarn
-
-To install these on MacOS:
+We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
+If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
 
 ```
-brew cask install postgres
 brew install rbenv ruby-build redis yarn
 ```
 
-To set up Ruby 2.5.1, see https://gorails.com/setup/osx/10.15-catalina
+You also need Postgres 10 - [Postgres.app](https://postgresapp.com) is a nice small GUI to manage PostgreSQL on a mac,
+though it isn't required. You can install it via brew:
 
-Open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
+```
+brew cask install postgres
+```
 
-### Setup
+Then open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
 
-To set up the Simple server for local development, clone the git repository and
-run the setup script included.
+### bin/setup
+
+To set up the Simple server for local development, clone the git repository and run the setup script included:
 
 ```
 $ git clone git@github.com:simpledotorg/simple-server.git
@@ -45,17 +47,19 @@ $ cd simple-server
 $ bin/setup
 ```
 
+If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
+
 #### Docker Compose
 
-For quick development and testing, the server can be run locally using Docker Compose and the command: 
+For quick development and testing, the server can be run locally using Docker Compose and the command:
 
 ```
 docker-compose up
-``` 
+```
 
-The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development. 
+The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
 
-Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below. 
+Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
 
 
 #### Manual Setup
@@ -170,7 +174,7 @@ into the codebase.
 
 ### Running the application locally
 
-Foreman is used to run the application locally. First, install foreman.
+Foreman can be used to run the application locally. First, install foreman.
 
 ```bash
 $ gem install foreman
@@ -203,35 +207,46 @@ We use the [standard](https://github.com/testdouble/standard#how-do-i-run-standa
 To check all the offenses throughout the codebase:
 
 ```bash
-bundle exec rails standard
+$ bin/rails standard
 ```
-**Note**: The codebase is currently undergoing a slow linting process and hence most files that have offenses have been ignored under a `.standard_todo.yml`. As we fix these files, remove them from the `yml` file so that they can be picked up by `standard` again for future offenses. Refer to [usage](https://github.com/testdouble/standard#usage) on how to generate todo files.
 
+To automatically fix all offenses,
+
+```bash
+$ bundle exec standardrb --fix
+```
+
+**Note**: Some files have been temporarily ignored under a `.standard_todo.yml`. As we fix these files, remove them from the `yml` file so that they can be picked up by `standard` again for future offenses. Refer to [usage](https://github.com/testdouble/standard#usage) on how to generate todo files.
+
+**Note**: Some files are permanently ignored under `.standard.yml` and do not require linting.
 
 ### Generating seed data
 
-To generate seed data, execute the following command from the project root
+To generate seed (fake patients) data, execute the following command from the project root
 
 ```bash
-$ foreman start -f Procfile.dev
-$ bundle exec rails db:seed db:seed_users_data
+$ bin/rails db:seed_patients
 ```
-**Note**: This **requires** server and sidekiq to be running.
 
 To purge the generated patient data, run
 
 ```bash
-bundle exec rails db:purge_users_data
+$ bin/rails db:purge_users_data
 ```
 
-**Note**: This only removes data created by `db:seed_users_data`, it keeps the seed data created by `db:seed`.
+You can also purge and re-seed by running:
+
+```bash
+$ bin/rails db:purge_and_reseed
+```
 
 ### Creating an admin user
 
 Run the following command from the project root to create a new dashboard admin:
 ```bash
-bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
+$ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 ```
+
 
 ### View Sandbox data in your local environment
 
@@ -255,17 +270,20 @@ API Documentation can be accessed at `/api-docs` on local server and hosted at h
 To regenerate the Swagger API documentation, run the following command.
 
 ```
-$ bundle exec rake rswag:specs:swaggerize
+$ bundle exec rake docs
 ```
 
 ### ADRs
 
 Architecture decisions are captured in ADR format and are available in `/doc/arch`
 
+### Wiki
+
+Guides, instructions and long-form maintenance documentation can go in `/doc/wiki`
+
 ### ERD (Entity-Relationship Diagram)
 
 These are not actively committed into the repository. But can be generated by running `bundle exec erd`
-
 
 ## Deployment
 
@@ -314,9 +332,5 @@ bundle exec cap india:staging deploy:rake task=db:seed
 
 ### Deployment Resources
 
-* [Deployment instructions for Simple Server](doc/deployment.md)
-* [Deployment repository](https://github.com/simpledotorg/deployment)
+The infrastructure setup including the ansible and terraform scripts are documented in the [deployment repository](https://github.com/simpledotorg/deployment).
 
-## Contributing
-
-The contribution guidelines can be found [here](doc/contributing.md).

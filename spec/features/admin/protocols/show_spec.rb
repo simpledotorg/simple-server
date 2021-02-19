@@ -11,14 +11,9 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
   new_drug = AdminPage::ProtocolDrugs::New.new
 
   before(:each) do
-    enable_flag(:new_permissions_system_aug_2020, owner)
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_protocols_path
-  end
-
-  after(:each) do
-    disable_flag(:new_permissions_system_aug_2020, owner)
   end
 
   context "protocol show page" do
@@ -49,18 +44,6 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
       protocol.select_protocol(var_protocol.name)
       protocol_show.click_edit_protocol_drug_button(var_protocol_drug.name)
       AdminPage::ProtocolDrugs::Edit.new.edit_protocol_drug_info("50mg", "AXDFC")
-    end
-
-    context "javascript based test" do
-      let!(:var_protocol) { create(:protocol, name: "BathindaTestProtocol", follow_up_days: "30") }
-      let!(:var_protocol_drug) { create_list(:protocol_drug, 3, protocol: var_protocol) }
-
-      skip "JS specs are currently disabled" do
-        it "should delete protocol drug", js: true do
-          protocol.select_protocol(var_protocol.name)
-          protocol_show.delete_protocol_drug(var_protocol_drug.first.name)
-        end
-      end
     end
   end
 end

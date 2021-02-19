@@ -7,12 +7,17 @@ module Reports
       Period.month(Date.current.beginning_of_month)
     end
 
-    def initialize(region:, period:)
+    def self.call(*args)
+      new(*args).call
+    end
+
+    def initialize(region:, period:, with_exclusions: false, months: MAX_MONTHS_OF_DATA)
       @current_user = current_user
       @region = region
       @period = period
-      start_period = period.advance(months: -(MAX_MONTHS_OF_DATA - 1))
+      start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
+      @with_exclusions = with_exclusions
     end
 
     attr_reader :current_user
@@ -20,10 +25,11 @@ module Reports
     attr_reader :period
     attr_reader :range
     attr_reader :region
+    attr_reader :with_exclusions
 
     def call
-      result = ControlRateService.new(region, periods: range).call
-      result.visited_without_bp_taken = NoBPMeasureService.new(region, periods: range).call
+      result = ControlRateService.new(region, periods: range, with_exclusions: with_exclusions).call
+      result.visited_without_bp_taken = repository.no_bp_measure_count[region.slug]
       result.calculate_percentages(:visited_without_bp_taken)
 
       start_period = [result.earliest_registration_period, range.begin].compact.max
@@ -36,6 +42,10 @@ module Reports
     end
 
     private
+
+    def repository
+      @repository ||= Reports::Repository.new(region, periods: range, with_exclusions: with_exclusions)
+    end
 
     # We want the current quarter and then the previous four
     def last_five_quarters

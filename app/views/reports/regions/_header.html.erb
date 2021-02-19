@@ -1,14 +1,19 @@
 <% period_selector = local_assigns.fetch(:period_selector, true) %>
 
 <div class="dashboard">
-  <nav class="breadcrumb mb-0px">
+  <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+    <div class="mo-search">
+      <%= render "search" %>
+    </div>
+  <% end %>
+  <nav class="breadcrumb mt-24px mb-0px pb-8px">
     <%= link_to "All reports", dashboard_districts_path %>
 
     <% # we can get rid of this check when FacilityDistrict goes away %>
     <% if @region.respond_to?(:ancestors) %>
-      <% @region.ancestors.where(region_type: %w[district block facility]).order(:path).each do |region| %>
+      <% @region.ancestors.where(region_type: %w[state district block facility]).order(:path).each do |region| %>
         <i class="fas fa-chevron-right"></i>
-        <%= link_to region.name, reports_region_path(region.slug, report_scope: region.region_type) %>
+        <%= link_to_if(accessible_region?(region, :view_reports), region.name, reports_region_path(region.slug, report_scope: region.region_type)) %>
       <% end %>
     <% else %>
       <% if @region.respond_to?(:facility_group) %>

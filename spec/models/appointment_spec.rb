@@ -105,28 +105,11 @@ describe Appointment, type: :model do
       end
     end
 
-    describe ".syncable_to_region" do
-      it "returns all patients registered in the region" do
-        facility_group = create(:facility_group)
-        facility = create(:facility, facility_group: facility_group)
-        patient = create(:patient)
-        other_patient = create(:patient)
+    describe ".for_sync" do
+      it "includes discarded appointments" do
+        discarded_appointment = create(:appointment, deleted_at: Time.now)
 
-        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
-
-        appointments = [
-          create(:appointment, patient: patient, facility: facility),
-          create(:appointment, patient: patient, facility: facility).tap(&:discard),
-          create(:appointment, patient: patient)
-        ]
-
-        _other_appointments = [
-          create(:appointment, patient: other_patient, facility: facility),
-          create(:appointment, patient: other_patient, facility: facility).tap(&:discard),
-          create(:appointment, patient: other_patient)
-        ]
-
-        expect(Appointment.syncable_to_region(facility_group)).to contain_exactly(*appointments)
+        expect(described_class.for_sync).to include(discarded_appointment)
       end
     end
   end
@@ -175,11 +158,25 @@ describe Appointment, type: :model do
           expect(appointment.status).to eq("cancelled")
         end
       end
+    end
 
-      it "sets patient status if call indicated they died" do
-        appointment.mark_patient_as_dead
+    describe "#update_patient_status" do
+      it "updates patient status if appointment call result is marked as dead" do
+        appointment.update(cancel_reason: :dead)
+        appointment.update_patient_status
+        expect(appointment.patient.status).to eq "dead"
+      end
 
-        expect(appointment.patient.status).to eq("dead")
+      it "updates patient status if appointment call result is marked as moved_to_private" do
+        appointment.update(cancel_reason: :moved_to_private)
+        appointment.update_patient_status
+        expect(appointment.patient.status).to eq "migrated"
+      end
+
+      it "updates patient status if appointment call result is marked as public_hospital_transfer" do
+        appointment.update(cancel_reason: :public_hospital_transfer)
+        appointment.update_patient_status
+        expect(appointment.patient.status).to eq "migrated"
       end
     end
   end

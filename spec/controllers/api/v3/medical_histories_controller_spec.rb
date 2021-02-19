@@ -61,6 +61,8 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         expect(response_1_records.count).to eq 4
         expect(response_1_records.map(&:patient).to_set).to eq Set[patient_in_request_facility]
 
+        reset_controller
+
         # GET request 2
         get :sync_to_user, params: {limit: 4, process_token: response_1_body["process_token"]}
         response_2_body = JSON(response.body)

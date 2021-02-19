@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Region, type: :model do
-  context "validations" do
+  describe "validations" do
     it "requires a region type" do
       region = Region.new(name: "foo", path: "foo")
       expect(region).to_not be_valid
@@ -9,7 +9,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "slugs" do
+  describe "slugs" do
     it "handles duplicate names nicely when creating a slug" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
       region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
@@ -25,7 +25,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "region_type" do
+  describe "region_type" do
     it "has question methods for determining type" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
       region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
@@ -47,7 +47,41 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "facilities" do
+  describe "reportable_children" do
+    it "is everything for India" do
+      expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
+
+      state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      fg = FactoryBot.create(:facility_group, region: district)
+      facility = FactoryBot.create(:facility, facility_group: fg)
+      expect(district.reportable_children).to match_array(district.block_regions)
+      expect(district.block_regions.first.reportable_children).to match_array([facility.region])
+    end
+
+    it "excludes states and blocks for other countries" do
+      allow(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD)).at_least(:once)
+
+      org = Seed.seed_org.region
+      state = FactoryBot.create(:region, :state, reparent_to: org)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      fg = FactoryBot.create(:facility_group, region: district)
+      facility = FactoryBot.create(:facility, facility_group: fg)
+      facility_region = facility.region
+      expect(district.reportable_children).to contain_exactly(facility_region)
+    end
+  end
+
+  describe "cache_key" do
+    it "contains class name, region type, and id" do
+      facility_group = create(:facility_group)
+      region = facility_group.region
+      expect(region.cache_key).to eq("regions/district/#{region.id}")
+      expect(facility_group.cache_key).to eq(region.cache_key)
+    end
+  end
+
+  describe "facilities" do
     it "returns the source facilities" do
       facility_group = create(:facility_group)
       facilities = create_list(:facility, 3, block: "Block ABC", facility_group: facility_group)
@@ -80,7 +114,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "organization" do
+  describe "organization" do
     it "gets the org from the parent org region" do
       org = create(:organization, name: "Test Organization")
       facility_group = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
@@ -89,7 +123,7 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "behavior" do
+  describe "behavior" do
     it "sets a valid path" do
       org = create(:organization, name: "Test Organization")
       facility_group_1 = create(:facility_group, name: "District XYZ", organization: org, state: "Test State")
@@ -123,7 +157,36 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "association helper methods" do
+  describe "accessible_children" do
+    it "only returns children regions that a user has access to" do
+      org = create(:organization, name: "Test Organization")
+      facility_group_1 = create(:facility_group, organization: org, state: "State 1")
+      facility_group_2 = create(:facility_group, organization: org, state: "State 1")
+      facility_1 = create(:facility, name: "facility1", state: "State 1", facility_group: facility_group_1)
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group_1)
+      facility_3 = create(:facility, name: "facility3", state: "State 2", facility_group: facility_group_2)
+      block_region = facility_1.region.parent
+
+      facility_report_viewer = create(:admin, :viewer_reports_only, :with_access, full_name: "facility_report_viewer", resource: facility_1)
+      district_report_viewer = create(:admin, :viewer_reports_only, :with_access, full_name: "district_report_viewer", resource: facility_group_1)
+      other_admin = create(:admin, :manager, :with_access, full_name: "district_report_viewer", resource: facility_group_2)
+
+      expect(facility_group_1.region.accessible_children(facility_report_viewer)).to be_empty
+      expect(block_region.accessible_children(facility_report_viewer)).to contain_exactly(facility_1.region)
+
+      expect(facility_group_1.region.accessible_children(district_report_viewer)).to match_array(facility_group_1.region.block_regions)
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility, access_level: :view_reports)).to match_array([facility_1.region, facility_2.region])
+      expect(facility_group_1.region.accessible_children(district_report_viewer, region_type: :facility, access_level: :manage)).to be_empty
+
+      expect(facility_group_1.region.accessible_children(other_admin, region_type: :facility)).to be_empty
+      expect(facility_group_1.region.accessible_children(other_admin, region_type: :block)).to be_empty
+      expect(facility_group_2.region.accessible_children(other_admin, region_type: :facility)).to match_array(facility_3.region)
+      expect(facility_group_2.region.accessible_children(other_admin, region_type: :facility, access_level: :manage)).to match_array(facility_3.region)
+    end
+  end
+
+  describe "association helper methods" do
     it "generates the appropriate has_one or has_many type methods based on the available region types" do
       facility_group_1 = create(:facility_group, organization: create(:organization), state: "State 1")
       create(:facility, facility_group: facility_group_1, state: "State 1")
@@ -195,7 +258,68 @@ RSpec.describe Region, type: :model do
     end
   end
 
-  context "#syncable_patients" do
+  describe "#cohort_analytics" do
+    it "invokes the CohortAnalyticsQuery" do
+      period = double("Period")
+      prev_periods = double("Periods")
+      cohort_analytics_query = double("CohortAnalyticsQuery", call: "result")
+      region = Region.new(name: "foo", path: "foo")
+
+      allow(CohortAnalyticsQuery).to receive(:new)
+        .with(region, period: period, prev_periods: prev_periods)
+        .and_return(cohort_analytics_query)
+
+      expect(region.cohort_analytics(period: period, prev_periods: prev_periods)).to eq("result")
+    end
+  end
+
+  describe "#dashboard_analytics" do
+    context "for facility regions" do
+      it "invokes the CohortAnalyticsQuery" do
+        period = double("Period")
+        prev_periods = double("Periods")
+        facility_analytics_query = double("FacilityAnalyticsQuery", call: "result")
+
+        region = Region.new(name: "foo", path: "foo", region_type: "facility")
+
+        allow(FacilityAnalyticsQuery).to receive(:new)
+          .with(region, period, prev_periods, include_current_period: false)
+          .and_return(facility_analytics_query)
+
+        result = region.dashboard_analytics(
+          period: period,
+          prev_periods: prev_periods,
+          include_current_period: false
+        )
+
+        expect(result).to eq("result")
+      end
+    end
+
+    context "for non-facility regions" do
+      it "invokes the CohortAnalyticsQuery" do
+        period = double("Period")
+        prev_periods = double("Periods")
+        district_analytics_query = double("DistrictAnalyticsQuery", call: "result")
+
+        region = Region.new(name: "foo", path: "foo", region_type: "district")
+
+        allow(DistrictAnalyticsQuery).to receive(:new)
+          .with(region, period, prev_periods, include_current_period: false)
+          .and_return(district_analytics_query)
+
+        result = region.dashboard_analytics(
+          period: period,
+          prev_periods: prev_periods,
+          include_current_period: false
+        )
+
+        expect(result).to eq("result")
+      end
+    end
+  end
+
+  describe "#syncable_patients" do
     let!(:organization) { create(:organization) }
     let!(:facility_group) { create(:facility_group, organization: organization, state: "Maharashtra") }
     let!(:facility_1) { create(:facility, block: "M1", facility_group: facility_group) }

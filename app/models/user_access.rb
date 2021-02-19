@@ -6,6 +6,7 @@ class UserAccess
   attr_reader :user
   def initialize(user)
     @user = user
+    raise ArgumentError, "user does not have a access_level set!" unless user.access_level
   end
 
   LEVELS = {
@@ -57,6 +58,22 @@ class UserAccess
       .includes(facility_groups: :facilities)
   end
 
+  class UnsupportedAccessRequest < RuntimeError; end
+
+  # Users can view reports for a state if they can manage any district within the state.
+  # Any other access requests (ie manage, view_pii, etc) for a state receive an error and are not supported.
+  #
+  # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
+  def accessible_state_regions(action)
+    if action == :view_reports
+      districts = accessible_district_regions(:manage)
+      state_region_ids = districts.map(&:state_region).pluck(:id)
+      Region.state_regions.where(id: state_region_ids)
+    else
+      raise UnsupportedAccessRequest, "States only support 'view_reports' authorization requests."
+    end
+  end
+
   def accessible_facility_groups(action)
     resources_for(FacilityGroup, action)
       .union(FacilityGroup.where(organization: accessible_organizations(action)))
@@ -70,18 +87,44 @@ class UserAccess
       .includes(facility_group: :organization)
   end
 
+  def accessible_district_regions(action)
+    facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
+    Region.district_regions.where(source_id: facility_group_ids)
+  end
+
+  # User block authorization is determined via the parent district.
+  #
+  # See CH2217 - https://app.clubhouse.io/simpledotorg/epic/2217/migrate-user-access-to-regions
+  def accessible_block_regions(action)
+    facility_group_ids = accessible_facility_groups(action).pluck("facility_groups.id")
+    facility_group_ids.uniq!
+    paths = Region.district_regions.where(source_id: facility_group_ids, source_type: "FacilityGroup").pluck(:path)
+    globs = paths.map { |path| " '#{path}.*' " }.join(",")
+    Region.block_regions.where("path ? ARRAY[#{globs}]::lquery[]")
+  end
+
+  def accessible_facility_regions(action)
+    facility_ids = accessible_facilities(action).pluck("facilities.id")
+    Region.facility_regions.where(source_id: facility_ids)
+  end
+
   def accessible_admins(action)
     return User.none unless action == :manage
     return User.admins if power_user?
     return User.none unless action_to_level(:manage).include?(user.access_level.to_sym)
 
     manageable_facilities = user.accessible_facilities(:manage)
+    manageable_facility_groups = user.accessible_facility_groups(:manage)
+    manageable_orgs = user.accessible_organizations(:manage)
 
     resource_ids =
       [
         manageable_facilities.pluck("facilities.id"),
         manageable_facilities.map(&:facility_group_id),
-        manageable_facilities.map { |facility| facility.organization.id }
+        manageable_facilities.map(&:organization_id),
+        manageable_facility_groups.map(&:id),
+        manageable_facility_groups.map(&:organization_id),
+        manageable_orgs.map(&:id)
       ].flatten.uniq
 
     User
@@ -210,6 +253,6 @@ class UserAccess
 
   def action_to_level(action)
     return ACTION_TO_LEVEL.values.flatten.uniq if action == ANY_ACTION
-    ACTION_TO_LEVEL[action]
+    ACTION_TO_LEVEL.fetch(action) { |key| raise ArgumentError, "unknown action #{action} - valid actions are #{ACTION_TO_LEVEL.keys}" }
   end
 end

@@ -3,18 +3,19 @@ name: India Demo Deployment
 blocks:
   - name: Deploy to India Demo
     task:
+      secrets:
+        - name: sentry-release-auth-token
+        - name: semaphore-deploy-key
       jobs:
         - name: Deploy to India Demo
           commands:
             - checkout
-            - sem-version ruby 2.5.1
+            - sem-version ruby 2.6.6
             - cache restore
             - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
             - 'BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap india:staging deploy'
-      secrets:
-        - name: semaphore-deploy-key
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
@@ -26,3 +27,5 @@ agent:
 promotions:
   - name: India Production Deployment
     pipeline_file: india_production_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'

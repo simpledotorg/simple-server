@@ -38,10 +38,7 @@ class APIController < ApplicationController
     # allow other region types as well
     return current_facility_group if requested_sync_region_id.blank?
     return current_facility_group if requested_sync_region_id == current_facility_group.id
-    if block_level_sync?
-      Rails.logger.info "current_sync_region set to block #{current_block.id} for user #{current_user.id}"
-      return current_block
-    end
+    return current_block if block_level_sync?
 
     current_facility_group
   end
@@ -71,16 +68,16 @@ class APIController < ApplicationController
   end
 
   def validate_facility
-    return head :bad_request unless current_facility.present?
+    head :bad_request unless current_facility.present?
   end
 
   def validate_current_facility_belongs_to_users_facility_group
-    return head :unauthorized unless current_user.present? &&
+    head :unauthorized unless current_user.present? &&
       current_facility_group.facilities.where(id: current_facility.id).present?
   end
 
   def current_user_present?
-    return head :unauthorized unless current_user.present?
+    head :unauthorized unless current_user.present?
   end
 
   def validate_sync_approval_status_allowed
@@ -100,7 +97,7 @@ class APIController < ApplicationController
   end
 
   def set_sentry_context
-    Raven.user_context(
+    Sentry.set_user(
       id: request.headers["HTTP_X_USER_ID"],
       request_facility_id: request.headers["HTTP_X_FACILITY_ID"]
     )

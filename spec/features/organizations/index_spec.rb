@@ -14,9 +14,6 @@ RSpec.feature "Verify Dashboard", type: :feature do
   dashboard_navigation = Navigations::DashboardPageNavigation.new
   org_page = AdminPage::Organizations::Index.new
 
-  before { enable_flag(:new_permissions_system_aug_2020, owner) }
-  after { disable_flag(:new_permissions_system_aug_2020, owner) }
-
   it "Verify organization is displayed in dashboard" do
     visit reports_regions_path
     login_page.do_login(owner.email, owner.password)
@@ -33,7 +30,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
 
     # total number of organization present in dashboard
     visit reports_regions_path
-    original_org_count = dashboard.all_elements(css: ".card.org-card").count
+    original_org_count = dashboard.all_elements(css: ".card.organization").count
 
     dashboard_navigation.click_manage_option("#nav-organizations-link")
 
@@ -45,7 +42,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
     org_page.is_organization_name_present("Test")
 
     # Dashboard doesn't show Organizations without any facilities
-    fg = create(:facility_group, organization: Organization.find_by_name("Test"))
+    fg = create(:facility_group, organization: Organization.find_by!(name: "Test"))
     create(:facility, facility_group: fg)
 
     dashboard_navigation.click_main_menu_tab("Reports")

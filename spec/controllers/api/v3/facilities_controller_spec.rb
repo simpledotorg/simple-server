@@ -97,7 +97,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           end
 
           context "when region level sync is enabled" do
-            it "sets the sync_region_id to the block id and user is not available" do
+            it "sets the sync_region_id to the facility group id when user is not available" do
               enable_flag(:block_level_sync, request_user)
               get :sync_to_user
 
@@ -109,6 +109,7 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
             it "sets the sync_region_id to the block id when user is available" do
               request.env["HTTP_X_USER_ID"] = request_user.id
+              request.env["HTTP_X_FACILITY_ID"] = request_user.facility.id
               request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
 
               enable_flag(:block_level_sync, request_user)

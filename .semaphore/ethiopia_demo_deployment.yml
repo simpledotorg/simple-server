@@ -24,3 +24,5 @@ agent:
 promotions:
   - name: Ethiopia Production Deployment
     pipeline_file: ethiopia_production_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'

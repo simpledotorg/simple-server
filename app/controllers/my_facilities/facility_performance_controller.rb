@@ -22,7 +22,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
     end
 
     set_period
-    @facilities = filter_facilities([:manage, :facility])
+    @facilities = filter_facilities
 
     @data_for_facility = {}
     @scores_for_facility = {}
@@ -73,9 +73,5 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
   def report_params
     params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
-  end
-
-  def force_cache?
-    report_params[:force_cache].present?
   end
 end

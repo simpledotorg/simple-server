@@ -2,22 +2,27 @@
   <div class="sub-nav">
     <div class="container">
       <div class="px-3 px-lg-0">
-        <%= link_to(my_facilities_overview_path, class: "sub-nav-link #{active_action?("index")}") do %>
+        <%= link_to(my_facilities_overview_path, class: "sub-nav-link #{active_controller_and_action?("my_facilities", "index")}") do %>
           Overview
         <% end %>
         <% if current_admin.feature_enabled?(:ranked_facilities) %>
-          <%= link_to(my_facilities_facility_performance_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/facility_performance"}") do %>
+          <%= link_to(my_facilities_facility_performance_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/facility_performance"}") do %>
             Facility performance
           <% end %>
         <% end %>
-        <%= link_to(my_facilities_blood_pressure_control_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("blood_pressure_control")}") do %>
-          BP control
+        <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{active_action?("bp_controlled")}") do %>
+          BP controlled
         <% end %>
-        <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
+        <%= link_to(my_facilities_bp_not_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "sub-nav-link #{active_action?("bp_not_controlled")}") do %>
+          BP not controlled
+        <% end %>
+        <%= link_to(my_facilities_missed_visits_path(preserve_query_params(request.query_parameters, ["zone", "size", "period", "facility_group"])), class: "sub-nav-link #{active_action?("missed_visits")}") do %>
           Missed visits
         <% end %>
-        <%= link_to(my_facilities_registrations_path(preserve_query_params(request.query_parameters, ["zone", "size", "period"])), class: "sub-nav-link #{active_action?("registrations")}") do %>
-          Registrations
+        <% if current_admin.feature_enabled?(:drug_stocks) %>
+          <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_controller?("my_facilities/drug_stocks")}") do %>
+            Drug stock
+          <% end %>
         <% end %>
         <%= link_to(my_facilities_drug_stock_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{"active" if params[:controller] == "my_facilities/drug_stock"}") do %>
         Drug stock

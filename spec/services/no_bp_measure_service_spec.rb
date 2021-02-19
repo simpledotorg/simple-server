@@ -13,11 +13,21 @@ RSpec.describe NoBPMeasureService do
 
   it "returns a count of 0 for a facility group with no facilities" do
     range = (Period.month("October 1 2018")..Period.month("October 1 2020"))
-    results = NoBPMeasureService.new(facility_group_1, periods: range).call
+    facility_group = double(FacilityGroup, facilities: [], cache_key: "district/xxxx-zzzz", cache_version: "")
+    results = NoBPMeasureService.new(facility_group, periods: range).call
     expect(results.size).to eq(range.entries.size)
     results.each do |period, count|
       expect(count).to eq(0)
     end
+  end
+
+  it "has a cache_key based on region and period" do
+    range = (Period.month("October 1 2018")..Period.month("October 1 2020"))
+    facility_group = double(FacilityGroup, facilities: [], cache_key: "district/xxxx-zzzz")
+    service = NoBPMeasureService.new(facility_group, periods: range)
+    expect(service.cache_key(Period.month("Septmeber 2020"))).to include("district/xxxx-zzzz")
+    expect(service.cache_key(Period.month("Septmeber 2020"))).to include("#{facility_group.cache_key}/Sep-2020")
+    expect(service.cache_key(Period.month("December 2020"))).to include("#{facility_group.cache_key}/Dec-2020")
   end
 
   it "counts visits in past three months for appts, drugs updated, blood sugar taken without blood pressures" do
@@ -65,6 +75,48 @@ RSpec.describe NoBPMeasureService do
 
     entries_without_visits.each do |(period, count)|
       expect(count).to eq(0)
+    end
+  end
+
+  context "when with_exclusions is true" do
+    it "doesn't include dead patients" do
+      facility = create(:facility, facility_group: facility_group_1)
+      appointment_date = Time.parse("May 1st, 2020")
+      appointment_month = Period.month("May 2020")
+
+      dead_patient_with_visit =
+        create(:patient,
+          status: :dead,
+          recorded_at: Time.parse("January 1st, 2020"),
+          assigned_facility: facility)
+      create(:appointment, creation_facility: facility, patient: dead_patient_with_visit, device_created_at: appointment_date)
+
+      report_range = (Period.month("Apr 1 2020")..Period.month("May 1 2020"))
+
+      results = NoBPMeasureService.new(facility, periods: report_range).call
+      expect(results[appointment_month]).to eq(1)
+
+      results_with_exclusions =
+        NoBPMeasureService.new(facility, periods: report_range, with_exclusions: true).call
+      expect(results_with_exclusions[appointment_month]).to eq(0)
+    end
+
+    it "doesn't include ltfu patients" do
+      facility = create(:facility, facility_group: facility_group_1)
+      appointment_date = Time.parse("May 1st, 2020")
+      appointment_month = Period.month("May 2020")
+
+      ltfu_patient_with_visit = create(:patient, recorded_at: Time.parse("January 1st, 2019"), assigned_facility: facility)
+      create(:appointment, creation_facility: facility, patient: ltfu_patient_with_visit, device_created_at: appointment_date)
+
+      report_range = (Period.month("Apr 1 2020")..Period.month("May 1 2020"))
+
+      results = NoBPMeasureService.new(facility, periods: report_range).call
+      expect(results[appointment_month]).to eq(1)
+
+      results_with_exclusions =
+        NoBPMeasureService.new(facility, periods: report_range, with_exclusions: true).call
+      expect(results_with_exclusions[appointment_month]).to eq(0)
     end
   end
 end

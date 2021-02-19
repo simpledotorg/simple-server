@@ -60,6 +60,7 @@ class User < ApplicationRecord
     class_name: "Facility",
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
+  has_many :drug_stocks
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
@@ -77,6 +78,10 @@ class User < ApplicationRecord
   end
   scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
   scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
+
+  def self.find_by_email(email)
+    joins(:email_authentications).find_by(email_authentications: {email: email})
+  end
 
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
@@ -103,6 +108,9 @@ class User < ApplicationRecord
   delegate :accessible_organizations,
     :accessible_facilities,
     :accessible_facility_groups,
+    :accessible_district_regions,
+    :accessible_block_regions,
+    :accessible_facility_regions,
     :accessible_users,
     :accessible_admins,
     :accessible_protocols,
@@ -114,6 +122,7 @@ class User < ApplicationRecord
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
+  after_discard :destroy_email_authentications
 
   def phone_number_authentication
     phone_number_authentications.first
@@ -125,6 +134,10 @@ class User < ApplicationRecord
 
   def user_access
     UserAccess.new(self)
+  end
+
+  def region_access(memoized: false)
+    @region_access ||= RegionAccess.new(self, memoized: memoized)
   end
 
   def registration_facility_id
@@ -237,7 +250,7 @@ class User < ApplicationRecord
   end
 
   def block_level_sync?
-    feature_enabled?(:block_level_sync)
+    feature_enabled?(:block_level_sync) && !can_teleconsult?
   end
 
   def flipper_id

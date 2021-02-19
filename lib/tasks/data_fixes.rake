@@ -1,7 +1,5 @@
 require "tasks/scripts/move_user_recorded_data_to_registration_facility"
-require "tasks/scripts/clean_ancient_dates"
-require "tasks/scripts/delete_bangladesh_demo_facility"
-require "tasks/scripts/clean_bangladesh_phone_numbers"
+require "tasks/scripts/discard_invalid_appointments"
 
 namespace :data_fixes do
   desc "Move all data recorded by a user from a source facility to a destination facility"
@@ -21,43 +19,17 @@ namespace :data_fixes do
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
 
-  desc "Clean up records with ancient dates that break reporting"
-  task clean_ancient_dates: :environment do
-    CleanAncientDates.call
-  end
+  desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
+  task :discard_invalid_scheduled_appointments, [:dry_run] => :environment do |_t, args|
+    dry_run =
+      args.dry_run == "true"
 
-  desc "Clean up records with ancient dates that break reporting (dryrun)"
-  task clean_ancient_dates_dryrun: :environment do
-    CleanAncientDates.call(dryrun: true)
-  end
+    puts "This is a dry run" if dry_run
 
-  desc "Handle Bangladesh demo patients"
-  task handle_bangladesh_demo_patients: :environment do
-    DeleteBangladeshDemoFacility.handle_patients
-  end
+    patients_ids = Appointment.where(status: "scheduled").group(:patient_id).count.select { |_k, v| v > 1 }.keys
 
-  desc "Handle Bangladesh demo patients (dryrun)"
-  task handle_bangladesh_demo_patients_dryrun: :environment do
-    DeleteBangladeshDemoFacility.handle_patients(dryrun: true)
-  end
-
-  desc "Delete Bangladesh demo facility"
-  task delete_bangladesh_demo_facility: :environment do
-    DeleteBangladeshDemoFacility.delete_facility
-  end
-
-  desc "Delete Bangladesh demo facility (dryrun)"
-  task delete_bangladesh_demo_facility_dryrun: :environment do
-    DeleteBangladeshDemoFacility.delete_facility(dryrun: true)
-  end
-
-  desc "Clean Bangladesh phone numbers"
-  task clean_bangladesh_phone_numbers: :environment do
-    CleanBangladeshPhoneNumbers.call
-  end
-
-  desc "Clean Bangladesh phone numbers (dryrun)"
-  task clean_bangladesh_phone_numbers_dryrun: :environment do
-    CleanBangladeshPhoneNumbers.call(dryrun: true)
+    Patient.with_discarded.where(id: patients_ids).each do |patient|
+      DiscardInvalidAppointments.call(patient: patient, dry_run: dry_run)
+    end
   end
 end

@@ -56,7 +56,9 @@ class Admin::ProtocolDrugsController < AdminController
     params.require(:protocol_drug).permit(
       :name,
       :dosage,
-      :rxnorm_code
+      :rxnorm_code,
+      :drug_category,
+      :stock_tracked
     )
   end
 end
