@@ -115,7 +115,7 @@ RSpec.describe DrugStocksQuery do
         rxnorm_codes.each do |rxnorm_code|
           protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
           expected_total_stock = stocks_by_rxnorm[rxnorm_code][:in_stock] * facilities.count
-          expect(result[drug_category][:drug_stocks][protocol_drug.id]).to eq(expected_total_stock)
+          expect(result[drug_category][:drug_stocks][rxnorm_code][:in_stock]).to eq(expected_total_stock)
         end
       end
     end
