@@ -13,10 +13,10 @@ RSpec.describe AppointmentsController, type: :controller do
   describe "GET #index" do
     render_views
 
-    let!(:appointment_facility) { create(:facility, facility_group: facility_group) }
-    let!(:facility_1) { create(:facility, facility_group: facility_group) }
-    let!(:facility_1_patients) { create_list(:patient, 3, assigned_facility: facility_1, registration_user: manager) }
-    let!(:overdue_appointments_in_facility_1) do
+    let(:appointment_facility) { create(:facility, facility_group: facility_group) }
+    let(:facility_1) { create(:facility, facility_group: facility_group) }
+    let(:facility_1_patients) { create_list(:patient, 3, assigned_facility: facility_1, registration_user: manager) }
+    let(:overdue_appointments_in_facility_1) do
       appointments = facility_1_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_1, user: manager)
@@ -25,9 +25,9 @@ RSpec.describe AppointmentsController, type: :controller do
       appointments
     end
 
-    let!(:facility_2) { create(:facility, facility_group: facility_group) }
-    let!(:facility_2_patients) { create_list(:patient, 3, assigned_facility: facility_2, registration_user: manager) }
-    let!(:overdue_appointments_in_facility_2) do
+    let(:facility_2) { create(:facility, facility_group: facility_group) }
+    let(:facility_2_patients) { create_list(:patient, 3, assigned_facility: facility_2, registration_user: manager) }
+    let(:overdue_appointments_in_facility_2) do
       appointments = facility_2_patients.map { |patient| create(:appointment, :overdue, patient: patient, facility: appointment_facility) }
       appointments.each do |appointment|
         create(:blood_pressure, patient: appointment.patient, facility: facility_2, user: manager)
@@ -37,18 +37,24 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     it "returns a success response" do
+      facility_1 # authorization requires at least one accessible facility
       get :index, params: {}
       expect(response).to be_successful
     end
 
     it "populates a list of overdue appointments" do
-      get :index, params: {}
       patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
+      get :index, params: {}
 
       expect(assigns(:patient_summaries).map(&:id)).to match_array(patient_ids)
     end
 
     describe "filtering by facility" do
+      before :each do
+        overdue_appointments_in_facility_1
+        overdue_appointments_in_facility_2
+      end
+
       it "displays appointments for all facilities if none is selected" do
         get :index, params: {per_page: "All"}
 
@@ -68,6 +74,11 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     describe "filtering by days overdue" do
+      before :each do
+        overdue_appointments_in_facility_1
+        overdue_appointments_in_facility_2
+      end
+
       it "displays patients only less than one year overdue when checked" do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
@@ -86,7 +97,7 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(assigns(:patient_summaries).map(&:id)).to_not include(really_overdue_patient_id)
       end
 
-      it "displays patients with all overdue date when unchecked and form is submitted" do
+      it "displays patients with all overdue date when less than one year overdue is unchecked" do
         really_overdue_appointment = create(:appointment,
           facility: facility_2,
           scheduled_date: 380.days.ago,
@@ -94,10 +105,7 @@ RSpec.describe AppointmentsController, type: :controller do
         create(:blood_pressure, patient: really_overdue_appointment.patient, facility: facility_2)
         really_overdue_patient_id = really_overdue_appointment.patient_id
 
-        get :index, params: {
-          per_page: "All",
-          submitted: "true"
-        }
+        get :index, params: {per_page: "All"}
 
         patient_ids = (overdue_appointments_in_facility_1 + overdue_appointments_in_facility_2).map(&:patient_id)
         expected_patient_ids = patient_ids.push(really_overdue_patient_id)
@@ -106,6 +114,11 @@ RSpec.describe AppointmentsController, type: :controller do
     end
 
     describe "pagination" do
+      before :each do
+        overdue_appointments_in_facility_1
+        overdue_appointments_in_facility_2
+      end
+
       it 'shows "Pagination::DEFAULT_PAGE_SIZE" records per page' do
         stub_const("Pagination::DEFAULT_PAGE_SIZE", 5)
         get :index, params: {}
@@ -128,24 +141,43 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(response.body.scan(/recorded at/).length).to be(total_records)
       end
     end
+
+    describe "search filters" do
+      before { facility_1 }
+
+      it "sets search_filters to default value if no index params are present" do
+        get :index, params: {}
+        expect(assigns(:search_filters)).to eq(["only_less_than_year_overdue"])
+      end
+
+      it "sets search_filters to params[:search_filters] if present" do
+        get :index, params: {search_filters: ["hi"]}
+        expect(assigns(:search_filters)).to eq(["hi"])
+      end
+
+      it "sets search filters to empty array if any index params are present but search_filters are not present" do
+        get :index, params: {per_page: 20}
+        expect(assigns(:search_filters)).to eq([])
+      end
+    end
   end
 
   describe "PUT #update" do
-    let!(:facility) { create(:facility, facility_group: facility_group) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
 
-    let!(:patient_with_overdue_appointment) do
+    let(:patient_with_overdue_appointment) do
       patient = create(:patient, registration_facility: facility)
       create(:blood_pressure, patient: patient, facility: facility)
       patient
     end
 
-    let!(:overdue_appointment) do
+    let(:overdue_appointment) do
       create(:appointment, :overdue,
         patient: patient_with_overdue_appointment,
         facility: facility)
     end
 
-    let!(:patient_without_overdue_appointment) do
+    let(:patient_without_overdue_appointment) do
       patient = create(:patient, registration_facility: facility)
       create(:appointment, patient: patient, facility: facility)
     end
@@ -264,6 +296,17 @@ RSpec.describe AppointmentsController, type: :controller do
         }
       }
       expect(overdue_appointment.reload.patient.status).to eq "migrated"
+    end
+
+    it "passes along search_filters in the redirect" do
+      put :update, params: {
+        id: overdue_appointment.id,
+        appointment: {
+          call_result: "public_hospital_transfer",
+          search_filters: "one two"
+        }
+      }
+      expect(response).to redirect_to(appointments_path + "?" + {search_filters: [:one, :two]}.to_param)
     end
   end
 end
