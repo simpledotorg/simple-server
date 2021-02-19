@@ -6,7 +6,7 @@
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <title><%= raw t("analytics.page_title") %></title>
+  <title><%= t("analytics.page_title") %></title>
 
   <%= inline_stylesheet("user_analytics.css") %>
 </head>
@@ -17,7 +17,7 @@
 
   <p class="updated-date">
     <span>
-      <%= raw t("analytics.updated", time: @user_analytics.last_updated_at) %>
+      <%= t("analytics.updated", time: @user_analytics.last_updated_at) %>
     </span>
   </p>
 
@@ -44,7 +44,7 @@
       <div class="day count-empty" style="display: none">
         <h3 class="stat-day"></h3>
         <%= inline_svg('icon_sync_cloud.svg') %>
-        <p><%= raw t("analytics.tap_sync") %></p>
+        <p><%= t("analytics.tap_sync") %></p>
       </div>
 
       <% @user_analytics.daily_period_list.each do |day_date| %>
@@ -55,19 +55,19 @@
 
           <div class="counts">
             <div class="count count-1">
-              <strong><%= raw t("analytics.registered") %></strong>
+              <strong><%= t("analytics.registered") %></strong>
               <div class="big-number">
                 <%= @user_analytics.daily_stats_by_date(:registrations, day_date) %>
               </div>
-              <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:registrations, day_date)) %>
+              <%= t("analytics.patient", count: @user_analytics.daily_stats_by_date(:registrations, day_date)) %>
             </div>
 
             <div class="count count-2">
-              <strong><%= raw t("analytics.follow_up") %></strong>
+              <strong><%= t("analytics.follow_up") %></strong>
               <div class="big-number">
                 <%= @user_analytics.daily_stats_by_date(:follow_ups, day_date) %>
               </div>
-              <%= raw t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
+              <%= t("analytics.patient", count: @user_analytics.daily_stats_by_date(:follow_ups, day_date)) %>
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@
   <!-- monthly registered patients view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3><%= raw t("analytics.registered_patients") %></h3>
+    <h3><%= t("analytics.registered_patients") %></h3>
 
     <% registrations_table_name = 'registrations' %>
 
@@ -95,7 +95,7 @@
   <!-- monthly follow-up patients view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-followup', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3><%= raw t("analytics.follow_up_patients") %></h3>
+    <h3><%= t("analytics.follow_up_patients") %></h3>
 
     <% follow_ups_table_name = 'follow_ups' %>
 
@@ -108,13 +108,24 @@
                          user_analytics: @user_analytics,
                          data_table_name: follow_ups_table_name } %>
   </div>
-
+  
+  <!-- drug stock --> 
+  <div class="card">
+      <h3>Drug stock report</h3>
+      <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of Feb-2021</p>
+      <a href="#" onclick="openWindow('drug-stock-form', 'progress-start'); return false" class="button">
+        Submit Drug Stock
+      </a>
+  </div>
+  
+  
+    
   <!-- monthly hypertension control view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info"><span>?</span></a>
-    <h3><%= raw t("analytics.hypertension_controlled") %></h3>
+    <h3><%= t("analytics.hypertension_controlled") %></h3>
     <p class="desc">
-      <%= raw t("analytics.hypertension_control_desc") %>
+      <%= t("analytics.hypertension_controlled_desc") %>
     </p>
 
     <p class="desc control-desc">
@@ -136,7 +147,7 @@
             </tr>
         </tbody>
     </table>
-    <p class="center" style="margin: 12px 0 0 0; text-align: center;"><%= raw t("analytics.last_12_months") %></p>
+    <p class="center" style="margin: 12px 0 0 0; text-align: center;"><%= t("analytics.last_12_months") %></p>
   </div>
 
   <div class="card">
@@ -146,7 +157,7 @@
   <!-- all trophies view -->
   <% if @user_analytics.achievements? %>
     <div class="trophies">
-      <h4><%= raw t("analytics.achievements") %></h4>
+      <h4><%= t("analytics.achievements") %></h4>
       <% @user_analytics.unlocked_trophies.sort.each do |trophy| %>
         <div class="trophy trophy-<%= trophy %>">
           <%= inline_svg('ribbon.svg') %>
@@ -154,7 +165,7 @@
           <span>
               <%= number_to_human(trophy, :format => '%n%u', :units => { thousand: 'K', million: 'M' }) %>
             </span>
-          <div><%= trophy %> <%= raw t("analytics.follow_up") %><br><%= raw t("analytics.hypertension_patients") %></div>
+          <div><%= trophy %> <%= t("analytics.follow_up") %><br><%= t("analytics.hypertension_patients") %></div>
         </div>
       <% end %>
 
@@ -164,17 +175,17 @@
         <span>
             <%= inline_svg('icon_lock.svg') %>
           </span>
-        <div><%= @user_analytics.locked_trophy %> <%= raw t("analytics.follow_up") %><br><%= raw t("analytics.hypertension_patients") %></div>
+        <div><%= @user_analytics.locked_trophy %> <%= t("analytics.follow_up") %><br><%= t("analytics.hypertension_patients") %></div>
       </div>
     </div>
   <% end %>
 
   <!-- footer -->
   <footer>
-    <h4 style="padding-top: 60px;"><%= raw t("analytics.notes") %></h4>
-    <p><%= raw t("analytics.footer_note_1", facility_name: @current_facility.name) %></p>
-    <h4 style="padding-top: 60px;"><%= raw t("analytics.thank_you") %></h4>
-    <p><%= raw t("analytics.thank_you_note") %></p>
+    <h4 style="padding-top: 60px;"><%= t("analytics.notes") %></h4>
+    <p><%= t("analytics.footer_note_1", facility_name: @current_facility.name) %></p>
+    <h4 style="padding-top: 60px;"><%= t("analytics.thank_you") %></h4>
+    <p><%= t("analytics.thank_you_note") %></p>
     <div style="height: 100px;"></div>
   </footer>
   </div>
@@ -186,12 +197,12 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.definition") %></h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("analytics.definition") %></h2>
 
         <div class="card">
-            <h3 style="margin-bottom: 1em;"><%= raw t("analytics.registered_patients") %></h3>
+            <h3 style="margin-bottom: 1em;"><%= t("analytics.registered_patients") %></h3>
             <p class="desc" style="margin-bottom: 1em;">
-              <%= raw t("analytics.registered_patients_desc") %>
+              <%= t("analytics.registered_patients_desc") %>
             </p>
         </div>
     </div>
@@ -203,12 +214,12 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.definition") %></h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("analytics.definition") %></h2>
 
         <div class="card">
-            <h3 style="margin-bottom: 1em;"><%= raw t("analytics.follow_up_patients") %></h3>
+            <h3 style="margin-bottom: 1em;"><%= t("analytics.follow_up_patients") %></h3>
             <p class="desc" style="margin-bottom: 1em;">
-              <%= raw t("analytics.follow_up_patients_desc") %>
+              <%= t("analytics.follow_up_patients_desc") %>
             </p>
         </div>
     </div>
@@ -220,20 +231,211 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.definition") %></h2>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("analytics.definition") %></h2>
 
         <div class="card">
-            <h3 style="margin-bottom: 1em;"><%= raw t("analytics.hypertension_controlled") %></h3>
+            <h3 style="margin-bottom: 1em;"><%= t("analytics.hypertension_controlled") %></h3>
             <p class="desc" style="margin-bottom: 1em;">
-                <b><%= raw t("analytics.numerator") %></b><br>
-              <%= raw t("analytics.hypertension_controlled_numerator") %>
+                <b><%= t("analytics.numerator") %></b><br>
+              <%= t("analytics.hypertension_controlled_numerator") %>
             </p>
             <p class="desc">
-                <b><%= raw t("analytics.denominator") %></b><br>
-              <%= raw t("analytics.hypertension_controlled_denominator") %>
+                <b><%= t("analytics.denominator") %></b><br>
+              <%= t("analytics.hypertension_controlled_denominator") %>
             </p>
         </div>
     </div>
+</div>
+
+<div id="drug-stock-form" class="progress-body" style="display: none;">
+  <div class="progress-contents">
+    <a href="#" onclick="closeWindow('drug-stock-form', 'progress-start'); return false" class="help-back">
+      <%= inline_svg('icon_back.svg') %>
+    </a>
+    <h2 style="padding-top: 80px; padding-left: 8px;">Number of tablets</h2>
+    <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
+    
+    <div class="form-group mt-4">
+      <label for="drug-stock-date">Drug stock report for:</label>
+      <div class="form-row">
+        <select class="card-dropdown" id="drug-stock-date">
+          <option value="02-2021">
+            End of February 2021
+          </option>
+        </select>
+      </div>
+      
+    </div>
+      
+    <div class="form-group mt-4">
+        <label for="a-medicationAmlodipine5mg">Amlodipine 5 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-medicationAmlodipine5mg">
+          <small id="a-medicationAmlodipine5mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-medicationAmlodipine5mg">
+            <small id="b-medicationAmlodipine5mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+        
+    </div>
+    <div class="form-group mt-4">
+        <label for="a-medicationAmlodipine10mg">Amlodipine 10 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-medicationAmlodipine10mg">
+          <small id="a-medicationAmlodipine10mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-medicationAmlodipine10mg">
+            <small id="b-medicationAmlodipine10mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+        
+    </div>
+    
+    <div class="form-group mt-4">
+        <label for="a-Telmisartin20mg">Telmisartin 20 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-Telmisartin20mg">
+          <small id="a-Telmisartin20mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-Telmisartin20mg">
+            <small id="b-Telmisartin20mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+        
+    </div>
+    
+    <div class="form-group mt-4">
+        <label for="a-Telmisartin40mg">Telmisartin 40 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-Telmisartin40mg">
+          <small id="a-Telmisartin40mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-Telmisartin40mg">
+            <small id="b-Telmisartin40mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+        
+    </div>
+    
+    <div class="form-group mt-4">
+        <label for="a-Losartan50mg">Losartan 50 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-Losartan50mg">
+          <small id="a-Losartan50mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-Losartan50mg">
+            <small id="b-Losartan50mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+    </div>
+    
+    <div class="form-group mt-4">
+        <label for="a-Hydrochlorathiazide125mg">Hydrochlorathiazide 12.5 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-Hydrochlorathiazide125mg">
+          <small id="a-Hydrochlorathiazide125mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-Hydrochlorathiazide125mg">
+            <small id="b-Hydrochlorathiazide125mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+    </div>
+    
+    <div class="form-group mt-4">
+        <label for="a-Hydrochlorathiazide25mg">Hydrochlorathiazide 25 mg</label>
+        <div class="form-row">
+          <div class="col">
+          <input type="number" class="form-control" id="a-Hydrochlorathiazide25mg">
+          <small id="a-Hydrochlorathiazide25mg" class="form-text text-muted">Received during the month</small>
+          </div>
+          <div class="col">
+            <input type="number" class="form-control" id="b-Hydrochlorathiazide25mg">
+            <small id="b-Hydrochlorathiazide25mg" class="form-text text-muted">Stock at end of the month</small>
+          </div>
+        </div>
+    </div>
+    <div class="button-fixed-bottom">
+      <button onclick="openWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="button">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<div id="drug-stock-submitted" class="progress-body" style="display: none;">
+  <div class="progress-contents">
+      <a href="#" onclick="closeWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="help-back">
+          <%= inline_svg('icon_back.svg') %>
+      </a>
+
+      <div class="card" style="margin-top: 100px; text-align: center;">
+        <div style="padding: 40px 0 20px 0;"><%= inline_svg('check.svg') %></div>
+        <h2>Submitted!</h2>
+        <p>We automatically estimated how many days of drug stock remain, based on the number of patients registered at your facility.</p>
+      </div>
+      
+      <div class="card">
+        <h3 style="margin-bottom: 8px;">ARB tablets</h3>
+        <span class="text-green">245 days of drug stock</span>
+        
+        <div class="card-row">
+          <span class="light float-right">1456 tablets</span>
+          <h6>Amlodipine 5 mg</h6>  
+        </div>
+        <div class="card-row">
+          <span class="light float-right">1456 tablets</span>
+          <h6>Amlodipine 10 mg</h6>  
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3 style="margin-bottom: 8px;">CCB tablets</h3>
+        <span class="text-red">1 day of drug stock</span>
+        
+        <div class="card-row">
+          <span class="light float-right">&#8212;</span>
+          <h6>Losartan 50 mg</h6>  
+        </div>
+        <div class="card-row">
+          <span class="light float-right">10 tablets</span>
+          <h6>Telmisartan 40 mg</h6>  
+        </div>
+        <div class="card-row">
+          <span class="light float-right">0 tablets</span>
+          <h6>Telmisartan 80 mg</h6>  
+        </div>
+      </div>
+      
+      <div class="card">
+        <h3 style="margin-bottom: 8px;">Diuretic tablets</h3>
+        <span class="text-orange">35 days of drug stock</span>
+        
+        <div class="card-row">
+          <span class="light float-right">19 tablets</span>
+          <h6>Chlorthalidone 12.5 mg</h6>  
+        </div>
+        <div class="card-row">
+          <span class="light float-right">200 tablets</span>
+          <h6>Chlorthalidone 25 mg</h6>  
+        </div>
+      </div>
+      
+      <div class="button-fixed-bottom">
+        <button onclick="closeWindow('drug-stock-submitted', 'progress-start'); return false" class="button">DONE</button>
+      </div>
+      
+  </div>
 </div>
 
 <div id="progress-cohort" class="progress-body" style="display: none;">
@@ -242,26 +444,22 @@
             <%= inline_svg('icon_back.svg') %>
         </a>
 
-        <h2 style="padding-top: 80px; padding-left: 8px;"><%= raw t("analytics.hypertension_cohort_report") %></h2>
-        <p class="left"><%= raw t("analytics.hypertension_cohort_report_desc") %></p>
+        <h2 style="padding-top: 80px; padding-left: 8px;"><%= t("analytics.hypertension_cohort_report") %></h2>
+        <p class="left"><%= t("analytics.hypertension_cohort_report_desc") %></p>
         <div class="key">
-            <p class="left" style="color: #007A31;"><span class="key-color green"></span> <%= raw t("analytics.patients_with_controlled_bp") %></p>
-            <p class="left" style="color: #FF3355;"><span class="key-color red"></span> <%= raw t("analytics.patients_with_uncontrolled_bp") %></p>
-            <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> <%= raw t("analytics.patients_with_no_bp_measure") %></p>
+            <p class="left" style="color: #007A31;"><span class="key-color green"></span> <%= t("analytics.patients_with_controlled_bp") %></p>
+            <p class="left" style="color: #FF3355;"><span class="key-color red"></span> <%= t("analytics.patients_with_uncontrolled_bp") %></p>
+            <p class="left" style="color: #6C737A;"><span class="key-color grey"></span> <%= t("analytics.patients_with_no_bp_measure") %></p>
         </div>
 
         <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
           <div class="card cohort">
-              <h6>
-                <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>&nbsp;
-                <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
-              </h6>
-
-              <div style="font-size: 16px; margin: 8px 0 12px 0;">  <%= raw t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %></div>
+              <h6><%= cohort[:registered] %> <%= t("analytics.patient", count: cohort[:registered]) %> <%= t("analytics.registered_in") %> <%= cohort[:patients_registered] %></h6>
+              <div style="font-size: 16px; margin: 8px 0 12px 0;">  <%= t("analytics.result_from_last_visit_in") %> <%= cohort[:results_in] %></div>
               <table class="cohort-bars">
                   <tr>
                     <% if cohort[:registered].zero? %>
-                      <td class="cohort-none"> <%= raw t("analytics.no_patients") %></td>
+                      <td class="cohort-none"> <%= t("analytics.no_patients") %></td>
                     <% else %>
                       <td class="cohort-nobp" style="width: <%= @user_analytics.cohort_no_bp(cohort) %>;">
                         <%= @user_analytics.cohort_no_bp(cohort) %>
@@ -278,11 +476,11 @@
           </div>
         <% end %>
 
-        <h3 style="padding-top: 40px; padding-left: 8px;"> <%= raw t("analytics.notes") %></h3>
+        <h3 style="padding-top: 40px; padding-left: 8px;"> <%= t("analytics.notes") %></h3>
         <ul class="footnotes">
-            <li><strong> <%= raw t("analytics.numerator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_1") %></li>
-            <li><strong> <%= raw t("analytics.denominator") %>:</strong> <%= raw t("analytics.cohort_report_footnote_2") %></li>
-            <li><%= raw t("analytics.cohort_report_footnote_3") %></li>
+            <li><strong> <%= t("analytics.numerator") %>:</strong> <%= t("analytics.cohort_report_footnote_1") %></li>
+            <li><strong> <%= t("analytics.denominator") %>:</strong> <%= t("analytics.cohort_report_footnote_2") %></li>
+            <li><%= t("analytics.cohort_report_footnote_3") %></li>
         </ul>
     </div>
 </div>
