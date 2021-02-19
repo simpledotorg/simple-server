@@ -31,9 +31,6 @@ class Reports::RegionsController < AdminController
 
   def show
     @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
-    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
-    @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
-    @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
     @with_ltfu = with_ltfu?
 
     @children = @region.reportable_children
@@ -62,6 +59,12 @@ class Reports::RegionsController < AdminController
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
                                                        prev_periods: 6,
                                                        include_current_period: true)
+    @chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
+      ltfu_trend: Reports::RegionService.new(region: @region,
+                                             period: @period,
+                                             with_exclusions: report_with_exclusions?).call
+    }
 
     region_source = @region.source
     if region_source.respond_to?(:recent_blood_pressures)
