@@ -40,5 +40,65 @@ describe MergeDuplicatePatients do
       expect(new_patient.prescription_drugs.count).to eq(patient_blue.prescription_drugs.count + patient_red.prescription_drugs.count)
       expect(with_comparable_attributes(new_patient.prescribed_drugs)).to match_array(with_comparable_attributes(patient_red.prescribed_drugs))
     end
+
+    it "merges medical histories" do
+      earlier_medical_history = create(:medical_history,
+        prior_heart_attack_boolean: true,
+        prior_stroke_boolean: false,
+        chronic_kidney_disease_boolean: nil,
+        receiving_treatment_for_hypertension_boolean: nil,
+        diabetes_boolean: nil,
+        diagnosed_with_hypertension_boolean: nil,
+        prior_heart_attack: "yes",
+        prior_stroke: "no",
+        chronic_kidney_disease: "unknown",
+        receiving_treatment_for_hypertension: "no",
+        diabetes: "no",
+        diagnosed_with_hypertension: "no",
+        hypertension: "no",
+        device_created_at: 1.month.ago,
+        device_updated_at: 1.month.ago,
+        created_at: 1.month.ago,
+        updated_at: 1.month.ago)
+
+      later_medical_history = create(:medical_history,
+        prior_heart_attack_boolean: true,
+        prior_stroke_boolean: nil,
+        chronic_kidney_disease_boolean: nil,
+        receiving_treatment_for_hypertension_boolean: nil,
+        diabetes_boolean: false,
+        device_created_at: 1.month.ago,
+        device_updated_at: 1.month.ago,
+        created_at: 1.month.ago,
+        updated_at: 1.month.ago,
+        diagnosed_with_hypertension_boolean: nil,
+        prior_heart_attack: "no",
+        prior_stroke: "no",
+        chronic_kidney_disease: "no",
+        receiving_treatment_for_hypertension: "no",
+        diabetes: "yes",
+        diagnosed_with_hypertension: "no",
+        hypertension: "no")
+
+      new_patient = described_class.new([earlier_medical_history.patient, later_medical_history.patient]).merge
+      expect(new_patient.medical_history.attributes.with_indifferent_access).to include(
+        prior_heart_attack_boolean: true,
+        prior_stroke_boolean: false,
+        chronic_kidney_disease_boolean: nil,
+        receiving_treatment_for_hypertension_boolean: nil,
+        diabetes_boolean: false,
+        diagnosed_with_hypertension_boolean: nil,
+        prior_heart_attack: "yes",
+        prior_stroke: "no",
+        chronic_kidney_disease: "no",
+        receiving_treatment_for_hypertension: "no",
+        diabetes: "yes",
+        diagnosed_with_hypertension: "no",
+        hypertension: "no",
+        user_id: later_medical_history.user.id,
+        device_created_at: later_medical_history.device_created_at,
+        device_updated_at: later_medical_history.device_updated_at
+      )
+    end
   end
 end
