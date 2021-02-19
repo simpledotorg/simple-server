@@ -7,8 +7,6 @@ en:
       default: "%d-%^b-%Y %I:%M %p"
   errors:
     messages:
-      password:
-        password_strength: "Password must be at least 10 characters long and contain a lower case letter, an upper case letter, and a number."
       already_confirmed: "was already confirmed, please try signing in"
       confirmation_period_expired: "needs to be confirmed within %{period}, please request a new one"
       expired: "has expired, please request a new one"

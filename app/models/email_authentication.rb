@@ -24,17 +24,4 @@ class EmailAuthentication < ApplicationRecord
   validates :password,
     format: {with: /(?=.*\d)/, message: "must contain at least one number"},
     allow_nil: true
-
-  after_validation :strip_unnecessary_errors
-
-  private
-
-  # We only want to display one error message to the user, so if we get multiple
-  # errors clear out all errors and present our nice message to the user.
-  def strip_unnecessary_errors
-    if errors[:password].any? && errors[:password].size > 1
-      errors.delete(:password)
-      errors.add(:password, I18n.translate("errors.messages.password.password_strength"))
-    end
-  end
 end
