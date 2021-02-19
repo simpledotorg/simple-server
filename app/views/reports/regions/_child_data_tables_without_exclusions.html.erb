@@ -1,0 +1,278 @@
+<h3 class="mt-48px mb-8px fs-28px c-black">
+  <%= region_type.capitalize.pluralize %> in <%= @region.name %>
+</h3>
+<p class="mb-24px fs-16px c-grey-dark c-print-black">
+  <span class="fw-bold">Total:</span> <%= pluralize(data.count, region_type, locale: :en) %>
+</p>
+<div class="d-lg-flex flex-lg-wrap">
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3 class="mb-8px c-black">
+          BP controlled
+        </h3>
+      </div>
+      <div class="table-responsive">
+        <table id="htn-controlled-table" class="table-compact">
+          <colgroup>
+            <col class="w-lg-120px">
+            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
+          </colgroup>
+          <thead>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-left">
+              <%= region_type.capitalize %>
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+              % of patients with BP controlled
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+              Total patients with BP controlled
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="row-total" data-sort-method="none">
+            <td class="type-title">
+              <%= @region.name %>
+            </td>
+            <td class="ta-left">
+              <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
+            </td>
+          </tr>
+          <% data.each do |result| %>
+            <% next if result.dig("controlled_patients_rate", @period).nil? %>
+            <tr>
+              <td class="ta-left">
+                <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                  <%= result.region.name %>
+                <% end %>
+              </td>
+              <td class="ta-left">
+                <%= number_to_percentage(result["controlled_patients_rate"].values.last, precision: 0) %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(result["controlled_patients"].values.last) %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="pt-12px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black ">
+          <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black ">
+          <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3 class="mb-8px c-black">
+          BP not controlled
+        </h3>
+      </div>
+      <div class="table-responsive">
+        <table id="htn-not-under-control-table" class="table-compact">
+          <colgroup>
+            <col class="w-lg-120px">
+            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
+          </colgroup>
+          <thead>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-left">
+              <%= region_type.capitalize %>
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+              % of patients with BP not controlled
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+              Total patients with BP not controlled
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="row-total" data-sort-method="none">
+            <td class="type-title">
+              <%= @region.name %>
+            </td>
+            <td class="ta-left">
+              <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
+            </td>
+          </tr>
+          <% data.each do |result| %>
+            <% next if result.dig("uncontrolled_patients_rate", @period).nil? %>
+            <tr>
+              <td class="ta-left">
+                <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                  <%= result.region.name %>
+                <% end %>
+              </td>
+              <td class="ta-left">
+                <%= number_to_percentage(result["uncontrolled_patients_rate"].values.last, precision: 0) %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(result["uncontrolled_patients"].values.last) %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="pt-12px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black ">
+          <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black ">
+          <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pr-lg-2">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3 class="c-black">
+          Missed visits
+        </h3>
+      </div>
+      <div class="table-responsive">
+        <table id="no-bp-measure-table" class="table-compact">
+          <colgroup>
+            <col class="w-lg-120px">
+            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
+          </colgroup>
+          <thead>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-left">
+              <%= region_type.capitalize %>
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+              % of patients with no visit in >3 months
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+              Total patients with no visit in >3 months
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="row-total" data-sort-method="none">
+            <td class="type-title">
+              <%= @region.name %>
+            </td>
+            <td class="ta-left">
+              <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
+            </td>
+          </tr>
+          <% data.each do |result| %>
+            <% next if result.dig("missed_visits_rate", @period).nil? %>
+            <tr>
+              <td class="ta-left">
+                <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                  <%= result.region.name %>
+                <% end %>
+              </td>
+              <td class="ta-left">
+                <%= result["missed_visits_rate"].values.last %>%
+              </td>
+              <td class="ta-left">
+                <%= result["missed_visits"].values.last %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="pt-12px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black ">
+          <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black ">
+          <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex w-lg-50 pl-lg-2">
+    <div class="card d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0">
+      <div class="mb-2">
+        <h3 class="c-black">
+          Monthly and cumulative registrations
+        </h3>
+      </div>
+      <div class="table-responsive">
+        <table id="cumulative-registrations-table" class="table-compact">
+          <colgroup>
+            <col class="w-lg-120px">
+            <col class="table-divider">
+            <col class="table-divider w-lg-200px">
+          </colgroup>
+          <thead>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-left">
+              <%= region_type.capitalize %>
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number" data-sort-default>
+              Patients registered in <%= @period.to_s %>
+            </th>
+            <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+              Total registered patients
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="row-total" data-sort-method="none">
+            <td class="type-title">
+              <%= @region.name %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(@data.last_value(:registrations)) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
+            </td>
+          </tr>
+          <% data.each do |result| %>
+            <% next if result.dig("registrations", @period).nil? %>
+            <tr>
+              <td class="ta-left">
+                <%= link_to(reports_region_path(result.region, report_scope: region_type))do %>
+                  <%= result.region.name %>
+                <% end %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(result["registrations"].values.last || 0) %>
+              </td>
+              <td class="ta-left">
+                <%= number_with_delimiter(result["cumulative_registrations"].values.last) %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mb-2 pt-12px">
+        <p class="us-none fs-14px c-transparent">
+          <br>
+          <br>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

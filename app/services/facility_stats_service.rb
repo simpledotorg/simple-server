@@ -30,16 +30,17 @@ class FacilityStatsService
     size = facility_data.region.source.facility_size
     add_size_section(size) unless stats_by_size[size]
     periods.each do |period|
-      current_period = stats_by_size[size][period]
+      current_period = stats_by_size[size][:periods][period]
       current_period[rate_numerator] += facility_data.dig(rate_numerator, period) || 0
       current_period[:adjusted_registrations] += facility_data[:adjusted_registrations][period]
       current_period[:cumulative_registrations] += facility_data[:cumulative_registrations][period]
+      current_period[:cumulative_assigned_patients] += facility_data[:cumulative_assigned_patients][period]
     end
   end
 
   def calculate_percentages
     stats_by_size.values.each do |size_data|
-      size_data.values.each do |period_stats|
+      size_data[:periods].values.each do |period_stats|
         adjusted_registrations = period_stats["adjusted_registrations"]
         next if adjusted_registrations == 0 || period_stats[rate_numerator] == 0
         period_stats[rate_name] = (period_stats[rate_numerator].to_f / adjusted_registrations.to_f * 100).round
@@ -48,7 +49,9 @@ class FacilityStatsService
   end
 
   def add_size_section(size)
-    stats_by_size[size] = size_data_template
+    stats_by_size[size] = {
+      periods: size_data_template
+    }
   end
 
   def size_data_template
@@ -57,6 +60,7 @@ class FacilityStatsService
         rate_numerator => 0,
         "adjusted_registrations" => 0,
         "cumulative_registrations" => 0,
+        "cumulative_assigned_patients" => 0,
         rate_name => 0
       }.with_indifferent_access
     end

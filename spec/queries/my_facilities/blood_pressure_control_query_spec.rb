@@ -479,6 +479,12 @@ RSpec.describe BloodPressureControlQuery do
           user: user)
       end
 
+      let!(:ltfu_patient) do
+        create(:patient,
+          assigned_facility: assigned_facility,
+          recorded_at: 2.years.ago)
+      end
+
       before do
         ActiveRecord::Base.transaction do
           LatestBloodPressuresPerPatientPerMonth.refresh
@@ -493,7 +499,8 @@ RSpec.describe BloodPressureControlQuery do
               patient_without_recent_bp,
               patients_with_uncontrolled_bp,
               patients_with_missed_visit,
-              old_patient)
+              old_patient,
+              ltfu_patient)
           end
 
           context "when with_exclusions is true" do
@@ -501,6 +508,11 @@ RSpec.describe BloodPressureControlQuery do
               patient_with_recent_bp.update(status: :dead)
 
               expect(described_class.new(with_exclusions: true).overall_patients).not_to include(patient_with_recent_bp)
+            end
+
+            it "excludes LTFU patients" do
+              expect(described_class.new(with_exclusions: false).overall_patients).to include(ltfu_patient)
+              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(ltfu_patient)
             end
           end
         end
@@ -518,7 +530,8 @@ RSpec.describe BloodPressureControlQuery do
                 patient_without_recent_bp,
                 patients_with_uncontrolled_bp,
                 patients_with_missed_visit,
-                old_patient].length)
+                old_patient,
+                ltfu_patient].length)
             end
           end
 

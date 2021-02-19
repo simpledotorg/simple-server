@@ -59,7 +59,7 @@ class MissedVisitsQuery
   def total_patients_per_facility
     @total_patients_per_facility ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports(with_exclusions: @with_exclusions, exclude_ltfu_as_of: Date.today)
         .where(assigned_facility: facilities)
         .group(:assigned_facility_id)
         .count

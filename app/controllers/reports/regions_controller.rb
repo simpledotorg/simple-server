@@ -30,10 +30,8 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period).call
-    @last_registration_value = @data[:cumulative_registrations].values&.last || 0
-    @new_registrations = @last_registration_value - (@data[:cumulative_registrations].values[-2] || 0)
-    @adjusted_registration_date = @data[:adjusted_registrations].keys[-4]
+    @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
+    @with_ltfu = with_ltfu?
 
     @children = @region.reportable_children
     @children_data = @children.map { |child|
@@ -50,6 +48,12 @@ class Reports::RegionsController < AdminController
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
                                                        prev_periods: 6,
                                                        include_current_period: true)
+    @chart_data = {
+      patient_breakdown: PatientBreakdownService.call(region: @region),
+      ltfu_trend: Reports::RegionService.new(region: @region,
+                                             period: @period,
+                                             with_exclusions: report_with_exclusions?).call
+    }
 
     region_source = @region.source
     if region_source.respond_to?(:recent_blood_pressures)
@@ -106,6 +110,7 @@ class Reports::RegionsController < AdminController
   private
 
   def accessible_region?(region, action)
+    return false unless region.reportable_region?
     current_admin.region_access(memoized: true).accessible_region?(region, action)
   end
 
@@ -175,6 +180,10 @@ class Reports::RegionsController < AdminController
 
   def report_with_exclusions?
     current_admin.feature_enabled?(:report_with_exclusions)
+  end
+
+  def with_ltfu?
+    current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
   end
 
   def log_cache_metrics
