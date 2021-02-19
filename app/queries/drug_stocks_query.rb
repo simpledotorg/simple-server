@@ -109,18 +109,23 @@ class DrugStocksQuery
     facility_report
   end
 
-  def drug_attribute_sum(for_end_of_month, attribute)
+  def drug_attribute_sum_by_rxnorm_code(for_end_of_month, attribute)
     drug_stocks = DrugStock.latest_for_facilities(@facilities, for_end_of_month)
 
     # remove the pluck here
-    DrugStock.where({drug_stocks: {id: drug_stocks.pluck(:id)}}).group(:protocol_drug).sum(attribute)
+    DrugStock
+      .where({drug_stocks: {id: drug_stocks.pluck(:id)}})
+      .group(:protocol_drug)
+      .sum(attribute)
+      .map { |(protocol_drug, attribute_sum)| [protocol_drug.rxnorm_code, {attribute => attribute_sum}] }
+      .to_h
   end
 
   def drug_stock_totals
     total_patient_count = patient_counts.values&.sum
     report_all = {patient_count: total_patient_count}
-    total_drug_stocks_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
-    total_drug_stocks_by_id = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.id, in_stock] }.to_h
+    total_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :in_stock)
+    total_drug_stocks_by_id = drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :in_stock)
 
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
       patient_days = Reports::DrugStockCalculation.new(
@@ -137,12 +142,13 @@ class DrugStocksQuery
   end
 
   def drug_consumption_totals
-    report_all = {}
-    total_previous_month_drug_stocks_by_rxnorm_code = drug_attribute_sum(end_of_previous_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
-    total_drug_stocks_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :in_stock).map { |(protocol_drug, in_stock)| [protocol_drug.rxnorm_code, {in_stock: in_stock}] }.to_h
-    total_drug_received_by_rxnorm_code = drug_attribute_sum(@for_end_of_month, :received).map { |(protocol_drug, received)| [protocol_drug.rxnorm_code, {received: received}] }.to_h
+    total_patient_count = patient_counts.values&.sum
+    report_all = {patient_count: total_patient_count}
+    total_previous_month_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(end_of_previous_month, :in_stock)
+    total_drug_stocks_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :in_stock)
+    total_drug_received_by_rxnorm_code = drug_attribute_sum_by_rxnorm_code(@for_end_of_month, :received)
 
-    total_previous_month_drug_stocks_by_rxnorm_code = total_previous_month_drug_stocks_by_rxnorm_code.deep_merge(total_drug_received_by_rxnorm_code)
+    total_drug_stocks_by_rxnorm_code = total_drug_stocks_by_rxnorm_code.deep_merge(total_drug_received_by_rxnorm_code)
 
     protocol_drugs_by_category.each do |(drug_category, _protocol_drugs)|
       consumption = Reports::DrugStockCalculation.new(
@@ -160,7 +166,10 @@ class DrugStocksQuery
 
   def stocks_by_rxnorm_code(drug_stocks)
     drug_stocks&.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock
+      acc[drug_stock.protocol_drug.rxnorm_code] =
+        drug_stock
+          .as_json
+          .with_indifferent_access
     }
   end
 

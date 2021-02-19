@@ -1,8 +1,8 @@
 <div>
   <% return nil if report.nil? || report[:total] == "error" %>
-
-  <% report[:drugs].each_with_index do |drug, i| %>
-    <span class='math'><%= '+' unless i == 0 %><%= drug[:consumption] %>*<%= drug[:coefficient] %></span>
+  <% drugs = report[:drugs].reject {|drug| drug.nil? || drug[:consumed] == "error"} %>
+  <% drugs.each_with_index do |drug, i| %>
+    <span class='math'><%= '+' unless i == 0 %><%= drug[:consumed] %>*<%= drug[:coefficient] %></span>
     <%= drug[:name] %>
     <br>
   <% end %>
