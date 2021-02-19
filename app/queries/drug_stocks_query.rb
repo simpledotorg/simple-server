@@ -81,7 +81,7 @@ class DrugStocksQuery
   end
 
   def drug_consumption_for_category(drug_category, selected_month_drug_stocks, previous_month_drug_stocks)
-    consumption = Reports::DrugStockCalculation.new(
+    Reports::DrugStockCalculation.new(
       state: @state,
       protocol: @protocol,
       drug_category: drug_category,
