@@ -1,5 +1,5 @@
 class AssignedPatientsQuery
-  # Returns ALL registration counts for a region
+  # Returns ALL assigned counts for a region
   def count(region, type, with_exclusions: false)
     formatter = lambda { |v| type == :quarter ? Period.quarter(v) : Period.month(v) }
 
