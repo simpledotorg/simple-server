@@ -136,6 +136,42 @@ a.help-back {
 
 .card {
     position: relative;
+    
+    .card-row {
+      border-top: 1px solid $grey-lightest;
+      padding: 16px 0 0 0;
+      margin: 16px 0 0 0;
+    }
+    
+    h6 {
+      font-size: 18px;
+      font-weight: normal;
+      margin: 0 0 8px 0;
+    }
+}
+
+.float-right {
+  float: right;
+}
+
+.light {
+  color: $grey-mid;
+}
+
+.text-green {
+  color: $green;
+}
+
+.text-yellow {
+  color: $yellow-dark;
+}
+
+.text-orange {
+  color: $orange;
+}
+
+.text-red {
+  color: $red;
 }
 
 .day {
@@ -609,4 +645,67 @@ footer p {
 
 .day {
   min-height: 250px;
+}
+
+.form-group {
+  padding: 1.5em 8px;
+  
+  label {
+    display: block;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+  }
+  small {
+    display: block;
+    margin: 6px 0 0 0;
+    opacity: 0.8;
+  }
+}
+
+.form-row {
+  display: flex;
+}
+
+.col {
+  flex-wrap: nowrap;
+  width: 45%;
+  margin-right: 5%;
+}
+
+input.form-control {
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+  border: none;
+}
+
+.button {
+  display: block;
+  padding: 16px;
+  text-align: center;
+  background: #E0F0FF;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold !important;
+  border: none;
+  box-shadow: 0 2px 1px rgba(0,0,0,.16), 0 2px 0 #9CC8F3;
+  color: #0075EB !important;
+}
+
+.button-fixed-bottom {
+  background: #F3F9FF;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 -2px 3px rgba(0,0,0,.16);
+  
+  .button {
+    width: 100%;
+  }
 }
