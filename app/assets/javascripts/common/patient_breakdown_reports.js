@@ -122,13 +122,14 @@ PatientBreakdownReports = function () {
   this.initializePatientBreakdownChart = () => {
     const data = this.getPatientBreakdownData();
 
-    const chartLabelDescriptions = {
-      "ltfu_patients": "Lost to follow-up",
-      "not_ltfu_patients": "Not lost to follow-up",
-      "dead_patients": "Died"
+    const chartSegments = {
+      "ltfu_patients": { "description" : "Lost to follow-up", color: reports.darkBlueColor},
+      "not_ltfu_patients": { "description": "Not lost to follow-up", color: reports.mediumGreenColor},
+      "dead_patients": {"description": "Died", color: reports.mediumRedColor}
     }
-    const chartLabels = Object.keys(chartLabelDescriptions)
-    const chartData = chartLabels.map(el => data[el]).filter(el => el !== 0)
+
+    const chartLabels = Object.keys(chartSegments).filter(el => data[el] !== 0)
+    const chartData = chartLabels.map(el => data[el])
     const transferredPatients = {
       ltfu_patients: data["ltfu_transferred_patients"],
       not_ltfu_patients: data["not_ltfu_transferred_patients"],
@@ -142,11 +143,7 @@ PatientBreakdownReports = function () {
         borderColor: this.whiteColor,
         borderWidth: 1,
         data: chartData,
-        backgroundColor: [
-          reports.darkBlueColor,
-          reports.mediumGreenColor,
-          reports.mediumRedColor
-        ]
+        backgroundColor: chartLabels.map(label => chartSegments[label]["color"])
       }]
     };
     breakdownChartConfig.options.layout.padding.left = 30;
@@ -165,7 +162,7 @@ PatientBreakdownReports = function () {
       callbacks: {
         title: ([tooltipItem], tooltipData) => {
           const label = tooltipData.labels[tooltipItem.index];
-          return chartLabelDescriptions[label];
+          return chartSegments[label]["description"];
         },
         label: (tooltipItem, tooltipData) => {
           const label = tooltipData.labels[tooltipItem.index];

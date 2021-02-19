@@ -81,7 +81,7 @@
                                     "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle") } %>
         </div>
         <p class="mb-0px c-grey-dark mr-lg-12px"><%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
-          hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
+          hypertension patients assigned to <%= @region.name %> as of <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %></p>
       </div>
       <div class="p-relative mb-16px d-lg-flex">
         <div class="w-360px h-360px">

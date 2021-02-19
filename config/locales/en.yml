@@ -57,7 +57,7 @@ en:
   visit_but_no_bp_taken_copy:
     numerator: "Patients with no BP taken at their last visit in the last 3 months."
   lost_to_follow_up_copy:
-    reports_card_subtitle: "Hypertension patients with no BP taken in the last 12 months"
+    reports_card_subtitle: "Hypertension patients with no BP taken in the last 12 months."
     numerator: "Patients with no BP taken in the last 12 months."
   registered_patients_copy:
     reports_card_subtitle: "Monthly and total hypertension patients registered in %{region_name}"

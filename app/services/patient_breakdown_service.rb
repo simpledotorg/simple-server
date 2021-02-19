@@ -5,8 +5,9 @@ class PatientBreakdownService
     new(*args).call
   end
 
-  def initialize(region:)
+  def initialize(region:, period: Period.month(Time.current))
     @region = region
+    @period = period
     @facilities = region.facilities
   end
 
@@ -15,15 +16,15 @@ class PatientBreakdownService
 
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
+      breakdown_date = @period.start_date
       patients = Patient.with_hypertension.where(assigned_facility: facilities)
-      now = Time.current
 
       {
         dead_patients: patients.status_dead.count,
-        ltfu_patients: patients.excluding_dead.ltfu_as_of(now).count,
-        not_ltfu_patients: patients.excluding_dead.not_ltfu_as_of(now).count,
-        ltfu_transferred_patients: patients.ltfu_as_of(now).status_migrated.count,
-        not_ltfu_transferred_patients: patients.not_ltfu_as_of(now).status_migrated.count,
+        ltfu_patients: patients.excluding_dead.ltfu_as_of(breakdown_date).count,
+        not_ltfu_patients: patients.excluding_dead.not_ltfu_as_of(breakdown_date).count,
+        ltfu_transferred_patients: patients.ltfu_as_of(breakdown_date).status_migrated.count,
+        not_ltfu_transferred_patients: patients.not_ltfu_as_of(breakdown_date).status_migrated.count,
         total_patients: patients.count
       }
     }
