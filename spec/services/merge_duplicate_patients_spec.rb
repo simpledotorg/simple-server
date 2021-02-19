@@ -15,8 +15,7 @@ end
 
 def with_comparable_attributes(related_entities)
   related_entities.map do |entity|
-    # entity.attributes.with_indifferent_access.except(:id, :patient_id, :created_at, :updated_at)
-    entity.name
+    entity.attributes.with_indifferent_access.except(:id, :patient_id, :created_at, :updated_at)
   end
 end
 

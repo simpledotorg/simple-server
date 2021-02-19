@@ -37,11 +37,14 @@ class MergeDuplicatePatients
   end
 
   def create_prescription_drugs(patient)
-    all_prescription_drugs = PrescriptionDrug.where(patient_id: @patients)
-    all_prescription_drugs = (all_prescription_drugs.all - latest_patient.prescribed_drugs).each { |pd| pd.is_deleted = true; pd }
-    all_prescription_drugs += latest_patient.prescribed_drugs
+    current_prescription_drugs = latest_patient.prescribed_drugs
+    old_prescription_drugs =
+      PrescriptionDrug
+        .where(patient_id: @patients)
+        .where.not(id: current_prescription_drugs)
 
-    all_prescription_drugs.map do |prescription_drug|
+    old_prescription_drugs.each { |pd| pd.is_deleted = true }
+    (current_prescription_drugs + old_prescription_drugs).map do |prescription_drug|
       PrescriptionDrug.create(prescription_drug.attributes.merge(
         id: SecureRandom.uuid,
         patient_id: patient.id
