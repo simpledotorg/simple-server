@@ -49,7 +49,7 @@ class Reports::RegionsController < AdminController
                                                        prev_periods: 6,
                                                        include_current_period: true)
     @chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region),
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
       ltfu_trend: Reports::RegionService.new(region: @region,
                                              period: @period,
                                              with_exclusions: report_with_exclusions?).call
