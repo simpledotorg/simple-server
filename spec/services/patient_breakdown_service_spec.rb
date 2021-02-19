@@ -17,8 +17,6 @@ RSpec.describe PatientBreakdownService do
       not_ltfu_transferred_patient = create(:patient, :hypertension, status: :migrated, assigned_facility: facility)
       dead_patient = create(:patient, :hypertension, status: :dead, assigned_facility: facility)
       not_hypertensive_patient = create(:patient, :without_hypertension, assigned_facility: facility)
-      create(:blood_pressure, recorded_at: 1.day.ago, patient: not_ltfu_patient)
-      create(:blood_pressure, recorded_at: 1.day.ago, patient: not_ltfu_transferred_patient)
 
       expected_result = {
         dead_patients: 1,

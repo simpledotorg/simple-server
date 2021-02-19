@@ -17,7 +17,7 @@
           <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
           <strong>Denominator:</strong>
           <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-            <%= t("denominator_copy", region_name: "each facility") %>
+            <%= t("denominator_excluding_ltfu_copy", region_name: "each facility") %>
           <% else %>
             <%= t("denominator_without_exclusions_copy", region_name: "each facility") %>
           <% end %>
