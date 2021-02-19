@@ -83,11 +83,7 @@ class ControlRateService
   def assigned_patients_counts
     return @assigned_patients_counts if defined? @assigned_patients_counts
 
-    @assigned_patients_counts =
-      region.assigned_patients
-        .for_reports(with_exclusions: with_exclusions)
-        .group_by_period(period_type, :recorded_at, {format: group_date_formatter})
-        .count
+    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type, with_exclusions: with_exclusions)
   end
 
   def ltfu_patients(period)
