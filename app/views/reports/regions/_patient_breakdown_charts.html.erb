@@ -6,23 +6,18 @@
           <h3 class="mb-0px mr-8px">
             Lost to follow-up
           </h3>
-          <span class="p-relative t-1px">
-            <i
-              class="fas fa-question-circle fs-14px c-grey-dark"
-              data-toggle="tooltip"
-              data-placement="right"
-              data-trigger="hover click"
-              data-html="true"
-              title="<p class='mb-4px'><strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %></p><p class='mb-0px'><strong>Denominator:</strong> <%= t("ltfu_denominator_copy", region_name: @region.name) %></p>"
-            >
-            </i>
-          </span>
+          <%= render "definition_tooltip",
+                     definitions: { "Numerator" => t("lost_to_follow_up_copy.numerator"),
+                                    "Denominator" => t("ltfu_denominator_copy", region_name: @region.name) } %>
         </div>
         <p class="c-grey-dark">
           <%= t("lost_to_follow_up_copy.reports_card_subtitle") %>
         </p>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-blue-dark<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
+          <p class="mb-0px fs-32px fw-bold
+            <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>c-blue-dark
+            <% else %>c-grey-medium
+            <% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>">
             <% if @chart_data[:ltfu_trend].last_value(:ltfu_patients_rate) %>
               <%= number_to_percentage(@chart_data[:ltfu_trend].last_value(:ltfu_patients_rate), precision: 0) %>
             <% else %>
@@ -81,19 +76,12 @@
           <h3 class="mb-0px mr-8px">
             Assigned patients breakdown
           </h3>
-          <span class="p-relative t-1px">
-            <i
-              class="fas fa-question-circle fs-14px c-grey-dark"
-              data-toggle="tooltip"
-              data-placement="right"
-              data-trigger="hover click"
-              data-html="true"
-              title="<p class='mb-4px'><strong>Not lost to follow-up:</strong> <%= t("not_lost_to_follow_up_copy") %></p><p class='mb-0px'><strong>Lost to follow-up:</strong> <%= t("lost_to_follow_up_copy.reports_card_subtitle") %></p>"
-            >
-            </i>
-          </span>
+          <%= render "definition_tooltip",
+                     definitions: { "Not lost to follow-up" => t("not_lost_to_follow_up_copy"),
+                                    "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle") } %>
         </div>
-        <p class="mb-0px c-grey-dark mr-lg-12px"><%=number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %> hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
+        <p class="mb-0px c-grey-dark mr-lg-12px"><%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
+          hypertension patients assigned to <%= @region.name %> as of <%= @period.to_s %></p>
       </div>
       <div class="p-relative mb-16px d-lg-flex">
         <div class="w-360px h-360px">
