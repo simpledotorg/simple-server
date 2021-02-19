@@ -47,6 +47,7 @@
             <%= bootstrap_form_with(model: form_model) do |form| %>
                 <%= form.hidden_field :selected_facility_id, value: @facility_id %>
                 <%= form.hidden_field :page, value: @page %>
+                <%= form.hidden_field :search_filters, value: @search_filters %>
                 <%= form.select :call_result,
                     call_result_options,
                     {
