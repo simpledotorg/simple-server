@@ -108,8 +108,8 @@
                          user_analytics: @user_analytics,
                          data_table_name: follow_ups_table_name } %>
   </div>
-  
-  <!-- drug stock --> 
+
+  <!-- drug stock -->
   <div class="card">
       <h3>Drug stock report</h3>
       <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of Feb-2021</p>
@@ -117,9 +117,9 @@
         Submit Drug Stock
       </a>
   </div>
-  
-  
-    
+
+
+
   <!-- monthly hypertension control view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info"><span>?</span></a>
@@ -254,7 +254,9 @@
     </a>
     <h2 style="padding-top: 80px; padding-left: 8px;">Number of tablets</h2>
     <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
-    
+
+    <%= form_for(api_v3_analytics_user_analytics_path(format: :html)) do |f| %>
+
     <div class="form-group mt-4">
       <label for="drug-stock-date">Drug stock report for:</label>
       <div class="form-row">
@@ -264,22 +266,22 @@
           </option>
         </select>
       </div>
-      
+
     </div>
-      
+
     <div class="form-group mt-4">
         <label for="a-medicationAmlodipine5mg">Amlodipine 5 mg</label>
         <div class="form-row">
           <div class="col">
-          <input type="number" class="form-control" id="a-medicationAmlodipine5mg">
+          <input type="number" name="med1-received" class="form-control" id="a-medicationAmlodipine5mg">
           <small id="a-medicationAmlodipine5mg" class="form-text text-muted">Received during the month</small>
           </div>
           <div class="col">
-            <input type="number" class="form-control" id="b-medicationAmlodipine5mg">
+            <input type="number" name="med1-stock" class="form-control" id="b-medicationAmlodipine5mg">
             <small id="b-medicationAmlodipine5mg" class="form-text text-muted">Stock at end of the month</small>
           </div>
         </div>
-        
+
     </div>
     <div class="form-group mt-4">
         <label for="a-medicationAmlodipine10mg">Amlodipine 10 mg</label>
@@ -293,9 +295,9 @@
             <small id="b-medicationAmlodipine10mg" class="form-text text-muted">Stock at end of the month</small>
           </div>
         </div>
-        
+
     </div>
-    
+
     <div class="form-group mt-4">
         <label for="a-Telmisartin20mg">Telmisartin 20 mg</label>
         <div class="form-row">
@@ -308,9 +310,9 @@
             <small id="b-Telmisartin20mg" class="form-text text-muted">Stock at end of the month</small>
           </div>
         </div>
-        
+
     </div>
-    
+
     <div class="form-group mt-4">
         <label for="a-Telmisartin40mg">Telmisartin 40 mg</label>
         <div class="form-row">
@@ -323,9 +325,9 @@
             <small id="b-Telmisartin40mg" class="form-text text-muted">Stock at end of the month</small>
           </div>
         </div>
-        
+
     </div>
-    
+
     <div class="form-group mt-4">
         <label for="a-Losartan50mg">Losartan 50 mg</label>
         <div class="form-row">
@@ -339,7 +341,7 @@
           </div>
         </div>
     </div>
-    
+
     <div class="form-group mt-4">
         <label for="a-Hydrochlorathiazide125mg">Hydrochlorathiazide 12.5 mg</label>
         <div class="form-row">
@@ -353,7 +355,7 @@
           </div>
         </div>
     </div>
-    
+
     <div class="form-group mt-4">
         <label for="a-Hydrochlorathiazide25mg">Hydrochlorathiazide 25 mg</label>
         <div class="form-row">
@@ -367,9 +369,13 @@
           </div>
         </div>
     </div>
+
     <div class="button-fixed-bottom">
+      <%= f.submit "SAVE" %>
+
       <button onclick="openWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="button">SAVE</button>
     </div>
+    <% end %>
   </div>
 </div>
 
@@ -384,57 +390,57 @@
         <h2>Submitted!</h2>
         <p>We automatically estimated how many days of drug stock remain, based on the number of patients registered at your facility.</p>
       </div>
-      
+
       <div class="card">
         <h3 style="margin-bottom: 8px;">ARB tablets</h3>
         <span class="text-green">245 days of drug stock</span>
-        
+
         <div class="card-row">
           <span class="light float-right">1456 tablets</span>
-          <h6>Amlodipine 5 mg</h6>  
+          <h6>Amlodipine 5 mg</h6>
         </div>
         <div class="card-row">
           <span class="light float-right">1456 tablets</span>
-          <h6>Amlodipine 10 mg</h6>  
+          <h6>Amlodipine 10 mg</h6>
         </div>
       </div>
-      
+
       <div class="card">
         <h3 style="margin-bottom: 8px;">CCB tablets</h3>
         <span class="text-red">1 day of drug stock</span>
-        
+
         <div class="card-row">
           <span class="light float-right">&#8212;</span>
-          <h6>Losartan 50 mg</h6>  
+          <h6>Losartan 50 mg</h6>
         </div>
         <div class="card-row">
           <span class="light float-right">10 tablets</span>
-          <h6>Telmisartan 40 mg</h6>  
+          <h6>Telmisartan 40 mg</h6>
         </div>
         <div class="card-row">
           <span class="light float-right">0 tablets</span>
-          <h6>Telmisartan 80 mg</h6>  
+          <h6>Telmisartan 80 mg</h6>
         </div>
       </div>
-      
+
       <div class="card">
         <h3 style="margin-bottom: 8px;">Diuretic tablets</h3>
         <span class="text-orange">35 days of drug stock</span>
-        
+
         <div class="card-row">
           <span class="light float-right">19 tablets</span>
-          <h6>Chlorthalidone 12.5 mg</h6>  
+          <h6>Chlorthalidone 12.5 mg</h6>
         </div>
         <div class="card-row">
           <span class="light float-right">200 tablets</span>
-          <h6>Chlorthalidone 25 mg</h6>  
+          <h6>Chlorthalidone 25 mg</h6>
         </div>
       </div>
-      
+
       <div class="button-fixed-bottom">
         <button onclick="closeWindow('drug-stock-submitted', 'progress-start'); return false" class="button">DONE</button>
       </div>
-      
+
   </div>
 </div>
 

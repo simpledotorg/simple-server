@@ -8,6 +8,10 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     respond_to_html_or_json(@user_analytics.statistics)
   end
 
+  def create
+    redirect_to api_v3_analytics_user_analytics_path(format: "html"), notice: "ok!"
+  end
+
   private
 
   def report_with_exclusions?

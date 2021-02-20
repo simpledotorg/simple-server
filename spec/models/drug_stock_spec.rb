@@ -18,10 +18,10 @@ describe DrugStock, type: :model do
   end
 
   describe "Returns latest records for a given facility and month" do
-    let!(:facility_group) { create(:facility_group) }
-    let!(:protocol_drug) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
-    let!(:protocol_drug_2) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
-    let!(:facility) { create(:facility, facility_group: facility_group) }
+    let(:facility_group) { create(:facility_group) }
+    let(:protocol_drug) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
+    let(:protocol_drug_2) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
 
     it "returns latest stocks for end of jan" do
       end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month
@@ -49,5 +49,17 @@ describe DrugStock, type: :model do
       latest_drug_stocks = DrugStock.latest_for_facility(facility, end_of_january).to_a
       expect(latest_drug_stocks).to include(jan_drug_1_stock_2, jan_drug_2_stock_2)
     end
+
+    fit "can be grouped by month" do
+      end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month
+      jan_drug_stock = create(:drug_stock, facility: facility, protocol_drug: protocol_drug,
+        for_end_of_month: "January 1 2021".to_date.end_of_month)
+      jan_drug_stock = create(:drug_stock, facility: facility, protocol_drug: protocol_drug,
+        for_end_of_month: "February 1 2021".to_date.end_of_month)
+      latest_drug_stocks = DrugStock.where(facility: facility).group(:for_end_of_month).count
+      pp latest_drug_stocks
+
+    end
+
   end
 end
