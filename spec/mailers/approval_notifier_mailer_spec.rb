@@ -5,16 +5,19 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
 
     let!(:organization) { create(:organization) }
     let!(:org_manager) { create(:admin, :manager, :with_access, resource: organization) }
+    let!(:unsubscribed_org_manager) { create(:admin, :manager, :with_access, resource: organization, receive_approval_emails: false) }
     let!(:other_organization) { create(:organization) }
     let!(:other_org_manager) { create(:admin, :manager, :with_access, resource: other_organization) }
 
     let!(:facility_group) { create(:facility_group, organization: organization) }
     let!(:fg_manager) { create(:admin, :manager, :with_access, resource: facility_group) }
+    let!(:unsubscribed_fg_manager) { create(:admin, :manager, :with_access, resource: facility_group, receive_approval_emails: false) }
     let!(:other_facility_group) { create(:facility_group, organization: other_organization) }
     let!(:other_fg_manager) { create(:admin, :manager, :with_access, resource: other_facility_group) }
 
     let!(:facility) { create(:facility, facility_group: facility_group) }
     let!(:facility_manager) { create(:admin, :manager, :with_access, resource: facility) }
+    let!(:unsubscribed_facility_manager) { create(:admin, :manager, :with_access, resource: facility, receive_approval_emails: false) }
     let!(:other_facility) { create(:facility, facility_group: other_facility_group) }
     let!(:other_facility_manager) { create(:admin, :manager, :with_access, resource: other_facility) }
 
