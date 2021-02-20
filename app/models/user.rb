@@ -234,10 +234,6 @@ class User < ApplicationRecord
     where(sync_approval_status: :requested)
   end
 
-  def has_role?(*roles)
-    roles.map(&:to_sym).include?(role.to_sym)
-  end
-
   def destroy_email_authentications
     destroyable_email_auths = email_authentications.load
 
