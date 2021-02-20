@@ -50,7 +50,7 @@ describe DrugStock, type: :model do
       expect(latest_drug_stocks).to include(jan_drug_1_stock_2, jan_drug_2_stock_2)
     end
 
-    fit "can be grouped by month" do
+    it "can be grouped by month" do
       end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month
       jan_drug_stock = create(:drug_stock, facility: facility, protocol_drug: protocol_drug,
         for_end_of_month: "January 1 2021".to_date.end_of_month)
