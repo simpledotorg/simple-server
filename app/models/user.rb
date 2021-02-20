@@ -60,6 +60,7 @@ class User < ApplicationRecord
     class_name: "Facility",
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
+  has_one :settings, class_name: "UserSettings"
   has_many :drug_stocks
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
