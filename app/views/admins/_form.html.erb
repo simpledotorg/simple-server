@@ -50,6 +50,17 @@
               }
           ) %>
 
+      <div class="mt-3 mb-3">
+        <%= form.check_box(
+                :receive_approval_emails,
+                {
+                    checked: admin.receive_approval_emails,
+                    id: :receive_approval_emails,
+                    label: "Receive approval emails"
+                }
+            ) %>
+      </div>
+
       <%= access_level_select(form, current_admin.permitted_access_levels,
           {
               required: true,
