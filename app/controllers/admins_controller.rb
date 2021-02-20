@@ -114,7 +114,7 @@ class AdminsController < AdminController
       role: params[:role],
       organization_id: params[:organization_id],
       access_level: params[:access_level],
-      receive_approval_emails: params[:receive_approval_emails],
+      receive_approval_notifications: params[:receive_approval_notifications],
       device_updated_at: Time.current
     }.compact
   end

@@ -112,8 +112,8 @@ RSpec.describe AdminsController, type: :controller do
       let(:organization) { create(:organization) }
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:facilities) { create_list(:facility, 2, facility_group: facility_group) }
-      let(:manager) { create(:admin, :manager, :with_access, resource: organization, receive_approval_emails: true) }
-      let(:power_user) { create(:admin, :power_user, receive_approval_emails: true) }
+      let(:manager) { create(:admin, :manager, :with_access, resource: organization, receive_approval_notifications: true) }
+      let(:power_user) { create(:admin, :power_user, receive_approval_notifications: true) }
       let(:full_name) { Faker::Name.name }
       let(:email) { Faker::Internet.email }
       let(:job_title) { "Title" }
@@ -177,7 +177,7 @@ RSpec.describe AdminsController, type: :controller do
             {
               full_name: Faker::Name.name,
               role: "New user title",
-              receive_approval_emails: false
+              receive_approval_notifications: false
             }
 
           put :update, params: request_params.merge(params)
@@ -187,7 +187,7 @@ RSpec.describe AdminsController, type: :controller do
           expect(response).to redirect_to(admins_url)
           expect(admin_being_updated.full_name).to eq(params[:full_name])
           expect(admin_being_updated.role).to eq(params[:role])
-          expect(admin_being_updated.receive_approval_emails).to eq(false)
+          expect(admin_being_updated.receive_approval_notifications).to eq(false)
         end
 
         it "updating email is disallowed" do

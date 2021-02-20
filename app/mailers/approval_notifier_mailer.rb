@@ -29,7 +29,7 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def supervisor_emails
     User.admins.manager_access
-      .where(receive_approval_emails: true)
+      .where(receive_approval_notifications: true)
       .select { |admin| admin.accessible_facilities(:manage).include?(user.facility) }
       .reject { |admin| admin.accesses.map(&:resource).include?(user.organization) }
       .map(&:email)
@@ -38,7 +38,7 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def organization_owner_emails
     User.admins.manager_access
-      .where(receive_approval_emails: true)
+      .where(receive_approval_notifications: true)
       .select { |admin| admin.accessible_organizations(:manage).where(id: user.organization).any? }
       .map(&:email)
       .join(",")
@@ -46,7 +46,7 @@ class ApprovalNotifierMailer < ApplicationMailer
 
   def owner_emails
     User.admins.power_user_access
-      .where(receive_approval_emails: true)
+      .where(receive_approval_notifications: true)
       .map(&:email)
       .join(",")
   end

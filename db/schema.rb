@@ -572,7 +572,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_065508) do
     t.string "access_level"
     t.string "teleconsultation_phone_number"
     t.string "teleconsultation_isd_code"
-    t.boolean "receive_approval_emails", default: true, null: false
+    t.boolean "receive_approval_notifications", default: true, null: false
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["access_level"], name: "index_users_on_access_level"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"

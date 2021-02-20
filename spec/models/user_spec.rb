@@ -44,7 +44,7 @@ RSpec.describe User, type: :model do
       )
     }
 
-    it { is_expected.to validate_inclusion_of(:receive_approval_emails).in_array([true, false]) }
+    it { is_expected.to validate_inclusion_of(:receive_approval_notifications).in_array([true, false]) }
   end
 
   describe "#full_teleconsultation_phone_number" do
