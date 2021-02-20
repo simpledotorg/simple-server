@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_19_154825) do
+ActiveRecord::Schema.define(version: 2021_02_20_065508) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -558,15 +558,6 @@ ActiveRecord::Schema.define(version: 2021_02_19_154825) do
     t.index ["user_id"], name: "index_user_authentications_on_user_id"
   end
 
-  create_table "user_settings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "user_id"
-    t.boolean "receive_approval_emails", default: true, null: false
-    t.datetime "deleted_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_user_settings_on_user_id", unique: true
-  end
-
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "full_name"
     t.string "sync_approval_status", null: false
@@ -581,6 +572,7 @@ ActiveRecord::Schema.define(version: 2021_02_19_154825) do
     t.string "access_level"
     t.string "teleconsultation_phone_number"
     t.string "teleconsultation_isd_code"
+    t.boolean "receive_approval_emails", default: true, null: false
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["access_level"], name: "index_users_on_access_level"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
@@ -610,7 +602,6 @@ ActiveRecord::Schema.define(version: 2021_02_19_154825) do
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
-  add_foreign_key "user_settings", "users"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
