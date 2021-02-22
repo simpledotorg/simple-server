@@ -17,6 +17,7 @@ class MergeDuplicatePatients
       create_prescription_drugs(new_patient)
       create_medical_history(new_patient)
       create_phone_numbers(new_patient)
+      create_patient_business_identifiers(new_patient)
       # mark the other patients merged and soft deleted
       new_patient.reload
     end
@@ -40,15 +41,7 @@ class MergeDuplicatePatients
       assigned_facility: latest_patient.assigned_facility,
       address: create_address
     }.merge(age_and_dob)
-    Patient.create(attributes)
-  end
-
-  def latest_available_attribute(attr)
-    @patients.map { |patient| patient.send(attr) }.compact.last
-  end
-
-  def latest_patient_with_attribute(attr)
-    @patients.select { |patient| patient.send(attr).present? }.last
+    Patient.create!(attributes)
   end
 
   def age_and_dob
@@ -76,18 +69,13 @@ class MergeDuplicatePatients
         .where.not(id: current_prescription_drugs)
 
     old_prescription_drugs.each { |pd| pd.is_deleted = true }
-    (current_prescription_drugs + old_prescription_drugs).map do |prescription_drug|
-      PrescriptionDrug.create(prescription_drug.attributes.with_indifferent_access.merge(
-        id: SecureRandom.uuid,
-        patient_id: patient.id
-      ))
-    end
+    create_cloned_records(patient, PrescriptionDrug, current_prescription_drugs + old_prescription_drugs)
   end
 
   def create_medical_history(patient)
     medical_histories = MedicalHistory.where(patient_id: @patients).order(:device_updated_at)
 
-    MedicalHistory.create(consolidate_medical_history(medical_histories).merge(
+    MedicalHistory.create!(consolidate_medical_history(medical_histories).merge(
       id: SecureRandom.uuid,
       patient_id: patient.id,
       device_created_at: medical_histories.last.device_created_at,
@@ -125,15 +113,37 @@ class MergeDuplicatePatients
         .where(patient_id: @patients)
         .order("number, device_updated_at DESC")
 
-    phone_numbers.map do |phone_number|
-      PatientPhoneNumber.create!(phone_number.attributes.with_indifferent_access.merge(
+    create_cloned_records(patient, PatientPhoneNumber, phone_numbers)
+  end
+
+  def create_patient_business_identifiers(patient)
+    business_identifiers =
+      PatientBusinessIdentifier
+        .select("DISTINCT ON (identifier) *")
+        .where(patient_id: @patients)
+        .order("identifier, device_updated_at DESC")
+
+    create_cloned_records(patient, PatientBusinessIdentifier, business_identifiers)
+  end
+
+  def create_address
+    Address.create!(latest_available_attribute(:address).attributes.merge(id: SecureRandom.uuid))
+  end
+
+  def latest_available_attribute(attr)
+    @patients.map { |patient| patient.send(attr) }.compact.last
+  end
+
+  def latest_patient_with_attribute(attr)
+    @patients.select { |patient| patient.send(attr).present? }.last
+  end
+
+  def create_cloned_records(patient, klass, records)
+    records.map do |record|
+      klass.create!(record.attributes.with_indifferent_access.merge(
         id: SecureRandom.uuid,
         patient_id: patient.id
       ))
     end
-  end
-
-  def create_address
-    Address.create(latest_available_attribute(:address).attributes.merge(id: SecureRandom.uuid))
   end
 end

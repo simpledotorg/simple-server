@@ -83,15 +83,28 @@ describe MergeDuplicatePatients do
     end
 
     it "merges phone numbers uniqued by the number" do
-      p1 = create(:patient_phone_number, number: "111111111", dnd_status: true, device_updated_at: 2.months.ago)
-      p2 = create(:patient_phone_number, number: "111111111", dnd_status: false, device_updated_at: 1.month.ago)
-      p3 = create(:patient_phone_number, number: "3333333333")
-      patient_blue = create(:patient, phone_numbers: [p1, p2])
-      patient_red = create(:patient, phone_numbers: [p3])
+      patient_blue = create(:patient, phone_numbers: [])
+      patient_red = create(:patient, phone_numbers: [])
+      _phone_number_1 = create(:patient_phone_number, number: "111111111", dnd_status: true, device_updated_at: 2.months.ago, patient: patient_blue)
+      phone_number_2 = create(:patient_phone_number, number: "111111111", dnd_status: false, device_updated_at: 1.month.ago, patient: patient_red)
+      phone_number_3 = create(:patient_phone_number, number: "3333333333", patient: patient_red)
 
       new_patient = described_class.new([patient_blue, patient_red]).merge
 
-      expect(with_comparable_attributes(new_patient.phone_numbers)).to match_array(with_comparable_attributes([p2, p3]))
+      expect(with_comparable_attributes(new_patient.phone_numbers)).to match_array(with_comparable_attributes([phone_number_2, phone_number_3]))
+    end
+
+    it "merges patient business identifiers uniqued by the identifier" do
+      patient_blue = create(:patient, business_identifiers: [])
+      patient_red = create(:patient, business_identifiers: [])
+      identifier_id = SecureRandom.uuid
+      _business_identifier_1 = create(:patient_business_identifier, identifier: identifier_id, device_updated_at: 2.months.ago, patient: patient_blue)
+      business_identifier_2 = create(:patient_business_identifier, identifier: identifier_id, device_updated_at: 1.month.ago, patient: patient_red)
+      business_identifier_3 = create(:patient_business_identifier, identifier: SecureRandom.uuid, patient: patient_red)
+
+      new_patient = described_class.new([patient_blue, patient_red]).merge
+
+      expect(with_comparable_attributes(new_patient.business_identifiers)).to match_array(with_comparable_attributes([business_identifier_2, business_identifier_3]))
     end
 
     it "merges medical histories" do
