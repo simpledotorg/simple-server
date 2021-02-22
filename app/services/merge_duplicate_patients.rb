@@ -43,11 +43,11 @@ class MergeDuplicatePatients
   end
 
   def latest_available_attribute(attr)
-    @patients.map {|patient| patient.send(attr)}.compact.last
+    @patients.map { |patient| patient.send(attr) }.compact.last
   end
 
   def latest_patient_with_attribute(attr)
-    @patients.select {|patient| patient.send(attr).present?}.last
+    @patients.select { |patient| patient.send(attr).present? }.last
   end
 
   def age_and_dob
