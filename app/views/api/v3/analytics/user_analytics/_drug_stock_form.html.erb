@@ -6,7 +6,9 @@
     <h2 style="padding-top: 80px; padding-left: 8px;">Number of tablets</h2>
     <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
 
-    <%= bootstrap_form_for(api_v3_analytics_user_analytics_path(format: :html)) do |form| %>
+    <%= bootstrap_form_with(url: my_facilities_drug_stocks_url(format: :html),
+      autocomplete: "off",
+      label_errors: true) do |form| %>
 
     <div class="form-group mt-4">
       <label for="drug-stock-date">Drug stock report for:</label>
@@ -39,9 +41,8 @@
     <% end %>
 
     <div class="button-fixed-bottom">
-      <%= form.submit "SAVE" %>
-
-      <button onclick="openWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="button">SAVE</button>
+      <%= form.button "SAVE", class: "button" %>
+      <%# <button onclick="openWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="button">SAVE</button> %>
     </div>
     <% end %>
   </div>
