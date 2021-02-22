@@ -122,7 +122,7 @@ describe MergeDuplicatePatients do
         hypertension: "no")
 
       new_patient = described_class.new([earlier_medical_history.patient, later_medical_history.patient]).merge
-      expect(new_patient.medical_history.attributes.with_indifferent_access).to include(
+      expect(new_patient.medical_history.attributes.with_indifferent_access.with_int_timestamps).to include({
         prior_heart_attack_boolean: true,
         prior_stroke_boolean: false,
         chronic_kidney_disease_boolean: nil,
@@ -138,8 +138,7 @@ describe MergeDuplicatePatients do
         hypertension: "no",
         user_id: later_medical_history.user.id,
         device_created_at: later_medical_history.device_created_at,
-        device_updated_at: later_medical_history.device_updated_at
-      )
+        device_updated_at: later_medical_history.device_updated_at }.with_indifferent_access.with_int_timestamps)
     end
   end
 end
