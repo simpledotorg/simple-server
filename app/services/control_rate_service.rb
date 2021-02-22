@@ -11,6 +11,7 @@ class ControlRateService
     @facilities = region.facilities
     @periods = periods
     @report_range = periods
+    @period_type = @report_range.begin.type
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     @with_exclusions = with_exclusions
@@ -21,6 +22,7 @@ class ControlRateService
   delegate :logger, to: Rails
   attr_reader :facilities
   attr_reader :region
+  attr_reader :period_type
   attr_reader :report_range
   attr_reader :results
   attr_reader :with_exclusions
@@ -46,12 +48,13 @@ class ControlRateService
   def fetch_all_data
     results.registrations = registration_counts
     results.assigned_patients = assigned_patients_counts
-    results.earliest_registration_period = registration_counts.keys.first
+    results.earliest_registration_period = [registration_counts.keys.first, assigned_patients_counts.keys.first].compact.min
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period)
     end
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
+    results.count_cumulative_assigned_patients
     results.count_adjusted_registrations_with_ltfu
 
     if with_exclusions
@@ -67,26 +70,20 @@ class ControlRateService
     results.calculate_percentages(:controlled_patients)
     results.calculate_percentages(:controlled_patients_with_ltfu)
     results.calculate_percentages(:uncontrolled_patients)
+    results.calculate_percentages(:ltfu_patients)
     results
   end
 
   def registration_counts
     return @registration_counts if defined? @registration_counts
 
-    @registration_counts =
-      region.assigned_patients
-        .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
-        .count
+    @registration_counts = RegisteredPatientsQuery.new.count(region, period_type)
   end
 
   def assigned_patients_counts
     return @assigned_patients_counts if defined? @assigned_patients_counts
 
-    @assigned_patients_counts =
-      region.assigned_patients
-        .for_reports(with_exclusions: with_exclusions)
-        .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
-        .count
+    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type, with_exclusions: with_exclusions)
   end
 
   def ltfu_patients(period)
@@ -105,9 +102,9 @@ class ControlRateService
 
   def cache_key
     if with_exclusions
-      "#{self.class}/#{region.cache_key}/#{@periods.end.type}/with_exclusions"
+      "#{self.class}/#{region.cache_key}/#{period_type}/with_exclusions"
     else
-      "#{self.class}/#{region.cache_key}/#{@periods.end.type}"
+      "#{self.class}/#{region.cache_key}/#{period_type}"
     end
   end
 

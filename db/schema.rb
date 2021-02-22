@@ -16,7 +16,6 @@ ActiveRecord::Schema.define(version: 2021_02_17_111153) do
   enable_extension "ltree"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
-  enable_extension "tsm_system_rows"
 
   create_table "accesses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id", null: false

@@ -5,9 +5,15 @@
       <h3>
         <%= cohort_report_type(@period) %> cohort trend
       </h3>
-      <p class="mb-0px c-grey-dark c-print-black">
-        The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following quarter
-      </p>
+      <% if @period.type == :month %>
+        <p class="mb-0px c-grey-dark c-print-black">
+          The result for all assigned hypertensive patients registered in a month at their follow-up visit in the following two months
+        </p>
+      <% else %>
+        <p class="mb-0px c-grey-dark c-print-black">
+          The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following quarter
+        </p>
+      <% end %>
     </div>
     <% @cohort_data.each_with_index do |cohort, index| %>
       <div class="split-row mt-0px pt-0px mb-16px <%= "split-row-first" if index == 0 %>">

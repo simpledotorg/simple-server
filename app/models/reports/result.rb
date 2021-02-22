@@ -21,8 +21,10 @@ module Reports
           controlled_patients_rate: Hash.new(0),
           controlled_patients_with_ltfu_rate: Hash.new(0),
           cumulative_registrations: Hash.new(0),
+          cumulative_assigned_patients: Hash.new(0),
           earliest_registration_period: nil,
           ltfu_patients: Hash.new(0),
+          ltfu_patients_rate: Hash.new(0),
           missed_visits_rate: {},
           missed_visits: {},
           period_info: {},
@@ -99,8 +101,9 @@ module Reports
 
     [:period_info, :earliest_registration_period,
       :registrations, :cumulative_registrations,
-      :assigned_patients, :ltfu_patients,
-      :adjusted_registrations, :adjusted_registrations_with_ltfu,
+      :assigned_patients, :cumulative_assigned_patients,
+      :ltfu_patients,
+      :adjusted_registrations_with_ltfu, :adjusted_registrations,
       :missed_visits, :missed_visits_rate,
       :controlled_patients, :controlled_patients_with_ltfu,
       :controlled_patients_rate, :controlled_patients_with_ltfu_rate,
@@ -132,28 +135,21 @@ module Reports
         counts[period] = assigned_patients[adjusted_period]
       }
 
-      self.adjusted_registrations_with_ltfu = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_registrations = running_totals[period.previous]
-        current_registrations = adjusted_registration_counts[period]
-        total = current_registrations + previous_registrations
-        running_totals[period] = total
-      }
+      self.adjusted_registrations_with_ltfu = running_totals(adjusted_registration_counts)
     end
 
     def count_adjusted_registrations
       self.adjusted_registrations = full_data_range.each_with_object(Hash.new(0)) do |period, running_totals|
-        adjusted_period = period.advance(months: -3)
-        running_totals[period] = adjusted_registrations_with_ltfu[period] - ltfu_patients[adjusted_period]
+        running_totals[period] = adjusted_registrations_with_ltfu[period] - ltfu_patients[period]
       end
     end
 
+    def count_cumulative_assigned_patients
+      self.cumulative_assigned_patients = running_totals(assigned_patients)
+    end
+
     def count_cumulative_registrations
-      self.cumulative_registrations = full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_registrations = running_totals[period.previous]
-        current_registrations = registrations[period]
-        total = current_registrations + previous_registrations
-        running_totals[period] = total
-      }
+      self.cumulative_registrations = running_totals(registrations)
     end
 
     # "Missed visits" is the remaining registered patients when we subtract out the other three groups.
@@ -183,10 +179,22 @@ module Reports
       self.period_info = range.each_with_object({}) do |period, hsh|
         hsh[period] = {
           name: period.to_s,
+          start_date: period.start_date.to_s(:day_mon_year),
+          ltfu_since_date: period.start_date.advance(months: -12).to_s(:day_mon_year),
           bp_control_start_date: period.bp_control_range_start_date,
           bp_control_end_date: period.bp_control_range_end_date
         }
       end
+    end
+
+    def registrations_for_quarterly_percentage
+      {
+        controlled_patients: :assigned_patients,
+        uncontrolled_patients: :assigned_patients,
+        controlled_patients_with_ltfu: :assigned_patients,
+        visited_without_bp_taken: :assigned_patients,
+        ltfu_patients: :cumulative_registrations
+      }
     end
 
     def registrations_for_monthly_percentage
@@ -194,13 +202,14 @@ module Reports
         controlled_patients: :adjusted_registrations,
         uncontrolled_patients: :adjusted_registrations,
         controlled_patients_with_ltfu: :adjusted_registrations_with_ltfu,
-        visited_without_bp_taken: :adjusted_registrations
+        visited_without_bp_taken: :adjusted_registrations,
+        ltfu_patients: :cumulative_registrations
       }
     end
 
     def denominator_for_percentage_calculation(period, key)
       if quarterly_report?
-        self[:assigned_patients][period.previous] || 0
+        self[registrations_for_quarterly_percentage[key]][period.previous] || 0
       else
         self[registrations_for_monthly_percentage[key]][period]
       end
@@ -220,6 +229,15 @@ module Reports
     def percentage(numerator, denominator)
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
+    end
+
+    def running_totals(periodwise_counts)
+      full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
+        previous_total = running_totals[period.previous]
+        current_count = periodwise_counts[period]
+        total = previous_total + current_count
+        running_totals[period] = total
+      }
     end
   end
 end
