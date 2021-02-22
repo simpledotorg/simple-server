@@ -16,8 +16,9 @@ class MergeDuplicatePatients
       new_patient = create_patient
       create_prescription_drugs(new_patient)
       create_medical_history(new_patient)
+      create_phone_numbers(new_patient)
       # mark the other patients merged and soft deleted
-      new_patient
+      new_patient.reload
     end
   end
 
@@ -76,7 +77,7 @@ class MergeDuplicatePatients
 
     old_prescription_drugs.each { |pd| pd.is_deleted = true }
     (current_prescription_drugs + old_prescription_drugs).map do |prescription_drug|
-      PrescriptionDrug.create(prescription_drug.attributes.merge(
+      PrescriptionDrug.create(prescription_drug.attributes.with_indifferent_access.merge(
         id: SecureRandom.uuid,
         patient_id: patient.id
       ))
@@ -112,6 +113,23 @@ class MergeDuplicatePatients
       merged_attributes[attribute] = medical_histories
         .map { |patient| patient[attribute] }
         .min_by { |value| precedence.fetch(value, precedence.size) }
+    end
+  end
+
+  def create_phone_numbers(patient)
+    phone_numbers =
+      PatientPhoneNumber
+        .unscoped
+        .kept
+        .select("DISTINCT ON (number) *")
+        .where(patient_id: @patients)
+        .order("number, device_updated_at DESC")
+
+    phone_numbers.map do |phone_number|
+      PatientPhoneNumber.create!(phone_number.attributes.with_indifferent_access.merge(
+        id: SecureRandom.uuid,
+        patient_id: patient.id
+      ))
     end
   end
 

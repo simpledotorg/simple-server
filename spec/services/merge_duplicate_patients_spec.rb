@@ -82,6 +82,18 @@ describe MergeDuplicatePatients do
       expect(with_comparable_attributes(new_patient.prescribed_drugs)).to match_array(with_comparable_attributes(patient_red.prescribed_drugs))
     end
 
+    it "merges phone numbers uniqued by the number" do
+      p1 = create(:patient_phone_number, number: "111111111", dnd_status: true, device_updated_at: 2.months.ago)
+      p2 = create(:patient_phone_number, number: "111111111", dnd_status: false, device_updated_at: 1.month.ago)
+      p3 = create(:patient_phone_number, number: "3333333333")
+      patient_blue = create(:patient, phone_numbers: [p1, p2])
+      patient_red = create(:patient, phone_numbers: [p3])
+
+      new_patient = described_class.new([patient_blue, patient_red]).merge
+
+      expect(with_comparable_attributes(new_patient.phone_numbers)).to match_array(with_comparable_attributes([p2, p3]))
+    end
+
     it "merges medical histories" do
       earlier_medical_history = create(:medical_history,
         prior_heart_attack_boolean: true,
