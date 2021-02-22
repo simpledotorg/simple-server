@@ -33,6 +33,17 @@ describe MergeDuplicatePatients do
       expect(new_patient.device_updated_at).to eq(patient_blue.device_updated_at)
     end
 
+    it "Uses the latest available name, gender, and reminder consent" do
+      patient_earliest = create(:patient, recorded_at: 2.months.ago, full_name: "patient earliest", gender: :male, reminder_consent: "granted")
+      patient_latest = create(:patient, recorded_at: 1.month.ago, full_name: "patient latest", gender: :female, reminder_consent: "denied")
+
+      new_patient = described_class.new([patient_earliest, patient_latest]).merge
+
+      expect(new_patient.full_name).to eq(patient_latest.full_name)
+      expect(new_patient.gender).to eq(patient_latest.gender)
+      expect(new_patient.reminder_consent).to eq(patient_latest.reminder_consent)
+    end
+
     it "Uses full set of prescription drugs from latest visit, and ensures history is kept" do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
 

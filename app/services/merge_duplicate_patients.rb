@@ -28,6 +28,9 @@ class MergeDuplicatePatients
   def create_patient
     Patient.create(
       id: SecureRandom.uuid,
+      full_name: latest_patient.full_name,
+      gender: latest_patient.gender,
+      reminder_consent: latest_patient.reminder_consent,
       recorded_at: earliest_patient.recorded_at,
       registration_facility: earliest_patient.registration_facility,
       registration_user: earliest_patient.registration_user,
