@@ -36,20 +36,29 @@ class MergeDuplicatePatients
       registration_user: earliest_patient.registration_user,
       device_created_at: earliest_patient.device_created_at,
       device_updated_at: earliest_patient.device_updated_at,
-      assigned_facility: latest_patient.assigned_facility
+      assigned_facility: latest_patient.assigned_facility,
+      address: create_address
     }.merge(age_and_dob)
     Patient.create(attributes)
+  end
+
+  def latest_available_attribute(attr)
+    @patients.map {|patient| patient.send(attr)}.compact.last
+  end
+
+  def latest_patient_with_attribute(attr)
+    @patients.select {|patient| patient.send(attr).present?}.last
   end
 
   def age_and_dob
     if @patients.map(&:date_of_birth).any?
       {
-        date_of_birth: @patients.map(&:date_of_birth).compact.last,
+        date_of_birth: latest_available_attribute(:date_of_birth),
         age: nil,
         age_updated_at: nil
       }
     else
-      latest_patient_with_age = @patients.select{|patient| patient.age.present?}.last
+      latest_patient_with_age = latest_patient_with_attribute(:age)
       {
         date_of_birth: nil,
         age: latest_patient_with_age.age,
@@ -104,5 +113,9 @@ class MergeDuplicatePatients
         .map { |patient| patient[attribute] }
         .min_by { |value| precedence.fetch(value, precedence.size) }
     end
+  end
+
+  def create_address
+    Address.create(latest_available_attribute(:address).attributes.merge(id: SecureRandom.uuid))
   end
 end
