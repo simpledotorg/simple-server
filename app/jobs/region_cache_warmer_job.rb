@@ -1,7 +1,11 @@
 class RegionCacheWarmerJob
+  DEFAULT_CONCURRENCY_LIMIT = 3
+
   include Sidekiq::Worker
+  include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :default
+  sidekiq_throttle(concurrency: {limit: ENV["REGION_CACHE_WARMER_CONCURRENCY"] || DEFAULT_CONCURRENCY_LIMIT})
 
   def perform(region_id, period_attributes)
     region = Region.find(region_id)
@@ -15,6 +19,9 @@ class RegionCacheWarmerJob
 
       Reports::RegionService.call(region: region, period: period, with_exclusions: true)
       Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
+
+      PatientBreakdownService.call(region: region, period: period)
+      Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
     end
     notify "finished region caching for region #{region_id}"
   end

@@ -94,18 +94,21 @@ RSpec.describe FacilityStatsService do
       expect(small.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 2, 0, 0]
       expect(small.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 3, 3, 3]
       expect(small.map { |_, v| v[:cumulative_registrations] }).to eq [3, 3, 3, 3, 3, 3]
+      expect(small.map { |_, v| v[:cumulative_assigned_patients] }).to eq [3, 3, 3, 3, 3, 3]
       expect(small.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 67, 0, 0]
 
       medium = stats_by_size[:medium][:periods]
       expect(medium.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 1, 0]
       expect(medium.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 2, 2]
       expect(medium.map { |_, v| v[:cumulative_registrations] }).to eq [0, 2, 2, 2, 2, 2]
+      expect(medium.map { |_, v| v[:cumulative_assigned_patients] }).to eq [0, 2, 2, 2, 2, 2]
       expect(medium.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 50, 0]
 
       large = stats_by_size[:large][:periods]
       expect(large.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 0, 1]
       expect(large.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 0, 3]
       expect(large.map { |_, v| v[:cumulative_registrations] }).to eq [0, 0, 3, 3, 3, 3]
+      expect(large.map { |_, v| v[:cumulative_assigned_patients] }).to eq [0, 0, 3, 3, 3, 3]
       expect(large.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 0, 33]
     end
 
@@ -138,27 +141,9 @@ RSpec.describe FacilityStatsService do
                                                 period: period, rate_numerator: :womp)
       stat_keys = stats_by_size[:small][:periods].values.first.keys
       stat_values = stats_by_size[:small][:periods].values.first.values
-      expected_keys = ["womp", "adjusted_registrations", "cumulative_registrations", "womp_rate"]
+      expected_keys = ["womp", "adjusted_registrations", "cumulative_registrations", "cumulative_assigned_patients", "womp_rate"]
       expect(stat_keys).to match_array(expected_keys)
-      expect(stat_values).to match_array([0, 0, 0, 0])
-    end
-
-    it "sets total_registered_hypertensive_patients for each size" do
-      small_facility
-      month = december - 4.months
-      medium_facility1 = create(:facility, name: "medium_1", facility_size: "medium")
-      medium_facility2 = create(:facility, name: "medium_2", facility_size: "medium")
-      create_list(:patient, 2, :hypertension, full_name: "medium_uncontrolled", registration_user: user,
-                                              registration_facility: medium_facility1, recorded_at: month)
-      create_list(:patient, 1, :without_hypertension, full_name: "medium_controlled", registration_user: user,
-                                                      registration_facility: medium_facility2, recorded_at: month)
-      facilities = [small_facility, medium_facility1, medium_facility2]
-      refresh_views
-      facilities_reports = facilities_data(facilities)
-      stats_by_size = FacilityStatsService.call(facilities: facilities_reports,
-                                                period: period, rate_numerator: :controlled_patients)
-      expect(stats_by_size[:small][:total_registered_hypertensive_patients]).to eq 0
-      expect(stats_by_size[:medium][:total_registered_hypertensive_patients]).to eq 2
+      expect(stat_values).to match_array([0, 0, 0, 0, 0])
     end
   end
 end

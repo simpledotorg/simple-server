@@ -56,6 +56,12 @@ RSpec.describe Period, type: :model do
       expect(period.value).to be_instance_of(Quarter)
       expect(period).to eq(Period.quarter(quarter_1_2020))
     end
+
+    it "coerces month dates to the beginning of the month" do
+      date = Date.parse("December 12, 2020")
+      period = Period.new(type: :month, value: date)
+      expect(period.value).to eq(Date.parse("December 1, 2020"))
+    end
   end
 
   it "times and dates can convert themselves into periods" do
