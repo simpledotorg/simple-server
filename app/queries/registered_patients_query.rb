@@ -1,5 +1,5 @@
 class RegisteredPatientsQuery
-  def count(region, period_type, with_exclusions: false)
+  def count(region, period_type)
     formatter = lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
     region.registered_patients
       .with_hypertension
