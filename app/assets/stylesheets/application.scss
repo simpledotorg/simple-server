@@ -626,3 +626,13 @@ span.inactive {
   font-weight: bold;
   cursor: pointer;
 }
+
+.password-toggle-button {
+	color: $blue;
+	height: 34px;
+	position: absolute;
+	right: 2px;
+	top: calc(1em + 17px);
+	width: 60px;
+	z-index: 10;
+}
