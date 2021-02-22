@@ -6,7 +6,7 @@
     <h2 style="padding-top: 80px; padding-left: 8px;">Number of tablets</h2>
     <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
 
-    <%= form_for(api_v3_analytics_user_analytics_path(format: :html)) do |f| %>
+    <%= bootstrap_form_for(api_v3_analytics_user_analytics_path(format: :html)) do |form| %>
 
     <div class="form-group mt-4">
       <label for="drug-stock-date">Drug stock report for:</label>
@@ -20,109 +20,26 @@
 
     </div>
 
-    <div class="form-group mt-4">
-        <label for="a-medicationAmlodipine5mg">Amlodipine 5 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" name="med1-received" class="form-control" id="a-medicationAmlodipine5mg">
-          <small id="a-medicationAmlodipine5mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" name="med1-stock" class="form-control" id="b-medicationAmlodipine5mg">
-            <small id="b-medicationAmlodipine5mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
+    <% @protocol_drugs.each do |protocol_drug| %>
+      <%= form.fields_for "drug_stocks[]", DrugStock.new do |drug_stock_form| %>
+        <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
+
+        <div class="form-group mt-4">
+            <label for=""><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%></label>
+            <div class="form-row">
+              <div class="col">
+                <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received during the month" %>
+              </div>
+              <div class="col">
+                <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), hide_label: true, help: "Stock at end of the month" %>
+              </div>
+            </div>
         </div>
-
-    </div>
-    <div class="form-group mt-4">
-        <label for="a-medicationAmlodipine10mg">Amlodipine 10 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" class="form-control" id="a-medicationAmlodipine10mg">
-          <small id="a-medicationAmlodipine10mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" class="form-control" id="b-medicationAmlodipine10mg">
-            <small id="b-medicationAmlodipine10mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
-        </div>
-
-    </div>
-
-    <div class="form-group mt-4">
-        <label for="a-Telmisartin20mg">Telmisartin 20 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" class="form-control" id="a-Telmisartin20mg">
-          <small id="a-Telmisartin20mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" class="form-control" id="b-Telmisartin20mg">
-            <small id="b-Telmisartin20mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
-        </div>
-
-    </div>
-
-    <div class="form-group mt-4">
-        <label for="a-Telmisartin40mg">Telmisartin 40 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" class="form-control" id="a-Telmisartin40mg">
-          <small id="a-Telmisartin40mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" class="form-control" id="b-Telmisartin40mg">
-            <small id="b-Telmisartin40mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
-        </div>
-
-    </div>
-
-    <div class="form-group mt-4">
-        <label for="a-Losartan50mg">Losartan 50 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" class="form-control" id="a-Losartan50mg">
-          <small id="a-Losartan50mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" class="form-control" id="b-Losartan50mg">
-            <small id="b-Losartan50mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
-        </div>
-    </div>
-
-    <div class="form-group mt-4">
-        <label for="a-Hydrochlorathiazide125mg">Hydrochlorathiazide 12.5 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" class="form-control" id="a-Hydrochlorathiazide125mg">
-          <small id="a-Hydrochlorathiazide125mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" class="form-control" id="b-Hydrochlorathiazide125mg">
-            <small id="b-Hydrochlorathiazide125mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
-        </div>
-    </div>
-
-    <div class="form-group mt-4">
-        <label for="a-Hydrochlorathiazide25mg">Hydrochlorathiazide 25 mg</label>
-        <div class="form-row">
-          <div class="col">
-          <input type="number" class="form-control" id="a-Hydrochlorathiazide25mg">
-          <small id="a-Hydrochlorathiazide25mg" class="form-text text-muted">Received during the month</small>
-          </div>
-          <div class="col">
-            <input type="number" class="form-control" id="b-Hydrochlorathiazide25mg">
-            <small id="b-Hydrochlorathiazide25mg" class="form-text text-muted">Stock at end of the month</small>
-          </div>
-        </div>
-    </div>
+      <% end %>
+    <% end %>
 
     <div class="button-fixed-bottom">
-      <%= f.submit "SAVE" %>
+      <%= form.submit "SAVE" %>
 
       <button onclick="openWindow('drug-stock-submitted', 'drug-stock-form'); return false" class="button">SAVE</button>
     </div>
