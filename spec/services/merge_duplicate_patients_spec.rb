@@ -44,6 +44,34 @@ describe MergeDuplicatePatients do
       expect(new_patient.reminder_consent).to eq(patient_latest.reminder_consent)
     end
 
+    context "age and dob" do
+      it "Uses the latest available DoB" do
+        patient_earliest = create(:patient, recorded_at: 3.months.ago, age: 42, date_of_birth: Date.parse("1 January 1945"))
+        patient_not_latest = create(:patient, recorded_at: 2.month.ago, age: 42, date_of_birth: Date.parse("10 January 1945"))
+        patient_latest = create(:patient, recorded_at: 1.month.ago, age: 42, date_of_birth: nil)
+
+        new_patient = described_class.new([patient_earliest, patient_not_latest, patient_latest]).merge
+
+        expect(new_patient.date_of_birth).to eq(patient_not_latest.date_of_birth)
+        expect(new_patient.age).to eq(nil)
+        expect(new_patient.age_updated_at).to eq(nil)
+        expect(new_patient.current_age).to eq(patient_not_latest.current_age)
+      end
+
+      it "If there is no DoB, it uses the latest available age" do
+        patient_earliest = create(:patient, recorded_at: 3.months.ago, age: 88, date_of_birth: nil, age_updated_at: 2.months.ago)
+        patient_not_latest = create(:patient, recorded_at: 2.month.ago, age: 42, date_of_birth: nil, age_updated_at: 1.month.ago)
+        patient_latest = create(:patient, recorded_at: 1.month.ago, age: nil, date_of_birth: nil, age_updated_at: 1.month.ago)
+
+        new_patient = described_class.new([patient_earliest, patient_not_latest, patient_latest]).merge
+
+        expect(new_patient.date_of_birth).to eq(nil)
+        expect(new_patient.age).to eq(42)
+        expect(new_patient.age_updated_at).to eq(patient_not_latest.age_updated_at)
+        expect(new_patient.current_age).to eq(patient_not_latest.current_age)
+      end
+    end
+
     it "Uses full set of prescription drugs from latest visit, and ensures history is kept" do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
 

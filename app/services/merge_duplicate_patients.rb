@@ -26,7 +26,7 @@ class MergeDuplicatePatients
   end
 
   def create_patient
-    Patient.create(
+    attributes = {
       id: SecureRandom.uuid,
       full_name: latest_patient.full_name,
       gender: latest_patient.gender,
@@ -37,7 +37,25 @@ class MergeDuplicatePatients
       device_created_at: earliest_patient.device_created_at,
       device_updated_at: earliest_patient.device_updated_at,
       assigned_facility: latest_patient.assigned_facility
-    )
+    }.merge(age_and_dob)
+    Patient.create(attributes)
+  end
+
+  def age_and_dob
+    if @patients.map(&:date_of_birth).any?
+      {
+        date_of_birth: @patients.map(&:date_of_birth).compact.last,
+        age: nil,
+        age_updated_at: nil
+      }
+    else
+      latest_patient_with_age = @patients.select{|patient| patient.age.present?}.last
+      {
+        date_of_birth: nil,
+        age: latest_patient_with_age.age,
+        age_updated_at: latest_patient_with_age.age_updated_at
+      }
+    end
   end
 
   def create_prescription_drugs(patient)
