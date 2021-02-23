@@ -630,6 +630,7 @@ span.inactive {
 .password-toggle-button {
 	color: $blue;
 	height: 34px;
+	line-height: 0;
 	position: absolute;
 	right: 2px;
 	top: calc(1em + 17px);
