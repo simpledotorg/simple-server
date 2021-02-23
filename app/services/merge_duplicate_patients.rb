@@ -127,7 +127,7 @@ class MergeDuplicatePatients
   end
 
   def create_address
-    Address.create!(latest_available_attribute(:address).attributes.merge(id: SecureRandom.uuid))
+    Address.create!(copyable_attributes(latest_available_attribute(:address)).merge(id: SecureRandom.uuid))
   end
 
   def latest_available_attribute(attr)
@@ -140,10 +140,16 @@ class MergeDuplicatePatients
 
   def create_cloned_records(patient, klass, records)
     records.map do |record|
-      klass.create!(record.attributes.with_indifferent_access.merge(
-        id: SecureRandom.uuid,
-        patient_id: patient.id
-      ))
+      klass.create!(
+        copyable_attributes(record)
+          .merge(id: SecureRandom.uuid, patient_id: patient.id)
+      )
     end
+  end
+
+  def copyable_attributes(record)
+    record.attributes
+      .with_indifferent_access
+      .except(:created_at, :updated_at)
   end
 end
