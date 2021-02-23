@@ -9,12 +9,22 @@ RSpec.describe Api::DrugStocksController, type: :controller do
     Flipper.disable(:drug_stocks)
   end
 
-  xdescribe "POST #create" do
-    let(:redirect_url) { "report_url_with_filters" }
-    let(:session) { {report_url_with_filters: redirect_url} }
-    let(:params) {
-      {
-        facility_id: facility_group_with_stock_tracked.facilities.first.id,
+  describe "POST #create" do
+    let(:power_user) { create(:user) }
+    let(:facility_group) { create(:facility_group) }
+
+    def set_headers(user, facility)
+      request.env["HTTP_X_USER_ID"] = user.id
+      request.env["HTTP_X_FACILITY_ID"] = facility.id
+      request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
+    end
+
+    fit "creates drug stock records and redirects successfully" do
+      facility = create(:facility, facility_group: power_user.facility.facility_group)
+      protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
+      set_headers(power_user, facility)
+      params = {
+        facility_id: facility.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
@@ -22,41 +32,11 @@ RSpec.describe Api::DrugStocksController, type: :controller do
           in_stock: 20
         }]
       }
-    }
-
-    it "creates drug stock records and redirects successfully" do
-      sign_in(power_user.email_authentication)
-
-      expect { post :create, params: params, session: session }.to change { DrugStock.count }.by(1)
-      expect(flash[:notice]).to eq "Saved drug stocks"
-    end
-
-    it "shows an error message if params are invalid" do
-      sign_in(power_user.email_authentication)
 
       expect {
-        post :create,
-          params: params.merge(drug_stocks: [{protocol_drug_id: protocol_drug.id,
-                                              received: "ten",
-                                              in_stock: nil}]),
-          session: session
-      }.not_to change { DrugStock.count }
-
-      expect(response).to redirect_to(redirect_url)
-      expect(flash[:alert]).to eq "Something went wrong, Drug Stocks were not saved."
-    end
-
-    it "allows saving empty drug stock values" do
-      sign_in(power_user.email_authentication)
-
-      expect {
-        post :create,
-          params: params.merge(drug_stocks: [{protocol_drug_id: protocol_drug.id,
-                                              in_stock: nil,
-                                              received: nil}]),
-          session: session
+        post :create, params: params
+        expect(response).to be_successful
       }.to change { DrugStock.count }.by(1)
-
       expect(flash[:notice]).to eq "Saved drug stocks"
     end
   end
