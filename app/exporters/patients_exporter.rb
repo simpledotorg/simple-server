@@ -193,15 +193,10 @@ class PatientsExporter
   end
 
   def status(patient_summary)
-    if ltfu?(patient_summary)
+    if patient_summary.ltfu?
       "Lost to follow-up"
     else
       PATIENT_STATUS_DESCRIPTIONS[patient_summary.status]
     end
-  end
-
-  def ltfu?(patient_summary)
-    !(patient_summary.latest_blood_pressure_recorded_at > Patient::LTFU_TIME.ago ||
-      patient_summary.recorded_at > Patient::LTFU_TIME.ago)
   end
 end

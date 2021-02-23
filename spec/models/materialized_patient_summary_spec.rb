@@ -259,5 +259,21 @@ describe MaterializedPatientSummary, type: :model do
         expect(patient_summary.latest_bp_passport_identifier).to eq(patient.latest_bp_passport.identifier)
       end
     end
+
+    describe "#ltfu?" do
+      specify do
+        ltfu_patient = create(:patient, recorded_at: 2.years.ago)
+        refresh_view
+
+        expect(described_class.find_by(id: ltfu_patient.id).ltfu?).to eq true
+      end
+
+      specify do
+        not_ltfu_patient = create(:patient, recorded_at: 1.month.ago)
+        refresh_view
+
+        expect(described_class.find_by(id: not_ltfu_patient.id).ltfu?).to eq false
+      end
+    end
   end
 end
