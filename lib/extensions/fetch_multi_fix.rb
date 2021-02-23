@@ -1,3 +1,5 @@
+# Created to work around a bug in Rails: https://github.com/rails/rails/issues/41535
+# Once the upstream bug is fixed, this workaround can be removed.
 module FetchMultiFix
   def fetch_multi(*names)
     options = names.extract_options!
