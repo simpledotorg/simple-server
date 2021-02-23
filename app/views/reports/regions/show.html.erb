@@ -104,7 +104,7 @@
                 <% end %>
                 patients registered till
                 <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
+                  <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                 </span>
               </p>
             <% else %>
@@ -203,7 +203,7 @@
                 </span>
                 patients registered till
                 <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
+                  <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                 </span>
               </p>
             <% else %>
@@ -294,7 +294,7 @@
                 </span>
                 patients registered till
                 <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
+                  <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                 </span>
               </p>
             <% else %>
@@ -364,7 +364,7 @@
                   <p class="m-0px c-black c-print-black">
                     total <%= "registration".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
                     <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
-                      <%= @period.bp_control_range_end_date %>
+                      <%= Date.today.to_s(:day_mon_year) %>
                     </span>
                   </p>
                 <% else %>
@@ -413,7 +413,7 @@
                 <p class="m-0px c-black">
                   patients registered till
                   <span data-registrations-period-end="<%= @period.bp_control_range_end_date%>">
-                    <%= @period.bp_control_range_end_date%>
+                    <%= @period.bp_control_range_end_date %>
                   </span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">

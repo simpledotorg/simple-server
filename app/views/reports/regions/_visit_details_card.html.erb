@@ -43,7 +43,7 @@
                   </span>
                   patients registered till
                   <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
+                    <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                   </span>
                 </p>
               <% else %>
@@ -89,7 +89,7 @@
                   </span>
                   patients registered till
                   <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
+                    <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                   </span>
                 </p>
               <% else %>
@@ -135,7 +135,7 @@
                   </span>
                   patients registered till
                   <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
+                    <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                   </span>
                 </p>
               <% else %>
@@ -181,7 +181,7 @@
                   </span>
                   patients registered till
                   <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
+                    <%= @period.blood_pressure_control_range.begin.to_s(:day_mon_year) %>
                   </span>
                 </p>
               <% else %>
