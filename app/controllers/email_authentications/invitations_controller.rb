@@ -13,6 +13,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
 
     User.transaction do
+      binding.pry
       new_user = User.new(user_params)
 
       super do |resource|
@@ -58,6 +59,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       role: params[:role],
       access_level: params[:access_level],
       organization_id: params[:organization_id],
+      receive_approval_notifications: params[:receive_approval_notifications] == "1",
       device_created_at: Time.current,
       device_updated_at: Time.current,
       sync_approval_status: :denied
