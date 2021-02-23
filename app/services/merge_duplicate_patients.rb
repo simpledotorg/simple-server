@@ -18,6 +18,7 @@ class MergeDuplicatePatients
       create_medical_history(new_patient)
       create_phone_numbers(new_patient)
       create_patient_business_identifiers(new_patient)
+      create_encounters_and_observables(new_patient)
       # mark the other patients merged and soft deleted
       new_patient.reload
     end
@@ -69,7 +70,7 @@ class MergeDuplicatePatients
         .where.not(id: current_prescription_drugs)
 
     old_prescription_drugs.each { |pd| pd.is_deleted = true }
-    create_cloned_records(patient, PrescriptionDrug, current_prescription_drugs + old_prescription_drugs)
+    create_cloned_records!(patient, PrescriptionDrug, current_prescription_drugs + old_prescription_drugs)
   end
 
   def create_medical_history(patient)
@@ -113,7 +114,7 @@ class MergeDuplicatePatients
         .where(patient_id: @patients)
         .order("number, device_updated_at DESC")
 
-    create_cloned_records(patient, PatientPhoneNumber, phone_numbers)
+    create_cloned_records!(patient, PatientPhoneNumber, phone_numbers)
   end
 
   def create_patient_business_identifiers(patient)
@@ -123,7 +124,24 @@ class MergeDuplicatePatients
         .where(patient_id: @patients)
         .order("identifier, device_updated_at DESC")
 
-    create_cloned_records(patient, PatientBusinessIdentifier, business_identifiers)
+    create_cloned_records!(patient, PatientBusinessIdentifier, business_identifiers)
+  end
+
+  def create_encounters_and_observables(patient)
+    encounters = Encounter.where(patient: @patients)
+    encounters.map do |encounter|
+      new_encounter = Encounter.create!(
+        copyable_attributes(encounter)
+          .merge(id: Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on),
+                 patient_id: patient.id)
+      )
+
+      encounter.observations.map do |observation|
+        observable = observation.observable
+        new_observable = create_cloned_record!(patient, observable.class, observable)
+        Observation.create!(user_id: observation.user_id, observable: new_observable, encounter: new_encounter)
+      end
+    end
   end
 
   def create_address
@@ -138,18 +156,22 @@ class MergeDuplicatePatients
     @patients.select { |patient| patient.send(attr).present? }.last
   end
 
-  def create_cloned_records(patient, klass, records)
+  def create_cloned_records!(patient, klass, records)
     records.map do |record|
-      klass.create!(
-        copyable_attributes(record)
-          .merge(id: SecureRandom.uuid, patient_id: patient.id)
-      )
+      create_cloned_record!(patient, klass, record)
     end
+  end
+
+  def create_cloned_record!(patient, klass, record)
+    klass.create!(
+      copyable_attributes(record)
+        .merge(id: SecureRandom.uuid, patient_id: patient.id)
+    )
   end
 
   def copyable_attributes(record)
     record.attributes
       .with_indifferent_access
-      .except(:created_at, :updated_at)
+      .except(:id, :patient_id, :created_at, :updated_at)
   end
 end

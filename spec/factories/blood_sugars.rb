@@ -13,11 +13,7 @@ FactoryBot.define do
 
     trait(:with_encounter) do
       after :build do |blood_sugar|
-        create(:encounter,
-          :with_observables,
-          patient: blood_sugar.patient,
-          observable: blood_sugar,
-          facility: blood_sugar.facility)
+        create_encounter_for(blood_sugar)
       end
     end
 

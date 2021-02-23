@@ -165,5 +165,16 @@ describe MergeDuplicatePatients do
         device_created_at: later_medical_history.device_created_at,
         device_updated_at: later_medical_history.device_updated_at }.with_indifferent_access.with_int_timestamps)
     end
+
+    it "copies over encounters, observations and all observables" do
+      patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
+
+      new_patient = described_class.new([patient_blue, patient_red]).merge
+
+      expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(Encounter.where(patient_id: [patient_blue, patient_red]))
+      expect(with_comparable_attributes(new_patient.blood_pressures)).to eq with_comparable_attributes(BloodPressure.where(patient_id: [patient_blue, patient_red]))
+      expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(BloodSugar.where(patient_id: [patient_blue, patient_red]))
+      expect(with_comparable_attributes(new_patient.observations)).to match_array with_comparable_attributes([patient_blue, patient_red].flat_map(&:observations))
+    end
   end
 end
