@@ -27,7 +27,6 @@
       Filters
     </h4>
     <%= form_tag appointments_path, method: :get, id: "search-filters" do %>
-      <%= hidden_field_tag :submitted, true %>
       <% PatientSummaryQuery.filters.each do |filter, label| %>
         <label for=<%= "search-#{filter}" %>>
           <% checked = @search_filters.include?(filter) %>

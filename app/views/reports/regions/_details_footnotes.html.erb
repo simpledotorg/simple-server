@@ -1,0 +1,70 @@
+<div class="mt-32px mb-64px ph-20px">
+  <h3 class="mb-16px pb-8px fw-bold c-grey-dark bb-1px bb-grey-medium">
+    Definitions
+  </h3>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Lost to follow-up
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        <strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %>
+      </p>
+      <p class="mb-0px fs-14px c-grey-dark">
+        <strong>Denominator</strong> <%= t("ltfu_denominator_copy", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Not lost to follow-up
+    </p>
+    <div class="pl-16px">
+      <p class="mb-0px fs-14px c-grey-dark">
+        <%= t("not_lost_to_follow_up_copy", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Total registered patients
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Monthly registered patients
+    </p>
+    <div class="pl-16px">
+      <p class="mb-0px fs-14px c-grey-dark">
+        <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Follow-up patients
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        <%= t("follow_up_patients_copy", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <% if @region.facility_region? %>
+    <div class="mb-0px">
+      <p class="mb-8px fs-16px fw-bold c-grey-dark">
+        BP measures taken
+      </p>
+      <div class="pl-16px">
+        <p class="mb-8px fs-14px c-grey-dark">
+          <%= t("bp_measures_taken_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    </div>
+  <% end %>
+</div>

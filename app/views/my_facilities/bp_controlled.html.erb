@@ -14,7 +14,13 @@
           <strong>What to look for:</strong> High percentages are good, and 70% or higher is ideal 
         </p>
         <p class="c-grey-dark c-print-black">
-          <strong>Numerator:</strong> <%= t("numerator_copy.bp_controlled") %>, <strong>Denominator:</strong> <%= t("denominator_copy") %>
+          <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
+          <strong>Denominator:</strong>
+          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+            <%= t("denominator_excluding_ltfu_copy", region_name: "each facility") %>
+          <% else %>
+            <%= t("denominator_without_exclusions_copy", region_name: "each facility") %>
+          <% end %>
         </p>
       </div>
       <div class="d-flex fw-wrap mb-16px ph-16px">
@@ -87,10 +93,10 @@
                   All <%= Facility.localized_facility_size(size) %>s
                 </td>
                 <td>
-                  <%= number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_registrations]) %>
+                  <%= number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_assigned_patients]) %>
                 </td>
                 <td>
-                  <%= number_or_zero_with_delimiter(@stats_by_size[size][:total_registered_hypertensive_patients]) %>
+                  <%= number_or_zero_with_delimiter(@stats_by_size[size][:periods][@period][:cumulative_registrations]) %>
                 </td>
                 <td>
                   <div class="w-90px h-20px">
@@ -130,10 +136,10 @@
                     <% end %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) %>
+                    <%= number_or_zero_with_delimiter(facility_data["cumulative_assigned_patients"].values.last) %>
                   </td>
                   <td>
-                    <%= number_or_zero_with_delimiter(facility.registered_hypertension_patients.count) %>
+                    <%= number_or_zero_with_delimiter(facility_data["cumulative_registrations"].values.last) %>
                   </td>
                   <td>
                     <div class="w-90px h-20px">
