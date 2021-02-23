@@ -25,24 +25,24 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
 
           organization = create(:organization)
           org_manager = create(:admin, :manager, :with_access, resource: organization)
-          unsubscribed_org_manager = create(:admin, :manager, :with_access, resource: organization, receive_approval_notifications: false)
+          _unsubscribed_org_manager = create(:admin, :manager, :with_access, resource: organization, receive_approval_notifications: false)
           other_organization = create(:organization)
-          other_org_manager = create(:admin, :manager, :with_access, resource: other_organization)
+          _other_org_manager = create(:admin, :manager, :with_access, resource: other_organization)
 
           facility_group = create(:facility_group, organization: organization)
           fg_manager = create(:admin, :manager, :with_access, resource: facility_group)
-          unsubscribed_fg_manager = create(:admin, :manager, :with_access, resource: facility_group, receive_approval_notifications: false)
+          _unsubscribed_fg_manager = create(:admin, :manager, :with_access, resource: facility_group, receive_approval_notifications: false)
           other_facility_group = create(:facility_group, organization: other_organization)
-          other_fg_manager = create(:admin, :manager, :with_access, resource: other_facility_group)
+          _other_fg_manager = create(:admin, :manager, :with_access, resource: other_facility_group)
 
           facility = create(:facility, facility_group: facility_group)
           facility_manager = create(:admin, :manager, :with_access, resource: facility)
-          unsubscribed_facility_manager = create(:admin, :manager, :with_access, resource: facility, receive_approval_notifications: false)
+          _unsubscribed_facility_manager = create(:admin, :manager, :with_access, resource: facility, receive_approval_notifications: false)
           other_facility = create(:facility, facility_group: other_facility_group)
-          other_facility_manager = create(:admin, :manager, :with_access, resource: other_facility)
+          _other_facility_manager = create(:admin, :manager, :with_access, resource: other_facility)
 
           user = create(:user, :sync_requested, organization: organization, registration_facility: facility)
-          other_user = create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility)
+          _other_user = create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility)
 
           mail = described_class.registration_approval_email(user_id: user.id)
 
@@ -63,24 +63,24 @@ RSpec.describe ApprovalNotifierMailer, type: :mailer do
 
         organization = create(:organization)
         org_manager = create(:admin, :manager, :with_access, resource: organization)
-        unsubscribed_org_manager = create(:admin, :manager, :with_access, resource: organization, receive_approval_notifications: false)
+        _unsubscribed_org_manager = create(:admin, :manager, :with_access, resource: organization, receive_approval_notifications: false)
         other_organization = create(:organization)
-        other_org_manager = create(:admin, :manager, :with_access, resource: other_organization)
+        _other_org_manager = create(:admin, :manager, :with_access, resource: other_organization)
 
         facility_group = create(:facility_group, organization: organization)
         fg_manager = create(:admin, :manager, :with_access, resource: facility_group)
-        unsubscribed_fg_manager = create(:admin, :manager, :with_access, resource: facility_group, receive_approval_notifications: false)
+        _unsubscribed_fg_manager = create(:admin, :manager, :with_access, resource: facility_group, receive_approval_notifications: false)
         other_facility_group = create(:facility_group, organization: other_organization)
-        other_fg_manager = create(:admin, :manager, :with_access, resource: other_facility_group)
+        _other_fg_manager = create(:admin, :manager, :with_access, resource: other_facility_group)
 
         facility = create(:facility, facility_group: facility_group)
         facility_manager = create(:admin, :manager, :with_access, resource: facility)
-        unsubscribed_facility_manager = create(:admin, :manager, :with_access, resource: facility, receive_approval_notifications: false)
+        _unsubscribed_facility_manager = create(:admin, :manager, :with_access, resource: facility, receive_approval_notifications: false)
         other_facility = create(:facility, facility_group: other_facility_group)
-        other_facility_manager = create(:admin, :manager, :with_access, resource: other_facility)
+        _other_facility_manager = create(:admin, :manager, :with_access, resource: other_facility)
 
         user = create(:user, :sync_requested, organization: organization, registration_facility: facility)
-        other_user = create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility)
+        _other_user = create(:user, :sync_requested, organization: other_organization, registration_facility: other_facility)
 
         mail = described_class.reset_password_approval_email(user_id: user.id)
 

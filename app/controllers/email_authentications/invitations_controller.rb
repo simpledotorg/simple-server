@@ -13,7 +13,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
     raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
 
     User.transaction do
-      binding.pry
       new_user = User.new(user_params)
 
       super do |resource|
