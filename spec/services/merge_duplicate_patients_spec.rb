@@ -15,7 +15,7 @@ end
 
 def with_comparable_attributes(related_entities)
   related_entities.map do |entity|
-    entity.attributes.with_indifferent_access.except(:id, :patient_id, :created_at, :updated_at)
+    entity.attributes.with_indifferent_access.with_int_timestamps.except(:id, :patient_id, :created_at, :updated_at)
   end
 end
 
@@ -25,12 +25,12 @@ describe MergeDuplicatePatients do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
 
       new_patient = described_class.new([patient_blue, patient_red]).merge
-      expect(new_patient.recorded_at).to eq(patient_blue.recorded_at)
+      expect(new_patient.recorded_at.to_i).to eq(patient_blue.recorded_at.to_i)
       expect(new_patient.registration_facility).to eq(patient_blue.registration_facility)
       expect(new_patient.registration_user).to eq(patient_blue.registration_user)
       expect(new_patient.assigned_facility).to eq(patient_red.assigned_facility)
-      expect(new_patient.device_created_at).to eq(patient_blue.device_created_at)
-      expect(new_patient.device_updated_at).to eq(patient_blue.device_updated_at)
+      expect(new_patient.device_created_at.to_i).to eq(patient_blue.device_created_at.to_i)
+      expect(new_patient.device_updated_at.to_i).to eq(patient_blue.device_updated_at.to_i)
     end
 
     it "Uses the latest available name, gender, address, and reminder consent" do
@@ -69,7 +69,7 @@ describe MergeDuplicatePatients do
 
         expect(new_patient.date_of_birth).to eq(nil)
         expect(new_patient.age).to eq(42)
-        expect(new_patient.age_updated_at).to eq(patient_not_latest.age_updated_at)
+        expect(new_patient.age_updated_at.to_i).to eq(patient_not_latest.age_updated_at.to_i)
         expect(new_patient.current_age).to eq(patient_not_latest.current_age)
       end
     end
