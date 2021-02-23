@@ -5,7 +5,8 @@ class PatientsExporter
   BATCH_SIZE = 1000
   PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
                                  migrated: "Transferred out",
-                                 dead: "Died"}.with_indifferent_access
+                                 dead: "Died",
+                                 ltfu: "Lost to follow-up"}.with_indifferent_access
 
   BLOOD_SUGAR_TYPES = {
     random: "Random",
@@ -193,10 +194,12 @@ class PatientsExporter
   end
 
   def status(patient_summary)
-    if patient_summary.ltfu?
-      "Lost to follow-up"
+    patient_status = if patient_summary.ltfu?
+      :ltfu
     else
-      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status]
+      patient_summary.status
     end
+
+    PATIENT_STATUS_DESCRIPTIONS[patient_status]
   end
 end
