@@ -188,5 +188,13 @@ describe MergeDuplicatePatients do
       patient_blue.appointments.status_scheduled.update_all(status: :cancelled)
       expect(with_comparable_attributes(new_patient.appointments)).to match_array with_comparable_attributes(Appointment.where(patient_id: [patient_red, patient_blue]))
     end
+
+    it "copies over teleconsultations" do
+      patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
+
+      new_patient = described_class.new([patient_blue, patient_red]).merge
+
+      expect(with_comparable_attributes(new_patient.teleconsultations)).to match_array with_comparable_attributes(Teleconsultation.where(patient_id: [patient_blue, patient_red]))
+    end
   end
 end

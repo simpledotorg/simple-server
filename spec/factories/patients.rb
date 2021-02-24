@@ -130,6 +130,7 @@ def create_visit(patient, facility: patient.registration_facility, user: patient
   create_list(:prescription_drug, 2, device_created_at: visited_at, facility: facility, patient: patient, user: user)
   patient.appointments.where("device_created_at < ?", visited_at).update_all(status: :visited)
   create(:appointment, status: :scheduled, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user)
+  create(:teleconsultation, patient: patient, facility: facility, requester: user, medical_officer: user, requested_medical_officer: user)
 end
 
 def add_some_visits(patient, visit_count, facility: patient.registration_facility, user: patient.registration_user)

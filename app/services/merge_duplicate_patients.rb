@@ -20,6 +20,7 @@ class MergeDuplicatePatients
       create_patient_business_identifiers(new_patient)
       create_encounters_and_observables(new_patient)
       create_appointments(new_patient)
+      create_teleconsultations(new_patient)
       # mark the other patients merged and soft deleted
       new_patient.reload
     end
@@ -150,6 +151,10 @@ class MergeDuplicatePatients
 
     stale_appointments = patient.appointments.status_scheduled.order(device_updated_at: :desc).drop(1)
     stale_appointments.map { |appointment| appointment.update!(status: :cancelled) }
+  end
+
+  def create_teleconsultations(patient)
+    create_cloned_records!(patient, Teleconsultation, Teleconsultation.where(patient_id: @patients))
   end
 
   def create_address
