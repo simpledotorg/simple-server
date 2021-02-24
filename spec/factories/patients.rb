@@ -123,16 +123,17 @@ def updated_patient_payload(existing_patient)
 end
 
 def create_visit(patient, facility: patient.registration_facility, user: patient.registration_user, visited_at: Time.now)
-  patient.prescription_drugs.map { |pd| pd.update(is_deleted: true) }
+  patient.prescription_drugs.where("device_created_at < ?", visited_at).update_all(is_deleted: true)
   create(:blood_pressure, :with_encounter, :critical, recorded_at: visited_at, facility: facility, patient: patient, user: user)
   create(:blood_sugar, :fasting, :with_encounter, recorded_at: visited_at, facility: facility, patient: patient, user: user)
   create_list(:prescription_drug, 2, :protocol, device_created_at: visited_at, facility: facility, patient: patient, user: user)
   create_list(:prescription_drug, 2, device_created_at: visited_at, facility: facility, patient: patient, user: user)
-  create(:appointment, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user)
+  patient.appointments.where("device_created_at < ?", visited_at).update_all(status: :visited)
+  create(:appointment, status: :scheduled, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user)
 end
 
 def add_some_visits(patient, visit_count, facility: patient.registration_facility, user: patient.registration_user)
-  (1..visit_count).to_a.each do |num_months|
+  (1..visit_count).to_a.reverse_each do |num_months|
     create_visit(patient, facility: facility, user: user, visited_at: num_months.months.ago)
   end
 end

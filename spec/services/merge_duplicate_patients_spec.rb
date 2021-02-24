@@ -176,5 +176,17 @@ describe MergeDuplicatePatients do
       expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(BloodSugar.where(patient_id: [patient_blue, patient_red]))
       expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes([patient_blue, patient_red].flat_map(&:observations).map(&:observable))
     end
+
+    it "copies over appointments, keeps only one scheduled appointment and marks the rest as cancelled" do
+      patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
+      scheduled_appointments = Appointment.where(patient_id: [patient_red, patient_blue]).status_scheduled.order(device_created_at: :desc)
+
+      new_patient = described_class.new([patient_blue, patient_red]).merge
+
+      expect(with_comparable_attributes(new_patient.appointments.status_scheduled)).to eq with_comparable_attributes(scheduled_appointments.take(1))
+
+      patient_blue.appointments.status_scheduled.update_all(status: :cancelled)
+      expect(with_comparable_attributes(new_patient.appointments)).to match_array with_comparable_attributes(Appointment.where(patient_id: [patient_red, patient_blue]))
+    end
   end
 end
