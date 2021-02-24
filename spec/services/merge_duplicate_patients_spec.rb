@@ -163,7 +163,8 @@ describe MergeDuplicatePatients do
         hypertension: "no",
         user_id: later_medical_history.user.id,
         device_created_at: later_medical_history.device_created_at,
-        device_updated_at: later_medical_history.device_updated_at }.with_indifferent_access.with_int_timestamps)
+        device_updated_at: later_medical_history.device_updated_at
+      }.with_indifferent_access.with_int_timestamps)
     end
 
     it "copies over encounters, observations and all observables" do

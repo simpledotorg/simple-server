@@ -170,7 +170,7 @@ class MergeDuplicatePatients
   end
 
   def latest_patient_with_attribute(attr)
-    @patients.select { |patient| patient.send(attr).present? }.last
+    @patients.reverse.find { |patient| patient.send(attr).present? }
   end
 
   def create_cloned_records!(patient, klass, records)

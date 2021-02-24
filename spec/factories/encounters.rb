@@ -67,8 +67,8 @@ def create_encounter_for(observable)
     encountered_on: encountered_on)
 
   create(:observation,
-        encounter_id: encounter_id,
-        observable: observable,
-        observable_type: observable.class.name,
-        user: observable.user)
+    encounter_id: encounter_id,
+    observable: observable,
+    observable_type: observable.class.name,
+    user: observable.user)
 end
