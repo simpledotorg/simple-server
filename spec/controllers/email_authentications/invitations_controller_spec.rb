@@ -31,6 +31,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
         email: email,
         role: job_title,
         access_level: :manager,
+        receive_approval_notifications: false,
         organization_id: organization.id
       }
     }
@@ -65,6 +66,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
           new_user = User.find_by(full_name: full_name)
           expect(new_user.full_name).to eq(params[:full_name])
           expect(new_user.role).to eq(params[:role])
+          expect(new_user.receive_approval_notifications).to eq(params[:receive_approval_notifications])
         end
 
         it "sends an email to the invited admin" do
