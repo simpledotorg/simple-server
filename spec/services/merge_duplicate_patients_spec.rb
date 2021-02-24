@@ -15,7 +15,7 @@ end
 
 def with_comparable_attributes(related_entities)
   related_entities.map do |entity|
-    entity.attributes.with_indifferent_access.with_int_timestamps.except(:id, :patient_id, :created_at, :updated_at)
+    entity.attributes.with_indifferent_access.with_int_timestamps.except(:id, :patient_id, :created_at, :updated_at, :deleted_at)
   end
 end
 
@@ -78,8 +78,8 @@ describe MergeDuplicatePatients do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
 
       new_patient = described_class.new([patient_blue, patient_red]).merge
-      expect(new_patient.prescription_drugs.count).to eq(patient_blue.prescription_drugs.count + patient_red.prescription_drugs.count)
-      expect(with_comparable_attributes(new_patient.prescribed_drugs)).to match_array(with_comparable_attributes(patient_red.prescribed_drugs))
+      expect(new_patient.prescription_drugs.count).to eq(patient_blue.prescription_drugs.with_discarded.count + patient_red.prescription_drugs.with_discarded.count)
+      expect(with_comparable_attributes(new_patient.prescribed_drugs)).to match_array(with_comparable_attributes(patient_red.prescribed_drugs.with_discarded))
     end
 
     it "merges phone numbers uniqued by the number" do
@@ -167,34 +167,52 @@ describe MergeDuplicatePatients do
     end
 
     it "copies over encounters, observations and all observables" do
-      patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
+      patients = create_duplicate_patients.values
+      encounters = Encounter.where(patient_id: patients).load
+      blood_pressures = BloodPressure.where(patient_id: patients).load
+      blood_sugars = BloodSugar.where(patient_id: patients).load
+      observables = patients.flat_map(&:observations).map(&:observable)
 
-      new_patient = described_class.new([patient_blue, patient_red]).merge
+      new_patient = described_class.new(patients).merge
 
-      expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(Encounter.where(patient_id: [patient_blue, patient_red]))
-      expect(with_comparable_attributes(new_patient.blood_pressures)).to eq with_comparable_attributes(BloodPressure.where(patient_id: [patient_blue, patient_red]))
-      expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(BloodSugar.where(patient_id: [patient_blue, patient_red]))
-      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes([patient_blue, patient_red].flat_map(&:observations).map(&:observable))
+      expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(encounters)
+      expect(with_comparable_attributes(new_patient.blood_pressures)).to eq with_comparable_attributes(blood_pressures)
+      expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(blood_sugars)
+      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes(observables)
     end
 
     it "copies over appointments, keeps only one scheduled appointment and marks the rest as cancelled" do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
-      scheduled_appointments = Appointment.where(patient_id: [patient_red, patient_blue]).status_scheduled.order(device_created_at: :desc)
+      scheduled_appointments = Appointment.where(patient_id: [patient_red, patient_blue]).status_scheduled.order(device_created_at: :desc).load
 
       new_patient = described_class.new([patient_blue, patient_red]).merge
+      patient_blue.appointments.with_discarded.status_scheduled.update_all(status: :cancelled)
 
       expect(with_comparable_attributes(new_patient.appointments.status_scheduled)).to eq with_comparable_attributes(scheduled_appointments.take(1))
-
-      patient_blue.appointments.status_scheduled.update_all(status: :cancelled)
-      expect(with_comparable_attributes(new_patient.appointments)).to match_array with_comparable_attributes(Appointment.where(patient_id: [patient_red, patient_blue]))
+      expected_appointments = Appointment.with_discarded.where(patient_id: [patient_red, patient_blue])
+      expect(with_comparable_attributes(new_patient.appointments)).to match_array with_comparable_attributes(expected_appointments)
     end
 
     it "copies over teleconsultations" do
-      patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
+      patients = create_duplicate_patients.values
+      teleconsultations = Teleconsultation.where(patient_id: patients).load
 
-      new_patient = described_class.new([patient_blue, patient_red]).merge
+      new_patient = described_class.new(patients).merge
 
-      expect(with_comparable_attributes(new_patient.teleconsultations)).to match_array with_comparable_attributes(Teleconsultation.where(patient_id: [patient_blue, patient_red]))
+      expect(with_comparable_attributes(new_patient.teleconsultations)).to match_array with_comparable_attributes(teleconsultations)
+    end
+
+    context "marks patients as merged" do
+      it "soft deletes the merged patients" do
+        patients = create_duplicate_patients.values
+
+        expect(patients.first).to receive(:discard_data).and_call_original
+        expect(patients.last).to receive(:discard_data).and_call_original
+
+        described_class.new(patients).merge
+
+        expect(patients.map(&:discarded?)).to all be true
+      end
     end
   end
 end
