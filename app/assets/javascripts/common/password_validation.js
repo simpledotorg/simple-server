@@ -1,33 +1,23 @@
 PasswordValidation = function() {
   const DebounceTimeout = 500;
 
-  this.initialize = function() {
+  this.initialize = () => {
     this.timer = null;
-    this.response = null;
     this.passwordInput = $("#password");
-    this.passwordInput.on("input", this.handlePasswordInput);
+    this.passwordInput.on("input", this.debounce);
   }
 
-  this.handlePasswordInput = () => {
-    console.log("CHANGE", this.passwordInput.val());
-    this.setTimer();
-  }
+  this.debounce = () => {
+    const later = () => {
+      clearTimeout(this.timer);
+      this.validatePassword();
+    };
 
-  this.setTimer = function() {
-    console.log("STARTING TIMER")
-    this.cancelTimer();
-    this.timer = setTimeout(this.validatePassword, DebounceTimeout);
-  }
-
-  this.cancelTimer = function() {
-    console.log("CANCELING TIMER")
-    if (!this.timer) return;
     clearTimeout(this.timer);
-    this.timer = null;
+    this.timer = setTimeout(later, DebounceTimeout);
   }
 
   this.validatePassword = () => {
-    console.log("MAKING REQUEST")
     const token = $("meta[name=csrf-token]").attr("content")
     const url = "http://localhost:3000/email_authentications/validate"
     const password = this.passwordInput.val();
@@ -39,15 +29,39 @@ PasswordValidation = function() {
         "X-CSRF-Token": token
       },
       data: {"password": password}
-    }).done(function(data, status){
-      console.log(status)
-      console.log(data)
-      this.timer = null;
+    }).done((data, status) => {
+      let response = []
       if (status === "success") {
-        this.response = data["errors"];
-      } else {
-        this.response = null;
+        response = data["errors"]
       }
+      this.updateChecklist(response);
+      this.updateSubmitStatus(response);
     });
+  }
+
+  this.updateChecklist = (response) => {
+    response.includes("too_short") ? this.uncheckItem("length") : this.checkItem("length");
+    response.includes("needs_lower") ? this.uncheckItem("lower") : this.checkItem("lower");
+    response.includes("needs_upper") ? this.uncheckItem("upper") : this.checkItem("upper");
+    response.includes("needs_number") ? this.uncheckItem("number") : this.checkItem("number");
+  }
+
+  this.checkItem = (id) => {
+    const text = $(`#${id}`);
+    text.addClass("completed");
+  }
+
+  this.uncheckItem = (id) => {
+    const text = $(`#${id}`);
+    text.removeClass("completed");
+  }
+
+  this.updateSubmitStatus = (response) => {
+    const button = $("#password-submit");
+    if (response.length === 0) {
+      button.removeAttr("disabled");
+    } else {
+      button.attr("disabled", true);
+    }
   }
 }

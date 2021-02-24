@@ -7,8 +7,6 @@ en:
       default: "%d-%^b-%Y %I:%M %p"
   errors:
     messages:
-      password:
-        password_strength: "Password must be at least 10 characters long and contain a lower case letter, an upper case letter, and a number."
       already_confirmed: "was already confirmed, please try signing in"
       confirmation_period_expired: "needs to be confirmed within %{period}, please request a new one"
       expired: "has expired, please request a new one"
@@ -72,6 +70,12 @@ en:
   follow_up_patients_copy: "Hypertension patients with a BP measure taken during a month in %{region_name}."
   not_lost_to_follow_up_copy: "Hypertension patients with a BP taken in the last 12 months."
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
+  password_creation:
+    prompt: "Keep your account's data private. Create a secure password:"
+    too_short: "At least 10 characters long"
+    needs_number: "Includes one number"
+    needs_lower_case: "Includes one lower case character"
+    needs_upper_case: "Includes one upper case character"
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
@@ -111,7 +115,7 @@ en:
         submit_button: "Send an invitation"
       edit:
         header: "Set your password"
-        submit_button: "Set my password"
+        submit_button: "Set password"
     mailer:
       confirmation_instructions:
         subject: "Confirmation instructions"
