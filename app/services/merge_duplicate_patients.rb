@@ -21,13 +21,13 @@ class MergeDuplicatePatients
       create_encounters_and_observables(new_patient)
       create_appointments(new_patient)
       create_teleconsultations(new_patient)
-      mark_as_merged
+      mark_as_merged(new_patient)
       new_patient.reload
     end
   end
 
-  def mark_as_merged
-    #  TODO: add a field to the old patients and point it to new patients
+  def mark_as_merged(new_patient)
+    @patients.map { |patient| patient.update!(merged_into: new_patient.id) }
     @patients.map(&:discard_data)
   end
 
