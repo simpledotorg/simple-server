@@ -174,7 +174,7 @@ describe MergeDuplicatePatients do
       expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(Encounter.where(patient_id: [patient_blue, patient_red]))
       expect(with_comparable_attributes(new_patient.blood_pressures)).to eq with_comparable_attributes(BloodPressure.where(patient_id: [patient_blue, patient_red]))
       expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(BloodSugar.where(patient_id: [patient_blue, patient_red]))
-      expect(with_comparable_attributes(new_patient.observations)).to match_array with_comparable_attributes([patient_blue, patient_red].flat_map(&:observations))
+      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes([patient_blue, patient_red].flat_map(&:observations).map(&:observable))
     end
   end
 end
