@@ -364,11 +364,7 @@
                   <p class="m-0px c-black c-print-black">
                     total <%= "registration".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
                     <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
-                      <% if @period.value.strftime("%m") == Date.today.strftime("%m") %>
-                        <%= Date.today.to_s(:day_mon_year) %>
-                      <% else %>
-                        <%= @period.bp_control_range_end_date %>
-                      <% end %>
+                      <%= registrations_end_date %>
                     </span>
                   </p>
                 <% else %>
@@ -417,11 +413,7 @@
                 <p class="m-0px c-black">
                   patients registered till
                   <span data-registrations-period-end="<%= @period.bp_control_range_end_date%>">
-                    <% if @period.value.strftime("%m") == Date.today.strftime("%m") %>
-                      <%= Date.today.to_s(:day_mon_year) %>
-                    <% else %>
-                      <%= @period.bp_control_range_end_date %>
-                    <% end %>
+                    <%= registrations_end_date %>
                   </span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
