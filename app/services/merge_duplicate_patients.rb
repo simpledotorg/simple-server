@@ -12,7 +12,7 @@ class MergeDuplicatePatients
   end
 
   def merge
-    ActiveRecord::Base.transaction do
+    new_patient = ActiveRecord::Base.transaction do
       new_patient = create_patient
       create_prescription_drugs(new_patient)
       create_medical_history(new_patient)
@@ -24,6 +24,9 @@ class MergeDuplicatePatients
       mark_as_merged(new_patient)
       new_patient.reload
     end
+
+    Rails.logger.info "Merged patients #{@patients.pluck(:id)} into patient #{new_patient.id}"
+    new_patient
   end
 
   def mark_as_merged(new_patient)
