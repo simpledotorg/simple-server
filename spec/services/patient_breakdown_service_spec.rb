@@ -11,12 +11,12 @@ RSpec.describe PatientBreakdownService do
   describe ".call" do
     it "gets the patient breakdowns by status and ltfu-ness and caches it" do
       facility = create(:facility)
-      ltfu_patient = create(:patient, :hypertension, recorded_at: 2.years.ago, assigned_facility: facility)
-      not_ltfu_patient = create(:patient, :hypertension, assigned_facility: facility)
-      ltfu_transferred_patient = create(:patient, :hypertension, recorded_at: 2.years.ago, status: :migrated, assigned_facility: facility)
-      not_ltfu_transferred_patient = create(:patient, :hypertension, status: :migrated, assigned_facility: facility)
-      dead_patient = create(:patient, :hypertension, status: :dead, assigned_facility: facility)
-      not_hypertensive_patient = create(:patient, :without_hypertension, assigned_facility: facility)
+      _ltfu_patient = create(:patient, :hypertension, recorded_at: 2.years.ago, assigned_facility: facility)
+      _not_ltfu_patient = create(:patient, :hypertension, assigned_facility: facility)
+      _ltfu_transferred_patient = create(:patient, :hypertension, recorded_at: 2.years.ago, status: :migrated, assigned_facility: facility)
+      _not_ltfu_transferred_patient = create(:patient, :hypertension, status: :migrated, assigned_facility: facility)
+      _dead_patient = create(:patient, :hypertension, status: :dead, assigned_facility: facility)
+      _not_hypertensive_patient = create(:patient, :without_hypertension, assigned_facility: facility)
 
       expected_result = {
         dead_patients: 1,

@@ -25,7 +25,7 @@
               BP controlled
             </h3>
           <% end %>
-          <% if current_admin.feature_enabled?(:report_with_exclusions) && current_admin.power_user? %>
+          <% if current_admin.feature_enabled?(:report_with_exclusions) && current_admin.feature_enabled?(:ltfu_toggle) %>
             <div class="align-right custom-control custom-switch">
               <form method="get">
                 <input type="checkbox"
