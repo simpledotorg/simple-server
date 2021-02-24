@@ -13,10 +13,10 @@ class Api::DrugStocksController < APIController
                           for_end_of_month: @for_end_of_month)
       end
     end
-    render json: { status: "OK" }
+    render json: {status: "OK"}
   rescue ActiveRecord::RecordInvalid => e
     logger.error "could not create DrugStocks - record invalid", errors: e.message
-    render json: { status: "invalid", errors: e.message }, status: 422
+    render json: {status: "invalid", errors: e.message}, status: 422
   end
 
   private

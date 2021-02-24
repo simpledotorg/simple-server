@@ -49,17 +49,5 @@ describe DrugStock, type: :model do
       latest_drug_stocks = DrugStock.latest_for_facility(facility, end_of_january).to_a
       expect(latest_drug_stocks).to include(jan_drug_1_stock_2, jan_drug_2_stock_2)
     end
-
-    it "can be grouped by month" do
-      end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month
-      jan_drug_stock = create(:drug_stock, facility: facility, protocol_drug: protocol_drug,
-        for_end_of_month: "January 1 2021".to_date.end_of_month)
-      jan_drug_stock = create(:drug_stock, facility: facility, protocol_drug: protocol_drug,
-        for_end_of_month: "February 1 2021".to_date.end_of_month)
-      latest_drug_stocks = DrugStock.where(facility: facility).group(:for_end_of_month).count
-      pp latest_drug_stocks
-
-    end
-
   end
 end
