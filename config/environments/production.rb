@@ -60,7 +60,7 @@ Rails.application.configure do
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
     [:redis_cache_store, {url: ENV["RAILS_CACHE_REDIS_URL"]}]
   else
-    [:redis_cache_store, ENV["REDIS_URL"]]
+    [:redis_cache_store, {url: ENV["REDIS_URL"]}]
   end
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
