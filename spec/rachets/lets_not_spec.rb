@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe "Rachet down usage of let!" do
-  expected_usages = 694
+  expected_usages = 679
 
   it "prevents new usages" do
     command = %{grep -rn "\slet\!(:" spec}
@@ -17,8 +17,8 @@ RSpec.describe "Rachet down usage of let!" do
     EOL
     happy_msg = <<~EOL
       You removed a usage of let! We previously had #{expected_usages}, but found #{actual_usages}.
-      Thank you helping us to work towards more explicit and maintainable specs.
-      Please change EXPECTED_USAGES in #{__FILE__} to #{actual_usages} to continue to rachet this down."
+      Thank you for helping us work towards more explicit and maintainable specs.
+      Please change 'expected_usages' in #{__FILE__} to #{actual_usages} to continue to rachet this down."
     EOL
     expect(actual_usages).to_not be > expected_usages, msg
     expect(actual_usages).to_not be < expected_usages, happy_msg
