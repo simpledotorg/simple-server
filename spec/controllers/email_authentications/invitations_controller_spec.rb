@@ -149,7 +149,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
           sign_in(non_manager.email_authentication)
 
           post :create, params: request_params
-          expect(response).to redirect_to(root_path)
+          expect(response).to redirect_to(root_path), -> { {status: response.status, body: response.body, flash: flash} }
         end
       end
     end
