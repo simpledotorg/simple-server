@@ -6,7 +6,7 @@
     <h2 style="padding-top: 80px; padding-left: 8px;">Number of tablets</h2>
     <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
 
-    <%= bootstrap_form_with(url: api_drug_stocks_path(format: :html),
+    <%= bootstrap_form_with(url: api_drug_stocks_url(format: :html),
       autocomplete: "off",
       label_errors: true) do |form| %>
 
