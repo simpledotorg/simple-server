@@ -125,13 +125,15 @@ end
 
 def create_visit(patient, facility: patient.registration_facility, user: patient.registration_user, visited_at: Time.now)
   patient.prescription_drugs.where("device_created_at < ?", visited_at).update_all(is_deleted: true)
-  create(:blood_pressure, :with_encounter, :critical, recorded_at: visited_at, facility: facility, patient: patient, user: user)
-  create(:blood_sugar, :fasting, :with_encounter, recorded_at: visited_at, facility: facility, patient: patient, user: user)
-  create_list(:prescription_drug, 2, :protocol, device_created_at: visited_at, facility: facility, patient: patient, user: user)
-  create_list(:prescription_drug, 2, device_created_at: visited_at, facility: facility, patient: patient, user: user)
   patient.appointments.where("device_created_at < ?", visited_at).update_all(status: :visited)
-  create(:appointment, status: :scheduled, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user)
-  create(:teleconsultation, patient: patient, facility: facility, requester: user, medical_officer: user, requested_medical_officer: user)
+  {
+    blood_pressure: create(:blood_pressure, :with_encounter, :critical, recorded_at: visited_at, facility: facility, patient: patient, user: user),
+    blood_sugar: create(:blood_sugar, :fasting, :with_encounter, recorded_at: visited_at, facility: facility, patient: patient, user: user),
+    protocol_prescription_drug: create(:prescription_drug, :protocol, device_created_at: visited_at, facility: facility, patient: patient, user: user),
+    non_protocol_prescription_drug: create(:prescription_drug, device_created_at: visited_at, facility: facility, patient: patient, user: user),
+    appointment: create(:appointment, status: :scheduled, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user),
+    teleconsultation: create(:teleconsultation, patient: patient, facility: facility, requester: user, medical_officer: user, requested_medical_officer: user)
+  }
 end
 
 def add_some_visits(patient, visit_count, facility: patient.registration_facility, user: patient.registration_user)
