@@ -140,9 +140,10 @@ class DeduplicatePatients
   def create_encounters_and_observables(patient)
     encounters = Encounter.where(patient: @patients)
     encounters.map do |encounter|
-      new_encounter = Encounter.create!(
+      encounter_id = Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on)
+      new_encounter = Encounter.find_by(id: encounter_id) || Encounter.create!(
         copyable_attributes(encounter)
-          .merge(id: Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on),
+          .merge(id: encounter_id,
                  patient_id: patient.id)
       )
 
