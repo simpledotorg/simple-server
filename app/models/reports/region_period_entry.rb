@@ -12,6 +12,7 @@ module Reports
       [region.cache_key, period.cache_key, calculation, @options].join("/")
     end
 
+    delegate :adjusted_period, to: :period
     alias_method :to_s, :cache_key
   end
 end

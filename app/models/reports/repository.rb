@@ -97,7 +97,7 @@ module Reports
     smart_memoize def controlled_patient_rates
       cached_query(__method__) do |entry|
         controlled = controlled_patients_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
+        total = cumulative_assigned_patients_count[entry.region.slug][entry.adjusted_period]
         percentage(controlled, total)
       end
     end
@@ -105,7 +105,7 @@ module Reports
     smart_memoize def uncontrolled_patient_rates
       cached_query(__method__) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
+        total = cumulative_assigned_patients_count[entry.region.slug][entry.adjusted_period]
         percentage(controlled, total)
       end
     end
