@@ -20,6 +20,8 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
+    # Uses Memery to memoize a method, but takes into account our force_cache setting. If force_cache is true,
+    # a caller is asking for all values to be retrieved fresh from the database, so we want to skip memoization.
     def self.smart_memoize(method)
       memoize(method, condition: -> { !force_cache? })
     end
@@ -52,8 +54,7 @@ module Reports
         region_slug = region_entry.region.slug
         totals[region_slug] = Hash.new(0)
         next if patient_counts.empty?
-        first_period = patient_counts.keys.first
-        full_range = (first_period..periods.end)
+        full_range = (patient_counts.keys.first..periods.end)
         full_range.each do |period|
           previous_total = totals[region_slug][period.previous]
           current_amount = patient_counts[period] || 0
@@ -61,8 +62,6 @@ module Reports
         end
       end
     end
-
-    memoize :cumulative_assigned_patients_count, condition: -> { !force_cache? }
 
     smart_memoize def controlled_patients_count
       cached_query(__method__) do |entry|
@@ -108,7 +107,7 @@ module Reports
 
     private
 
-    # Generate all necessary cache keys for a calculation, then yield to the block with every entry.
+    # Generate all necessary cache keys for a calculation, then yield to the block for every entry.
     # Once all results are returned via fetch_multi, return the data in a standard format of:
     #   {
     #     region_1_slug: { period_1: value, period_2: value }
@@ -125,8 +124,6 @@ module Reports
         results[entry.region.slug][entry.period] = count
       end
     end
-
-    memoize :cached_query
 
     def cache_entries(calculation)
       combinations = regions.to_a.product(periods.to_a)
