@@ -5,21 +5,24 @@ module Reports
 
     def initialize(regions, periods:, with_exclusions: false)
       @regions = Array(regions)
-      @regions_by_id = @regions.group_by { |r| r.id }
       @with_exclusions = with_exclusions
 
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
       else
-        periods.to_a
+        periods
       end
     end
 
-    attr_reader :regions, :periods
-    attr_reader :regions_by_id
+    attr_reader :periods
+    attr_reader :regions
     attr_reader :with_exclusions
 
     delegate :cache, :logger, to: Rails
+
+    def self.smart_memoize(method)
+      memoize(method, condition: -> { !force_cache? })
+    end
 
     # Returns assigned patients for a region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
     # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
@@ -30,21 +33,21 @@ module Reports
     #    region_slug: { period: value, period: value },
     #    region_slug: { period: value, period: value }
     # }
-    def assigned_patients_count
+    smart_memoize def assigned_patients_count
       full_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] }
         results[entry.region.slug] = values
       end
     end
 
-    def full_assigned_patients_counts
+    smart_memoize def full_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
       cache.fetch_multi(*items, force: force_cache?) { |entry|
         AssignedPatientsQuery.new.count(entry.region, :month, with_exclusions: with_exclusions)
       }
     end
 
-    def cumulative_assigned_patients_count
+    smart_memoize def cumulative_assigned_patients_count
       full_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         region_slug = region_entry.region.slug
         totals[region_slug] = Hash.new(0)
@@ -61,42 +64,42 @@ module Reports
 
     memoize :cumulative_assigned_patients_count, condition: -> { !force_cache? }
 
-    def controlled_patients_count
-      cached_query(:controlled_patients_count) do |entry|
+    smart_memoize def controlled_patients_count
+      cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period, with_exclusions: with_exclusions).count
       end
     end
 
-    def uncontrolled_patients_count
-      cached_query(:uncontrolled_patients_count) do |entry|
+    smart_memoize def uncontrolled_patients_count
+      cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period, with_exclusions: with_exclusions).count
       end
     end
 
-    def controlled_patient_rates
-      cached_query(:controlled_patient_rates) do |entry|
+    smart_memoize def controlled_patient_rates
+      cached_query(__method__) do |entry|
         controlled = controlled_patients_count[entry.region.slug][entry.period]
         total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
       end
     end
 
-    def uncontrolled_patient_rates
-      cached_query(:uncontrolled_patient_rates) do |entry|
+    smart_memoize def uncontrolled_patient_rates
+      cached_query(__method__) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
         total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
       end
     end
 
-    def missed_visits_count
-      cached_query(:missed_visits_count) do |entry|
+    smart_memoize def missed_visits_count
+      cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period, with_exclusions: with_exclusions)
       end
     end
 
-    def missed_visits_rate
-      cached_query(:missed_visits_rate) do |entry|
+    smart_memoize def missed_visits_rate
+      cached_query(__method__) do |entry|
         controlled = missed_visits_count[entry.region.slug][entry.period]
         total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
@@ -123,7 +126,7 @@ module Reports
       end
     end
 
-    memoize :cached_query, ~> { !force_cache? }
+    memoize :cached_query
 
     def cache_entries(calculation)
       combinations = regions.to_a.product(periods.to_a)
