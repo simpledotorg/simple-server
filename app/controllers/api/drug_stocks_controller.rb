@@ -13,9 +13,10 @@ class Api::DrugStocksController < APIController
                           for_end_of_month: @for_end_of_month)
       end
     end
-    render json: { status: "OK" }
-  rescue ActiveRecord::RecordInvalid
-    redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
+    render json: {status: "OK"}
+  rescue ActiveRecord::RecordInvalid => e
+    logger.error "could not create DrugStocks - record invalid", errors: e.message
+    render json: {status: "invalid", errors: e.message}, status: 422
   end
 
   private
