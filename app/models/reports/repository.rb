@@ -42,7 +42,7 @@ module Reports
       end
     end
 
-    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its 
+    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def full_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
