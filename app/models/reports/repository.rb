@@ -26,7 +26,7 @@ module Reports
       memoize(method, condition: -> { !force_cache? })
     end
 
-    # Returns assigned patients for a region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
+    # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
     # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
     # to conform to the same interface as all the other queries here.
 
@@ -42,6 +42,8 @@ module Reports
       end
     end
 
+    # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its 
+    # fast and easy via the underlying query.
     smart_memoize def full_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
       cache.fetch_multi(*items, force: force_cache?) { |entry|
@@ -49,6 +51,7 @@ module Reports
       }
     end
 
+    # Return the running total of cumulative assigned patient counts.
     smart_memoize def cumulative_assigned_patients_count
       full_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         region_slug = region_entry.region.slug
@@ -116,9 +119,7 @@ module Reports
     #
     def cached_query(calculation, &block)
       items = cache_entries(calculation)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |entry|
-        block.call(entry)
-      }
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
         results[entry.region.slug] ||= Hash.new(0)
         results[entry.region.slug][entry.period] = count

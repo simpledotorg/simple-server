@@ -9,6 +9,9 @@
       <%= form.text_field :full_name, id: :full_name, required: true, autocomplete: "off", label: "Full name *", placeholder: "Full name" %>
       <%= form.text_field :email, id: :email, required: true, label: "Email *", placeholder: "Email" %>
       <%= form.text_field :role, id: :role, required: true, help: "CVHO, STS, State Official etc.", label: 'Job title *', placeholder: "Job title" %>
+      <div class="mt-3 mb-3">
+        <%= form.check_box(:receive_approval_notifications, checked: true, label: "Receive approval notifications") %>
+      </div>
       <%= access_level_select(form, current_admin.permitted_access_levels, required: true) %>
 
       <%= form.label "Facility Access *" %>
