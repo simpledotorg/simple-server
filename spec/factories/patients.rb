@@ -80,6 +80,7 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except("registration_user_id")
     .except("test_data")
     .except("deleted_by_user_id")
+    .except("merged_into")
     .merge(
       "address" => patient.address.attributes.with_payload_keys,
       "phone_numbers" => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except("patient_id", "dnd_status") },
