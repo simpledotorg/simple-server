@@ -1,5 +1,6 @@
 module Reports
   class Repository
+    include Memery
     PERCENTAGE_PRECISION = 0
 
     def initialize(regions, periods:, with_exclusions: false)
@@ -57,6 +58,8 @@ module Reports
         end
       end
     end
+
+    memoize :cumulative_assigned_patients_count, condition: -> { !force_cache? }
 
     def controlled_patients_count
       cached_query(:controlled_patients_count) do |entry|
@@ -119,6 +122,8 @@ module Reports
         results[entry.region.slug][entry.period] = count
       end
     end
+
+    memoize :cached_query, ~> { !force_cache? }
 
     def cache_entries(calculation)
       combinations = regions.to_a.product(periods.to_a)
