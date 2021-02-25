@@ -168,8 +168,12 @@ describe MergeDuplicatePatients do
     end
 
     it "copies over encounters, observations and all observables" do
-      patients = create_duplicate_patients.values
-      encounters = Encounter.where(patient_id: patients).load
+      patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
+      patients = [patient_blue, patient_red]
+
+      visit = create_visit(patient_blue, facility: patient_red.registration_facility, visited_at: patient_red.latest_blood_pressure.recorded_at)
+
+      encounters = Encounter.where(patient_id: patients).load - [visit[:blood_pressure].encounter]
       blood_pressures = BloodPressure.where(patient_id: patients).load
       blood_sugars = BloodSugar.where(patient_id: patients).load
       observables = patients.flat_map(&:observations).map(&:observable)
