@@ -88,6 +88,7 @@ class User < ApplicationRecord
   validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
   validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
   validates :access_level, presence: true, if: -> { email_authentication.present? }
+  validates :receive_approval_notifications, inclusion: {in: [true, false]}
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -230,10 +231,6 @@ class User < ApplicationRecord
 
   def self.requested_sync_approval
     where(sync_approval_status: :requested)
-  end
-
-  def has_role?(*roles)
-    roles.map(&:to_sym).include?(role.to_sym)
   end
 
   def destroy_email_authentications

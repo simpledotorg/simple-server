@@ -58,6 +58,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       role: params[:role],
       access_level: params[:access_level],
       organization_id: params[:organization_id],
+      receive_approval_notifications: params[:receive_approval_notifications],
       device_created_at: Time.current,
       device_updated_at: Time.current,
       sync_approval_status: :denied
