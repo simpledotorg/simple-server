@@ -140,15 +140,13 @@ def add_some_visits(patient, visit_count, facility: patient.registration_facilit
   end
 end
 
-def create_regular_patient(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
-  # Creates a "regular" patient with a passport, some history, visits, etc
+def create_patient_with_visits(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
   patient = create(:patient,
     recorded_at: registration_time,
     registration_facility: facility,
     registration_user: user,
     device_created_at: registration_time,
     device_updated_at: registration_time)
-  passport = create(:patient_business_identifier, patient: patient)
   add_some_visits(patient, 3, facility: facility, user: user)
   patient
 end

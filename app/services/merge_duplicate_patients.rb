@@ -54,12 +54,12 @@ class MergeDuplicatePatients
   def age_and_dob
     if @patients.map(&:date_of_birth).any?
       {
-        date_of_birth: latest_available_attribute(:date_of_birth),
+        date_of_birth: latest_available_property(:date_of_birth),
         age: nil,
         age_updated_at: nil
       }
     else
-      latest_patient_with_age = latest_patient_with_attribute(:age)
+      latest_patient_with_age = latest_patient_with_property(:age)
       {
         date_of_birth: nil,
         age: latest_patient_with_age.age,
@@ -162,15 +162,15 @@ class MergeDuplicatePatients
   end
 
   def create_address
-    Address.create!(copyable_attributes(latest_available_attribute(:address)).merge(id: SecureRandom.uuid))
+    Address.create!(copyable_attributes(latest_available_property(:address)).merge(id: SecureRandom.uuid))
   end
 
-  def latest_available_attribute(attr)
-    @patients.map { |patient| patient.send(attr) }.compact.last
+  def latest_available_property(property)
+    @patients.map { |patient| patient.send(property) }.compact.last
   end
 
-  def latest_patient_with_attribute(attr)
-    @patients.reverse.find { |patient| patient.send(attr).present? }
+  def latest_patient_with_property(property)
+    @patients.reverse.find { |patient| patient.send(property).present? }
   end
 
   def create_cloned_records!(patient, klass, records)

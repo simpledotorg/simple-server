@@ -13,7 +13,7 @@ FactoryBot.define do
 
     trait(:with_encounter) do
       after :build do |blood_pressure|
-        create_encounter_for(blood_pressure)
+        associate_encounter(blood_pressure)
       end
     end
 

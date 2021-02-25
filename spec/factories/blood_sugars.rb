@@ -13,7 +13,7 @@ FactoryBot.define do
 
     trait(:with_encounter) do
       after :build do |blood_sugar|
-        create_encounter_for(blood_sugar)
+        associate_encounter(blood_sugar)
       end
     end
 

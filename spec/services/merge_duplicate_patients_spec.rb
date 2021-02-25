@@ -1,14 +1,11 @@
 require "rails_helper"
 
 def create_duplicate_patients
-  facility_blue = create(:facility, block: "blue")
+  facility_blue = create(:facility, name: "Facility Blue")
   user = create(:user, registration_facility: facility_blue)
-  patient_blue = create_regular_patient(registration_time: 6.month.ago, facility: facility_blue, user: user)
-  passport_id = patient_blue.business_identifiers.first.identifier
-
-  facility_red = create(:facility, facility_group: facility_blue.facility_group, block: "red")
-  patient_red = create_regular_patient(registration_time: 1.month.ago, facility: facility_red, user: user)
-  patient_red.business_identifiers.first.update(identifier: passport_id)
+  patient_blue = create_patient_with_visits(registration_time: 6.month.ago, facility: facility_blue, user: user)
+  facility_red = create(:facility, facility_group: facility_blue.facility_group, name: "Facility Red")
+  patient_red = create_patient_with_visits(registration_time: 1.month.ago, facility: facility_red, user: user)
 
   {blue: patient_blue, red: patient_red}
 end
