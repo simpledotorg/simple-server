@@ -37,7 +37,7 @@ module Reports
     # }
     smart_memoize def assigned_patients_count
       full_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] }
+        values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
     end
@@ -64,6 +64,22 @@ module Reports
           totals[region_slug][period] += previous_total + current_amount
         end
       end
+    end
+
+    smart_memoize def registration_counts
+      complete_registration_counts.each_with_object({}) do |(entry, result), results|
+        values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] if result[period] }
+        results[entry.region.slug] = values
+      end
+    end
+
+    # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
+    # fast and easy via the underlying query.
+    smart_memoize def complete_registration_counts
+      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
+      cache.fetch_multi(*items, force: force_cache?) { |entry|
+        RegisteredPatientsQuery.new.count(entry.region, :month)
+      }
     end
 
     smart_memoize def controlled_patients_count

@@ -23,11 +23,12 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "counts and rates" do
-    it "gets assigned patient counts for single region" do
+    it "gets assigned and registration counts for single region" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
       facility_1, facility_2 = facilities.take(2)
 
-      _facility_1_registered = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
+      _facility_1_registered = create_list(:patient, 2, default_attrs.merge(full_name: "controlled", recorded_at: jan_2019 + 1.day))
       create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019.advance(months: -4), assigned_facility: facility_1, registration_user: user)
       _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
 
@@ -38,6 +39,35 @@ RSpec.describe Reports::Repository, type: :model do
         }
       }
       expect(repo.assigned_patients_count).to eq(expected)
+      expect(repo.registration_counts).to eq(expected)
+    end
+
+    it "gets assigned and registration counts for a range of periods" do
+      facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+      facility_1, facility_2 = facilities.take(2)
+
+      default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
+      _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
+      _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.parse("August 10th 2018")))
+      _facility_2_registered = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+
+      refresh_views
+
+      slug = facility_1.slug
+      repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
+      service = ControlRateService.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
+      result = service.call
+
+      # ensure we match the ControlRateService results, otherwise things could change in the reports
+      expect(repo.registration_counts[slug]).to eq(result[:registrations])
+      expect(repo.assigned_patients_count[slug]).to eq(result[:assigned_patients])
+
+      expect(repo.assigned_patients_count[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.assigned_patients_count[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.assigned_patients_count[slug][july_2020]).to be_nil
+      expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
+      expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
+      expect(repo.registration_counts[slug][july_2020]).to be_nil
     end
 
     it "gets controlled counts and rates for single region" do
