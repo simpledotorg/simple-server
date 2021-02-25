@@ -31,7 +31,7 @@ RSpec.describe RegionCacheWarmerJob, type: :job do
     described_class.drain
   end
 
-  it "refreshes the cache" do
+  it "refreshes the region service cache" do
     facility = create(:facility)
     period = Period.month(Time.current.beginning_of_month)
 
@@ -45,5 +45,22 @@ RSpec.describe RegionCacheWarmerJob, type: :job do
     final_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
 
     expect(final_registrations).not_to eq(initial_registrations)
+  end
+
+  it "refreshes the patient breakdown cache" do
+    facility = create(:facility)
+    period = Period.month(Time.current.beginning_of_month)
+
+    described_class.perform_async(facility.region.id, period.attributes)
+    described_class.drain
+    initial_breakdown = PatientBreakdownService.call(region: facility.region, period: period)
+
+    create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
+    create(:patient, status: :dead, assigned_facility: facility)
+    described_class.perform_async(facility.region.id, period.attributes)
+    described_class.drain
+    final_breakdown = PatientBreakdownService.call(region: facility.region, period: period)
+
+    expect(final_breakdown).not_to eq(initial_breakdown)
   end
 end

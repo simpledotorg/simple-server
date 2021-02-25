@@ -34,7 +34,7 @@ class Period
     self.value = if quarter?
       self.class.cast_to_quarter(value)
     else
-      value.to_date
+      value.to_date.beginning_of_month
     end
   end
 
