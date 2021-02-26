@@ -134,7 +134,7 @@ def create_visit(patient, facility: patient.registration_facility, user: patient
   create(:teleconsultation, patient: patient, facility: facility, requester: user, medical_officer: user, requested_medical_officer: user)
 end
 
-def add_some_visits(patient, visit_count, facility: patient.registration_facility, user: patient.registration_user)
+def add_visits(visit_count, patient:, facility: patient.registration_facility, user: patient.registration_user)
   (1..visit_count).to_a.reverse_each do |num_months|
     create_visit(patient, facility: facility, user: user, visited_at: num_months.months.ago)
   end
@@ -147,6 +147,6 @@ def create_patient_with_visits(registration_time: Time.now, facility: create(:fa
     registration_user: user,
     device_created_at: registration_time,
     device_updated_at: registration_time)
-  add_some_visits(patient, 3, facility: facility, user: user)
+  add_visits(3, patient: patient, facility: facility, user: user)
   patient
 end
