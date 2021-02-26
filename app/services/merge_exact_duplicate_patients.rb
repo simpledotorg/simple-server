@@ -12,7 +12,7 @@ class MergeExactDuplicatePatients
       Rails.logger.info "Merging patients #{patient_ids}"
 
       begin
-        MergeDuplicatePatients.new(Patient.where(id: patient_ids)).merge
+        DeduplicatePatients.new(Patient.where(id: patient_ids)).merge
       rescue => e
         # Bad data can cause our merge logic to breakdown in unpredictable ways.
         # We want to report any such errors and look into them on a per case basis.
@@ -24,19 +24,19 @@ class MergeExactDuplicatePatients
   end
 
   def handle_error(e, patient_ids)
-    merge_failures << { exception: e, patient_ids: patient_ids }
+    merge_failures << {exception: e, patient_ids: patient_ids}
 
     Rails.logger.debug "Failed to merge patients #{patient_ids}"
-    Sentry.capture_message("Failed to merge duplicate patients", extra: { exception: e, patient_ids: patient_ids })
+    Sentry.capture_message("Failed to merge duplicate patients", extra: {exception: e, patient_ids: patient_ids})
   end
 
   def report_stats
-    { processed: { total: duplicate_patient_ids.flatten.count,
-                   distinct: duplicate_patient_ids.count },
-      merged: { total: duplicate_patient_ids.flatten.count - merge_failures.flatten.count,
-                distinct: duplicate_patient_ids.count - merge_failures.count,
-                total_failures: merge_failures.count,
-                distinct_failure: merge_failures.flatten.count}}
+    {processed: {total: duplicate_patient_ids.flatten.count,
+                 distinct: duplicate_patient_ids.count},
+     merged: {total: duplicate_patient_ids.flatten.count - merge_failures.flatten.count,
+              distinct: duplicate_patient_ids.count - merge_failures.count,
+              total_failures: merge_failures.count,
+              distinct_failure: merge_failures.flatten.count}}
   end
 
   def report
