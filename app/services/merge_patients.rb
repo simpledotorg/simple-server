@@ -12,6 +12,8 @@ class MergePatients
   end
 
   def merge
+    Rails.logger.info "Merging patients #{patient_ids}"
+
     new_patient = ActiveRecord::Base.transaction do
       new_patient = create_patient
       create_prescription_drugs(new_patient)
@@ -46,8 +48,9 @@ class MergePatients
       device_created_at: earliest_patient.device_created_at,
       device_updated_at: earliest_patient.device_updated_at,
       assigned_facility: latest_patient.assigned_facility,
-      address: create_address
-    }.merge(age_and_dob)
+      address: create_address,
+      **age_and_dob
+    }
     Patient.create!(attributes)
   end
 
