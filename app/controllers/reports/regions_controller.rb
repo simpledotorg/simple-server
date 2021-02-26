@@ -35,19 +35,19 @@ class Reports::RegionsController < AdminController
 
     @children = @region.reportable_children
 
-    repo = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
+    child_data_repo = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
     @children_data = @children.map { |child|
       slug = child.slug
       {
         region: child,
-        controlled_patients: repo.controlled_patients_count[slug][@period],
-        controlled_patients_rate: repo.controlled_patient_rates[slug][@period],
-        uncontrolled_patients: repo.uncontrolled_patients_count[slug][@period],
-        uncontrolled_patients_rate: repo.uncontrolled_patient_rates[slug][@period],
-        missed_visits: repo.missed_visits_count[slug][@period],
-        missed_visits_percentage: repo.missed_visits_rate[slug][@period],
-        registrations: repo.registration_counts[slug][@period],
-        cumulative_patients: repo.cumulative_assigned_patients_count[slug][@period]
+        controlled_patients: child_data_repo.controlled_patients_count[slug][@period],
+        controlled_patients_rate: child_data_repo.controlled_patient_rates[slug][@period],
+        uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug][@period],
+        uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug][@period],
+        missed_visits: child_data_repo.missed_visits_count[slug][@period],
+        missed_visits_percentage: child_data_repo.missed_visits_rate[slug][@period],
+        registrations: child_data_repo.registration_counts[slug][@period],
+        cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug][@period]
       }
     }
   end
