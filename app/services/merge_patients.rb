@@ -12,6 +12,7 @@ class MergePatients
   end
 
   def merge
+    patient_ids = @patients.pluck(:id)
     Rails.logger.info "Merging patients #{patient_ids}"
 
     new_patient = ActiveRecord::Base.transaction do
@@ -27,7 +28,7 @@ class MergePatients
       new_patient.reload
     end
 
-    Rails.logger.info "Merged patients #{@patients.pluck(:id)} into patient #{new_patient.id}"
+    Rails.logger.info "Merged patients #{patient_ids} into patient #{new_patient.id}"
     new_patient
   end
 
