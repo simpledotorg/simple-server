@@ -16,7 +16,7 @@ def with_comparable_attributes(related_entities)
   end
 end
 
-describe MergePatients do
+describe DeduplicatePatients do
   context "#merge" do
     it "creates a new patient with the right associated facilities and users" do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
