@@ -36,7 +36,7 @@ module Reports
     #    region_slug: { period: value, period: value }
     # }
     smart_memoize def assigned_patients_count
-      full_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
+      complete_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
@@ -44,7 +44,7 @@ module Reports
 
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
-    smart_memoize def full_assigned_patients_counts
+    smart_memoize def complete_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
       cache.fetch_multi(*items, force: force_cache?) { |entry|
         AssignedPatientsQuery.new.count(entry.region, :month, with_exclusions: with_exclusions)
@@ -53,16 +53,11 @@ module Reports
 
     # Return the running total of cumulative assigned patient counts.
     smart_memoize def cumulative_assigned_patients_count
-      full_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
-        region_slug = region_entry.region.slug
-        totals[region_slug] = Hash.new(0)
-        next if patient_counts.empty?
-        full_range = (patient_counts.keys.first..periods.end)
-        full_range.each do |period|
-          previous_total = totals[region_slug][period.previous]
-          current_amount = patient_counts[period] || 0
-          totals[region_slug][period] += previous_total + current_amount
-        end
+      complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
+        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
+        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+        }
       end
     end
 

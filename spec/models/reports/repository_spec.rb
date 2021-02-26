@@ -5,6 +5,8 @@ RSpec.describe Reports::Repository, type: :model do
   let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
+  let(:july_2020_range) { (Period.month(july_2020.advance(months: -24))..Period.month(july_2020)) }
+
   let(:june_1_2018) { Time.parse("June 1, 2018 00:00:00+00:00") }
   let(:june_1_2020) { Time.parse("June 1, 2020 00:00:00+00:00") }
   let(:june_30_2020) { Time.parse("June 30, 2020 00:00:00+00:00") }
@@ -70,6 +72,17 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.registration_counts[slug][july_2020]).to be_nil
     end
 
+    it "gets registration and assigned patient counts for branch new regions with no data" do
+      facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
+      repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
+      expected = {
+        facility_1.slug => july_2020_range.each_with_object({}) { |period, hsh| hsh[period] = 0 }
+      }
+      expect(repo.registration_counts).to eq({facility_1.slug => {}})
+      expect(repo.controlled_patients_count).to eq(expected)
+      expect(repo.controlled_patient_rates).to eq(expected)
+    end
+
     it "gets controlled counts and rates for single region" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
       facility_1, facility_2 = facilities.take(2)
@@ -98,7 +111,8 @@ RSpec.describe Reports::Repository, type: :model do
       }
       repo = Reports::Repository.new(facility_1.region, periods: jan_2020.to_period)
       (jan_2019.to_period..jan_2020.to_period).each do |period|
-        expect(repo.cumulative_assigned_patients_count[facility_1.region.slug][period]).to eq(4)
+        count = repo.cumulative_assigned_patients_count[facility_1.slug][period]
+        expect(count).to eq(4), "expected 4 assigned patients for #{period} but got #{count}"
       end
       expect(repo.controlled_patients_count).to eq(expected_counts)
       expect(repo.controlled_patient_rates).to eq(expected_rates)
@@ -230,8 +244,7 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "caching" do
-    let(:facility_1) { create(:facility) }
-    let(:july_2020_range) { (Period.month(july_2020.advance(months: -24))..Period.month(july_2020)) }
+    let(:facility_1) { create(:facility, name: "facility-1") }
 
     it "incorporates optional args into the cache keys" do
       with_exclusions_repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"), with_exclusions: true)

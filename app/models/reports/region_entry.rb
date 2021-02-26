@@ -11,6 +11,8 @@ module Reports
     end
 
     alias_method :to_s, :cache_key
+
     attr_reader :region
+    delegate :slug, to: :region
   end
 end
