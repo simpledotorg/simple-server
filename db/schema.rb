@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_17_111153) do
+ActiveRecord::Schema.define(version: 2021_02_24_120024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -416,6 +416,7 @@ ActiveRecord::Schema.define(version: 2021_02_17_111153) do
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
     t.uuid "assigned_facility_id"
+    t.uuid "merged_into_patient_id"
     t.index ["address_id"], name: "index_patients_on_address_id"
     t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
@@ -572,6 +573,7 @@ ActiveRecord::Schema.define(version: 2021_02_17_111153) do
     t.string "access_level"
     t.string "teleconsultation_phone_number"
     t.string "teleconsultation_isd_code"
+    t.boolean "receive_approval_notifications", default: true, null: false
     t.index "to_tsvector('simple'::regconfig, COALESCE((full_name)::text, ''::text))", name: "index_gin_users_on_full_name", using: :gin
     t.index ["access_level"], name: "index_users_on_access_level"
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
@@ -596,6 +598,7 @@ ActiveRecord::Schema.define(version: 2021_02_17_111153) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
+  add_foreign_key "patients", "patients", column: "merged_into_patient_id"
   add_foreign_key "protocol_drugs", "protocols"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
