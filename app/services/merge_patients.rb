@@ -1,4 +1,4 @@
-class MergeDuplicatePatients
+class MergePatients
   def initialize(patients)
     @patients = patients.sort_by(&:recorded_at)
   end
