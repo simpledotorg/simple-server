@@ -1,0 +1,124 @@
+<div class="card mb-0">
+  <h3 class="mb-16px c-black">
+    <%= @period %> <%= region_type %> performance
+  </h3>
+  <div class="table-responsive">
+    <table id="region-comparison-table" class="table-compact">
+      <colgroup>
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+        <col class="table-divider">
+        <col>
+      </colgroup>
+      <thead>
+        <tr class="sorts" data-sort-method="thead">
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
+            <%= region_type.capitalize %>
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            BP controlled
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Patients with<br>
+            BP controlled
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            BP not controlled
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Patients with<br>
+            BP not controlled
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Missed visits
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Patients with<br>
+            a missed visit
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Total registered<br>
+            patients
+          </th>
+          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
+            Patients registered<br>
+            in <%= @period.to_s %>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-total" data-sort-method="none">
+          <td class="type-title">
+            <%= @region.name %>
+          </td>
+          <td class="ta-left">
+            <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+          </td>
+          <td class="ta-left">
+            <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
+          </td>
+          <td class="ta-left">
+            <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
+          </td>
+          <td class="ta-left">
+            <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
+          </td>
+          <td class="ta-left">
+            <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
+          </td>
+          <td class="ta-left">
+            <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
+          </td>
+          <td class="ta-left">
+            <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
+          </td>
+          <td class="ta-left">
+            <%= number_with_delimiter(@data.last_value(:registrations)) %>
+          </td>
+        </tr>
+        <% data.each do |result| %>
+          <% next if result.dig("controlled_patients_rate", @period).nil? %>
+          <% next if result.dig("uncontrolled_patients_rate", @period).nil? %>
+          <% next if result.dig("missed_visits_rate", @period).nil? %>
+          <% next if result.dig("registrations", @period).nil? %>
+          <tr>
+            <td class="ta-left">
+              <%= link_to(reports_region_path(result.region, report_scope: region_type)) do %>
+                <%= result.region.name %>
+              <% end %>
+            </td>
+            <td class="ta-left">
+              <%= number_to_percentage(result["controlled_patients_rate"].values.last || 0, precision: 0) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result["controlled_patients"].values.last) %>
+            </td>
+            <td class="ta-left">
+              <%= number_to_percentage(result["uncontrolled_patients_rate"].values.last || 0, precision: 0) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result["uncontrolled_patients"].values.last) %>
+            </td>
+            <td class="ta-left">
+              <%= number_to_percentage(result["missed_visits_rate"].values.last || 0, precision: 0) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result["missed_visits"].values.last) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result["cumulative_registrations"].values.last) %>
+            </td>
+            <td class="ta-left">
+              <%= number_with_delimiter(result["registrations"].values.last || 0) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
