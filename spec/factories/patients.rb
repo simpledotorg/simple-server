@@ -80,7 +80,7 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except("registration_user_id")
     .except("test_data")
     .except("deleted_by_user_id")
-    .except("merged_into")
+    .except("merged_into_patient_id")
     .merge(
       "address" => patient.address.attributes.with_payload_keys,
       "phone_numbers" => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except("patient_id", "dnd_status") },
@@ -136,21 +136,21 @@ def create_visit(patient, facility: patient.registration_facility, user: patient
   }
 end
 
-def add_some_visits(patient, visit_count, facility: patient.registration_facility, user: patient.registration_user)
+def add_visits(visit_count, patient:, facility: patient.registration_facility, user: patient.registration_user)
   (1..visit_count).to_a.reverse_each do |num_months|
     create_visit(patient, facility: facility, user: user, visited_at: num_months.months.ago)
   end
 end
 
-def create_regular_patient(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
-  # Creates a "regular" patient with a passport, some history, visits, etc
+def create_patient_with_visits(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
   patient = create(:patient,
     recorded_at: registration_time,
     registration_facility: facility,
     registration_user: user,
     device_created_at: registration_time,
     device_updated_at: registration_time)
-  passport = create(:patient_business_identifier, patient: patient)
-  add_some_visits(patient, 3, facility: facility, user: user)
+
+  add_visits(3, patient: patient, facility: facility, user: user)
+
   patient
 end

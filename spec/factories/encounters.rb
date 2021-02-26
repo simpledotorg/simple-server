@@ -55,7 +55,7 @@ def updated_encounters_payload(existing_encounter)
   )
 end
 
-def create_encounter_for(observable)
+def associate_encounter(observable)
   encountered_on = Encounter.generate_encountered_on(observable.recorded_at, 0)
   encounter_id = Encounter.generate_id(observable.facility_id, observable.patient_id, encountered_on)
 
