@@ -6,6 +6,8 @@ module Reports
     def initialize(regions, periods:, with_exclusions: false)
       @regions = Array(regions)
       @with_exclusions = with_exclusions
+      @no_bp_measure_query = NoBPMeasureQuery.new
+      @control_rate_query = ControlRateQuery.new
 
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -14,6 +16,8 @@ module Reports
       end
     end
 
+    attr_reader :control_rate_query
+    attr_reader :no_bp_measure_query
     attr_reader :periods
     attr_reader :regions
     attr_reader :with_exclusions
@@ -145,14 +149,6 @@ module Reports
     def percentage(numerator, denominator)
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
-    end
-
-    def no_bp_measure_query
-      @no_bp_measure_query ||= NoBPMeasureQuery.new
-    end
-
-    def control_rate_query
-      @control_rate_query ||= ControlRateQuery.new
     end
 
     def force_cache?
