@@ -32,7 +32,7 @@ class MergePatients
   end
 
   def mark_as_merged(new_patient)
-    @patients.map { |patient| patient.update!(merged_into: new_patient.id) }
+    @patients.map { |patient| patient.update!(merged_into_patient_id: new_patient.id) }
     @patients.map(&:discard_data)
   end
 

@@ -212,12 +212,12 @@ describe MergePatients do
         expect(patients.map(&:discarded?)).to all be true
       end
 
-      it "sets the merged_into on the merged patients to the new patient" do
+      it "sets the merged_into_patient_id on the merged patients to the new patient" do
         patients = create_duplicate_patients.values
 
         new_patient = described_class.new(patients).merge
 
-        expect(patients.map(&:merged_into)).to all eq new_patient.id
+        expect(patients.map(&:merged_into_patient_id)).to all eq new_patient.id
       end
     end
   end
