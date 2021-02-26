@@ -8,12 +8,12 @@
           <%= f.password_field :password, type: "password", id: "password", class: "password-field", autofocus: true, autocomplete: "off" %>
           <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
         </div>
-        <p class="password-prompt"><%= t("password_creation.prompt") %></p>
+        <p class="password-prompt"><%= t("devise.password_creation.prompt") %></p>
         <ul class="password-validation-checklist">
-          <li id="length"><i class="fas fa-check-circle"></i><%= t("password_creation.too_short") %></li>
-          <li id="number"><i class="fas fa-check-circle"></i><%= t("password_creation.needs_number") %></li>
-          <li id="lower"><i class="fas fa-check-circle"></i><%= t("password_creation.needs_lower_case") %></li>
-          <li id="upper"><i class="fas fa-check-circle"></i><%= t("password_creation.needs_upper_case") %></li>
+          <li id="length"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.too_short") %></li>
+          <li id="number"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_number") %></li>
+          <li id="lower"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_lower_case") %></li>
+          <li id="upper"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_upper_case") %></li>
         </ul>
       <%= f.primary t("devise.invitations.edit.submit_button"), id: "password-submit", disabled: true %>
     <% end %>

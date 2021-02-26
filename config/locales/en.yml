@@ -70,12 +70,6 @@ en:
   follow_up_patients_copy: "Hypertension patients with a BP measure taken during a month in %{region_name}."
   not_lost_to_follow_up_copy: "Hypertension patients with a BP taken in the last 12 months."
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}."
-  password_creation:
-    prompt: "Keep your account's data private. Create a secure password:"
-    too_short: "At least 10 characters long"
-    needs_number: "Includes one number"
-    needs_lower_case: "Includes one lower case character"
-    needs_upper_case: "Includes one upper case character"
 
   admin:
     reset_otp_alert: 'Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP'
@@ -141,6 +135,14 @@ en:
     omniauth_callbacks:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."
+    password_creation:
+      needs_number: "Includes one number"
+      needs_lower_case: "Includes one lower case character"
+      needs_upper_case: "Includes one upper case character"
+      prompt: "Keep your account's data private. Create a secure password:"
+      reset_button: "Change password"
+      reset_header: "Change your password"
+      too_short: "At least 10 characters long"
     passwords:
       no_token: "You can't access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided."
       send_instructions: "You will receive an email with instructions on how to reset your password in a few minutes."
