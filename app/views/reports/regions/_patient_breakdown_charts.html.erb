@@ -41,8 +41,8 @@
                   <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>
                 </span>
                 patients registered till
-                <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
-                  <%= @period.bp_control_range_end_date %>
+                <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
+                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>
                 </span>
               </p>
             <% else %>
