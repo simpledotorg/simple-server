@@ -410,15 +410,11 @@ Reports = function () {
         const mostRecentPeriod = cardNode.getAttribute("data-period");
         const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
         const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
-        const registrationsEndDate = registrationsPeriodEndNode.getAttribute("data-registrations-period-end");
         const monthlyRegistrationsNode = cardNode.querySelector("[data-monthly-registrations]");
         const registrationsMonthEndNode = cardNode.querySelector("[data-registrations-month-end]");
-        const totalRegistrationDataPoints = Object.values(data.cumulativeRegistrations).length - 1;
         let label = null;
-        let dataPointIndex = null;
         if (tooltip.dataPoints) {
           label = tooltip.dataPoints[0].label;
-          dataPointIndex = tooltip.dataPoints[0]["index"];
         } else {
           label = mostRecentPeriod;
         }
@@ -426,13 +422,9 @@ Reports = function () {
         const cumulativeRegistrations = data.cumulativeRegistrations[label];
         const monthlyRegistrations = data.monthlyRegistrations[label];
 
-        const setRegistrationEndDate = dataPointIndex == totalRegistrationDataPoints || tooltip.dataPoints == undefined
-          ? registrationsEndDate
-          : period.bp_control_end_date;
-
         monthlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(monthlyRegistrations);
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(cumulativeRegistrations);
-        registrationsPeriodEndNode.innerHTML = setRegistrationEndDate;
+        registrationsPeriodEndNode.innerHTML = period.bp_control_end_date;
         registrationsMonthEndNode.innerHTML = label;
       }
     };
