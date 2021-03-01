@@ -68,12 +68,4 @@ module DashboardHelper
   def facility_size_six_month_rate_change(facility_size_data, rate_name)
     facility_size_data[@period][rate_name] - facility_size_data[@start_period][rate_name] || 0
   end
-
-  def registrations_end_date
-    if @period.value.month == Date.current.month
-      Date.current.to_s(:day_mon_year)
-    else
-      @period.bp_control_range_end_date
-    end
-  end
 end
