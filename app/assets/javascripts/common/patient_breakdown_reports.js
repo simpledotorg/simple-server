@@ -109,7 +109,7 @@ PatientBreakdownReports = function () {
         totalPatientsNode.innerHTML = reports.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.ltfu_since_date;
         registrationsNode.innerHTML = reports.formatNumberWithCommas(cumulativeAssignedPatients);
-        registrationsPeriodEndNode.innerHTML = period.bp_control_end_date;
+        registrationsPeriodEndNode.innerHTML = period.start_date;
       }
     };
 
