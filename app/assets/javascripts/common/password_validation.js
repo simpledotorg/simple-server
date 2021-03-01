@@ -20,7 +20,7 @@ PasswordValidation = function() {
 
   this.validatePassword = () => {
     const token = $("meta[name=csrf-token]").attr("content");
-    const url = "http://localhost:3000/email_authentications/validate";
+    const url = "/email_authentications/validate";
     const password = this.passwordInput.val();
 
     $.ajax({
