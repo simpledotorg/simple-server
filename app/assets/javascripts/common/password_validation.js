@@ -1,5 +1,6 @@
 PasswordValidation = function() {
   const DebounceTimeout = 500;
+  const Validations = ["too_short", "needs_number", "needs_lower", "needs_upper"];
 
   this.initialize = () => {
     this.timer = null;
@@ -18,8 +19,8 @@ PasswordValidation = function() {
   }
 
   this.validatePassword = () => {
-    const token = $("meta[name=csrf-token]").attr("content")
-    const url = "http://localhost:3000/email_authentications/validate"
+    const token = $("meta[name=csrf-token]").attr("content");
+    const url = "http://localhost:3000/email_authentications/validate";
     const password = this.passwordInput.val();
 
     $.ajax({
@@ -30,9 +31,12 @@ PasswordValidation = function() {
       },
       data: {"password": password}
     }).done((data, status) => {
-      let response = []
+      let response;
       if (status === "success") {
-        response = data["errors"]
+        response = data["errors"];
+      } else {
+        // if we don't get a response, mark all validations as failures
+        response = Validations;
       }
       this.updateChecklist(response);
       this.updateSubmitStatus(response);
@@ -40,10 +44,9 @@ PasswordValidation = function() {
   }
 
   this.updateChecklist = (response) => {
-    response.includes("too_short") ? this.uncheckItem("length") : this.checkItem("length");
-    response.includes("needs_lower") ? this.uncheckItem("lower") : this.checkItem("lower");
-    response.includes("needs_upper") ? this.uncheckItem("upper") : this.checkItem("upper");
-    response.includes("needs_number") ? this.uncheckItem("number") : this.checkItem("number");
+    Validations.forEach(validationName => {
+      response.includes(validationName) ? this.uncheckItem(validationName) : this.checkItem(validationName);
+    });
   }
 
   this.checkItem = (id) => {
