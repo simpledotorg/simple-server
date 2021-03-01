@@ -93,7 +93,7 @@ class PatientsWithHistoryExporter < PatientsExporter
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
-      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status],
+      status(patient_summary),
       patient_summary.latest_phone_number,
       patient_summary.street_address,
       patient_summary.village_or_colony,

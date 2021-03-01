@@ -235,6 +235,7 @@ class Patient < ApplicationRecord
     medical_history&.discard
     phone_numbers.discard_all
     prescription_drugs.discard_all
+    teleconsultations.discard_all
     discard
   end
 end

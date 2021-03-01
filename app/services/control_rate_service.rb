@@ -11,6 +11,7 @@ class ControlRateService
     @facilities = region.facilities
     @periods = periods
     @report_range = periods
+    @period_type = @report_range.begin.type
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
     @with_exclusions = with_exclusions
@@ -21,6 +22,7 @@ class ControlRateService
   delegate :logger, to: Rails
   attr_reader :facilities
   attr_reader :region
+  attr_reader :period_type
   attr_reader :report_range
   attr_reader :results
   attr_reader :with_exclusions
@@ -75,21 +77,13 @@ class ControlRateService
   def registration_counts
     return @registration_counts if defined? @registration_counts
 
-    @registration_counts =
-      region.registered_patients
-        .with_hypertension
-        .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
-        .count
+    @registration_counts = RegisteredPatientsQuery.new.count(region, period_type)
   end
 
   def assigned_patients_counts
     return @assigned_patients_counts if defined? @assigned_patients_counts
 
-    @assigned_patients_counts =
-      region.assigned_patients
-        .for_reports(with_exclusions: with_exclusions)
-        .group_by_period(report_range.begin.type, :recorded_at, {format: group_date_formatter})
-        .count
+    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type, with_exclusions: with_exclusions)
   end
 
   def ltfu_patients(period)
@@ -108,9 +102,9 @@ class ControlRateService
 
   def cache_key
     if with_exclusions
-      "#{self.class}/#{region.cache_key}/#{@periods.end.type}/with_exclusions"
+      "#{self.class}/#{region.cache_key}/#{period_type}/with_exclusions"
     else
-      "#{self.class}/#{region.cache_key}/#{@periods.end.type}"
+      "#{self.class}/#{region.cache_key}/#{period_type}"
     end
   end
 

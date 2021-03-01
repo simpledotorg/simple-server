@@ -27,4 +27,10 @@ class MaterializedPatientSummary < ActiveRecord::Base
   def prescribed_drugs(date: Date.current)
     prescription_drugs.prescribed_as_of(date)
   end
+
+  def ltfu?
+    recorded_at < Patient::LTFU_TIME.ago &&
+      (latest_blood_pressure_recorded_at.nil? ||
+        latest_blood_pressure_recorded_at < Patient::LTFU_TIME.ago)
+  end
 end

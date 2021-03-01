@@ -45,9 +45,7 @@ module Reports
     #
     def cached_query(calculation, &block)
       items = cache_keys(calculation)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item|
-        block.call(item)
-      }
+      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item| block.call(item) }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
         results[item.region.slug][item.period] = count
