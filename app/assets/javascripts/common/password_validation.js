@@ -4,7 +4,7 @@ PasswordValidation = function() {
 
   this.initialize = () => {
     this.timer = null;
-    this.passwordInput = $("#password");
+    this.passwordInput = $("#password-input");
     this.passwordInput.on("input", this.debounce);
   }
 
@@ -33,10 +33,10 @@ PasswordValidation = function() {
       error: () => {
         this.updateChecklist(Validations);
         this.updateSubmitStatus(Validations);
-        this.displayValidationError();
+        this.showErrorMessage();
       },
       success: (response) => {
-        this.hideValidationError();
+        this.hideErrorMessage();
         const errors = response["errors"];
         this.updateChecklist(errors);
         this.updateSubmitStatus(errors);
@@ -44,13 +44,13 @@ PasswordValidation = function() {
     });
   }
 
-  this.hideValidationError = () => {
-    $("#password").removeClass("is-invalid");
+  this.hideErrorMessage = () => {
+    this.passwordInput.removeClass("is-invalid");
     $("#validation-error-message").addClass("hidden");
   }
 
-  this.displayValidationError = () => {
-    $("#password").addClass("is-invalid");
+  this.showErrorMessage = () => {
+    this.passwordInput.addClass("is-invalid");
     $("#validation-error-message").removeClass("hidden");
   }
 
