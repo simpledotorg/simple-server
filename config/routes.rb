@@ -137,6 +137,8 @@ Rails.application.routes.draw do
     path: "email_authentications",
     controllers: {invitations: "email_authentications/invitations"}
 
+  post "email_authentications/validate", to: "email_authentications/password_validations#create"
+
   resources :admins do
     member do
       get "access_tree/:page", to: "admins#access_tree", as: :access_tree
@@ -172,7 +174,8 @@ Rails.application.routes.draw do
     get "missed_visits", to: "missed_visits"
     get "facility_performance", to: "facility_performance#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
-    get "drug_stocks", to: "drug_stocks#index"
+    get "drug_stocks", to: "drug_stocks#drug_stocks"
+    get "drug_consumption", to: "drug_stocks#drug_consumption"
     post "drug_stocks", to: "drug_stocks#create"
     get "drug_stocks/:facility_id/new", to: "drug_stocks#new", as: :drug_stock_form
   end

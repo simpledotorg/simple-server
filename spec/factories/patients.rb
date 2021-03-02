@@ -80,6 +80,7 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except("registration_user_id")
     .except("test_data")
     .except("deleted_by_user_id")
+    .except("merged_into_patient_id")
     .merge(
       "address" => patient.address.attributes.with_payload_keys,
       "phone_numbers" => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except("patient_id", "dnd_status") },
@@ -120,4 +121,32 @@ def updated_patient_payload(existing_patient)
       "metadata" => business_identifier.metadata&.to_json
     )]
   )
+end
+
+def create_visit(patient, facility: patient.registration_facility, user: patient.registration_user, visited_at: Time.now)
+  patient.prescription_drugs.where("device_created_at < ?", visited_at).update_all(is_deleted: true)
+  create(:blood_pressure, :with_encounter, :critical, recorded_at: visited_at, facility: facility, patient: patient, user: user)
+  create(:blood_sugar, :fasting, :with_encounter, recorded_at: visited_at, facility: facility, patient: patient, user: user)
+  create_list(:prescription_drug, 2, :protocol, device_created_at: visited_at, facility: facility, patient: patient, user: user)
+  create_list(:prescription_drug, 2, device_created_at: visited_at, facility: facility, patient: patient, user: user)
+  patient.appointments.where("device_created_at < ?", visited_at).update_all(status: :visited)
+  create(:appointment, status: :scheduled, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user)
+  create(:teleconsultation, patient: patient, facility: facility, requester: user, medical_officer: user, requested_medical_officer: user)
+end
+
+def add_visits(visit_count, patient:, facility: patient.registration_facility, user: patient.registration_user)
+  (1..visit_count).to_a.reverse_each do |num_months|
+    create_visit(patient, facility: facility, user: user, visited_at: num_months.months.ago)
+  end
+end
+
+def create_patient_with_visits(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
+  patient = create(:patient,
+    recorded_at: registration_time,
+    registration_facility: facility,
+    registration_user: user,
+    device_created_at: registration_time,
+    device_updated_at: registration_time)
+  add_visits(3, patient: patient, facility: facility, user: user)
+  patient
 end

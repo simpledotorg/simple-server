@@ -47,13 +47,13 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
         it "responds successfully" do
           post :create, params: request_params
 
-          expect(response).to redirect_to(admins_url)
+          expect(response).to redirect_to(admins_url), -> { {status: response.status, body: response.body, flash: flash} }
         end
 
         it "creates an email authentication for invited email" do
           expect {
             post :create, params: request_params
-          }.to change(EmailAuthentication, :count).by(1)
+          }.to change(EmailAuthentication, :count).by(1), -> { {status: response.status, body: response.body, flash: flash} }
 
           expect(EmailAuthentication.find_by(email: email)).to be_present
         end
@@ -61,7 +61,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
         it "creates a user record for the invited admin" do
           expect {
             post :create, params: request_params
-          }.to change(User, :count).by(1)
+          }.to change(User, :count).by(1), -> { {status: response.status, body: response.body, flash: flash} }
 
           new_user = User.find_by(full_name: full_name)
           expect(new_user.full_name).to eq(params[:full_name])
@@ -73,7 +73,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
           post :create, params: request_params
 
           invitation_email = ActionMailer::Base.deliveries.last
-          expect(invitation_email.to).to include(email)
+          expect(invitation_email.to).to include(email), -> { {status: response.status, body: response.body, flash: flash} }
         end
       end
 
@@ -126,7 +126,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
         sign_in(manager.email_authentication)
 
         post :create, params: request_params
-        expect(response).to redirect_to(admins_url)
+        expect(response).to redirect_to(admins_url), -> { {status: response.status, body: response.body, flash: flash} }
 
         sign_out(manager.email_authentication)
       end
@@ -135,7 +135,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
         sign_in(power_user.email_authentication)
 
         post :create, params: request_params
-        expect(response).to redirect_to(admins_url)
+        expect(response).to redirect_to(admins_url), -> { {status: response.status, body: response.body, flash: flash} }
       end
     end
 
@@ -149,7 +149,7 @@ RSpec.describe EmailAuthentications::InvitationsController, type: :controller do
           sign_in(non_manager.email_authentication)
 
           post :create, params: request_params
-          expect(response).to redirect_to(root_path)
+          expect(response).to redirect_to(root_path), -> { {status: response.status, body: response.body, flash: flash} }
         end
       end
     end

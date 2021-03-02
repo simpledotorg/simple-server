@@ -54,7 +54,7 @@
         <% end %>
         <% %>
         <% if patient_days.present? %>
-          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "tooltip", report: @report.dig(:all, drug_category) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:all, drug_category) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
             <em class="<%= patient_days_bg_color(patient_days) %>">
               <%= patient_days %>
             </em>
@@ -92,7 +92,7 @@
             <% end %>
           <% end %>
           <% if patient_days.present? %>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "tooltip", report: facility_report[drug_category] %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_stocks_tooltip", report: facility_report[drug_category] %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
               <em class="<%= patient_days_bg_color(patient_days) %>">
                 <%= patient_days %>
               </em>

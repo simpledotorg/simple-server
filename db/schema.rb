@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_20_065508) do
+ActiveRecord::Schema.define(version: 2021_02_24_120024) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -416,6 +416,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_065508) do
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
     t.uuid "assigned_facility_id"
+    t.uuid "merged_into_patient_id"
     t.index ["address_id"], name: "index_patients_on_address_id"
     t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
@@ -597,6 +598,7 @@ ActiveRecord::Schema.define(version: 2021_02_20_065508) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
+  add_foreign_key "patients", "patients", column: "merged_into_patient_id"
   add_foreign_key "protocol_drugs", "protocols"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"

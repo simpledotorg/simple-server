@@ -62,6 +62,7 @@ class Api::V3::PatientTransformer
         .except("address_id",
           "registration_user_id",
           "test_data",
+          "merged_into_patient_id",
           "deleted_by_user_id")
         .merge(
           "address" => Api::V3::Transformer.to_response(patient.address),
