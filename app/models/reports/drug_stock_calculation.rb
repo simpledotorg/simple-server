@@ -42,17 +42,15 @@ module Reports
     end
 
     def consumption
-      consumption = {}
       protocol_drugs = protocol_drugs_by_category[@drug_category]
-      drug_consumption = protocol_drugs.each_with_object(consumption) { |protocol_drug, consumption|
+      drug_consumption = protocol_drugs.each_with_object({}) { |protocol_drug, consumption|
         opening_balance = @previous_month_stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code, :in_stock)
         received = @stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code, :received)
         closing_balance = @stocks_by_rxnorm_code&.dig(protocol_drug.rxnorm_code, :in_stock)
         consumption[protocol_drug] = consumption_calculation(opening_balance, received, closing_balance)
       }
-      consumption.merge(drug_consumption)
-      consumption[:base_doses] = base_doses(drug_consumption)
-      consumption
+      drug_consumption[:base_doses] = base_doses(drug_consumption)
+      drug_consumption
     rescue => e
       # drug is not in formula, or other configuration error
       Sentry.capture_message("Consumption Calculation Error",
@@ -105,7 +103,6 @@ module Reports
         consumed: opening_balance + received - closing_balance
       }
     rescue => e
-      # drug is not in formula, or other configuration error
       Sentry.capture_message("Consumption Calculation Error",
         extra: {
           protocol: @protocol,
@@ -132,7 +129,8 @@ module Reports
     def base_doses_calculation(doses)
       doses
         .reject { |dose| dose[:consumed].nil? || dose[:consumed] == "error" }
-        .map { |dose| dose[:consumed] * dose[:coefficient] }.reduce(:+)
+        .map { |dose| dose[:consumed] * dose[:coefficient] }
+        .reduce(:+)
     end
 
     def estimated_patients

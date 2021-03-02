@@ -23,7 +23,7 @@
   <tr>
     <th></th>
     <% @drugs_by_category.map do |drug_category, drugs| %>
-      <th colspan=<%= drugs.count.to_s %>><%= protocol_drug_labels[drug_category] %></th>
+      <th colspan=<%= drugs.count.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
     <% end %>
     <th colspan=<%= @drugs_by_category.count.to_s %>>Overall in base doses</th>
   </tr>
@@ -38,7 +38,7 @@
     <% end %>
     <% @drugs_by_category.map do |drug_category, _drugs| %>
       <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
-        <%= protocol_drug_short_labels[drug_category] %><br> base doses
+        <%= protocol_drug_labels[drug_category][:short] %><br> base doses
       </th>
     <% end %>
     <th class="mobile"></th>

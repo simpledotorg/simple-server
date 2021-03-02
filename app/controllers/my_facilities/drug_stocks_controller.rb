@@ -12,25 +12,13 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :set_force_cache, only: [:drug_stocks, :drug_consumption]
 
   def drug_stocks
-    @facilities = filter_facilities
-      .includes(facility_group: :protocol_drugs)
-      .where(protocol_drugs: {stock_tracked: true})
-    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-    render && return if @facilities.empty?
-    query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
-    @report = query.drug_stocks_report
-    @drugs_by_category = query.protocol_drugs_by_category
+    drug_report
+    @report = @query.drug_stocks_report
   end
 
   def drug_consumption
-    @facilities = filter_facilities
-      .includes(facility_group: :protocol_drugs)
-      .where(protocol_drugs: {stock_tracked: true})
-    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-    render && return if @facilities.empty?
-    query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
-    @report = query.drug_consumption_report
-    @drugs_by_category = query.protocol_drugs_by_category
+    drug_report
+    @report = @query.drug_consumption_report
   end
 
   def new
@@ -58,6 +46,16 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   private
+
+  def drug_report
+    @facilities = filter_facilities
+      .includes(facility_group: :protocol_drugs)
+      .where(protocol_drugs: {stock_tracked: true})
+    @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
+    render && return if @facilities.empty?
+    @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
+    @drugs_by_category = @query.protocol_drugs_by_category
+  end
 
   def redirect_url(query_params = {})
     report_url_with_filters = session[:report_url_with_filters]
