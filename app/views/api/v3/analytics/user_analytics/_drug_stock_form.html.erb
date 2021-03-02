@@ -7,6 +7,7 @@
     <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
 
     <%= bootstrap_form_with(url: api_drug_stocks_url(format: :json),
+      method: :post,
       autocomplete: "off",
       label_errors: true) do |form| %>
 
