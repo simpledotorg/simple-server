@@ -204,7 +204,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
         "bp_control_start_date" => "1-Oct-2019",
         "bp_control_end_date" => "31-Dec-2019",
         "start_date" => "1-Dec-2019",
-        "ltfu_since_date" => "1-Dec-2018"
+        "ltfu_since_date" => "1-Dec-2018",
+        "bp_control_registration_date" => "30-Sep-2019"
       }
       expect(data[:period_info][dec_2019_period]).to eq(period_hash)
     end
