@@ -29,39 +29,44 @@ PasswordValidation = function() {
       headers: {
         "X-CSRF-Token": token
       },
-      data: {"password": password}
-    }).done((data, status) => {
-      let response;
-      if (status === "success") {
-        response = data["errors"];
-      } else {
-        // if we don't get a response, mark all validations as failures
-        response = Validations;
+      data: {"password": password},
+      error: () => {
+        this.updateChecklist(Validations);
+        this.updateSubmitStatus(Validations);
+        this.displayValidationError();
+      },
+      success: (response) => {
+        this.hideValidationError();
+        const errors = response["errors"];
+        this.updateChecklist(errors);
+        this.updateSubmitStatus(errors);
       }
-      this.updateChecklist(response);
-      this.updateSubmitStatus(response);
     });
   }
 
-  this.updateChecklist = (response) => {
-    Validations.forEach(validationName => {
-      response.includes(validationName) ? this.uncheckItem(validationName) : this.checkItem(validationName);
+  this.hideValidationError = () => {
+    $("#password").removeClass("is-invalid");
+    $("#validation-error-message").addClass("hidden");
+  }
+
+  this.displayValidationError = () => {
+    $("#password").addClass("is-invalid");
+    $("#validation-error-message").removeClass("hidden");
+  }
+
+  this.updateChecklist = (errors) => {
+    Validations.forEach(validation => {
+      if(errors.includes(validation)) {
+        $(`#${validation}`).removeClass("completed")
+      } else {
+        $(`#${validation}`).addClass("completed")
+      }
     });
   }
 
-  this.checkItem = (id) => {
-    const text = $(`#${id}`);
-    text.addClass("completed");
-  }
-
-  this.uncheckItem = (id) => {
-    const text = $(`#${id}`);
-    text.removeClass("completed");
-  }
-
-  this.updateSubmitStatus = (response) => {
+  this.updateSubmitStatus = (errors) => {
     const button = $("#password-submit");
-    if (response.length === 0) {
+    if (errors.length === 0) {
       button.removeAttr("disabled");
     } else {
       button.attr("disabled", true);

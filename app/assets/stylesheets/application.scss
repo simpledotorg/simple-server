@@ -653,6 +653,13 @@ span.inactive {
 	width: 480px;
 }
 
+.error-message {
+    color: red;
+    &.hidden {
+        display: none;
+    }
+}
+
 .password-prompt {
 	color: $grey-dark;
 	margin-bottom: 4px;
