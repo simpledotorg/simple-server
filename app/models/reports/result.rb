@@ -183,7 +183,7 @@ module Reports
           ltfu_since_date: period.start_date.advance(months: -12).to_s(:day_mon_year),
           bp_control_start_date: period.bp_control_range_start_date,
           bp_control_end_date: period.bp_control_range_end_date,
-          bp_control_registration_date: period.bp_control_range_registration_date
+          bp_control_registration_date: period.bp_control_registrations_until_date
         }
       end
     end
