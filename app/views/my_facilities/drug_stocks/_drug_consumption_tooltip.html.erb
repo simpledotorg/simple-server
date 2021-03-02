@@ -1,0 +1,7 @@
+<div>
+  <% return nil if report.nil? || report[:consumed] == "error" %>
+  <span class='math'><%= report[:opening_balance] %></span>Opening balance<br>
+  <span class='math'>+<%= report[:received] %></span>Stock received<br>
+  <span class='math'>-<%= report[:closing_balance] %></span>Closing balance<br>
+  <span class='math'>=<%= report[:consumed] %></span>Tablets consumed
+</div>

@@ -1,0 +1,113 @@
+<table class="mt-3 table table-compact table-responsive-md table-hover analytics-table">
+  <colgroup>
+    <col>
+    <% @drugs_by_category.map do |_drug_category, drugs| %>
+      <% drugs.each_with_index do |_drug, index| %>
+        <% if index == 0 %>
+          <col class="table-divider">
+        <% else %>
+          <col>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% @drugs_by_category.each_with_index do |_drug_category, index| %>
+      <% if index == 0 %>
+        <col class="table-divider">
+      <% else %>
+        <col>
+      <% end %>
+    <% end %>
+    <col class="mobile">
+  </colgroup>
+  <thead>
+  <tr>
+    <th></th>
+    <% @drugs_by_category.map do |drug_category, drugs| %>
+      <th colspan=<%= drugs.count.to_s %>><%= protocol_drug_labels[drug_category][:full] %></th>
+    <% end %>
+    <th colspan=<%= @drugs_by_category.count.to_s %>>Overall in base doses</th>
+  </tr>
+  <tr data-sort-method="thead" class="sorts">
+    <th class="row-label sort-label" data-sort-default>Facilities</th>
+    <% @drugs_by_category.map do |_drug_category, drugs| %>
+      <% drugs.map do |drug| %>
+        <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key=<%= drug.id %>>
+          <%= drug.name %><br> <%= drug.dosage %>
+        </th>
+      <% end %>
+    <% end %>
+    <% @drugs_by_category.map do |drug_category, _drugs| %>
+      <th class="row-label sort-label row-medicine" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
+        <%= protocol_drug_labels[drug_category][:short] %><br> base doses
+      </th>
+    <% end %>
+    <th class="mobile"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr data-sort-method="thead" class="sorts">
+    <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= @report[:all][:patient_count] %>">
+      All
+    </td>
+    <% @drugs_by_category.map do |drug_category, drugs| %>
+      <% drugs.map do |drug| %>
+        <% consumed = @report[:all].dig(drug_category, drug, :consumed) %>
+        <% if consumed == "error" %>
+          <td class="type-blank"><span>?</span></td>
+        <% elsif consumed.nil? %>
+          <td class="type-blank"><span>&#8212;</span></td>
+        <% else %>
+          <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: @report.dig(:all, drug_category, drug) %>" data-sort-column-key=<%= drug.id %>>
+            <%= consumed %>
+          </td>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% @drugs_by_category.map do |drug_category, _drugs| %>
+      <% total = @report.dig(:all, drug_category, :base_doses, :total) %>
+      <% if total.nil? || total == "error" %>
+        <td class="type-blank"><span>?</span></td>
+      <% else %>
+        <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "base_doses_tooltip", report: @report.dig(:all, drug_category, :base_doses) %>" data-sort-column-key=<%= drug_category %>>
+          <%= total %>
+        </td>
+      <% end %>
+    <% end %>
+    <td class="mobile"></td>
+  </tr>
+  <% @report[:facilities].each do |(_facility_id, facility_report)| %>
+    <tr>
+      <% facility = facility_report[:facility] %>
+      <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
+          data-original-title='<%= "#{facility.name}: #{facility_report[:patient_count]} patients" %>'>
+        <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
+          <%= facility.name %>
+        <% end %>
+      </td>
+      <% @drugs_by_category.map do |drug_category, drugs| %>
+        <% drugs.map do |drug| %>
+          <% consumed = facility_report.dig(drug_category, drug, :consumed) %>
+          <% if consumed.nil? || consumed == "error" %>
+            <td class="type-blank"><span>?</span></td>
+          <% else %>
+            <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_consumption_tooltip", report: facility_report[drug_category][drug] %>" data-sort-column-key=<%= drug.id %>>
+              <%= consumed %>
+            </td>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% @drugs_by_category.map do |drug_category, _drugs| %>
+        <% total = facility_report.dig(drug_category, :base_doses, :total) %>
+        <% if total.nil? || total == "error" %>
+          <td class="type-blank"><span>?</span></td>
+        <% else %>
+          <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "base_doses_tooltip", report: facility_report[drug_category][:base_doses] %>" data-sort-column-key=<%= drug_category %>>
+            <%= total %>
+          </td>
+        <% end %>
+      <% end %>
+      <td class="mobile"></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
