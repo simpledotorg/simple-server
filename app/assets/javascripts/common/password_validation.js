@@ -56,7 +56,7 @@ PasswordValidation = function() {
 
   this.updateChecklist = (errors) => {
     Validations.forEach(validation => {
-      if(errors.includes(validation)) {
+      if (errors.includes(validation)) {
         $(`#${validation}`).removeClass("completed")
       } else {
         $(`#${validation}`).addClass("completed")
