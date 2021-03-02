@@ -9,15 +9,11 @@ class MergeExactDuplicatePatients
 
   def perform
     duplicate_patient_ids.map do |patient_ids|
-      Rails.logger.info "Merging patients #{patient_ids}"
-
-      begin
-        DeduplicatePatients.new(Patient.where(id: patient_ids)).merge
-      rescue => e
-        # Bad data can cause our merge logic to breakdown in unpredictable ways.
-        # We want to report any such errors and look into them on a per case basis.
-        handle_error(e, patient_ids)
-      end
+      DeduplicatePatients.new(Patient.where(id: patient_ids)).merge
+    rescue => e
+      # Bad data can cause our merge logic to breakdown in unpredictable ways.
+      # We want to report any such errors and look into them on a per case basis.
+      handle_error(e, patient_ids)
     end
 
     report
