@@ -10,43 +10,43 @@ RSpec.describe EmailAuthentication, type: :model do
     it "can't be nil" do
       auth = build(:email_authentication, password: nil)
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "can't be blank"
+      expect(auth.errors.messages[:password]).to include "can't be blank"
     end
 
     it "can't be blank" do
       auth = build(:email_authentication, password: "")
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "can't be blank"
+      expect(auth.errors.messages[:password]).to include "can't be blank"
     end
 
     it "requires at least ten characters" do
       auth = build(:email_authentication, password: "a" * 9)
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "must be between 10 and 128 characters"
+      expect(auth.errors.messages[:password]).to include "must be between 10 and 128 characters"
     end
 
     it "requires fewer than 128 characters" do
       auth = build(:email_authentication, password: "a" * 129)
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "must be between 10 and 128 characters"
+      expect(auth.errors.messages[:password]).to include "must be between 10 and 128 characters"
     end
 
     it "requires at least one lower case letter" do
       auth = build(:email_authentication, password: "A" * 10)
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "must contain at least one lower case letter"
+      expect(auth.errors.messages[:password]).to include "must contain at least one lower case letter"
     end
 
     it "requires at least one upper case letter" do
       auth = build(:email_authentication, password: "a" * 10)
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "must contain at least one upper case letter"
+      expect(auth.errors.messages[:password]).to include "must contain at least one upper case letter"
     end
 
     it "requires at least one number" do
       auth = build(:email_authentication, password: "NoNumbers!")
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "must contain at least one number"
+      expect(auth.errors.messages[:password]).to include "must contain at least one number"
     end
 
     it "is valid when it is at least ten characters and includes a number and lower and upper case letters" do
@@ -61,7 +61,7 @@ RSpec.describe EmailAuthentication, type: :model do
       expect(auth).to be_valid
       auth.password = nil
       expect(auth).to_not be_valid
-      # expect(auth.errors.messages[:password]).to include "can't be blank"
+      expect(auth.errors.messages[:password]).to include "can't be blank"
     end
 
     it "is considered a valid EmailAuthentication even if the password in the database is invalid" do
@@ -73,7 +73,6 @@ RSpec.describe EmailAuthentication, type: :model do
     end
 
     it "allows email to be updated even if the EmailAuthentication has an invalid password" do
-      weak_password_error = "Password must be at least 10 characters long and contain a lower case letter, an upper case letter, and a number."
       auth = build(:email_authentication, password: "1234567890")
       auth.save(validate: false)
       auth = EmailAuthentication.find(auth.id)
@@ -83,7 +82,6 @@ RSpec.describe EmailAuthentication, type: :model do
       # make sure an invalid password change is prevented
       auth.password = "passw0rd"
       expect(auth).to_not be_valid
-      expect(auth.errors.messages[:password]).to eq [weak_password_error]
     end
   end
 end
