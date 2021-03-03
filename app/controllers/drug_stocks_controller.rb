@@ -1,8 +1,10 @@
-class Api::DrugStocksController < APIController
+class DrugStocksController < ApplicationController
   before_action :set_for_end_of_month
 
   def create
-    @facility = current_facility
+    @facility = Facility.find(drug_stocks_params[:facility_id])
+    authenticate
+
     DrugStock.transaction do
       drug_stocks_params[:drug_stocks].map do |drug_stock|
         DrugStock.create!(facility: @facility,
@@ -21,8 +23,34 @@ class Api::DrugStocksController < APIController
 
   private
 
+  def auth_token
+    @auth_token ||= drug_stocks_params[:auth_token]
+  end
+
+  def current_user
+    @current_user ||= User.find(drug_stocks_params[:user_id])
+  end
+
+  def fail_request(status, reason)
+    logger.warn "API request failed due to #{reason}"
+    head(status)
+  end
+
+  def authenticate
+    return fail_request(:unauthorized, "access_token unauthorized") unless access_token_authorized?
+    RequestStore.store[:current_user_id] = current_user.id
+    current_user.mark_as_logged_in if current_user.has_never_logged_in?
+  end
+
+  def access_token_authorized?
+    ActiveSupport::SecurityUtils.secure_compare(auth_token, current_user.access_token)
+  end
+
   def drug_stocks_params
     params.permit(
+      :auth_token,
+      :facility_id,
+      :user_id,
       :for_end_of_month,
       drug_stocks:
         [:received,

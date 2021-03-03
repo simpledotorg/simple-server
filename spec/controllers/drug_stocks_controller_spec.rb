@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Api::DrugStocksController, type: :controller do
+RSpec.describe DrugStocksController, type: :controller do
   before do
     Flipper.enable(:drug_stocks)
   end
@@ -13,18 +13,13 @@ RSpec.describe Api::DrugStocksController, type: :controller do
     let(:power_user) { create(:user) }
     let(:facility_group) { create(:facility_group) }
 
-    def set_headers(user, facility)
-      request.env["HTTP_X_USER_ID"] = user.id
-      request.env["HTTP_X_FACILITY_ID"] = facility.id
-      request.env["HTTP_AUTHORIZATION"] = "Bearer #{user.access_token}"
-    end
-
     it "creates drug stock records and sends JSON success response" do
       facility = create(:facility, facility_group: power_user.facility.facility_group)
       protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
-      set_headers(power_user, facility)
       params = {
+        auth_token: power_user.access_token,
         facility_id: facility.id,
+        user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,
@@ -43,9 +38,10 @@ RSpec.describe Api::DrugStocksController, type: :controller do
     it "sends error messages for invalid saves" do
       facility = create(:facility, facility_group: power_user.facility.facility_group)
       protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
-      set_headers(power_user, facility)
       params = {
+        auth_token: power_user.access_token,
         facility_id: facility.id,
+        user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
         drug_stocks: [{
           protocol_drug_id: protocol_drug.id,

@@ -10,6 +10,9 @@
       method: :post,
       autocomplete: "off",
       label_errors: true) do |form| %>
+      <%= form.hidden_field :facilitY_id, current_facility.id %>
+      <%= form.hidden_field :user_id, current_user.id %>
+      <%= form.hidden_field :auth_token, current_user.access_token %>
 
     <div class="form-group mt-4">
       <label for="drug-stock-date">Drug stock report for:</label>

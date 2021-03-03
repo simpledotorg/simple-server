@@ -52,10 +52,10 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :drug_stocks, only: :create
+
   namespace :api, defaults: {format: "json"} do
     get "manifest.json", to: "manifests#show"
-
-    resources :drug_stocks, only: :create
 
     # Returning HTTP Status `410` for deprecated API version `v1`
     namespace :v1 do
