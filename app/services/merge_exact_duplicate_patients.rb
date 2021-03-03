@@ -16,7 +16,7 @@ class MergeExactDuplicatePatients
       handle_error(e, patient_ids)
     end
 
-    report
+    report_summary
   end
 
   def handle_error(e, patient_ids)
@@ -35,7 +35,7 @@ class MergeExactDuplicatePatients
               distinct_failure: merge_failures.flatten.count}}
   end
 
-  def report
+  def report_summary
     Rails.logger.info(report_stats.to_json)
     Rails.logger.info "Failed to merge patients #{merge_failures}"
   end
