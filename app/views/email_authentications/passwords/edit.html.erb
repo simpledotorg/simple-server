@@ -1,9 +1,10 @@
-<h1><%= t("devise.password_creation.reset_header") %></h1>
+<% unless resource.reset_password_period_valid? == false # explicitly check false because it can be nil %>
+  <h1><%= t("devise.password_creation.reset_header") %></h1>
 
-<div class="row">
-  <div class="col-md-8">
-    <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, inline_errors: false) do |f| %>
-      <%= f.hidden_field :reset_password_token, readonly: true %>
+  <div class="row">
+    <div class="col-md-8">
+      <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }, inline_errors: false) do |f| %>
+        <%= f.hidden_field :reset_password_token, readonly: true %>
         <div class="password-form">
           <%= f.password_field :password, type: "password", id: "password-input", class: "password-input", autofocus: true, autocomplete: "off" %>
           <input id="toggle-password" type="button" class="btn btn-light password-toggle-button" value="Show">
@@ -21,17 +22,20 @@
           <li id="needs_lower"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_lower_case") %></li>
           <li id="needs_upper"><i class="fas fa-check-circle"></i><%= t("devise.password_creation.needs_upper_case") %></li>
         </ul>
-      <%= f.primary t("devise.password_creation.reset_button"), id: "password-submit", disabled: true %>
-    <% end %>
+        <%= f.primary t("devise.password_creation.reset_button"), id: "password-submit", disabled: true %>
+      <% end %>
+    </div>
   </div>
-</div>
 
-<div class="actions mt-4">
-  <%= render "email_authentications/shared/links" %>
-</div>
+  <div class="actions mt-4">
+    <%= render "email_authentications/shared/links" %>
+  </div>
 
-<script>
-  new PasswordVisibilityToggle();
-  const validator = new PasswordValidation();
-  validator.initialize();
-</script>
+  <script>
+    new PasswordVisibilityToggle();
+    const validator = new PasswordValidation();
+    validator.initialize();
+  </script>
+<% else %>
+  <%= render partial: "expired_reset_token" %>
+<% end %>
