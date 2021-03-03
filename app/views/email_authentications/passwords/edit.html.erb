@@ -1,4 +1,4 @@
-<% unless resource.reset_password_period_valid? == false # explicitly check false because it can be nil %>
+<% unless resource.reset_password_period_valid? == false %>
   <h1><%= t("devise.password_creation.reset_header") %></h1>
 
   <div class="row">
