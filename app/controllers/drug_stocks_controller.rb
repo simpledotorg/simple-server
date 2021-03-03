@@ -1,4 +1,5 @@
 class DrugStocksController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :set_for_end_of_month
 
   def create

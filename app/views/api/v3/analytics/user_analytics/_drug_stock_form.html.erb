@@ -6,13 +6,13 @@
     <h2 style="padding-top: 80px; padding-left: 8px;">Number of tablets</h2>
     <p style="text-align: left; padding: 0 8px 1em 8px;">Leave blank if unknown. Enter "0" if stock is empty.</p>
 
-    <%= bootstrap_form_with(url: api_drug_stocks_url(format: :json),
+    <%= bootstrap_form_with(url: drug_stocks_url(format: :json),
       method: :post,
       autocomplete: "off",
       label_errors: true) do |form| %>
-      <%= form.hidden_field :facilitY_id, current_facility.id %>
-      <%= form.hidden_field :user_id, current_user.id %>
-      <%= form.hidden_field :auth_token, current_user.access_token %>
+      <%= form.hidden_field :facility_id, value: current_facility.id %>
+      <%= form.hidden_field :user_id, value: current_user.id %>
+      <%= form.hidden_field :auth_token, value: current_user.access_token %>
 
     <div class="form-group mt-4">
       <label for="drug-stock-date">Drug stock report for:</label>
