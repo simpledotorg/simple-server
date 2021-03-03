@@ -53,11 +53,15 @@ class Period
   # Returns a range of dates that correspond to the 'control range' for this period.
   # For example, for a month period of July 1st 2020, this will return the range of April 30th..July 31st.
   def blood_pressure_control_range
-    three_months_ago = end_date.advance(months: -3)
+    three_months_ago = end_date.advance(months: -3).end_of_month
     (three_months_ago..end_date)
   end
 
   alias_method :bp_control_range, :blood_pressure_control_range
+
+  def bp_control_registrations_until_date
+    bp_control_range.begin.to_s(:day_mon_year)
+  end
 
   def bp_control_range_start_date
     bp_control_range.begin.next_day.to_s(:day_mon_year)

@@ -125,6 +125,10 @@ RSpec.describe Period, type: :model do
     range = Period.month("July 1st 2020").blood_pressure_control_range
     expect(range.begin).to eq(Date.parse("April 30th 2020"))
     expect(range.end).to eq(Date.parse("July 31st 2020"))
+
+    range = Period.month("February 1st 2020").blood_pressure_control_range
+    expect(range.begin).to eq(Date.parse("November 30th 2019"))
+    expect(range.end).to eq(Date.parse("February 29th 2020"))
   end
 
   it "can be used in ranges" do
