@@ -1,5 +1,6 @@
 class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   include ApplicationHelper
+  before_action :set_for_end_of_month
 
   layout false
 
@@ -27,6 +28,14 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     respond_to do |format|
       format.html { render :show }
       format.json { render json: stats }
+    end
+  end
+
+  def set_for_end_of_month
+    @for_end_of_month ||= if params[:for_end_of_month]
+      Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
+    else
+      Date.today.end_of_month
     end
   end
 end
