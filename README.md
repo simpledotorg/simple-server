@@ -300,7 +300,7 @@ To make a full production release, run the release script from master:
 bin/release
 ```
 
-This will create a git release tag and automatically trigger a deployment to all environments through Semaphore.  Please make sure to copy / paste the changelog output so you can post it in the #releases channel.
+This will create a git release tag and automatically trigger a deployment to all environments through Semaphore. You can monitor the deployment progress [in Semaphore](https://simple.semaphoreci.com/projects/simple-server) via the tagged release's workflow. Please make sure to copy / paste the changelog from `bin/release` so you can post it in the #releases channel.
 
 ### Deployment to a specific environment
 
