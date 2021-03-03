@@ -20,10 +20,10 @@ class MergeExactDuplicatePatients
   end
 
   def handle_error(e, patient_ids)
-    merge_failures << {exception: e, patient_ids: patient_ids}
+    error_details = {exception: e, patient_ids: patient_ids}
+    merge_failures << error_details
 
-    Rails.logger.debug "Failed to merge patients #{patient_ids}"
-    Sentry.capture_message("Failed to merge duplicate patients", extra: {exception: e, patient_ids: patient_ids})
+    Sentry.capture_message("Failed to merge duplicate patients", extra: error_details)
   end
 
   def report_stats
