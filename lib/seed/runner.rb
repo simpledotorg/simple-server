@@ -62,6 +62,9 @@ module Seed
           bp_result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
           result.merge! bp_result
 
+          drug_result = PrescriptionDrugSeeder.call(config: config, facility: facility, user: user)
+          result.merge! drug_result
+
           appt_result = create_appts(patient_info, user)
           result[:appointment] = appt_result.ids.size
           result

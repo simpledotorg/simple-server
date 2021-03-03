@@ -80,7 +80,6 @@ module Seed
       counts[:blood_pressure] = result.ids.size
 
       encounters = []
-      prescription_drugs = []
       result.results.each do |row|
         bp_id, recorded_at, patient_id = *row
 
@@ -95,22 +94,6 @@ module Seed
           patient_id: patient_id,
           updated_at: recorded_at,
           timezone_offset: 0
-        }
-
-        prescription_drugs << {
-          id: SecureRandom.uuid,
-          name: "Amlodipine",
-          dosage: "5 mg",
-          rxnorm_code: "329528",
-          is_protocol_drug: true,
-          is_deleted: false,
-          facility_id: facility.id,
-          patient_id: patient_id,
-          user_id: user.id,
-          created_at: recorded_at,
-          updated_at: recorded_at,
-          device_created_at: recorded_at,
-          device_updated_at: recorded_at
         }
       end
 
@@ -127,10 +110,8 @@ module Seed
 
       encounter_result = Encounter.import(encounters)
       observation_result = Observation.import(observations)
-      prescription_drug_result = PrescriptionDrug.import(prescription_drugs)
       counts[:encounter] = encounter_result.ids.size
       counts[:observation] = observation_result.ids.size
-      counts[:prescription_drug] = prescription_drug_result.ids.size
       counts
     end
   end
