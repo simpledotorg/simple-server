@@ -292,7 +292,7 @@ Simple Server is deployed to several environments using a mixture of tools.
 * Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
   for more information.
 * Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
-* SemaphoreCI: Continuous deployment
+* SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to Sandbox via Semaphore after CI has run successfully.  
 
 To make a deployment, run the release script.
 
