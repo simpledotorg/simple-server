@@ -26,6 +26,11 @@ class MergeExactDuplicatePatients
     Sentry.capture_message("Failed to merge duplicate patients", extra: error_details)
   end
 
+  def report_summary
+    Rails.logger.info(report_stats.to_json)
+    Rails.logger.info "Failed to merge patients #{merge_failures}"
+  end
+
   def report_stats
     {processed: {total: duplicate_patient_ids.flatten.count,
                  distinct: duplicate_patient_ids.count},
@@ -33,11 +38,6 @@ class MergeExactDuplicatePatients
               distinct: duplicate_patient_ids.count - merge_failures.count,
               total_failures: merge_failures.count,
               distinct_failure: merge_failures.flatten.count}}
-  end
-
-  def report_summary
-    Rails.logger.info(report_stats.to_json)
-    Rails.logger.info "Failed to merge patients #{merge_failures}"
   end
 
   memoize def duplicate_patient_ids
