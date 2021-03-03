@@ -20,8 +20,11 @@
           Missed visits
         <% end %>
         <% if current_admin.feature_enabled?(:drug_stocks) %>
-          <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_controller?("my_facilities/drug_stocks")}") do %>
+          <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("drug_stocks")}") do %>
             Drug stock
+          <% end %>
+          <%= link_to(my_facilities_drug_consumption_path(preserve_query_params(request.query_parameters, ["zone", "size"])), class: "sub-nav-link #{active_action?("drug_consumption")}") do %>
+            Drug consumption
           <% end %>
         <% end %>
       </div>

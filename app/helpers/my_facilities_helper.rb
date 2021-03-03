@@ -31,11 +31,11 @@ module MyFacilitiesHelper
   end
 
   def protocol_drug_labels
-    {hypertension_ccb: "CCB Tablets",
-     hypertension_arb: "ARB Tablets",
-     hypertension_diuretic: "Diuretic Tablets",
-     hypertension_other: "Other Tablets",
-     diabetes: "Diabetes Tablets",
-     other: "Other Tablets"}.with_indifferent_access
+    {hypertension_ccb: {full: "CCB Tablets", short: "CCB"},
+     hypertension_arb: {full: "ARB Tablets", short: "ARB"},
+     hypertension_diuretic: {full: "Diuretic Tablets", short: "Diuretic"},
+     hypertension_other: {full: "Other Tablets", short: "Other(H)"},
+     diabetes: {full: "Diabetes Tablets", short: "Diabetes"},
+     other: {full: "Other Tablets", short: "Other"}}.with_indifferent_access
   end
 end
