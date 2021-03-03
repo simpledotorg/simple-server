@@ -629,11 +629,67 @@ span.inactive {
 
 .password-toggle-button {
 	color: $blue;
-	height: 34px;
+	bottom: 10px;
+	font-size: 14px;
+	height: 24px;
+	left: 425px;
 	line-height: 0;
+	padding: 0px;
 	position: absolute;
-	right: 2px;
-	top: calc(1em + 17px);
-	width: 60px;
+	width: 47px;
 	z-index: 10;
+}
+
+.password-form {
+	position: relative;
+
+	.form-group {
+		margin-bottom: 7px
+	}
+}
+
+.password-input {
+	height: 44px;
+	width: 480px;
+}
+
+.error-message {
+    color: red;
+    &.hidden {
+        display: none;
+    }
+}
+
+.password-prompt {
+	color: $grey-dark;
+	margin-bottom: 4px;
+}
+
+.password-validation-checklist {
+	color: $grey-mid;
+	list-style-type: none;
+	padding-left: 0;
+
+	li {
+		margin-bottom: 4px;
+	}
+
+	.completed {
+		color: black;
+		i {
+			color: $green-dark
+		}
+	}
+
+	.fa-check-circle {
+		height: 16px;
+		margin-right: 8px;
+		width: 16px;
+	}
+}
+
+.password-submit {
+	font-size: 16px;
+	height: 43px;
+	width: 141px;
 }

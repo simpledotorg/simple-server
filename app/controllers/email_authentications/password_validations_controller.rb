@@ -2,6 +2,7 @@ class EmailAuthentications::PasswordValidationsController < ApplicationControlle
   def create
     auth = EmailAuthentication.new(password: params[:password])
     auth.validate
-    render json: {errors: auth.errors[:password]}
+    errors = auth.errors.details[:password].collect { |e| e[:error] }
+    render json: {errors: errors}
   end
 end

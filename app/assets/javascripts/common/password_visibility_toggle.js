@@ -1,5 +1,5 @@
 PasswordVisibilityToggle = function () {
-  const passwordInput = document.getElementById("password");
+  const passwordInput = document.getElementById("password-input");
   const togglePasswordButton = document.getElementById("toggle-password");
   togglePasswordButton.addEventListener("click", togglePassword);
 
