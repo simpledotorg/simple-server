@@ -23,10 +23,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def new
     session[:report_url_with_filters] ||= request.referer
-    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month) || []
-    @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.id] = drug_stock
-    }
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(@facility, @for_end_of_month)
   end
 
   def create
