@@ -65,8 +65,7 @@ class DrugStocksController < ApplicationController
       drug_stocks:
         [:received,
           :in_stock,
-          :protocol_drug_id]
-    )
+          :protocol_drug_id])
   end
 
   def set_for_end_of_month
