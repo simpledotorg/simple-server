@@ -1,0 +1,10 @@
+<% @patients.each do |patient| %>
+  <input id="<%= patient.id %>" type="radio" name="merge" checked> Keep
+  <label style="font-weight: normal" for="<%= patient.id %>"><%= patient.attributes %></label>
+<% end %>
+<button class="btn btn-primary">Keep selected patient</button>
+<button class="btn btn-danger">Discard all</button>
+<button class="btn btn-outline-info">Skip</button>
+<br>
+<br>
+2000 duplicate passports remaining

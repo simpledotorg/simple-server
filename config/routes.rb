@@ -212,6 +212,8 @@ Rails.application.routes.draw do
     get "fix_zone_data", to: "fix_zone_data#show"
     post "update_zone", to: "fix_zone_data#update"
 
+    get "deduplicate_patients", to: "deduplicate_patients#show"
+
     resources :error_traces, only: [:index, :create]
   end
 
