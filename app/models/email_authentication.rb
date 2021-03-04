@@ -26,8 +26,8 @@ class EmailAuthentication < ApplicationRecord
     allow_nil: true
 
   def self.generate_password
-    lower = Array('a'..'z').sample
-    upper = Array('A'..'Z').sample
+    lower = Array("a".."z").sample
+    upper = Array("A".."Z").sample
     number = SecureRandom.random_number(1).to_s
     SecureRandom.base64(16) + lower + upper + number
   end
