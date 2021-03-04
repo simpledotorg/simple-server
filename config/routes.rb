@@ -135,7 +135,10 @@ Rails.application.routes.draw do
 
   devise_for :email_authentications,
     path: "email_authentications",
-    controllers: {invitations: "email_authentications/invitations"}
+    controllers: {
+      invitations: "email_authentications/invitations",
+      passwords: "email_authentications/passwords"
+    }
 
   post "email_authentications/validate", to: "email_authentications/password_validations#create"
 
