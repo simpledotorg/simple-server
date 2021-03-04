@@ -1,15 +1,16 @@
+# This controller is meant to be used from the Android app _only_,
+# hence we handle authentication ourselves from params passed from the client.
 class DrugStocksController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :authenticate
+  before_action :find_current_facility
   before_action :set_for_end_of_month
   layout false
 
   def create
-    @facility = Facility.find(safe_params[:facility_id])
-
     DrugStock.transaction do
       safe_params[:drug_stocks].map do |drug_stock|
-        DrugStock.create!(facility: @facility,
+        DrugStock.create!(facility: current_facility,
                           user: current_user,
                           protocol_drug_id: drug_stock[:protocol_drug_id],
                           received: drug_stock[:received].presence,
@@ -18,7 +19,7 @@ class DrugStocksController < ApplicationController
       end
     end
     redirect_to drug_stocks_url(for_end_of_month: @for_end_of_month,
-                                facility_id: @facility.id,
+                                facility_id: current_facility.id,
                                 user_id: current_user.id,
                                 access_token: current_user.access_token)
   rescue ActiveRecord::RecordInvalid => e
@@ -27,9 +28,8 @@ class DrugStocksController < ApplicationController
   end
 
   def index
-    @facility = Facility.find(safe_params[:facility_id])
-    @protocol_drugs = @facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
-    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month) || []
+    @protocol_drugs = current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
+    drug_stock_list = DrugStock.latest_for_facility(current_facility, @for_end_of_month) || []
     @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
       acc[drug_stock.protocol_drug.id] = drug_stock
     }
@@ -38,6 +38,7 @@ class DrugStocksController < ApplicationController
   private
 
   attr_reader :current_user
+  attr_reader :current_facility
 
   def authenticate
     user = User.find(safe_params[:user_id])
@@ -55,12 +56,12 @@ class DrugStocksController < ApplicationController
     @current_user = user
   end
 
+  def find_current_facility
+    @current_facility = Facility.find(safe_params[:facility_id])
+  end
+
   def safe_params
-    params.permit(
-      :access_token,
-      :facility_id,
-      :user_id,
-      :for_end_of_month,
+    params.permit(:access_token, :facility_id, :user_id, :for_end_of_month,
       drug_stocks:
         [:received,
           :in_stock,
