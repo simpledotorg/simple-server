@@ -24,4 +24,11 @@ class EmailAuthentication < ApplicationRecord
   validates :password,
     format: {with: /(?=.*\d)/, error: :needs_number, message: "must contain at least one number"},
     allow_nil: true
+
+  def self.generate_password
+    lower = Array('a'..'z').sample
+    upper = Array('A'..'Z').sample
+    number = SecureRandom.random_number(1).to_s
+    SecureRandom.base64(16) + lower + upper + number
+  end
 end
