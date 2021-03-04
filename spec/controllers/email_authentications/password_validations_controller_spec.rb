@@ -4,7 +4,7 @@ RSpec.describe EmailAuthentications::PasswordValidationsController, type: :reque
   describe "#create" do
     it "returns a list of all errors for the password" do
       post "/email_authentications/validate", params: {password: "I have no numbers"}
-      expected_response = {"errors" => ["must contain at least one number"]}
+      expected_response = {"errors" => ["needs_number"]}
       expect(response.status).to eq 200
       expect(JSON.parse(response.body)).to eq(expected_response)
     end

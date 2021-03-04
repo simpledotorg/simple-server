@@ -1,35 +1,26 @@
 PasswordValidation = function() {
   const DebounceTimeout = 500;
+  const Validations = ["too_short", "needs_number", "needs_lower", "needs_upper"];
 
-  this.initialize = function() {
+  this.initialize = () => {
     this.timer = null;
-    this.response = null;
-    this.passwordInput = $("#password");
-    this.passwordInput.on("input", this.handlePasswordInput);
+    this.passwordInput = $("#password-input");
+    this.passwordInput.on("input", this.debounce);
   }
 
-  this.handlePasswordInput = () => {
-    console.log("CHANGE", this.passwordInput.val());
-    this.setTimer();
-  }
+  this.debounce = () => {
+    const later = () => {
+      clearTimeout(this.timer);
+      this.validatePassword();
+    };
 
-  this.setTimer = function() {
-    console.log("STARTING TIMER")
-    this.cancelTimer();
-    this.timer = setTimeout(this.validatePassword, DebounceTimeout);
-  }
-
-  this.cancelTimer = function() {
-    console.log("CANCELING TIMER")
-    if (!this.timer) return;
     clearTimeout(this.timer);
-    this.timer = null;
+    this.timer = setTimeout(later, DebounceTimeout);
   }
 
   this.validatePassword = () => {
-    console.log("MAKING REQUEST")
-    const token = $("meta[name=csrf-token]").attr("content")
-    const url = "http://localhost:3000/email_authentications/validate"
+    const token = $("meta[name=csrf-token]").attr("content");
+    const url = "/email_authentications/validate";
     const password = this.passwordInput.val();
 
     $.ajax({
@@ -38,16 +29,47 @@ PasswordValidation = function() {
       headers: {
         "X-CSRF-Token": token
       },
-      data: {"password": password}
-    }).done(function(data, status){
-      console.log(status)
-      console.log(data)
-      this.timer = null;
-      if (status === "success") {
-        this.response = data["errors"];
-      } else {
-        this.response = null;
+      data: {"password": password},
+      error: () => {
+        this.updateChecklist(Validations);
+        this.updateSubmitStatus(Validations);
+        this.showErrorMessage();
+      },
+      success: (response) => {
+        this.hideErrorMessage();
+        const errors = response["errors"];
+        this.updateChecklist(errors);
+        this.updateSubmitStatus(errors);
       }
     });
+  }
+
+  this.hideErrorMessage = () => {
+    this.passwordInput.removeClass("is-invalid");
+    $("#validation-error-message").addClass("hidden");
+  }
+
+  this.showErrorMessage = () => {
+    this.passwordInput.addClass("is-invalid");
+    $("#validation-error-message").removeClass("hidden");
+  }
+
+  this.updateChecklist = (errors) => {
+    Validations.forEach(validation => {
+      if (errors.includes(validation)) {
+        $(`#${validation}`).removeClass("completed")
+      } else {
+        $(`#${validation}`).addClass("completed")
+      }
+    });
+  }
+
+  this.updateSubmitStatus = (errors) => {
+    const button = $("#password-submit");
+    if (errors.length === 0) {
+      button.removeAttr("disabled");
+    } else {
+      button.attr("disabled", true);
+    }
   }
 }
