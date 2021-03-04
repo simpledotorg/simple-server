@@ -1,0 +1,876 @@
+---
+- name: Amlodipine
+  dosage:
+  frequency: OD
+  rxnorm_code: "17767"
+  category: HTN
+  id: c0450279-0968-4452-abd2-323aea72b677
+  composition:
+- name: Amlodipine
+  dosage: 2.5 mg
+  frequency: OD
+  rxnorm_code: "329527"
+  category: HTN
+  id: 303f2e0c-7803-434b-84ee-e60b34113845
+  composition:
+- name: Amlodipine
+  dosage: 5 mg
+  frequency: OD
+  rxnorm_code: "329528"
+  category: HTN
+  id: 38be0cee-d0b7-4b55-a142-3871c6877b88
+  composition:
+- name: Amlodipine
+  dosage: 10 mg
+  frequency: OD
+  rxnorm_code: "329526"
+  category: HTN
+  id: 71d2509a-8105-4dea-bc77-8594499936b0
+  composition:
+- name: Aspirin
+  dosage:
+  frequency: OD
+  rxnorm_code: "1191"
+  category: Other
+  id: 052207d0-44ae-4ed5-ba41-203ec7f8df14
+  composition:
+- name: Aspirin
+  dosage: 75 mg
+  frequency: OD
+  rxnorm_code: "315429"
+  category: Other
+  id: f67251ab-7849-46ea-8739-5e3d43878c85
+  composition:
+- name: Aspirin
+  dosage: 150 mg
+  frequency: OD
+  rxnorm_code: "315413"
+  category: Other
+  id: d0be0fb1-563a-4af3-bcb7-1ebc6e94fe93
+  composition:
+- name: Atenolol
+  dosage:
+  frequency: OD
+  rxnorm_code: "1202"
+  category: HTN
+  id: 8985fbad-628c-4cc1-8d8a-9aa321c11a90
+  composition:
+- name: Atenolol
+  dosage: 25 mg
+  frequency: OD
+  rxnorm_code: "315437"
+  category: HTN
+  id: 4e11ee32-86f0-4d51-b8b7-f17228e8f906
+  composition:
+- name: Atenolol
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "315438"
+  category: HTN
+  id: e54f07b8-6310-464a-a241-612c217dd800
+  composition:
+- name: Atenolol
+  dosage: 100 mg
+  frequency: OD
+  rxnorm_code: "315436"
+  category: HTN
+  id: a7fcc809-808b-482f-b0a3-75f354626983
+  composition:
+- name: Atorvastatin
+  dosage:
+  frequency: OD
+  rxnorm_code: "83367"
+  category: Other
+  id: 3bd13995-9d5a-42ff-9aa0-eadc911432c9
+  composition:
+- name: Atorvastatin
+  dosage: 10 mg
+  frequency: OD
+  rxnorm_code: "597970"
+  category: Other
+  id: cd27dfe1-c0c6-4bfc-a806-0e88528ef19a
+  composition:
+- name: Atorvastatin
+  dosage: 20 mg
+  frequency: OD
+  rxnorm_code: "597966"
+  category: Other
+  id: e624f5e1-5c3b-4e3d-a4f5-46897077ff35
+  composition:
+- name: Captopril
+  dosage:
+  frequency: TDS
+  rxnorm_code: "1998"
+  category: HTN
+  id: e155d129-cb9c-4da9-8688-b664e62a0948
+  composition:
+- name: Captopril
+  dosage: 12.5 mg
+  frequency: TDS
+  rxnorm_code: "315560"
+  category: HTN
+  id: 17216435-bc32-4852-adf0-155710556e2e
+  composition:
+- name: Captopril
+  dosage: 25 mg
+  frequency: TDS
+  rxnorm_code: "315561"
+  category: HTN
+  id: 7274a711-6265-41ee-975d-860f1e6c347c
+  composition:
+- name: Captopril
+  dosage: 50 mg
+  frequency: TDS
+  rxnorm_code: "315562"
+  category: HTN
+  id: 51eafe6a-4eb3-410c-b178-dff49042b09b
+  composition:
+- name: Chlorthalidone
+  dosage:
+  frequency: OD
+  rxnorm_code: "2409"
+  category: HTN
+  id: e843a514-6122-4147-9f7d-179632522e21
+  composition:
+- name: Chlorthalidone
+  dosage: 12.5 mg
+  frequency: OD
+  rxnorm_code: "331132"
+  category: HTN
+  id: 434c8c54-0407-4fa8-887a-0bc2342339d1
+  composition:
+- name: Chlorthalidone
+  dosage: 25 mg
+  frequency: OD
+  rxnorm_code: "315655"
+  category: HTN
+  id: 65cf29b8-9287-4763-ac96-768ea49c3a24
+  composition:
+- name: Clopidogrel
+  dosage:
+  frequency: OD
+  rxnorm_code: "32968"
+  category: Other
+  id: 9cedcb62-7d8f-498b-a453-bb74499642b6
+  composition:
+- name: Clopidogrel
+  dosage: 75 mg
+  frequency: OD
+  rxnorm_code: "329449"
+  category: Other
+  id: 0a1bdd8f-14f5-4e00-8f45-49086b4b5436
+  composition:
+- name: Enalapril
+  dosage:
+  frequency:
+  rxnorm_code: "3827"
+  category: HTN
+  id: beb44efa-7e67-41c1-aec8-c22d8868031a
+  composition:
+- name: Enalapril
+  dosage: 2.5 mg
+  frequency: OD
+  rxnorm_code: "858803"
+  category: HTN
+  id: 8e854e5f-a6b6-4cc6-a463-bc157e442703
+  composition:
+- name: Enalapril
+  dosage: 5 mg
+  frequency: OD
+  rxnorm_code: "833236"
+  category: HTN
+  id: e823514b-1537-40fd-b618-a8efb42d0ce3
+  composition:
+- name: Enalapril
+  dosage: 10 mg
+  frequency: OD
+  rxnorm_code: "858816"
+  category: HTN
+  id: 579f3c9c-65f9-4aa1-9f2f-10f1fbf1da21
+  composition:
+- name: Enalapril
+  dosage: 20 mg
+  frequency: OD
+  rxnorm_code: "858809"
+  category: HTN
+  id: cc9fa06d-e0b2-4ecc-b95e-c858dc1b884d
+  composition:
+- name: Enalapril
+  dosage: 40 mg
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: 8d6d4388-efa6-4dcf-90f4-80f3d6a02609
+  composition:
+- name: Enalapril
+  dosage: 2.5 mg
+  frequency: BD
+  rxnorm_code: "858803"
+  category: HTN
+  id: 8d6e8c3f-80ed-4406-bcba-e64c3c4d9801
+  composition:
+- name: Enalapril
+  dosage: 5 mg
+  frequency: BD
+  rxnorm_code: "833236"
+  category: HTN
+  id: fa2e387c-6280-460a-a4b8-ecdb0e1ec014
+  composition:
+- name: Enalapril
+  dosage: 10 mg
+  frequency: BD
+  rxnorm_code: "858816"
+  category: HTN
+  id: ae1a6b55-4bb9-4527-9535-c7f358b6adec
+  composition:
+- name: Enalapril
+  dosage: 20 mg
+  frequency: BD
+  rxnorm_code: "858809"
+  category: HTN
+  id: 603e5c99-0a9c-4c6b-950e-9d0740057020
+  composition:
+- name: Enalapril
+  dosage: 40 mg
+  frequency: BD
+  rxnorm_code:
+  category: HTN
+  id: a1a9098c-be31-4ec4-9464-dbeb3cb170d5
+  composition:
+- name: Glibenclamide
+  dosage:
+  frequency:
+  rxnorm_code: "4815"
+  category: DM
+  id: 9da15971-651c-4041-ae50-f08c59301279
+  composition:
+- name: Glibenclamide
+  dosage: 2.5 mg
+  frequency: OD
+  rxnorm_code: "315989"
+  category: DM
+  id: a53f2350-ec5a-4104-a629-9ff9be9319b0
+  composition:
+- name: Glibenclamide
+  dosage: 2.5 mg
+  frequency: BD
+  rxnorm_code: "315989"
+  category: DM
+  id: 6a014ef8-f4a5-48e4-97fe-a2927c3743cd
+  composition:
+- name: Glibenclamide
+  dosage: 5 mg
+  frequency: OD
+  rxnorm_code: "315991"
+  category: DM
+  id: 9270f5ca-d579-412f-a63f-2490efb772a2
+  composition:
+- name: Glibenclamide
+  dosage: 5 mg
+  frequency: BD
+  rxnorm_code: "315991"
+  category: DM
+  id: f4c20073-47c1-4ea0-a28b-22ea6283f84b
+  composition:
+- name: Gliclazide
+  dosage:
+  frequency:
+  rxnorm_code: "4816"
+  category: DM
+  id: a20a5eca-de93-4777-b7aa-581da305234d
+  composition:
+- name: Gliclazide
+  dosage: 40 mg
+  frequency: OD
+  rxnorm_code:
+  category: DM
+  id: 90b0570b-cb02-458f-914a-4b39f6aaef3c
+  composition:
+- name: Gliclazide
+  dosage: 40 mg
+  frequency: BD
+  rxnorm_code:
+  category: DM
+  id: b756f668-f9d8-415a-a5ee-9d2a0c396f2c
+  composition:
+- name: Gliclazide
+  dosage: 80 mg
+  frequency: OD
+  rxnorm_code: "332029"
+  category: DM
+  id: c66fde33-f4e3-4e0b-a382-87ff6fd869d5
+  composition:
+- name: Gliclazide
+  dosage: 80 mg
+  frequency: BD
+  rxnorm_code: "332029"
+  category: DM
+  id: d18f35a7-4cc4-4b49-8645-d5da74682342
+  composition:
+- name: Glimepiride
+  dosage:
+  frequency: OD
+  rxnorm_code: "25789"
+  category: DM
+  id: d693f545-7264-4f0f-884d-c006fd14b557
+  composition:
+- name: Glimepiride
+  dosage: 1 mg
+  frequency: OD
+  rxnorm_code: "315978"
+  category: DM
+  id: 0dde69c9-71ce-4d19-b41d-6b16d0d04e7e
+  composition:
+- name: Glimepiride
+  dosage: 2 mg
+  frequency: OD
+  rxnorm_code: "317637"
+  category: DM
+  id: e9cafef6-e762-40eb-a1d1-3f4554f810f6
+  composition:
+- name: Glimepiride
+  dosage: 4 mg
+  frequency: OD
+  rxnorm_code: "315979"
+  category: DM
+  id: 928eba4a-cb53-4f54-805b-50fdcdb510bc
+  composition:
+- name: Glipizide
+  dosage:
+  frequency:
+  rxnorm_code: "4821"
+  category: DM
+  id: 2fbc1e32-a8c3-4c01-a1ec-10e20e415bac
+  composition:
+- name: Glipizide
+  dosage: 2.5 mg
+  frequency: OD
+  rxnorm_code: "330349"
+  category: DM
+  id: d9375533-eefc-45dc-8571-abbe15a65e5b
+  composition:
+- name: Glipizide
+  dosage: 5 mg
+  frequency: OD
+  rxnorm_code: "315980"
+  category: DM
+  id: ef1fe1a9-0c67-476a-9a0c-21ef72fabf60
+  composition:
+- name: Glipizide
+  dosage: 10 mg
+  frequency: OD
+  rxnorm_code: "317379"
+  category: DM
+  id: 47c92ae4-3130-4f38-87ff-94a10ae6ad37
+  composition:
+- name: Glipizide
+  dosage: 2.5 mg
+  frequency: BD
+  rxnorm_code: "330349"
+  category: DM
+  id: 00ac68fb-c3be-4798-a3aa-63b431c504bb
+  composition:
+- name: Glipizide
+  dosage: 5 mg
+  frequency: BD
+  rxnorm_code: "315980"
+  category: DM
+  id: 3349444e-73e9-46c3-b91e-3a50df505892
+  composition:
+- name: Glipizide
+  dosage: 10 mg
+  frequency: BD
+  rxnorm_code: "317379"
+  category: DM
+  id: 3d9a833d-8b4d-4c46-beae-475f6ab9003b
+  composition:
+- name: Hydrochlorothiazide
+  dosage:
+  frequency: OD
+  rxnorm_code: "5487"
+  category: HTN
+  id: 804e974e-1484-44e6-843b-527ee56f80cb
+  composition:
+- name: Hydrochlorothiazide
+  dosage: 12.5 mg
+  frequency: OD
+  rxnorm_code: "316047"
+  category: HTN
+  id: bcaccbf4-aefc-4e6f-953f-64760e354fee
+  composition:
+- name: Hydrochlorothiazide
+  dosage: 25 mg
+  frequency: OD
+  rxnorm_code: "316049"
+  category: HTN
+  id: 7ef407b8-0410-4e92-839b-7262e3e44203
+  composition:
+- name: Hydrochlorothiazide
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "316051"
+  category: HTN
+  id: b2e6fd71-061b-4589-9ee1-2e4650239866
+  composition:
+- name: Lisinopril
+  dosage:
+  frequency: OD
+  rxnorm_code: "29046"
+  category: HTN
+  id: 5aedd7d5-ef4a-4704-9f41-a1b1175bb495
+  composition:
+- name: Lisinopril
+  dosage: 5 mg
+  frequency: OD
+  rxnorm_code: "316156"
+  category: HTN
+  id: 8ba42b61-9ad5-4e9a-9e2a-546817517957
+  composition:
+- name: Lisinopril
+  dosage: 10 mg
+  frequency: OD
+  rxnorm_code: "316151"
+  category: HTN
+  id: f8b462fc-5636-4160-927f-b2f46d4f4e33
+  composition:
+- name: Lisinopril
+  dosage: 20 mg
+  frequency: OD
+  rxnorm_code: "316153"
+  category: HTN
+  id: b1307ea6-57f5-4969-8492-8f206367ec7b
+  composition:
+- name: Lisinopril
+  dosage: 40 mg
+  frequency: OD
+  rxnorm_code: "316155"
+  category: HTN
+  id: 60d2629b-f45a-4d7a-9407-47c3d0247e2b
+  composition:
+- name: Losartan
+  dosage:
+  frequency: OD
+  rxnorm_code: "52175"
+  category: HTN
+  id: a94e587c-4e92-481e-b826-ca14c81a163b
+  composition:
+- name: Losartan
+  dosage: 25 mg
+  frequency: OD
+  rxnorm_code: "979484"
+  category: HTN
+  id: 700af7f1-51d0-4fb3-bb88-728f729d0100
+  composition:
+- name: Losartan
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "979467"
+  category: HTN
+  id: ef976f92-e9b4-404a-9f29-df90ea1d1221
+  composition:
+- name: Losartan
+  dosage: 100 mg
+  frequency: OD
+  rxnorm_code: "979463"
+  category: HTN
+  id: e454fbe9-697e-4b17-8d65-59228152743c
+  composition:
+- name: Losartan-Hydrochlorathiazide
+  dosage:
+  frequency: OD
+  rxnorm_code: "214619"
+  category: HTN
+  id: 7c027d0c-3925-43ee-bc95-fbbaf8bf421c
+  composition:
+- name: Losartan-Hydrochlorathiazide
+  dosage: 50 mg / 12.5 mg
+  frequency: OD
+  rxnorm_code: "979468"
+  category: HTN
+  id: 41f371f9-cc7f-44a5-980c-6c2434ffb6cf
+  composition:
+- name: Losartan-Hydrochlorathiazide
+  dosage: 100 mg / 25 mg
+  frequency: OD
+  rxnorm_code: "979471"
+  category: HTN
+  id: 6c835107-897a-4d30-aaf3-99eb0e798220
+  composition:
+- name: Losartan-H
+  dosage:
+  frequency: OD
+  rxnorm_code: "214619"
+  category: HTN
+  id: 1e7968c3-9b81-41c0-8976-3aff6b32ea17
+  composition:
+- name: Losartan-H
+  dosage: 50 mg / 12.5 mg
+  frequency: OD
+  rxnorm_code: "979468"
+  category: HTN
+  id: b094c467-f5c8-4a78-bf76-4595418ff265
+  composition:
+- name: Losartan-H
+  dosage: 100 mg / 25 mg
+  frequency: OD
+  rxnorm_code: "979471"
+  category: HTN
+  id: 43c6654b-1655-4f43-b038-acd415e8794f
+  composition:
+- name: Losartan-Amlodipine
+  dosage:
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: b7f35385-6e96-4462-9972-d66eda93b2ed
+  composition:
+- name: Losartan-Amlodipine
+  dosage: 25 mg / 2.5 mg
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: 9815ab11-fe9f-4665-a429-8f666b624f56
+  composition:
+- name: Losartan-Amlodipine
+  dosage: 25 mg / 5 mg
+  frequency: OD
+  rxnorm_code:
+  category:
+  id: 03b0c809-966a-424c-ad4d-4ad0b72a28d7
+  composition:
+- name: Losartan-Amlodipine
+  dosage: 50 mg / 5 mg
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: af810022-9b3f-4f32-8139-0b918ec95245
+  composition:
+- name: Metoprolol
+  dosage:
+  frequency: BD
+  rxnorm_code: "203191"
+  category: HTN
+  id: f0d68af6-0b46-448e-96bc-9a1e029034f8
+  composition:
+- name: Metoprolol
+  dosage: 12.5 mg
+  frequency: BD
+  rxnorm_code:
+  category: HTN
+  id: 6d19bfb3-26b6-4932-847a-fd090d5d520a
+  composition:
+- name: Metoprolol
+  dosage: 25 mg
+  frequency: BD
+  rxnorm_code: "866426"
+  category: HTN
+  id: d2b06886-aac7-4641-b81a-fbe6bda0ca6c
+  composition:
+- name: Metoprolol
+  dosage: 50 mg
+  frequency: BD
+  rxnorm_code: "866435"
+  category: HTN
+  id: 4a7c044e-ba4d-4124-a5b9-690445e9515a
+  composition:
+- name: Metoprolol
+  dosage: 100 mg
+  frequency: BD
+  rxnorm_code: "866411"
+  category: HTN
+  id: 31443b19-fb82-4a6e-9f7e-57827e655e2f
+  composition:
+- name: Metoprolol XL
+  dosage:
+  frequency: OD
+  rxnorm_code: "221124"
+  category: HTN
+  id: 41cb06c8-f394-41db-97f3-2a37726a200d
+  composition:
+- name: Metoprolol XL
+  dosage: 25 mg
+  frequency: OD
+  rxnorm_code: "1370489"
+  category: HTN
+  id: 7f880752-aaed-404b-b508-1cd90d75ea21
+  composition:
+- name: Metoprolol XL
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "1370474"
+  category: HTN
+  id: 330f8486-845b-42d3-b2ac-6b0c991ff22a
+  composition:
+- name: Metoprolol XL
+  dosage: 100 mg
+  frequency: OD
+  rxnorm_code: "1370483"
+  category: HTN
+  id: 8ae40ed8-2c4c-4ef7-873a-be94651862f1
+  composition:
+- name: Metformin
+  dosage:
+  frequency:
+  rxnorm_code: "6809"
+  category: DM
+  id: 478989ce-a4a8-4cb9-8f08-cc0be57c14cd
+  composition:
+- name: Metformin
+  dosage: 500 mg
+  frequency: OD
+  rxnorm_code: "860974"
+  category: DM
+  id: 01a0ce84-026e-4f44-88b8-fc240bb9a73d
+  composition:
+- name: Metformin
+  dosage: 500 mg
+  frequency: BD
+  rxnorm_code: "860974"
+  category: DM
+  id: ff6820af-2c2b-4290-b5a2-8af16b3a6e01
+  composition:
+- name: Metformin
+  dosage: 1000 mg
+  frequency: OD
+  rxnorm_code: "860995"
+  category: DM
+  id: ccb7e8d0-b14c-4d94-bcc6-23bbaa3c4907
+  composition:
+- name: Metformin
+  dosage: 1000 mg
+  frequency: BD
+  rxnorm_code: "860995"
+  category: DM
+  id: ffa89ea9-0c46-41ce-a212-7287dac4fc9a
+  composition:
+- name: Metformin SR
+  dosage:
+  frequency:
+  rxnorm_code:
+  category: DM
+  id: 393c835f-9122-486f-9a90-755319a1be6f
+  composition:
+- name: Metformin SR
+  dosage: 500 mg
+  frequency: OD
+  rxnorm_code: "1807915"
+  category: DM
+  id: 3aea8590-a18c-487f-9bae-07e54bea230b
+  composition:
+- name: Metformin SR
+  dosage: 500 mg
+  frequency: BD
+  rxnorm_code: "1807915"
+  category: DM
+  id: e44d485d-8f7e-4420-b242-1dd0bd3dc1b3
+  composition:
+- name: Metformin SR
+  dosage: 1000 mg
+  frequency: OD
+  rxnorm_code: "1807888"
+  category: DM
+  id: e9bc48c6-99c9-4588-bad9-04c0504cc7db
+  composition:
+- name: Metformin SR
+  dosage: 1000 mg
+  frequency: BD
+  rxnorm_code: "1807888"
+  category: DM
+  id: 43496985-828e-43a4-bbaf-f258989afbdf
+  composition:
+- name: Metformin SR
+  dosage: 2000 mg
+  frequency: OD
+  rxnorm_code:
+  category: DM
+  id: 0f16fab1-78d8-4b79-9055-76ed0ff97aff
+  composition:
+- name: Propranolol
+  dosage:
+  frequency:
+  rxnorm_code: "8787"
+  category: HTN
+  id: 9f2c9556-4987-431d-b91a-21d930ca71fc
+  composition:
+- name: Propranolol
+  dosage: 20 mg
+  frequency: OD
+  rxnorm_code: "856456"
+  category: HTN
+  id: b4be4e93-cfeb-4d34-98f6-6e11099a40c2
+  composition:
+- name: Propranolol
+  dosage: 20 mg
+  frequency: BD
+  rxnorm_code: "856456"
+  category: HTN
+  id: 93fbc23b-0c3a-4bb1-a250-61dab03461d2
+  composition:
+- name: Propranolol
+  dosage: 20 mg
+  frequency: TDS
+  rxnorm_code: "856456"
+  category: HTN
+  id: '048d4720-c7b2-42c6-94bb-1ba23576f14c'
+  composition:
+- name: Propranolol
+  dosage: 40 mg
+  frequency: OD
+  rxnorm_code: "856421"
+  category: HTN
+  id: 9d0c3aeb-2d79-433e-87fb-222e1d868802
+  composition:
+- name: Propranolol
+  dosage: 40 mg
+  frequency: BD
+  rxnorm_code: "856421"
+  category: HTN
+  id: 5c38d9b4-7111-4ac6-824c-7155f8b5f1de
+  composition:
+- name: Propranolol
+  dosage: 40 mg
+  frequency: TDS
+  rxnorm_code: "856421"
+  category: HTN
+  id: e622bf55-4441-4533-8e1e-41287620ad76
+  composition:
+- name: Rosuvastatin
+  dosage:
+  frequency: OD
+  rxnorm_code: "301542"
+  category: Other
+  id: fa2a06b9-9153-425b-892f-954ff180fa22
+  composition:
+- name: Rosuvastatin
+  dosage: 5 mg
+  frequency: OD
+  rxnorm_code: "2167572"
+  category: Other
+  id: 62e2efa8-2ae7-4e9d-a3e0-7ff55bc8b9f5
+  composition:
+- name: Rosuvastatin
+  dosage: 20 mg
+  frequency: OD
+  rxnorm_code: "2167564"
+  category: Other
+  id: 453af01c-cbc3-4068-b032-a626b0e8698b
+  composition:
+- name: Rosuvastatin
+  dosage: 10 mg
+  frequency: OD
+  rxnorm_code: "2167555"
+  category: Other
+  id: 0d07dd59-db07-41ee-9f79-bce8b478684c
+  composition:
+- name: Sitagliptin
+  dosage:
+  frequency: OD
+  rxnorm_code: "593411"
+  category: DM
+  id: 3ca09082-5e35-4c14-ae27-2783f3ba19d5
+  composition:
+- name: Sitagliptin
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "665041"
+  category: DM
+  id: 72701a0c-dca7-4927-bdb2-70dcc35fde5c
+  composition:
+- name: Sitagliptin
+  dosage: 100 mg
+  frequency: OD
+  rxnorm_code: "665031"
+  category: DM
+  id: a14b04cb-6365-4a26-b680-487fc9b779ee
+  composition:
+- name: Spironolactone
+  dosage:
+  frequency: OD
+  rxnorm_code: "9997"
+  category: HTN
+  id: cab718e6-574e-40b5-9984-32b206988c72
+  composition:
+- name: Spironolactone
+  dosage: 12.5 mg
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: 5c03eab7-a3af-4d08-92b2-8298a958cc49
+  composition:
+- name: Spironolactone
+  dosage: 25 mg
+  frequency: OD
+  rxnorm_code: "316728"
+  category: HTN
+  id: 8c6a17a0-eded-49fa-9b56-1e995e755909
+  composition:
+- name: Spironolactone
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "317508"
+  category: HTN
+  id: db6015e5-068a-4066-8f86-a6aff0f5ac88
+  composition:
+- name: Spironolactone
+  dosage: 100 mg
+  frequency: OD
+  rxnorm_code: "316727"
+  category: HTN
+  id: aea9c425-1d5f-4227-bf64-508020ccbd85
+  composition:
+- name: Telmisartan
+  dosage:
+  frequency: OD
+  rxnorm_code: "73494"
+  category: HTN
+  id: 196be537-ba01-4020-961e-763fe6f558ee
+  composition:
+- name: Telmisartan
+  dosage: 20 mg
+  frequency: OD
+  rxnorm_code: "331555"
+  category: HTN
+  id: 8b9c3f81-6788-40d1-9e1b-08904f2dd83b
+  composition:
+- name: Telmisartan
+  dosage: 40 mg
+  frequency: OD
+  rxnorm_code: "316764"
+  category: HTN
+  id: 3bbb5483-da1a-4885-84bd-042cb3ee7eb1
+  composition:
+- name: Telmisartan
+  dosage: 80 mg
+  frequency: OD
+  rxnorm_code: "316765"
+  category: HTN
+  id: c0421e4c-7209-4064-a318-baaccd38201b
+  composition:
+- name: Telvas 3D
+  dosage:
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: 689c42d9-81d2-4c22-a845-be1a485ae69c
+  composition:
+- name: Telvas 3D
+  dosage: 5mg / 12.5 mg / 40 mg
+  frequency: OD
+  rxnorm_code:
+  category: HTN
+  id: 61000bb1-b0c4-46ce-82ec-da98c40d6714
+  composition:
+- name: Vildagliptin
+  dosage:
+  frequency: OD
+  rxnorm_code: "596554"
+  category: DM
+  id: 524b9b99-6c6e-4400-88da-a0b706c5ab3f
+  composition:
+- name: Vildagliptin
+  dosage: 50 mg
+  frequency: OD
+  rxnorm_code: "757711"
+  category: DM
+  id: c120e130-cf92-40ef-86f5-fe29aa0805b3
+  composition:
