@@ -9,7 +9,7 @@ end
 
 gem "dotenv-rails"
 
-gem 'active_hash', '~> 2.3.0'
+gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
 gem "activerecord-import"
 gem "amazing_print"
