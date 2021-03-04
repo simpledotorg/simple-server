@@ -292,22 +292,15 @@ Simple Server is deployed to several environments using a mixture of tools.
 * Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
   for more information.
 * Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
-* SemaphoreCI: Continuous deployment
+* SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to Sandbox via Semaphore after CI has run successfully.  
 
-To make a deployment, run the release script.
+To make a full production release, run the release script from master:
 
 ```
 bin/release
 ```
 
-This will create a git release tag and automatically trigger a deployment to all non-production environments through
-Semaphore.
-
-Once complete, trigger a manual deployment to production environments through the
-[Semaphore CI dashboard](https://resolvetosavelives.semaphoreci.com/projects/simple-server).
-
-> Make sure you add your SSH keys as single sign-on so that `cap` doesn't get confused when there's more than 1 instance
-> to deal with. You can do this simply by running `ssh-add -K ~/.ssh/id_rsa`.
+This will create a git release tag and automatically trigger a deployment to all environments through Semaphore. You can monitor the deployment progress [in Semaphore](https://simple.semaphoreci.com/projects/simple-server) via the tagged release's workflow. Please make sure to copy / paste the changelog from `bin/release` so you can post it in the #releases channel.
 
 ### Deployment to a specific environment
 
