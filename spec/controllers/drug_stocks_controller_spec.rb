@@ -17,7 +17,7 @@ RSpec.describe DrugStocksController, type: :controller do
       facility = create(:facility, facility_group: power_user.facility.facility_group)
       protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
       params = {
-        auth_token: power_user.access_token,
+        access_token: power_user.access_token,
         facility_id: facility.id,
         user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
@@ -40,7 +40,7 @@ RSpec.describe DrugStocksController, type: :controller do
       facility = create(:facility, facility_group: power_user.facility.facility_group)
       protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
       params = {
-        auth_token: power_user.access_token,
+        access_token: power_user.access_token,
         facility_id: facility.id,
         user_id: power_user.id,
         for_end_of_month: Date.today.strftime("%b-%Y"),
