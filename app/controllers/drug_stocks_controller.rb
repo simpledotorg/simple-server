@@ -1,6 +1,7 @@
 class DrugStocksController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :set_for_end_of_month
+  layout false
 
   def create
     @facility = Facility.find(drug_stocks_params[:facility_id])
@@ -16,10 +17,23 @@ class DrugStocksController < ApplicationController
                           for_end_of_month: @for_end_of_month)
       end
     end
-    render json: {status: "OK"}
+    redirect_to drug_stocks_url(for_end_of_month: @for_end_of_month,
+                                facility_id: @facility.id,
+                                user_id: current_user.id,
+                                auth_token: current_user.access_token)
   rescue ActiveRecord::RecordInvalid => e
     logger.error "could not create DrugStocks - record invalid", errors: e.message
     render json: {status: "invalid", errors: e.message}, status: 422
+  end
+
+  def index
+    @facility = Facility.find(drug_stocks_params[:facility_id])
+    authenticate
+    @protocol_drugs = @facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
+    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month) || []
+    @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
+      acc[drug_stock.protocol_drug.id] = drug_stock
+    }
   end
 
   private
@@ -62,7 +76,7 @@ class DrugStocksController < ApplicationController
 
   def set_for_end_of_month
     @for_end_of_month ||= if params[:for_end_of_month]
-      Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
+      Date.parse(params[:for_end_of_month]).end_of_month
     else
       Date.today.end_of_month
     end

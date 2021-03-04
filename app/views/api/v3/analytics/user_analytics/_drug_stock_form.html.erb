@@ -17,9 +17,9 @@
     <div class="form-group mt-4">
       <label for="drug-stock-date">Drug stock report for:</label>
       <div class="form-row">
-        <%= form.text_field :for_end_of_month, id: "for_end_of_month", label: "For end of month:", value: @for_end_of_month.strftime("%b-%Y"), required: true %>
+        <% options = last_n_months(n: 6, inclusive: true).map { |d| [d.strftime("%b-%Y"), d.strftime("%b-%Y")] } %>
+        <%= form.select :for_end_of_month, options, class: "form-control" %>
       </div>
-
     </div>
 
     <% @protocol_drugs.each do |protocol_drug| %>

@@ -112,7 +112,7 @@
   <!-- drug stock -->
   <div class="card">
       <h3>Drug stock report</h3>
-      <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of Feb-2021</p>
+      <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
       <a href="#" onclick="openWindow('drug-stock-form', 'progress-start'); return false" class="button">
         Submit Drug Stock
       </a>

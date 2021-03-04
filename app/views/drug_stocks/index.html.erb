@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: auto;">
+<head>
+  <meta charset="utf-8">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <title><%= raw t("analytics.page_title") %></title>
+
+  <%= inline_stylesheet("user_analytics.css") %>
+</head>
+
+<body id="progress">
+
+  <h3>Drug stock report for <%= @for_end_of_month.to_s(:mon_year) %></h3>
+
+  <% @protocol_drugs.each do |protocol_drug| %>
+    <div class="card">
+
+      <h3><%= protocol_drug.name %></h3>
+      <p></p>
+
+      <div class="form-row">
+        <div class="col">
+          <strong>Received</strong> <%= @drug_stocks[protocol_drug.id].try(&:received) %>
+        </div>
+        <div class="col">
+          <strong>In Stock</strong> <%= @drug_stocks[protocol_drug.id].try(&:in_stock) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+</body>

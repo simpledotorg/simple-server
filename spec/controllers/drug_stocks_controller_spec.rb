@@ -30,9 +30,10 @@ RSpec.describe DrugStocksController, type: :controller do
 
       expect {
         post :create, params: params
-        expect(response).to be_successful
+        expect(response).to be_redirect
       }.to change { DrugStock.count }.by(1)
-      expect(JSON.parse(response.body)).to eq({"status" => "OK"})
+      stock = DrugStock.find_by!(protocol_drug: protocol_drug)
+      expect(stock.received).to eq(10)
     end
 
     it "sends error messages for invalid saves" do

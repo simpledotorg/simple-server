@@ -52,7 +52,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :drug_stocks, only: :create
+  resources :drug_stocks, only: [:create, :index]
 
   namespace :api, defaults: {format: "json"} do
     get "manifest.json", to: "manifests#show"
