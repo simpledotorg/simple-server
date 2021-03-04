@@ -149,6 +149,9 @@ class DeduplicatePatients
 
       encounter.observations.map do |observation|
         observable = observation.observable
+
+        next unless observable.present?
+
         new_observable = create_cloned_record!(patient, observable.class, observable)
         Observation.create!(user_id: observation.user_id, observable: new_observable, encounter: new_encounter)
       end

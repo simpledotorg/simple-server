@@ -12,39 +12,41 @@
     <th>Gender</th>
     <th>Age</th>
     <th>Registered on</th>
-    <th>Registeration facility</th>
+    <th>Registration facility</th>
     <th>Last visited</th>
     <th>Address</th>
     <th>Phone numbers</th>
 
-    <% @patients.each do |patient_summary| %>
-      <tr class="toggle-row" data-patient-id="<%= patient_summary.patient.id %>">
+    <% @patients.each do |patient| %>
+      <tr class="toggle-row" data-patient-id="<%= patient.id %>">
         <td>
-          <input id="<%= patient_summary.id %>"
+          <input id="<%= patient.id %>"
                  type="checkbox"
                  name="duplicate_patients[]"
-                 value="<%= patient_summary.patient.id %>"
+                 value="<%= patient.id %>"
                  form="deduplicate_patients"
                  checked>
         </td>
-        <td><%= patient_summary.full_name %></td>
-        <td><%= patient_summary.gender.capitalize %></td>
-        <td><%= patient_summary.current_age.to_i %></td>
-        <td><%= patient_summary.recorded_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M %p") %></td>
-        <td><%= patient_summary.registration_facility_name %></td>
+        <td><%= patient.full_name %></td>
+        <td><%= patient.gender.capitalize %></td>
+        <td><%= patient.current_age.to_i %></td>
+        <td><%= patient.recorded_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M %p") %></td>
+        <td><%= patient.registration_facility.name %>, <%= patient.registration_facility.block_region.name %>
+          <br>
+          <%= patient.registration_facility.region.district_region.name %>, <%= patient.registration_facility.region.state_region.name %></td>
         <td>
-          <% if patient_summary.latest_blood_pressure_recorded_at.present? %>
-            <%= patient_summary.latest_blood_pressure_facility_name %>
-            <%= rounded_time_ago_in_words(patient_summary.latest_blood_pressure_recorded_at) %>
+          <% if patient.latest_blood_pressure&.recorded_at.present? %>
+            <%= patient.latest_blood_pressure.facility.name %>
+            <%= rounded_time_ago_in_words(patient.latest_blood_pressure.recorded_at) %>
           <% end %>
         </td>
         <td>
-          <%= "#{patient_summary.street_address}, " if patient_summary.street_address.present? %>
-          <%= patient_summary.village_or_colony %>
+          <%= "#{patient.address.street_address}, " if patient.address.street_address.present? %>
+          <%= patient.address.village_or_colony %>
         </td>
         <td>
-          <% if patient_summary.latest_phone_number.present? %>
-            <%= patient_summary.patient.phone_numbers.pluck(:number).join(",") %>
+          <% if patient.phone_numbers.present? %>
+            <%= patient.phone_numbers.pluck(:number).join(",") %>
           <% else %>
             Not present
           <% end %>
@@ -57,5 +59,12 @@
 
 <form id="deduplicate_patients" method="POST" action="/admin/deduplicate_patients" class="form-inline">
   <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
-  <button class="btn btn-outline-info">Skip</button>
+  <a href="javascript:location.reload();" class="btn btn-outline-info">Skip</a>
 </form>
+<script>
+  $("tr.toggle-row").click(function()  {
+    let patientId = $(this).data()["patientId"];
+    console.log($(`input#${patientId}`).is(':checked'))
+    $(`input#${patientId}`).attr("checked", !$(`input#${patientId}`).is(':checked'));
+  })
+</script>
