@@ -1,10 +1,61 @@
-<% @patients.each do |patient| %>
-  <input id="<%= patient.id %>" type="radio" name="merge" checked> Keep
-  <label style="font-weight: normal" for="<%= patient.id %>"><%= patient.attributes %></label>
-<% end %>
-<button class="btn btn-primary">Keep selected patient</button>
-<button class="btn btn-danger">Discard all</button>
-<button class="btn btn-outline-info">Skip</button>
-<br>
-<br>
-2000 duplicate passports remaining
+<div class="card">
+  <h1 class="page-title">Merge duplicate patients</h1>
+  <p class="c-grey-dark">
+    These patients have the same BP passport.
+    Please confirm that they refer to the same person.
+    <br>
+    Unselect patients that don't refer to this person. They will not be merged and be left as is.
+  </p>
+  <table class="table table-responsive-md table-hover">
+    <th>Select</th>
+    <th style="min-width: 150px">Full name</th>
+    <th>Gender</th>
+    <th>Age</th>
+    <th>Registered on</th>
+    <th>Registeration facility</th>
+    <th>Last visited</th>
+    <th>Address</th>
+    <th>Phone numbers</th>
+
+    <% @patients.each do |patient_summary| %>
+      <tr class="toggle-row" data-patient-id="<%= patient_summary.patient.id %>">
+        <td>
+          <input id="<%= patient_summary.id %>"
+                 type="checkbox"
+                 name="duplicate_patients[]"
+                 value="<%= patient_summary.patient.id %>"
+                 form="deduplicate_patients"
+                 checked>
+        </td>
+        <td><%= patient_summary.full_name %></td>
+        <td><%= patient_summary.gender.capitalize %></td>
+        <td><%= patient_summary.current_age.to_i %></td>
+        <td><%= patient_summary.recorded_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M %p") %></td>
+        <td><%= patient_summary.registration_facility_name %></td>
+        <td>
+          <% if patient_summary.latest_blood_pressure_recorded_at.present? %>
+            <%= patient_summary.latest_blood_pressure_facility_name %>
+            <%= rounded_time_ago_in_words(patient_summary.latest_blood_pressure_recorded_at) %>
+          <% end %>
+        </td>
+        <td>
+          <%= "#{patient_summary.street_address}, " if patient_summary.street_address.present? %>
+          <%= patient_summary.village_or_colony %>
+        </td>
+        <td>
+          <% if patient_summary.latest_phone_number.present? %>
+            <%= patient_summary.patient.phone_numbers.pluck(:number).join(",") %>
+          <% else %>
+            Not present
+          <% end %>
+        </td>
+        </label>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<form id="deduplicate_patients" method="POST" action="/admin/deduplicate_patients" class="form-inline">
+  <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
+  <button class="btn btn-outline-info">Skip</button>
+</form>
