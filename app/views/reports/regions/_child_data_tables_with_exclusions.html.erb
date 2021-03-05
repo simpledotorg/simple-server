@@ -78,10 +78,11 @@
             <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:registrations)) %>
+            <%= number_with_delimiter(@data[:registrations][@period]) %>
           </td>
         </tr>
         <% data.each do |result| %>
+          <% # not sure what this is about but dig will always return 0 here so I don't think it's useful %>
           <% next if result.dig("controlled_patients_rate", @period).nil? %>
           <% next if result.dig("uncontrolled_patients_rate", @period).nil? %>
           <% next if result.dig("missed_visits_rate", @period).nil? %>
@@ -114,7 +115,7 @@
               <%= number_with_delimiter(result["cumulative_registrations"].values.last) %>
             </td>
             <td class="ta-left">
-              <%= number_with_delimiter(result["registrations"].values.last || 0) %>
+              <%= number_with_delimiter(result[:registrations][@period]) %>
             </td>
           </tr>
         <% end %>
