@@ -42,12 +42,18 @@ class Webview::DrugStocksController < ApplicationController
   attr_reader :current_facility, :current_user
   helper_method :current_facility, :current_user
 
+  def fail_request(status, reason)
+    logger.warn "API request failed due to #{reason}"
+    head(status)
+  end
+
   def authenticate
     user = User.find(safe_params[:user_id])
     if ActiveSupport::SecurityUtils.secure_compare(safe_params[:access_token], user.access_token)
+      return fail_request(:forbidden, "sync_approval_status_allowed is false") unless user.sync_approval_status_allowed?
       login(user)
     else
-      logger.warn "API request failed due to #{reason}"
+      logger.warn "API request failed due to invalid access token"
       head(:unauthorized)
     end
   end

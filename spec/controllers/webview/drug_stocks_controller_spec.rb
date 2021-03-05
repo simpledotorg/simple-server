@@ -9,6 +9,39 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
     Flipper.disable(:drug_stocks)
   end
 
+  fdescribe "GET #new" do
+    let(:facility) { create(:facility) }
+
+    it "renders 404 for anonymous users" do
+      expect {
+        get :new
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "denies access for users without sync approval" do
+      user = create(:user, sync_approval_status: :denied)
+      params = {
+        access_token: user.access_token,
+        facility_id: facility.id,
+        user_id: user.id,
+      }
+      get :new, params: params
+      expect(response).to be_forbidden
+    end
+
+    it "denies access for users with incorrect access token" do
+      user = create(:user)
+      params = {
+        access_token: SecureRandom.hex(20),
+        facility_id: facility.id,
+        user_id: user.id,
+      }
+      get :new, params: params
+      expect(response).to be_unauthorized
+    end
+
+  end
+
   describe "POST #create" do
     let(:power_user) { create(:user) }
     let(:facility_group) { create(:facility_group) }

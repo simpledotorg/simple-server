@@ -29,7 +29,7 @@
             label_errors: true) do |form| %>
             <%= form.hidden_field :facility_id, value: current_facility.id %>
             <%= form.hidden_field :user_id, value: current_user.id %>
-            <%= form.hidden_field :auth_token, value: current_user.access_token %>
+            <%= form.hidden_field :access_token, value: current_user.access_token %>
 
           <div class="form-group mt-4">
             <label for="drug-stock-date">Drug stock report for:</label>
