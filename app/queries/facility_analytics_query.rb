@@ -19,6 +19,7 @@ class FacilityAnalyticsQuery
 
   def results
     results = [
+      total_assigned_patients,
       registered_patients_by_period,
       total_registered_patients,
       follow_up_patients_by_period,
@@ -27,6 +28,16 @@ class FacilityAnalyticsQuery
 
     return {} if results.blank?
     results.inject(&:deep_merge)
+  end
+
+  def total_assigned_patients
+    @total_assigned_patients ||=
+      Patient
+        .with_hypertension
+        .joins(:assigned_facility)
+        .where(facilities: {id: facilities})
+        .group("facilities.id")
+        .count
   end
 
   def total_registered_patients

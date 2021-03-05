@@ -319,6 +319,9 @@
               Facilities
             </th>
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+              Total assigned patients
+            </th>
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               <% if current_admin.feature_enabled?(:report_with_exclusions) %>
                 Total registered<br>
                 patients
@@ -346,6 +349,9 @@
             <td class="row-total ta-center">
               <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
             </td>
+            <td class="row-total ta-center">
+              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
+            </td>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
               <td class="row-total ta-center">
                 <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date))) %>
@@ -362,6 +368,9 @@
               <tr>
                 <td class="row-title">
                   <%= link_to resource.send(:name), send(:reports_region_facility_details_path, resource) %>
+                </td>
+                <td class="ta-center">
+                  hey
                 </td>
                 <td class="ta-center">
                   <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
