@@ -7,9 +7,6 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   def show
     @user_analytics = UserAnalyticsPresenter.new(current_facility, with_exclusions: report_with_exclusions?)
 
-    @protocol_drugs = @current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
-    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
-
     respond_to_html_or_json(@user_analytics.statistics)
   end
 

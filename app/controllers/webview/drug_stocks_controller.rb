@@ -8,6 +8,8 @@ class Webview::DrugStocksController < ApplicationController
   layout false
 
   def new
+    @protocol_drugs = @current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
   end
 
   def create
@@ -37,8 +39,8 @@ class Webview::DrugStocksController < ApplicationController
 
   private
 
-  attr_reader :current_user
-  attr_reader :current_facility
+  attr_reader :current_facility, :current_user
+  helper_method :current_facility, :current_user
 
   def authenticate
     user = User.find(safe_params[:user_id])

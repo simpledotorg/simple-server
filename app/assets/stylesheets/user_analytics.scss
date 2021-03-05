@@ -17,13 +17,13 @@ body#progress {
 }
 
 .cohort {
-    
+
     h6 {
         font-size: 18px;
         text-align: left;
         margin: 0;
     }
-    
+
     p {
         text-align: left;
         padding: 6px 0 0 0;
@@ -36,31 +36,31 @@ body#progress {
     text-align: center;
     min-height: 46px;
     margin: 0 -2px;
-    
+
     td {
         padding: 12px 6px;
         font-weight: bold;
         font-size: 16px;
     }
-    
+
     .cohort-controlled {
         background: $green;
         color: #fff;
         border-radius: 0 3px 3px 0;
     }
-    
+
     .cohort-uncontrolled {
         background: $red;
         color: #fff;
         border-radius: none;
     }
-    
+
     .cohort-nobp {
         background: $grey-light;
         color: #444;
         border-radius: 3px 0 0 3px;
     }
-    
+
     .cohort-none {
         background: $grey-light;
         color: #444;
@@ -71,7 +71,7 @@ body#progress {
 .key {
     margin: 24px 0 32px 0;
     font-size: 16px;
-    
+
     span {
         display: inline-block;
         width: 16px;
@@ -80,16 +80,16 @@ body#progress {
         background: #999;
         margin: -3px 8px 0 0;
         border-radius: 3px;
-        
+
         &.green {
             background: $green;
         }
-        
+
         &.red {
             background: $red;
         }
     }
-    
+
 }
 
 .progress-contents {
@@ -136,13 +136,13 @@ a.help-back {
 
 .card {
     position: relative;
-    
+
     .card-row {
       border-top: 1px solid $grey-lightest;
       padding: 16px 0 0 0;
       margin: 16px 0 0 0;
     }
-    
+
     h6 {
       font-size: 18px;
       font-weight: normal;
@@ -342,7 +342,7 @@ span.percent {
 p.control-desc {
     line-height: 1.5;
     font-size: 18px;
-    
+
     .green {
         color: $green;
         font-size: 32px;
@@ -365,7 +365,7 @@ p.control-desc {
         margin-right: 16px;
         transition: 0.3s ease-in-out;
     }
-    
+
     &:active {
         .tip {
             opacity: 1;
@@ -377,7 +377,7 @@ p.control-desc {
 .bar-chart {
     width: 100%;
     margin-bottom: 8px;
-    background-image: linear-gradient(to top, 
+    background-image: linear-gradient(to top,
         #fff 35px, $grey-lightest 35px, #fff 36px,
         #fff 55px, $grey-lightest 55px, #fff 56px,
         #fff 75px, $grey-lightest 75px, #fff 76px,
@@ -391,7 +391,7 @@ p.control-desc {
         #fff 235px, $grey-lightest 235px, #fff 236px,
         #fff 255px, $grey-lightest 255px, #fff 256px,
     );
-    
+
     .bar {
         background: $green-light;
         width: 12px;
@@ -399,7 +399,7 @@ p.control-desc {
         position: relative;
         border-radius: 100px;
         min-height: 20px;
-        
+
         span {
             display: block;
             background: #fff;
@@ -410,13 +410,13 @@ p.control-desc {
             margin-left: -1px;
         }
     }
-    
+
     .bar-value {
         position: relative;
         height: 30px;
         width: 10px;
         margin: 0 auto 16px auto;
-        
+
         span {
             font-size: 14px;
             transform: translate(-96px, -80px) rotate(90deg);
@@ -427,12 +427,12 @@ p.control-desc {
             z-index: 100000;
         }
     }
-    
+
     tbody td {
         height: 160px;
         vertical-align: bottom;
         text-align: center;
-        
+
         &:last-of-type {
             .bar-value {
                 font-weight: bold;
@@ -649,7 +649,7 @@ footer p {
 
 .form-group {
   padding: 1.5em 8px;
-  
+
   label {
     display: block;
     font-weight: bold;
@@ -672,7 +672,7 @@ footer p {
   margin-right: 5%;
 }
 
-input.form-control {
+select.form-control, input.form-control {
   font-size: 24px;
   padding: 8px;
   border-radius: 6px;
@@ -704,7 +704,7 @@ input.form-control {
   padding: 8px;
   box-sizing: border-box;
   box-shadow: 0 -2px 3px rgba(0,0,0,.16);
-  
+
   .button {
     width: 100%;
   }
