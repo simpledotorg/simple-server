@@ -323,7 +323,41 @@ Rake tasks can be run on the deployed server using Capistrano as well. For examp
 bundle exec cap india:staging deploy:rake task=db:seed
 ```
 
+### Deployment to a new environment
+
+When setting up a new environment to deploy Simple Server to, follow these steps.
+
+#### 1. Create a config file
+
+Create a new file in `config/deploy/<env_name>.rb` for the new environment. It can be placed inside a subdirectory if
+desired. Populate the new config file with relevant IP address info. Use an existing file for reference. For example,
+the configuration for a deployment with two EC2 instances may look like:
+```
+server "ec2-12-111-34-45.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db cron whitelist_phone_numbers seed_data]
+server "ec2-12-222-67-89.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
+```
+
+The first server runs the web application and cron tasks, the second server runs Sidekiq to process background jobs.
+
+#### 2. Install Sidekiq
+
+A one-time installation of Sidekiq is required in new environments. Run the following command:
+
+```bash
+bundle exec cap <environment> sidekiq:install
+```
+
+#### 2. Deploy
+
+You can now run a regular Capistrano deployment:
+
+```bash
+bundle exec cap <environment> sidekiq:install
+```
+
+This may take a long time for the first deployment, since several dependencies (like Ruby) need to be installed.
+Subsequent deployments will be much faster.
+
 ### Deployment Resources
 
 The infrastructure setup including the ansible and terraform scripts are documented in the [deployment repository](https://github.com/simpledotorg/deployment).
-
