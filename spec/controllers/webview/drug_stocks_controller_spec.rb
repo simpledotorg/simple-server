@@ -23,7 +23,7 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
       params = {
         access_token: user.access_token,
         facility_id: facility.id,
-        user_id: user.id,
+        user_id: user.id
       }
       get :new, params: params
       expect(response).to be_forbidden
@@ -34,12 +34,11 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
       params = {
         access_token: SecureRandom.hex(20),
         facility_id: facility.id,
-        user_id: user.id,
+        user_id: user.id
       }
       get :new, params: params
       expect(response).to be_unauthorized
     end
-
   end
 
   describe "POST #create" do

@@ -24,9 +24,9 @@ class Webview::DrugStocksController < ApplicationController
       end
     end
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
-                                facility_id: current_facility.id,
-                                user_id: current_user.id,
-                                access_token: current_user.access_token)
+                                        facility_id: current_facility.id,
+                                        user_id: current_user.id,
+                                        access_token: current_user.access_token)
   rescue ActiveRecord::RecordInvalid => e
     logger.error "could not create DrugStocks - record invalid", errors: e.message
     render json: {status: "invalid", errors: e.message}, status: 422
