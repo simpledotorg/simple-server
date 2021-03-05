@@ -53,7 +53,7 @@ FactoryBot.define do
   end
 
   sequence(:strong_password) do |n|
-    Faker::Lorem.characters(number: 9, min_alpha: 9).capitalize + Faker::Lorem.characters(number: 1, min_numeric: 1)
+    Faker::Lorem.characters(number: 9, min_alpha: 9).capitalize + n.to_s
   end
 
   factory :admin, class: User do
