@@ -113,7 +113,7 @@ Reports = function () {
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
         registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
-        registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
+        registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
 
@@ -204,7 +204,7 @@ Reports = function () {
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
         registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
-        registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
+        registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
 
@@ -295,7 +295,7 @@ Reports = function () {
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
         registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
-        registrationsPeriodEndNode.innerHTML = period.bp_control_start_date;
+        registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
 
@@ -521,6 +521,7 @@ Reports = function () {
         const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
         const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
         const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
+        const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
         const adjustedRegistrationsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
         let label = null;
         let missedVisitsRate = null;
@@ -557,6 +558,7 @@ Reports = function () {
         controlledPatientsNode.innerHTML = this.formatNumberWithCommas(totalControlledPatients);
         periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
         periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
+        registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
         adjustedRegistrationsNodes.forEach(node => node.innerHTML = adjustedRegistrations);
       },
     };

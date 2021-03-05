@@ -48,10 +48,11 @@ class Reports::RegionsController < AdminController
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
                                                        prev_periods: 6,
                                                        include_current_period: true)
+    @current_month_period = Period.month(Time.current)
     @chart_data = {
-      patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
+      patient_breakdown: PatientBreakdownService.call(region: @region, period: @current_month_period),
       ltfu_trend: Reports::RegionService.new(region: @region,
-                                             period: @period,
+                                             period: @current_month_period,
                                              with_exclusions: report_with_exclusions?).call
     }
 
