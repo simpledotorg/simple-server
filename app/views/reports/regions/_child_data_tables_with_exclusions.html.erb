@@ -7,75 +7,32 @@
       <colgroup>
         <col>
         <col class="table-divider">
-        <col>
         <col class="table-divider">
-        <col>
         <col class="table-divider">
-        <col>
         <col class="table-divider">
         <col>
       </colgroup>
       <thead>
-        <tr>
-          <th></th>
-          <th colspan="2">
-            BP controlled
-            <%= render "definition_tooltip",
-                    definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
-                                  "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) }
-            %>
-          </th>
-          <th colspan="2">
-            BP not controlled
-            <%= render "definition_tooltip",
-                    definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
-                                  "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) }
-            %>
-          </th>
-          <th colspan="2">
-            Missed visits
-            <%= render "definition_tooltip",
-                    definitions: { "Numerator" => t("missed_visits_copy.numerator"),
-                                  "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) }
-            %>
-          </th>
-          <th colspan="2">
-            Registrations
-            <%= render "definition_tooltip",
-                      definitions: {
-                        "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
-                        "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name)
-                      }
-            %>
-          </th>
-        </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small ta-left" data-sort-default>
             <%= region_type.capitalize %>
           </th>
           <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Percent
+            BP controlled
           </th>
           <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Total patients
+            BP not controlled
           </th>
           <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Percent
+            Missed visits
           </th>
           <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Total patients
+            Total registered<br>
+            patients
           </th>
           <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Percent
-          </th>
-          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Total patients
-          </th>
-          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            Total
-          </th>
-          <th class="row-label sort-label sort-label-small ta-left" data-sort-method="number">
-            <%= @period.to_s %>
+            Patients registered<br>
+            in <%= @period.to_s %>
           </th>
         </tr>
       </thead>
@@ -95,9 +52,6 @@
               <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
             </em>
           </td>
-          <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
-          </td>
           <td
             class="type-percent"
             data-sort-column-key="bp-not-controlled-rate"
@@ -109,9 +63,6 @@
               <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
             </em>
           </td>
-          <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
-          </td>
           <td
             class="type-percent"
             data-sort-column-key="missed-visits-rate"
@@ -122,9 +73,6 @@
             <em data-rate="<%= @data.last_value(:missed_visits_rate) %>">
               <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
             </em>
-          </td>
-          <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
           </td>
           <td class="ta-left">
             <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
@@ -155,9 +103,6 @@
                 <%= number_to_percentage(result["controlled_patients_rate"].values.last || 0, precision: 0) %>
               </em>
             </td>
-            <td class="ta-left">
-              <%= number_with_delimiter(result["controlled_patients"].values.last) %>
-            </td>
             <td
               class="type-percent"
               data-sort-column-key="bp-not-controlled-rate"
@@ -169,9 +114,6 @@
                 <%= number_to_percentage(result["uncontrolled_patients_rate"].values.last || 0, precision: 0) %>
               </em>
             </td>
-            <td class="ta-left">
-              <%= number_with_delimiter(result["uncontrolled_patients"].values.last) %>
-            </td>
             <td
               class="type-percent"
               data-sort-column-key="missed-vists-rate"
@@ -182,9 +124,6 @@
               <em data-rate="<%= result["missed_visits_rate"].values.last %>">
                 <%= number_to_percentage(result["missed_visits_rate"].values.last || 0, precision: 0) %>
               </em>
-            </td>
-            <td class="ta-left">
-              <%= number_with_delimiter(result["missed_visits"].values.last) %>
             </td>
             <td class="ta-left">
               <%= number_with_delimiter(result["cumulative_registrations"].values.last) %>
