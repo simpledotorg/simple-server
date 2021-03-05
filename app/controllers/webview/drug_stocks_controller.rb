@@ -1,11 +1,14 @@
 # This controller is meant to be used from the Android app _only_,
 # hence we handle authentication ourselves from params passed from the client.
-class DrugStocksController < ApplicationController
+class Webview::DrugStocksController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :authenticate
   before_action :find_current_facility
   before_action :set_for_end_of_month
   layout false
+
+  def new
+  end
 
   def create
     DrugStock.transaction do
@@ -18,7 +21,7 @@ class DrugStocksController < ApplicationController
                           for_end_of_month: @for_end_of_month)
       end
     end
-    redirect_to drug_stocks_url(for_end_of_month: @for_end_of_month,
+    redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
                                 facility_id: current_facility.id,
                                 user_id: current_user.id,
                                 access_token: current_user.access_token)

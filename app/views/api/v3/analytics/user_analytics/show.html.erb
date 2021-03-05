@@ -110,13 +110,13 @@
   </div>
 
   <!-- drug stock -->
-  <div class="card">
-      <h3>Drug stock report</h3>
-      <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
-      <a href="#" onclick="openWindow('drug-stock-form', 'progress-start'); return false" class="button">
-        Submit Drug Stock
-      </a>
-  </div>
+  <% if current_user.feature_enabled?(:drug_stocks) %>
+    <div class="card">
+        <h3>Drug stock report</h3>
+        <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
+        <%= link_to "Submit Drug Stock", new_webview_drug_stock_url, class: "button" %>
+    </div>
+  <% end %>
 
   <!-- monthly hypertension control view -->
   <div class="card">
@@ -244,8 +244,6 @@
         </div>
     </div>
 </div>
-
-<%= render "drug_stock_form" %>
 
 <div id="drug-stock-submitted" class="progress-body" style="display: none;">
   <div class="progress-contents">

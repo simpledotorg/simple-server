@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe DrugStocksController, type: :controller do
+RSpec.describe Webview::DrugStocksController, type: :controller do
   before do
     Flipper.enable(:drug_stocks)
   end
