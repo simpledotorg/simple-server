@@ -5,7 +5,8 @@ class PatientsExporter
   BATCH_SIZE = 1000
   PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
                                  migrated: "Transferred out",
-                                 dead: "Died"}.with_indifferent_access
+                                 dead: "Died",
+                                 ltfu: "Lost to follow-up"}.with_indifferent_access
 
   BLOOD_SUGAR_TYPES = {
     random: "Random",
@@ -112,7 +113,7 @@ class PatientsExporter
       patient_summary.full_name,
       patient_summary.current_age.to_i,
       patient_summary.gender.capitalize,
-      PATIENT_STATUS_DESCRIPTIONS[patient_summary.status],
+      status(patient_summary),
       patient_summary.latest_phone_number,
       patient_summary.street_address,
       patient_summary.village_or_colony,
@@ -190,5 +191,15 @@ class PatientsExporter
   def latest_blood_sugar_type(patient_summary)
     patient_summary.latest_blood_sugar_type.presence &&
       BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type]
+  end
+
+  def status(patient_summary)
+    patient_status = if patient_summary.ltfu?
+      :ltfu
+    else
+      patient_summary.status
+    end
+
+    PATIENT_STATUS_DESCRIPTIONS[patient_status]
   end
 end

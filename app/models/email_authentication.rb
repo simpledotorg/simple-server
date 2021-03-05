@@ -16,25 +16,19 @@ class EmailAuthentication < ApplicationRecord
     length: {in: Devise.password_length, message: "must be between 10 and 128 characters"},
     allow_nil: true
   validates :password,
-    format: {with: /(?=.*[a-z])/, message: "must contain at least one lower case letter"},
+    format: {with: /(?=.*[a-z])/, error: :needs_lower, message: "must contain at least one lower case letter"},
     allow_nil: true
   validates :password,
-    format: {with: /(?=.*[A-Z])/, message: "must contain at least one upper case letter"},
+    format: {with: /(?=.*[A-Z])/, error: :needs_upper, message: "must contain at least one upper case letter"},
     allow_nil: true
   validates :password,
-    format: {with: /(?=.*\d)/, message: "must contain at least one number"},
+    format: {with: /(?=.*\d)/, error: :needs_number, message: "must contain at least one number"},
     allow_nil: true
 
-  after_validation :strip_unnecessary_errors
-
-  private
-
-  # We only want to display one error message to the user, so if we get multiple
-  # errors clear out all errors and present our nice message to the user.
-  def strip_unnecessary_errors
-    if errors[:password].any? && errors[:password].size > 1
-      errors.delete(:password)
-      errors.add(:password, I18n.translate("errors.messages.password.password_strength"))
-    end
+  def self.generate_password
+    lower = Array("a".."z").sample
+    upper = Array("A".."Z").sample
+    number = SecureRandom.random_number(1).to_s
+    SecureRandom.base64(16) + lower + upper + number
   end
 end

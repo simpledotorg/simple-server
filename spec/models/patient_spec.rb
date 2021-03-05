@@ -606,62 +606,86 @@ describe Patient, type: :model do
   end
 
   context ".discard_data" do
-    before do
-      create_list(:prescription_drug, 2, patient: patient)
-      create_list(:appointment, 2, patient: patient)
-      create_list(:blood_pressure, 2, :with_encounter, patient: patient)
-      create_list(:blood_sugar, 2, :with_encounter, patient: patient)
-    end
-
     it "soft deletes the patient's encounters" do
+      patient = create(:patient)
+      create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
+
       patient.discard_data
       expect(Encounter.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's observations" do
+      patient = create(:patient)
+      create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
+
       patient.discard_data
-      encounter_ids = Encounter.with_discarded.where(patient: patient).map(&:id)
+      encounter_ids = Encounter.with_discarded.where(patient: patient).pluck(:id)
       expect(Observation.where(encounter_id: encounter_ids)).to be_empty
     end
 
     it "soft deletes the patient's blood pressures" do
+      patient = create(:patient)
+      create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
+
       patient.discard_data
       expect(BloodPressure.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's blood_sugars" do
+      patient = create(:patient)
+      create_list(:blood_sugar, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
+
       patient.discard_data
       expect(BloodSugar.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's appointments" do
+      patient = create(:patient)
+      create_list(:appointment, 2, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
+
       patient.discard_data
       expect(Appointment.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's prescription drugs" do
+      patient = create(:patient)
+      create_list(:prescription_drug, 2, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
+
       patient.discard_data
       expect(PrescriptionDrug.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's business identifiers" do
+      patient = create(:patient)
       patient.discard_data
       expect(PatientBusinessIdentifier.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's phone numbers" do
+      patient = create(:patient)
       patient.discard_data
       expect(PatientPhoneNumber.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's medical history" do
+      patient = create(:patient)
       patient.discard_data
       expect(MedicalHistory.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's address" do
+      patient = create(:patient)
       patient.discard_data
       expect(Address.where(id: patient.address_id)).to be_empty
+    end
+
+    it "soft deleted the patient's teleconsultations" do
+      patient = create(:patient)
+      user = patient.registration_user
+      create_list(:teleconsultation, 2, patient: patient, requester: user, medical_officer: user, requested_medical_officer: user)
+      patient.discard_data
+
+      expect(Teleconsultation.where(patient: patient)).to be_empty
     end
   end
 end

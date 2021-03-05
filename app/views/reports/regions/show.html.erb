@@ -103,8 +103,8 @@
                   </span>
                 <% end %>
                 patients registered till
-                <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
+                <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
+                  <%= @period.bp_control_registrations_until_date %>
                 </span>
               </p>
             <% else %>
@@ -202,8 +202,8 @@
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
                 </span>
                 patients registered till
-                <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
+                <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
+                  <%= @period.bp_control_registrations_until_date %>
                 </span>
               </p>
             <% else %>
@@ -293,8 +293,8 @@
                   <%= number_with_delimiter(@data.last_value(:adjusted_registrations)) %>
                 </span>
                 patients registered till
-                <span data-registrations-period-end="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
+                <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
+                  <%= @period.bp_control_registrations_until_date %>
                 </span>
               </p>
             <% else %>
@@ -412,8 +412,8 @@
               <% if @data.last_value(:cumulative_registrations) %>
                 <p class="m-0px c-black">
                   patients registered till
-                  <span data-registrations-period-end="<%= @period.bp_control_range_end_date%>">
-                    <%= @period.bp_control_range_end_date%>
+                  <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
+                    <%= @period.bp_control_range_end_date %>
                   </span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
