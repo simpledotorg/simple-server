@@ -352,7 +352,7 @@ bundle exec cap <environment> sidekiq:install
 You can now run a regular Capistrano deployment:
 
 ```bash
-bundle exec cap <environment> sidekiq:install
+bundle exec cap <environment> deploy
 ```
 
 This may take a long time for the first deployment, since several dependencies (like Ruby) need to be installed.
