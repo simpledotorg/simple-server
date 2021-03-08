@@ -417,7 +417,7 @@
                   </span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
-                  <span data-monthly-registrations="<%= @data.dig(:registrations, @period) %>">
+                  <span data-monthly-registrations="<%= number_with_delimiter(@data.dig(:registrations, @period)) %>">
                     <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
                   </span>
                   new <%= "patient".pluralize(@data.dig(:registrations, @period)) %> registered in
