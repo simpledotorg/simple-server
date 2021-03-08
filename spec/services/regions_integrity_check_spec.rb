@@ -11,11 +11,12 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
   context "missing regions" do
     it "tracks missing org" do
-      missing = Organization.import(build_list(:organization, 2)).ids
+      orgs = create_list(:organization, 2)
+      orgs.each { |org| org.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.inconsistencies.dig(:organizations, :missing_regions)).to match_array(missing)
+      expect(swept.inconsistencies.dig(:organizations, :missing_regions)).to match_array(orgs.pluck(:id))
     end
 
     it "tracks missing state" do
@@ -30,11 +31,12 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
     end
 
     it "tracks missing facility_groups" do
-      missing = FacilityGroup.import(build_list(:facility_group, 2, state: state.name)).ids
+      groups = create_list(:facility_group, 2, state: state.name)
+      groups.each { |fg| fg.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.inconsistencies.dig(:districts, :missing_regions)).to match_array(missing)
+      expect(swept.inconsistencies.dig(:districts, :missing_regions)).to match_array(groups.pluck(:id))
     end
 
     it "tracks missing blocks" do
