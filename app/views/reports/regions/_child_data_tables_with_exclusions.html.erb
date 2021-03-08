@@ -90,20 +90,44 @@
           <td class="type-title">
             <%= @region.name %>
           </td>
-          <td class="ta-left">
-            <%= number_to_percentage(@data.dig(:controlled_patients_rate, @period), precision: 0) %>
+          <td
+            class="type-percent"
+            data-sort-column-key="total-patients-<%= @period %>"
+            data-sort="<%= @data.dig(:controlled_patients_rate, @period) %>"
+            data-toggle="tooltip"
+            title="<%= number_with_delimiter(@data.dig(:controlled_patients, @period)) %> / <%= number_with_delimiter(@data.dig(:adjusted_registrations, @period)) %> patients"
+          >
+            <em data-rate="<%= @data.dig(:controlled_patients_rate, @period) %>">
+              <%= number_to_percentage(@data.dig(:controlled_patients_rate, @period) || 0, precision: 0) %>
+            </em>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.dig(:controlled_patients, @period)) %>
+            <%= number_with_delimiter(@data.dig(:controlled_patients, @period), precision: 0) %>
           </td>
-          <td class="ta-left">
-            <%= number_to_percentage(@data.dig(:uncontrolled_patients_rate, @period), precision: 0) %>
+          <td
+            class="type-percent"
+            data-sort-column-key="total-patients-<%= @period %>"
+            data-sort="<%= @data.dig(:uncontrolled_patients_rate, @period) %>"
+            data-toggle="tooltip"
+            title="<%= number_with_delimiter(@data.dig(:uncontrolled_patients, @period)) %> / <%= number_with_delimiter(@data.dig(:adjusted_registrations, @period)) %> patients"
+          >
+            <em data-rate="<%= @data.dig(:uncontrolled_patients_rate, @period) %>">
+              <%= number_to_percentage(@data.dig(:uncontrolled_patients_rate, @period) || 0, precision: 0) %>
+            </em>
           </td>
           <td class="ta-left">
             <%= number_with_delimiter(@data.dig(:uncontrolled_patients, @period)) %>
           </td>
-          <td class="ta-left">
-            <%= number_to_percentage(@data.dig(:missed_visits_rate, @period), precision: 0) %>
+          <td
+            class="type-percent"
+            data-sort-column-key="total-patients-<%= @period %>"
+            data-sort="<%= @data.dig(:missed_visits_rate, @period) %>"
+            data-toggle="tooltip"
+            title="<%= number_with_delimiter(@data.dig(:missed_visits, @period)) %> / <%= number_with_delimiter(@data.dig(:adjusted_registrations, @period)) %> patients"
+          >
+            <em data-rate="<%= @data.dig(:missed_visits_rate, @period) %>">
+              <%= number_to_percentage(@data.dig(:missed_visits_rate, @period) || 0, precision: 0) %>
+            </em>
           </td>
           <td class="ta-left">
             <%= number_with_delimiter(@data.dig(:missed_visits, @period)) %>
