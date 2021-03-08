@@ -51,10 +51,10 @@
               </th>
             <% else %>
               <th colspan="6">
-                New registrations<sup>2</sup>
+                New registrations<sup>3</sup>
               </th>
               <th colspan="6">
-                Follow-up patients<sup>3</sup>
+                Follow-up patients<sup>4</sup>
               </th>
             <% end %>
           </tr>
@@ -64,10 +64,18 @@
             </th>
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+                Total assigned<br>
+                patients
+              <% else %>
+                Total assigned patients<sup>1</sup>
+              <% end %>
+            </th>
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+              <% if current_admin.feature_enabled?(:report_with_exclusions) %>
                 Total registered<br>
                 patients
               <% else %>
-                Cumulative registrations<sup>1</sup>
+                Cumulative registrations<sup>2</sup>
               <% end %>
             </th>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -88,6 +96,9 @@
               Total
             </td>
             <td class="row-total ta-center">
+              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_assigned_patients] || 0 })) %>
+            </td>
+            <td class="row-total ta-center">
               <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
             </td>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -106,6 +117,9 @@
               <tr>
                 <td class="row-title">
                   <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
+                </td>
+                <td class="ta-center">
+                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_assigned_patients))) %>
                 </td>
                 <td class="ta-center">
                   <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
@@ -129,13 +143,16 @@
     <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+          <strong>1. Total assigned patients:</strong> <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %>
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+          <strong>2. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>3. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
+          <strong>4. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
         </p>
       </div>
     <% end %>
@@ -307,10 +324,10 @@
               </th>
             <% else %>
               <th colspan="6">
-                New registrations<sup>2</sup>
+                New registrations<sup>3</sup>
               </th>
               <th colspan="6">
-                Follow-up patients<sup>3</sup>
+                Follow-up patients<sup>4</sup>
               </th>
             <% end %>
           </tr>
@@ -319,14 +336,19 @@
               Facilities
             </th>
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
-              Total assigned patients
+              <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+                Total assigned<br>
+                patients
+              <% else %>
+                Total assigned patients<sup>1</sup>
+              <% end %>
             </th>
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               <% if current_admin.feature_enabled?(:report_with_exclusions) %>
                 Total registered<br>
                 patients
               <% else %>
-                Cumulative registrations<sup>1</sup>
+                Cumulative registrations<sup>2</sup>
               <% end %>
             </th>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -347,7 +369,7 @@
               <%= @region.name %>
             </td>
             <td class="row-total ta-center">
-              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
+              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_assigned_patients] || 0 })) %>
             </td>
             <td class="row-total ta-center">
               <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
@@ -370,7 +392,7 @@
                   <%= link_to resource.send(:name), send(:reports_region_facility_details_path, resource) %>
                 </td>
                 <td class="ta-center">
-                  hey
+                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_assigned_patients))) %>
                 </td>
                 <td class="ta-center">
                   <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
@@ -394,13 +416,16 @@
     <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
       <div class="mt-20px">
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>1. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+          <strong>1. Total assigned patients:</strong> <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %>
         </p>
         <p class="mb-8px fs-14px c-grey-dark c-print-black">
-          <strong>2. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+          <strong>2. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>3. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
         </p>
         <p class="mb-0px fs-14px c-grey-dark c-print-black">
-          <strong>3. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
+          <strong>4. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
         </p>
       </div>
     <% end %>

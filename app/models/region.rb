@@ -142,6 +142,10 @@ class Region < ApplicationRecord
     Patient.where(assigned_facility: facility_regions.pluck(:source_id))
   end
 
+  def assigned_hypertension_patients
+    Patient.with_hypertension.where(assigned_facility: facilities)
+  end
+
   def appointed_patients
     Patient.joins(:appointments).where(appointments: {facility: facility_regions.pluck(:source_id)})
   end

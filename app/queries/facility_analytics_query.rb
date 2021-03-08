@@ -12,9 +12,9 @@ class FacilityAnalyticsQuery
   end
 
   def call
-    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
+    # Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
       results
-    end
+    # end
   end
 
   def results
@@ -31,13 +31,20 @@ class FacilityAnalyticsQuery
   end
 
   def total_assigned_patients
+    # binding.pry
+
     @total_assigned_patients ||=
-      Patient
-        .with_hypertension
-        .joins(:assigned_facility)
-        .where(facilities: {id: facilities})
-        .group("facilities.id")
+      @facility
+        .assigned_hypertension_patients
+        .group("registration_user_id")
+        .distinct("patients.id")
         .count
+
+    return if @total_assigned_patients.blank?
+
+    @total_assigned_patients
+      .map { |user_id, count| [user_id, {total_assigned_patients: count}] }
+      .to_h
   end
 
   def total_registered_patients

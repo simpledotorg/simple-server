@@ -20,7 +20,6 @@ class DistrictAnalyticsQuery
   def call
     # Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
       results
-binding.pry
 # end
   end
 
