@@ -12,9 +12,9 @@ class FacilityAnalyticsQuery
   end
 
   def call
-    # Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
       results
-    # end
+    end
   end
 
   def results
@@ -31,8 +31,6 @@ class FacilityAnalyticsQuery
   end
 
   def total_assigned_patients
-    # binding.pry
-
     @total_assigned_patients ||=
       @facility
         .assigned_hypertension_patients
