@@ -57,35 +57,32 @@
             <%= @region.name %>
           </td>
           <td class="ta-left">
-            <%= number_to_percentage(@data.last_value(:controlled_patients_rate), precision: 0) %>
+            <%= number_to_percentage(@data.dig(:controlled_patients_rate, @period), precision: 0) %>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
+            <%= number_with_delimiter(@data.dig(:controlled_patients, @period)) %>
           </td>
           <td class="ta-left">
-            <%= number_to_percentage(@data.last_value(:uncontrolled_patients_rate), precision: 0) %>
+            <%= number_to_percentage(@data.dig(:uncontrolled_patients_rate, @period), precision: 0) %>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
+            <%= number_with_delimiter(@data.dig(:uncontrolled_patients, @period)) %>
           </td>
           <td class="ta-left">
-            <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
+            <%= number_to_percentage(@data.dig(:missed_visits_rate, @period), precision: 0) %>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
+            <%= number_with_delimiter(@data.dig(:missed_visits, @period)) %>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
+            <%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %>
           </td>
           <td class="ta-left">
-            <%= number_with_delimiter(@data.last_value(:registrations)) %>
+            <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
           </td>
         </tr>
         <% data.each do |result| %>
-          <% next if result.dig("controlled_patients_rate", @period).nil? %>
-          <% next if result.dig("uncontrolled_patients_rate", @period).nil? %>
-          <% next if result.dig("missed_visits_rate", @period).nil? %>
-          <% next if result.dig("registrations", @period).nil? %>
+          <% next if result.dig(:missed_visits_rate, @period).nil? %>
           <tr>
             <td class="ta-left">
               <%= link_to(reports_region_path(result.region, report_scope: region_type)) do %>
@@ -93,28 +90,28 @@
               <% end %>
             </td>
             <td class="ta-left">
-              <%= number_to_percentage(result["controlled_patients_rate"].values.last || 0, precision: 0) %>
+              <%= number_to_percentage(result.dig(:controlled_patients_rate, @period), precision: 0) %>
             </td>
             <td class="ta-left">
-              <%= number_with_delimiter(result["controlled_patients"].values.last) %>
+              <%= number_with_delimiter(result.dig(:controlled_patients, @period)) %>
             </td>
             <td class="ta-left">
-              <%= number_to_percentage(result["uncontrolled_patients_rate"].values.last || 0, precision: 0) %>
+              <%= number_to_percentage(result.dig(:uncontrolled_patients_rate, @period), precision: 0) %>
             </td>
             <td class="ta-left">
-              <%= number_with_delimiter(result["uncontrolled_patients"].values.last) %>
+              <%= number_with_delimiter(result.dig(:uncontrolled_patients, @period)) %>
             </td>
             <td class="ta-left">
-              <%= number_to_percentage(result["missed_visits_rate"].values.last || 0, precision: 0) %>
+              <%= number_to_percentage(result.dig(:missed_visits_rate, @period), precision: 0) %>
             </td>
             <td class="ta-left">
-              <%= number_with_delimiter(result["missed_visits"].values.last) %>
+              <%= number_with_delimiter(result.dig(:missed_visits, @period)) %>
             </td>
             <td class="ta-left">
-              <%= number_with_delimiter(result["cumulative_registrations"].values.last) %>
+              <%= number_with_delimiter(result.dig(:cumulative_registrations, @period)) %>
             </td>
             <td class="ta-left">
-              <%= number_with_delimiter(result["registrations"].values.last || 0) %>
+              <%= number_with_delimiter(result.dig(:registrations, @period)) %>
             </td>
           </tr>
         <% end %>
