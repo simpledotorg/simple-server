@@ -174,13 +174,17 @@ describe DeduplicatePatients do
       blood_pressures = BloodPressure.where(patient_id: patients).load
       blood_sugars = BloodSugar.where(patient_id: patients).load
       observables = patients.flat_map(&:observations).map(&:observable)
+      soft_deleted_bp = blood_pressures.first
+      soft_deleted_sugar = blood_sugars.first
+      soft_deleted_bp.discard
+      soft_deleted_sugar.discard
 
       new_patient = described_class.new(patients).merge
 
       expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(encounters)
-      expect(with_comparable_attributes(new_patient.blood_pressures)).to eq with_comparable_attributes(blood_pressures)
-      expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(blood_sugars)
-      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes(observables)
+      expect(with_comparable_attributes(new_patient.blood_pressures)).to match_array with_comparable_attributes(blood_pressures - [soft_deleted_bp])
+      expect(with_comparable_attributes(new_patient.blood_sugars)).to match_array with_comparable_attributes(blood_sugars - [soft_deleted_sugar])
+      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes(observables - [soft_deleted_bp, soft_deleted_sugar])
     end
 
     it "copies over appointments, keeps only one scheduled appointment and marks the rest as cancelled" do
