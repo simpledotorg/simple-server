@@ -1,23 +1,22 @@
 // Universal variables
 @import "partials/variables";
 
-/* Background to white */
-body {
-    background: #fff;
-}
+@page { margin: 1cm; }
+
+body { background: #fff; }
 
 table { page-break-inside: avoid; }
 
 /* Force background colors to print */
 *{ color-adjust: exact; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
+
 /* Hide elements that are not required in print */
 .mobile,
 .dropdown,
 .breadcrumb,
-.downloads {
-    display: none;
-}
+.downloads,
+.alert { display: none !important; }
 
 /******************
 Custom formatting for printable elements
@@ -36,9 +35,7 @@ Custom formatting for printable elements
     border-color: #000 !important;
 }
 
-.card {
-    border: 2px solid black;
-}
+.card { border: 2px solid black; }
 
 .split-bars {
     border-collapse: separate;
@@ -58,3 +55,18 @@ Custom formatting for printable elements
 .key div.controlled {
     color: #000;
 }
+
+/* Display */
+.d-print-none { display: none !important; }
+.d-print-block { display: block !important; }
+.pb-inside-avoid { page-break-inside: avoid; }
+.pb-after-always { page-break-after: always; }
+/* Size */
+.w-print-16cm { width: 16cm !important; }
+.h-print-12cm { height: 12cm !important; }
+/* Space */
+.mt-print-2cm { margin-top: 2cm !important; }
+/* Fonts, colors, and borders */
+.fw-print-bold { font-weight: 700; }
+.c-print-black { color: #000; }
+.b-print-black { border: 2px solid #000; }

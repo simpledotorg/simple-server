@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+last_release = ARGV[0]
+if last_release.nil? || last_release == "-h" || last_release == "--help"
+  docs = <<~EOL
+    You must provide a git ref to compare HEAD to for the changelog. For example, if the last release was tagged
+    release-2020-12-01 and you want changes since then, run `bin/changelog release-2020-12-01`.
+  EOL
+  abort docs
+end
+
+git_log = `git log #{last_release}..HEAD --oneline --decorate=no`
+changelog = git_log.strip.split("\n")
+  .map { |line| line.match(/\s(.*)/)&.captures&.last }
+  .reject { |line| line =~ /^Merge/ } # remove merge commits
+  .compact
+  .map { |line| "• #{line}" }
+  .join("\n")
+
+puts changelog

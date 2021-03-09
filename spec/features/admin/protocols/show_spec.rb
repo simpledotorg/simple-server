@@ -1,8 +1,7 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "test protocol detail page functionality", type: :feature do
-  let(:owner) { create(:admin) }
-  let!(:permissions) { create(:user_permission, user: owner, permission_slug: :manage_protocols) }
+  let(:owner) { create(:admin, :power_user) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
   let!(:var_protocol_drug) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol) }
 
@@ -45,18 +44,6 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
       protocol.select_protocol(var_protocol.name)
       protocol_show.click_edit_protocol_drug_button(var_protocol_drug.name)
       AdminPage::ProtocolDrugs::Edit.new.edit_protocol_drug_info("50mg", "AXDFC")
-    end
-
-    context "javascript based test" do
-      let!(:var_protocol) { create(:protocol, name: "BathindaTestProtocol", follow_up_days: "30") }
-      let!(:var_protocol_drug) { create_list(:protocol_drug, 3, protocol: var_protocol) }
-
-      skip "JS specs are currently disabled" do
-        it "should delete protocol drug", js: true do
-          protocol.select_protocol(var_protocol.name)
-          protocol_show.delete_protocol_drug(var_protocol_drug.first.name)
-        end
-      end
     end
   end
 end

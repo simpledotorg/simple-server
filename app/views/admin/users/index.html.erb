@@ -4,22 +4,12 @@
 
 <% currently_selected_district = params[:district].presence || 'All districts' %>
 
-<% if current_admin.permissions_v2_enabled? %>
-  <%= render 'shared/paginate_and_filter_by_district',
-             form_url: admin_users_path,
-             current_admin: current_admin,
-             district: @district,
-             per_page: @per_page,
-             scope_namespace: current_admin.accessible_facilities(:manage) %>
-
-<% else %>
-  <%= render 'shared/paginate_and_filter_by_district',
-             form_url: admin_users_path,
-             current_admin: current_admin,
-             district: @district,
-             per_page: @per_page,
-             scope_namespace: [:manage, :user, Facility] %>
-<% end %>
+<%= render 'shared/paginate_and_filter_by_district',
+           form_url: admin_users_path,
+           current_admin: current_admin,
+           district: @district,
+           per_page: @per_page,
+           scope_namespace: current_admin.accessible_facilities(:manage) %>
 
 <% if @users.exists? %>
   <% if searching? %>
@@ -46,16 +36,7 @@
               <% if user.registration_facility.present? %>
                 Registration facility:
                 <% facility = user.registration_facility %>
-
-                <% if current_admin.permissions_v2_enabled? %>
-                    <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
-                <% else %>
-                  <% if policy([:manage, :facility, facility]).show? %>
-                    <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
-                  <% else %>
-                    <%= user.registration_facility.name %>
-                  <% end %>
-                <% end %>
+                <%= link_to facility.name, [:admin, facility.facility_group, facility], class: "text-dark" %>
               <% end %>
             </div>
             <div class="mt-2">
@@ -65,32 +46,14 @@
           </div>
           <div class="col-md-5 text-right">
             <% unless user.sync_approval_status == 'allowed' %>
-              <% if current_admin.permissions_v2_enabled? %>
-                <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: 'btn btn-sm btn-outline-success' %>
-              <% else %>
-                <% if policy([:manage, :user, user]).enable_access? %>
-                  <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: 'btn btn-sm btn-outline-success' %>
-                <% end %>
-              <% end %>
+              <%= link_to 'Allow', admin_user_enable_access_path(user), method: :put, data: {confirm: I18n.t('admin.enable_access_alert')}, class: 'btn btn-sm btn-outline-success' %>
             <% end %>
 
             <% unless user.sync_approval_status == 'denied' %>
-              <% if current_admin.permissions_v2_enabled? %>
-                  <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
-              <% else %>
-                <% if policy([:manage, :user, user]).disable_access? %>
-                  <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
-                <% end %>
-              <% end %>
+              <%= link_to 'Deny', '#deny-access-modal-' + user.id, 'data-toggle' => 'modal', class: 'btn btn-sm btn-outline-danger' %>
             <% end %>
 
-            <% if current_admin.permissions_v2_enabled? %>
-                <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
-            <% else %>
-              <% if policy([:manage, :user, user]).edit? %>
-                <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
-              <% end %>
-            <% end %>
+            <%= link_to 'Edit', edit_admin_user_path(user), class: 'btn btn-sm btn-outline-primary' %>
 
             <%= render partial: "deny_access_modal", locals: {user: user} %>
           </div>

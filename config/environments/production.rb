@@ -58,15 +58,16 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
-    [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
+    [:redis_cache_store, {url: ENV["RAILS_CACHE_REDIS_URL"]}]
   else
-    [:redis_store, ENV["REDIS_URL"]]
+    [:redis_cache_store, {url: ENV["REDIS_URL"]}]
   end
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
-  config.active_job.queue_adapter = :inline
+  config.active_job.queue_adapter = :sidekiq
   # config.active_job.queue_name_prefix = "simple-server_#{Rails.env}"
   config.action_mailer.perform_caching = false
+  config.action_mailer.deliver_later_queue_name = "default"
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -95,7 +96,7 @@ Rails.application.configure do
   config.active_support.deprecation = :notify
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger = ActiveSupport::Logger.new($stdout)
+    logger = JsonLogger.new($stdout)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
   end

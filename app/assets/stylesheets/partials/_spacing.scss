@@ -1,12 +1,12 @@
-$space-amounts: (3, 5, 8, 10, 12, 14, 15, 16);
+$space-amounts: (3, 5, 8, 10, 12, 14, 15, 16, 20);
 
 @each $space in $space-amounts {
   .m-#{$space}px {
-    margin: #{$space}px !important;
+    margin: #{$space}px;
   }
 
   .p-#{$space}px {
-    padding: #{$space}px !important;
+    padding: #{$space}px;
   }
 }
 
@@ -22,6 +22,7 @@ $space-amounts: (3, 5, 8, 10, 12, 14, 15, 16);
 .mr-16px { margin-right: 16px; }
 .mr-24px { margin-right: 24px; }
 .mb-0px { margin-bottom: 0px; }
+.mb-4px { margin-bottom: 4px; }
 .mb-8px { margin-bottom: 8px; }
 .mb-12px { margin-bottom: 12px; }
 .mb-16px { margin-bottom: 16px; }
@@ -41,5 +42,6 @@ $space-amounts: (3, 5, 8, 10, 12, 14, 15, 16);
 .pb-4px { padding-bottom: 4px; }
 .pb-8px { padding-bottom: 8px; }
 .pl-16px { padding-left: 16px; }
+.pl-20px { padding-left: 20px; }
 .px-1px { padding-right: 1px; padding-left: 1px; }
 .px-20px { padding-right: 20px; padding-left: 20px; }

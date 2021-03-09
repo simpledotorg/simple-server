@@ -32,4 +32,14 @@ describe Encounter, type: :model do
       expect(id_1).to eq(id_2)
     end
   end
+
+  describe "Scopes" do
+    describe ".for_sync" do
+      it "includes discarded encounters" do
+        discarded_encounter = create(:encounter, deleted_at: Time.now)
+
+        expect(described_class.for_sync).to include(discarded_encounter)
+      end
+    end
+  end
 end

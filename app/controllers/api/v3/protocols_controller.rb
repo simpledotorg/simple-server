@@ -9,22 +9,40 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
     __sync_to_user__("protocols")
   end
 
-  def find_records_to_sync(since, limit)
-    super(since, limit).includes(:protocol_drugs)
+  private
+
+  def current_facility_records
+    []
   end
 
-  private
+  def other_facility_records
+    time(__method__) do
+      Protocol
+        .with_discarded
+        .updated_on_server_since(other_facilities_processed_since, limit)
+    end
+  end
 
   def disable_audit_logs?
     true
   end
 
   def transform_to_response(protocol)
-    protocol.as_json(include: :protocol_drugs)
+    protocol.as_json
   end
 
   def response_process_token
-    {other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
-     resync_token: resync_token}
+    {
+      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      resync_token: resync_token
+    }
+  end
+
+  def block_level_sync?
+    current_user&.block_level_sync?
+  end
+
+  def force_resync?
+    resync_token_modified?
   end
 end

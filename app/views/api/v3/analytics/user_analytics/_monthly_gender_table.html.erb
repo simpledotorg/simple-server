@@ -3,7 +3,7 @@
   <!-- the "all" table for both HTN & DM across genders -->
   <table class="progress-table <%= data_table_name %> all">
     <tr class="total">
-      <td class="row-label">All-time</td>
+      <td class="row-label"><%= raw t("analytics.all_time") %></td>
       <td>
         <%= user_analytics.all_time_htn_or_dm_count(stat) %>
       </td>
@@ -22,7 +22,7 @@
   <!-- the "all genders" table -->
   <table class="progress-table <%= data_table_name %> diabetes:all" style="display: none">
     <tr class="total">
-      <td class="row-label">All-time</td>
+      <td class="row-label"><%= raw t("analytics.all_time") %></td>
       <td>
         <%= user_analytics.all_time_dm_count(stat) %>
       </td>
@@ -42,7 +42,7 @@
   <!-- gender-wise tables -->
   <table class="progress-table <%= data_table_name %> diabetes:<%= gender %>" style="display: none">
     <tr class="total">
-      <td class="row-label">All-time</td>
+      <td class="row-label"><%= raw t("analytics.all_time") %></td>
       <td>
         <%= user_analytics.all_time_dm_stats_by_gender(stat, gender) %>
       </td>
@@ -64,7 +64,7 @@
        style="<%= user_analytics.diabetes_enabled? ? 'display: none' : '' %>">
 
   <tr class="total">
-    <td class="row-label">All-time</td>
+    <td class="row-label"><%= raw t("analytics.all_time") %></td>
     <td>
       <%= user_analytics.all_time_htn_count(stat) %>
     </td>
@@ -83,7 +83,7 @@
   <!-- gender-wise tables -->
   <table class="progress-table <%= data_table_name %> hypertension:<%= gender %>" style="display: none">
     <tr class="total">
-      <td class="row-label">All-time</td>
+      <td class="row-label"><%= raw t("analytics.all_time") %></td>
       <td>
         <%= user_analytics.all_time_htn_stats_by_gender(stat, gender) %>
       </td>

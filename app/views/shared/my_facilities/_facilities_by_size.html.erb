@@ -1,6 +1,10 @@
 <div class="card mb-3">
-  <h2>Facilities</h2>
-  <p>Facilities where Simple is deployed</p>
+  <h2>
+    Facilities using Simple
+  </h2>
+  <p>
+    Active facilities have &ge;10 patients with BPs recorded in the last 7 days
+  </p>
   <section id="facilities-by-size">
     <table class="table table-compact table-hover">
       <colgroup>
@@ -12,40 +16,66 @@
       <tr>
         <th></th>
         <th>Total</th>
-        <th>Inactive<sup>1</sup></th>
+        <th>Inactive</th>
       </tr>
       </thead>
       <tbody>
       <tr class="row-total">
-        <td>All</td>
-        <td class="text-right"><%= @facilities.count %></td>
-        <td class="text-right"><%= @inactive_facilities.count %></td>
+        <td>
+          All
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facilities.count) %> <%= "facility".pluralize(@facilities.count) %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@inactive_facilities.count) %> <%= "facility".pluralize(@inactive_facilities.count) %>
+        </td>
       </tr>
       <tr>
-        <td>Large</td>
-        <td class="text-right"><%= @facility_counts_by_size[:total]["large"].to_i %></td>
-        <td class="text-right"><%= @facility_counts_by_size[:inactive]["large"].to_i %></td>
+        <td>
+          <%= Facility.localized_facility_size("large") %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:total]["large"].to_i) %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["large"].to_i) %>
+        </td>
       </tr>
       <tr>
-        <td>Medium</td>
-        <td class="text-right"><%= @facility_counts_by_size[:total]["medium"].to_i %></td>
-        <td class="text-right"><%= @facility_counts_by_size[:inactive]["medium"].to_i %></td>
+        <td>
+          <%= Facility.localized_facility_size("medium") %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:total]["medium"].to_i) %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["medium"].to_i) %>
+        </td>
       </tr>
       <tr>
-        <td>Small</td>
-        <td class="text-right"><%= @facility_counts_by_size[:total]["small"].to_i %></td>
-        <td class="text-right"><%= @facility_counts_by_size[:inactive]["small"].to_i %></td>
+        <td>
+          <%= Facility.localized_facility_size("small") %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:total]["small"].to_i) %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["small"].to_i) %>
+        </td>
       </tr>
       <tr>
-        <td>Community</td>
-        <td class="text-right"><%= @facility_counts_by_size[:total]["community"].to_i %></td>
-        <td class="text-right"><%= @facility_counts_by_size[:inactive]["community"].to_i %></td>
+        <td>
+          <%= Facility.localized_facility_size("community") %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:total]["community"].to_i) %>
+        </td>
+        <td class="text-right">
+          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["community"].to_i) %>
+        </td>
       </tr>
       </tbody>
     </table>
-    <ol style="padding-left: 15px"><li>
-      <strong>Inactive:</strong>
-      Facilities where &lt;10 patients had any BPs recorded in the last 7 days.
-    </li></ol>
   </section>
 </div>

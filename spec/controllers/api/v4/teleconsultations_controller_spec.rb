@@ -32,7 +32,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
     let(:empty_payload) { Hash[request_key, []] }
 
     before :each do
-      _request_user = FactoryBot.create(:user)
+      _request_user = create(:user)
       set_authentication_headers
     end
 

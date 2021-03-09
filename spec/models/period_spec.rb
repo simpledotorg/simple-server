@@ -56,6 +56,12 @@ RSpec.describe Period, type: :model do
       expect(period.value).to be_instance_of(Quarter)
       expect(period).to eq(Period.quarter(quarter_1_2020))
     end
+
+    it "coerces month dates to the beginning of the month" do
+      date = Date.parse("December 12, 2020")
+      period = Period.new(type: :month, value: date)
+      expect(period.value).to eq(Date.parse("December 1, 2020"))
+    end
   end
 
   it "times and dates can convert themselves into periods" do
@@ -119,6 +125,10 @@ RSpec.describe Period, type: :model do
     range = Period.month("July 1st 2020").blood_pressure_control_range
     expect(range.begin).to eq(Date.parse("April 30th 2020"))
     expect(range.end).to eq(Date.parse("July 31st 2020"))
+
+    range = Period.month("February 1st 2020").blood_pressure_control_range
+    expect(range.begin).to eq(Date.parse("November 30th 2019"))
+    expect(range.end).to eq(Date.parse("February 29th 2020"))
   end
 
   it "can be used in ranges" do

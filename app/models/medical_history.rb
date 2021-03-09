@@ -29,6 +29,8 @@ class MedicalHistory < ApplicationRecord
   enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
 
+  scope :for_sync, -> { with_discarded }
+
   def indicates_hypertension_risk?
     prior_heart_attack_boolean || prior_stroke_boolean
   end

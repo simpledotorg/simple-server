@@ -1,8 +1,9 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Owner Login as Admin", type: :feature do
-  let(:owner) { create(:admin, :owner) }
-  let(:counsellor) { create(:admin, :counsellor) }
+  let(:facility) { create(:facility) }
+  let(:owner) { create(:admin, :power_user) }
+  let(:counsellor) { create(:admin, :call_center, :with_access, resource: facility) }
   login_page = AdminPage::Sessions::New.new
   dashboard_navigation = Navigations::DashboardPageNavigation.new
 
@@ -12,12 +13,13 @@ RSpec.feature "Owner Login as Admin", type: :feature do
       login_page.do_login(owner.email, owner.password)
     end
 
-    it "Logs in " do
+    it "logs in" do
       dashboard_navigation.validate_owners_home_page
+      dashboard_navigation.open_more
       expect(page).to have_content(owner.email)
     end
 
-    it "log Out" do
+    it "logs out" do
       dashboard_navigation.click_logout_button
       login_page.is_successful_logout_message_present
       login_page.click_successful_message_cross_button
@@ -29,12 +31,13 @@ RSpec.feature "Owner Login as Admin", type: :feature do
       login_page.do_login(counsellor.email, counsellor.password)
     end
 
-    it "Logs in " do
+    it "logs in" do
       expect(page).to have_content("Patients that are overdue for a follow-up visit.")
+      dashboard_navigation.open_more
       expect(page).to have_content(counsellor.email)
     end
 
-    it "log Out" do
+    it "logs out" do
       dashboard_navigation.click_logout_button
       login_page.is_successful_logout_message_present
       login_page.click_successful_message_cross_button

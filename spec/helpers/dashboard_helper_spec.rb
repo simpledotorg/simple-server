@@ -27,5 +27,19 @@ RSpec.describe DashboardHelper, type: :helper do
         expect(expected_months).to eq([first_jan, first_apr])
       end
     end
+
+    context "number_or_dash_with_delimiter" do
+      it "returns dash if number is zero-ish" do
+        expect(number_or_dash_with_delimiter(0)).to eq("-")
+        expect(number_or_dash_with_delimiter(nil)).to eq("-")
+        expect(number_or_dash_with_delimiter("")).to eq("-")
+      end
+
+      it "returns number with delimter with a valid number" do
+        expect(number_or_dash_with_delimiter(12335)).to eq("12,335")
+        expect(number_or_dash_with_delimiter(12335, delimiter: "_")).to eq("12_335")
+        expect(number_or_dash_with_delimiter(100)).to eq("100")
+      end
+    end
   end
 end

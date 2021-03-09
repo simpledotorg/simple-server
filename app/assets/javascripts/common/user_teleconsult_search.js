@@ -65,11 +65,16 @@ UserTeleconsultSearch = function () {
 
   this.search = (e) => {
     let searchQuery = e.value;
+    let facilityGroupId = $("#search_query").data("facilityGroupId");
+
     if (searchQuery.length) {
       this.showSpinner();
       $.ajax({
         url: this.searchURL,
-        data: {"search_query": searchQuery},
+        data: {
+          "search_query": searchQuery,
+          "facility_group_id": facilityGroupId
+        },
         success: (res) => {
           this.populateSearchResults(searchQuery, res)
         }

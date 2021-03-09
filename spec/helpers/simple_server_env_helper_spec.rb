@@ -99,7 +99,7 @@ RSpec.describe SimpleServerEnvHelper do
     context "when in the default environment" do
       it "should return the default logo" do
         ENV[simple_server_env] = "default"
-        logo_for_default_environment = image_tag "logos/default/simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Dashboard Logo"
+        logo_for_default_environment = image_tag "logos/default/simple_logo.svg", width: 30, height: 30, class: "d-inline-block align-top", alt: "Simple Dashboard Logo"
 
         expect(logo_for_environment).to eq logo_for_default_environment
       end
@@ -108,7 +108,7 @@ RSpec.describe SimpleServerEnvHelper do
     context "when in the qa environment" do
       it "should return the QA logo" do
         ENV[simple_server_env] = "qa"
-        logo_for_qa_environment = image_tag "logos/qa/simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Dashboard Qa Logo"
+        logo_for_qa_environment = image_tag "logos/qa/simple_logo.svg", width: 30, height: 30, class: "d-inline-block align-top", alt: "Simple Dashboard Qa Logo"
 
         expect(logo_for_environment).to eq logo_for_qa_environment
       end
@@ -117,7 +117,7 @@ RSpec.describe SimpleServerEnvHelper do
     context "when in the demo environment" do
       it "should return the demo logo" do
         ENV[simple_server_env] = "demo"
-        logo_for_demo_environment = image_tag "logos/demo/simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Dashboard Demo Logo"
+        logo_for_demo_environment = image_tag "logos/demo/simple_logo.svg", width: 30, height: 30, class: "d-inline-block align-top", alt: "Simple Dashboard Demo Logo"
 
         expect(logo_for_environment).to eq logo_for_demo_environment
       end
@@ -126,7 +126,7 @@ RSpec.describe SimpleServerEnvHelper do
     context "when in the sandbox environment" do
       it "should return the sandbox logo" do
         ENV[simple_server_env] = "sandbox"
-        logo_for_sandbox_environment = image_tag "logos/sandbox/simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Dashboard Sandbox Logo"
+        logo_for_sandbox_environment = image_tag "logos/sandbox/simple_logo.svg", width: 30, height: 30, class: "d-inline-block align-top", alt: "Simple Dashboard Sandbox Logo"
 
         expect(logo_for_environment).to eq logo_for_sandbox_environment
       end
@@ -135,7 +135,7 @@ RSpec.describe SimpleServerEnvHelper do
     context "when in the production environment" do
       it "should return the production logo" do
         ENV[simple_server_env] = "production"
-        logo_for_production_environment = image_tag "logos/production/simple_logo.svg", width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: "Simple Dashboard Production Logo"
+        logo_for_production_environment = image_tag "logos/production/simple_logo.svg", width: 30, height: 30, class: "d-inline-block align-top", alt: "Simple Dashboard Production Logo"
 
         expect(logo_for_environment).to eq logo_for_production_environment
       end

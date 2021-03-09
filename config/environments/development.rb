@@ -13,9 +13,9 @@ Rails.application.configure do
   config.consider_all_requests_local = true
 
   config.cache_store = if ENV["RAILS_CACHE_REDIS_URL"].present?
-    [:redis_store, {host: ENV["RAILS_CACHE_REDIS_URL"]}]
+    [:redis_cache_store, {url: ENV["RAILS_CACHE_REDIS_URL"]}]
   else
-    [:redis_store, ENV["REDIS_URL"]]
+    [:redis_cache_store, {url: ENV["REDIS_URL"]}]
   end
 
   # Enable/disable caching. By default caching is disabled.
@@ -28,6 +28,8 @@ Rails.application.configure do
   else
     config.action_controller.perform_caching = false
   end
+
+  config.log_level = :debug
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

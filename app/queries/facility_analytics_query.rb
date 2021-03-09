@@ -1,7 +1,7 @@
 class FacilityAnalyticsQuery
   include DashboardHelper
 
-  CACHE_VERSION = 1
+  CACHE_VERSION = 2
 
   def initialize(facility, period = :month, prev_periods = 3, from_time = Time.current, include_current_period: false)
     @facility = facility
@@ -20,7 +20,9 @@ class FacilityAnalyticsQuery
   def results
     results = [
       registered_patients_by_period,
-      total_registered_patients
+      total_registered_patients,
+      follow_up_patients_by_period,
+      bp_measures_by_period
     ].compact
 
     return {} if results.blank?
@@ -43,15 +45,21 @@ class FacilityAnalyticsQuery
   end
 
   def registered_patients_by_period
-    @registered_patients_by_period ||=
-      @facility
-        .registered_hypertension_patients
-        .group("registration_user_id")
-        .group_by_period(@period, :recorded_at)
-        .distinct("patients.id")
-        .count
+    result = ActivityService.new(@facility, group: [:registration_user_id]).registrations
 
-    group_by_user_and_date(@registered_patients_by_period, :registered_patients_by_period)
+    group_by_date_and_user(result, :registered_patients_by_period)
+  end
+
+  def follow_up_patients_by_period
+    result = ActivityService.new(@facility, group: [BloodPressure.arel_table[:user_id]]).follow_ups
+
+    group_by_date_and_user(result, :follow_up_patients_by_period)
+  end
+
+  def bp_measures_by_period
+    result = ActivityService.new(@facility, group: [BloodPressure.arel_table[:user_id]]).bp_measures
+
+    group_by_date_and_user(result, :bp_measures_by_period)
   end
 
   private
@@ -67,15 +75,18 @@ class FacilityAnalyticsQuery
     ].join("/")
   end
 
-  def group_by_user_and_date(query_results, key)
+  def group_by_date_and_user(result, key)
     valid_dates = dates_for_periods(@period,
       @prev_periods,
       from_time: @from_time,
       include_current_period: @include_current_period)
 
-    query_results.map { |(user_id, date), value|
-      {user_id => {key => {date.to_date => value}.slice(*valid_dates)}}
-    }.inject(&:deep_merge)
+    transformed_result = result.each_with_object({}) { |((date, user_id), count), hsh|
+      next unless date.in?(valid_dates)
+      hsh[user_id] ||= {key => {}}
+      hsh[user_id][key][date] = count
+    }
+    transformed_result.presence
   end
 
   def force_cache?

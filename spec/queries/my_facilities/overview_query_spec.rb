@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MyFacilities::OverviewQuery do
+RSpec.describe OverviewQuery do
   describe "#inactive_facilities" do
     let!(:active_facility) { create(:facility) }
     let!(:inactive_facility) { create :facility }

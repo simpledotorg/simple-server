@@ -1,17 +1,29 @@
 FactoryBot.define do
   factory :facility_group do
     transient do
-      org { create(:organization) }
+      state_name { Faker::Address.state }
     end
 
     id { SecureRandom.uuid }
-    name { Faker::Address.district }
+    name { Seed::FakeNames.instance.district }
     description { Faker::Company.catch_phrase }
-    organization { org }
-    protocol
+    organization
+    state { state_name }
+    protocol { create(:protocol, :with_tracked_drugs) }
 
-    sequence :slug do |n|
-      "#{name.to_s.parameterize.underscore}_#{n}"
+    transient do
+      create_parent_region { true }
+    end
+
+    before(:create) do |facility_group, options|
+      if options.create_parent_region
+        facility_group.organization.region.state_regions.find_by(name: facility_group.state) ||
+          create(:region, :state, name: facility_group.state, reparent_to: facility_group.organization.region)
+      end
+    end
+
+    trait :without_parent_region do
+      create_parent_region { false }
     end
   end
 end

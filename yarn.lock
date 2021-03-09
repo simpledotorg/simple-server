@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+numeral@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/numeral/-/numeral-2.0.6.tgz#4ad080936d443c2561aed9f2197efffe25f4e506"
+  integrity sha1-StCAk21EPCVhrtnyGX7//iX05QY=
+
 tablesort@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/tablesort/-/tablesort-5.2.0.tgz#132643eaebf31b5e17d6e90222aa24ee11d9b4e6"

@@ -1,44 +1,30 @@
-<div class="alert alert-primary">
-  <span class="fw-bold">Early access:</span> Thanks for your patience as we improve this page. The following features are coming soon:
-  <ul class="mt-4px mb-0px pl-16px">
-    <li>More detailed cohorts</li>
-    <li>Top district and facility benchmarks</li>
-    <li>Lost to follow-up rate</li>
-    <li>Facility comparison tables</li>
-    <li>State and block level reports</li>
-  </ul>
-</div>
 <div class="container">
   <div class="row">
     <div class="col-sm-5 col-lg-7">
-      <% @organizations.each do |organization| %>
-      <section>
-        <div class="card">
-          <h2><%= organization.name %></h2>
-          <% if current_admin.permissions_v2_enabled? %>
-            <% current_admin.accessible_facilities(:view_reports)
-               .where(facility_groups: {organization: organization})
-               .flat_map(&:facility_group)
-               .uniq
-               .compact
-               .sort_by(&:name)
-               .each do |district| %>
-              <%= link_to(reports_region_path(district, report_scope: "district"), class: "link-row") do %>
-                <i class='fas fa-angle-right light'></i>
-                <%= district.name %>
-              <% end %>
-            <% end %>
-          <% else %>
-            <% policy_scope([:cohort_report, organization.facility_groups]).order(:name).each do |district| %>
-              <%= link_to(reports_region_path(district, report_scope: "district"), class: "link-row") do %>
-                <i class='fas fa-angle-right light'></i>
-                <%= district.name %>
-              <% end %>
-            <% end %>
-          <% end %>
-        </div>
-      </section>
+
+      <%= form_tag regions_search_url(format: :json), id: "search-form", method: :get do %>
+        <div class="mo-search">
+          <%= render "search" %>
+        <div>
       <% end %>
+
+      <div id="facility-access">
+        <% @accessible_regions.each do |org, children| %>
+          <div class="card organization show region-index">
+            <div class="access-tree__section-header">
+              <%= org.name %>
+            </div>
+
+            <%= render Reports::RegionTreeComponent.new(parent: org, children: children) %>
+          </div>
+        <% end %>
+      </div>
+
+      <script>
+        const async = false;
+        new AdminAccess("facility-access").initialize(async);
+      </script>
+
     </div>
   </div>
 </div>

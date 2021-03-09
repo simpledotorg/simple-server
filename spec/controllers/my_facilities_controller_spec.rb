@@ -6,11 +6,9 @@ end
 
 RSpec.describe MyFacilitiesController, type: :controller do
   let(:facility_group) { create(:facility_group) }
-  let(:supervisor) do
-    create(:admin, :supervisor, facility_group: facility_group).tap do |user|
-      user.user_permissions.create!(permission_slug: "view_my_facilities")
-    end
-  end
+  let(:supervisor) { create(:admin, :manager, :with_access, resource: facility_group) }
+  let(:facility) { create(:facility, facility_group: facility_group) }
+  let(:december) { Period.month("December 2020") }
 
   render_views
 
@@ -18,90 +16,116 @@ RSpec.describe MyFacilitiesController, type: :controller do
     sign_in(supervisor.email_authentication)
   end
 
+  def refresh_views
+    ActiveRecord::Base.transaction do
+      LatestBloodPressuresPerPatientPerMonth.refresh
+      LatestBloodPressuresPerPatientPerQuarter.refresh
+      PatientRegistrationsPerDayPerFacility.refresh
+    end
+  end
+
   describe "GET #index" do
     it "returns a success response" do
+      facility
       get :index, params: {}
 
       expect(response).to be_successful
     end
   end
 
-  describe "GET #ranked_facilities" do
+  describe "GET #bp_controlled" do
     it "returns a success response" do
-      get :ranked_facilities, params: {}
+      controlled = Timecop.freeze("August 15th 2020") {
+        create_list(:patient, 2, full_name: "controlled", assigned_facility: facility, registration_user: supervisor)
+      }
+      Timecop.freeze("September 20th 2020") do
+        controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: supervisor) }
+      end
+      Timecop.freeze("January 15th 2021") do
+        refresh_views
+        get :bp_controlled, params: {}
+      end
 
       expect(response).to be_successful
+
+      facility_data = assigns(:data_for_facility)[facility.name]
+
+      expect(facility_data[:adjusted_registrations][december]).to eq(2)
+      expect(facility_data[:controlled_patients_rate][Period.month("November 2020")]).to eq(100)
     end
-  end
 
-  describe "GET #blood_pressure_control" do
-    it "returns a success response" do
-      get :blood_pressure_control, params: {}
+    context "when admin has access to multiple facilities" do
+      let(:other_district) { create(:facility_group, name: "other district") }
+      let(:facility_2) { create(:facility, facility_group: other_district, zone: "foo") }
+      let(:facility_3) { create(:facility, facility_group: other_district, zone: "oof") }
 
-      expect(response).to be_successful
-    end
-  end
+      before :each do
+        supervisor.accesses.create! resource: other_district
+        Timecop.freeze("August 15th 2020") do
+          create_list(:patient, 2, full_name: "controlled in facility", assigned_facility: facility, registration_user: supervisor)
+          create_list(:patient, 2, full_name: "controlled in facility_2", assigned_facility: facility_2, registration_user: supervisor)
+          create_list(:patient, 1, full_name: "controlled in facility_3", assigned_facility: facility_3, registration_user: supervisor)
+        end
+        refresh_views
+      end
 
-  describe "GET #registrations" do
-    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
-    let!(:facility_not_under_supervisor) { create(:facility) }
-    let!(:patients) do
-      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
-        create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
+      it "sets data_for_facility for all facilities in the selected district" do
+        Timecop.freeze("January 15th 2021") do
+          get :bp_controlled, params: {facility_group: other_district.slug}
+        end
+        expect(response).to be_successful
+        expect(assigns(:data_for_facility)[facility_2.name]).to_not be_nil
+        expect(assigns(:data_for_facility)[facility_3.name]).to_not be_nil
+        expect(assigns(:data_for_facility)[facility.name]).to be_nil
+        expect(assigns(:stats_by_size).keys).to eq(["small"])
+        expect(assigns(:display_sizes)).to eq(["small"])
       end
     end
+  end
 
+  describe "GET #bp_not_controlled" do
     it "returns a success response" do
-      get :registrations, params: {}
+      controlled = Timecop.freeze("August 15th 2020") {
+        create_list(:patient, 2, full_name: "uncontrolled", assigned_facility: facility, registration_user: supervisor)
+      }
+      Timecop.freeze("September 20th 2020") do
+        controlled.each { |patient| create(:blood_pressure, :hypertensive, patient: patient, facility: facility, user: supervisor) }
+      end
+
+      Timecop.freeze("January 15th 2021") do
+        refresh_views
+        get :bp_controlled, params: {}
+      end
 
       expect(response).to be_successful
-    end
-
-    it "instantiates a MyFacilities::RegistrationsQuery object with the right arguments and calls the required methods" do
-      params = {period: :quarter}
-      query_object = MyFacilities::RegistrationsQuery.new
-      allow(MyFacilities::RegistrationsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
-        .and_return(query_object)
-
-      expect(MyFacilities::RegistrationsQuery).to receive(:new)
-        .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
-
-      expect(query_object).to receive(:registrations).and_return(query_object.registrations)
-      expect(query_object).to receive(:total_registrations).and_return(query_object.total_registrations)
-
-      get :registrations, params: params
+      facility_data = assigns(:data_for_facility)[facility.name]
+      expect(facility_data[:adjusted_registrations][Period.month("December 2020")]).to eq(2)
+      expect(facility_data[:uncontrolled_patients_rate][Period.month("November 2020")]).to eq(100)
+      expect(assigns(:stats_by_size).keys).to eq(["small"])
+      expect(assigns(:display_sizes)).to eq(["small"])
     end
   end
 
   describe "GET #missed_visits" do
-    let!(:facility_under_supervisor) { create(:facility, facility_group: facility_group) }
-    let!(:facility_not_under_supervisor) { create(:facility) }
-    let!(:patients) do
-      [facility_under_supervisor, facility_not_under_supervisor].map do |facility|
-        create(:patient, registration_facility: facility, recorded_at: 3.months.ago)
-      end
-    end
-
     it "returns a success response" do
-      get :missed_visits, params: {}
+      controlled = Timecop.freeze("August 15th 2020") {
+        create_list(:patient, 2, full_name: "controlled", assigned_facility: facility, registration_user: supervisor)
+      }
+      Timecop.freeze("September 20th 2020") do
+        controlled.each { |patient| create(:blood_pressure, :under_control, patient: patient, facility: facility, user: supervisor) }
+      end
+
+      Timecop.freeze("January 15th 2021") do
+        refresh_views
+        get :bp_controlled, params: {}
+      end
 
       expect(response).to be_successful
-    end
-
-    it "instantiates a MyFacilities::MissedVisitsQuery object with the right arguments and calls the required methods" do
-      params = {period: :quarter}
-      query_object = MyFacilities::MissedVisitsQuery.new
-      allow(MyFacilities::MissedVisitsQuery).to receive(:new).with(hash_including(params.merge(last_n: 3)))
-        .and_return(query_object)
-
-      expect(MyFacilities::MissedVisitsQuery).to receive(:new)
-        .with(hash_including(facilities: facilities(Facility.where(id: facility_under_supervisor))))
-
-      expect(query_object).to receive(:periods).and_return(query_object.periods)
-      expect(query_object).to receive(:missed_visits_by_facility).and_return(query_object.missed_visits_by_facility).at_least(:once)
-      expect(query_object).to receive(:missed_visit_totals).and_return(query_object.missed_visit_totals).at_least(:once)
-      expect(query_object).to receive(:calls_made).and_return(query_object.calls_made)
-      get :missed_visits, params: params
+      facility_data = assigns(:data_for_facility)[facility.name]
+      expect(facility_data[:adjusted_registrations][Period.month("December 2020")]).to eq(2)
+      expect(facility_data[:missed_visits_rate][Period.month("December 2020")]).to eq(100)
+      expect(assigns(:stats_by_size).keys).to eq(["small"])
+      expect(assigns(:display_sizes)).to eq(["small"])
     end
   end
 end

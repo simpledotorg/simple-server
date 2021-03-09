@@ -24,7 +24,7 @@ module SimpleServerEnvHelper
   def logo_for_environment
     image_name = "logos/#{simple_env}/simple_logo.svg"
 
-    image_tag image_name, width: 30, height: 30, class: "d-inline-block mr-2 align-top", alt: alt_for_environment
+    image_tag image_name, width: 30, height: 30, class: "d-inline-block align-top", alt: alt_for_environment
   end
 
   def alt_for_environment

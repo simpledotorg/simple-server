@@ -295,15 +295,12 @@ span.percent {
 }
 
 .updated-date {
+  margin-top: 12px;
+  padding: 0;
   text-align: center;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
-  padding: 16px 0;
-  clear: both;
-
-  span {
-    letter-spacing: 1px;
-  }
+  letter-spacing: 1px;
 }
 
 p.control-desc {

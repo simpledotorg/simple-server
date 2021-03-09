@@ -32,6 +32,8 @@ class BloodPressure < ApplicationRecord
       .where(arel_table[:diastolic].lt(THRESHOLDS[:hypertensive][:diastolic]))
   }
 
+  scope :for_sync, -> { with_discarded }
+
   def critical?
     systolic >= THRESHOLDS[:critical][:systolic] || diastolic >= THRESHOLDS[:critical][:diastolic]
   end

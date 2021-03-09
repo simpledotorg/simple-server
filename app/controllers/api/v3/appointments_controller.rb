@@ -1,6 +1,4 @@
 class Api::V3::AppointmentsController < Api::V3::SyncController
-  include Api::V3::PrioritisableByFacility
-
   def sync_from_user
     __sync_from_user__(appointments_params)
   end
@@ -18,8 +16,7 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
   def merge_if_valid(appointment_params)
     validator = Api::V3::AppointmentPayloadValidator.new(appointment_params)
     logger.debug "Follow Up Schedule had errors: #{validator.errors_hash}" if validator.invalid?
-    if validator.invalid?
-      NewRelic::Agent.increment_metric("Merge/Appointment/schema_invalid")
+    if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
       record_params = Api::V3::AppointmentTransformer
@@ -27,6 +24,7 @@ class Api::V3::AppointmentsController < Api::V3::SyncController
         .merge(metadata)
 
       appointment = Appointment.merge(record_params)
+      appointment.update_patient_status
       {record: appointment}
     end
   end

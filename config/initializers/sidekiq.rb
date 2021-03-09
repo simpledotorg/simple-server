@@ -24,8 +24,17 @@ Sidekiq.configure_client do |config|
   config.redis = SidekiqConfig.connection_pool
 end
 
+SIDEKIQ_STATS_KEY = "worker"
+SIDEKIQ_STATS_PREFIX = "#{SimpleServer.env}.#{CountryConfig.current[:abbreviation]}"
+
 Sidekiq.configure_server do |config|
-  config.server_middleware { |chain| chain.add SetLocalTimezone }
+  config.server_middleware do |chain|
+    chain.add SetLocalTimezone
+    # The env and prefix are used to create keys in the format of env.prefix.worker_name.[stat_name]
+    # We want 'sidekiq' to be the top level, and then have our env specific information,
+    # which is we pass in a static string to `env` and the actual server env to `prefix`.
+    chain.add Sidekiq::Statsd::ServerMiddleware, env: SIDEKIQ_STATS_KEY, prefix: SIDEKIQ_STATS_PREFIX, statsd: Statsd.instance.statsd
+  end
   config.redis = SidekiqConfig.connection_pool
 end
 

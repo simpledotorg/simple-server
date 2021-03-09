@@ -4,40 +4,21 @@ class Admin::UsersController < AdminController
 
   before_action :set_user, except: [:index, :teleconsult_search]
   around_action :set_time_zone, only: [:show]
-  before_action :set_district, only: [:index, :teleconsult_search]
-
-  skip_after_action :verify_authorized, if: -> { current_admin.permissions_v2_enabled? }
-  skip_after_action :verify_policy_scoped, if: -> { current_admin.permissions_v2_enabled? }
-  after_action :verify_authorization_attempted, if: -> { current_admin.permissions_v2_enabled? }
+  before_action :set_district, only: [:index]
 
   def index
-    if current_admin.permissions_v2_enabled?
-      authorize_v2 { current_admin.accessible_users(:manage).any? }
+    authorize { current_admin.accessible_users(:manage).any? }
 
-      facilities = if @district == "All"
-        current_admin.accessible_facilities(:manage)
-      else
-        current_admin.accessible_facilities(:manage).where(district: @district)
-      end
-
-      users = current_admin.accessible_users(:manage)
-        .joins(phone_number_authentications: :facility)
-        .where(phone_number_authentications: {registration_facility_id: facilities})
-        .order("users.full_name", "facilities.name", "users.device_created_at")
+    facilities = if @district == "All"
+      current_admin.accessible_facilities(:manage)
     else
-      authorize([:manage, :user, User])
-
-      facilities = if @district == "All"
-        policy_scope([:manage, :user, Facility.all])
-      else
-        policy_scope([:manage, :user, Facility.where(district: @district)])
-      end
-
-      users = policy_scope([:manage, :user, User])
-        .joins(phone_number_authentications: :facility)
-        .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
-        .order("users.full_name", "facilities.name", "users.device_created_at")
+      current_admin.accessible_facilities(:manage).where(district: @district)
     end
+
+    users = current_admin.accessible_users(:manage)
+      .joins(phone_number_authentications: :facility)
+      .where(phone_number_authentications: {registration_facility_id: facilities})
+      .order("users.full_name", "facilities.name", "users.device_created_at")
 
     @users =
       if searching?
@@ -48,33 +29,15 @@ class Admin::UsersController < AdminController
   end
 
   def teleconsult_search
-    if Flipper.enabled?(:new_permissions_system_aug_2020, current_admin)
-      authorize_v2 { current_admin.accessible_users(:manage).any? }
+    authorize { current_admin.accessible_users(:manage).any? }
 
-      facilities = if @district == "All"
-        current_admin.accessible_facilities(:manage)
-      else
-        current_admin.accessible_facilities(:manage).where(district: @district)
-      end
+    facility_group = FacilityGroup.find(params[:facility_group_id])
+    facilities = current_admin.accessible_facilities(:manage).where(facility_group: facility_group)
 
-      users = current_admin.accessible_users(:manage)
-        .joins(phone_number_authentications: :facility)
-        .where(phone_number_authentications: {registration_facility_id: facilities})
-        .order("users.full_name", "facilities.name", "users.device_created_at")
-    else
-      authorize([:manage, :user, User])
-
-      facilities = if @district == "All"
-        policy_scope([:manage, :user, Facility.all])
-      else
-        policy_scope([:manage, :user, Facility.where(district: @district)])
-      end
-
-      users = policy_scope([:manage, :user, User])
-        .joins(phone_number_authentications: :facility)
-        .where("phone_number_authentications.registration_facility_id IN (?)", facilities.map(&:id))
-        .order("users.full_name", "facilities.name", "users.device_created_at")
-    end
+    users = current_admin.accessible_users(:manage)
+      .joins(phone_number_authentications: :facility)
+      .where(phone_number_authentications: {registration_facility_id: facilities})
+      .order("users.full_name", "facilities.name", "users.device_created_at")
 
     respond_to do |format|
       format.json { @users = users.teleconsult_search(search_query) }
@@ -136,12 +99,7 @@ class Admin::UsersController < AdminController
   end
 
   def set_user
-    if current_admin.permissions_v2_enabled?
-      @user = authorize_v2 { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
-    else
-      @user = User.find(params[:id] || params[:user_id])
-      authorize([:manage, :user, @user])
-    end
+    @user = authorize { current_admin.accessible_users(:manage).find(params[:id] || params[:user_id]) }
   end
 
   def set_time_zone

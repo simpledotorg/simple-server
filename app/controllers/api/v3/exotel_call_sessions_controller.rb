@@ -1,8 +1,6 @@
 class Api::V3::ExotelCallSessionsController < ApplicationController
   SCHEDULE_CALL_LOG_JOB_AFTER = 30.minutes
 
-  after_action :report_http_status
-
   def create
     unless valid_patient_phone_number?
       respond_in_plain_text(:bad_request) && return
@@ -70,13 +68,9 @@ class Api::V3::ExotelCallSessionsController < ApplicationController
     render plain: text, status: status
   end
 
-  def report_http_status
-    NewRelic::Agent.increment_metric("#{controller_name}/#{action_name}/#{response.status}")
-  end
-
   def report_call_info
-    NewRelic::Agent.increment_metric("#{controller_name}/call_type/#{call_type}")
-    NewRelic::Agent.increment_metric("#{controller_name}/call_status/#{call_status}")
+    Statsd.instance.increment("#{controller_name}.call_type.#{call_type}")
+    Statsd.instance.increment("#{controller_name}.call_status.#{call_status}")
   end
 
   def schedule_call_log_job(user_phone_number, callee_phone_number)

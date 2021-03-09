@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Facility page functionality", type: :feature do
-  let(:admin) { create(:admin) }
-
+  let(:admin) { create(:admin, :power_user) }
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:another_organization) { create(:organization) }
-  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
-  let!(:unassociated_facility) { create(:facility, facility_group: nil, name: "testfacility") }
-  let!(:unassociated_facility02) { create(:facility, facility_group: nil, name: "testfacility_02") }
-
+  let!(:ihmi_group_bathinda) { create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda") }
   let!(:protocol_01) { create(:protocol, name: "testProtocol") }
 
   facility_page = AdminPage::Facilities::Show.new
@@ -18,10 +14,6 @@ RSpec.feature "Facility page functionality", type: :feature do
 
   context "facility group listing" do
     context "admin has permission to manage facility groups" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facility_groups)]
-      end
-
       before(:each) do
         visit root_path
         sign_in(admin.email_authentication)
@@ -34,25 +26,46 @@ RSpec.feature "Facility page functionality", type: :feature do
         expect(page).to have_content("Bathinda")
       end
 
-      it "create new facility group without assigning any facility" do
-        facility_page.click_add_facility_group_button
+      context "create new facility group" do
+        it "create new facility group without assigning any facility" do
+          ihmi = create(:organization, name: "IHMI2")
+          protocol_01 = create(:protocol, name: "testProtocol1")
+          create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
+          facility_page.click_add_facility_group_button
 
-        expect(page).to have_content("New facility group")
-        facility_group.add_new_facility_group_without_assigningfacility("IHMI", "testfacilitygroup", "testDescription", protocol_01.name)
+          expect(page).to have_content("New facility group")
+          facility_group.add_new_facility_group_without_assigning_facility(
+            org_name: "IHMI2",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            protocol_name: protocol_01.name,
+            state: "Punjab"
+          )
 
-        expect(page).to have_content("Bathinda")
-        expect(page).to have_content("Testfacilitygroup")
-      end
+          expect(page).to have_content("Bathinda")
+          expect(page).to have_content("Testfacilitygroup")
+        end
 
-      it "create new facility group with facility" do
-        facility_page.click_add_facility_group_button
+        it "create new facility group with facility" do
+          ihmi = create(:organization, name: "IHMI2")
+          protocol_01 = create(:protocol, name: "testProtocol1")
+          create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
 
-        expect(page).to have_content("New facility group")
-        facility_group.add_new_facility_group("IHMI", "testfacilitygroup", "testDescription", unassociated_facility.name, protocol_01.name)
+          facility_page.click_add_facility_group_button
 
-        expect(page).to have_content("Bathinda")
-        expect(page).to have_content("Testfacilitygroup")
-        facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
+          expect(page).to have_content("New facility group")
+          facility_group.add_new_facility_group(
+            org_name: "IHMI2",
+            name: "testfacilitygroup",
+            description: "testDescription",
+            protocol_name: protocol_01.name,
+            state: "Punjab"
+          )
+
+          expect(page).to have_content("Bathinda")
+          expect(page).to have_content("Testfacilitygroup")
+          facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
+        end
       end
 
       it "admin should be able to delete facility group without facility " do
@@ -60,30 +73,11 @@ RSpec.feature "Facility page functionality", type: :feature do
         expect(page).to have_content("Edit facility group")
         facility_group.click_on_delete_facility_group_button
       end
-
-      it "admin should be able to edit facility group info " do
-        facility_page.click_add_facility_group_button
-        facility_group.add_new_facility_group("IHMI", "testfacilitygroup", "testDescription", unassociated_facility.name, protocol_01.name)
-        facility_page.click_edit_button_present_for_facilitygroup("Testfacilitygroup")
-
-        # deselecting previously selected facility
-        facility_group.select_unassociated_facility(unassociated_facility.name)
-
-        # select new unassigned facility
-        facility_group.select_unassociated_facility(unassociated_facility02.name)
-        facility_group.click_on_update_facility_group_button
-
-        expect(page).to have_content(unassociated_facility02.name)
-      end
     end
   end
 
   context "facility listing" do
     context "admin has permission to manage facilities for a facility group" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: ihmi_group_bathinda)]
-      end
-
       before(:each) do
         visit root_path
         sign_in(admin.email_authentication)
@@ -95,10 +89,8 @@ RSpec.feature "Facility page functionality", type: :feature do
       end
     end
 
-    context "admin does not have permission to manage facilities a facility group" do
-      let!(:permissions) do
-        [create(:user_permission, user: admin, permission_slug: :manage_facilities, resource: create(:facility_group))]
-      end
+    context "admin does not have permission to manage facilities at a facility group" do
+      let(:admin) { create(:admin, :manager, accesses: [build(:access, resource: create(:facility_group))]) }
 
       before(:each) do
         visit root_path

@@ -1,4 +1,4 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Admin User page functionality", type: :feature do
   let(:owner) { create(:admin, :power_user) }
@@ -18,14 +18,9 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
   context "Admin User landing page" do
     before(:each) do
-      enable_flag(:new_permissions_system_aug_2020, owner)
-      visit organizations_path
+      visit reports_regions_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
-    end
-
-    after(:each) do
-      disable_flag(:new_permissions_system_aug_2020, owner)
+      navigation.click_manage_option("#mobile-app-users")
     end
 
     it "Verify User landing page" do
@@ -41,7 +36,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
   end
 
   context " javascript based test", js: true do
-    let(:owner) { create(:admin, :owner) }
+    let(:owner) { create(:admin, :power_user) }
     let!(:ihmi) { create(:organization, name: "IHMI") }
     let!(:group_bathinda) { create(:facility_group, organization: ihmi, name: "Bathinda") }
     let!(:facility_hoshiarpur) { create(:facility, facility_group: group_bathinda, name: "Hoshiarpur", district: "Hoshiarpur") }
@@ -62,7 +57,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district("All districts")
       expect(user_page.get_all_user_count).to eq(10)
@@ -81,7 +76,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district(facility_buchho.district)
       # assertion for chc buchoo facility
@@ -92,7 +87,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
       edit_page.edit_registration_facility(facility_hoshiarpur.name)
 
       # user should be displayed in hoshiarpur as we have edited its registration facility
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.select_district(facility_hoshiarpur.district)
       expect(user_page.get_all_user(facility_hoshiarpur.name)).to eq(1)
 
@@ -106,7 +101,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
 
       user_page.select_district(var_amir.district)
       user_page.is_facility_name_present(var_amir.name)
@@ -115,7 +110,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
   end
 
   context "admin should be able to allow/Deny User access  " do
-    let(:owner) { create(:admin, :owner) }
+    let(:owner) { create(:admin, :power_user) }
     let!(:facility_hoshiarpur) { create(:facility, name: "Hoshiarpur") }
     let!(:facility_Buchoo) { create(:facility, name: "CHC Buchho") }
 
@@ -130,7 +125,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.deny_access(user.full_name)
     end
 
@@ -141,7 +136,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.allow_access(user.full_name)
     end
 
@@ -152,7 +147,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
 
       visit root_path
       login_page.do_login(owner.email, owner.password)
-      navigation.select_manage_option("Users")
+      navigation.click_manage_option("#mobile-app-users")
       user_page.allow_access(user.full_name)
     end
   end

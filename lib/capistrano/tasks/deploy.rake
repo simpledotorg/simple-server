@@ -14,6 +14,17 @@ namespace :deploy do
     end
   end
 
+  desc "Runs any runner task, example: cap deploy:runner task='RegionBackfill.call'"
+  task runner: [:set_rails_env] do
+    on release_roles([:app]) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          execute :rails, :runner, ENV["task"]
+        end
+      end
+    end
+  end
+
   desc "Print the latest deployed revision SHA"
   task :get_latest_deployed_sha do
     on release_roles([:app]) do

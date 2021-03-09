@@ -1,6 +1,6 @@
 module PurgeUsersData
   def self.perform
-    return "Can't run this task in #{ENV["SIMPLE_SERVER_ENV"]}!'" if ENV["SIMPLE_SERVER_ENV"] == "production"
+    abort "Can't run this task in #{ENV["SIMPLE_SERVER_ENV"]}!'" if ENV["SIMPLE_SERVER_ENV"] == "production"
 
     # These are in a "valid" order so that we don't run into Foreign-Key violations
     models = [BloodPressure,
@@ -17,13 +17,15 @@ module PurgeUsersData
       PatientBusinessIdentifier,
       PatientPhoneNumber,
       Patient,
-      Address]
+      Address,
+      Teleconsultation]
 
-    ActiveRecord::Base.transaction do
-      models.each do |model|
-        puts "Deleting #{model} data"
-        model.with_discarded.delete_all
+    tables = models.map(&:table_name).join(", ")
+    time = Benchmark.ms {
+      ActiveRecord::Base.transaction do
+        ActiveRecord::Base.connection.execute("truncate #{tables}")
       end
-    end
+    }
+    puts "Truncated Patient related tables in #{time.round} ms"
   end
 end

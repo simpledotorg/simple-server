@@ -1,33 +1,23 @@
-require "rails_helper"
+require "features_helper"
 
 RSpec.feature "Overdue appointments", type: :feature do
   let!(:ihmi) { create(:organization, name: "IHMI") }
   let!(:ihmi_group) { create(:facility_group, organization: ihmi) }
   let!(:facility) { create(:facility, facility_group: ihmi_group) }
-
-  let!(:supervisor) { create(:admin, role: "supervisor") }
-  let!(:view_overdue_permission) do
-    create(:user_permission, user: supervisor,
-                             permission_slug: :view_overdue_list,
-                             resource: ihmi_group)
-  end
-  let!(:download_overdue_permission) do
-    create(:user_permission, user: supervisor,
-                             permission_slug: :download_overdue_list,
-                             resource: ihmi_group)
-  end
+  let!(:call_center) { create(:admin, :call_center) }
 
   before do
+    call_center.accesses.create(resource: ihmi)
     ENV["IHCI_ORGANIZATION_UUID"] = ihmi.id
   end
 
   describe "index" do
-    before { sign_in(supervisor.email_authentication) }
+    before { sign_in(call_center.email_authentication) }
 
     it "shows Overdue tab" do
       visit root_path
 
-      expect(page).to have_content("Overdue")
+      expect(page).to have_content("Overdue patients")
     end
 
     describe "Overdue patients tab" do
@@ -70,21 +60,9 @@ RSpec.feature "Overdue appointments", type: :feature do
       it "shows all overdue patients" do
         expect(page).to have_content(overdue_patient_in_facility_1.full_name)
         expect(page).to have_content(overdue_patient_in_facility_2.full_name)
-      end
-
-      it "shows registration date for overdue patients" do
         expect(page).to have_content("Registered on")
-      end
-
-      it "does not show non-overdue patients" do
         expect(page).not_to have_content(non_overdue_patient_in_facility_1.full_name)
-      end
-
-      it "does not show overdue patients in unauthorized facilities" do
         expect(page).not_to have_content(overdue_patient_in_unauthorized_facility.full_name)
-      end
-
-      it "does not allow you to download the overdue list for all facilities" do
         expect(page).to have_content(/select a facility/i)
         expect(page).not_to have_selector("a", text: "Download Overdue List")
       end

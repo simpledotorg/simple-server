@@ -3,15 +3,12 @@ ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../config/environment", __dir__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
-require "capybara/rails"
-require "pundit/rspec"
 require "factory_bot_rails"
 require "faker"
 require "timecop"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 Dir[Rails.root.join("spec/pages/application_page.rb")].sort.each { |f| require f }
-Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 Dir[Rails.root.join("spec/**/shared_examples/**/*.rb")].sort.each { |f| require f }
 
 ActiveRecord::Migration.maintain_test_schema!
@@ -30,6 +27,15 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :view
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Warden::Test::Helpers
+
+  config.before(:all) do
+    # create a root region and persist across all tests (the root region is effectively a singleton)
+    Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
+  end
+
+  config.before(:each) do
+    RequestStore.clear!
+  end
 
   Shoulda::Matchers.configure do |config|
     config.integrate do |with|

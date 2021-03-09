@@ -4,7 +4,7 @@ module MyFacilitiesHelper
   end
 
   def percentage(numerator, denominator)
-    return "—" if denominator.nil? || denominator.zero? || numerator.nil?
+    return "0%" if denominator.nil? || denominator.zero? || numerator.nil?
     percentage_string((numerator * 100.0) / denominator)
   end
 
@@ -17,5 +17,25 @@ module MyFacilitiesHelper
     when :month
       facility.monthly_estimated_opd_load
     end
+  end
+
+  def patient_days_bg_color(patient_days)
+    return if patient_days.nil?
+    return "bg-red" if patient_days == "error"
+    if patient_days < 30 then "bg-red"
+    elsif patient_days < 60 then "bg-orange"
+    elsif patient_days < 90 then "bg-yellow"
+    else
+      "bg-green"
+    end
+  end
+
+  def protocol_drug_labels
+    {hypertension_ccb: {full: "CCB Tablets", short: "CCB"},
+     hypertension_arb: {full: "ARB Tablets", short: "ARB"},
+     hypertension_diuretic: {full: "Diuretic Tablets", short: "Diuretic"},
+     hypertension_other: {full: "Other Tablets", short: "Other(H)"},
+     diabetes: {full: "Diabetes Tablets", short: "Diabetes"},
+     other: {full: "Other Tablets", short: "Other"}}.with_indifferent_access
   end
 end

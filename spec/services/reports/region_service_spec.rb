@@ -2,11 +2,7 @@ require "rails_helper"
 
 RSpec.describe Reports::RegionService, type: :model do
   let(:organization) { create(:organization, name: "org-1") }
-  let(:user) do
-    create(:admin, :supervisor, organization: organization).tap do |user|
-      user.user_permissions << build(:user_permission, permission_slug: :view_cohort_reports, resource: organization)
-    end
-  end
+  let(:user) { create(:admin, :manager, :with_access, resource: organization) }
   let(:facility_group_1) { FactoryBot.create(:facility_group, name: "facility_group_1", organization: organization) }
 
   let(:jan_2019) { Time.parse("January 1st, 2019") }
@@ -46,6 +42,26 @@ RSpec.describe Reports::RegionService, type: :model do
       result = service.call
       expect(result[:visited_without_bp_taken][may_1.to_period]).to eq(1)
       expect(result[:visited_without_bp_taken_rate][may_1.to_period]).to eq(50)
+    end
+
+    it "counts missed visits for the reporting range _only_" do
+      may_1 = Time.parse("May 1st, 2020")
+      may_15 = Time.parse("May 15th, 2020")
+      facility = create(:facility, facility_group: facility_group_1)
+      _patient_missed_visit_1 = FactoryBot.create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2010"))
+      _patient_missed_visit_2 = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
+      patient_without_bp = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
+      patient_with_bp = FactoryBot.create(:patient, registration_facility: facility, recorded_at: jan_2020)
+      _appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
+      _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
+      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
+
+      service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
+      result = service.call
+      expect(result[:missed_visits].size).to eq(service.range.entries.size)
+      expect(result[:missed_visits][Period.month("August 1 2018")]).to eq(1)
+      expect(result[:missed_visits][jan_2020.to_period]).to eq(1)
+      expect(result[:missed_visits][Period.month("April 1 2020")]).to eq(4)
     end
   end
 
@@ -96,7 +112,7 @@ RSpec.describe Reports::RegionService, type: :model do
       facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
       facility = facilities.first
 
-      _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
+      _registered_in_jan = create_list(:patient, 2, recorded_at: jan_2019 + 1.day, registration_facility: facility, registration_user: user)
 
       service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
       result = service.call
@@ -208,10 +224,10 @@ RSpec.describe Reports::RegionService, type: :model do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
       facility, other_facility = facilities.first, facilities.last
 
-      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-      uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, registration_facility: other_facility, registration_user: user)
+      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019 + 1.day, registration_facility: facility, registration_user: user)
+      uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019 + 1.day, registration_facility: facility, registration_user: user)
+      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019 + 1.day, registration_facility: facility, registration_user: user)
+      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019 + 1.day, registration_facility: other_facility, registration_user: user)
 
       Timecop.freeze(jan_2020) do
         controlled_in_jan_and_june.map do |patient|
@@ -232,7 +248,7 @@ RSpec.describe Reports::RegionService, type: :model do
 
         create(:blood_pressure, :under_control, facility: facility, patient: controlled_just_for_june, recorded_at: 4.days.ago)
 
-        uncontrolled = create_list(:patient, 2, recorded_at: Time.current, registration_facility: facility, registration_user: user)
+        uncontrolled = create_list(:patient, 2, recorded_at: Time.current + 1.day, registration_facility: facility, registration_user: user)
         uncontrolled.map do |patient|
           create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: 1.days.ago)
           create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago)
@@ -259,6 +275,23 @@ RSpec.describe Reports::RegionService, type: :model do
       expect(result[:registrations][june_1.to_period]).to eq(2)
       expect(result[:cumulative_registrations][june_1.to_period]).to eq(7)
       expect(result[:adjusted_registrations][june_1.to_period]).to eq(5)
+    end
+  end
+
+  context "without months_request" do
+    it "returns data for the default limit of 24 months " do
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1))
+      result = service.call
+      expect(result[:period_info].count).to eq 24
+    end
+  end
+
+  context "with months_request" do
+    it "returns data for the requested number of months" do
+      month_limit = 6
+      service = Reports::RegionService.new(region: facility_group_1, period: Period.month(june_1), months: month_limit)
+      result = service.call
+      expect(result[:period_info].count).to eq month_limit
     end
   end
 end

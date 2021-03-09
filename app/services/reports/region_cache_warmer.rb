@@ -4,25 +4,12 @@ module Reports
       new.call
     end
 
-    def self.create_slack_notifier
-      return if ENV["SLACK_ALERTS_WEBHOOK_URL"].blank?
-      Slack::Notifier.new(ENV["SLACK_ALERTS_WEBHOOK_URL"], channel: "#alerts", username: "simple-server")
-    end
-
     def initialize(period: RegionService.default_period)
-      @notifier = self.class.create_slack_notifier
-      @start_time = Time.current
       @period = period
-      @original_force_cache = RequestStore.store[:force_cache]
-      RequestStore.store[:force_cache] = true
-      notify "#{self.class.name} Starting ..."
+      notify "queueing region reports cache warming"
     end
 
-    attr_reader :original_force_cache, :period
-    attr_reader :start_time
-    attr_reader :notifier
-
-    delegate :logger, to: Rails
+    attr_reader :period
 
     def call
       if Flipper.enabled?(:disable_region_cache_warmer)
@@ -30,36 +17,23 @@ module Reports
         return
       end
 
-      notify "starting facility_group caching"
-      Statsd.instance.time("region_cache_warmer.facility_groups") do
-        cache_facility_groups
+      Region.where.not(region_type: ["root", "organization"]).pluck(:id).each do |region_id|
+        RegionCacheWarmerJob.perform_async(region_id, period.attributes)
       end
 
-      notify "starting facility caching"
-      Statsd.instance.time("region_cache_warmer.facilities") do
-        cache_facilities
-      end
-      notify "finished"
-    ensure
-      RequestStore.store[:force_cache] = original_force_cache
+      notify "queued region reports cache warming"
     end
 
     private
 
-    def notify(msg)
-      Rails.logger.info msg: msg, class: self.class.name
-    end
-
-    def cache_facility_groups
-      FacilityGroup.all.each do |region|
-        RegionService.new(region: region, period: period).call
-      end
-    end
-
-    def cache_facilities
-      Facility.all.each do |region|
-        RegionService.new(region: region, period: period).call
-      end
+    def notify(msg, extra = {})
+      data = {
+        logger: {
+          name: self.class.name
+        },
+        class: self.class.name
+      }.merge(extra).merge(msg: msg)
+      Rails.logger.info data
     end
   end
 end

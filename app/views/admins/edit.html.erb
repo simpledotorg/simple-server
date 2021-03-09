@@ -1,7 +1,3 @@
-<% unless current_admin.permissions_v2_enabled? %>
-  <h1>Edit admin</h1>
-<% end %>
-
 <%= render 'form',
     current_admin: AdminAccessPresenter.new(current_admin),
     admin: AdminAccessPresenter.new(@admin) %>

@@ -23,19 +23,32 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:update_all_patients_phone_number_details"
 end
 
-every :day, at: local("02:00 am"), roles: [:cron] do
+every :day, at: local("12:30am"), roles: [:cron] do
+  rake "db:refresh_materialized_views"
+end
+
+every :day, at: local("01:00 am"), roles: [:cron] do
+  runner "MarkPatientMobileNumbers.call"
+end
+
+every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
-every :day, at: local("03:00 am"), roles: [:cron] do
-  rake "link_teleconsultation_medical_officers"
+every :day, at: local("05:00 am"), roles: [:cron] do
+  runner "DuplicatePassportAnalytics.report"
 end
 
-every [:sunday, :wednesday], at: local("12:30am"), roles: [:cron] do
-  rake "refresh_materialized_db_views"
+every :monday, at: local("6:00 am"), roles: [:cron] do
+  if Flipper.enabled?(:weekly_telemed_report)
+    rake "reports:telemedicine"
+  end
 end
 
-every :month, at: local("04:00 am"), roles: [:seed_data] do
-  rake "db:purge_users_data"
-  rake "db:seed_users_data"
+every 2.minutes, roles: [:cron] do
+  runner "TracerJob.perform_async(Time.current.iso8601, false)"
+end
+
+every 30.minutes, roles: [:cron] do
+  runner "RegionsIntegrityCheck.sweep"
 end

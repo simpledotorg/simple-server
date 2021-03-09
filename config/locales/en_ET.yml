@@ -7,18 +7,27 @@ en_ET:
         size: "Size *"
         street_address: "House and road number"
         village_or_colony: "Kebele"
-        zone: "Zone"
-        district: "Woreda *"
+        zone: "Woreda *"
+        district: "Zone *"
         state: "Region *"
         country: "Country *"
+        pin: "Postal Code"
       address:
         street_address: "House and street number"
         village_or_colony: "Kebele"
-        zone: "Zone"
-        district: "Woreda *"
+        zone: "Woreda *"
+        district: "Zone"
         state: "Region *"
         country: "Country *"
+        pin: "Postal Code"
     submit:
       facility:
         create: "Save facility"
         update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "Health post"
+        small: "Health center"
+        medium: "Primary hospital"
+        large: "General/specialized hospital"

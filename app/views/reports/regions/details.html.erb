@@ -1,133 +1,402 @@
-<%= render "header"%>
-<div class="card">
-  <h3 class="mb-8px c-black">
-    Visit details of all HTN patients
-  </h3>
-  <p class="mb-0px c-grey-dark">
-    <%= number_with_delimiter(@data[:adjusted_registrations].values.last) %> assigned patients until the end of <%= @adjusted_registration_date %>
-  </p>
-  <% if @last_registration_value %>
-    <div class="d-flex fd-column fd-lg-row">
-      <div class="order-lg-2 w-lg-224px mt-lg-16px ml-lg-24px">
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-grey-medium"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= percentage_or_na(@data[:missed_visits_rate].values.last, precision: 0) %>
-            </p>
-            <p class="flex-1 m-0px fs-14px">
-              No visit >3 months
-            </p>
-          </div>
-        </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-grey-dark"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= number_to_percentage(@data[:visited_without_bp_taken_rate].values.last, precision: 0) %>
-            </p>
-            <p class="flex-1 m-0px fs-14px">
-              Visited but no BP recorded
-              <span
-                data-toggle="tooltip"
-                data-placement="top"
-                data-trigger="hover"
-                title="Patients registered until the end of <%= @data[:adjusted_registrations].keys[-4] %> with an appointment scheduled, updated medicines, or blood sugar taken"
-              >
-                <i class="fas fa-info-circle ml-4px fs-12px c-grey-dark"></i>
-              </span>
-            </p>
-          </div>
-        </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-red-medium"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= number_to_percentage(@data[:uncontrolled_patients_rate].values.last, precision: 0) %>
-            </p>
-            <p class="flex-1 m-0px fs-14px">
-              BP not controlled
-            </p>
-          </div>
-        </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <div class="w-12px h-12px mr-12px br-2px bg-green-dark"></div>
-          <div class="d-flex flex-1 align-baseline fd-lg-column">
-            <p class="w-48px m-0px fw-bold fs-20px lh-1 mb-lg-4px w-lg-full">
-              <%= number_to_percentage(@data[:controlled_patients_rate].values.last, precision: 0) %>
-            </p>
-            <p class="flex-1 m-0px fs-14px">
-              BP controlled
-            </p>
-          </div>
-        </div>
-        <div class="d-flex align-baseline mb-8px mb-lg-16px">
-          <p class="mb-0px fs-12px c-grey-dark">
-            <strong>Denominator:</strong> All hypertensive patients assigned to <%= @region.name %> registered before
-            the last 3 months
-          </p>
-        </div>
-      </div>
-      <div class="flex-lg-1 order-lg-1">
-        <canvas id="missedVisitDetails"></canvas>
-      </div>
-    </div>
-  <% else %>
-    <div class="d-flex align-center justify-center w-100pt h-200px h-lg-380px bl-1px bb-1px bl-grey-medium bb-grey-medium">
-      <p class="c-grey-medium">
-        No data available
-      </p>
-    </div>
-  <% end %>
-</div>
-<% if @region.is_a?(Facility) %>
-  <% if current_admin.permissions_v2_enabled? %>
-    <% if current_admin.accessible_facilities(:view_reports).include?(@region) %>
-      <%= render "shared/recent_bp_log",
-                 blood_pressures: @recent_blood_pressures,
-                 display_model: :facility %>
-    <% end %>
-  <% else %>
-    <% if policy([:cohort_report, @region]).view_health_worker_activity? %>
-      <%= render "shared/recent_bp_log",
-                 blood_pressures: @recent_blood_pressures,
-                 display_model: :facility %>
-    <% end %>
-  <% end %>
+<%= render "header", period_selector: false %>
+
+<% if current_admin.feature_enabled?(:report_with_exclusions) %>
+  <%= render "reports/regions/patient_breakdown_charts" %>
 <% end %>
 
-<% unless @region.is_a?(Facility) %>
-  <% if current_admin.permissions_v2_enabled? %>
-    <%= render "analytics/districts/follow_ups_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-    <%= render "analytics/districts/registrations_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: current_admin.accessible_facilities(:view_reports).order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-  <% else %>
-    <%= render "analytics/districts/follow_ups_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: Facility.order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-    <%= render "analytics/districts/registrations_table",
-               dashboard_analytics: @dashboard_analytics,
-               period: @period.type,
-               row_resource: Facility.order(:name),
-               row_resource_display_field: :name,
-               row_resource_link: :reports_region_facility_path %>
-  <% end %>
+<% if @region.facility_region? %>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+      <div class="d-flex flex-1 mb-8px">
+        <h3 class="mb-0px mr-8px">
+          Patient registrations and follow-ups
+        </h3>
+        <%= render "definition_tooltip",
+                   definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name),
+                                  "Follow-up patients" => t("follow_up_patients_copy", region_name: @region.name) } %>
+      </div>
+    <% else %>
+      <h3 class="mb-16px c-black">
+        Patient registrations and follow-ups
+      </h3>
+    <% end %>
+    <div class="table-responsive">
+      <table class="analytics-table table-compact">
+        <colgroup>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+              <th colspan="6">
+                Monthly registered patients
+              </th>
+              <th colspan="6">
+                Follow-up patients
+              </th>
+            <% else %>
+              <th colspan="6">
+                New registrations<sup>2</sup>
+              </th>
+              <th colspan="6">
+                Follow-up patients<sup>3</sup>
+              </th>
+            <% end %>
+          </tr>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
+              Users
+            </th>
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+              <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+                Total registered<br>
+                patients
+              <% else %>
+                Cumulative registrations<sup>1</sup>
+              <% end %>
+            </th>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <%= format_period(@period.type, date) %>
+              </th>
+            <% end %>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <%= format_period(@period.type, date) %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-title row-total" data-sort-method="none">
+            <td class="row-title row-total">
+              Total
+            </td>
+            <td class="row-total ta-center">
+              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
+            </td>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <td class="row-total ta-center">
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date))) %>
+              </td>
+            <% end %>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <td class="row-total ta-center">
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date))) %>
+              </td>
+            <% end %>
+          </tr>
+          <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
+            <% if @dashboard_analytics[resource.id].present? %>
+              <tr>
+                <td class="row-title">
+                  <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
+                </td>
+                <td class="ta-center">
+                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
+                </td>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
+                  </td>
+                <% end %>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date))) %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
+      <div class="mt-20px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>1. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>2. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black">
+          <strong>3. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+      <div class="d-flex flex-1 mb-8px">
+        <h3 class="mb-0px mr-8px">
+          Healthcare worker activity
+        </h3>
+        <%= render "definition_tooltip",
+                   definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name),
+                                  "BP measures taken" => t("bp_measures_taken_copy", region_name: @region.name) } %>
+      </div>
+    <% else %>
+      <h3 class="mb-8px c-black">
+        User activity
+      </h3>
+    <% end %>
+    <div class="table-responsive">
+      <table class="analytics-table table-compact">
+        <colgroup>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+              <th colspan="6">
+                Monthly registered patients
+              </th>
+              <th colspan="6">
+                BP measures taken
+              </th>
+            <% else %>
+              <th colspan="6">
+                New registrations<sup>2</sup>
+              </th>
+              <th colspan="6">
+                BP measures taken<sup>3</sup>
+              </th>
+            <% end %>
+          </tr>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
+              Users
+            </th>
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+              <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+                Total registered<br>
+                patients
+              <% else %>
+                Cumulative registrations<sup>1</sup>
+              <% end %>
+            </th>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <%= format_period(@period.type, date) %>
+              </th>
+            <% end %>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <%= format_period(@period.type, date) %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% current_admin.accessible_users(:view_reports).order(:full_name).each do |resource| %>
+            <% if @dashboard_analytics[resource.id].present? %>
+              <tr>
+                <td class="row-title">
+                  <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
+                </td>
+                <td class="ta-center">
+                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
+                </td>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
+                  </td>
+                <% end %>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, date))) %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
+      <div class="mt-20px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>1. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>2. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black">
+          <strong>3. BP measures taken:</strong> <%= t("bp_measures_taken_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+  <%= render "shared/recent_bp_log",
+             blood_pressures: @recent_blood_pressures,
+             display_model: :facility %>
+<% else %>
+  <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
+    <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+      <div class="d-flex flex-1 mb-8px">
+        <h3 class="mb-0px mr-8px">
+          Patient registrations and follow-ups
+        </h3>
+        <%= render "definition_tooltip",
+                   definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name),
+                                  "Follow-up patients" => t("follow_up_patients_copy", region_name: @region.name) } %>
+      </div>
+    <% else %>
+      <h3 class="mb-16px c-black">
+        Patient registrations and follow-ups
+      </h3>
+    <% end %>
+    <div class="table-responsive">
+      <table class="analytics-table table-compact">
+        <colgroup>
+            <col>
+            <col class="table-divider">
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col class="table-divider">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+              <th colspan="6">
+                Monthly registered patients
+              </th>
+              <th colspan="6">
+                Follow-up patients
+              </th>
+            <% else %>
+              <th colspan="6">
+                New registrations<sup>2</sup>
+              </th>
+              <th colspan="6">
+                Follow-up patients<sup>3</sup>
+              </th>
+            <% end %>
+          </tr>
+          <tr class="sorts" data-sort-method="thead">
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-default>
+              Facilities
+            </th>
+            <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
+              <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+                Total registered<br>
+                patients
+              <% else %>
+                Cumulative registrations<sup>1</sup>
+              <% end %>
+            </th>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <%= format_period(@period.type, date) %>
+              </th>
+            <% end %>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <th class="row-label sort-label sort-label-small" data-sort-method="number">
+                <%= format_period(@period.type, date) %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-title row-total" data-sort-method="none">
+            <td class="row-title row-total">
+              <%= @region.name %>
+            </td>
+            <td class="row-total ta-center">
+              <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
+            </td>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <td class="row-total ta-center">
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date))) %>
+              </td>
+            <% end %>
+            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+              <td class="row-total ta-center">
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date))) %>
+              </td>
+            <% end %>
+          </tr>
+          <% current_admin.accessible_facilities(:view_reports).order(:name).each do |resource| %>
+            <% if @dashboard_analytics[resource.id].present? %>
+              <tr>
+                <td class="row-title">
+                  <%= link_to resource.send(:name), send(:reports_region_facility_details_path, resource) %>
+                </td>
+                <td class="ta-center">
+                  <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
+                </td>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
+                  </td>
+                <% end %>
+                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                  <td class="ta-center">
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date))) %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
+      <div class="mt-20px">
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>1. Cumulative registrations:</strong> <%= t("registered_patients_copy.total_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-8px fs-14px c-grey-dark c-print-black">
+          <strong>2. New registrations:</strong> <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+        </p>
+        <p class="mb-0px fs-14px c-grey-dark c-print-black">
+          <strong>3. Follow-up patients:</strong> <%= t("follow_up_patients_copy", region_name: @region.name) %>
+        </p>
+      </div>
+    <% end %>
+  </div>
 <% end %>
-
-
-<div id="data-json" style="display: none;">
-  <%= raw @data.to_json %>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<% if current_admin.feature_enabled?(:report_with_exclusions) %>
+  <%= render "details_footnotes" %>
+<% end %>

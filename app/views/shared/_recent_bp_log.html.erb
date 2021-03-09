@@ -1,11 +1,15 @@
 <div class="card" id="recent-bps">
-  <h3>Recent BPs</h3>
-  <p> A log of the BPs recorded
+  <h3 class="mb-8px">
+    Recent BPs
+  </h3>
+  <p class="c-grey-dark">
+    A log of BP measures taken
     <% if display_model == :facility %>
-      at this facility.
+      by healthcare workers at <%= @region.name %>
     <% elsif display_model == :user %>
-      by this user.
-    <% end %></p>
+      by this healthecare workers.
+    <% end %>
+  </p>
   <% if blood_pressures.any? %>
     <div class="table-responsive table-compact pb-3">
       <table>
@@ -55,7 +59,7 @@
               <td class="nowrap"><%= bp.user.present? ? link_to(bp.user.full_name, [:admin, bp.user]) : "unknown" %></td>
             <% end %>
             <% if display_model == :user %>
-              <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, analytics_facility_path(bp.facility)) : "unknown" %></td>
+              <td class="nowrap"><%= bp.facility.present? ? link_to(bp.facility.name, reports_region_facility_path(bp.facility)) : "unknown" %></td>
             <% end %>
           </tr>
         <% end %>

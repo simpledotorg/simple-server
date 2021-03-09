@@ -1,0 +1,428 @@
+---
+Gurdaspur:
+  - Batala
+  - Dera Baba Nanak
+  - Dhariwal
+  - Dinanagar
+  - Dorangla
+  - Fatehgarh Churian
+  - Gurdaspur
+  - Kahnuwan
+  - Kalanaur
+  - Quadian
+  - Shri Hargobindpur
+Pathankot:
+  - Narot Jaimal Singh
+  - Bamial
+  - Dharkalan
+  - Pathankot Urban
+  - Gharota
+  - Sujanpur
+Bathinda:
+  - Bathinda
+  - Sangat
+  - Nathana
+  - Rampura
+  - Phul
+  - Bhagta
+  - Goniana
+  - Talwandi Sabo
+  - Maur
+  - Balianwali
+Hoshiarpur:
+  - Bhunga
+  - Dasuya
+  - Hajipur
+  - Mukerian
+  - Tanda
+  - Talwara
+  - Mahilpur
+  - Garhshankar
+  - Chakowal
+  - Harta Badla
+Mansa:
+  - Mansa
+  - Sardulgarh
+  - Budhlada
+  - Jhunir
+  - Bhikhi
+  - Khiala Kalan
+Chennai:
+  - Zone 1 Thiruvottriyur
+  - Zone 2 Manali
+  - Zone 3 Madhavaram
+  - Zone 4 Tondiarpet
+  - Zone 5 Royapuram
+  - Zone 6 Thiru. Vi. Ka Nagar
+  - Zone 7 Ambattur
+  - Zone 8 Anna Nagar
+  - Zone 9 Teynampet
+  - Zone 10 Kodambakkam
+  - Zone 11 Valasaravakkam
+  - Zone 12 Alandur
+  - Zone 13 Adyar
+  - Zone 14 Perungudi
+  - Zone 15 Sholinganallur
+Ratnagiri:
+  - Ratnagiri
+  - Sangameshwar
+  - Lanja
+  - Rajapur
+  - Chiplun
+  - Guhagar
+  - Dapoli
+  - Mandangad
+  - Khed
+Thane:
+  - Thane
+  - Kalyan
+  - Murbad
+  - Bhiwandi
+  - Shahapur
+  - Ulhasnagar
+  - Ambernath
+Palghar:
+  - Palghar
+  - Vasai
+  - Dahanu
+  - Talasari
+  - Jawhar
+  - Mokhada
+  - Vada
+  - Vikramgad
+Wardha:
+  - Wardha
+  - Deoli
+  - Seloo
+  - Arvi
+  - Ashti
+  - Karanja
+  - Hinganghat
+  - Samudrapur
+Bhandara:
+  - Bhandara
+  - Tumsar
+  - Pauni
+  - Mohadi
+  - Sakoli
+  - Lakhni
+  - Lakhandur
+Gondia:
+  - Gondia
+  - Tirora
+  - Goregaon
+  - Arjuni Morgaon
+  - Amgaon
+  - Salekasa
+  - Sadak Arjuni
+  - Deori
+Gadchiroli:
+  - Gadchiroli
+  - Dhanora
+  - Chamorshi
+  - Mulchera
+  - Desaiganj (Vadasa)
+  - Armori
+  - Kurkheda
+  - Korchi
+  - Aheri
+  - Bhamragad
+  - Sironcha
+  - Etapalli
+Chandrapur:
+  - Chandrapur
+  - Saoli
+  - Mul
+  - Ballarpur
+  - Pombhurna
+  - Gondpipari
+  - Warora
+  - Chimur
+  - Bhadravati
+  - Bramhapuri
+  - Nagbhid
+  - Sindewahi
+  - Rajura
+  - Korpana
+  - Jivati
+Pune:
+  - Pune City
+  - Haveli
+  - Khed (Rajgurunagar)
+  - Junnar
+  - Ambegaon (Ghodegaon)
+  - Maval (Vadgaon)
+  - Mulshi (Paud)
+  - Shirur
+  - Purandhar (Saswad)
+  - Velhe
+  - Bhor
+  - Baramati
+  - Indapur
+  - Daund
+Satara:
+  - Satara
+  - Jaoli
+  - Koregaon
+  - Wai
+  - Mahabaleshwar
+  - Khandala
+  - Phaltan
+  - Maan (Dahiwadi)
+  - Khatav (Vaduj)
+  - Patan
+  - Karad
+Sangli:
+  - Miraj
+  - Kavathe Mahankal
+  - Tasgaon
+  - Jat
+  - Walwa (Islampur)
+  - Shirala
+  - Khanapur
+  - Atpadi
+  - Palus
+  - Kadegaon
+Kolhapur:
+  - Karvir
+  - Panhala
+  - Shahuwadi
+  - Kagal
+  - Hatkanangale
+  - Shirol
+  - Radhanagari
+  - Gaganbawada
+  - Bhudargad
+  - Gadhinglaj
+  - Chandgad
+  - Ajara
+Sindhudurg:
+  - Devgad 
+  - Dodamarg 
+  - Kankavli 
+  - Kudal
+  - Malvan
+  - Sawantwadi
+  - Vaibhavwadi
+  - Vengurla
+Krishna:
+  - Vijayawada
+  - Gudivada
+  - Machilipatnam
+  - Nuzividu
+Visakhapatnam:
+  - GVMC
+  - Anakapally
+  - Bheemunipatnam
+  - Visakhapatnam
+  - Narsipatnam
+Varanasi:
+  - Varanasi City
+  - Baragaon
+  - Cholapur
+  - Arajiline
+  - Harhua
+  - Chiraigaon
+  - Kashi Vidyapith
+  - Sewapuri
+  - Pindra
+  - Harahua
+Rohtas:
+  - Akorhi Gola
+  - Bikramganj
+  - Chenari
+  - Dawath
+  - Dehri
+  - Dinara
+  - Karakat
+  - Kargahar
+  - Kochas
+  - Nasriganj
+  - Nauhatta
+  - Nokha
+  - Rajpur
+  - Rohtas
+  - Sanjhauli
+  - Sasaram
+  - Sheosagar
+  - Suryapura
+  - Tilouthu
+Muzaffarpur:
+  - Sadar
+  - Aurai
+  - Musahri
+  - Kurhani
+  - Motipur
+  - Paroo
+  - Minapur
+  - Saraiya
+  - Sakra
+  - Kanti
+  - Gaighat
+  - Bochaha
+  - Katra
+  - Sahebganj
+  - Marwan
+  - Bandra
+  - Muraul
+Vaishali:
+  - Bhagwanpur
+  - Bidupur
+  - Chehrakala
+  - Desri
+  - Goraul
+  - Hajipur
+  - Jandaha
+  - Lalganj
+  - Mahnar
+  - Mahua
+  - Patepur
+  - Paterhi Belsar
+  - Raghopur
+  - Rajapakar
+  - Sahdai Buzurg
+  - Vaishali
+  - Khajechand Chapra
+Birbhum:
+  - Suri Municipality
+  - Bolpur Municipality
+  - Bolpur Sriniketan
+  - Dubrajpur
+  - Illambazar
+  - Khoyrasole
+  - Labpur
+  - Md. Bazar
+  - Nanoor
+  - Rajnagar
+  - Sainthia
+  - Suri I
+  - Suri II
+Howrah:
+  - Bally Jagachha
+  - Domjur
+  - Jagatballavpur
+  - Sankrail
+  - Panchla
+  - Udaynarayanpur
+  - Bagnan I
+  - Bagnan II
+  - Uluberia I
+  - Uluberia II
+  - Shyampur I
+  - Shyampur II
+  - Amta I
+  - Amta II
+  - Howrah Municipal Corporation
+  - Uluberia Municipality
+Paschim Medinipur:
+  - Medinipur Sadar
+  - Salboni
+  - Garbeta I
+  - Garbeta II
+  - Garbeta III
+  - Kharagpur I
+  - Kharagpur II
+  - Kharagpur Sadar
+  - Keshiari
+  - Pingla
+  - Sabang
+  - Debra
+  - Mohanpur
+  - Daspur I
+  - Daspur II
+  - Chandrakona I
+  - Chandrakona II
+  - Dantan I
+  - Dantan II
+  - Narayangarh
+  - Keshpur
+  - Ghatal
+  - Paschim Medinipur Municipality
+Purba Bardhaman:
+  - Ausgram I
+  - Ausgram II
+  - Bhatar
+  - Burdwan I
+  - Burdwan II
+  - Galsi I
+  - Galsi II
+  - Jamalpur
+  - Kalna I
+  - Kalna II
+  - Katwa I
+  - Katwa II
+  - Ketugram I
+  - Ketugram II
+  - Khandaghosh
+  - Mangalkot
+  - Manteswar
+  - Memari I
+  - Memari II
+  - Purbasthali I
+  - Purbasthali II
+  - Raina I
+  - Raina II
+  - Kalna Municipality
+  - Katwa Municipality
+  - Bardhaman Municipality
+Purba Medinipur:
+  - Bhagawanpur I
+  - Egra I
+  - Egra II
+  - Haldia
+  - Kolaghat
+  - Mahisadal
+  - Moyna
+  - Nandakumar
+  - Panskura I
+  - Patashpur I
+  - Patashpur II
+  - Sahid Matangini
+  - Sutahata
+  - Tamluk
+Ranchi:
+  - Angara
+  - Bero
+  - Bundu
+  - Burmu
+  - Chanho
+  - Dighia
+  - Kanke
+  - Lapung
+  - Mandar
+  - Namkum
+  - Notmapped
+  - Ormanjhi
+  - Ranchi
+  - Ratu
+  - Silli
+  - Sonahatu
+  - Tamar I
+Bokaro:
+  - Bermo
+  - Chandankiyari
+  - Chas
+  - Gomia
+  - Jaridih
+  - Kasmar
+  - Nawadih
+  - Peterwar
+Raichur:
+  - Deodurga
+Chikmagalur:
+  - Kadur
+Jalandhar:
+  - Adampur
+  - Bara Pind
+  - Bilga
+  - Jamsher
+  - Jandiala
+  - Kala Bakra
+  - Kartarpur
+  - Lohian Khas
+  - Mehatpur
+  - Nakodar
+  - Phillaur
+  - Shahkot
+  - Shankar
+  - Urban Jalandhar

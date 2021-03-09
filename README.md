@@ -1,6 +1,7 @@
 # Simple Server
 
-[![Build Status](https://semaphoreci.com/api/v1/resolvetosavelives/simple-server/branches/master/badge.svg)](https://semaphoreci.com/resolvetosavelives/simple-server)
+[![Build Status](https://resolvetosavelives.semaphoreci.com/badges/simple-server/branches/master.svg)](https://resolvetosavelives.semaphoreci.com/projects/simple-server)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
@@ -12,37 +13,54 @@ This is the backend for the Simple app to help track hypertensive patients acros
 * [Contributing](#contributing)
 
 ## Development
+### Caveat for Apple Silicon M1 macs
+
+If you are installing on an M1 Mac, you should do all the below in Rosetta (ie `arch` returns i386 in a terminal). See [here](https://5balloons.info/correct-way-to-install-and-use-homebrew-on-m1-macs/) for how to create a Rosetta specific Terminal.
+
+We have some rubygems that don't work under the native ARM architecture, so a fully ARM native setup does not work yet. For details you can follow [this issue](https://github.com/simpledotorg/simple-server/issues/1969).
 
 ### Dependencies
 
-Make sure you have the following dependencies installed:
-
-- Ruby 2.5.1
-- PostgreSQL 10
-- Redis
-- Yarn
-
-To install these on MacOS:
+We have a `bin/setup` script that does most of the work of getting things setup, but you need a few things in place first.
+If you are on a Mac, install [homebrew](https://brew.sh) and then install rbenv, redis, and yarn:
 
 ```
-brew cask install postgres
 brew install rbenv ruby-build redis yarn
 ```
 
-To set up Ruby 2.5.1, see https://gorails.com/setup/osx/10.15-catalina
+You also need Postgres 10 - [Postgres.app](https://postgresapp.com) is a nice small GUI to manage PostgreSQL on a mac,
+though it isn't required. You can install it via brew:
 
-Open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
+```
+brew cask install postgres
+```
 
-### Setup
+Then open Postgres.app and ensure you have a PostgreSQL 10 server initialized.
 
-To set up the Simple server for local development, clone the git repository and
-run the setup script included.
+### bin/setup
+
+To set up the Simple server for local development, clone the git repository and run the setup script included:
 
 ```
 $ git clone git@github.com:simpledotorg/simple-server.git
 $ cd simple-server
 $ bin/setup
 ```
+
+If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
+
+#### Docker Compose
+
+For quick development and testing, the server can be run locally using Docker Compose and the command:
+
+```
+docker-compose up
+```
+
+The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
+
+Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
+
 
 #### Manual Setup
 
@@ -60,31 +78,6 @@ bundle _1.17.3_ install
 rake yarn:install
 rails db:setup
 ```
-
-##### Issues with MacOS Catalina and Puma
-
-When running `bin/setup` on MacOS Catalina, you may encounter issues installing the `puma` gem related to compiler upgrades Apple issued.
-
-If you see errors like this:
-
-```
-compiling puma_http11.c
-puma_http11.c:203:22: error: implicitly declaring library function 'isspace' with type 'int (int)' [-Werror,-Wimplicit-function-declaration]
-  while (vlen > 0 && isspace(value[vlen - 1])) vlen--;
-                     ^
-puma_http11.c:203:22: note: include the header <ctype.h> or explicitly provide a declaration for 'isspace'
-1 error generated.
-make: *** [puma_http11.o] Error 1
-make failed, exit code 2
-```
-
-To fix, install `puma` with this command:
-
-```
-gem install puma:4.3.5 -- --with-cflags="-Wno-error=implicit-function-declaration"
-```
-
-Now re-run `bin/setup` to continue installing everything else.
 
 #### Developing with the Android app
 
@@ -181,7 +174,7 @@ into the codebase.
 
 ### Running the application locally
 
-Foreman is used to run the application locally. First, install foreman.
+Foreman can be used to run the application locally. First, install foreman.
 
 ```bash
 $ gem install foreman
@@ -214,35 +207,55 @@ We use the [standard](https://github.com/testdouble/standard#how-do-i-run-standa
 To check all the offenses throughout the codebase:
 
 ```bash
-bundle exec rails standard
+$ bin/rails standard
 ```
-**Note**: The codebase is currently undergoing a slow linting process and hence most files that have offenses have been ignored under a `.standard_todo.yml`. As we fix these files, remove them from the `yml` file so that they can be picked up by `standard` again for future offenses. Refer to [usage](https://github.com/testdouble/standard#usage) on how to generate todo files.
 
+To automatically fix all offenses,
+
+```bash
+$ bundle exec standardrb --fix
+```
+
+**Note**: Some files have been temporarily ignored under a `.standard_todo.yml`. As we fix these files, remove them from the `yml` file so that they can be picked up by `standard` again for future offenses. Refer to [usage](https://github.com/testdouble/standard#usage) on how to generate todo files.
+
+**Note**: Some files are permanently ignored under `.standard.yml` and do not require linting.
 
 ### Generating seed data
 
-To generate seed data, execute the following command from the project root
+To generate seed (fake patients) data, execute the following command from the project root
 
 ```bash
-$ foreman start -f Procfile.dev
-$ bundle exec rails db:seed db:seed_users_data
+$ bin/rails db:seed_patients
 ```
-**Note**: This **requires** server and sidekiq to be running.
 
 To purge the generated patient data, run
 
 ```bash
-bundle exec rails db:purge_users_data
+$ bin/rails db:purge_users_data
 ```
 
-**Note**: This only removes data created by `db:seed_users_data`, it keeps the seed data created by `db:seed`.
+You can also purge and re-seed by running:
+
+```bash
+$ bin/rails db:purge_and_reseed
+```
 
 ### Creating an admin user
 
 Run the following command from the project root to create a new dashboard admin:
 ```bash
-bundle exec rails 'create_admin_user[<name>,<email>,<password>]'
+$ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 ```
+
+
+### View Sandbox data in your local environment
+
+1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
+2. Ask someone from the Simple team to add you as an admin to Sandbox
+3. Create a password for your Sandbox account and use that to log into the Sandbox dashboard on https://api-sandbox.simple.org
+4. Run `ssh deploy@ec2-13-235-33-14.ap-south-1.compute.amazonaws.com` to verify that your SSH access from step 1 was completed successfully.
+5. Run `bundle exec cap sandbox db:pull` to sync Sandbox data with your local machine.
+6. Use your Sandbox email and password to log into your local environment (http://localhost:3000).
 
 ### Profiling
 
@@ -257,17 +270,20 @@ API Documentation can be accessed at `/api-docs` on local server and hosted at h
 To regenerate the Swagger API documentation, run the following command.
 
 ```
-$ bundle exec rake rswag:specs:swaggerize
+$ bundle exec rake docs
 ```
 
 ### ADRs
 
 Architecture decisions are captured in ADR format and are available in `/doc/arch`
 
+### Wiki
+
+Guides, instructions and long-form maintenance documentation can go in `/doc/wiki`
+
 ### ERD (Entity-Relationship Diagram)
 
 These are not actively committed into the repository. But can be generated by running `bundle exec erd`
-
 
 ## Deployment
 
@@ -276,22 +292,15 @@ Simple Server is deployed to several environments using a mixture of tools.
 * Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
   for more information.
 * Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
-* SemaphoreCI: Continuous deployment
+* SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to Sandbox via Semaphore after CI has run successfully.  
 
-To make a deployment, run the release script.
+To make a full production release, run the release script from master:
 
 ```
 bin/release
 ```
 
-This will create a git release tag and automatically trigger a deployment to all non-production environments through
-Semaphore.
-
-Once complete, trigger a manual deployment to production environments through the
-[Semaphore CI dashboard](https://resolvetosavelives.semaphoreci.com/projects/simple-server).
-
-> Make sure you add your SSH keys as single sign-on so that `cap` doesn't get confused when there's more than 1 instance
-> to deal with. You can do this simply by running `ssh-add -K ~/.ssh/id_rsa`.
+This will create a git release tag and automatically trigger a deployment to all environments through Semaphore. You can monitor the deployment progress [in Semaphore](https://simple.semaphoreci.com/projects/simple-server) via the tagged release's workflow. Please make sure to copy / paste the changelog from `bin/release` so you can post it in the #releases channel.
 
 ### Deployment to a specific environment
 
@@ -314,11 +323,41 @@ Rake tasks can be run on the deployed server using Capistrano as well. For examp
 bundle exec cap india:staging deploy:rake task=db:seed
 ```
 
+### Deployment to a new environment
+
+When setting up a new environment to deploy Simple Server to, follow these steps.
+
+#### 1. Create a config file
+
+Create a new file in `config/deploy/<env_name>.rb` for the new environment. It can be placed inside a subdirectory if
+desired. Populate the new config file with relevant IP address info. Use an existing file for reference. For example,
+the configuration for a deployment with two EC2 instances may look like:
+```
+server "ec2-12-111-34-45.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web app db cron whitelist_phone_numbers seed_data]
+server "ec2-12-222-67-89.ap-south-1.compute.amazonaws.com", user: "deploy", roles: %w[web sidekiq]
+```
+
+The first server runs the web application and cron tasks, the second server runs Sidekiq to process background jobs.
+
+#### 2. Install Sidekiq
+
+A one-time installation of Sidekiq is required in new environments. Run the following command:
+
+```bash
+bundle exec cap <environment> sidekiq:install
+```
+
+#### 2. Deploy
+
+You can now run a regular Capistrano deployment:
+
+```bash
+bundle exec cap <environment> deploy
+```
+
+This may take a long time for the first deployment, since several dependencies (like Ruby) need to be installed.
+Subsequent deployments will be much faster.
+
 ### Deployment Resources
 
-* [Deployment instructions for Simple Server](doc/deployment.md)
-* [Deployment repository](https://github.com/simpledotorg/deployment)
-
-## Contributing
-
-The contribution guidelines can be found [here](doc/contributing.md).
+The infrastructure setup including the ansible and terraform scripts are documented in the [deployment repository](https://github.com/simpledotorg/deployment).

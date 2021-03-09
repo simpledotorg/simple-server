@@ -18,7 +18,7 @@ to dashboard features. Each feature on the dashboard is backed by its on permiss
 access can be granted and revoked accordingly.
 
 ## Status
-Accepted
+Superseded (by [012-simplified-user-permissions](012-simplified-user-permissions.md))
 
 ## Consequences
 If each small feature on the dashboard has it's own permission, there would be an explosion in

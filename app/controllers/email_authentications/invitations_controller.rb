@@ -1,58 +1,25 @@
 class EmailAuthentications::InvitationsController < Devise::InvitationsController
-  before_action :verify_params, only: [:create], unless: -> { current_admin.permissions_v2_enabled? }
-  before_action :verify_params_v2, only: [:create], if: -> { current_admin.permissions_v2_enabled? }
+  before_action :verify_params, only: [:create]
   helper_method :current_admin
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
 
   def new
-    if current_admin.permissions_v2_enabled?
-      raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
-    else
-      authorize([:manage, :admin, current_admin])
-    end
-
+    raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
     super
   end
 
   def create
-    if current_admin.permissions_v2_enabled?
-      raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
+    raise UserAccess::NotAuthorizedError unless current_admin.accessible_facilities(:manage).any?
 
-      User.transaction do
-        new_user = User.new(user_params)
+    User.transaction do
+      new_user = User.new(user_params)
 
-        super do |resource|
-          new_user.email_authentications = [resource]
-          new_user.save!
+      super do |resource|
+        new_user.email_authentications = [resource]
+        new_user.save!
 
-          current_admin.grant_access(new_user, selected_facilities)
-
-          #
-          # Automatically add new users as they are granted access to the new access system
-          Flipper.enable_actor(:new_permissions_system_aug_2020, Flipper::Actor.new(new_user.flipper_id))
-        end
-      end
-    else
-      user = User.new(user_params)
-      authorize([:manage, :admin, user])
-
-      User.transaction do
-        super do |resource|
-          user.email_authentications = [resource]
-          user.save!
-
-          next if permission_params.blank?
-
-          permission_params.each do |attributes|
-            user.user_permissions.create!(attributes.permit(
-              :permission_slug,
-              :resource_id,
-              :resource_type
-            ))
-          end
-        end
+        current_admin.grant_access(new_user, selected_facilities)
       end
     end
   end
@@ -61,20 +28,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def verify_params
     user = User.new(user_params)
-    email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
-
-    unless user.valid? && email_authentication.valid?
-      user.errors.delete(:email_authentications)
-      render json: {errors: user.errors.full_messages + email_authentication.errors.full_messages}, status: :bad_request
-    end
-  end
-
-  #
-  # This is a temporary `verify_params` method that will exist until we migrate fully to the new permissions system
-  #
-  def verify_params_v2
-    user = User.new(user_params)
-    email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
+    password = EmailAuthentication.generate_password
+    email_authentication = user.email_authentications.new(invite_params.merge(password: password))
 
     if validate_selected_facilities?
       flash[:alert] = "At least one facility should be selected for access before inviting an Admin."
@@ -104,6 +59,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       role: params[:role],
       access_level: params[:access_level],
       organization_id: params[:organization_id],
+      receive_approval_notifications: params[:receive_approval_notifications],
       device_created_at: Time.current,
       device_updated_at: Time.current,
       sync_approval_status: :denied
@@ -120,10 +76,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def invite_params
     {email: params[:email]}
-  end
-
-  def temporary_password
-    SecureRandom.base64(16)
   end
 
   def validate_selected_facilities?

@@ -94,9 +94,54 @@ RSpec.describe FacilityAnalyticsQuery do
         end
       end
     end
+
+    describe "#follow_up_patients_by_period" do
+      it "groups the follow up patients by users within a facility and by period" do
+        expected_result =
+          {
+            users[0].id =>
+              {follow_up_patients_by_period: {four_months_back => 6,
+                                              three_months_back => 12,
+                                              two_months_back => 6}},
+            users[1].id =>
+              {follow_up_patients_by_period: {four_months_back => 6,
+                                              three_months_back => 12,
+                                              two_months_back => 6}}
+          }
+
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+      end
+    end
   end
 
   context "edge cases" do
+    describe "#follow_up_patients_by_period" do
+      it "should discount counting as follow-up if the last BP is removed" do
+        patient = Timecop.travel(four_months_back) {
+          create(:patient, :hypertension, registration_facility: facility, registration_user: users.first)
+        }
+
+        _mar_bp = Timecop.travel(three_months_back) {
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+        }
+
+        apr_bp = Timecop.travel(two_months_back) {
+          create(:blood_pressure, patient: patient, facility: facility, user: users.first)
+        }
+
+        # simulate soft-deleting a blood_pressure
+        apr_bp.discard
+
+        expected_result =
+          {users.first.id =>
+              {follow_up_patients_by_period: {
+                three_months_back => 1
+              }}}
+
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
+      end
+    end
+
     describe "#registered_patients_by_period" do
       it "should count patients as registered even if they do not have a bp" do
         Timecop.travel(one_month_back) do
@@ -118,6 +163,7 @@ RSpec.describe FacilityAnalyticsQuery do
     it "returns nil for all analytics queries" do
       expect(analytics.registered_patients_by_period).to eq(nil)
       expect(analytics.total_registered_patients).to eq(nil)
+      expect(analytics.follow_up_patients_by_period).to eq(nil)
     end
   end
 
@@ -134,8 +180,8 @@ RSpec.describe FacilityAnalyticsQuery do
 
     before do
       Timecop.travel(three_months_back) do
-        create(:blood_pressure, :with_encounter, patient: patients.first, facility: facility, user: users.first)
-        create(:blood_pressure, :with_encounter, patient: patients.second, facility: facility, user: users.first)
+        create(:blood_pressure, patient: patients.first, facility: facility, user: users.first)
+        create(:blood_pressure, patient: patients.second, facility: facility, user: users.first)
       end
       patients.first.discard_data
     end
@@ -149,6 +195,19 @@ RSpec.describe FacilityAnalyticsQuery do
               }}}
 
         expect(analytics.registered_patients_by_period).to eq(expected_result)
+      end
+    end
+
+    describe "#follow_up_patients_by_period" do
+      let!(:expected_result) do
+        {users.first.id =>
+            {follow_up_patients_by_period: {
+              three_months_back => 1
+            }}}
+      end
+
+      it "shouldn't count discarded patients" do
+        expect(analytics.follow_up_patients_by_period).to eq(expected_result)
       end
     end
 

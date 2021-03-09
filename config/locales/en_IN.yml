@@ -7,7 +7,7 @@ en_IN:
         size: "Size *"
         street_address: "House number and street"
         village_or_colony: "Colony, village or ward"
-        zone: "Block"
+        zone: "Block *"
         district: "District *"
         state: "State *"
         country: "Country *"
@@ -15,3 +15,10 @@ en_IN:
       facility:
         create: "Save facility"
         update: "Save facility"
+  activerecord:
+    facility:
+      facility_size:
+        community: "HWC/SC"
+        small: "PHC"
+        medium: "CHC"
+        large: "SDH/DH"
