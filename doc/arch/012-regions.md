@@ -2,9 +2,9 @@
 
 ## Date 
 
-October 2020
+October 2020 (accepted)
 
-_Note: this document is being written retroactively to explain a core change in our domain model that has since been implemented_
+_Note: this document is being written retroactively to explain a core change in our domain model that has since been implemented...the October date refers to when this decision was accepted._
 ## Context
 
 Medical officers, nurses, administers, and developers of Simple often want to group patients into geographic and administrative regions. This helps with generating relevant reports for the dashboard as well as with syncing the right amount of data for the offline-first mobile app. 
@@ -25,9 +25,15 @@ Given all this, it will be useful to be able to generalize the grouping of patie
 
 ## Decision
 
-We will create a new table (`regions`) and ActiveRecord model (`Region`). Regions will have a single parent region, except for the "root" region which will have a null parent region. A Region can have many children regions. This means a Region has a self-referential has-many relationship. Since the relationships are consistent and standardized, things like reports, navigation, and region managemtn become simpler and more intuitive. 
+We will create a new table (`regions`) and ActiveRecord model (`Region`). Regions will have a single parent region, except for the "root" region which will have a null parent region. A Region can have many children regions. This means a Region has a self-referential has-many relationship. Since the relationships are consistent and standardized, things like reports, navigation, and region management becomes simpler and more intuitive. 
 
-Our Region model will follow the hierarchy we need for India, as it is our largest deployment:  `root -> organization -> state -> district -> block -> facility`. We will work towards a more flexible or fine-grained model as scale and new deployments require it.
+Our Region model will follow the hierarchy we need for India, as it is our largest deployment. This model is:
+
+`root -> organization -> state -> district -> block -> facility`
+
+An example of this would be 
+
+`root -> IHCI -> Maharashtra -> Nagpur -> Bhadravati -> [hospital / clinic name]`
 
 A region can belong to an optional "source" model, which in practice will be an Organization, FacilityGroup, or a Facility. This helps us as we transition to a Regions-centered domain model - we need to know the 'legacy' models that many of the patient related models refer to.  For example. there are many records that refer to a `facility_id` to determine where patients were registered or treated.
 
