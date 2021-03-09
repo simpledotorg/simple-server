@@ -378,16 +378,16 @@
             <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
               <p
                 class="mb-0px fs-32px fw-bold <% if @data.last_value(:registrations).blank? %>c-grey-medium<% else %>c-purple-medium<% end %> mr-lg-12px"
-                data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>"
+                data-monthly-registrations="<%= number_with_delimiter(@data.dig(:registrations, @period)) %>"
               >
-                <%= number_with_delimiter(@data.last_value(:registrations)) %>
+                <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
               </p>
               <div>
                 <% if @data.last_value(:registrations) %>
                   <p class="m-0px c-black c-print-black">
-                    new <%= "registration".pluralize(@data.last_value(:registrations)) %><br>in
-                    <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
-                      <%= @data.last_key(:registrations) %>
+                    new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
+                    <span data-registrations-month-end="<%= @period %>">
+                      <%= @period %>
                     </span>
                   </p>
                 <% else %>
@@ -417,12 +417,12 @@
                   </span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
-                  <span data-monthly-registrations="<%= number_with_delimiter(@data.last_value(:registrations)) %>">
-                    <%= number_with_delimiter(@data.last_value(:registrations)) %>
+                  <span data-monthly-registrations="<%= number_with_delimiter(@data.dig(:registrations, @period)) %>">
+                    <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
                   </span>
-                  new <%= "patient".pluralize(@data.last_value(:registrations)) %> registered in
-                  <span data-registrations-month-end="<%= @data.last_key(:registrations) %>">
-                    <%= @data.last_key(:registrations) %>
+                  new <%= "patient".pluralize(@data.dig(:registrations, @period)) %> registered in
+                  <span data-registrations-month-end="<%= @period %>">
+                    <%= @period %>
                   </span>
                 </p>
               <% else %>
