@@ -19,7 +19,7 @@ Over time Simple has developed a need for more fine grained groupings of patient
 
 Our mobile app sync has been built around FacilityGroup. As we have grown, syncing all patients within a FacilityGroup loads far too much data -- sometimes tens of thousands of patients. This can overload mobile phones and introduce many UX challenges. Most Simple app users work with hundreds or maybe a thousand of patients over the course of a week, not 10k+.
 
-In the admin UI, there are many users who want to monitor performance at differnt levels than the district or facility level. Some admin users should have access to levels above or below the FacilityGroup that do not yet exist. For example, in India some users should have reports access at the [state level](https://en.wikipedia.org/wiki/States_and_union_territories_of_India), which is above the district (ie FacilityGroup). The current model does not suppor this, in any sort of clean way.
+In the admin UI, there are many users who want to monitor performance at different levels than the district or facility level. Some admin users should have access to levels above or below the FacilityGroup that do not yet exist. For example, in India some users should have reports access at the [state level](https://en.wikipedia.org/wiki/States_and_union_territories_of_India), which is above the district (ie FacilityGroup). The current model does not support this.
 
 Given all this, it will be useful to be able to generalize the grouping of patients into "Regions". A Region is a geographic group of patients that can contain other regions.  All regions share some things from Simple's perspective: they have a parent region, a name, a unique slug (for URLs), and a description. More importantly, they allow us to group patients and their data into meaningful slices for reports and mobile app usage.
 
@@ -55,6 +55,7 @@ Introducing regions could add unnecessary complexity for smaller deployments tha
 Our authorization model would work well with regions, as a user could have an `access_level` on a particular region, and the access would flow through to children regions. We would need to do some transition work to accomplish this.
 
 We are deliberately building Regions as a straight-forward hiearchrial grouping, knowing there are many other ways to view patient health data that may not align with our Region model. For the purposes of Simple we want to simplify and pick a consistent path forward. We know that other more nuanced systems can come later as needed.
+
 ## Status
 
 Accepted, implemented and in place as of March 2021. The backfill has completed and the ongoing sync is in place. We have not yet deprecated the legacy zone/state fields or the FacilityGroup model.
