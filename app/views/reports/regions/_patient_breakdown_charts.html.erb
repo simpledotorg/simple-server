@@ -30,7 +30,7 @@
                 <span data-total-patients="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %>">
                   <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %>
                 </span>
-                patients with no BP taken since
+                <%= "patient".pluralize(@chart_data[:ltfu_trend].last_value(:ltfu_patients)) %> with no BP taken since
                 <span data-period-start="<%= @chart_data[:ltfu_trend].last_value(:period_info)["ltfu_since_date"] %>">
                   <%= @chart_data[:ltfu_trend].last_value(:period_info)["ltfu_since_date"] %>
                 </span>
@@ -40,7 +40,7 @@
                 <span data-registrations="<%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>">
                   <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>
                 </span>
-                patients registered till
+                <%= "patient".pluralize(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %> registered till
                 <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
                   <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>
                 </span>
