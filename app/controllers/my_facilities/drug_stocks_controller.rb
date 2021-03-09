@@ -1,7 +1,7 @@
 class MyFacilities::DrugStocksController < AdminController
   include Pagination
   include MyFacilitiesFiltering
-  include EndOfMonth
+  include SetForEndOfMonth
 
   layout "my_facilities"
 
