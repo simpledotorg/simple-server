@@ -82,6 +82,41 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
 
+    describe "#call" do
+      it "returns aggregated data for all facilities in the district" do
+        expected_result = {
+          facility_1.id => {
+            total_registered_patients: 6,
+            registered_patients_by_period: {
+              four_months_back => 3,
+              three_months_back => 3
+            },
+            follow_up_patients_by_period: {
+              three_months_back => 3,
+              two_months_back => 6,
+              one_month_back => 3
+            }
+          },
+          facility_2.id => {
+            total_assigned_patients: 6,
+            total_registered_patients: 6,
+            registered_patients_by_period: {
+              four_months_back => 3,
+              three_months_back => 3
+            },
+            follow_up_patients_by_period: {
+              three_months_back => 3,
+              two_months_back => 6,
+              one_month_back => 3
+            }
+          },
+          facility_3.id => {total_assigned_patients: 6}
+        }
+
+        expect(analytics.call).to eq(expected_result)
+      end
+    end
+
     describe "#registered_patients_by_period" do
       context "considers only htn diagnosed patients" do
         it "groups the registered patients by facility and beginning of month" do
