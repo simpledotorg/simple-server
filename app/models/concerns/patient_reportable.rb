@@ -12,15 +12,15 @@ module PatientReportable
     scope :ltfu_as_of, ->(date) do
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id
-             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", date - LTFU_TIME, date])}")
-        .where("bp_recorded_at IS NULL AND patients.recorded_at < ?", date - LTFU_TIME)
+             AND #{sanitize_sql(["bp_recorded_at > ? AND bp_recorded_at < ?", (date - LTFU_TIME).end_of_month, date])}")
+        .where("bp_recorded_at IS NULL AND patients.recorded_at < ?", (date - LTFU_TIME).end_of_month)
         .distinct(:patient_id)
     end
 
     scope :not_ltfu_as_of, ->(date) do
       joins("LEFT OUTER JOIN latest_blood_pressures_per_patient_per_months
              ON patients.id = latest_blood_pressures_per_patient_per_months.patient_id")
-        .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?", date - LTFU_TIME, date, date - LTFU_TIME)
+        .where("bp_recorded_at > ? AND bp_recorded_at < ? OR patients.recorded_at >= ?", (date - LTFU_TIME).end_of_month, date, (date - LTFU_TIME).end_of_month)
         .distinct(:patient_id)
     end
 
