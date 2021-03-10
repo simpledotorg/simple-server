@@ -224,15 +224,4 @@ RSpec.describe FacilityAnalyticsQuery do
       end
     end
   end
-
-  describe "#total_assigned_patients" do
-    it "returns assigned patient totals sorted by registration user id" do
-      patient = create(:patient, :hypertension, assigned_facility: facility)
-      expected_result = {
-        patient.registration_user_id => {total_assigned_patients: 1}
-      }
-
-      expect(analytics.total_assigned_patients).to eq(expected_result)
-    end
-  end
 end

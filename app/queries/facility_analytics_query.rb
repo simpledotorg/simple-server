@@ -19,7 +19,6 @@ class FacilityAnalyticsQuery
 
   def results
     results = [
-      total_assigned_patients,
       registered_patients_by_period,
       total_registered_patients,
       follow_up_patients_by_period,
@@ -28,21 +27,6 @@ class FacilityAnalyticsQuery
 
     return {} if results.blank?
     results.inject(&:deep_merge)
-  end
-
-  def total_assigned_patients
-    @total_assigned_patients ||=
-      @facility
-        .assigned_hypertension_patients
-        .group("registration_user_id")
-        .distinct("patients.id")
-        .count
-
-    return if @total_assigned_patients.blank?
-
-    @total_assigned_patients
-      .map { |user_id, count| [user_id, {total_assigned_patients: count}] }
-      .to_h
   end
 
   def total_registered_patients
