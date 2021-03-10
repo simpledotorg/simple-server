@@ -158,6 +158,54 @@
         }
       }
     },
+    "/drugs/sync": {
+      "get": {
+        "summary": "Syncs drug data from server to device.",
+        "tags": [
+          "Drug"
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns drugs",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "drugs": {
+                  "$ref": "#/definitions/drugs"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "drugs",
+                "process_token"
+              ]
+            }
+          }
+        }
+      }
+    },
     "/facility_teleconsultations/{facility_id}": {
       "get": {
         "summary": "Fetch a facility's teleconsultation phone number",
@@ -1470,6 +1518,93 @@
       ],
       "items": {
         "$ref": "#/definitions/teleconsultation"
+      }
+    },
+    "drug": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "name": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "hypertension_ccb",
+            "hypertension_arb",
+            "hypertension_diuretic",
+            "hypertension_ace",
+            "hypertension_other",
+            "diabetes",
+            "other",
+            null
+          ]
+        },
+        "frequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "once_a_day",
+            "twice_a_day",
+            "thrice_a_day",
+            null
+          ]
+        },
+        "composition": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dosage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rxnorm_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "protocol": {
+          "type": "boolean"
+        },
+        "common": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "drugs": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/drug"
       }
     }
   },
