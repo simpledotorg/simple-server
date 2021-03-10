@@ -43,6 +43,12 @@ module DashboardHelper
     period == :month ? value.strftime("%b-%Y") : quarter_string(value)
   end
 
+  def multiline_format_period(period, value)
+    formatted_period = format_period(period, value)
+    shortened_period, year = formatted_period.split("-")
+    shortened_period + "-\n" + year
+  end
+
   def analytics_totals(analytics, metric, date)
     analytics.sum { |_, row| row.dig(metric, date) || 0 }
   end

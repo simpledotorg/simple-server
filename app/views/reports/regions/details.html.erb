@@ -281,6 +281,7 @@
         <colgroup>
             <col>
             <col class="table-divider">
+            <col>
             <col class="table-divider">
             <col>
             <col>
@@ -297,7 +298,7 @@
         <thead>
           <tr>
             <th></th>
-            <th></th>
+            <th colspan="2"></th>
             <% if current_admin.feature_enabled?(:report_with_exclusions) %>
               <th colspan="6">
                 Monthly registered patients
@@ -336,12 +337,12 @@
             </th>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= format_period(@period.type, date) %>
+                <%= multiline_format_period(@period.type, date) %>
               </th>
             <% end %>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= format_period(@period.type, date) %>
+                <%= multiline_format_period(@period.type, date) %>
               </th>
             <% end %>
           </tr>
