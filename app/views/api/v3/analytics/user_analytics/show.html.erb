@@ -75,6 +75,12 @@
     </div>
   </div>
 
+  <div class="card">
+    <h1><%= @user_analytics.current_facility.assigned_hypertension_patients.count %></h1>
+    <h2>Total assigned patients</h2>
+    All hypertension patients assigned to <%= @user_analytics.current_facility.name %>. <%= @user_analytics.current_facility.name %> is responsible to control their hypertension.
+  </div>
+
   <!-- monthly registered patients view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-registered', 'progress-start'); return false" class="info"><span>?</span></a>
