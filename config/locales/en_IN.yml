@@ -11,6 +11,11 @@ en_IN:
         district: "District *"
         state: "State *"
         country: "Country *"
+      drug:
+        frequency:
+          once_a_day: "OD"
+          twice_a_day: "BD"
+          thrice_a_day: "TDS"
     submit:
       facility:
         create: "Save facility"
