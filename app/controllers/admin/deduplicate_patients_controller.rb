@@ -11,8 +11,8 @@ class Admin::DeduplicatePatientsController < AdminController
     authorize { current_admin.power_user? }
 
     duplicate_patients = Patient.where(id: params[:duplicate_patients])
-    deduped_patient = PatientDeduplication::Deduplicator.new(duplicate_patients).merge
+    PatientDeduplication::Deduplicator.new(duplicate_patients).merge
 
-    redirect_to admin_deduplicate_patients_path, notice: "Patient merged into #{deduped_patient.id}"
+    redirect_to admin_deduplicate_patients_path, notice: "Patients merged"
   end
 end
