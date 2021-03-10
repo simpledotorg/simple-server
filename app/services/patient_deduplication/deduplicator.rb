@@ -1,7 +1,8 @@
 module PatientDeduplication
   class Deduplicator
-    def initialize(patients)
+    def initialize(patients, user: nil)
       @patients = patients.sort_by(&:recorded_at)
+      @user_id = user&.id
     end
 
     def earliest_patient
@@ -34,7 +35,11 @@ module PatientDeduplication
     end
 
     def mark_as_merged(new_patient)
-      @patients.map { |patient| patient.update!(merged_into_patient_id: new_patient.id) }
+      @patients.map do |patient| patient.update!(
+        merged_into_patient_id: new_patient.id,
+        merged_by_user_id: @user_id
+      )
+      end
       @patients.map(&:discard_data)
     end
 
@@ -51,6 +56,7 @@ module PatientDeduplication
         device_updated_at: earliest_patient.device_updated_at,
         assigned_facility: latest_patient.assigned_facility,
         address: create_address,
+        merged_by_user_id: @user_id,
         **age_and_dob
       }
       Patient.create!(attributes)

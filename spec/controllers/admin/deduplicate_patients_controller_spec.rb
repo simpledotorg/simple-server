@@ -8,11 +8,11 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
       sign_in(admin.email_authentication)
 
       patients = [create(:patient, full_name: "Patient one"), create(:patient, full_name: "Patient two")]
-      expect(PatientDeduplication::Deduplicator).to receive(:new).and_call_original
 
       post :merge, params: {duplicate_patients: patients.map(&:id)}
 
       expect(Patient.count).to eq 1
+      expect(Patient.first.merged_by_user_id).to eq admin.id
       expect(Patient.with_discarded.count).to eq 3
     end
   end
