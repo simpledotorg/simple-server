@@ -19,6 +19,12 @@ RSpec.configure do |config|
     render_views if ENV["CI"]
   end
 
+  if ENV["CI"]
+    config.before(:example, :focus) do
+      fail "This example was committed with `:focus` and should not have been"
+    end
+  end
+
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
