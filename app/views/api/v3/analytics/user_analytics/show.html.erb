@@ -109,6 +109,17 @@
                          data_table_name: follow_ups_table_name } %>
   </div>
 
+  <!-- drug stock -->
+  <% if current_user.feature_enabled?(:drug_stocks_mobile) %>
+    <div class="card">
+        <h3>Drug stock report</h3>
+        <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
+        <%= link_to "Submit Drug Stock", new_webview_drug_stock_url(user_id: current_user.id,
+          access_token: current_user.access_token,
+          facility_id: current_facility.id), class: "button" %>
+    </div>
+  <% end %>
+
   <!-- monthly hypertension control view -->
   <div class="card">
     <a href="#"  onclick="openWindow('progress-help-controlled', 'progress-start'); return false" class="info"><span>?</span></a>
