@@ -434,18 +434,4 @@ RSpec.describe Region, type: :model do
         .to be_empty
     end
   end
-
-  describe "#assigned_hypertension_patients" do
-    it "returns only hypertensive patients assigned to the region" do
-      facility_group = create(:facility_group)
-      block_1_facility = create(:facility, block: "Block 1", facility_group: facility_group)
-      block_2_facility = create(:facility, block: "Block 2", facility_group: facility_group)
-      hypertensive_patient = create(:patient, :hypertension, registration_facility: block_2_facility, assigned_facility: block_1_facility)
-      create(:patient, :without_hypertension, registration_facility: block_1_facility)
-      create(:patient, :hypertension, registration_facility: block_2_facility)
-      block_1 = Region.block_regions.find_by!(name: "Block 1")
-
-      expect(block_1.assigned_hypertension_patients).to match_array([hypertensive_patient])
-    end
-  end
 end
