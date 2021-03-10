@@ -9,7 +9,7 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
     Flipper.disable(:drug_stocks)
   end
 
-  fdescribe "GET #new" do
+  describe "GET #new" do
     let(:facility) { create(:facility) }
 
     it "renders 404 for anonymous users" do
