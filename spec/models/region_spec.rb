@@ -10,7 +10,7 @@ RSpec.describe Region, type: :model do
   end
 
   describe "slugs" do
-    it "handles duplicate names nicely when creating a slug" do
+    fit "handles duplicate names nicely when creating a slug" do
       region_1 = Region.create!(name: "New York", region_type: "state", reparent_to: Region.root)
       region_2 = Region.create!(name: "New York", region_type: "district", reparent_to: region_1)
       region_3 = Region.create!(name: "New York", region_type: "block", reparent_to: region_2)
