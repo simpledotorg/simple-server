@@ -18,10 +18,10 @@ describe DrugStock, type: :model do
   end
 
   describe "Returns latest records for a given facility and month" do
-    let!(:facility_group) { create(:facility_group) }
-    let!(:protocol_drug) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
-    let!(:protocol_drug_2) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
-    let!(:facility) { create(:facility, facility_group: facility_group) }
+    let(:facility_group) { create(:facility_group) }
+    let(:protocol_drug) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
+    let(:protocol_drug_2) { create(:protocol_drug, stock_tracked: true, protocol: facility_group.protocol) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
 
     it "returns latest stocks for end of jan" do
       end_of_january = Date.strptime("Jan-2021", "%b-%Y").end_of_month

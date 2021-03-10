@@ -1,6 +1,7 @@
 class MyFacilities::DrugStocksController < AdminController
   include Pagination
   include MyFacilitiesFiltering
+  include SetForEndOfMonth
 
   layout "my_facilities"
 
@@ -23,10 +24,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def new
     session[:report_url_with_filters] ||= request.referer
-    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month) || []
-    @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.id] = drug_stock
-    }
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(@facility, @for_end_of_month)
   end
 
   def create
@@ -87,14 +85,6 @@ class MyFacilities::DrugStocksController < AdminController
   def drug_stocks_enabled?
     unless current_admin.feature_enabled?(:drug_stocks)
       redirect_to :root
-    end
-  end
-
-  def set_for_end_of_month
-    @for_end_of_month ||= if params[:for_end_of_month]
-      Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
-    else
-      Date.today.end_of_month
     end
   end
 end
