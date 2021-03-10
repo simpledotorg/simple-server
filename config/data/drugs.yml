@@ -3,7 +3,7 @@
   name: Amlodipine
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '17767'
   drug_category: hypertension_ccb
   deleted: false
@@ -11,7 +11,7 @@
   name: Amlodipine
   composition:
   dosage: 2.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '329527'
   drug_category: hypertension_ccb
   deleted: false
@@ -19,7 +19,7 @@
   name: Amlodipine
   composition:
   dosage: 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '329528'
   drug_category: hypertension_ccb
   deleted: false
@@ -27,7 +27,7 @@
   name: Amlodipine
   composition:
   dosage: 10 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '329526'
   drug_category: hypertension_ccb
   deleted: false
@@ -35,7 +35,7 @@
   name: Aspirin
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1191'
   drug_category: other
   deleted: false
@@ -43,7 +43,7 @@
   name: Aspirin
   composition:
   dosage: 75 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315429'
   drug_category: other
   deleted: false
@@ -51,7 +51,7 @@
   name: Aspirin
   composition:
   dosage: 150 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315413'
   drug_category: other
   deleted: false
@@ -59,7 +59,7 @@
   name: Atenolol
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1202'
   drug_category: hypertension_other
   deleted: false
@@ -67,7 +67,7 @@
   name: Atenolol
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315437'
   drug_category: hypertension_other
   deleted: false
@@ -75,7 +75,7 @@
   name: Atenolol
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315438'
   drug_category: hypertension_other
   deleted: false
@@ -83,7 +83,7 @@
   name: Atenolol
   composition:
   dosage: 100 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315436'
   drug_category: hypertension_other
   deleted: false
@@ -91,7 +91,7 @@
   name: Atorvastatin
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '83367'
   drug_category: other
   deleted: false
@@ -99,7 +99,7 @@
   name: Atorvastatin
   composition:
   dosage: 10 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '597970'
   drug_category: other
   deleted: false
@@ -107,7 +107,7 @@
   name: Atorvastatin
   composition:
   dosage: 20 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '597966'
   drug_category: other
   deleted: false
@@ -115,7 +115,7 @@
   name: Atorvastatin
   composition:
   dosage: 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: other
   deleted: false
@@ -123,7 +123,7 @@
   name: Captopril
   composition:
   dosage:
-  frequency: TDS
+  frequency: thrice_a_day
   rxnorm_code: '1998'
   drug_category: hypertension_ace
   deleted: false
@@ -131,7 +131,7 @@
   name: Captopril
   composition:
   dosage: 12.5 mg
-  frequency: TDS
+  frequency: thrice_a_day
   rxnorm_code: '315560'
   drug_category: hypertension_ace
   deleted: false
@@ -139,7 +139,7 @@
   name: Captopril
   composition:
   dosage: 25 mg
-  frequency: TDS
+  frequency: thrice_a_day
   rxnorm_code: '315561'
   drug_category: hypertension_ace
   deleted: false
@@ -147,7 +147,7 @@
   name: Captopril
   composition:
   dosage: 50 mg
-  frequency: TDS
+  frequency: thrice_a_day
   rxnorm_code: '315562'
   drug_category: hypertension_ace
   deleted: false
@@ -155,7 +155,7 @@
   name: Chlorthalidone
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '2409'
   drug_category: hypertension_diuretic
   deleted: false
@@ -163,7 +163,7 @@
   name: Chlorthalidone
   composition:
   dosage: 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '331132'
   drug_category: hypertension_diuretic
   deleted: false
@@ -171,7 +171,7 @@
   name: Chlorthalidone
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315655'
   drug_category: hypertension_diuretic
   deleted: false
@@ -179,7 +179,7 @@
   name: Clopidogrel
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '32968'
   drug_category: other
   deleted: false
@@ -187,7 +187,7 @@
   name: Clopidogrel
   composition:
   dosage: 75 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '329449'
   drug_category: other
   deleted: false
@@ -203,7 +203,7 @@
   name: Enalapril
   composition:
   dosage: 2.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '858803'
   drug_category: hypertension_ace
   deleted: false
@@ -211,7 +211,7 @@
   name: Enalapril
   composition:
   dosage: 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '833236'
   drug_category: hypertension_ace
   deleted: false
@@ -219,7 +219,7 @@
   name: Enalapril
   composition:
   dosage: 10 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '858816'
   drug_category: hypertension_ace
   deleted: false
@@ -227,7 +227,7 @@
   name: Enalapril
   composition:
   dosage: 20 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '858809'
   drug_category: hypertension_ace
   deleted: false
@@ -235,7 +235,7 @@
   name: Enalapril
   composition:
   dosage: 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_ace
   deleted: false
@@ -243,7 +243,7 @@
   name: Enalapril
   composition:
   dosage: 2.5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '858803'
   drug_category: hypertension_ace
   deleted: false
@@ -251,7 +251,7 @@
   name: Enalapril
   composition:
   dosage: 5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '833236'
   drug_category: hypertension_ace
   deleted: false
@@ -259,7 +259,7 @@
   name: Enalapril
   composition:
   dosage: 10 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '858816'
   drug_category: hypertension_ace
   deleted: false
@@ -267,7 +267,7 @@
   name: Enalapril
   composition:
   dosage: 20 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '858809'
   drug_category: hypertension_ace
   deleted: false
@@ -283,7 +283,7 @@
   name: Glibenclamide
   composition:
   dosage: 2.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315989'
   drug_category: diabetes
   deleted: false
@@ -291,7 +291,7 @@
   name: Glibenclamide
   composition:
   dosage: 2.5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '315989'
   drug_category: diabetes
   deleted: false
@@ -299,7 +299,7 @@
   name: Glibenclamide
   composition:
   dosage: 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315991'
   drug_category: diabetes
   deleted: false
@@ -307,7 +307,7 @@
   name: Glibenclamide
   composition:
   dosage: 5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '315991'
   drug_category: diabetes
   deleted: false
@@ -323,7 +323,7 @@
   name: Gliclazide
   composition:
   dosage: 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: diabetes
   deleted: false
@@ -331,7 +331,7 @@
   name: Gliclazide
   composition:
   dosage: 40 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code:
   drug_category: diabetes
   deleted: false
@@ -339,7 +339,7 @@
   name: Gliclazide
   composition:
   dosage: 80 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '332029'
   drug_category: diabetes
   deleted: false
@@ -347,7 +347,7 @@
   name: Gliclazide
   composition:
   dosage: 80 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '332029'
   drug_category: diabetes
   deleted: false
@@ -355,7 +355,7 @@
   name: Glimepiride
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '25789'
   drug_category: diabetes
   deleted: false
@@ -363,7 +363,7 @@
   name: Glimepiride
   composition:
   dosage: 1 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315978'
   drug_category: diabetes
   deleted: false
@@ -371,7 +371,7 @@
   name: Glimepiride
   composition:
   dosage: 2 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '317637'
   drug_category: diabetes
   deleted: false
@@ -379,7 +379,7 @@
   name: Glimepiride
   composition:
   dosage: 4 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315979'
   drug_category: diabetes
   deleted: false
@@ -395,7 +395,7 @@
   name: Glipizide
   composition:
   dosage: 2.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '330349'
   drug_category: diabetes
   deleted: false
@@ -403,7 +403,7 @@
   name: Glipizide
   composition:
   dosage: 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '315980'
   drug_category: diabetes
   deleted: false
@@ -411,7 +411,7 @@
   name: Glipizide
   composition:
   dosage: 10 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '317379'
   drug_category: diabetes
   deleted: false
@@ -419,7 +419,7 @@
   name: Glipizide
   composition:
   dosage: 2.5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '330349'
   drug_category: diabetes
   deleted: false
@@ -427,7 +427,7 @@
   name: Glipizide
   composition:
   dosage: 5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '315980'
   drug_category: diabetes
   deleted: false
@@ -435,7 +435,7 @@
   name: Glipizide
   composition:
   dosage: 10 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '317379'
   drug_category: diabetes
   deleted: false
@@ -443,7 +443,7 @@
   name: Hydrochlorothiazide
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '5487'
   drug_category: hypertension_diuretic
   deleted: false
@@ -451,7 +451,7 @@
   name: Hydrochlorothiazide
   composition:
   dosage: 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316047'
   drug_category: hypertension_diuretic
   deleted: false
@@ -459,7 +459,7 @@
   name: Hydrochlorothiazide
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316049'
   drug_category: hypertension_diuretic
   deleted: false
@@ -467,7 +467,7 @@
   name: Hydrochlorothiazide
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316051'
   drug_category: hypertension_diuretic
   deleted: false
@@ -475,7 +475,7 @@
   name: Lisinopril
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '29046'
   drug_category: hypertension_ace
   deleted: false
@@ -483,7 +483,7 @@
   name: Lisinopril
   composition:
   dosage: 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316156'
   drug_category: hypertension_ace
   deleted: false
@@ -491,7 +491,7 @@
   name: Lisinopril
   composition:
   dosage: 10 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316151'
   drug_category: hypertension_ace
   deleted: false
@@ -499,7 +499,7 @@
   name: Lisinopril
   composition:
   dosage: 20 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316153'
   drug_category: hypertension_ace
   deleted: false
@@ -507,7 +507,7 @@
   name: Lisinopril
   composition:
   dosage: 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316155'
   drug_category: hypertension_ace
   deleted: false
@@ -515,7 +515,7 @@
   name: Losartan
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '52175'
   drug_category: hypertension_arb
   deleted: false
@@ -523,7 +523,7 @@
   name: Losartan
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979484'
   drug_category: hypertension_arb
   deleted: false
@@ -531,7 +531,7 @@
   name: Losartan
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979467'
   drug_category: hypertension_arb
   deleted: false
@@ -539,7 +539,7 @@
   name: Losartan
   composition:
   dosage: 100 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979463'
   drug_category: hypertension_arb
   deleted: false
@@ -547,7 +547,7 @@
   name: Losartan-Hydrochlorathiazide
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '214619'
   drug_category: hypertension_other
   deleted: false
@@ -555,7 +555,7 @@
   name: Losartan-Hydrochlorathiazide
   composition:
   dosage: 50 mg / 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979468'
   drug_category: hypertension_other
   deleted: false
@@ -563,7 +563,7 @@
   name: Losartan-Hydrochlorathiazide
   composition:
   dosage: 100 mg / 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979471'
   drug_category: hypertension_other
   deleted: false
@@ -571,7 +571,7 @@
   name: Losartan-H
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '214619'
   drug_category: hypertension_other
   deleted: false
@@ -579,7 +579,7 @@
   name: Losartan-H
   composition:
   dosage: 50 mg / 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979468'
   drug_category: hypertension_other
   deleted: false
@@ -587,7 +587,7 @@
   name: Losartan-H
   composition:
   dosage: 100 mg / 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '979471'
   drug_category: hypertension_other
   deleted: false
@@ -595,7 +595,7 @@
   name: Losartan-Amlodipine
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -603,7 +603,7 @@
   name: Losartan-Amlodipine
   composition:
   dosage: 25 mg / 2.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -611,7 +611,7 @@
   name: Losartan-Amlodipine
   composition:
   dosage: 25 mg / 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -619,7 +619,7 @@
   name: Losartan-Amlodipine
   composition:
   dosage: 50 mg / 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -627,7 +627,7 @@
   name: Metoprolol
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '203191'
   drug_category: hypertension_other
   deleted: false
@@ -635,7 +635,7 @@
   name: Metoprolol
   composition:
   dosage: 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -643,7 +643,7 @@
   name: Metoprolol
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '866426'
   drug_category: hypertension_other
   deleted: false
@@ -651,7 +651,7 @@
   name: Metoprolol
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '866435'
   drug_category: hypertension_other
   deleted: false
@@ -659,7 +659,7 @@
   name: Metoprolol
   composition:
   dosage: 100 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '866411'
   drug_category: hypertension_other
   deleted: false
@@ -667,7 +667,7 @@
   name: Metoprolol
   composition:
   dosage:
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '203191'
   drug_category: hypertension_other
   deleted: false
@@ -675,7 +675,7 @@
   name: Metoprolol
   composition:
   dosage: 12.5 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -683,7 +683,7 @@
   name: Metoprolol
   composition:
   dosage: 25 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '866426'
   drug_category: hypertension_other
   deleted: false
@@ -691,7 +691,7 @@
   name: Metoprolol
   composition:
   dosage: 50 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '866435'
   drug_category: hypertension_other
   deleted: false
@@ -699,7 +699,7 @@
   name: Metoprolol
   composition:
   dosage: 100 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '866411'
   drug_category: hypertension_other
   deleted: false
@@ -707,7 +707,7 @@
   name: Metoprolol XL
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '221124'
   drug_category: hypertension_other
   deleted: false
@@ -715,7 +715,7 @@
   name: Metoprolol XL
   composition:
   dosage: 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -723,7 +723,7 @@
   name: Metoprolol XL
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1370489'
   drug_category: hypertension_other
   deleted: false
@@ -731,7 +731,7 @@
   name: Metoprolol XL
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1370474'
   drug_category: hypertension_other
   deleted: false
@@ -739,7 +739,7 @@
   name: Metoprolol XL
   composition:
   dosage: 100 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1370483'
   drug_category: hypertension_other
   deleted: false
@@ -755,7 +755,7 @@
   name: Metformin
   composition:
   dosage: 500 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '860974'
   drug_category: diabetes
   deleted: false
@@ -763,7 +763,7 @@
   name: Metformin
   composition:
   dosage: 500 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '860974'
   drug_category: diabetes
   deleted: false
@@ -771,7 +771,7 @@
   name: Metformin
   composition:
   dosage: 1000 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '860995'
   drug_category: diabetes
   deleted: false
@@ -779,7 +779,7 @@
   name: Metformin
   composition:
   dosage: 1000 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '860995'
   drug_category: diabetes
   deleted: false
@@ -795,7 +795,7 @@
   name: Metformin SR
   composition:
   dosage: 500 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1807915'
   drug_category: diabetes
   deleted: false
@@ -803,7 +803,7 @@
   name: Metformin SR
   composition:
   dosage: 1000 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '1807888'
   drug_category: diabetes
   deleted: false
@@ -811,7 +811,7 @@
   name: Metformin SR
   composition:
   dosage: 2000 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: diabetes
   deleted: false
@@ -827,7 +827,7 @@
   name: Propranolol
   composition:
   dosage: 20 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '856456'
   drug_category: hypertension_other
   deleted: false
@@ -835,7 +835,7 @@
   name: Propranolol
   composition:
   dosage: 20 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '856456'
   drug_category: hypertension_other
   deleted: false
@@ -843,7 +843,7 @@
   name: Propranolol
   composition:
   dosage: 20 mg
-  frequency: TDS
+  frequency: thrice_a_day
   rxnorm_code: '856456'
   drug_category: hypertension_other
   deleted: false
@@ -851,7 +851,7 @@
   name: Propranolol
   composition:
   dosage: 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '856421'
   drug_category: hypertension_other
   deleted: false
@@ -859,7 +859,7 @@
   name: Propranolol
   composition:
   dosage: 40 mg
-  frequency: BD
+  frequency: twice_a_day
   rxnorm_code: '856421'
   drug_category: hypertension_other
   deleted: false
@@ -867,7 +867,7 @@
   name: Propranolol
   composition:
   dosage: 40 mg
-  frequency: TDS
+  frequency: thrice_a_day
   rxnorm_code: '856421'
   drug_category: hypertension_other
   deleted: false
@@ -875,7 +875,7 @@
   name: Rosuvastatin
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '301542'
   drug_category: other
   deleted: false
@@ -883,7 +883,7 @@
   name: Rosuvastatin
   composition:
   dosage: 5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '2167572'
   drug_category: other
   deleted: false
@@ -891,7 +891,7 @@
   name: Rosuvastatin
   composition:
   dosage: 20 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '2167564'
   drug_category: other
   deleted: false
@@ -899,7 +899,7 @@
   name: Rosuvastatin
   composition:
   dosage: 10 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '2167555'
   drug_category: other
   deleted: false
@@ -907,7 +907,7 @@
   name: Sitagliptin
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '593411'
   drug_category: diabetes
   deleted: false
@@ -915,7 +915,7 @@
   name: Sitagliptin
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '665041'
   drug_category: diabetes
   deleted: false
@@ -923,7 +923,7 @@
   name: Sitagliptin
   composition:
   dosage: 100 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '665031'
   drug_category: diabetes
   deleted: false
@@ -931,7 +931,7 @@
   name: Spironolactone
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '9997'
   drug_category: hypertension_other
   deleted: false
@@ -939,7 +939,7 @@
   name: Spironolactone
   composition:
   dosage: 12.5 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -947,7 +947,7 @@
   name: Spironolactone
   composition:
   dosage: 25 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316728'
   drug_category: hypertension_other
   deleted: false
@@ -955,7 +955,7 @@
   name: Spironolactone
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '317508'
   drug_category: hypertension_other
   deleted: false
@@ -963,7 +963,7 @@
   name: Telmisartan
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '73494'
   drug_category: hypertension_arb
   deleted: false
@@ -971,7 +971,7 @@
   name: Telmisartan
   composition:
   dosage: 20 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '331555'
   drug_category: hypertension_arb
   deleted: false
@@ -979,7 +979,7 @@
   name: Telmisartan
   composition:
   dosage: 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316764'
   drug_category: hypertension_arb
   deleted: false
@@ -987,7 +987,7 @@
   name: Telmisartan
   composition:
   dosage: 80 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '316765'
   drug_category: hypertension_arb
   deleted: false
@@ -995,7 +995,7 @@
   name: Telvas 3D
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -1003,7 +1003,7 @@
   name: Telvas 3D
   composition:
   dosage: 5mg / 12.5 mg / 40 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code:
   drug_category: hypertension_other
   deleted: false
@@ -1011,7 +1011,7 @@
   name: Vildagliptin
   composition:
   dosage:
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '596554'
   drug_category: diabetes
   deleted: false
@@ -1019,7 +1019,7 @@
   name: Vildagliptin
   composition:
   dosage: 50 mg
-  frequency: OD
+  frequency: once_a_day
   rxnorm_code: '757711'
   drug_category: diabetes
   deleted: false
