@@ -39,4 +39,35 @@ RSpec.describe PatientDeduplication::Strategies do
       expect(described_class.identifier_and_full_name_match).to be_empty
     end
   end
+
+  describe "#identifier_match" do
+    it "finds patients with the same identifier without matching names" do
+      patient_1 = create(:patient, full_name: "Patient one")
+      passport_id = patient_1.business_identifiers.first.identifier
+
+      patient_2 = create(:patient, full_name: "Patient two")
+      patient_2.business_identifiers.first.update(identifier: passport_id)
+
+      create(:patient, full_name: "Patient three")
+
+      expect(described_class.identifier_match.first).to match_array [patient_1.id, patient_2.id]
+    end
+
+    it "optionally returns only a given number of matches" do
+      patient_one = create(:patient, full_name: "Patient one")
+      patient_one_passport_id = patient_one.business_identifiers.first.identifier
+
+      patient_one_dup = create(:patient, full_name: "Patient one dup")
+      patient_one_dup.business_identifiers.first.update(identifier: patient_one_passport_id)
+
+      patient_2 = create(:patient, full_name: "Patient two")
+      patient_2_passport_id = patient_2.business_identifiers.first.identifier
+
+      patient_2_dup = create(:patient, full_name: "Patient two dup")
+      patient_2_dup.business_identifiers.first.update(identifier: patient_2_passport_id)
+
+      expect(described_class.identifier_match(limit: 1).count).to eq 1
+      expect(described_class.identifier_match.count).to eq 2
+    end
+  end
 end
