@@ -78,7 +78,6 @@ class Webview::DrugStocksController < ApplicationController
 
   def set_for_end_of_month
     @for_end_of_month ||= if params[:for_end_of_month]
-      pp params[:for_end_of_month]
       Date.parse(params[:for_end_of_month])
     else
       Date.current.end_of_month
