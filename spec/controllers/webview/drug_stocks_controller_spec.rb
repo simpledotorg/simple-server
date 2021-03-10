@@ -52,7 +52,7 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
         access_token: power_user.access_token,
         facility_id: facility.id,
         user_id: power_user.id,
-        for_end_of_month: Date.today.strftime("%b-%Y"),
+        for_end_of_month: Date.today.strftime("%b-%Y")
       }
 
       expect {
