@@ -45,6 +45,22 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
     let(:power_user) { create(:user) }
     let(:facility_group) { create(:facility_group) }
 
+    it "works with on changes" do
+      facility = create(:facility, facility_group: power_user.facility.facility_group)
+      _protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
+      params = {
+        access_token: power_user.access_token,
+        facility_id: facility.id,
+        user_id: power_user.id,
+        for_end_of_month: Date.today.strftime("%b-%Y"),
+      }
+
+      expect {
+        post :create, params: params
+        expect(response).to be_redirect
+      }.to change { DrugStock.count }.by(0)
+    end
+
     it "creates drug stock records and sends JSON success response" do
       facility = create(:facility, facility_group: power_user.facility.facility_group)
       protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
