@@ -1,7 +1,7 @@
 class CreateEtlDataWarehouseTables < ActiveRecord::Migration[5.2]
   def change
     create_table :blood_pressure_observations_over_time, id: :uuid do |t|
-      t.uuid :patient_id, null: :false
+      t.uuid :patient_id, null: false
       t.integer :months_since_registration
       t.date :calendar_month
       t.integer :systolic
@@ -11,7 +11,7 @@ class CreateEtlDataWarehouseTables < ActiveRecord::Migration[5.2]
     end
 
     create_table :encounters_over_time, id: :uuid do |t|
-      t.uuid :patient_id, null: :false
+      t.uuid :patient_id, null: false
       t.date :calendar_month
       t.integer :months_since_registration
       t.integer :months_since_encounter
@@ -19,7 +19,7 @@ class CreateEtlDataWarehouseTables < ActiveRecord::Migration[5.2]
     end
 
     create_table :patient_states_over_time, id: :uuid do |t|
-      t.uuid :patient_id, null: :false
+      t.uuid :patient_id, null: false
       t.date :calendar_month
       t.integer :months_since_registration
       t.string :diagnosed_disease_state
