@@ -84,4 +84,12 @@ RSpec.describe EmailAuthentication, type: :model do
       expect(auth).to_not be_valid
     end
   end
+
+  describe "self.generate_password" do
+    it "generates a valid password" do
+      password = EmailAuthentication.generate_password
+      auth = build(:email_authentication, password: password)
+      expect(auth).to be_valid
+    end
+  end
 end

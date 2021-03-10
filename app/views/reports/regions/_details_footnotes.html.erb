@@ -4,24 +4,11 @@
   </h3>
   <div class="mb-24px">
     <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Lost to follow-up
+      Total assigned patients
     </p>
     <div class="pl-16px">
       <p class="mb-8px fs-14px c-grey-dark">
-        <strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %>
-      </p>
-      <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator</strong> <%= t("ltfu_denominator_copy", region_name: @region.name) %>
-      </p>
-    </div>
-  </div>
-  <div class="mb-24px">
-    <p class="mb-8px fs-16px fw-bold c-grey-dark">
-      Not lost to follow-up
-    </p>
-    <div class="pl-16px">
-      <p class="mb-0px fs-14px c-grey-dark">
-        <%= t("not_lost_to_follow_up_copy", region_name: @region.name) %>
+        <%= t("assigned_patients_copy.total_assigned_patients", region_name: @region.name) %>
       </p>
     </div>
   </div>
@@ -42,6 +29,29 @@
     <div class="pl-16px">
       <p class="mb-0px fs-14px c-grey-dark">
         <%= t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Lost to follow-up
+    </p>
+    <div class="pl-16px">
+      <p class="mb-8px fs-14px c-grey-dark">
+        <strong>Numerator:</strong> <%= t("lost_to_follow_up_copy.numerator") %>
+      </p>
+      <p class="mb-0px fs-14px c-grey-dark">
+        <strong>Denominator</strong> <%= t("ltfu_denominator_copy", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Not lost to follow-up
+    </p>
+    <div class="pl-16px">
+      <p class="mb-0px fs-14px c-grey-dark">
+        <%= t("not_lost_to_follow_up_copy", region_name: @region.name) %>
       </p>
     </div>
   </div>

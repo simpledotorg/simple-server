@@ -68,7 +68,7 @@ class APIController < ApplicationController
   end
 
   def validate_facility
-    head :bad_request unless current_facility.present?
+    fail_request(:bad_request, "no current_facility set") unless current_facility.present?
   end
 
   def validate_current_facility_belongs_to_users_facility_group
@@ -77,15 +77,20 @@ class APIController < ApplicationController
   end
 
   def current_user_present?
-    head :unauthorized unless current_user.present?
+    fail_request(:unauthorized, "no current_user set") unless current_user.present?
   end
 
   def validate_sync_approval_status_allowed
-    head :forbidden unless current_user.sync_approval_status_allowed?
+    fail_request(:forbidden, "sync_approval_status_allowed is false") unless current_user.sync_approval_status_allowed?
+  end
+
+  def fail_request(status, reason)
+    logger.warn "API request failed due to #{reason}"
+    head(status)
   end
 
   def authenticate
-    return head :unauthorized unless access_token_authorized?
+    return fail_request(:unauthorized, "access_token unauthorized") unless access_token_authorized?
     RequestStore.store[:current_user_id] = current_user.id
     current_user.mark_as_logged_in if current_user.has_never_logged_in?
   end

@@ -11,6 +11,7 @@ module ParameterFiltering
     controller
     created_at
     deleted_at
+    for_end_of_month
     force_cache
     limit
     metadata_version
