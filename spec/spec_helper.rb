@@ -21,7 +21,7 @@ RSpec.configure do |config|
 
   if ENV["CI"]
     config.before(:example, :focus) do
-      fail "This example was committed with `:focus` and should not have been"
+      fail "This example was committed to CI with `:focus` turned on. Please remove any focus specs to make sure all tests run on CI"
     end
   end
 
