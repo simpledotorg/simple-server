@@ -1,7 +1,7 @@
 # This controller is meant to be used from the Android app _only_,
 # hence we handle authentication ourselves from params passed from the client.
 class Webview::DrugStocksController < ApplicationController
-  include EndOfMonth
+  include SetForEndOfMonth
   skip_before_action :verify_authenticity_token
   before_action :authenticate
   before_action :find_current_facility
