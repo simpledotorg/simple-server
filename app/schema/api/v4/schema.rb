@@ -167,6 +167,10 @@ class Api::V4::Schema
        required: %i[teleconsultation_phone_number teleconsultation_phone_numbers]}
     end
 
+    def drug_sync_to_user_response
+      sync_to_user_response(:drugs)
+    end
+
     def definitions
       {error: error,
        errors: Api::V4::Models.array_of("error"),
