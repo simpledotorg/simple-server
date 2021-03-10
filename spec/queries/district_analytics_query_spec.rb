@@ -227,4 +227,15 @@ RSpec.describe DistrictAnalyticsQuery do
       end
     end
   end
+
+  describe "#total_assigned_patients" do
+    it "returns total assigned patients sorted by facility id" do
+      patient = create(:patient, :hypertension, assigned_facility: facility_1)
+      expected_result = {
+        facility_1.id => {total_assigned_patients: 1}
+      }
+
+      expect(analytics.total_assigned_patients).to eq(expected_result)
+    end
+  end
 end

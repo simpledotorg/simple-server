@@ -44,11 +44,11 @@ class DistrictAnalyticsQuery
         .group("facilities.id")
         .count
 
-      return if @total_assigned_patients.blank?
+    return if @total_assigned_patients.blank?
 
-      @total_assigned_patients
-        .map { |facility_id, count| [facility_id, {total_assigned_patients: count}] }
-        .to_h
+    @total_assigned_patients
+      .map { |facility_id, count| [facility_id, {total_assigned_patients: count}] }
+      .to_h
   end
 
   def total_registered_patients
