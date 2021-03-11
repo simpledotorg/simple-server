@@ -30,7 +30,7 @@ describe DeduplicatePatients do
       expect(new_patient.device_updated_at.to_i).to eq(patient_blue.device_updated_at.to_i)
     end
 
-    it "Uses the latest available name, gender, address, and reminder consent" do
+    it "Uses the latest available name, gender, status, address,and reminder consent" do
       patient_earliest = create(:patient, recorded_at: 2.months.ago, full_name: "patient earliest", gender: :male, reminder_consent: "granted")
       patient_not_latest = create(:patient, recorded_at: 2.months.ago, full_name: "patient not latest", gender: :male, reminder_consent: "granted")
       patient_latest = create(:patient, recorded_at: 1.month.ago, full_name: "patient latest", gender: :female, reminder_consent: "denied", address: nil)
@@ -39,6 +39,7 @@ describe DeduplicatePatients do
 
       expect(new_patient.full_name).to eq(patient_latest.full_name)
       expect(new_patient.gender).to eq(patient_latest.gender)
+      expect(new_patient.status).to eq(patient_latest.status)
       expect(new_patient.reminder_consent).to eq(patient_latest.reminder_consent)
       expect(new_patient.address.street_address).to eq(patient_not_latest.address.street_address)
     end

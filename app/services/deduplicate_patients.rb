@@ -49,6 +49,7 @@ class DeduplicatePatients
       device_created_at: earliest_patient.device_created_at,
       device_updated_at: earliest_patient.device_updated_at,
       assigned_facility: latest_patient.assigned_facility,
+      status: latest_patient.status,
       address: create_address,
       **age_and_dob
     }

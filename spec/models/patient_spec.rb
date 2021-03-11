@@ -100,6 +100,9 @@ describe Patient, type: :model do
 
       # invalid statuses should raise errors
       expect { patient.status = "something else" }.to raise_error(ArgumentError)
+
+      patient.status = nil
+      expect(patient).to be_invalid
     end
   end
 
