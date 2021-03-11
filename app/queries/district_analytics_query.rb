@@ -48,7 +48,8 @@ class DistrictAnalyticsQuery
     # @total_registered_patients
     #   .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
     #   .to_h
-    RegisteredPatientsQuery.new.total(region)
+
+    region.registered_hypertension_patients.count
   end
 
   def registered_patients_by_period
