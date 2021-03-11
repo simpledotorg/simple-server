@@ -13,16 +13,7 @@ class Webview::DrugStocksController < ApplicationController
   end
 
   def create
-    DrugStock.transaction do
-      safe_params[:drug_stocks].map do |drug_stock|
-        DrugStock.create!(facility: current_facility,
-                          user: current_user,
-                          protocol_drug_id: drug_stock[:protocol_drug_id],
-                          received: drug_stock[:received].presence,
-                          in_stock: drug_stock[:in_stock].presence,
-                          for_end_of_month: @for_end_of_month)
-      end
-    end
+    DrugStocksCreator.call(current_user, current_facility, @for_end_of_month, safe_params[:drug_stocks])
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
                                         facility_id: current_facility.id,
                                         user_id: current_user.id,
