@@ -30,24 +30,22 @@ class FacilityAnalyticsQuery
   end
 
   def total_registered_patients
-    @total_registered_patients ||=
-      @facility
-        .registered_hypertension_patients
-        .group("registration_user_id")
-        .distinct("patients.id")
-        .count
+    # @total_registered_patients ||=
+    #   @facility.registered_hypertension_patients.group("registration_user_id").distinct("patients.id").count
 
-    return if @total_registered_patients.blank?
+    # return if @total_registered_patients.blank?
 
-    @total_registered_patients
-      .map { |user_id, count| [user_id, {total_registered_patients: count}] }
-      .to_h
+    # @total_registered_patients
+    #   .map { |user_id, count| [user_id, {total_registered_patients: count}] }
+    #   .to_h
+    RegisteredPatientsQuery.new.count(@facility, :month, group_by: :registration_user_id)
   end
 
   def registered_patients_by_period
-    result = ActivityService.new(@facility, group: [:registration_user_id]).registrations
+    # result = ActivityService.new(@facility, group: [:registration_user_id]).registrations
 
-    group_by_date_and_user(result, :registered_patients_by_period)
+    # group_by_date_and_user(result, :registered_patients_by_period)
+    RegisteredPatientsQuery.new.count(region, :month, group_by: :registration_user_id)
   end
 
   def follow_up_patients_by_period
