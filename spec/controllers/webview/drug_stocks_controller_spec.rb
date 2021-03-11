@@ -45,7 +45,27 @@ RSpec.describe Webview::DrugStocksController, type: :controller do
     let(:power_user) { create(:user) }
     let(:facility_group) { create(:facility_group) }
 
-    it "works with on changes" do
+    it "denies access for users with incorrect access token" do
+      facility = create(:facility, facility_group: power_user.facility.facility_group)
+      protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
+      params = {
+        access_token: SecureRandom.hex(24),
+        facility_id: facility.id,
+        user_id: power_user.id,
+        for_end_of_month: Date.today.strftime("%b-%Y"),
+        drug_stocks: [{
+          protocol_drug_id: protocol_drug.id,
+          received: 10,
+          in_stock: 20
+        }]
+      }
+      expect {
+        post :create, params: params
+      }.to change { DrugStock.count }.by(0)
+      expect(response).to be_unauthorized
+    end
+
+    it "works with empty drug stock params" do
       facility = create(:facility, facility_group: power_user.facility.facility_group)
       _protocol_drug = create(:protocol_drug, stock_tracked: true, protocol: facility.facility_group.protocol)
       params = {
