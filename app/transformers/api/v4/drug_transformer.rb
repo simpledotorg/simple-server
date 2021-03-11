@@ -5,7 +5,6 @@ class Api::V4::DrugTransformer < Api::V4::Transformer
         .as_json["attributes"]
         .merge("protocol" => false,
                "common" => true,
-               "stock_tracked" => false,
                "created_at" => drug.created_at,
                "updated_at" => drug.updated_at,
                "deleted_at" => drug.deleted_at)
