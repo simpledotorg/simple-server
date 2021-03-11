@@ -1,7 +1,6 @@
 module PatientDeduplication
   module Strategies
     class << self
-
       # Exact match based on identifiers, and case insensitive full names
       def identifier_and_full_name_match
         PatientBusinessIdentifier

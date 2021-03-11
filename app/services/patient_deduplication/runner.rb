@@ -35,11 +35,11 @@ module PatientDeduplication
 
     def report_stats
       {processed: {total: duplicate_patient_ids.flatten.count,
-        distinct: duplicate_patient_ids.count},
-        merged: {total: duplicate_patient_ids.flatten.count - merge_failures.flatten.count,
-          distinct: duplicate_patient_ids.count - merge_failures.count,
-          total_failures: merge_failures.count,
-          distinct_failure: merge_failures.flatten.count}}
+                   distinct: duplicate_patient_ids.count},
+       merged: {total: duplicate_patient_ids.flatten.count - merge_failures.flatten.count,
+                distinct: duplicate_patient_ids.count - merge_failures.count,
+                total_failures: merge_failures.count,
+                distinct_failure: merge_failures.flatten.count}}
     end
   end
 end

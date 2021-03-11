@@ -35,10 +35,11 @@ module PatientDeduplication
     end
 
     def mark_as_merged(new_patient)
-      @patients.map do |patient| patient.update!(
-        merged_into_patient_id: new_patient.id,
-        merged_by_user_id: @user_id
-      )
+      @patients.map do |patient|
+        patient.update!(
+          merged_into_patient_id: new_patient.id,
+          merged_by_user_id: @user_id
+        )
       end
       @patients.map(&:discard_data)
     end
@@ -151,7 +152,7 @@ module PatientDeduplication
         new_encounter = Encounter.find_by(id: encounter_id) || Encounter.create!(
           copyable_attributes(encounter)
             .merge(id: encounter_id,
-              patient_id: patient.id)
+                   patient_id: patient.id)
         )
 
         encounter.observations.map do |observation|
@@ -203,8 +204,8 @@ module PatientDeduplication
 
     def copyable_attributes(record)
       record.attributes
-            .with_indifferent_access
-            .except(:id, :patient_id, :created_at, :updated_at)
+        .with_indifferent_access
+        .except(:id, :patient_id, :created_at, :updated_at)
     end
   end
 end

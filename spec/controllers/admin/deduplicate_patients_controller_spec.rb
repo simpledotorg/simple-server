@@ -1,9 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
-  context '#merge' do
-    it 'Merges patients given their IDs' do
-
+  context "#merge" do
+    it "Merges patients given their IDs" do
       admin = create(:admin, :power_user)
       sign_in(admin.email_authentication)
 
