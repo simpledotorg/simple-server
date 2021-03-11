@@ -125,7 +125,7 @@ RSpec.describe Reports::Repository, type: :model do
 
   it "gets no bp measure counts" do
     facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
-    facility_1_no_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+    facility_1_no_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019.advance(months: 1), assigned_facility: facility_1, registration_user: user)
     facility_1_with_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
     Timecop.freeze(jan_2020) do
