@@ -40,7 +40,7 @@ module PatientReportable
       end
     end
 
-    def ltfu_time_ago(date)
+    def self.ltfu_time_ago(date)
       (date.to_date - LTFU_TIME).end_of_month
     end
   end
