@@ -43,10 +43,9 @@ module DashboardHelper
     period == :month ? value.strftime("%b-%Y") : quarter_string(value)
   end
 
+  # this is not inherently multiline but is intended for tight spaces where it will break cleanly over two lines
   def multiline_format_period(period, value)
-    formatted_period = format_period(period, value)
-    shortened_period, year = formatted_period.split("-")
-    shortened_period + "-\n" + year
+    format_period(period, value).gsub("-", "- ")
   end
 
   def analytics_totals(analytics, metric, date)

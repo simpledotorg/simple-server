@@ -39,9 +39,8 @@ class DistrictAnalyticsQuery
     @total_assigned_patients ||=
       Patient
         .with_hypertension
-        .joins(:assigned_facility)
-        .where(facilities: {id: facilities})
-        .group("facilities.id")
+        .where(assigned_facility: facilities)
+        .group(:assigned_facility_id)
         .count
 
     return if @total_assigned_patients.blank?

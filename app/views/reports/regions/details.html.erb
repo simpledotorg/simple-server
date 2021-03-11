@@ -321,16 +321,14 @@
             </th>
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-                Total assigned<br>
-                patients
+                Total assigned patients
               <% else %>
                 Total assigned patients<sup>1</sup>
               <% end %>
             </th>
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-                Total registered<br>
-                patients
+                Total registered patients
               <% else %>
                 Cumulative registrations<sup>2</sup>
               <% end %>
