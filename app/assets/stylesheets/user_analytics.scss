@@ -148,6 +148,33 @@ a.help-back {
       font-weight: normal;
       margin: 0 0 8px 0;
     }
+
+    &.assigned-patients-card {
+      text-align: center;
+      padding: 20px 16px;
+
+      .assigned-count {
+        font-size: 48px;
+        font-weight: bold;
+        line-height: 56px;
+        margin: 0px;
+      }
+
+      .assigned-label {
+        font-size: 18px;
+        font-weight: normal;
+        line-height: 32px;
+        margin: 0px 0px 24px 0px;
+      }
+
+      .assigned-description {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 22px;
+        margin: 0;
+        padding: 0;
+      }
+    }
 }
 
 .float-right {

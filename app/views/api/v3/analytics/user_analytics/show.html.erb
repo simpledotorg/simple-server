@@ -75,10 +75,11 @@
     </div>
   </div>
 
-  <div class="card">
-    <h1><%= @user_analytics.current_facility.assigned_hypertension_patients.count %></h1>
-    <h2>Total assigned patients</h2>
-    All hypertension patients assigned to <%= @user_analytics.current_facility.name %>. <%= @user_analytics.current_facility.name %> is responsible to control their hypertension.
+  <!-- display number of patients assigned to facility -->
+  <div class="card assigned-patients-card">
+    <p class="assigned-count"><%= @user_analytics.current_facility.assigned_hypertension_patients.count %></p>
+    <p class="assigned-label">Total assigned patients</p>
+    <p class="assigned-description">All hypertension patients assigned to <%= @user_analytics.current_facility.name %>. <%= @user_analytics.current_facility.name %> is responsible to control their hypertension.</p>
   </div>
 
   <!-- monthly registered patients view -->
