@@ -8,6 +8,7 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
+gem "rails", "5.2.4.5"
 
 gem "active_record_union"
 gem "activerecord-import"
@@ -53,7 +54,6 @@ gem "pg_ltree", "1.1.8"
 gem "phonelib"
 gem "pry-rails"
 gem "rack-mini-profiler"
-gem "rails", "5.2.4.4"
 gem "redis"
 gem "request_store"
 gem "request_store-sidekiq"

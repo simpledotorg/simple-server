@@ -32,6 +32,8 @@ module Seed
     end
 
     def call
+      seed_feature_flags
+
       result = FacilitySeeder.call(config: config)
       total_counts[:facility] = result&.ids&.size || 0
       UserSeeder.call(config: config)
@@ -49,6 +51,10 @@ module Seed
 
       announce "⭐️  Seed complete! Elasped time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️"
       [counts, total_counts]
+    end
+
+    def seed_feature_flags
+      Flipper.enable(:drug_stocks)
     end
 
     def seed_patients(progress)
