@@ -75,4 +75,4 @@ en:
       male: "Male"
       transgender: "Transgender"
     assigned_patients_label: "Total assigned patients"
-    assigned_patients_description: "All hypertension patients assigned to %{facility_name}. %{facility_name} is responsible to control their hypertension."
+    assigned_patients_description: "All hypertension patients assigned to %{facility_name}. %{facility_name} is responsible for controlling their hypertension."
