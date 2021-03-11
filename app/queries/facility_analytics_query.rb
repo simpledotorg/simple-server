@@ -38,7 +38,7 @@ class FacilityAnalyticsQuery
     # @total_registered_patients
     #   .map { |user_id, count| [user_id, {total_registered_patients: count}] }
     #   .to_h
-    RegisteredPatientsQuery.new.count(@facility, :month, group_by: :registration_user_id)
+    region.registered_patients.with_hypertension.count
   end
 
   def registered_patients_by_period

@@ -35,25 +35,27 @@ class DistrictAnalyticsQuery
   end
 
   def total_registered_patients
-    @total_registered_patients ||=
-      Patient
-        .with_hypertension
-        .joins(:registration_facility)
-        .where(facilities: {id: facilities})
-        .group("facilities.id")
-        .count
+    # @total_registered_patients ||=
+    #   Patient
+    #     .with_hypertension
+    #     .joins(:registration_facility)
+    #     .where(facilities: {id: facilities})
+    #     .group("facilities.id")
+    #     .count
 
-    return if @total_registered_patients.blank?
+    # return if @total_registered_patients.blank?
 
-    @total_registered_patients
-      .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
-      .to_h
+    # @total_registered_patients
+    #   .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
+    #   .to_h
+    RegisteredPatientsQuery.new.total(region)
   end
 
   def registered_patients_by_period
-    result = ActivityService.new(region, group: [:registration_facility_id]).registrations
+    # result = ActivityService.new(region, group: [:registration_facility_id]).registrations
 
-    group_by_date_and_facility(result, :registered_patients_by_period)
+    # group_by_date_and_facility(result, :registered_patients_by_period)
+    RegisteredPatientsQuery.new.count(region, :month, group_by: :facility_id)
   end
 
   def follow_up_patients_by_period
