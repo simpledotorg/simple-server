@@ -61,7 +61,7 @@
 
 <div class="container">
   <div class="row">
-    <form id="deduplicate_patients" method="POST" action="/admin/deduplicate_patients" class="form-inline col">
+    <form id="deduplicate_patients" method="POST" action="<%= admin_deduplication_path %>" class="form-inline col">
       <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
       <a href="javascript:location.reload();" class="btn btn-outline-info">Skip</a>
     </form>
