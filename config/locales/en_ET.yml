@@ -24,7 +24,7 @@ en_ET:
         frequency:
           one_per_day: "PD"
           two_per_day: "BID"
-          three_per_day: "TID",
+          three_per_day: "TID"
           four_per_day: "QID"
     submit:
       facility:
