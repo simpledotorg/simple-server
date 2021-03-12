@@ -1,11 +1,11 @@
 <div class="card">
   <h1 class="page-title">Merge duplicate patients</h1>
   <p class="c-grey-dark">
-    These patients have the same BP passport.
-    Please confirm that they refer to the same person.
-    <br>
+    These patients have the same BP passport. Please confirm that they refer to the same person.
+    <br/>
     Unselect patients that don't refer to this person. They will not be merged and be left as is.
   </p>
+
   <table class="table table-responsive-md table-hover">
     <th>Select</th>
     <th style="min-width: 150px">Full name</th>
@@ -46,7 +46,9 @@
         </td>
         <td>
           <% if patient.phone_numbers.present? %>
-            <%= patient.phone_numbers.pluck(:number).join(",") %>
+            <% patient.phone_numbers.pluck(:number).each do |phone_number| %>
+              <%= phone_number %> <br/>
+            <% end %>
           <% else %>
             Not present
           <% end %>
@@ -57,10 +59,22 @@
   </table>
 </div>
 
-<form id="deduplicate_patients" method="POST" action="/admin/deduplicate_patients" class="form-inline">
-  <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
-  <a href="javascript:location.reload();" class="btn btn-outline-info">Skip</a>
-</form>
+<div class="container">
+  <div class="row">
+    <form id="deduplicate_patients" method="POST" action="/admin/deduplicate_patients" class="form-inline col">
+      <button class="btn btn-primary mr-2" type="submit">Merge selected patients</button>
+      <a href="javascript:location.reload();" class="btn btn-outline-info">Skip</a>
+    </form>
+    <p class="c-grey-dark col-sm text-right align-baseline">
+      <% if @duplicate_count == Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>
+        <%= Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>+
+      <% else %>
+        <%= @duplicate_count %>
+      <% end %>
+      duplicate patients remaining
+    </p>
+  </div>
+</div>
 <script>
   $("tr.toggle-row").click(function()  {
     let patientId = $(this).data()["patientId"];
