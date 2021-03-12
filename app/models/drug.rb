@@ -16,9 +16,10 @@ class Drug < ActiveYaml::Base
   }.freeze
 
   FREQUENCIES = {
-    once_a_day: "Once a day",
-    twice_a_day: "Twice a day",
-    thrice_a_day: "Thrice a day"
+    one_per_day: "One per day",
+    two_per_day: "Two per day",
+    three_per_day: "Three per day",
+    four_per_day: "Four per day"
   }.freeze
 
   def updated_at

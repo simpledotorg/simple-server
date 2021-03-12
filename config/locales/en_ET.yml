@@ -22,9 +22,10 @@ en_ET:
         pin: "Postal Code"
       drug:
         frequency:
-          once_a_day: "PD"
-          twice_a_day: "BID"
-          thrice_a_day: "TID"
+          one_per_day: "PD"
+          two_per_day: "BID"
+          three_per_day: "TID",
+          four_per_day: "QID"
     submit:
       facility:
         create: "Save facility"
