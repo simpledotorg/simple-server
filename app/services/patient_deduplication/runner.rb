@@ -10,7 +10,7 @@ module PatientDeduplication
     attr_accessor :merge_failures, :duplicate_patient_ids
 
     def perform
-      duplicate_patient_ids.map do |patient_ids|
+      duplicate_patient_ids.each do |patient_ids|
         Deduplicator.new(Patient.where(id: patient_ids)).merge
       rescue => e
         # Bad data can cause our merge logic to breakdown in unpredictable ways.
