@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
   context "#merge" do
-    it "Merges patients given their IDs" do
+    it "merges patients given their IDs" do
       admin = create(:admin, :power_user)
       sign_in(admin.email_authentication)
 
@@ -10,9 +10,10 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
 
       post :merge, params: {duplicate_patients: patients.map(&:id)}
 
+      patients.each(&:reload)
+      expect(patients).to all be_discarded
+      expect(Patient.pluck(:merged_by_user_id)).to all eq admin.id
       expect(Patient.count).to eq 1
-      expect(Patient.first.merged_by_user_id).to eq admin.id
-      expect(Patient.with_discarded.count).to eq 3
     end
   end
 end
