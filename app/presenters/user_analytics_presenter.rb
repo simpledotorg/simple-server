@@ -348,7 +348,8 @@ class UserAnalyticsPresenter
           follow_ups: follow_ups,
           registrations: registrations
         }
-      }
+      },
+      assigned_hypertension_patients_count: current_facility.assigned_hypertension_patients.count
     }
   end
 

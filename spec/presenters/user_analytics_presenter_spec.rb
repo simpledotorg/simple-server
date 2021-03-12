@@ -365,6 +365,13 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
           expect(data.dig(:all_time, :grouped_by_date)).to eq(expected_output)
         end
       end
+
+      it "has assigned_hypertension_patients_count" do
+        data = described_class.new(current_facility).statistics
+        expected_output = current_facility.assigned_hypertension_patients.count
+
+        expect(data.dig(:all_time, :assigned_hypertension_patients_count)).to eq(expected_output)
+      end
     end
 
     context "when diabetes management is disabled" do
