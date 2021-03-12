@@ -825,80 +825,6 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
   SQL
   add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
 
-  create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-      blood_pressures.patient_id,
-      patients.registration_facility_id,
-      patients.assigned_facility_id,
-      patients.status AS patient_status,
-      blood_pressures.facility_id AS bp_facility_id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
-      blood_pressures.systolic,
-      blood_pressures.diastolic,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
-      medical_histories.hypertension AS medical_history_hypertension,
-      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-     FROM ((blood_pressures
-       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
-       LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
-    WHERE (blood_pressures.deleted_at IS NULL)
-    ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
-  SQL
-  add_index "latest_blood_pressures_per_patient_per_months", ["assigned_facility_id"], name: "index_bp_months_assigned_facility_id"
-  add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
-  add_index "latest_blood_pressures_per_patient_per_months", ["bp_recorded_at"], name: "index_bp_months_bp_recorded_at"
-  add_index "latest_blood_pressures_per_patient_per_months", ["medical_history_hypertension"], name: "index_bp_months_medical_history_hypertension"
-  add_index "latest_blood_pressures_per_patient_per_months", ["patient_id"], name: "index_latest_bp_per_patient_per_months_patient_id"
-  add_index "latest_blood_pressures_per_patient_per_months", ["patient_recorded_at"], name: "index_bp_months_patient_recorded_at"
-  add_index "latest_blood_pressures_per_patient_per_months", ["registration_facility_id"], name: "index_bp_months_registration_facility_id"
-
-  create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
-      latest_blood_pressures_per_patient_per_months.patient_id,
-      latest_blood_pressures_per_patient_per_months.registration_facility_id,
-      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
-      latest_blood_pressures_per_patient_per_months.patient_status,
-      latest_blood_pressures_per_patient_per_months.bp_facility_id,
-      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
-      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
-      latest_blood_pressures_per_patient_per_months.systolic,
-      latest_blood_pressures_per_patient_per_months.diastolic,
-      latest_blood_pressures_per_patient_per_months.deleted_at,
-      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
-      latest_blood_pressures_per_patient_per_months.month,
-      latest_blood_pressures_per_patient_per_months.quarter,
-      latest_blood_pressures_per_patient_per_months.year
-     FROM latest_blood_pressures_per_patient_per_months
-    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
-  SQL
-  add_index "latest_blood_pressures_per_patient_per_quarters", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_quarters", unique: true
-  add_index "latest_blood_pressures_per_patient_per_quarters", ["patient_id"], name: "index_latest_bp_per_patient_per_quarters_patient_id"
-
-  create_view "latest_blood_pressures_per_patients", materialized: true, sql_definition: <<-SQL
-      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
-      latest_blood_pressures_per_patient_per_months.patient_id,
-      latest_blood_pressures_per_patient_per_months.registration_facility_id,
-      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
-      latest_blood_pressures_per_patient_per_months.patient_status,
-      latest_blood_pressures_per_patient_per_months.bp_facility_id,
-      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
-      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
-      latest_blood_pressures_per_patient_per_months.systolic,
-      latest_blood_pressures_per_patient_per_months.diastolic,
-      latest_blood_pressures_per_patient_per_months.deleted_at,
-      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
-      latest_blood_pressures_per_patient_per_months.month,
-      latest_blood_pressures_per_patient_per_months.quarter,
-      latest_blood_pressures_per_patient_per_months.year
-     FROM latest_blood_pressures_per_patient_per_months
-    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
-  SQL
-  add_index "latest_blood_pressures_per_patients", ["bp_id"], name: "index_latest_blood_pressures_per_patients", unique: true
-  add_index "latest_blood_pressures_per_patients", ["patient_id"], name: "index_latest_bp_per_patient_patient_id"
-
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
       concat(date_part('year'::text, p.recorded_at), ' Q', date_part('quarter'::text, p.recorded_at)) AS registration_quarter,
@@ -1238,5 +1164,79 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     WHERE (p.deleted_at IS NULL);
   SQL
   add_index "materialized_patient_summaries", ["id"], name: "index_materialized_patient_summaries_on_id", unique: true
+
+  create_view "latest_blood_pressures_per_patient_per_months", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+      blood_pressures.patient_id,
+      patients.registration_facility_id,
+      patients.assigned_facility_id,
+      patients.status AS patient_status,
+      blood_pressures.facility_id AS bp_facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at)) AS patient_recorded_at,
+      blood_pressures.systolic,
+      blood_pressures.diastolic,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.deleted_at)) AS deleted_at,
+      medical_histories.hypertension AS medical_history_hypertension,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+     FROM ((blood_pressures
+       JOIN patients ON ((patients.id = blood_pressures.patient_id)))
+       LEFT JOIN medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
+    WHERE ((blood_pressures.deleted_at IS NULL) AND (patients.deleted_at IS NULL))
+    ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id;
+  SQL
+  add_index "latest_blood_pressures_per_patient_per_months", ["assigned_facility_id"], name: "index_bp_months_assigned_facility_id"
+  add_index "latest_blood_pressures_per_patient_per_months", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_months", unique: true
+  add_index "latest_blood_pressures_per_patient_per_months", ["bp_recorded_at"], name: "index_bp_months_bp_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["medical_history_hypertension"], name: "index_bp_months_medical_history_hypertension"
+  add_index "latest_blood_pressures_per_patient_per_months", ["patient_id"], name: "index_latest_bp_per_patient_per_months_patient_id"
+  add_index "latest_blood_pressures_per_patient_per_months", ["patient_recorded_at"], name: "index_bp_months_patient_recorded_at"
+  add_index "latest_blood_pressures_per_patient_per_months", ["registration_facility_id"], name: "index_bp_months_registration_facility_id"
+
+  create_view "latest_blood_pressures_per_patient_per_quarters", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter) latest_blood_pressures_per_patient_per_months.bp_id,
+      latest_blood_pressures_per_patient_per_months.patient_id,
+      latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
+      latest_blood_pressures_per_patient_per_months.patient_status,
+      latest_blood_pressures_per_patient_per_months.bp_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
+      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
+      latest_blood_pressures_per_patient_per_months.systolic,
+      latest_blood_pressures_per_patient_per_months.diastolic,
+      latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
+      latest_blood_pressures_per_patient_per_months.month,
+      latest_blood_pressures_per_patient_per_months.quarter,
+      latest_blood_pressures_per_patient_per_months.year
+     FROM latest_blood_pressures_per_patient_per_months
+    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.year, latest_blood_pressures_per_patient_per_months.quarter, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
+  SQL
+  add_index "latest_blood_pressures_per_patient_per_quarters", ["bp_id"], name: "index_latest_blood_pressures_per_patient_per_quarters", unique: true
+  add_index "latest_blood_pressures_per_patient_per_quarters", ["patient_id"], name: "index_latest_bp_per_patient_per_quarters_patient_id"
+
+  create_view "latest_blood_pressures_per_patients", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (latest_blood_pressures_per_patient_per_months.patient_id) latest_blood_pressures_per_patient_per_months.bp_id,
+      latest_blood_pressures_per_patient_per_months.patient_id,
+      latest_blood_pressures_per_patient_per_months.registration_facility_id,
+      latest_blood_pressures_per_patient_per_months.assigned_facility_id,
+      latest_blood_pressures_per_patient_per_months.patient_status,
+      latest_blood_pressures_per_patient_per_months.bp_facility_id,
+      latest_blood_pressures_per_patient_per_months.bp_recorded_at,
+      latest_blood_pressures_per_patient_per_months.patient_recorded_at,
+      latest_blood_pressures_per_patient_per_months.systolic,
+      latest_blood_pressures_per_patient_per_months.diastolic,
+      latest_blood_pressures_per_patient_per_months.deleted_at,
+      latest_blood_pressures_per_patient_per_months.medical_history_hypertension,
+      latest_blood_pressures_per_patient_per_months.month,
+      latest_blood_pressures_per_patient_per_months.quarter,
+      latest_blood_pressures_per_patient_per_months.year
+     FROM latest_blood_pressures_per_patient_per_months
+    ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id;
+  SQL
+  add_index "latest_blood_pressures_per_patients", ["bp_id"], name: "index_latest_blood_pressures_per_patients", unique: true
+  add_index "latest_blood_pressures_per_patients", ["patient_id"], name: "index_latest_bp_per_patient_patient_id"
 
 end
