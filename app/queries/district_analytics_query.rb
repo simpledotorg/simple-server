@@ -1,7 +1,7 @@
 class DistrictAnalyticsQuery
   include DashboardHelper
 
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
 
   attr_reader :region, :facilities
 
@@ -25,6 +25,7 @@ class DistrictAnalyticsQuery
 
   def results
     results = [
+      total_assigned_patients,
       total_registered_patients,
       registered_patients_by_period,
       follow_up_patients_by_period
@@ -32,6 +33,21 @@ class DistrictAnalyticsQuery
 
     return {} if results.blank?
     results.inject(&:deep_merge)
+  end
+
+  def total_assigned_patients
+    @total_assigned_patients ||=
+      Patient
+        .with_hypertension
+        .where(assigned_facility: facilities)
+        .group(:assigned_facility_id)
+        .count
+
+    return if @total_assigned_patients.blank?
+
+    @total_assigned_patients
+      .map { |facility_id, count| [facility_id, {total_assigned_patients: count}] }
+      .to_h
   end
 
   def total_registered_patients

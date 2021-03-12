@@ -16,7 +16,7 @@ class PatientBreakdownService
 
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
-      breakdown_date = @period.start_date
+      breakdown_date = @period.end_date
       patients = Patient.with_hypertension.where(assigned_facility: facilities)
 
       {
