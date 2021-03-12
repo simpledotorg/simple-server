@@ -31,7 +31,7 @@ describe PatientDeduplication::Deduplicator do
       expect(new_patient.merged_by_user_id).to eq(patient_blue.registration_user.id)
     end
 
-    it "Uses the latest available name, gender, address, and reminder consent" do
+    it "Uses the latest available name, gender, status, address,and reminder consent" do
       patient_earliest = create(:patient, recorded_at: 2.months.ago, full_name: "patient earliest", gender: :male, reminder_consent: "granted")
       patient_not_latest = create(:patient, recorded_at: 2.months.ago, full_name: "patient not latest", gender: :male, reminder_consent: "granted")
       patient_latest = create(:patient, recorded_at: 1.month.ago, full_name: "patient latest", gender: :female, reminder_consent: "denied", address: nil)
@@ -40,6 +40,7 @@ describe PatientDeduplication::Deduplicator do
 
       expect(new_patient.full_name).to eq(patient_latest.full_name)
       expect(new_patient.gender).to eq(patient_latest.gender)
+      expect(new_patient.status).to eq(patient_latest.status)
       expect(new_patient.reminder_consent).to eq(patient_latest.reminder_consent)
       expect(new_patient.address.street_address).to eq(patient_not_latest.address.street_address)
     end
@@ -175,13 +176,17 @@ describe PatientDeduplication::Deduplicator do
       blood_pressures = BloodPressure.where(patient_id: patients).load
       blood_sugars = BloodSugar.where(patient_id: patients).load
       observables = patients.flat_map(&:observations).map(&:observable)
+      soft_deleted_bp = blood_pressures.first
+      soft_deleted_sugar = blood_sugars.first
+      soft_deleted_bp.discard
+      soft_deleted_sugar.discard
 
       new_patient = described_class.new(patients).merge
 
       expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(encounters)
-      expect(with_comparable_attributes(new_patient.blood_pressures)).to eq with_comparable_attributes(blood_pressures)
-      expect(with_comparable_attributes(new_patient.blood_sugars)).to eq with_comparable_attributes(blood_sugars)
-      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes(observables)
+      expect(with_comparable_attributes(new_patient.blood_pressures)).to match_array with_comparable_attributes(blood_pressures - [soft_deleted_bp])
+      expect(with_comparable_attributes(new_patient.blood_sugars)).to match_array with_comparable_attributes(blood_sugars - [soft_deleted_sugar])
+      expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes(observables - [soft_deleted_bp, soft_deleted_sugar])
     end
 
     it "copies over appointments, keeps only one scheduled appointment and marks the rest as cancelled" do
