@@ -94,6 +94,7 @@ class Patient < ApplicationRecord
   }
 
   validate :past_date_of_birth
+  validates :status, presence: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
