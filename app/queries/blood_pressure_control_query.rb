@@ -82,7 +82,7 @@ class BloodPressureControlQuery
       Patient
         .for_reports(
           with_exclusions: @with_exclusions,
-          exclude_ltfu_as_of: Date.today
+          exclude_ltfu_as_of: Date.today.end_of_month
         )
         .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
