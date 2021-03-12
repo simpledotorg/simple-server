@@ -30,7 +30,7 @@
           <div>Enter your drug stock report at the end of every month.</div>
           <ul style="padding-bottom: 1em;">
             <li class="check">Enter number of tablets for each drug</li>
-            <li class="check">Leave blank if you do not know the amount</li>
+            <li class="check">Leave blank if you don't know an amount</li>
             <li class="check">Enter "0" if stock is out</li>
           </ul>
 
@@ -55,7 +55,7 @@
               <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
 
               <div class="form-group">
-                  <label for=""><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%></label>
+                  <label for=""><%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets</label>
                   <div class="form-row">
                     <div class="col">
                       <%= drug_stock_form.number_field :received, class: :received, value: @drug_stocks[protocol_drug.id].try(&:received), hide_label: true, help: "Received this month" %>
