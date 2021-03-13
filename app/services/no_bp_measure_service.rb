@@ -1,4 +1,5 @@
 class NoBPMeasureService
+  include BustCache
   CACHE_VERSION = 3
   CACHE_TTL = 7.days
 
@@ -21,7 +22,7 @@ class NoBPMeasureService
 
   def call
     keys = cache_keys_for_period.keys
-    cached_results = cache.fetch_multi(*keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) { |key|
+    cached_results = cache.fetch_multi(*keys, version: cache_version, expires_in: CACHE_TTL, force: bust_cache?) { |key|
       period = cache_keys_for_period.fetch(key)
       execute_sql(period)
     }
@@ -77,9 +78,5 @@ class NoBPMeasureService
 
   def cache_version
     "#{region.cache_version}/#{CACHE_VERSION}"
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 end
