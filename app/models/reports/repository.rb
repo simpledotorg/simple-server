@@ -1,5 +1,6 @@
 module Reports
   class Repository
+    include BustCache
     include Memery
     PERCENTAGE_PRECISION = 0
 
@@ -134,7 +135,7 @@ module Reports
     #
     def cached_query(calculation, &block)
       items = cache_entries(calculation)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |entry| block.call(entry) }
+      cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
         results[entry.region.slug] ||= Hash.new(0)
         results[entry.region.slug][entry.period] = count
@@ -149,10 +150,6 @@ module Reports
     def percentage(numerator, denominator)
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
-    end
-
-    def force_cache?
-      RequestStore.store[:force_cache]
     end
   end
 end

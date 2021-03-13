@@ -1,4 +1,5 @@
 class CohortAnalyticsQuery
+  include BustCache
   include QuarterHelper
 
   CACHE_VERSION = 1
@@ -22,7 +23,7 @@ class CohortAnalyticsQuery
   end
 
   def call
-    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: bust_cache?) do
       results
     end
   end
@@ -117,9 +118,5 @@ class CohortAnalyticsQuery
 
   def controlled(patients)
     patients.where("newest_bps.systolic < 140 AND newest_bps.diastolic < 90")
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 end

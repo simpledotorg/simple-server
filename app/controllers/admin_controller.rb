@@ -1,5 +1,7 @@
 class AdminController < ApplicationController
+  include BustCache
   before_action :authenticate_email_authentication!
+  before_action :set_bust_cache
 
   after_action :verify_authorization_attempted, except: [:root]
 
@@ -22,12 +24,8 @@ class AdminController < ApplicationController
     end
   end
 
-  def set_force_cache
-    RequestStore.store[:force_cache] = true if force_cache?
-  end
-
-  def force_cache?
-    params[:force_cache].present?
+  def set_bust_cache
+    RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
   end
 
   helper_method :current_admin

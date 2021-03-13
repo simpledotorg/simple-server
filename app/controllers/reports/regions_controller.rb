@@ -5,7 +5,6 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :set_force_cache
   before_action :find_region, except: [:index]
   around_action :set_time_zone
   after_action :log_cache_metrics
@@ -178,7 +177,7 @@ class Reports::RegionsController < AdminController
   end
 
   def report_params
-    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
+    params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
   end
 
   def set_time_zone
