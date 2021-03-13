@@ -1,4 +1,5 @@
 class CohortService
+  include BustCache
   CACHE_VERSION = 2
   CACHE_TTL = 7.days
   attr_reader :periods
@@ -19,7 +20,7 @@ class CohortService
   private
 
   def compute(period)
-    Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: force_cache?) do
+    Rails.cache.fetch(cache_key(period), version: cache_version, expires_in: CACHE_TTL, force: bust_cache?) do
       cohort_period = period.previous
       results_in = if period.quarter?
         period.to_s
@@ -56,9 +57,5 @@ class CohortService
 
   def cache_version
     "#{region.updated_at.utc.to_s(:usec)}/#{CACHE_VERSION}"
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 end

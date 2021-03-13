@@ -22,12 +22,12 @@ class AdminController < ApplicationController
     end
   end
 
-  def set_force_cache
-    RequestStore.store[:force_cache] = true if force_cache?
+  def set_bust_cache
+    RequestStore.store[:bust_cache] = true if bust_cache?
   end
 
-  def force_cache?
-    params[:force_cache].present?
+  def bust_cache?
+    params[:bust_cache].present?
   end
 
   helper_method :current_admin
