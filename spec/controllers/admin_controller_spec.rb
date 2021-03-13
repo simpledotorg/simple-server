@@ -70,6 +70,22 @@ RSpec.describe AdminController, type: :controller do
     end
   end
 
+  fcontext "bust_cache" do
+    it "bust_cache is false if the param is not present" do
+      routes.draw { get "authorized" => "admin#authorized" }
+      get :authorized
+      expect(RequestStore[:bust_cache]).to be_falsey
+      expect(controller.bust_cache?).to be_falsey
+    end
+
+    it "sets bust_cache to true if the param is present" do
+      routes.draw { get "authorized" => "admin#authorized" }
+      get :authorized, params: {bust_cache: "1"}
+      expect(RequestStore[:bust_cache]).to be_truthy
+      expect(controller.bust_cache?).to be_truthy
+    end
+  end
+
   context "#verify_authorization_attempted" do
     it "raises an error if authorize is not called but required" do
       routes.draw { get "authorization_not_attempted" => "admin#authorization_not_attempted" }
