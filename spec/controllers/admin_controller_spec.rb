@@ -70,7 +70,7 @@ RSpec.describe AdminController, type: :controller do
     end
   end
 
-  fcontext "bust_cache" do
+  context "bust_cache" do
     it "bust_cache is false if the param is not present" do
       routes.draw { get "authorized" => "admin#authorized" }
       get :authorized
