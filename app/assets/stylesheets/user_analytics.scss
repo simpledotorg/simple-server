@@ -226,8 +226,9 @@ sup {
   padding-left: 2px;
 }
 
-.card-dropdown {
+#progress select {
   width: 100%;
+  display: block;
   border: 1px solid $blue;
   color: $blue;
   font-weight: bold;
@@ -444,6 +445,14 @@ p.control-desc {
     }
 }
 
+ul .check {
+  background: transparent url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMkMyIDE3LjUyIDYuNDggMjIgMTIgMjJDMTcuNTIgMjIgMjIgMTcuNTIgMjIgMTJDMjIgNi40OCAxNy41MiAyIDEyIDJaTTEyIDIwQzcuNTkgMjAgNCAxNi40MSA0IDEyQzQgNy41OSA3LjU5IDQgMTIgNEMxNi40MSA0IDIwIDcuNTkgMjAgMTJDMjAgMTYuNDEgMTYuNDEgMjAgMTIgMjBaTTEwIDE0LjE3TDE1Ljg4IDguMjlDMTYuMjcgNy45IDE2LjkxIDcuOSAxNy4zIDguMjlDMTcuNjkgOC42OCAxNy42OSA5LjMxIDE3LjMgOS43TDEwLjcxIDE2LjI5QzEwLjMyIDE2LjY4IDkuNjkgMTYuNjggOS4zIDE2LjI5TDYuNzEgMTMuN0M2LjMyIDEzLjMxIDYuMzIgMTIuNjggNi43MSAxMi4yOUM2Ljg5NjgzIDEyLjEwMjcgNy4xNTA0OCAxMS45OTc1IDcuNDE1IDExLjk5NzVDNy42Nzk1MiAxMS45OTc1IDcuOTMzMTcgMTIuMTAyNyA4LjEyIDEyLjI5TDEwIDE0LjE3WiIgZmlsbD0iIzAwQjg0OSIvPgo8L3N2Zz4K) no-repeat 0 50%;
+  list-style: none;
+  padding: 8px 0 8px 32px;
+  margin: 0 0 0 -40px;
+  font-size: 15px;
+}
+
 .trophies {
   text-align: center;
   padding-top: 30px;
@@ -648,7 +657,8 @@ footer p {
 }
 
 .form-group {
-  padding: 1.5em 8px;
+  padding: 16px 0 !important;
+  width: 100%;
 
   label {
     display: block;
@@ -657,6 +667,7 @@ footer p {
   }
   small {
     display: block;
+    font-size: 14px;
     margin: 6px 0 0 0;
     opacity: 0.8;
   }
@@ -668,8 +679,12 @@ footer p {
 
 .col {
   flex-wrap: nowrap;
-  width: 45%;
-  margin-right: 5%;
+  width: 43%;
+  margin-left: 8%;
+}
+
+.col:first-child {
+  margin-left: 0;
 }
 
 select.form-control, input.form-control {
@@ -677,7 +692,12 @@ select.form-control, input.form-control {
   padding: 8px;
   border-radius: 6px;
   width: 100%;
-  border: none;
+  border: 1px solid white;
+  
+  &:focus {
+    outline: none;
+    border: 1px solid $blue;
+  }
 }
 
 .button {
@@ -707,5 +727,8 @@ select.form-control, input.form-control {
 
   .button {
     width: 100%;
+    background: $blue;
+    color: #fff !important;
+    box-shadow: 0 2px 1px rgba(0,0,0,.16);
   }
 }

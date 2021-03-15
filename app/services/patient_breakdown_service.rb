@@ -1,4 +1,5 @@
 class PatientBreakdownService
+  include BustCache
   CACHE_VERSION = 1
 
   def self.call(*args)
@@ -15,8 +16,8 @@ class PatientBreakdownService
   attr_reader :facilities
 
   def call
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
-      breakdown_date = @period.start_date
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
+      breakdown_date = @period.end_date
       patients = Patient.with_hypertension.where(assigned_facility: facilities)
 
       {
@@ -36,9 +37,5 @@ class PatientBreakdownService
 
   def cache_version
     "#{region.cache_version}/#{CACHE_VERSION}"
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 end

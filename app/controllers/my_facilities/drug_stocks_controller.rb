@@ -10,7 +10,6 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
   before_action :drug_stocks_enabled?
-  before_action :set_force_cache, only: [:drug_stocks, :drug_consumption]
 
   def drug_stocks
     drug_report
@@ -28,17 +27,8 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def create
-    DrugStock.transaction do
-      drug_stocks_params[:drug_stocks].map do |drug_stock|
-        DrugStock.create!(facility: @facility,
-                          user: current_admin,
-                          protocol_drug_id: drug_stock[:protocol_drug_id],
-                          received: drug_stock[:received].presence,
-                          in_stock: drug_stock[:in_stock].presence,
-                          for_end_of_month: @for_end_of_month)
-      end
-    end
-    redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks"
+    DrugStocksCreator.call(current_admin, @facility, @for_end_of_month, drug_stocks_params[:drug_stocks])
+    redirect_to redirect_url(bust_cache: true), notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
   end

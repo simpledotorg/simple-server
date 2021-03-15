@@ -1,4 +1,5 @@
 class ControlRateService
+  include BustCache
   CACHE_VERSION = 9
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
@@ -36,7 +37,7 @@ class ControlRateService
   private
 
   def all_cached_data
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
       fetch_all_data
     }
   end
@@ -92,7 +93,7 @@ class ControlRateService
     Patient
       .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.start_date)
+      .ltfu_as_of(period.end_date)
       .count
   end
 
@@ -110,10 +111,6 @@ class ControlRateService
 
   def cache_version
     "#{region.cache_version}/#{CACHE_VERSION}"
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 
   def group_date_formatter

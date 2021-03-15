@@ -49,6 +49,7 @@ class DeduplicatePatients
       device_created_at: earliest_patient.device_created_at,
       device_updated_at: earliest_patient.device_updated_at,
       assigned_facility: latest_patient.assigned_facility,
+      status: latest_patient.status,
       address: create_address,
       **age_and_dob
     }
@@ -140,14 +141,17 @@ class DeduplicatePatients
   def create_encounters_and_observables(patient)
     encounters = Encounter.where(patient: @patients)
     encounters.map do |encounter|
-      new_encounter = Encounter.create!(
+      encounter_id = Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on)
+      new_encounter = Encounter.find_by(id: encounter_id) || Encounter.create!(
         copyable_attributes(encounter)
-          .merge(id: Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on),
+          .merge(id: encounter_id,
                  patient_id: patient.id)
       )
 
       encounter.observations.map do |observation|
         observable = observation.observable
+
+        next unless observable.present?
         new_observable = create_cloned_record!(patient, observable.class, observable)
         Observation.create!(user_id: observation.user_id, observable: new_observable, encounter: new_encounter)
       end
