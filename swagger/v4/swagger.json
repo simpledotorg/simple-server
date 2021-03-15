@@ -1551,9 +1551,10 @@
             "null"
           ],
           "enum": [
-            "once_a_day",
-            "twice_a_day",
-            "thrice_a_day",
+            "one_per_day",
+            "two_per_day",
+            "three_per_day",
+            "four_per_day",
             null
           ]
         },
@@ -1576,10 +1577,24 @@
           ]
         },
         "protocol": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "yes",
+            "no"
+          ]
         },
         "common": {
-          "type": "boolean"
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "yes",
+            "no"
+          ]
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"

@@ -312,8 +312,8 @@ class Api::V4::Models
          composition: {type: [:string, "null"]},
          dosage: {type: [:string, "null"]},
          rxnorm_code: {type: [:string, "null"]},
-         protocol: {type: :boolean},
-         common: {type: :boolean},
+         protocol: {type: [:string, "null"], enum: [:yes, :no]},
+         common: {type: [:string, "null"], enum: [:yes, :no]},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
