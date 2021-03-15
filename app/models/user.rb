@@ -61,6 +61,11 @@ class User < ApplicationRecord
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
   has_many :drug_stocks
+  has_many :merged_patients,
+    -> { with_discarded },
+    inverse_of: :merged_by_user,
+    class_name: "Patient",
+    foreign_key: :merged_by_user_id
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
