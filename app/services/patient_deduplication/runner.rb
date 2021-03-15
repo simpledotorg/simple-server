@@ -31,6 +31,10 @@ module PatientDeduplication
     def report_summary
       Rails.logger.info(report_stats.to_json)
       Rails.logger.info "Failed to merge patients #{merge_failures}"
+
+      Statsd.instance.count("PatientDeduplication.total_processed", duplicate_patient_ids.flatten.count)
+      Statsd.instance.count("PatientDeduplication.total_merged", duplicate_patient_ids.flatten.count - merge_failures.flatten.count)
+      Statsd.instance.count("PatientDeduplication.total_failures", merge_failures.flatten.count)
     end
 
     def report_stats
