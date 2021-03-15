@@ -3,7 +3,11 @@ module PatientDeduplication
     def initialize(patients, user: nil)
       @patients = patients.sort_by(&:recorded_at)
       @user_id = user&.id
+
+      validate_patients(patients)
     end
+
+    attr_reader :errors
 
     def earliest_patient
       @patients.first
@@ -207,6 +211,12 @@ module PatientDeduplication
       record.attributes
         .with_indifferent_access
         .except(:id, :patient_id, :created_at, :updated_at)
+    end
+
+    def validate_patients(patients)
+      if patients.count < 2
+        @errors = "Select at least 2 patients to be merged."
+      end
     end
   end
 end

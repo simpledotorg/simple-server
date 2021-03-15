@@ -5,8 +5,8 @@
     <br/>
     Unselect patients that don't refer to this person. They will not be merged and be left as is.
   </p>
-
   <table class="table table-responsive-md table-hover">
+    <thead>
     <th>Select</th>
     <th style="min-width: 150px">Full name</th>
     <th>Gender</th>
@@ -16,7 +16,8 @@
     <th>Last visited</th>
     <th>Address</th>
     <th>Phone numbers</th>
-
+    </thead>
+    <tbody>
     <% @patients.each do |patient| %>
       <tr class="toggle-row" data-patient-id="<%= patient.id %>">
         <td>
@@ -56,6 +57,14 @@
         </label>
       </tr>
     <% end %>
+    <% unless @patients.present? %>
+      <tr class="text-center">
+        <td colspan="9">
+          No duplicate patients found that need to be merged
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
   </table>
 </div>
 
