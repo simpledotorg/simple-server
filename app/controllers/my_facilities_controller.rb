@@ -75,7 +75,7 @@ class MyFacilitiesController < AdminController
   end
 
   def report_params
-    params.permit(:id, :force_cache, :report_scope, {period: [:type, :value]})
+    params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
   end
 
   def report_with_exclusions?
