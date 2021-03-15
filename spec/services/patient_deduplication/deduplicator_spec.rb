@@ -16,18 +16,19 @@ def with_comparable_attributes(related_entities)
   end
 end
 
-describe DeduplicatePatients do
+describe PatientDeduplication::Deduplicator do
   context "#merge" do
     it "creates a new patient with the right associated facilities and users" do
       patient_blue, patient_red = create_duplicate_patients.values_at(:blue, :red)
 
-      new_patient = described_class.new([patient_blue, patient_red]).merge
+      new_patient = described_class.new([patient_blue, patient_red], user: patient_blue.registration_user).merge
       expect(new_patient.recorded_at.to_i).to eq(patient_blue.recorded_at.to_i)
       expect(new_patient.registration_facility).to eq(patient_blue.registration_facility)
       expect(new_patient.registration_user).to eq(patient_blue.registration_user)
       expect(new_patient.assigned_facility).to eq(patient_red.assigned_facility)
       expect(new_patient.device_created_at.to_i).to eq(patient_blue.device_created_at.to_i)
       expect(new_patient.device_updated_at.to_i).to eq(patient_blue.device_updated_at.to_i)
+      expect(new_patient.merged_by_user_id).to eq(patient_blue.registration_user.id)
     end
 
     it "Uses the latest available name, gender, status, address,and reminder consent" do
@@ -221,12 +222,22 @@ describe DeduplicatePatients do
         expect(patients.map(&:discarded?)).to all be true
       end
 
-      it "sets the merged_into_patient_id on the merged patients to the new patient" do
+      it "sets the merged_into_patient_id, and merged_by_user_id on the merged patients to the new patient" do
+        patients = create_duplicate_patients.values
+
+        new_patient = described_class.new(patients, user: patients.first.registration_user).merge
+
+        expect(patients.map(&:merged_into_patient_id)).to all eq new_patient.id
+        expect(patients.map(&:merged_by_user_id)).to all eq patients.first.registration_user.id
+      end
+
+      it "does not set merged_by_user_id if not passed in" do
         patients = create_duplicate_patients.values
 
         new_patient = described_class.new(patients).merge
 
-        expect(patients.map(&:merged_into_patient_id)).to all eq new_patient.id
+        expect(patients.map(&:merged_by_user_id)).to all be_nil
+        expect(new_patient.merged_by_user_id).to be_nil
       end
     end
   end

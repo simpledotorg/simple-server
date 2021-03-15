@@ -159,6 +159,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                    .except("registration_user_id")
                    .except("test_data")
                    .except("merged_into_patient_id")
+                   .except("merged_by_user_id")
                    .except("deleted_by_user_id"))
             .to eq(updated_patient.with_int_timestamps)
         end
@@ -206,7 +207,8 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                      .except("registration_user_id")
                      .except("test_data")
                      .except("deleted_by_user_id")
-                     .except("merged_into_patient_id"))
+                     .except("merged_into_patient_id")
+                     .except("merged_by_user_id"))
               .to eq(updated_patient.except("address", "phone_numbers", "business_identifiers"))
           end
         end
