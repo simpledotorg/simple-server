@@ -19,36 +19,41 @@
         <%= inline_svg("icon_back.svg") %>
       </a>
       
-      <div class="card" style="margin: 80px 0 80px 0;">
-        <div style="height: 200px; background: transparent url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMyIiBoZWlnaHQ9IjEzMiIgdmlld0JveD0iMCAwIDEzMiAxMzIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjY2IiBjeT0iNjYiIHI9IjY2IiBmaWxsPSIjRTBGRkVEIi8+CjxwYXRoIGQ9Ik01My4xMTE3IDg0Ljc5MTdMMzguMDc1IDY5Ljc1NUMzNy4yNjU0IDY4Ljk0MzYgMzYuMTY2MyA2OC40ODc1IDM1LjAyIDY4LjQ4NzVDMzMuODczOCA2OC40ODc1IDMyLjc3NDYgNjguOTQzNiAzMS45NjUgNjkuNzU1QzMwLjI3NSA3MS40NDUgMzAuMjc1IDc0LjE3NSAzMS45NjUgNzUuODY1TDUwLjA3ODMgOTMuOTc4M0M1MS43NjgzIDk1LjY2ODMgNTQuNDk4MyA5NS42NjgzIDU2LjE4ODMgOTMuOTc4M0wxMDIuMDM1IDQ4LjEzMTZDMTAzLjcyNSA0Ni40NDE2IDEwMy43MjUgNDMuNzExNiAxMDIuMDM1IDQyLjAyMTZDMTAxLjIyNSA0MS4yMTAyIDEwMC4xMjYgNDAuNzU0MiA5OC45OCA0MC43NTQyQzk3LjgzMzggNDAuNzU0MiA5Ni43MzQ2IDQxLjIxMDIgOTUuOTI1IDQyLjAyMTZMNTMuMTExNyA4NC43OTE3WiIgZmlsbD0iIzAwQjg0OSIvPgo8L3N2Zz4K) 50% 50% no-repeat; background-size: 180px;">
-        </div>
-
-        <h2 style="text-align: center;">Complete!</h2>
-        <p>View drug stock in estimated patient days below</p>
+      <div class="card" style="margin-top: 100px; text-align: center;">
+        <div style="padding: 40px 0 20px 0;"><%= inline_svg("check.svg") %></div>
+        <p>We automatically estimated how many days of drug stock remain, based on the number of patients registered at your facility.</p>
       </div>
 
-      <h3>Drug stock report for end of <%= @for_end_of_month %></h3>
+      <h3>For end of <%= @for_end_of_month %></h3>
+      <% facility_report = @report[:facilities][current_facility.id] %>
 
-      <% @protocol_drugs.each do |protocol_drug| %>
+      <% @drugs_by_category.each do |category, drugs| %>
+        <% patient_days = facility_report.dig(category, :patient_days) %>
+
         <div class="card">
-    
-          <h3><%= protocol_drug.name %></h3>
-          <p></p>
-    
-          <div class="form-row">
-            <div class="col">
-              <strong>Received</strong> <%= @drug_stocks[protocol_drug.id].try(&:received) %>
+          <h3 style="margin-bottom: 8px;"><%= category %></h3>
+          <span class="text-green"><%= patient_days %> days of drug stock</span>
+
+          <% drugs.each do |drug| %>
+            <% drug_stock = facility_report.dig(category, :drug_stocks, drug.id) %>
+
+            <div class="card-row">
+              <span class="light float-right"><%= drug_stock.in_stock %> tablets</span>
+              <h6><%= drug.name %> <%= drug.dosage %> </h6>
             </div>
-            <div class="col">
-              <strong>In Stock</strong> <%= @drug_stocks[protocol_drug.id].try(&:in_stock) %>
+            <div class="card-row">
+              <span class="light float-right">1456 tablets</span>
+              <h6>Amlodipine 10 mg</h6>
             </div>
-          </div>
+
+          <% end %>
+
         </div>
       <% end %>
     </div>
   </div>
 
-  <div id="drug-stock-submitted" class="progress-body" style="display: none;">
+  <div id="drug-stock-submitted" class="progress-body" style="display:none">
     <div class="progress-contents">
         <div class="card" style="margin-top: 100px; text-align: center;">
           <div style="padding: 40px 0 20px 0;"><%= inline_svg('check.svg') %></div>
@@ -66,38 +71,6 @@
           <div class="card-row">
             <span class="light float-right">1456 tablets</span>
             <h6>Amlodipine 10 mg</h6>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin-bottom: 8px;">CCB tablets</h3>
-          <span class="text-red">1 day of drug stock</span>
-
-          <div class="card-row">
-            <span class="light float-right">&#8212;</span>
-            <h6>Losartan 50 mg</h6>
-          </div>
-          <div class="card-row">
-            <span class="light float-right">10 tablets</span>
-            <h6>Telmisartan 40 mg</h6>
-          </div>
-          <div class="card-row">
-            <span class="light float-right">0 tablets</span>
-            <h6>Telmisartan 80 mg</h6>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3 style="margin-bottom: 8px;">Diuretic tablets</h3>
-          <span class="text-orange">35 days of drug stock</span>
-
-          <div class="card-row">
-            <span class="light float-right">19 tablets</span>
-            <h6>Chlorthalidone 12.5 mg</h6>
-          </div>
-          <div class="card-row">
-            <span class="light float-right">200 tablets</span>
-            <h6>Chlorthalidone 25 mg</h6>
           </div>
         </div>
     </div>
