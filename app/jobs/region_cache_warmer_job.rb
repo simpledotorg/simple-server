@@ -10,7 +10,7 @@ class RegionCacheWarmerJob
   def perform(region_id, period_attributes)
     region = Region.find(region_id)
     period = Period.new(period_attributes)
-    RequestStore.store[:force_cache] = true
+    RequestStore.store[:bust_cache] = true
 
     notify "starting region caching for region #{region_id}"
     Statsd.instance.time("region_cache_warmer.#{region_id}") do

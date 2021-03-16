@@ -1,5 +1,7 @@
 module Reports
   class Repository
+    include BustCache
+
     def initialize(regions, periods:, with_exclusions: false)
       @regions = Array(regions)
       @regions_by_id = @regions.group_by { |r| r.id }
@@ -45,7 +47,7 @@ module Reports
     #
     def cached_query(calculation, &block)
       items = cache_keys(calculation)
-      cached_results = cache.fetch_multi(*items, force: force_cache?) { |item| block.call(item) }
+      cached_results = cache.fetch_multi(*items, force: bust_cache?) { |item| block.call(item) }
       cached_results.each_with_object({}) do |(item, count), results|
         results[item.region.slug] ||= Hash.new(0)
         results[item.region.slug][item.period] = count
@@ -63,10 +65,6 @@ module Reports
 
     def control_rate_query
       @control_rate_query ||= ControlRateQuery.new
-    end
-
-    def force_cache?
-      RequestStore.store[:force_cache]
     end
   end
 end

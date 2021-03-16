@@ -3,7 +3,11 @@ module PatientDeduplication
     def initialize(patients, user: nil)
       @patients = patients.sort_by(&:recorded_at)
       @user_id = user&.id
+
+      validate_patients(patients)
     end
+
+    attr_reader :errors
 
     def earliest_patient
       @patients.first
@@ -35,7 +39,7 @@ module PatientDeduplication
     end
 
     def mark_as_merged(new_patient)
-      @patients.map do |patient|
+      @patients.each do |patient|
         patient.update!(
           merged_into_patient_id: new_patient.id,
           merged_by_user_id: @user_id
@@ -148,7 +152,7 @@ module PatientDeduplication
 
     def create_encounters_and_observables(patient)
       encounters = Encounter.where(patient: @patients)
-      encounters.map do |encounter|
+      encounters.each do |encounter|
         encounter_id = Encounter.generate_id(encounter.facility.id, patient.id, encounter.encountered_on)
         new_encounter = Encounter.find_by(id: encounter_id) || Encounter.create!(
           copyable_attributes(encounter)
@@ -156,7 +160,7 @@ module PatientDeduplication
                    patient_id: patient.id)
         )
 
-        encounter.observations.map do |observation|
+        encounter.observations.each do |observation|
           observable = observation.observable
 
           next unless observable.present?
@@ -191,7 +195,7 @@ module PatientDeduplication
     end
 
     def create_cloned_records!(patient, klass, records)
-      records.map do |record|
+      records.each do |record|
         create_cloned_record!(patient, klass, record)
       end
     end
@@ -207,6 +211,12 @@ module PatientDeduplication
       record.attributes
         .with_indifferent_access
         .except(:id, :patient_id, :created_at, :updated_at)
+    end
+
+    def validate_patients(patients)
+      if patients.count < 2
+        @errors = "Select at least 2 patients to be merged."
+      end
     end
   end
 end

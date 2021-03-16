@@ -1,4 +1,5 @@
 class DistrictAnalyticsQuery
+  include BustCache
   include DashboardHelper
 
   CACHE_VERSION = 3
@@ -18,7 +19,7 @@ class DistrictAnalyticsQuery
   end
 
   def call
-    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: force_cache?) do
+    Rails.cache.fetch(cache_key, expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"), force: bust_cache?) do
       results
     end
   end
@@ -104,9 +105,5 @@ class DistrictAnalyticsQuery
     }
 
     transformed_result.presence
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 end
