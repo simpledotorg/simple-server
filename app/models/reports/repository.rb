@@ -25,10 +25,10 @@ module Reports
 
     delegate :cache, :logger, to: Rails
 
-    # Uses Memery to memoize a method, but takes into account our force_cache setting. If force_cache is true,
-    # a caller is asking for all values to be retrieved fresh from the database, so we want to skip memoization.
+    # Uses Memery to memoize a method, but takes into account our bust_cache setting. If bust_cache is true,
+    # a caller is asking for all values to be retrieved fresh from the database, so we want to skip memoization and caching.
     def self.smart_memoize(method)
-      memoize(method, condition: -> { !force_cache? })
+      memoize(method, condition: -> { !bust_cache? })
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
@@ -51,7 +51,7 @@ module Reports
     # fast and easy via the underlying query.
     smart_memoize def complete_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
-      cache.fetch_multi(*items, force: force_cache?) { |entry|
+      cache.fetch_multi(*items, force: bust_cache?) { |entry|
         AssignedPatientsQuery.new.count(entry.region, :month, with_exclusions: with_exclusions)
       }
     end
@@ -77,7 +77,7 @@ module Reports
     # fast and easy via the underlying query.
     smart_memoize def complete_registration_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
-      cache.fetch_multi(*items, force: force_cache?) { |entry|
+      cache.fetch_multi(*items, force: bust_cache?) { |entry|
         RegisteredPatientsQuery.new.count(entry.region, :month)
       }
     end
