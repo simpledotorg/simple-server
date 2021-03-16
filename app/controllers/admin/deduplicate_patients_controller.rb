@@ -18,8 +18,10 @@ class Admin::DeduplicatePatientsController < AdminController
 
     if deduplicator.errors
       redirect_to admin_deduplication_path, notice: deduplicator.errors
+      PatientDeduplication::Stats.report("manual", duplicate_patients.count, 0, duplicate_patients.count)
     else
       merged_patient = deduplicator.merge
+      PatientDeduplication::Stats.report("manual", duplicate_patients.count, duplicate_patients.count, 0)
       redirect_to admin_deduplication_path, notice: "Patients merged into #{merged_patient.full_name}."
     end
   end

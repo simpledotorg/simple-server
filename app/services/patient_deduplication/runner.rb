@@ -1,7 +1,5 @@
 module PatientDeduplication
   class Runner
-    include Memery
-
     def initialize(duplicate_patient_ids)
       @duplicate_patient_ids = duplicate_patient_ids
       @merge_failures = []
@@ -32,9 +30,12 @@ module PatientDeduplication
       Rails.logger.info(report_stats.to_json)
       Rails.logger.info "Failed to merge patients #{merge_failures}"
 
-      Statsd.instance.count("PatientDeduplication.total_processed", duplicate_patient_ids.flatten.count)
-      Statsd.instance.count("PatientDeduplication.total_merged", duplicate_patient_ids.flatten.count - merge_failures.flatten.count)
-      Statsd.instance.count("PatientDeduplication.total_failures", merge_failures.flatten.count)
+      Stats.report(
+        "automatic",
+        report_stats.dig(:processed, :total),
+        report_stats.dig(:merged, :total),
+        report_stats.dig(:merged, :total_failures)
+      )
     end
 
     def report_stats
@@ -42,8 +43,8 @@ module PatientDeduplication
                    distinct: duplicate_patient_ids.count},
        merged: {total: duplicate_patient_ids.flatten.count - merge_failures.flatten.count,
                 distinct: duplicate_patient_ids.count - merge_failures.count,
-                total_failures: merge_failures.count,
-                distinct_failure: merge_failures.flatten.count}}
+                total_failures: merge_failures.flatten.count,
+                distinct_failures: merge_failures.count}}
     end
   end
 end
