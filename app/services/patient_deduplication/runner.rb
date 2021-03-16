@@ -9,21 +9,12 @@ module PatientDeduplication
 
     def perform
       duplicate_patient_ids.each do |patient_ids|
-        Deduplicator.new(Patient.where(id: patient_ids)).merge
-      rescue => e
-        # Bad data can cause our merge logic to breakdown in unpredictable ways.
-        # We want to report any such errors and look into them on a per case basis.
-        handle_error(e, patient_ids)
+        deduplicator = Deduplicator.new(Patient.where(id: patient_ids))
+        deduplicator.merge
+        merge_failures << deduplicator.errors if deduplicator.errors.present?
       end
 
       report_summary
-    end
-
-    def handle_error(e, patient_ids)
-      error_details = {exception: e, patient_ids: patient_ids}
-      merge_failures << error_details
-
-      Sentry.capture_message("Failed to merge duplicate patients", extra: error_details)
     end
 
     def report_summary

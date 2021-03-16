@@ -3,6 +3,7 @@ module PatientDeduplication
     def initialize(patients, user: nil)
       @patients = patients.sort_by(&:recorded_at)
       @user_id = user&.id
+      @errors = []
 
       validate_patients(patients)
     end
@@ -18,6 +19,7 @@ module PatientDeduplication
     end
 
     def merge
+      return if errors.present?
       patient_ids = @patients.pluck(:id)
       Rails.logger.info "Merging patients #{patient_ids}"
 
@@ -36,6 +38,16 @@ module PatientDeduplication
 
       Rails.logger.info "Merged patients #{patient_ids} into patient #{new_patient.id}"
       new_patient
+    rescue => e
+      # Bad data can cause our merge logic to breakdown in unpredictable ways.
+      # We want to report any such errors and look into them on a per case basis.
+      handle_error(e)
+    end
+
+    def handle_error(e)
+      error_details = {exception: e, patient_ids: @patients.map(&:id)}
+      @errors << error_details
+      Sentry.capture_message("Failed to merge duplicate patients", extra: error_details)
     end
 
     def mark_as_merged(new_patient)
@@ -215,7 +227,7 @@ module PatientDeduplication
 
     def validate_patients(patients)
       if patients.count < 2
-        @errors = "Select at least 2 patients to be merged."
+        @errors << "Select at least 2 patients to be merged."
       end
     end
   end

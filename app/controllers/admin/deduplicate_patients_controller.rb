@@ -15,12 +15,12 @@ class Admin::DeduplicatePatientsController < AdminController
 
     duplicate_patients = Patient.where(id: params[:duplicate_patients])
     deduplicator = PatientDeduplication::Deduplicator.new(duplicate_patients, user: current_admin)
+    merged_patient = deduplicator.merge
 
-    if deduplicator.errors
-      redirect_to admin_deduplication_path, notice: deduplicator.errors
+    if deduplicator.errors.present?
       PatientDeduplication::Stats.report("manual", duplicate_patients.count, 0, duplicate_patients.count)
+      redirect_to admin_deduplication_path, alert: "Error in merging patients: #{deduplicator.errors.join(", ")}"
     else
-      merged_patient = deduplicator.merge
       PatientDeduplication::Stats.report("manual", duplicate_patients.count, duplicate_patients.count, 0)
       redirect_to admin_deduplication_path, notice: "Patients merged into #{merged_patient.full_name}."
     end
