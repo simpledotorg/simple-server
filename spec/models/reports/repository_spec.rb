@@ -260,7 +260,7 @@ RSpec.describe Reports::Repository, type: :model do
       end
     end
 
-    it "memoizes calls and will ignore memoization via force_cache" do
+    it "memoizes calls and will ignore memoization via bust_cache" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       Timecop.freeze(jan_2020) do
         controlled_in_jan.map do |patient|
