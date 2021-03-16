@@ -29,7 +29,7 @@ Reports = function () {
     const data = this.getReportingData();
 
     const controlledGraphControlRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
-    const controlledGraphAdjustedRegistrations = window.withLtfu ? data.adjustedRegistrationsWithLtfu : data.adjustedRegistrations;
+    const controlledGraphAdjustedPatientCounts = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const controlledGraphControlledPatients = window.withLtfu ? data.controlledPatientsWithLtfu : data.controlledPatients;
 
     const controlledGraphConfig = this.createBaseGraphConfig();
@@ -105,14 +105,14 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = controlledGraphAdjustedRegistrations[label];
+        const adjustedPatientCounts = controlledGraphAdjustedPatientCounts[label];
         const totalPatients = controlledGraphControlledPatients[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
+        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
         registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
@@ -196,14 +196,14 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = data.adjustedRegistrations[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
         const totalPatients = data.missedVisits[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
+        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
         registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
@@ -287,14 +287,14 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = data.adjustedRegistrations[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
         const totalPatients = data.uncontrolledPatients[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
+        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
         registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
@@ -522,7 +522,7 @@ Reports = function () {
         const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
         const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
         const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
-        const adjustedRegistrationsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
+        const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
         let label = null;
         let missedVisitsRate = null;
         let visitButNoBPMeasureRate = null;
@@ -542,7 +542,7 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = data.adjustedRegistrations[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
         const totalMissedVisits = data.missedVisits[label];
         const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[label];
         const totalUncontrolledPatients = data.uncontrolledPatients[label];
@@ -559,7 +559,7 @@ Reports = function () {
         periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
         periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
         registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
-        adjustedRegistrationsNodes.forEach(node => node.innerHTML = adjustedRegistrations);
+        adjustedPatientCountsNodes.forEach(node => node.innerHTML = adjustedPatientCounts);
       },
     };
 
@@ -613,8 +613,8 @@ Reports = function () {
       missedVisits: jsonData.missed_visits,
       missedVisitsRate: jsonData.missed_visits_rate,
       monthlyRegistrations: jsonData.registrations,
-      adjustedRegistrations: jsonData.adjusted_patient_counts,
-      adjustedRegistrationsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
+      adjustedPatientCounts: jsonData.adjusted_patient_counts,
+      adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledPatients: jsonData.uncontrolled_patients,
