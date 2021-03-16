@@ -223,23 +223,26 @@ RSpec.describe Reports::Repository, type: :model do
       expect(uncontrolled[region.slug].fetch(jan)).to eq(0)
     end
 
-    it "gets visisted with no BP taken counts" do
+    it "gets visit without BP taken counts with and without LTFU" do
       facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
-      facility_1_no_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-      facility_1_with_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      # Since we are reporting for Jan 2020, this patient is lost to follow up -- they have been registered for 12 months but have no BPs taken
+      visit_with_no_bp_and_ltfu = create(:patient, full_name: "visit_with_no_bp_and_ltfu", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      # This user is NOT lost to follow up, as they have not been registered over 12 months
+      visit_with_no_bp_and_not_ltfu = create(:patient, full_name: "visit_with_no_bp_and_not_ltfu", recorded_at: "June 2019", assigned_facility: facility_1, registration_user: user)
+      visit_with_bp = create(:patient, full_name: "visit_with_bp", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
       Timecop.freeze(jan_2020) do
-        create(:appointment, patient: facility_1_no_bp.first)
-        facility_1_with_bp.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 15.days.ago, user: user)
-        end
+        create(:appointment, patient: visit_with_no_bp_and_ltfu, facility: facility_1, user: user)
+        create(:blood_sugar, patient: visit_with_no_bp_and_not_ltfu, facility: facility_1, user: user)
+        create(:blood_pressure, :under_control, facility: facility_1, patient: visit_with_bp, user: user)
       end
 
       refresh_views
       jan = Period.month(jan_2020)
-      repo = Reports::Repository.new(facility_1, periods: (Period.month(jan.advance(months: -3))..Period.month(jan)), with_exclusions: true)
-      expect(repo.visited_without_bp_taken[facility_1.region.slug][Period.month(jan.advance(months: -1))]).to eq(0)
-      expect(repo.visited_without_bp_taken[facility_1.region.slug][Period.month(jan)]).to eq(1)
+      repo_with_exclusions = Reports::Repository.new(facility_1, periods: jan, with_exclusions: true)
+      expect(repo_with_exclusions.visited_without_bp_taken[facility_1.region.slug][jan]).to eq(1)
+      repo_without_exclusions = Reports::Repository.new(facility_1, periods: jan, with_exclusions: false)
+      expect(repo_without_exclusions.visited_without_bp_taken[facility_1.region.slug][jan]).to eq(2)
     end
   end
 
