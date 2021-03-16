@@ -7,5 +7,5 @@ class Statsd
 
   attr_reader :statsd
 
-  delegate :increment, :time, :timing, :gauge, to: :statsd
+  delegate :count, :increment, :time, :timing, :gauge, to: :statsd
 end
