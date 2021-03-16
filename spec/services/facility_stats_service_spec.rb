@@ -92,21 +92,21 @@ RSpec.describe FacilityStatsService do
       # all numbers except cumulative_registrations appear in data 3 months after they're recorded
       small = stats_by_size[:small][:periods]
       expect(small.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 2, 0, 0]
-      expect(small.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 3, 3, 3]
+      expect(small.map { |_, v| v[:adjusted_patient_counts] }).to eq [0, 0, 0, 3, 3, 3]
       expect(small.map { |_, v| v[:cumulative_registrations] }).to eq [3, 3, 3, 3, 3, 3]
       expect(small.map { |_, v| v[:cumulative_assigned_patients] }).to eq [3, 3, 3, 3, 3, 3]
       expect(small.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 67, 0, 0]
 
       medium = stats_by_size[:medium][:periods]
       expect(medium.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 1, 0]
-      expect(medium.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 2, 2]
+      expect(medium.map { |_, v| v[:adjusted_patient_counts] }).to eq [0, 0, 0, 0, 2, 2]
       expect(medium.map { |_, v| v[:cumulative_registrations] }).to eq [0, 2, 2, 2, 2, 2]
       expect(medium.map { |_, v| v[:cumulative_assigned_patients] }).to eq [0, 2, 2, 2, 2, 2]
       expect(medium.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 50, 0]
 
       large = stats_by_size[:large][:periods]
       expect(large.map { |_, v| v[:controlled_patients] }).to eq [0, 0, 0, 0, 0, 1]
-      expect(large.map { |_, v| v[:adjusted_registrations] }).to eq [0, 0, 0, 0, 0, 3]
+      expect(large.map { |_, v| v[:adjusted_patient_counts] }).to eq [0, 0, 0, 0, 0, 3]
       expect(large.map { |_, v| v[:cumulative_registrations] }).to eq [0, 0, 3, 3, 3, 3]
       expect(large.map { |_, v| v[:cumulative_assigned_patients] }).to eq [0, 0, 3, 3, 3, 3]
       expect(large.map { |_, v| v[:controlled_patients_rate] }).to eq [0, 0, 0, 0, 0, 33]
@@ -141,7 +141,7 @@ RSpec.describe FacilityStatsService do
                                                 period: period, rate_numerator: :womp)
       stat_keys = stats_by_size[:small][:periods].values.first.keys
       stat_values = stats_by_size[:small][:periods].values.first.values
-      expected_keys = ["womp", "adjusted_registrations", "cumulative_registrations", "cumulative_assigned_patients", "womp_rate"]
+      expected_keys = ["womp", "adjusted_patient_counts", "cumulative_registrations", "cumulative_assigned_patients", "womp_rate"]
       expect(stat_keys).to match_array(expected_keys)
       expect(stat_values).to match_array([0, 0, 0, 0, 0])
     end
