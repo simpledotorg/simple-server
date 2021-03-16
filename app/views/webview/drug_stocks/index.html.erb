@@ -31,7 +31,7 @@
         <% patient_days = facility_report.dig(category, :patient_days) %>
 
         <div class="card">
-          <h3 style="margin-bottom: 8px;"><%= category %></h3>
+          <h3 style="margin-bottom: 8px;"><%= protocol_drug_labels[category][:full] %></h3>
           <span class="text-green"><%= patient_days %> days of drug stock</span>
 
           <% drugs.each do |drug| %>
@@ -40,10 +40,6 @@
             <div class="card-row">
               <span class="light float-right"><%= drug_stock.in_stock %> tablets</span>
               <h6><%= drug.name %> <%= drug.dosage %> </h6>
-            </div>
-            <div class="card-row">
-              <span class="light float-right">1456 tablets</span>
-              <h6>Amlodipine 10 mg</h6>
             </div>
 
           <% end %>
