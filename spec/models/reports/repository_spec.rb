@@ -223,7 +223,7 @@ RSpec.describe Reports::Repository, type: :model do
       expect(uncontrolled[region.slug].fetch(jan)).to eq(0)
     end
 
-    it "gets no bp measure counts" do
+    it "gets visisted with no BP taken counts" do
       facility_1 = FactoryBot.create_list(:facility, 1, facility_group: facility_group_1).first
       facility_1_no_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       facility_1_with_bp = create_list(:patient, 1, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
@@ -238,8 +238,8 @@ RSpec.describe Reports::Repository, type: :model do
       refresh_views
       jan = Period.month(jan_2020)
       repo = Reports::Repository.new(facility_1, periods: (Period.month(jan.advance(months: -3))..Period.month(jan)), with_exclusions: true)
-      expect(repo.missed_visits_count[facility_1.region.slug][Period.month(jan.advance(months: -1))]).to eq(0)
-      expect(repo.missed_visits_count[facility_1.region.slug][Period.month(jan)]).to eq(1)
+      expect(repo.visited_without_bp_taken[facility_1.region.slug][Period.month(jan.advance(months: -1))]).to eq(0)
+      expect(repo.visited_without_bp_taken[facility_1.region.slug][Period.month(jan)]).to eq(1)
     end
   end
 
@@ -278,7 +278,7 @@ RSpec.describe Reports::Repository, type: :model do
       3.times { _result = repo.controlled_patient_rates }
     end
 
-    it "will ignore memoization via force_cache" do
+    it "will ignore memoization when bust_cache is true" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       Timecop.freeze(jan_2020) do
         controlled_in_jan.map do |patient|
@@ -287,7 +287,7 @@ RSpec.describe Reports::Repository, type: :model do
       end
       refresh_views
 
-      RequestStore[:force_cache] = true
+      RequestStore[:bust_cache] = true
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
       expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(3).times
 

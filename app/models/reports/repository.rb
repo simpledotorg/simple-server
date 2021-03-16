@@ -110,15 +110,15 @@ module Reports
       end
     end
 
-    smart_memoize def missed_visits_count
+    smart_memoize def visited_without_bp_taken
       cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period, with_exclusions: with_exclusions)
       end
     end
 
-    smart_memoize def missed_visits_rate
+    smart_memoize def visited_without_bp_taken_rate
       cached_query(__method__) do |entry|
-        controlled = missed_visits_count[entry.region.slug][entry.period]
+        controlled = visited_without_bp_taken[entry.region.slug][entry.period]
         total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
         percentage(controlled, total)
       end
