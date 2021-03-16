@@ -1,6 +1,6 @@
 class ControlRateService
   include BustCache
-  CACHE_VERSION = 9
+  CACHE_VERSION = 10
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
