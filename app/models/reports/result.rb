@@ -138,7 +138,7 @@ module Reports
       self.adjusted_patient_counts_with_ltfu = running_totals(adjusted_registration_counts)
     end
 
-    def count_adjusted_registrations
+    def count_adjusted_patient_counts
       self.adjusted_patient_counts = full_data_range.each_with_object(Hash.new(0)) do |period, running_totals|
         running_totals[period] = adjusted_patient_counts_with_ltfu[period] - ltfu_patients[period]
       end

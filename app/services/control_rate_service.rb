@@ -59,7 +59,7 @@ class ControlRateService
     results.count_adjusted_patient_counts_with_ltfu
 
     if with_exclusions
-      results.count_adjusted_registrations
+      results.count_adjusted_patient_counts
     else
       results.adjusted_patient_counts = results.adjusted_patient_counts_with_ltfu
     end
