@@ -1,10 +1,12 @@
 # This controller is meant to be used from webviews from the Android app _only_,
 # hence we handle authentication ourselves from params passed from the client.
 class Webview::DrugStocksController < ApplicationController
+  include BustCache
   skip_before_action :verify_authenticity_token
   before_action :authenticate
   before_action :find_current_facility
   before_action :set_for_end_of_month
+  before_action :set_bust_cache
   layout false
 
   def new
@@ -79,5 +81,9 @@ class Webview::DrugStocksController < ApplicationController
     else
       Date.current.end_of_month
     end
+  end
+
+  def set_bust_cache
+    RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
   end
 end
