@@ -79,8 +79,6 @@ class ControlRateService
     return @registration_counts if defined? @registration_counts
 
     @registration_counts = RegisteredPatientsQuery.new.count(region, period_type)
-    logger.info "rjs registration counts #{@registration_counts}"
-    @registration_counts
   end
 
   def assigned_patients_counts
