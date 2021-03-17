@@ -43,7 +43,7 @@ class Reports::RegionsController < AdminController
         controlled_patients_rate: child_data_repo.controlled_patient_rates[slug][@period],
         uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug][@period],
         uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug][@period],
-        missed_visits: child_data_repo.missed_visits_count[slug][@period],
+        missed_visits: child_data_repo.missed_visits[slug][@period],
         missed_visits_percentage: child_data_repo.missed_visits_rate[slug][@period],
         registrations: child_data_repo.registration_counts[slug][@period],
         cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug][@period]

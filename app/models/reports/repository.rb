@@ -105,6 +105,14 @@ module Reports
       end
     end
 
+    smart_memoize def missed_visits_rate
+      cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        remaining_percentages = controlled_patient_rates[slug][period] + uncontrolled_patient_rates[slug][period] + visited_without_bp_taken_rate[slug][period]
+        100 - remaining_percentages
+      end
+    end
+
     smart_memoize def controlled_patient_rates
       cached_query(__method__) do |entry|
         controlled = controlled_patients_count[entry.region.slug][entry.period]
