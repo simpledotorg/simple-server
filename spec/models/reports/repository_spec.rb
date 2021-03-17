@@ -193,7 +193,6 @@ RSpec.describe Reports::Repository, type: :model do
       result = repo.controlled_patients_count
 
       facility_1_results = result[facility_1.slug]
-      controlled_periods = [jan_2020.to_period.advance(months: 2), june_1_2020.to_period.advance(months: 2)]
       range.each do |period|
         expect(facility_1_results[period]).to_not be_nil
       end
@@ -302,7 +301,6 @@ RSpec.describe Reports::Repository, type: :model do
     it "returns same results as ControlRateService" do
       facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       facility_1, facility_2, facility_3 = *facilities.take(3)
-      regions = facilities.map(&:region)
 
       controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
