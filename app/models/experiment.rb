@@ -5,5 +5,7 @@ class Experiment < ActiveYaml::Base
   field :active
   field :variations
 
-  has_many :appointment_reminders
+  def bucket_size
+    variations.keys.count
+  end
 end
