@@ -352,5 +352,28 @@ RSpec.describe Reports::Repository, type: :model do
       expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
       expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
     end
+
+    it "gets same results as RegionService for missed_visits" do
+      may_1 = Time.parse("May 1st, 2020")
+      may_15 = Time.parse("May 15th, 2020")
+      facility = create(:facility, facility_group: facility_group_1)
+      _patient_missed_visit_1 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: Time.parse("December 1st 2010"))
+      _patient_missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020)
+      patient_without_bp = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020)
+      patient_with_bp = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: jan_2020)
+      _appointment_1 = create(:appointment, creation_facility: facility, scheduled_date: may_1, device_created_at: may_1, patient: patient_without_bp)
+      _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
+      create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
+
+      service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
+      repo = Reports::Repository.new(facility.region, periods: service.range)
+      legacy_results = service.call
+      facility_results = repo.missed_visits[facility.slug]
+
+      expect(legacy_results[:missed_visits].size).to eq(service.range.entries.size)
+      expect(facility_results.size).to eq(service.range.entries.size)
+      expect(facility_results).to eq(legacy_results[:missed_visits])
+    end
   end
+
 end

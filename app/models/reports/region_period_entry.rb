@@ -1,6 +1,7 @@
 module Reports
   class RegionPeriodEntry
     attr_reader :region, :period, :calculation
+
     def initialize(region, period, calculation, **options)
       @region = region
       @period = period
@@ -13,6 +14,7 @@ module Reports
     end
 
     delegate :adjusted_period, to: :period
+    delegate :slug, to: :region
     alias_method :to_s, :cache_key
   end
 end
