@@ -140,11 +140,11 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:assigned_patients][Period.month(jan_2019)]).to eq(5)
     expect(result[:cumulative_registrations][Period.month(jan_2019)]).to eq(5)
     expect(result[:cumulative_assigned_patients][Period.month(jan_2019)]).to eq(5)
-    expect(result[:adjusted_registrations][Period.month(jan_2019)]).to eq(0)
+    expect(result[:adjusted_patient_counts][Period.month(jan_2019)]).to eq(0)
 
     expect(result[:cumulative_registrations][Period.month(jan_2020)]).to eq(5)
     expect(result[:cumulative_assigned_patients][Period.month(jan_2020)]).to eq(5)
-    expect(result[:adjusted_registrations][Period.month(jan_2020)]).to eq(5)
+    expect(result[:adjusted_patient_counts][Period.month(jan_2020)]).to eq(5)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(40.0)
 
@@ -176,7 +176,7 @@ RSpec.describe ControlRateService, type: :model do
 
     expect(result[:registrations][Period.month(jan_2020)]).to eq(1)
     expect(result[:cumulative_registrations][Period.month(jan_2020)]).to eq(1)
-    expect(result[:adjusted_registrations][Period.month(jan_2020)]).to eq(0)
+    expect(result[:adjusted_patient_counts][Period.month(jan_2020)]).to eq(0)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(0)
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(0.0)
   end
@@ -206,7 +206,7 @@ RSpec.describe ControlRateService, type: :model do
 
       expect(result[:cumulative_registrations][report_month]).to eq(2)
       expect(result[:cumulative_assigned_patients][report_month]).to eq(2)
-      expect(result[:adjusted_registrations][report_month]).to eq(2)
+      expect(result[:adjusted_patient_counts][report_month]).to eq(2)
       expect(result[:controlled_patients][report_month]).to eq(2)
       expect(result[:controlled_patients_rate][report_month]).to eq(100.0)
       expect(result[:uncontrolled_patients][report_month]).to eq(0)
@@ -217,8 +217,8 @@ RSpec.describe ControlRateService, type: :model do
 
       expect(result_with_exclusions[:cumulative_registrations][report_month]).to eq(2)
       expect(result_with_exclusions[:cumulative_assigned_patients][report_month]).to eq(1)
-      expect(result_with_exclusions[:adjusted_registrations_with_ltfu][report_month]).to eq(1)
-      expect(result_with_exclusions[:adjusted_registrations][report_month]).to eq(1)
+      expect(result_with_exclusions[:adjusted_patient_counts_with_ltfu][report_month]).to eq(1)
+      expect(result_with_exclusions[:adjusted_patient_counts][report_month]).to eq(1)
       expect(result_with_exclusions[:controlled_patients][report_month]).to eq(1)
       expect(result_with_exclusions[:controlled_patients_rate][report_month]).to eq(100.0)
       expect(result_with_exclusions[:controlled_patients_with_ltfu_rate][report_month]).to eq(100.0)
