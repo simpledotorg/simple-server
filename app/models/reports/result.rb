@@ -130,12 +130,12 @@ module Reports
     # Adjusted patient counts are the cumulative patient counts (with exclusions) as of three months ago.
     # We use these for all the percentage calculations to exclude recently registered patients.
     def count_adjusted_patient_counts_with_ltfu
-      adjusted_registration_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
+      adjusted_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
         adjusted_period = period.advance(months: -3)
         counts[period] = assigned_patients[adjusted_period]
       }
 
-      self.adjusted_patient_counts_with_ltfu = running_totals(adjusted_registration_counts)
+      self.adjusted_patient_counts_with_ltfu = running_totals(adjusted_counts)
     end
 
     def count_adjusted_patient_counts
@@ -155,11 +155,11 @@ module Reports
     # "Missed visits" is the remaining patients when we subtract out the other three groups.
     def calculate_missed_visits(range)
       self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-        registrations = adjusted_patient_counts_for(period)
+        patient_count = adjusted_patient_counts_for(period)
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
         visited_without_bp_taken = visited_without_bp_taken_for(period)
-        missed_visits = registrations - visited_without_bp_taken - controlled - uncontrolled
+        missed_visits = patient_count - visited_without_bp_taken - controlled - uncontrolled
         hsh[period] = missed_visits.try(:floor) || 0
       }
     end
@@ -187,7 +187,7 @@ module Reports
       end
     end
 
-    def registrations_for_quarterly_percentage
+    def denominator_for_quarterly_percentage
       {
         controlled_patients: :assigned_patients,
         uncontrolled_patients: :assigned_patients,
@@ -197,7 +197,7 @@ module Reports
       }
     end
 
-    def registrations_for_monthly_percentage
+    def denominator_for_monthly_percentage
       {
         controlled_patients: :adjusted_patient_counts,
         uncontrolled_patients: :adjusted_patient_counts,
@@ -209,9 +209,9 @@ module Reports
 
     def denominator_for_percentage_calculation(period, key)
       if quarterly_report?
-        self[registrations_for_quarterly_percentage[key]][period.previous] || 0
+        self[denominator_for_quarterly_percentage[key]][period.previous] || 0
       else
-        self[registrations_for_monthly_percentage[key]][period]
+        self[denominator_for_monthly_percentage[key]][period]
       end
     end
 
