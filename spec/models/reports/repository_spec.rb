@@ -375,5 +375,4 @@ RSpec.describe Reports::Repository, type: :model do
       expect(facility_results).to eq(legacy_results[:missed_visits])
     end
   end
-
 end

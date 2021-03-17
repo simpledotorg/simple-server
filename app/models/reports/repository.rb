@@ -94,14 +94,14 @@ module Reports
       end
     end
 
-    def missed_visits
+    smart_memoize def missed_visits
       cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = cumulative_assigned_patients_count[slug][entry.adjusted_period]
         controlled = controlled_patients_count[slug][entry.period]
         uncontrolled = uncontrolled_patients_count[slug][entry.period]
         visits = visited_without_bp_taken[slug][entry.period]
-        missed_visits = patient_count - visits - controlled - uncontrolled
+        patient_count - visits - controlled - uncontrolled
       end
     end
 
