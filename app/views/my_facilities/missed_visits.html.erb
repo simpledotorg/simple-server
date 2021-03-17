@@ -117,7 +117,7 @@
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= missed_visits_rate %>"
                     data-toggle="tooltip"
-                    title="<%= data["missed_visits"] %> / <%= data["adjusted_registrations"] %> patients"
+                    title="<%= data["missed_visits"] %> / <%= data["adjusted_patient_counts"] %> patients"
                   >
                     <em data-rate="<%= missed_visits_rate %>">
                       <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>
@@ -159,7 +159,7 @@
                       data-sort-column-key="total-patients-<%= period %>"
                       data-sort="<%= missed_visits_rate %>"
                       data-toggle="tooltip"
-                      title="<%= facility_data["missed_visits"][period] %> / <%= facility_data["adjusted_registrations"][period] %> patients"
+                      title="<%= facility_data["missed_visits"][period] %> / <%= facility_data["adjusted_patient_counts"][period] %> patients"
                     >
                       <em data-rate="<%= missed_visits_rate %>">
                         <%= number_to_percentage(missed_visits_rate || 0, precision: 0) %>
