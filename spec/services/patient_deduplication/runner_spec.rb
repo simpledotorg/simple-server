@@ -11,7 +11,7 @@ RSpec.describe PatientDeduplication::Runner do
 
       allow_any_instance_of(PatientDeduplication::Deduplicator).to receive(:errors).and_return(["Some error"])
 
-      instance = described_class.new(PatientDeduplication::Strategies.identifier_and_full_name_match, "automatic")
+      instance = described_class.new(PatientDeduplication::Strategies.identifier_and_full_name_match)
       instance.perform
       expect(instance.merge_failures).to eq [["Some error"]]
     end
@@ -23,7 +23,7 @@ RSpec.describe PatientDeduplication::Runner do
       patient_2 = create(:patient, full_name: "Patient")
       patient_2.business_identifiers.first.update(identifier: passport_id)
 
-      instance = described_class.new(PatientDeduplication::Strategies.identifier_and_full_name_match, "automatic")
+      instance = described_class.new(PatientDeduplication::Strategies.identifier_and_full_name_match)
       instance.perform
       expect(instance.report_stats).to eq({processed: {total: 2,
                                                        distinct: 1},
