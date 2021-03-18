@@ -20,7 +20,7 @@ RSpec.describe Experiment, type: :model do
     end
   end
 
-  describe "bucket_size" do
+  describe "#bucket_size" do
     it "should return the number of buckets in the experiment" do
       expect(experiment.bucket_size).to eq(3)
     end

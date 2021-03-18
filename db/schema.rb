@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 2021_03_16_154530) do
     t.date "remind_on", null: false
     t.string "status", null: false
     t.bigint "experiment_id"
-    t.bigint "appointment_id"
+    t.uuid "appointment_id", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -596,6 +596,7 @@ ActiveRecord::Schema.define(version: 2021_03_16_154530) do
   end
 
   add_foreign_key "accesses", "users"
+  add_foreign_key "appointment_reminders", "appointments"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"

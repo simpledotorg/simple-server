@@ -4,5 +4,6 @@ FactoryBot.define do
     remind_on { Date.current + 3.days }
     status { "pending" }
     appointment
+    experiment_id { nil }
   end
 end
