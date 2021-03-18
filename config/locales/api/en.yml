@@ -160,6 +160,34 @@ en:
       tip:
         heading: Tip
         contents: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
+    register:
+      heading: Register a patient
+      contents: "There are two ways to register new patients:"
+      option_1:
+        label: Option 1
+        heading: If you have BP Passports
+        step_1: Press this button on the main screen
+        step_2_html: Pick up a <i>blank</i> BP Passport and scan the QR code.
+        step_3: Search for the patient’s full name.
+        step_4_html: If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.
+        step_5: Fill the registration form.
+        step_6: Talk to your patient and then complete the medical history.
+        step_7_html: Record the patient visit, press <span class="code">Save</span>.
+      option_2:
+        label: Option 2
+        heading_html: If you <i>do not</i> have BP Passports
+        step_1_html: Press <span class="code">Enter patient’s name</span>
+        step_2: Enter your patient's full name.
+        step_3_html: If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.
+        step_4: Fill the registration form.
+        step_5: Talk to your patient and then complete the medical history.
+        step_6_html: Record the patient visit, press <span class="code">Save</span>.
+      tips:
+        heading: Tips
+        tip_1: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
+        tip_2: Enter mobile number if you can!
+        tip_3: If you cannot find a follow-up patient, it is okay to register them as a new patient.
+        tip_4: If a patient loses their BP Passport, please give them a new one. Patients can have multiple BP Passports, they will all work correctly.
     bp_passport_app:
       new: NEW!
       heading: App for your patients

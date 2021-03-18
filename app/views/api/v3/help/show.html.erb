@@ -205,48 +205,48 @@
         <a href="#" onclick="closeWindow('help-register'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2>Register a patient</h2>
+        <h2><%= t("help.register.heading") %></h2>
         <section style="margin: -16px 0 24px 8px;">
-          <p>There are two ways to register new patients:</p>
+          <p><%= t("help.register.contents") %></p>
         </section>
         <div class="card">
-          <h3><span class="header-label"><span>Option 1</span></span>If you have BP Passports</h3>
+          <h3><span class="header-label"><span><%= t("help.register.option_1.label") %></span></span><%= t("help.register.option_1.heading") %></h3>
           <ol>
             <li class="num">
-              Press this button on the main screen
+              <%= t("help.register.option_1.step_1") %>
               <div class="help-example"><%= inline_svg('help/scan_bp_passport.svg') %></div>
             </li>
             <li class="num">
-              Pick up a <i>blank</i> BP Passport and scan the QR code.
+              <%= t("help.register.option_1.step_2_html") %>
               <div class="help-example"><%= inline_svg('help/bp_passport.svg') %></div>
             </li>
-            <li class="num">Search for the patient’s full name.</li>
-            <li class="num">If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.</li>
-            <li class="num">Fill the registration form.</li>
-            <li class="num">Talk to your patient and then complete the medical history.</li>
-            <li class="num">Record the patient visit, press <span class="code">Save</span>.</li>
+            <li class="num"><%= t("help.register.option_1.step_3") %></li>
+            <li class="num"><%= t("help.register.option_1.step_4_html") %></li>
+            <li class="num"><%= t("help.register.option_1.step_5") %></li>
+            <li class="num"><%= t("help.register.option_1.step_6") %></li>
+            <li class="num"><%= t("help.register.option_1.step_7_html") %></li>
           </ol>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Option 2</span></span>If you <i>do not</i> have BP Passports</h3>
+          <h3><span class="header-label"><span><%= t("help.register.option_2.label") %></span></span><%= t("help.register.option_2.heading") %></h3>
           <ol>
-            <li class="num">Press <span class="code">Enter patient’s name</span></li>
-            <li class="num">Enter your patient's full name.</li>
-            <li class="num">If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.</li>
-            <li class="num">Fill the registration form.</li>
-            <li class="num">Talk to your patient and then complete the medical history.</li>
-            <li class="num">Record the patient visit, press <span class="code">Save</span>.</li>
+            <li class="num"><%= t("help.register.option_2.step_1_html") %></li>
+            <li class="num"><%= t("help.register.option_2.step_2") %></li>
+            <li class="num"><%= t("help.register.option_2.step_3_html") %></li>
+            <li class="num"><%= t("help.register.option_2.step_4") %></li>
+            <li class="num"><%= t("help.register.option_2.step_5") %></li>
+            <li class="num"><%= t("help.register.option_2.step_6_html") %></li>
           </ol>
         </div>
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3>Tips</h3>
+          <h3><%= t("help.register.tips.heading") %></h3>
           <ul>
-            <li>Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.</li>
-            <li>Enter mobile number if you can!</li>
-            <li>If you cannot find a follow-up patient, it is okay to register them as a new patient.</li>
-            <li>If a patient loses their BP Passport, please give them a new one. Patients can have multiple BP Passports, they will all work correctly.</li>
+            <li><%= t("help.register.tips.tip_1") %></li>
+            <li><%= t("help.register.tips.tip_2") %></li>
+            <li><%= t("help.register.tips.tip_3") %></li>
+            <li><%= t("help.register.tips.tip_4") %></li>
           </ul>
         </div>
       </div>
