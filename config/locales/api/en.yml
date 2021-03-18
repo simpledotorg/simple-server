@@ -86,6 +86,12 @@ en:
     support:
       heading: Ask for help
       contents: If you have problems or questions, please press the button for our support group. Our friendly team will help you.
+    bp_passport_app_summary:
+      new: NEW!
+      heading: App for your patients
+      contents_1: Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.
+      contents_2: Ask your patients to go to the Google Play Store or Apple App Store and install the "BP Passport" app.
+      learn_more: Learn more...
     videos:
       heading: Training videos
       class:
@@ -254,12 +260,25 @@ en:
           condition_4: Transferred to another facility
           condition_5: Moved to private practitioner
           condition_6: Died
-
-    bp_passport_app:
-      new: NEW!
-      heading: App for your patients
-      contents_1: Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.
-      contents_2: Ask your patients to go to the Google Play Store or Apple App Store and install the "BP Passport" app.
-      learn_more: Learn more...
+    faq:
+      heading: Common questions
+      app_crash_question: What should I do if my app crashes?
+      app_crash_answer_html: First try restarting your device. If Simple is crashing and you cannot fix it, please go to the <span class="help">Help</span> screen and contact your supervisor or our team.
+      scan_not_working_question: Scan isn't working. What should I do?
+      scan_not_working_answer: Enter the BP Passport number at the bottom of the screen. If the problem persists, restart your phone. If it still does not work, contact your supervisor.
+      udpate_app_question: How do I update the app?
+      udpate_app_answer_html: "Update the app by pressing the settings icon and pressing <span class=\"code\">Update</span>. It is important to have the latest version of Simple on your device."
+      cant_find_followup_question: I cannot find a follow-up patient
+      cant_find_followup_answer: Sometimes it is difficult to find a follow-up patient when they do not have a BP Passport. If, after 5 minutes, you cannot find the patient, register them as a new patient. It is possible to combine the patient records in the future.
+      two_bp_passports_question: Can a patient have 2 BP Passports?
+      two_bp_passports_answer: Yes. A patient can have multiple BP Passports. They will all continue to work.
+      no_more_bp_passports_question: I ran out of BP Passports
+      no_more_bp_passports_answer_html: Please ask your supervisor to order more BP Passports, before you run out. Remember, you can still record patients even if you do not have any BP Passports &#8212; you can assign BP Passports later.
+      what_is_sync_question: What is a "sync"?
+      what_is_sync_answer: A "sync" saves your data to a central server. Please make sure that your data gets saved at least once per day. If you do not have a good internet connection, your data might take some time to sync.
+      data_usage_question: How much data does Simple use?
+      data_usage_answer: Simple uses very little data. On average about 20 MB is used each month.
+      access_my_info_question: Can Simple access my information?
+      access_my_info_answer: Simple does not access any of the personal information on your phone or tablet.
     privacy_policy: Privacy Policy
     terms_of_service: Terms of Service
