@@ -74,3 +74,23 @@ en:
       female: "Female"
       male: "Male"
       transgender: "Transgender"
+  help:
+    menu:
+      videos: Videos
+      start: 1. Getting started
+      register: 2. Register a patient
+      search: 3. Find the correct patient
+      record: 4. Record a patient’s visit
+      overdue: 5. Call overdue patients
+      faq: Common questions
+      support:
+        heading: Ask for help
+        contents: If you have problems or questions, please press the button for our support group. Our friendly team will help you.
+      bp_passport_app:
+        new: NEW!
+        heading: App for your patients
+        contents_1: Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.
+        contents_2: Ask your patients to go to the Google Play Store or Apple App Store and install the "BP Passport" app.
+        learn_more: Learn more...
+      privacy_policy: Privacy Policy
+      terms_of_service: Terms of Service
