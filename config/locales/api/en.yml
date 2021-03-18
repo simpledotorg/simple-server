@@ -280,5 +280,37 @@ en:
       data_usage_answer: Simple uses very little data. On average about 20 MB is used each month.
       access_my_info_question: Can Simple access my information?
       access_my_info_answer: Simple does not access any of the personal information on your phone or tablet.
+    bp_passport_app:
+      heading: BP Passport app
+      features:
+        heading: A free app for patients
+        contents: Patients can scan their paper BP Passports and the app will show the current measures and medications that you add in your hospital or clinic, right on their smartphone.
+        feature_1: Chart BPs
+        feature_2: Chart blood sugars
+        feature_3: Reminders to take medicines
+        feature_4: Healthy advice
+        feature_5: Free, with no ads
+        learn_more: "Learn more"
+      platforms:
+        headings: Apple and Android
+        contents_html: "Tell your patients to get the app by searching for <span class=\"code\">BP Passsport</span> on the Google Play Store or Apple App Store."
+        apple_app_store: Apple App Store
+        google_play_store: Google Play Store
+      languages:
+        heading: Languages
+        contents: "The BP Passport app is available in:"
+        language_amharic: Amharic
+        language_bengali: Bengali
+        language_english: English
+        language_french: French
+        language_hindi: Hindi
+        language_kannada: Kannada
+        language_marathi: Marathi
+        language_oromo: Oromo
+        language_punjabi: Punjabi
+        language_spanish: Spanish
+        language_tamil: Tamil
+        language_telugu: Telugu
+        language_tigrinya: Tigrinya
     privacy_policy: Privacy Policy
     terms_of_service: Terms of Service
