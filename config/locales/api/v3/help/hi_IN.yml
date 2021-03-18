@@ -1,0 +1,5 @@
+hi_IN:
+  api:
+    v3:
+      help:
+        new_registrations: नए पंजीकरण
