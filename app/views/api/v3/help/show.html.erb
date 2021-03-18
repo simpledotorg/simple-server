@@ -151,7 +151,7 @@
         <h2>Getting started</h2>
         <div class="card">
           <h3>Watch a video</h3>
-          <a href="%{help_screen_youtube_video_url}" class="video">
+          <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video">
             <%= inline_svg('thumb_demo.svg') %>
           </a>
           <p>Learn the basics of Simple in 5 minutes.</p>
@@ -192,7 +192,7 @@
         </div>
         <hr>
         <div class="card card-tip">
-          %{help_tip_svg}
+          <%= inline_svg('help/tip.svg') %>
           <h3>Tip</h3>
           <p>Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.</p>
         </div>
@@ -238,7 +238,7 @@
         </div>
         <hr>
         <div class="card card-tip">
-          %{help_tip_svg}
+          <%= inline_svg('help/tip.svg') %>
           <h3>Tips</h3>
           <ul>
             <li>Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.</li>
@@ -273,7 +273,7 @@
         </div>
         <hr>
         <div class="card card-tip">
-          %{help_tip_svg}
+          <%= inline_svg('help/tip.svg') %>
           <h3>Tip</h3>
           <p>If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.</p>
         </div>
@@ -336,7 +336,7 @@
         </div>
         <hr>
         <div class="card card-tip">
-          %{help_tip_svg}
+          <%= inline_svg('help/tip.svg') %>
           <h3>Tips</h3>
           <ul>
             <li>You can select the next visit date on a calendar by tapping <span class="code">CHANGE</span> when scheduling the visit.</li>
