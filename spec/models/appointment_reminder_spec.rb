@@ -1,11 +1,12 @@
 require "rails_helper"
 
 describe AppointmentReminder, type: :model do
-
   describe "associations" do
-
     it { should belong_to(:appointment) }
 
+    # can't use the belong_to test here because it would require Experiment to have many
+    # AppointmentReminders. has_many can be made to work for ActiveYaml by including an additional
+    # module but i don't expect us to need Experiment.appointment_reminders functionality
     it "should set experiment id when provided" do
       allow(ActiveYaml::Base).to receive(:actual_root_path).and_return(Rails.root + "spec/fixtures")
       appointment = create(:appointment)
