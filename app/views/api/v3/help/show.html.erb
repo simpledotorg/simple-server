@@ -46,10 +46,10 @@
         </nav>
         <div class="card support <%= CountryConfig.current[:abbreviation] %>">
           <h3>
-            <%= t("help.menu.support.heading") %>
+            <%= t("help.support.heading") %>
           </h3>
           <p>
-            <%= t("help.menu.support.contents") %>
+            <%= t("help.support.contents") %>
           </p>
           <a href="<%= ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>" class="support-button <%= CountryConfig.current[:abbreviation] %>-button">
             <%= inline_svg(ENV['HELP_SCREEN_SUPPORT_GROUP_ICON']) %> <%= ENV['HELP_SCREEN_SUPPORT_GROUP_NUMBER'] %>
@@ -58,12 +58,12 @@
         <div class="card">
           <a href="#" onclick="openWindow('help-bp-passport-app'); return false" class="card-header" style="background: #FF3355 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQ0IiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDM0NCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjEyMSIgeT0iMzAiIHdpZHRoPSIxMDkiIGhlaWdodD0iMTc5IiByeD0iOSIgZmlsbD0iIzAwNDc4RiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+CjxyZWN0IHg9IjE3OCIgeT0iODQiIHdpZHRoPSI2IiBoZWlnaHQ9Ijc1IiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE4MSIgY3k9Ijg0IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE4MSIgY3k9IjE1OSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIxODciIHk9Ijk5IiB3aWR0aD0iNiIgaGVpZ2h0PSI3MiIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIxOTAiIGN5PSI5OSIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzEiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTk2IiB5PSI4NiIgd2lkdGg9IjYiIGhlaWdodD0iNjgiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTk5IiBjeT0iODYiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTk5IiBjeT0iMTU0IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjIwNSIgeT0iOTIiIHdpZHRoPSI2IiBoZWlnaHQ9IjczIiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjIwOCIgY3k9IjkyIiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjIwOCIgY3k9IjE2NSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIyMTQiIHk9Ijk0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2NSIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIyMTciIGN5PSI5NCIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIyMTciIGN5PSIxNTkiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTMyIiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNzUiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTM1IiBjeT0iODQiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTM1IiBjeT0iMTU5IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjE0MSIgeT0iOTkiIHdpZHRoPSI2IiBoZWlnaHQ9IjcyIiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9Ijk5IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9IjE3MSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIxNTAiIHk9Ijg2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2OCIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIxNTMiIGN5PSI4NiIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIxNTMiIGN5PSIxNTQiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTU5IiB5PSI5MiIgd2lkdGg9IjYiIGhlaWdodD0iNzMiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTYyIiBjeT0iOTIiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTYyIiBjeT0iMTY1IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjE2OCIgeT0iOTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjY1IiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE3MSIgY3k9Ijk0IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE3MSIgY3k9IjE1OSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSI4NSIgeT0iMTI1IiB3aWR0aD0iNjMiIGhlaWdodD0iNjMiIHJ4PSI5IiBmaWxsPSIjMDAzNjZEIi8+CjxwYXRoIGQ9Ik0xMTUuNSAxNzZDMTIzLjUwOCAxNzYgMTMwIDE2OS40ODggMTMwIDE2MS40NTVDMTMwIDE1MC41NDUgMTE1LjUgMTM2IDExNS41IDEzNkMxMTUuNSAxMzYgMTAxIDE1MC41NDUgMTAxIDE2MS40NTVDMTAxIDE2OS40ODggMTA3LjQ5MiAxNzYgMTE1LjUgMTc2WiIgZmlsbD0iI0ZGMzM1NSIvPgo8cGF0aCBkPSJNMTA2LjQxNiAxNjcuODk5QzEwNS43NjEgMTY3LjEzIDEwNS44OTQgMTY2LjAwNyAxMDYuNzEzIDE2NS4zOTFDMTA3LjUzMyAxNjQuNzc1IDEwOC43MjggMTY0LjkgMTA5LjM4NCAxNjUuNjdDMTEyLjA4NiAxNjguODQyIDExNy4wMTUgMTY5LjM1NyAxMjAuMzkzIDE2Ni44MTlDMTIwLjg0NSAxNjYuNDc5IDEyMS4yNTUgMTY2LjA5NCAxMjEuNjE2IDE2NS42N0MxMjIuMjcyIDE2NC45IDEyMy40NjcgMTY0Ljc3NSAxMjQuMjg3IDE2NS4zOTFDMTI1LjEwNiAxNjYuMDA3IDEyNS4yMzkgMTY3LjEzIDEyNC41ODQgMTY3Ljg5OUMxMjQuMDQ3IDE2OC41MjkgMTIzLjQzOCAxNjkuMTAyIDEyMi43NjcgMTY5LjYwNkMxMTcuNzUgMTczLjM3NSAxMTAuNDMgMTcyLjYxMSAxMDYuNDE2IDE2Ny44OTlaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K) no-repeat 50% 50%; background-size: contain;">
           </a>
-          <h3><span style="color: #FF3355; font-size: 90%; float: right;"><%= t("help.menu.bp_passport_app.new") %></span> <%= t("help.menu.bp_passport_app.heading") %></h3>
-          <p><%= t("help.menu.bp_passport_app.contents_1") %></p>
-          <p><%= t("help.menu.bp_passport_app.contents_2") %></p>
-          <p class="card-footer-button"><a href="#" onclick="openWindow('help-bp-passport-app'); return false"><%= t("help.menu.bp_passport_app.learn_more") %></a></p>
+          <h3><span style="color: #FF3355; font-size: 90%; float: right;"><%= t("help.bp_passport_app.new") %></span> <%= t("help.bp_passport_app.heading") %></h3>
+          <p><%= t("help.bp_passport_app.contents_1") %></p>
+          <p><%= t("help.bp_passport_app.contents_2") %></p>
+          <p class="card-footer-button"><a href="#" onclick="openWindow('help-bp-passport-app'); return false"><%= t("help.bp_passport_app.learn_more") %></a></p>
         </div>
-        <p class="tos"><a href="https://simple.org/simple-privacy"><%= t("help.menu.privacy_policy") %></a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms"><%= t("help.menu.terms_of_service") %></a></p>
+        <p class="tos"><a href="https://simple.org/simple-privacy"><%= t("help.privacy_policy") %></a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms"><%= t("help.terms_of_service") %></a></p>
       </div>
     </div>
     <div id="help-videos" class="help-body" style="display: none;">
@@ -71,74 +71,76 @@
         <a href="#" onclick="closeWindow('help-videos'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2>Training videos</h2>
+        <h2><%= t("help.videos.heading") %></h2>
         <div class="card">
-          <h3>Take the class</h3>
-          <p>Watch a class to learn to use Simple.</p>
+          <h3><%= t("help.videos.class.heading") %></h3>
+          <p><%= t("help.videos.class.contents") %></p>
           <a href="%{help_screen_youtube_training_url}" class="video">
           <%= inline_svg('thumb_training.svg') %>
           </a>
           <p>
-            <a href="%{help_screen_youtube_training_url}">Training: All Chapters</a><br>English with Hindi subtitles 36:15
+            <a href="%{help_screen_youtube_training_url}"><%= t("help.videos.class.training_videos_link") %></a>
+            <br>
+            <%= t("help.videos.class.training_videos_subtitle") %>
           </p>
         </div>
         <div class="card">
-          <h3>Class chapters</h3>
+          <h3><%= t("help.videos.chapters.heading") %></h3>
           <div class="video-small">
-            <a href="https://youtu.be/r0mbu1s0l7A">1: Install the app</a>
+            <a href="https://youtu.be/r0mbu1s0l7A"><%= t("help.videos.chapters.chapter_1") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/YPySS9sL-EU">2: Introduction</a>
+            <a href="https://youtu.be/YPySS9sL-EU"><%= t("help.videos.chapters.chapter_2") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/5P5mGQVQFOU">3: Register a patient</a>
+            <a href="https://youtu.be/5P5mGQVQFOU"><%= t("help.videos.chapters.chapter_3") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/6hR1vQ8hoTU">4: Search for a follow-up patient</a>
+            <a href="https://youtu.be/6hR1vQ8hoTU"><%= t("help.videos.chapters.chapter_4") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/o3klwHrMEi0">5: Find the right patient</a>
+            <a href="https://youtu.be/o3klwHrMEi0"><%= t("help.videos.chapters.chapter_5") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/PuM29XINOn4">6: Call overdue patients</a>
+            <a href="https://youtu.be/PuM29XINOn4"><%= t("help.videos.chapters.chapter_6") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/elCBnApJLIM">7: Important features</a>
+            <a href="https://youtu.be/elCBnApJLIM"><%= t("help.videos.chapters.chapter_7") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/Aj-dKn_kmlw">8: FAQ</a>
+            <a href="https://youtu.be/Aj-dKn_kmlw"><%= t("help.videos.chapters.chapter_8") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/wF4t_pFuugY">9: How to get help</a>
+            <a href="https://youtu.be/wF4t_pFuugY"><%= t("help.videos.chapters.chapter_9") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/kls4QnWz1Nw">10: Start using Simple</a>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Tele-consultation training</h3>
-          <p>If your hospital is using Simple for tele-consultation, this training is for you.</p>
-          <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>">Tele-consultation with Simple<span>English</span></a>
-          </div>
-          <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>">सिम्पल द्वारा टेली-मेडिसिन<span>Hindi</span></a>
+            <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10") %></a>
           </div>
         </div>
         <div class="card">
-          <h3>BP Passports</h3>
-          <p>Learn how to use BP Passport cards or BP Passport stickers in your hospital.</p>
+          <h3><%= t("help.videos.teleconsultation.heading") %></h3>
+          <p><%= t("help.videos.teleconsultation.contents") %></p>
           <div class="video-small">
-            <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s">How to use a BP Passport<span>Hindi with English subtitles</span></a>
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_link") %><span><%= t("help.videos.teleconsultation.english_link_language") %></span></a>
+          </div>
+          <div class="video-small">
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_link") %><span><%= t("help.videos.teleconsultation.hindi_link_language") %></span></a>
           </div>
         </div>
         <div class="card">
-          <h3>Simple film</h3>
+          <h3><%= t("help.videos.bp_passports.heading") %></h3>
+          <p><%= t("help.videos.bp_passports.contents") %></p>
+          <div class="video-small">
+            <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s"><%= t("help.videos.bp_passports.video_link") %><span><%= t("help.videos.bp_passports.video_link_subtitle") %></span></a>
+          </div>
+        </div>
+        <div class="card">
+          <h3><%= t("help.videos.film.heading") %></h3>
           <a href="https://www.youtube.com/watch?v=C26CoyeExmU" class="video">
           <%= inline_svg('thumb_documentary.svg') %>
           </a>
           <p>
-            <a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.
+            <%= t("help.videos.film.link_html") %>
           </p>
         </div>
       </div>

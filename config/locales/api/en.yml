@@ -83,14 +83,48 @@ en:
       record: 4. Record a patient’s visit
       overdue: 5. Call overdue patients
       faq: Common questions
-      support:
-        heading: Ask for help
-        contents: If you have problems or questions, please press the button for our support group. Our friendly team will help you.
-      bp_passport_app:
-        new: NEW!
-        heading: App for your patients
-        contents_1: Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.
-        contents_2: Ask your patients to go to the Google Play Store or Apple App Store and install the "BP Passport" app.
-        learn_more: Learn more...
-      privacy_policy: Privacy Policy
-      terms_of_service: Terms of Service
+    support:
+      heading: Ask for help
+      contents: If you have problems or questions, please press the button for our support group. Our friendly team will help you.
+    videos:
+      heading: Training videos
+      class:
+        heading: Take the class
+        contents: Watch a class to learn to use Simple.
+        training_videos_link: "Training: All Chapters"
+        training_videos_subtitle: "English with Hindi subtitles 36:15"
+      chapters:
+        heading: Class chapters
+        chapter_1: "1: Install the app"
+        chapter_2: "2: Introduction"
+        chapter_3: "3: Register a patient"
+        chapter_4: "4: Search for a follow-up patient"
+        chapter_5: "5: Find the right patient"
+        chapter_6: "6: Call overdue patients"
+        chapter_7: "7: Important features"
+        chapter_8: "8: FAQ"
+        chapter_9: "9: How to get help"
+        chapter_10: "10: Start using Simple"
+      teleconsultation:
+        heading: Tele-consultation training
+        contents: If your hospital is using Simple for tele-consultation, this training is for you.
+        english_link: Tele-consultation with Simple
+        english_link_language: English
+        hindi_link: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_link_language: Hindi
+      bp_passports:
+        heading: BP Passports
+        contents: Learn how to use BP Passport cards or BP Passport stickers in your hospital.
+        video_link: How to use a BP Passport
+        video_link_subtitle: Hindi with English subtitles
+      film:
+        heading: Simple film
+        link_html: <a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.
+    bp_passport_app:
+      new: NEW!
+      heading: App for your patients
+      contents_1: Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.
+      contents_2: Ask your patients to go to the Google Play Store or Apple App Store and install the "BP Passport" app.
+      learn_more: Learn more...
+    privacy_policy: Privacy Policy
+    terms_of_service: Terms of Service
