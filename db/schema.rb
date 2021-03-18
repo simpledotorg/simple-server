@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_122746) do
+ActiveRecord::Schema.define(version: 2021_03_16_154530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -45,6 +45,18 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
     t.index ["zone"], name: "index_addresses_on_zone"
+  end
+
+  create_table "appointment_reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "remind_on", null: false
+    t.string "status", null: false
+    t.bigint "experiment_id"
+    t.bigint "appointment_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_appointment_reminders_on_appointment_id"
+    t.index ["experiment_id"], name: "index_appointment_reminders_on_experiment_id"
   end
 
   create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

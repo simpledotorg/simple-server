@@ -1,16 +1,20 @@
 require "rails_helper"
 
 RSpec.describe Experiment, type: :model do
+  before do
+    allow(ActiveYaml::Base).to receive(:actual_root_path).and_return(Rails.root + "spec/fixtures")
+  end
+
   subject(:experiment) { Experiment.first }
 
   describe "#variations" do
     it "should contain a hash from the yaml file" do
       expected_response = {
-        "A"=>[{"message"=>"Hi there", "when"=>-3},
-              {"message"=>"Are you coming?", "when"=>0},
-              {"message"=>"You are very late", "when" => 3}],
-        "B"=>[{"message"=>"Hi there. Come soon.", "when"=>-3}],
-        "C"=>[{"message"=>"You are late", "when"=>3}]
+        "A" => [{"message" => "Hi there", "when" => -3},
+          {"message" => "Are you coming?", "when" => 0},
+          {"message" => "You are very late", "when" => 3}],
+        "B" => [{"message" => "Hi there. Come soon.", "when" => -3}],
+        "C" => [{"message" => "You are late", "when" => 3}]
       }
       expect(experiment.variations).to eq(expected_response)
     end

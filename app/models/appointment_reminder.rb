@@ -1,8 +1,8 @@
 class AppointmentReminder < ApplicationRecord
-  belongs_to :patient
   belongs_to :experiment, optional: true
   belongs_to :appointment
-  has_many :communications
+
+  validates_presence_of :status
 
   enum status: {
     pending: "pending",

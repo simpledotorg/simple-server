@@ -1,0 +1,22 @@
+---
+- id: 123
+  active: true
+  variations:
+    A:
+      -
+        message: "Hi there"
+        when: -3
+      -
+        message: "Are you coming?"
+        when: -0
+      -
+        message: "You are very late"
+        when: 3
+    B:
+      -
+        message: "Hi there. Come soon."
+        when: -3
+    C:
+      -
+        message: "You are late"
+        when: 3
