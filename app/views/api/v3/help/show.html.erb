@@ -121,10 +121,10 @@
           <h3><%= t("help.videos.teleconsultation.heading") %></h3>
           <p><%= t("help.videos.teleconsultation.contents") %></p>
           <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_link") %><span><%= t("help.videos.teleconsultation.english_link_language") %></span></a>
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link") %><span><%= t("help.videos.teleconsultation.english_video_link_language") %></span></a>
           </div>
           <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_link") %><span><%= t("help.videos.teleconsultation.hindi_link_language") %></span></a>
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_video_link") %><span><%= t("help.videos.teleconsultation.hindi_video_link_language") %></span></a>
           </div>
         </div>
         <div class="card">
@@ -286,52 +286,52 @@
         <a href="#" onclick="closeWindow('help-record'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2>Record a patient's visit</h2>
+        <h2><%= t("help.record.heading") %></h2>
         <div class="card">
-          <h3>First, find the patient</h3>
-          <p>You can find patients two ways: scan their BP Passport or search for the patient by name or mobile number.</p>
+          <h3><%= t("help.record.find_patient.heading") %></h3>
+          <p><%= t("help.record.find_patient.contents") %></p>
         </div>
         <div class="card">
-          <h3>Record BP and medicines</h3>
+          <h3><%= t("help.record.record_info.heading") %></h3>
           <ol>
-            <li class="num">On the patient's summary screen, press <span class="code">+&nbsp;Blood pressure</span></li>
-            <li class="num">Then, add patient's hypertension medicines.</li>
-            <li class="num">Select the correct medicines and their dosages. To remove a medicine, tap the dosage and select <span class="code">None</span></li>
-            <li class="num">Press <span class="code">Save</span> and select the next visit date. Optional: You can change where the patient should visit next by pressing ‘Change’ below the patient’s current facility.</li>
-            <li class="num">Done. The patient visit is saved.</li>
+            <li class="num"><%= t("help.record.record_info.step_1_html") %></li>
+            <li class="num"><%= t("help.record.record_info.step_2") %></li>
+            <li class="num"><%= t("help.record.record_info.step_3_html") %></li>
+            <li class="num"><%= t("help.record.record_info.step_4_html") %></li>
+            <li class="num"><%= t("help.record.record_info.step_5") %></li>
           </ol>
         </div>
         <div class="card">
           <h3>
-            Medicine refills
+            <%= t("help.record.medicine_refills.heading") %>
           </h3>
           <p>
-            If you are refilling a patient’s current medicines:
+            <%= t("help.record.medicine_refills.contents") %>
           </p>
           <ol>
             <li class="num">
-              On the patient's summary screen, press <span class="code">+ Medicines</span>
+              <%= t("help.record.medicine_refills.step_1_html") %>
             </li>
             <li class="num">
-              Press <span class="code">Refill medicines</span>
+              <%= t("help.record.medicine_refills.step_2_html") %>
             </li>
             <li class="num">
-              Done!
+              <%= t("help.record.medicine_refills.step_3") %>
             </li>
           </ol>
           <div class="video-small">
             <a href="https://www.youtube.com/watch?v=8EmUUGzLz3w">
-            How to refill a patient's medicines
+            <%= t("help.record.medicine_refills.english_video_link") %>
             <span>
-            English
+            <%= t("help.record.medicine_refills.english_video_link_language") %>
             </span>
             </a>
           </div>
           <div class="video-small">
             <a href="https://www.youtube.com/watch?v=zYGBczMmx9c">
-            How to refill a patient's medicines
+            <%= t("help.record.medicine_refills.hindi_video_link") %>
             <span>
-            Hindi
+            <%= t("help.record.medicine_refills.hindi_video_link_language") %>
             </span>
             </a>
           </div>
@@ -339,11 +339,11 @@
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3>Tips</h3>
+          <h3><%= t("help.record.tips.heading") %></h3>
           <ul>
-            <li>You can select the next visit date on a calendar by tapping <span class="code">CHANGE</span> when scheduling the visit.</li>
-            <li>If you select <span class="code">NOT NOW</span>, the patient will not have a scheduled visit.</li>
-            <li>You can enter a BP from a previous visit. Enter the BP like normal and <span class="code">CHANGE</span> the date.</li>
+            <li><%= t("help.record.tips.tip_1_html") %></li>
+            <li><%= t("help.record.tips.tip_2_html") %></li>
+            <li><%= t("help.record.tips.tip_3_html") %></li>
           </ul>
         </div>
       </div>
@@ -353,33 +353,33 @@
         <a href="#" onclick="closeWindow('help-overdue'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2>Call overdue patients</h2>
+        <h2><%= t("help.overdue.heading") %></h2>
         <div class="card">
-          <h3>What is "Overdue"?</h3>
-          <p>Patients are overdue if they did not have a BP recorded by their scheduled visit date.</p>
-          <p>Patients at the top of the overdue patients list, are the most critical. Start calling patients at the top of the overdue list.</p>
+          <h3><%= t("help.overdue.what_is_overdue.heading") %></h3>
+          <p><%= t("help.overdue.what_is_overdue.contents_1") %></p>
+          <p><%= t("help.overdue.what_is_overdue.contents_2") %></p>
         </div>
         <div class="card">
-          <h3>Calling patients</h3>
-          <p>Call patients by pressing the phone icon. You may see two options: <span class="code">Normal call</span> and <span class="code">Secure call</span>. A "secure" call is toll-free will hide your phone number from the patient.</p>
+          <h3><%= t("help.overdue.calling.heading") %></h3>
+          <p><%= t("help.overdue.calling.contents_html") %></p>
           <div class="help-example"><%= inline_svg('help/calling.svg') %></div>
         </div>
         <div class="card">
-          <h3>Mark "result of call"</h3>
-          <p>Please mark the result of each phone call that you make. Press on the patient card to see the following options:</p>
+          <h3><%= t("help.overdue.result_of_call.heading") %></h3>
+          <p><%= t("help.overdue.result_of_call.contents") %></p>
           <ol>
-            <li class="num"><span class="code">Agreed to visit</span> if the patients tells you that they are coming for a follow-up.</li>
-            <li class="num"><span class="code">Remind to call later...</span> if the patient didn’t mention when they can follow-up or didn’t answer their phone call.</li>
+            <li class="num"><%= t("help.overdue.result_of_call.agreed_to_visit_html") %></li>
+            <li class="num"><%= t("help.overdue.result_of_call.remind_to_call_later_html") %></li>
             <li class="num">
-              <span class="code">Remove from overdue list</span> if:
+              <%= t("help.overdue.result_of_call.remove_from_overdue_list.contents_html") %>
               <div class="graphic-html help-example-text">
                 <ul>
-                  <li style="margin-top: 0;">Patient has already visited</li>
-                  <li>Patient is not responding</li>
-                  <li>Phone number does not work</li>
-                  <li>Transferred to another facility</li>
-                  <li>Moved to private practitioner</li>
-                  <li style="margin-bottom: 0;">Died</li>
+                  <li style="margin-top: 0;"><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_1") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_2") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_3") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_4") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_5") %></li>
+                  <li style="margin-bottom: 0;"><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_6") %></li>
                 </ul>
               </div>
             </li>

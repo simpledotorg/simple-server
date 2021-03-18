@@ -108,10 +108,10 @@ en:
       teleconsultation:
         heading: Tele-consultation training
         contents: If your hospital is using Simple for tele-consultation, this training is for you.
-        english_link: Tele-consultation with Simple
-        english_link_language: English
-        hindi_link: सिम्पल द्वारा टेली-मेडिसिन
-        hindi_link_language: Hindi
+        english_video_link: Tele-consultation with Simple
+        english_video_link_language: English
+        hindi_video_link: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_video_link_language: Hindi
       bp_passports:
         heading: BP Passports
         contents: Learn how to use BP Passport cards or BP Passport stickers in your hospital.
@@ -152,7 +152,7 @@ en:
       step_6:
         label: Step 6
         heading: Save the patient
-        contents_html: Hit <span class="code">SAVE</span> and schedule the patient's next visit. Write that date on the BP Passport.
+        contents_html: "Hit <span class=\"code\">SAVE</span> and schedule the patient's next visit. Write that date on the BP Passport."
       missed_visit:
         label: Missed visit
         heading: What happens next?
@@ -169,19 +169,19 @@ en:
         step_1: Press this button on the main screen
         step_2_html: Pick up a <i>blank</i> BP Passport and scan the QR code.
         step_3: Search for the patient’s full name.
-        step_4_html: If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.
+        step_4_html: "If you do not see the patient in the search results, tap <span class=\"code\">Register as a new patient</span>."
         step_5: Fill the registration form.
         step_6: Talk to your patient and then complete the medical history.
-        step_7_html: Record the patient visit, press <span class="code">Save</span>.
+        step_7_html: "Record the patient visit, press <span class=\"code\">Save</span>."
       option_2:
         label: Option 2
         heading_html: If you <i>do not</i> have BP Passports
-        step_1_html: Press <span class="code">Enter patient’s name</span>
+        step_1_html: "Press <span class=\"code\">Enter patient’s name</span>"
         step_2: Enter your patient's full name.
-        step_3_html: If you do not see the patient in the search results, tap <span class="code">Register as a new patient</span>.
+        step_3_html: "If you do not see the patient in the search results, tap <span class=\"code\">Register as a new patient</span>."
         step_4: Fill the registration form.
         step_5: Talk to your patient and then complete the medical history.
-        step_6_html: Record the patient visit, press <span class="code">Save</span>.
+        step_6_html: "Record the patient visit, press <span class=\"code\">Save</span>."
       tips:
         heading: Tips
         tip_1: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
@@ -196,15 +196,65 @@ en:
       choose_patient:
         heading_html: Choose the <i>correct</i> patient
         contents_1: "In the search results, it is very important to choose the correct patient. Always check:"
-        check_item_1_html: '<span class="code">Name</span> matches'
-        check_item_2_html: '<span class="code">Age</span> is correct'
-        check_item_3_html: '<span class="code">Address</span> is where the patient lives'
-        check_item_4_html: '<span class="code">Mobile number</span> matches'
-        check_item_5_html: '<span class="code">Last visit date</span> was a day the patient visited the hospital.'
+        check_item_1_html: "<span class=\"code\">Name</span> matches"
+        check_item_2_html: "<span class=\"code\">Age</span> is correct"
+        check_item_3_html: "<span class=\"code\">Address</span> is where the patient lives"
+        check_item_4_html: "<span class=\"code\">Mobile number</span> matches"
+        check_item_5_html: "<span class=\"code\">Last visit date</span> was a day the patient visited the hospital."
         contents_2: If the patient does not match any of the patients in the search, please register them as a new patient.
       tip:
         heading: Tip
         contents: If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.
+    record:
+      heading: Record a patient's visit
+      find_patient:
+        heading: First, find the patient
+        contents: "You can find patients two ways: scan their BP Passport or search for the patient by name or mobile number."
+      record_info:
+        heading: Record BP and medicines
+        step_1_html: "On the patient's summary screen, press <span class=\"code\">+&nbsp;Blood pressure</span>"
+        step_2: Then, add patient's hypertension medicines.
+        step_3_html: "Select the correct medicines and their dosages. To remove a medicine, tap the dosage and select <span class=\"code\">None</span>"
+        step_4_html: "Press <span class=\"code\">Save</span> and select the next visit date. Optional: You can change where the patient should visit next by pressing ‘Change’ below the patient’s current facility."
+        step_5: Done. The patient visit is saved.
+      medicine_refills:
+        heading: Medicine refills
+        contents: "If you are refilling a patient’s current medicines:"
+        step_1_html: "On the patient's summary screen, press <span class=\"code\">+ Medicines</span>"
+        step_2_html: "Press <span class=\"code\">Refill medicines</span>"
+        step_3: Done!
+        english_video_link: How to refill a patient's medicines
+        english_video_link_language: English
+        hindi_video_link: How to refill a patient's medicines
+        hindi_video_link_language: Hindi
+      tips:
+        heading: Tips
+        tip_1_html: "You can select the next visit date on a calendar by tapping <span class=\"code\">CHANGE</span> when scheduling the visit."
+        tip_2_html: "If you select <span class=\"code\">NOT NOW</span>, the patient will not have a scheduled visit."
+        tip_3_html: "You can enter a BP from a previous visit. Enter the BP like normal and <span class=\"code\">CHANGE</span> the date."
+    overdue:
+      heading: Call overdue patients
+      what_is_overdue:
+        heading: What is "Overdue"?
+        contents_1: Patients are overdue if they did not have a BP recorded by their scheduled visit date.
+        contents_2: Patients at the top of the overdue patients list, are the most critical. Start calling patients at the top of the overdue list.
+      calling:
+        heading: Calling patients
+        contents_html: "Call patients by pressing the phone icon. You may see two options: <span class=\"code\">Normal call</span> and <span class=\"code\">Secure call</span>. A \"secure\" call is toll-free will hide your phone number from the patient."
+      result_of_call:
+        heading: Mark "result of call"
+        contents: "Please mark the result of each phone call that you make. Press on the patient card to see the following options:"
+        agreed_to_visit_html: "<span class=\"code\">Agreed to visit</span> if the patients tells you that they are coming for a follow-up."
+        remind_to_call_later_html: "<span class=\"code\">Remind to call later...</span> if the patient didn’t mention when they can follow-up or didn’t answer their phone call."
+        remove_from_overdue_list:
+          contents_html: "<span class=\"code\">Remove from overdue list</span> if:"
+          condition_1: Patient has already visited
+          condition_2: Patient is not responding
+          condition_3: Phone number does not work
+          condition_4: Transferred to another facility
+          condition_5: Moved to private practitioner
+          condition_6: Died
+
     bp_passport_app:
       new: NEW!
       heading: App for your patients
