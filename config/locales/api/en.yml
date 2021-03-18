@@ -188,6 +188,23 @@ en:
         tip_2: Enter mobile number if you can!
         tip_3: If you cannot find a follow-up patient, it is okay to register them as a new patient.
         tip_4: If a patient loses their BP Passport, please give them a new one. Patients can have multiple BP Passports, they will all work correctly.
+    search:
+      heading: Find the correct patient
+      find_patient:
+        heading: How to find patients
+        contents: When you search for a patient by name or mobile number, it is important to select the correct patient.
+      choose_patient:
+        heading_html: Choose the <i>correct</i> patient
+        contents_1: "In the search results, it is very important to choose the correct patient. Always check:"
+        check_item_1_html: '<span class="code">Name</span> matches'
+        check_item_2_html: '<span class="code">Age</span> is correct'
+        check_item_3_html: '<span class="code">Address</span> is where the patient lives'
+        check_item_4_html: '<span class="code">Mobile number</span> matches'
+        check_item_5_html: '<span class="code">Last visit date</span> was a day the patient visited the hospital.'
+        contents_2: If the patient does not match any of the patients in the search, please register them as a new patient.
+      tip:
+        heading: Tip
+        contents: If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.
     bp_passport_app:
       new: NEW!
       heading: App for your patients

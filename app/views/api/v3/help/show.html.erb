@@ -256,28 +256,28 @@
         <a href="#" onclick="closeWindow('help-search'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2>Find the correct patient</h2>
+        <h2><%= t("help.search.heading") %></h2>
         <div class="card">
-          <h3>How to find patients</h3>
-          <p>When you search for a patient by name or mobile number, it is important to select the correct patient.</p>
+          <h3><%= t("help.search.find_patient.heading") %></h3>
+          <p><%= t("help.search.find_patient.contents") %></p>
         </div>
         <div class="card">
-          <h3>Choose the <i>correct</i> patient</h3>
-          <p>In the search results, it is very important to choose the correct patient. Always check:</p>
+          <h3><%= t("help.search.choose_patient.heading_html") %></h3>
+          <p><%= t("help.search.choose_patient.contents_1") %></p>
           <ol>
-            <li class="num"><span class="code">Name</span> matches</li>
-            <li class="num"><span class="code">Age</span> is correct</li>
-            <li class="num"><span class="code">Address</span> is where the patient lives</li>
-            <li class="num"><span class="code">Mobile number</span> matches</li>
-            <li class="num"><span class="code">Last visit date</span> was a day the patient visited the hospital.</li>
+            <li class="num"><%= t("help.search.choose_patient.check_item_1_html") %></li>
+            <li class="num"><%= t("help.search.choose_patient.check_item_2_html") %></li>
+            <li class="num"><%= t("help.search.choose_patient.check_item_3_html") %></li>
+            <li class="num"><%= t("help.search.choose_patient.check_item_4_html") %></li>
+            <li class="num"><%= t("help.search.choose_patient.check_item_5_html") %></li>
           </ol>
-          <p>If the patient does not match any of the patients in the search, please register them as a new patient.</p>
+          <p><%= t("help.search.choose_patient.contents_2") %></p>
         </div>
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3>Tip</h3>
-          <p>If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.</p>
+          <h3><%= t("help.search.tip.heading") %></h3>
+          <p><%= t("help.search.tip.contents") %></p>
         </div>
       </div>
     </div>
