@@ -119,7 +119,47 @@ en:
         video_link_subtitle: Hindi with English subtitles
       film:
         heading: Simple film
-        link_html: <a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.'
+    start:
+      heading: Getting started
+      getting_started_video:
+        heading: Watch a video
+        contents: Learn the basics of Simple in 5 minutes.
+      who_to_record:
+        heading: Who to record in Simple?
+        contents_1_html: Use Simple to record <i>every patient who has hypertension</i> or who is taking medicines for high BP.
+        contents_2: When the patient returns for follow-up, search for the same patient and enter a new BP.
+      step_1:
+        label: Step 1
+        heading: Take patient's BP
+        contents: "Take an accurate BP: feet on floor, back against chair, no talking."
+      step_2:
+        label: Step 2
+        heading: Write in BP Passport
+        contents: If you have BP Passports, write the patient's name. Then, scan it using the Simple app.
+      step_3:
+        label: Step 3
+        heading: Register patient
+        contents: If they are new, register the patient.
+      step_4:
+        label: Step 4
+        heading: Enter BP in Simple
+        contents_html: <i>Do not round</i> the BP reading.
+      step_5:
+        label: Step 5
+        heading: Enter medicines
+        contents: Enter the patient's current hypertension medicines.
+      step_6:
+        label: Step 6
+        heading: Save the patient
+        contents_html: Hit <span class="code">SAVE</span> and schedule the patient's next visit. Write that date on the BP Passport.
+      missed_visit:
+        label: Missed visit
+        heading: What happens next?
+        contents: If your patient misses their visit, Simple will send a text message reminding them to come back.
+      tip:
+        heading: Tip
+        contents: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
     bp_passport_app:
       new: NEW!
       heading: App for your patients

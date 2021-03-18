@@ -150,53 +150,53 @@
         <a href="#" onclick="closeWindow('help-start'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2>Getting started</h2>
+        <h2><%= t("help.start.heading") %></h2>
         <div class="card">
-          <h3>Watch a video</h3>
+          <h3><%= t("help.start.getting_started_video.heading") %></h3>
           <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video">
             <%= inline_svg('thumb_demo.svg') %>
           </a>
-          <p>Learn the basics of Simple in 5 minutes.</p>
+          <p><%= t("help.start.getting_started_video.contents") %></p>
         </div>
         <div class="card">
-          <h3>Who to record in Simple?</h3>
-          <p>Use Simple to record <i>every patient who has hypertension</i> or who is taking medicines for high BP.</p>
-          <p>When the patient returns for follow-up, search for the same patient and enter a new BP.</p>
+          <h3><%= t("help.start.who_to_record.heading") %></h3>
+          <p><%= t("help.start.who_to_record.contents_1_html") %></p>
+          <p><%= t("help.start.who_to_record.contents_2") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Step 1</span></span>Take patient's BP</h3>
-          <p>Take an accurate BP: feet on floor, back against chair, no talking.</p>
+          <h3><span class="header-label"><span><%= t("help.start.step_1.label") %></span></span><%= t("help.start.step_1.heading") %></h3>
+          <p><%= t("help.start.step_1.contents") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Step 2</span></span>Write in BP Passport</h3>
-          <p>If you have BP Passports, write the patient's name. Then, scan it using the Simple app.</p>
+          <h3><span class="header-label"><span><%= t("help.start.step_2.label") %></span></span><%= t("help.start.step_2.heading") %></h3>
+          <p><%= t("help.start.step_2.contents") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Step 3</span></span>Register patient</h3>
-          <p>If they are new, register the patient.</p>
+          <h3><span class="header-label"><span><%= t("help.start.step_3.label") %></span></span><%= t("help.start.step_3.heading") %></h3>
+          <p><%= t("help.start.step_3.contents") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Step 4</span></span>Enter BP in Simple</h3>
-          <p><i>Do not round</i> the BP reading.</p>
+          <h3><span class="header-label"><span><%= t("help.start.step_4.label") %></span></span><%= t("help.start.step_4.heading") %></h3>
+          <p><%= t("help.start.step_4.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Step 5</span></span>Enter medicines</h3>
-          <p>Enter the patient's current hypertension medicines.</p>
+          <h3><span class="header-label"><span><%= t("help.start.step_5.label") %></span></span><%= t("help.start.step_5.heading") %></h3>
+          <p><%= t("help.start.step_5.contents") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span>Step 6</span></span>Save the patient</h3>
-          <p>Hit <span class="code">SAVE</span> and schedule the patient's next visit. Write that date on the BP Passport.</p>
+          <h3><span class="header-label"><span><%= t("help.start.step_6.label") %></span></span><%= t("help.start.step_6.heading") %></h3>
+          <p><%= t("help.start.step_6.contents_html") %></p>
         </div>
         <hr>
         <div class="card">
-          <h3><span class="header-label"><span>Missed visit</span></span>What happens next?</h3>
-          <p>If your patient misses their visit, Simple will send a text message reminding them to come back.</p>
+          <h3><span class="header-label"><span><%= t("help.start.missed_visit.label") %></span></span><%= t("help.start.missed_visit.heading") %></h3>
+          <p><%= t("help.start.missed_visit.contents") %></p>
         </div>
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3>Tip</h3>
-          <p>Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.</p>
+          <h3><%= t("help.start.tip.heading") %></h3>
+          <p><%= t("help.start.tip.contents") %></p>
         </div>
       </div>
     </div>
