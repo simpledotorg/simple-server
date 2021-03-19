@@ -19,7 +19,7 @@ module MyFacilitiesHelper
     end
   end
 
-  def patient_days_bg_color(patient_days, prefix: "bg")
+  def patient_days_css_class(patient_days, prefix: "bg")
     return if patient_days.nil?
     color = if patient_days == "error" then :red
     elsif patient_days < 30 then :red
@@ -29,8 +29,6 @@ module MyFacilitiesHelper
     end
     "#{prefix}-#{color}"
   end
-
-  alias_method :patient_days_css_class, :patient_days_bg_color
 
   def protocol_drug_labels
     {hypertension_ccb: {full: "CCB Tablets", short: "CCB"},
