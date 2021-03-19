@@ -28,7 +28,7 @@
         <p>View drug stock in estimated patient days below</p>
       </div>
 
-      <h3>For end of <%= @for_end_of_month %></h3>
+      <h3>Drug stock report for end of <%= @for_end_of_month %></h3>
       <% facility_report = @report[:facilities][current_facility.id] %>
 
       <% @drugs_by_category.each do |category, drugs| %>
