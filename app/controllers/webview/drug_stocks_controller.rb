@@ -35,9 +35,6 @@ class Webview::DrugStocksController < ApplicationController
 
   private
 
-  def build_drug_report
-  end
-
   attr_reader :current_facility, :current_user
   helper_method :current_facility, :current_user
 
