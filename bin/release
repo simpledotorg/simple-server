@@ -62,5 +62,5 @@ system("git push origin refs/tags/#{release_tag}") || abort("Error pushing git t
 # ------------------
 puts
 puts "Successfully created release #{release_tag}."
-puts "Visit https://simple.semaphoreci.com/projects/simple-server to deploy the release to production."
+puts "Visit https://simple.semaphoreci.com/projects/simple-server to monitor the release."
 puts "Publish the changelog to the #releases channel."
