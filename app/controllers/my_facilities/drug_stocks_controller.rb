@@ -37,7 +37,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   def drug_report
     @facilities = filter_facilities
-      .where.not(facility_size: :community )
+      .where.not(facility_size: :community)
       .includes(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true})
 
@@ -82,12 +82,12 @@ class MyFacilities::DrugStocksController < AdminController
 
   def populate_facility_sizes
     @facility_sizes = @accessible_facilities
-                        .where(facility_group: @selected_facility_group, zone: @selected_zones)
-                        .pluck(:facility_size)
-                        .uniq
-                        .compact
-                        .sort
-                        .reject {|size| size == "community"}
+      .where(facility_group: @selected_facility_group, zone: @selected_zones)
+      .pluck(:facility_size)
+      .uniq
+      .compact
+      .sort
+      .reject { |size| size == "community" }
     @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
   end
 end
