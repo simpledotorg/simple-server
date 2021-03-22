@@ -334,7 +334,7 @@ span.percent {
 .updated-date {
   margin-top: 12px;
   padding: 0;
-  text-align: right;
+  text-align: center;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
   letter-spacing: 1px;
@@ -657,13 +657,13 @@ footer p {
 }
 
 .form-group {
-  padding: 16px 0 !important;
+  padding: 10px 0 16px 0 !important;
   width: 100%;
 
   label {
     display: block;
     font-weight: bold;
-    margin: 0 0 8px 0;
+    margin: 0;
   }
   small {
     display: block;
@@ -716,6 +716,7 @@ select.form-control, input.form-control {
 }
 
 .button-fixed-bottom {
+  z-index: 10000000000;
   background: #F3F9FF;
   position: fixed;
   bottom: 0;
@@ -730,5 +731,6 @@ select.form-control, input.form-control {
     background: $blue;
     color: #fff !important;
     box-shadow: 0 2px 1px rgba(0,0,0,.16);
+    box-sizing: border-box;
   }
 }
