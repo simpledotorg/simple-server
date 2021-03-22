@@ -563,7 +563,7 @@ Reports = function () {
         periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
         periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
         registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
-        adjustedPatientCountsNodes.forEach(node => node.innerHTML = adjustedPatientCounts);
+        adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
       },
     };
 
