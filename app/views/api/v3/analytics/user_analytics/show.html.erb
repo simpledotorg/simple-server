@@ -111,7 +111,7 @@
 
   <!-- drug stock -->
   <% if current_user.feature_enabled?(:drug_stocks_mobile) %>
-    <% if current_facility.facility_size != "community" %>
+    <% unless current_facility.community? %>
       <div class="card">
           <h3>Drug stock report</h3>
           <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
