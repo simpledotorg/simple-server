@@ -2,7 +2,7 @@ class Api::V4::DrugTransformer < Api::V4::Transformer
   class << self
     def to_response(drug)
       drug
-        .as_json["attributes"]
+        .attributes.as_json
         .merge("protocol" => "no",
                "common" => "yes",
                "created_at" => drug.created_at,
