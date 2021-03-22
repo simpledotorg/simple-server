@@ -39,14 +39,14 @@ class Reports::RegionsController < AdminController
       slug = child.slug
       {
         region: child,
-        controlled_patients: child_data_repo.controlled_patients_count[slug][@period],
-        controlled_patients_rate: child_data_repo.controlled_patient_rates[slug][@period],
-        uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug][@period],
-        uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug][@period],
-        missed_visits: child_data_repo.missed_visits[slug][@period],
-        missed_visits_percentage: child_data_repo.missed_visits_rate[slug][@period],
-        registrations: child_data_repo.registration_counts[slug][@period],
-        cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug][@period]
+        controlled_patients: child_data_repo.controlled_patients_count[slug],
+        controlled_patients_rate: child_data_repo.controlled_patient_rates[slug],
+        uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug],
+        uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug],
+        missed_visits: child_data_repo.missed_visits[slug],
+        missed_visits_rate: child_data_repo.missed_visits_rate[slug],
+        registrations: child_data_repo.registration_counts[slug],
+        cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug]
       }
     }
   end
