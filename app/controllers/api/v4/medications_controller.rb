@@ -1,4 +1,4 @@
-class Api::V4::DrugsController < Api::V4::SyncController
+class Api::V4::MedicationsController < Api::V4::SyncController
   include Api::V3::PublicApi
 
   def sync_to_user
@@ -13,7 +13,7 @@ class Api::V4::DrugsController < Api::V4::SyncController
 
   def other_facility_records
     time(__method__) do
-      Drug.all
+      Medication.all
     end
   end
 
@@ -22,7 +22,7 @@ class Api::V4::DrugsController < Api::V4::SyncController
   end
 
   def transform_to_response(drug)
-    Api::V4::DrugTransformer.to_response(drug)
+    Api::V4::MedicationTransformer.to_response(drug)
   end
 
   def response_process_token

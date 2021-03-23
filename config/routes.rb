@@ -135,7 +135,7 @@ Rails.application.routes.draw do
         post "sync", to: "teleconsultations#sync_from_user"
       end
 
-      scope :drugs do
+      scope :medications do
         get "sync", to: "drugs#sync_to_user"
       end
     end

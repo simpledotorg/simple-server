@@ -1,8 +1,8 @@
 require "rails_helper"
 
-RSpec.describe Api::V4::DrugsController, type: :controller do
+RSpec.describe Api::V4::MedicationsController, type: :controller do
   describe "GET sync: send data from server to device;" do
-    model = Drug
+    model = Medication
     response_key = model.to_s.underscore.pluralize
 
     it "Returns records from the beginning of time, when process_token is not set" do

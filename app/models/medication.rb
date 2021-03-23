@@ -1,4 +1,4 @@
-class Drug < ActiveYaml::Base
+class Medication < ActiveYaml::Base
   set_root_path "config/data"
   set_filename "drugs"
 

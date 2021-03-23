@@ -307,8 +307,8 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          name: {"$ref" => "#/definitions/non_empty_string"},
-         category: {type: [:string, "null"], enum: Drug::CATEGORIES.keys << nil},
-         frequency: {type: [:string, "null"], enum: Drug::FREQUENCIES.keys << nil},
+         category: {type: [:string, "null"], enum: Medication::CATEGORIES.keys << nil},
+         frequency: {type: [:string, "null"], enum: Medication::FREQUENCIES.keys << nil},
          composition: {type: [:string, "null"]},
          dosage: {type: [:string, "null"]},
          rxnorm_code: {type: [:string, "null"]},
