@@ -7,6 +7,6 @@ RSpec.describe Experiment::ReminderTemplate, type: :model do
   end
 
   describe "validations" do
-    it { should validate_presence_of(:experiment_group)}
+    it { should validate_presence_of(:experiment_group) }
   end
 end
