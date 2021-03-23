@@ -436,35 +436,39 @@ Reports = function () {
 
     const visitDetailsGraphConfig = this.createBaseGraphConfig();
     visitDetailsGraphConfig.type = "bar";
+
+    const maxBarsToDisplay = 6;
+    const barsToDisplay = Math.min(Object.keys(data.controlRate).length, maxBarsToDisplay);
+
     visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-6),
+      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
       datasets: [
         {
           label: "BP controlled",
           backgroundColor: this.mediumGreenColor,
           hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.controlRate).slice(-6),
+          data: Object.values(data.controlRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "BP uncontrolled",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.uncontrolledRate).slice(-6),
+          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "Visit but no BP measure",
           backgroundColor: this.mediumGreyColor,
           hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(-6),
+          data: Object.values(data.visitButNoBPMeasureRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "Missed visits",
           backgroundColor: this.mediumBlueColor,
           hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.missedVisitsRate).slice(-6),
+          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
           type: "bar",
         },
       ],
@@ -559,7 +563,7 @@ Reports = function () {
         periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
         periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
         registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
-        adjustedPatientCountsNodes.forEach(node => node.innerHTML = adjustedPatientCounts);
+        adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
       },
     };
 

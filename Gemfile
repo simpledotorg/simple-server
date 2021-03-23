@@ -10,6 +10,7 @@ end
 gem "dotenv-rails"
 gem "rails", "5.2.4.5"
 
+gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
 gem "activerecord-import"
 gem "amazing_print"
