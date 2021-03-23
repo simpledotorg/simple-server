@@ -1,13 +1,11 @@
-class AppointmentReminder < ApplicationRecord
-  belongs_to :experiment, optional: true
+class AppointmentReminder < ActiveRecord::Base
   belongs_to :appointment
+  belongs_to :patient
+  belongs_to :reminder_template, optional: true
 
-  validates_presence_of :status
-  validates_presence_of :remind_on
+  validates :status, presence: true
+  validates :remind_on, presence: true
+  validates :message, presence: true
 
-  enum status: {
-    pending: "pending",
-    sent: "sent",
-    cancelled: "cancelled"
-  }, _prefix: true
+  enum status: [:pending, :sent, :cancelled], _prefix: true
 end
