@@ -20,6 +20,12 @@ en_ET:
         state: "Region *"
         country: "Country *"
         pin: "Postal Code"
+      drug:
+        frequency:
+          one_per_day: "PD"
+          two_per_day: "BID"
+          three_per_day: "TID"
+          four_per_day: "QID"
     submit:
       facility:
         create: "Save facility"
