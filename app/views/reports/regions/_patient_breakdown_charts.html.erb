@@ -77,7 +77,7 @@
             Assigned patients breakdown
           </h3>
           <%= render "definition_tooltip",
-                     definitions: { "Not lost to follow-up" => t("not_lost_to_follow_up_copy"),
+                     definitions: { "Patients under care" => t("patients_under_care_copy"),
                                     "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle") } %>
         </div>
         <p class="mb-0px c-grey-dark mr-lg-12px"><%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
@@ -91,7 +91,7 @@
           <div class="mr-16px mb-12px">
             <p class="mb-1">
               <span class="legend-label bg-green"></span>
-              Not lost to follow-up
+              Patients under care
             </p>
             <p class="mb-1">
               <span class="legend-label bg-blue-dark"></span>
