@@ -4,7 +4,5 @@ module Experiment
     has_many :appointment_reminders
 
     validates :experiment_group, presence: true
-    validates :message, presence: true
-    validates :appointment_offset, presence: true
   end
 end

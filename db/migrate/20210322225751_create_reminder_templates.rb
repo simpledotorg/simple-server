@@ -3,7 +3,7 @@ class CreateReminderTemplates < ActiveRecord::Migration[5.2]
     create_table :reminder_templates do |t|
       t.integer :experiment_group, null: false
       t.string :message, null: true
-      t.integer :appointment_offset, null: false
+      t.integer :appointment_offset, null: true
       t.references :reminder_experiment, null: false, foreign_key: true
       t.timestamps
     end

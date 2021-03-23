@@ -538,7 +538,7 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
   create_table "reminder_templates", force: :cascade do |t|
     t.integer "experiment_group", null: false
     t.string "message"
-    t.integer "appointment_offset", null: false
+    t.integer "appointment_offset"
     t.bigint "reminder_experiment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
