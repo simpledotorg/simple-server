@@ -1,6 +1,6 @@
 class ControlRateService
   include BustCache
-  CACHE_VERSION = 9
+  CACHE_VERSION = 10
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -56,12 +56,12 @@ class ControlRateService
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
     results.count_cumulative_assigned_patients
-    results.count_adjusted_registrations_with_ltfu
+    results.count_adjusted_patient_counts_with_ltfu
 
     if with_exclusions
-      results.count_adjusted_registrations
+      results.count_adjusted_patient_counts
     else
-      results.adjusted_registrations = results.adjusted_registrations_with_ltfu
+      results.adjusted_patient_counts = results.adjusted_patient_counts_with_ltfu
     end
 
     results.controlled_patients = repository.controlled_patients_count[region.slug]

@@ -29,7 +29,7 @@ Reports = function () {
     const data = this.getReportingData();
 
     const controlledGraphControlRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
-    const controlledGraphAdjustedRegistrations = window.withLtfu ? data.adjustedRegistrationsWithLtfu : data.adjustedRegistrations;
+    const controlledGraphAdjustedPatientCounts = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const controlledGraphControlledPatients = window.withLtfu ? data.controlledPatientsWithLtfu : data.controlledPatients;
 
     const controlledGraphConfig = this.createBaseGraphConfig();
@@ -105,14 +105,14 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = controlledGraphAdjustedRegistrations[label];
+        const adjustedPatientCounts = controlledGraphAdjustedPatientCounts[label];
         const totalPatients = controlledGraphControlledPatients[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
+        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
         registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
@@ -196,14 +196,14 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = data.adjustedRegistrations[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
         const totalPatients = data.missedVisits[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
+        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
         registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
@@ -287,14 +287,14 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = data.adjustedRegistrations[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
         const totalPatients = data.uncontrolledPatients[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
         periodStartNode.innerHTML = period.bp_control_start_date;
         periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedRegistrations);
+        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
         registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
       }
     };
@@ -436,35 +436,39 @@ Reports = function () {
 
     const visitDetailsGraphConfig = this.createBaseGraphConfig();
     visitDetailsGraphConfig.type = "bar";
+
+    const maxBarsToDisplay = 6;
+    const barsToDisplay = Math.min(Object.keys(data.controlRate).length, maxBarsToDisplay);
+
     visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-6),
+      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
       datasets: [
         {
           label: "BP controlled",
           backgroundColor: this.mediumGreenColor,
           hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.controlRate).slice(-6),
+          data: Object.values(data.controlRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "BP uncontrolled",
           backgroundColor: this.mediumRedColor,
           hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.uncontrolledRate).slice(-6),
+          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "Visit but no BP measure",
           backgroundColor: this.mediumGreyColor,
           hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(-6),
+          data: Object.values(data.visitButNoBPMeasureRate).slice(-barsToDisplay),
           type: "bar",
         },
         {
           label: "Missed visits",
           backgroundColor: this.mediumBlueColor,
           hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.missedVisitsRate).slice(-6),
+          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
           type: "bar",
         },
       ],
@@ -522,7 +526,7 @@ Reports = function () {
         const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
         const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
         const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
-        const adjustedRegistrationsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
+        const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
         let label = null;
         let missedVisitsRate = null;
         let visitButNoBPMeasureRate = null;
@@ -542,7 +546,7 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedRegistrations = data.adjustedRegistrations[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
         const totalMissedVisits = data.missedVisits[label];
         const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[label];
         const totalUncontrolledPatients = data.uncontrolledPatients[label];
@@ -559,7 +563,7 @@ Reports = function () {
         periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
         periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
         registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
-        adjustedRegistrationsNodes.forEach(node => node.innerHTML = adjustedRegistrations);
+        adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
       },
     };
 
@@ -613,8 +617,8 @@ Reports = function () {
       missedVisits: jsonData.missed_visits,
       missedVisitsRate: jsonData.missed_visits_rate,
       monthlyRegistrations: jsonData.registrations,
-      adjustedRegistrations: jsonData.adjusted_registrations,
-      adjustedRegistrationsWithLtfu: jsonData.adjusted_registrations_with_ltfu,
+      adjustedPatientCounts: jsonData.adjusted_patient_counts,
+      adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledPatients: jsonData.uncontrolled_patients,
