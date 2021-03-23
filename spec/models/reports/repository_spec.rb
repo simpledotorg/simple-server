@@ -302,6 +302,8 @@ RSpec.describe Reports::Repository, type: :model do
       facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       facility_1, facility_2, facility_3 = *facilities.take(3)
 
+      _ltfu_patient = create(:patient, recorded_at: 2.years.ago, assigned_facility: facility_1, registration_facility: facility_1)
+      _dead_patient = create(:patient, full_name: "dead", recorded_at: jan_2019, status: :dead, assigned_facility: facility_1, registration_user: user)
       controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
       controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
@@ -344,6 +346,9 @@ RSpec.describe Reports::Repository, type: :model do
       slug = facility_1.slug
 
       range.each do |period|
+        expect(repo.adjusted_patient_counts[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+        expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
+        expect(repo.cumulative_assigned_patients_count[slug][period.adjusted_period]).to eq(service_result[:adjusted_patient_counts][period])
         expect(repo.controlled_patient_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
         expect(repo.uncontrolled_patient_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
       end

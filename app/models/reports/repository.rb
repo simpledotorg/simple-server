@@ -47,6 +47,15 @@ module Reports
       end
     end
 
+    smart_memoize def adjusted_patient_counts
+      cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
+        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
+          region_result[period] = result[period.adjusted_period]
+        }
+        results[entry] = values
+      end
+    end
+
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_assigned_patients_counts
@@ -98,7 +107,7 @@ module Reports
       cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = cumulative_assigned_patients_count[slug][entry.adjusted_period]
-        pp "patient_count via Repo for missed_visits #{entry}: #{patient_count}"
+        pp "patient_count #{entry.region.id} via Repo for missed_visits #{entry}: #{patient_count}"
         controlled = controlled_patients_count[slug][entry.period]
         uncontrolled = uncontrolled_patients_count[slug][entry.period]
         visits = visited_without_bp_taken[slug][entry.period]

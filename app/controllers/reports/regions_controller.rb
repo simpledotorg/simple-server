@@ -35,20 +35,30 @@ class Reports::RegionsController < AdminController
     @children = @region.reportable_children
 
     child_data_repo = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
-    @children_data = @children.map { |child|
-      slug = child.slug
-      {
-        region: child,
-        controlled_patients: child_data_repo.controlled_patients_count[slug],
-        controlled_patients_rate: child_data_repo.controlled_patient_rates[slug],
-        uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug],
-        uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug],
-        missed_visits: child_data_repo.missed_visits[slug],
-        missed_visits_rate: child_data_repo.missed_visits_rate[slug],
-        registrations: child_data_repo.registration_counts[slug],
-        cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug]
+    @children_data = if params[:legacy] == "1"
+      @children.map { |child|
+        Reports::RegionService.new(region: child, period: @period, with_exclusions: report_with_exclusions?).call
       }
-    }
+    else
+      @children.map { |child|
+        slug = child.slug
+        data = Reports::RegionService.new(region: child, period: @period, with_exclusions: report_with_exclusions?).call
+        pp "adjusted patient counts from repo", child_data_repo.adjusted_patient_counts[slug]
+        pp "adjusted patient counts from legacy", data[:adjusted_patient_counts]
+        {
+          region: child,
+          adjusted_patient_counts: child_data_repo.adjusted_patient_counts[slug],
+          controlled_patients: child_data_repo.controlled_patients_count[slug],
+          controlled_patients_rate: child_data_repo.controlled_patient_rates[slug],
+          uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug],
+          uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug],
+          missed_visits: child_data_repo.missed_visits[slug],
+          missed_visits_rate: child_data_repo.missed_visits_rate[slug],
+          registrations: child_data_repo.registration_counts[slug],
+          cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug]
+        }
+      }
+    end
   end
 
   def details
