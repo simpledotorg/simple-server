@@ -240,5 +240,25 @@ describe PatientDeduplication::Deduplicator do
         expect(new_patient.merged_by_user_id).to be_nil
       end
     end
+
+    context "handles errors" do
+      it "less than 2 patients cannot be merged" do
+        patients = [create(:patient)]
+        instance = described_class.new(patients, user: patients.first.registration_user)
+        expect(instance.errors).to eq ["Select at least 2 patients to be merged."]
+        expect(instance.merge).to eq nil
+      end
+
+      it "catches any error that happens during merge, and adds it to the list of errors" do
+        patients = create_duplicate_patients.values
+        patients.map(&:medical_history).each(&:discard)
+
+        instance = described_class.new(patients, user: patients.first.registration_user)
+
+        expect(instance.merge).to eq nil
+        expect(instance.errors.first[:exception]).to be_present
+        expect(instance.errors.first[:patient_ids]).to eq(patients.pluck(:id))
+      end
+    end
   end
 end

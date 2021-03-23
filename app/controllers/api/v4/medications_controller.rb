@@ -2,7 +2,7 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   include Api::V3::PublicApi
 
   def sync_to_user
-    __sync_to_user__("drugs")
+    __sync_to_user__("medications")
   end
 
   private
@@ -21,8 +21,8 @@ class Api::V4::MedicationsController < Api::V4::SyncController
     true
   end
 
-  def transform_to_response(drug)
-    Api::V4::MedicationTransformer.to_response(drug)
+  def transform_to_response(medication)
+    Api::V4::MedicationTransformer.to_response(medication)
   end
 
   def response_process_token

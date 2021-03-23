@@ -117,7 +117,7 @@
                     data-sort-column-key="total-patients-<%= period %>"
                     data-sort="<%= uncontrolled_patients_rate %>"
                     data-toggle="tooltip"
-                    title="<%= data["uncontrolled_patients"] %> / <%= data["adjusted_registrations"] %> patients"
+                    title="<%= data["uncontrolled_patients"] %> / <%= data["adjusted_patient_counts"] %> patients"
                   >
                     <em data-rate="<%= uncontrolled_patients_rate %>">
                       <%= number_to_percentage(uncontrolled_patients_rate || 0, precision: 0) %>
@@ -159,7 +159,7 @@
                       data-sort-column-key="total-patients-<%= period %>"
                       data-sort="<%= uncontrolled_patients_rate %>"
                       data-toggle="tooltip"
-                      title="<%= facility_data["uncontrolled_patients"][period] %> / <%= facility_data["adjusted_registrations"][period] %> patients"
+                      title="<%= facility_data["uncontrolled_patients"][period] %> / <%= facility_data["adjusted_patient_counts"][period] %> patients"
                     >
                       <em data-rate="<%= uncontrolled_patients_rate %>">
                         <%= number_to_percentage(uncontrolled_patients_rate || 0, precision: 0) %>

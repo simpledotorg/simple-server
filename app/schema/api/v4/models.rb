@@ -302,7 +302,7 @@ class Api::V4::Models
        required: %w[id password]}
     end
 
-    def drug
+    def medication
       {type: :object,
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
@@ -340,8 +340,8 @@ class Api::V4::Models
        facility_medical_officers: array_of("facility_medical_officer"),
        teleconsultation: teleconsultation,
        teleconsultations: array_of("teleconsultation"),
-       drug: drug,
-       drugs: array_of("drug")}
+       medication: medication,
+       medications: array_of("medication")}
     end
   end
 end
