@@ -59,7 +59,7 @@ class Period
   # Returns a range of times that correspond to the 'BP control range' for this period.
   # For example, for a reporting period of July 1st 2020, this will return the times of April 30th..July 31st.
   def blood_pressure_control_range
-    start_time = end_time.advance(months: -2).beginning_of_month.beginning_of_day
+    start_time = advance(months: -2).begin
     (start_time..end_time)
   end
 
