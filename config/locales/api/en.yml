@@ -34,8 +34,8 @@ en:
     registered: "Registered"
     follow_up: "Follow-up"
     patient:
-      one: "Patient"
-      other: "Patients"
+      one: "patient"
+      other: "patients"
     registered_patients: "Registered patients"
     follow_up_patients: "Follow-up patients"
     hypertension_controlled: "Hypertension controlled"
