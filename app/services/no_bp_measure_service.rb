@@ -43,7 +43,7 @@ class NoBPMeasureService
     registration_date = period.blood_pressure_control_range.begin
 
     Patient
-      .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.end_date)
+      .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.end)
       .joins(sanitize_sql(["LEFT OUTER JOIN appointments ON appointments.patient_id = patients.id
           AND appointments.device_created_at > ?
           AND appointments.device_created_at <= ?", start_date, end_date]))
