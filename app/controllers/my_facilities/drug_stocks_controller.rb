@@ -1,6 +1,7 @@
 class MyFacilities::DrugStocksController < AdminController
   include Pagination
   include MyFacilitiesFiltering
+  include SetForEndOfMonth
 
   layout "my_facilities"
 
@@ -9,7 +10,6 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :set_facility, only: [:new, :create]
   before_action :set_for_end_of_month
   before_action :drug_stocks_enabled?
-  before_action :set_force_cache, only: [:drug_stocks, :drug_consumption]
 
   def drug_stocks
     drug_report
@@ -23,24 +23,12 @@ class MyFacilities::DrugStocksController < AdminController
 
   def new
     session[:report_url_with_filters] ||= request.referer
-    drug_stock_list = DrugStock.latest_for_facility(@facility, @for_end_of_month) || []
-    @drug_stocks = drug_stock_list.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.id] = drug_stock
-    }
+    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(@facility, @for_end_of_month)
   end
 
   def create
-    DrugStock.transaction do
-      drug_stocks_params[:drug_stocks].map do |drug_stock|
-        DrugStock.create!(facility: @facility,
-                          user: current_admin,
-                          protocol_drug_id: drug_stock[:protocol_drug_id],
-                          received: drug_stock[:received].presence,
-                          in_stock: drug_stock[:in_stock].presence,
-                          for_end_of_month: @for_end_of_month)
-      end
-    end
-    redirect_to redirect_url(force_cache: true), notice: "Saved drug stocks"
+    DrugStocksCreator.call(current_admin, @facility, @for_end_of_month, drug_stocks_params[:drug_stocks])
+    redirect_to redirect_url, notice: "Saved drug stocks"
   rescue ActiveRecord::RecordInvalid
     redirect_to redirect_url, alert: "Something went wrong, Drug Stocks were not saved."
   end
@@ -49,8 +37,10 @@ class MyFacilities::DrugStocksController < AdminController
 
   def drug_report
     @facilities = filter_facilities
+      .where.not(facility_size: :community)
       .includes(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true})
+
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     render && return if @facilities.empty?
     @query = DrugStocksQuery.new(facilities: @facilities, for_end_of_month: @for_end_of_month)
@@ -90,11 +80,14 @@ class MyFacilities::DrugStocksController < AdminController
     end
   end
 
-  def set_for_end_of_month
-    @for_end_of_month ||= if params[:for_end_of_month]
-      Date.strptime(params[:for_end_of_month], "%b-%Y").end_of_month
-    else
-      Date.today.end_of_month
-    end
+  def populate_facility_sizes
+    @facility_sizes = @accessible_facilities
+      .where(facility_group: @selected_facility_group, zone: @selected_zones)
+      .pluck(:facility_size)
+      .uniq
+      .compact
+      .sort
+      .reject { |size| size == "community" }
+    @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
   end
 end

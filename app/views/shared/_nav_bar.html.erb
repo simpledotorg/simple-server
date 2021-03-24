@@ -78,6 +78,11 @@
                   <i class="fas fa-wrench main-menu-icon"></i> Error Traces
                 <% end %>
               <% end %>
+              <% if current_admin.power_user? %>
+                <%= link_to admin_deduplication_path, class: "dropdown-item #{active_controller?("admin/deduplicate_patients")}" do %>
+                  <i class="fas fa-share-alt main-menu-icon"></i> Merge Duplicate Patients
+                <% end %>
+              <% end %>
             <% end %>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">

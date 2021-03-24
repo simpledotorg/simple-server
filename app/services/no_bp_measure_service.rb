@@ -1,4 +1,5 @@
 class NoBPMeasureService
+  include BustCache
   CACHE_VERSION = 3
   CACHE_TTL = 7.days
 
@@ -21,7 +22,7 @@ class NoBPMeasureService
 
   def call
     keys = cache_keys_for_period.keys
-    cached_results = cache.fetch_multi(*keys, version: cache_version, expires_in: CACHE_TTL, force: force_cache?) { |key|
+    cached_results = cache.fetch_multi(*keys, version: cache_version, expires_in: CACHE_TTL, force: bust_cache?) { |key|
       period = cache_keys_for_period.fetch(key)
       execute_sql(period)
     }
@@ -42,7 +43,7 @@ class NoBPMeasureService
     registration_date = period.blood_pressure_control_range.begin
 
     Patient
-      .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.start_date)
+      .for_reports(with_exclusions: with_exclusions, exclude_ltfu_as_of: period.end_date)
       .joins(sanitize_sql(["LEFT OUTER JOIN appointments ON appointments.patient_id = patients.id
           AND appointments.device_created_at > ?
           AND appointments.device_created_at <= ?", start_date, end_date]))
@@ -77,9 +78,5 @@ class NoBPMeasureService
 
   def cache_version
     "#{region.cache_version}/#{CACHE_VERSION}"
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 end

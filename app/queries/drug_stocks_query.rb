@@ -7,6 +7,7 @@ class DrugStocksQuery
     # assuming that all facilities on the page have the same protocol
     @protocol = @facilities.first.protocol
     @state = @facilities.first.state
+    @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
   end
 
   def protocol_drugs_by_category
@@ -21,7 +22,7 @@ class DrugStocksQuery
   def drug_stocks_report
     Rails.cache.fetch(drug_stocks_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
-      force: RequestStore.store[:force_cache]) do
+      force: RequestStore.store[:bust_cache]) do
       {all: drug_stock_totals,
        facilities: drug_stock_report_for_facilities,
        last_updated_at: Time.now}
@@ -31,7 +32,7 @@ class DrugStocksQuery
   def drug_consumption_report
     Rails.cache.fetch(drug_consumption_cache_key,
       expires_in: ENV.fetch("ANALYTICS_DASHBOARD_CACHE_TTL"),
-      force: RequestStore.store[:force_cache]) do
+      force: RequestStore.store[:bust_cache]) do
       {all: drug_consumption_totals,
        facilities: drug_consumption_report_for_facilities,
        last_updated_at: Time.now}
@@ -166,10 +167,7 @@ class DrugStocksQuery
 
   def stocks_by_rxnorm_code(drug_stocks)
     drug_stocks&.each_with_object({}) { |drug_stock, acc|
-      acc[drug_stock.protocol_drug.rxnorm_code] =
-        drug_stock
-          .as_json
-          .with_indifferent_access
+      acc[drug_stock.protocol_drug.rxnorm_code] = drug_stock.as_json.with_indifferent_access
     }
   end
 
@@ -187,6 +185,7 @@ class DrugStocksQuery
     [
       "#{self.class.name}#drug_stocks",
       @facilities.map(&:id).sort,
+      @latest_drug_stocks.cache_key,
       @for_end_of_month,
       @protocol.id,
       @state,

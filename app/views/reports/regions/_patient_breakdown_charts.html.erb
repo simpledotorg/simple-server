@@ -41,8 +41,8 @@
                   <%= number_with_delimiter(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %>
                 </span>
                 <%= "patient".pluralize(@chart_data[:ltfu_trend].last_value(:cumulative_assigned_patients)) %> registered till
-                <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>">
-                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %>
+                <span data-registrations-period-end="<%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %>">
+                  <%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %>
                 </span>
               </p>
             <% else %>
@@ -77,11 +77,11 @@
             Assigned patients breakdown
           </h3>
           <%= render "definition_tooltip",
-                     definitions: { "Not lost to follow-up" => t("not_lost_to_follow_up_copy"),
+                     definitions: { "Patients under care" => t("patients_under_care_copy"),
                                     "Lost to follow-up" => t("lost_to_follow_up_copy.reports_card_subtitle") } %>
         </div>
         <p class="mb-0px c-grey-dark mr-lg-12px"><%= number_with_delimiter(@chart_data[:patient_breakdown][:total_patients]) %>
-          hypertension patients assigned to <%= @region.name %> as of <%= @chart_data[:ltfu_trend].last_value(:period_info)["start_date"] %></p>
+          hypertension patients assigned to <%= @region.name %> as of <%= @chart_data[:ltfu_trend].last_value(:period_info)["bp_control_end_date"] %></p>
       </div>
       <div class="p-relative mb-16px d-lg-flex">
         <div class="w-360px h-360px">
@@ -91,7 +91,7 @@
           <div class="mr-16px mb-12px">
             <p class="mb-1">
               <span class="legend-label bg-green"></span>
-              Not lost to follow-up
+              Patients under care
             </p>
             <p class="mb-1">
               <span class="legend-label bg-blue-dark"></span>

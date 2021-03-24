@@ -7,8 +7,15 @@ class DrugStock < ApplicationRecord
   validates :received, numericality: true, allow_nil: true
   validates :for_end_of_month, presence: true
 
+  def self.latest_for_facilities_grouped_by_protocol_drug(facilities, end_of_month)
+    drug_stock_list = latest_for_facilities(facilities, end_of_month) || []
+    drug_stock_list.each_with_object({}) { |drug_stock, acc|
+      acc[drug_stock.protocol_drug.id] = drug_stock
+    }
+  end
+
   def self.latest_for_facilities(facilities, for_end_of_month)
-    DrugStock.select("DISTINCT ON (facility_id, protocol_drug_id) *")
+    select("DISTINCT ON (facility_id, protocol_drug_id) *")
       .includes(:protocol_drug)
       .where(facility_id: facilities, for_end_of_month: for_end_of_month)
       .order(:facility_id, :protocol_drug_id, created_at: :desc)

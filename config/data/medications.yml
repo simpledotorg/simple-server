@@ -1,0 +1,1025 @@
+---
+- id: e9865df7-39b5-4fb8-8ab3-354f87a5d369
+  name: Amlodipine
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '17767'
+  drug_category: hypertension_ccb
+  deleted: false
+- id: 26a810f2-dcd6-480f-ac32-44d4f2e0b951
+  name: Amlodipine
+  composition:
+  dosage: 2.5 mg
+  frequency: one_per_day
+  rxnorm_code: '329527'
+  drug_category: hypertension_ccb
+  deleted: false
+- id: 93bc74a8-26c6-4150-af00-69a572e01163
+  name: Amlodipine
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code: '329528'
+  drug_category: hypertension_ccb
+  deleted: false
+- id: 612165b8-e9db-40be-9bde-316e9c834c55
+  name: Amlodipine
+  composition:
+  dosage: 10 mg
+  frequency: one_per_day
+  rxnorm_code: '329526'
+  drug_category: hypertension_ccb
+  deleted: false
+- id: a24c46eb-b4d7-45bc-a00d-01c618cff6a7
+  name: Aspirin
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '1191'
+  drug_category: other
+  deleted: false
+- id: 4d6c4e53-918a-45de-b855-92300d12361b
+  name: Aspirin
+  composition:
+  dosage: 75 mg
+  frequency: one_per_day
+  rxnorm_code: '315429'
+  drug_category: other
+  deleted: false
+- id: deffd527-caad-4b35-8656-9d7bcedd21e2
+  name: Aspirin
+  composition:
+  dosage: 150 mg
+  frequency: one_per_day
+  rxnorm_code: '315413'
+  drug_category: other
+  deleted: false
+- id: a6d72c41-6ad9-4020-9800-748e150dfcd7
+  name: Atenolol
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '1202'
+  drug_category: hypertension_other
+  deleted: false
+- id: 2d318512-203c-4cec-8cc6-657760bec80e
+  name: Atenolol
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '315437'
+  drug_category: hypertension_other
+  deleted: false
+- id: 9bd7665c-c776-4a2a-a955-27bdfa3b5b6b
+  name: Atenolol
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '315438'
+  drug_category: hypertension_other
+  deleted: false
+- id: f6150b41-963e-4b95-951d-d45a1f577206
+  name: Atenolol
+  composition:
+  dosage: 100 mg
+  frequency: one_per_day
+  rxnorm_code: '315436'
+  drug_category: hypertension_other
+  deleted: false
+- id: 1247a9fc-9998-4bd2-abfa-62532824a7dc
+  name: Atorvastatin
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '83367'
+  drug_category: other
+  deleted: false
+- id: 13eb8a52-37e0-45b8-a753-15cd86ff7065
+  name: Atorvastatin
+  composition:
+  dosage: 10 mg
+  frequency: one_per_day
+  rxnorm_code: '597970'
+  drug_category: other
+  deleted: false
+- id: fa287f47-a54a-4a77-83e1-209e93c48ee5
+  name: Atorvastatin
+  composition:
+  dosage: 20 mg
+  frequency: one_per_day
+  rxnorm_code: '597966'
+  drug_category: other
+  deleted: false
+- id: 2bb038de-34b8-4bdd-88b1-c53468300c19
+  name: Atorvastatin
+  composition:
+  dosage: 40 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: other
+  deleted: false
+- id: 9d3e178e-23ba-4218-bd69-4a332cf38087
+  name: Captopril
+  composition:
+  dosage:
+  frequency: three_per_day
+  rxnorm_code: '1998'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 9138e0c1-0173-46f3-992c-1a06f25de547
+  name: Captopril
+  composition:
+  dosage: 12.5 mg
+  frequency: three_per_day
+  rxnorm_code: '315560'
+  drug_category: hypertension_ace
+  deleted: false
+- id: fae50512-898f-49b3-bdca-40a7ebdd9850
+  name: Captopril
+  composition:
+  dosage: 25 mg
+  frequency: three_per_day
+  rxnorm_code: '315561'
+  drug_category: hypertension_ace
+  deleted: false
+- id: bbacff5c-474a-4fbc-b7f8-aade6e4b8526
+  name: Captopril
+  composition:
+  dosage: 50 mg
+  frequency: three_per_day
+  rxnorm_code: '315562'
+  drug_category: hypertension_ace
+  deleted: false
+- id: b81f89bd-fde5-447d-bea3-3215d95cbff7
+  name: Chlorthalidone
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '2409'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: 09f8bc3e-b112-46ae-979f-87f60fe94228
+  name: Chlorthalidone
+  composition:
+  dosage: 12.5 mg
+  frequency: one_per_day
+  rxnorm_code: '331132'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: 7cc38376-b468-43df-a55c-00498bd35a83
+  name: Chlorthalidone
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '315655'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: 4ac35c24-8797-4fdc-8a43-82a30140ea05
+  name: Clopidogrel
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '32968'
+  drug_category: other
+  deleted: false
+- id: 62de0277-a8ca-4052-b13d-cbcdc6253162
+  name: Clopidogrel
+  composition:
+  dosage: 75 mg
+  frequency: one_per_day
+  rxnorm_code: '329449'
+  drug_category: other
+  deleted: false
+- id: 416e4a6b-4561-451f-a7f0-2fb27221786c
+  name: Enalapril
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code: '3827'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 845b713d-3640-4158-8eb3-7a809d9a1f1a
+  name: Enalapril
+  composition:
+  dosage: 2.5 mg
+  frequency: one_per_day
+  rxnorm_code: '858803'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 3ef55abd-c632-44ec-b0d5-aa3c5b66663e
+  name: Enalapril
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code: '833236'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 220c8af8-f760-43fa-99ff-8043c077945c
+  name: Enalapril
+  composition:
+  dosage: 10 mg
+  frequency: one_per_day
+  rxnorm_code: '858816'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 11bd2c70-8069-45bb-bd5e-58869a9f076b
+  name: Enalapril
+  composition:
+  dosage: 20 mg
+  frequency: one_per_day
+  rxnorm_code: '858809'
+  drug_category: hypertension_ace
+  deleted: false
+- id: dfca2803-af96-47fe-84ff-d5a1dab5a4db
+  name: Enalapril
+  composition:
+  dosage: 40 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_ace
+  deleted: false
+- id: 2bd8c1ba-a873-4895-932e-af5f9e3854e7
+  name: Enalapril
+  composition:
+  dosage: 2.5 mg
+  frequency: two_per_day
+  rxnorm_code: '858803'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 33641439-1c07-420f-871d-2b744581a5cd
+  name: Enalapril
+  composition:
+  dosage: 5 mg
+  frequency: two_per_day
+  rxnorm_code: '833236'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 00b7b566-bda0-45ba-ae11-b9f1e8d96c22
+  name: Enalapril
+  composition:
+  dosage: 10 mg
+  frequency: two_per_day
+  rxnorm_code: '858816'
+  drug_category: hypertension_ace
+  deleted: false
+- id: d856ba1c-4fcf-4327-9916-21c2619f1ac1
+  name: Enalapril
+  composition:
+  dosage: 20 mg
+  frequency: two_per_day
+  rxnorm_code: '858809'
+  drug_category: hypertension_ace
+  deleted: false
+- id: e485c143-6691-4126-91a8-c7cf89c0a7a7
+  name: Glibenclamide
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code: '4815'
+  drug_category: diabetes
+  deleted: false
+- id: 1be2d256-e928-425f-8650-d84c2f9bada7
+  name: Glibenclamide
+  composition:
+  dosage: 2.5 mg
+  frequency: one_per_day
+  rxnorm_code: '315989'
+  drug_category: diabetes
+  deleted: false
+- id: 94ce4e9d-4b87-4139-baab-093adb69e841
+  name: Glibenclamide
+  composition:
+  dosage: 2.5 mg
+  frequency: two_per_day
+  rxnorm_code: '315989'
+  drug_category: diabetes
+  deleted: false
+- id: e9231f88-9b6a-4423-9a0d-219cbfb84b9c
+  name: Glibenclamide
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code: '315991'
+  drug_category: diabetes
+  deleted: false
+- id: 11744723-ed2c-4d08-a1c9-fa0994116dd0
+  name: Glibenclamide
+  composition:
+  dosage: 5 mg
+  frequency: two_per_day
+  rxnorm_code: '315991'
+  drug_category: diabetes
+  deleted: false
+- id: 715294df-2e02-4e79-8ca2-fcde000f15fb
+  name: Gliclazide
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code: '4816'
+  drug_category: diabetes
+  deleted: false
+- id: 0ecdb318-757c-44a4-8a76-2e75ca3d1578
+  name: Gliclazide
+  composition:
+  dosage: 40 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 720dfc5d-5895-4241-a862-12b1c63a9d24
+  name: Gliclazide
+  composition:
+  dosage: 40 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 362125dc-9f2b-4c8e-953a-a9d71fe1e72d
+  name: Gliclazide
+  composition:
+  dosage: 80 mg
+  frequency: one_per_day
+  rxnorm_code: '332029'
+  drug_category: diabetes
+  deleted: false
+- id: 8b1aa9ce-a783-4777-beac-046b1bfa89dd
+  name: Gliclazide
+  composition:
+  dosage: 80 mg
+  frequency: two_per_day
+  rxnorm_code: '332029'
+  drug_category: diabetes
+  deleted: false
+- id: 2536ded4-0c21-4da3-878f-202ccd4ca339
+  name: Glimepiride
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '25789'
+  drug_category: diabetes
+  deleted: false
+- id: 8e4c43e9-6fda-45ea-b0f6-e6325f04e4fe
+  name: Glimepiride
+  composition:
+  dosage: 1 mg
+  frequency: one_per_day
+  rxnorm_code: '315978'
+  drug_category: diabetes
+  deleted: false
+- id: 9525bce7-7f17-4e32-ac7e-0873baa05d70
+  name: Glimepiride
+  composition:
+  dosage: 2 mg
+  frequency: one_per_day
+  rxnorm_code: '317637'
+  drug_category: diabetes
+  deleted: false
+- id: 6daa089c-ebfe-466a-9532-d7ea85d27193
+  name: Glimepiride
+  composition:
+  dosage: 4 mg
+  frequency: one_per_day
+  rxnorm_code: '315979'
+  drug_category: diabetes
+  deleted: false
+- id: 25c66bc5-3475-497e-96b1-d1d08c46302d
+  name: Glipizide
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code: '4821'
+  drug_category: diabetes
+  deleted: false
+- id: b192c754-be6d-4e73-80d5-d76c7475dc79
+  name: Glipizide
+  composition:
+  dosage: 2.5 mg
+  frequency: one_per_day
+  rxnorm_code: '330349'
+  drug_category: diabetes
+  deleted: false
+- id: ed938f99-a071-41eb-85f1-dde12183effb
+  name: Glipizide
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code: '315980'
+  drug_category: diabetes
+  deleted: false
+- id: 0c39dba2-f106-4f85-bc34-d8197306f61f
+  name: Glipizide
+  composition:
+  dosage: 10 mg
+  frequency: one_per_day
+  rxnorm_code: '317379'
+  drug_category: diabetes
+  deleted: false
+- id: b9b9936a-8be3-406f-99ea-38983b64cbc8
+  name: Glipizide
+  composition:
+  dosage: 2.5 mg
+  frequency: two_per_day
+  rxnorm_code: '330349'
+  drug_category: diabetes
+  deleted: false
+- id: cca3c19a-015f-40ba-b1bd-be4fc2ca7e85
+  name: Glipizide
+  composition:
+  dosage: 5 mg
+  frequency: two_per_day
+  rxnorm_code: '315980'
+  drug_category: diabetes
+  deleted: false
+- id: c8dbf54c-a040-4391-9923-805723c0d5ae
+  name: Glipizide
+  composition:
+  dosage: 10 mg
+  frequency: two_per_day
+  rxnorm_code: '317379'
+  drug_category: diabetes
+  deleted: false
+- id: b8d2df55-3710-494b-8c33-954fe583dfd4
+  name: Hydrochlorothiazide
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '5487'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: f3a60e4e-b3ae-49ef-b880-ea61ebedef00
+  name: Hydrochlorothiazide
+  composition:
+  dosage: 12.5 mg
+  frequency: one_per_day
+  rxnorm_code: '316047'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: 1cfc79fd-8c9f-4a1e-8ba0-4389c54593ab
+  name: Hydrochlorothiazide
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '316049'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: cd338a10-2a75-4d2f-9b1e-dcad01d2f385
+  name: Hydrochlorothiazide
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '316051'
+  drug_category: hypertension_diuretic
+  deleted: false
+- id: f20e62e1-22df-45cb-ac7c-1876405f723c
+  name: Lisinopril
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '29046'
+  drug_category: hypertension_ace
+  deleted: false
+- id: b89ca764-adf0-4ab6-a9f0-1813944c7c01
+  name: Lisinopril
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code: '316156'
+  drug_category: hypertension_ace
+  deleted: false
+- id: fd8ccd44-5af0-464e-a490-e19e72c40acf
+  name: Lisinopril
+  composition:
+  dosage: 10 mg
+  frequency: one_per_day
+  rxnorm_code: '316151'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 6a041799-ccc4-4163-b6c2-e0a1a263c8e7
+  name: Lisinopril
+  composition:
+  dosage: 20 mg
+  frequency: one_per_day
+  rxnorm_code: '316153'
+  drug_category: hypertension_ace
+  deleted: false
+- id: f4f3cb93-d4ed-4c84-99de-319342cee371
+  name: Lisinopril
+  composition:
+  dosage: 40 mg
+  frequency: one_per_day
+  rxnorm_code: '316155'
+  drug_category: hypertension_ace
+  deleted: false
+- id: 5aa75246-3694-459f-8084-8c800a898930
+  name: Losartan
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '52175'
+  drug_category: hypertension_arb
+  deleted: false
+- id: ade11140-0edc-4913-b634-52c1b33a68e9
+  name: Losartan
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '979484'
+  drug_category: hypertension_arb
+  deleted: false
+- id: e8205c60-5b9d-41e1-b06c-f92a896b9298
+  name: Losartan
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '979467'
+  drug_category: hypertension_arb
+  deleted: false
+- id: 929a53ed-23dc-42fd-aa82-74df701c2522
+  name: Losartan
+  composition:
+  dosage: 100 mg
+  frequency: one_per_day
+  rxnorm_code: '979463'
+  drug_category: hypertension_arb
+  deleted: false
+- id: dfb2d1cf-cbfe-4402-9148-d0d5958e2d03
+  name: Losartan-Hydrochlorathiazide
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '214619'
+  drug_category: hypertension_other
+  deleted: false
+- id: d89fedc3-b0b1-420f-813e-d36316ec9bf0
+  name: Losartan-Hydrochlorathiazide
+  composition:
+  dosage: 50 mg / 12.5 mg
+  frequency: one_per_day
+  rxnorm_code: '979468'
+  drug_category: hypertension_other
+  deleted: false
+- id: 8c537132-50e1-4665-a86c-e278200af16d
+  name: Losartan-Hydrochlorathiazide
+  composition:
+  dosage: 100 mg / 25 mg
+  frequency: one_per_day
+  rxnorm_code: '979471'
+  drug_category: hypertension_other
+  deleted: false
+- id: 6d5fe3e7-948a-4560-b87d-7aedaa7c4f4c
+  name: Losartan-H
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '214619'
+  drug_category: hypertension_other
+  deleted: false
+- id: e8e1d3d1-4618-402a-b6b1-fe2a46c7a6a8
+  name: Losartan-H
+  composition:
+  dosage: 50 mg / 12.5 mg
+  frequency: one_per_day
+  rxnorm_code: '979468'
+  drug_category: hypertension_other
+  deleted: false
+- id: 9d602a1f-93f0-4ac9-9337-e80ac18e1a44
+  name: Losartan-H
+  composition:
+  dosage: 100 mg / 25 mg
+  frequency: one_per_day
+  rxnorm_code: '979471'
+  drug_category: hypertension_other
+  deleted: false
+- id: 6bcca629-5e00-4338-a311-b58001a8eeaa
+  name: Losartan-Amlodipine
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 6572a4a5-14ab-40ab-ae9d-17567b570785
+  name: Losartan-Amlodipine
+  composition:
+  dosage: 25 mg / 2.5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: ec475bc7-8a0d-4213-b870-f8828903e600
+  name: Losartan-Amlodipine
+  composition:
+  dosage: 25 mg / 5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: f071db96-1e90-4302-a4e4-a0450d198ada
+  name: Losartan-Amlodipine
+  composition:
+  dosage: 50 mg / 5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: f2d4b228-649b-48ee-9b4a-dc36abc6ab40
+  name: Metoprolol
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '203191'
+  drug_category: hypertension_other
+  deleted: false
+- id: b49adc94-83e9-49bb-a0e2-3f2733a212ad
+  name: Metoprolol
+  composition:
+  dosage: 12.5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 2b0c8478-8ed9-4f74-8224-f2c0b12977f1
+  name: Metoprolol
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '866426'
+  drug_category: hypertension_other
+  deleted: false
+- id: eb31f67d-64ac-4f0a-91c9-54b54a5d1de8
+  name: Metoprolol
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '866435'
+  drug_category: hypertension_other
+  deleted: false
+- id: 26c1d495-f2c1-4d91-87c3-2d7d03ce9d66
+  name: Metoprolol
+  composition:
+  dosage: 100 mg
+  frequency: one_per_day
+  rxnorm_code: '866411'
+  drug_category: hypertension_other
+  deleted: false
+- id: 49a3192a-6da9-499e-86f7-9391ebe2c81f
+  name: Metoprolol
+  composition:
+  dosage:
+  frequency: two_per_day
+  rxnorm_code: '203191'
+  drug_category: hypertension_other
+  deleted: false
+- id: 37f99983-4acb-4152-bd6e-61336ab21b99
+  name: Metoprolol
+  composition:
+  dosage: 12.5 mg
+  frequency: two_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 401bf950-e947-430e-880b-50b9e8724e6a
+  name: Metoprolol
+  composition:
+  dosage: 25 mg
+  frequency: two_per_day
+  rxnorm_code: '866426'
+  drug_category: hypertension_other
+  deleted: false
+- id: f0625df3-56c5-4979-8b4e-693874a8bd2b
+  name: Metoprolol
+  composition:
+  dosage: 50 mg
+  frequency: two_per_day
+  rxnorm_code: '866435'
+  drug_category: hypertension_other
+  deleted: false
+- id: 319c0014-8d43-4ab0-b407-3bb03b2888ec
+  name: Metoprolol
+  composition:
+  dosage: 100 mg
+  frequency: two_per_day
+  rxnorm_code: '866411'
+  drug_category: hypertension_other
+  deleted: false
+- id: 76406b89-8368-4929-8523-7daa9d1e896f
+  name: Metoprolol XL
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '221124'
+  drug_category: hypertension_other
+  deleted: false
+- id: e96b3e67-be2c-4eb8-b940-3d381d29bc26
+  name: Metoprolol XL
+  composition:
+  dosage: 12.5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 70bd7e6f-3e8b-4c4e-b37a-b887282b6b16
+  name: Metoprolol XL
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '1370489'
+  drug_category: hypertension_other
+  deleted: false
+- id: 83c6ed16-a2d5-4210-88cf-a2bd87ab5af3
+  name: Metoprolol XL
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '1370474'
+  drug_category: hypertension_other
+  deleted: false
+- id: bdd4d449-6f22-41ef-81a2-6e9f2a6381b4
+  name: Metoprolol XL
+  composition:
+  dosage: 100 mg
+  frequency: one_per_day
+  rxnorm_code: '1370483'
+  drug_category: hypertension_other
+  deleted: false
+- id: f0123b9f-ea52-4d25-b45c-005dd78181f4
+  name: Metformin
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code: '6809'
+  drug_category: diabetes
+  deleted: false
+- id: 23dbe80c-c211-4ef7-91d1-1239bfa8a327
+  name: Metformin
+  composition:
+  dosage: 500 mg
+  frequency: one_per_day
+  rxnorm_code: '860974'
+  drug_category: diabetes
+  deleted: false
+- id: 25afd872-84a4-4c28-a972-d2fd151f6b65
+  name: Metformin
+  composition:
+  dosage: 500 mg
+  frequency: two_per_day
+  rxnorm_code: '860974'
+  drug_category: diabetes
+  deleted: false
+- id: 69548c33-8748-46dd-9ff0-1e4f472d7b24
+  name: Metformin
+  composition:
+  dosage: 1000 mg
+  frequency: one_per_day
+  rxnorm_code: '860995'
+  drug_category: diabetes
+  deleted: false
+- id: 941c6b24-4874-48cb-8696-76b09ebb4e18
+  name: Metformin
+  composition:
+  dosage: 1000 mg
+  frequency: two_per_day
+  rxnorm_code: '860995'
+  drug_category: diabetes
+  deleted: false
+- id: 56c58752-8cac-4b8b-acf2-5122eace9ffc
+  name: Metformin SR
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 20be9990-5abb-484f-972a-da25a2efb41f
+  name: Metformin SR
+  composition:
+  dosage: 500 mg
+  frequency: one_per_day
+  rxnorm_code: '1807915'
+  drug_category: diabetes
+  deleted: false
+- id: 9b8ba1a0-b7c9-4650-a0b1-f985ab641b9e
+  name: Metformin SR
+  composition:
+  dosage: 1000 mg
+  frequency: one_per_day
+  rxnorm_code: '1807888'
+  drug_category: diabetes
+  deleted: false
+- id: ee8e9724-3b77-4f06-ab4d-730d9a52130e
+  name: Metformin SR
+  composition:
+  dosage: 2000 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: diabetes
+  deleted: false
+- id: 4669678e-0576-4ac7-bd6c-0339daebbbf0
+  name: Propranolol
+  composition:
+  dosage:
+  frequency:
+  rxnorm_code: '8787'
+  drug_category: hypertension_other
+  deleted: false
+- id: 66f163fa-4ade-4dd6-ab9e-5a01a438cd41
+  name: Propranolol
+  composition:
+  dosage: 20 mg
+  frequency: one_per_day
+  rxnorm_code: '856456'
+  drug_category: hypertension_other
+  deleted: false
+- id: 4db52fc4-b737-4f79-99bb-a96b527d5542
+  name: Propranolol
+  composition:
+  dosage: 20 mg
+  frequency: two_per_day
+  rxnorm_code: '856456'
+  drug_category: hypertension_other
+  deleted: false
+- id: e67b2aa5-a10d-4059-8f01-4451e3ac4b74
+  name: Propranolol
+  composition:
+  dosage: 20 mg
+  frequency: three_per_day
+  rxnorm_code: '856456'
+  drug_category: hypertension_other
+  deleted: false
+- id: 90478339-aecb-4f89-bddd-4366f4c4f74c
+  name: Propranolol
+  composition:
+  dosage: 40 mg
+  frequency: one_per_day
+  rxnorm_code: '856421'
+  drug_category: hypertension_other
+  deleted: false
+- id: 4feffc24-f9e0-4746-b438-7760b690c7bf
+  name: Propranolol
+  composition:
+  dosage: 40 mg
+  frequency: two_per_day
+  rxnorm_code: '856421'
+  drug_category: hypertension_other
+  deleted: false
+- id: 62557e0d-b583-4674-9131-4600f3213265
+  name: Propranolol
+  composition:
+  dosage: 40 mg
+  frequency: three_per_day
+  rxnorm_code: '856421'
+  drug_category: hypertension_other
+  deleted: false
+- id: 4d8127e6-a1a3-435c-be5f-a12452f45a68
+  name: Rosuvastatin
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '301542'
+  drug_category: other
+  deleted: false
+- id: 76b6081d-1c56-4501-aee0-f85dbd41072d
+  name: Rosuvastatin
+  composition:
+  dosage: 5 mg
+  frequency: one_per_day
+  rxnorm_code: '2167572'
+  drug_category: other
+  deleted: false
+- id: 848c4803-d4ee-4620-ba6d-24ff3d9f668d
+  name: Rosuvastatin
+  composition:
+  dosage: 20 mg
+  frequency: one_per_day
+  rxnorm_code: '2167564'
+  drug_category: other
+  deleted: false
+- id: ef85bbce-2508-4a2a-bde6-131d9c61afe6
+  name: Rosuvastatin
+  composition:
+  dosage: 10 mg
+  frequency: one_per_day
+  rxnorm_code: '2167555'
+  drug_category: other
+  deleted: false
+- id: d8da65a7-f4ea-46f9-83c7-1eab039afe7e
+  name: Sitagliptin
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '593411'
+  drug_category: diabetes
+  deleted: false
+- id: c6abecc5-97eb-4087-bca7-6457224e93a2
+  name: Sitagliptin
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '665041'
+  drug_category: diabetes
+  deleted: false
+- id: 92260d3f-c6a2-4e1a-902c-0f0a5f566138
+  name: Sitagliptin
+  composition:
+  dosage: 100 mg
+  frequency: one_per_day
+  rxnorm_code: '665031'
+  drug_category: diabetes
+  deleted: false
+- id: 7533fbc1-e91b-4120-89bd-c937b1669f61
+  name: Spironolactone
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '9997'
+  drug_category: hypertension_other
+  deleted: false
+- id: 33443684-7e43-4a56-9324-1b49e0f7e7a5
+  name: Spironolactone
+  composition:
+  dosage: 12.5 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 1a436491-e9d3-4a29-8975-d772d6cc59df
+  name: Spironolactone
+  composition:
+  dosage: 25 mg
+  frequency: one_per_day
+  rxnorm_code: '316728'
+  drug_category: hypertension_other
+  deleted: false
+- id: be27caf2-38a6-400c-bd6b-6c44b354e2a3
+  name: Spironolactone
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '317508'
+  drug_category: hypertension_other
+  deleted: false
+- id: 8800e0e6-e7c9-4b3c-ac30-aa3b19158a1d
+  name: Telmisartan
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '73494'
+  drug_category: hypertension_arb
+  deleted: false
+- id: 17b21bbf-2c15-42f8-9a7a-879e9ef681f5
+  name: Telmisartan
+  composition:
+  dosage: 20 mg
+  frequency: one_per_day
+  rxnorm_code: '331555'
+  drug_category: hypertension_arb
+  deleted: false
+- id: 45a6e4b8-d40a-4285-bcb9-b7acab04a80b
+  name: Telmisartan
+  composition:
+  dosage: 40 mg
+  frequency: one_per_day
+  rxnorm_code: '316764'
+  drug_category: hypertension_arb
+  deleted: false
+- id: 5312f633-b6c3-4b00-8cc6-9c9c66e6e716
+  name: Telmisartan
+  composition:
+  dosage: 80 mg
+  frequency: one_per_day
+  rxnorm_code: '316765'
+  drug_category: hypertension_arb
+  deleted: false
+- id: 34c201b6-9cd5-4795-aef5-d53b7b6c971f
+  name: Telvas 3D
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 4c6d84bc-481a-47e4-9981-8042885924f8
+  name: Telvas 3D
+  composition:
+  dosage: 5mg / 12.5 mg / 40 mg
+  frequency: one_per_day
+  rxnorm_code:
+  drug_category: hypertension_other
+  deleted: false
+- id: 94c761bf-7ff5-4ab7-b31f-9a1bfcfb9cf3
+  name: Vildagliptin
+  composition:
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: '596554'
+  drug_category: diabetes
+  deleted: false
+- id: 12dc3349-69df-4b22-946c-824c757392da
+  name: Vildagliptin
+  composition:
+  dosage: 50 mg
+  frequency: one_per_day
+  rxnorm_code: '757711'
+  drug_category: diabetes
+  deleted: false

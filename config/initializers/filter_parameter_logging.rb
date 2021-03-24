@@ -7,11 +7,12 @@ module ParameterFiltering
   ALLOWED_ATTRIBUTES = %w[
     action
     active
+    bust_cache
     code
     controller
     created_at
     deleted_at
-    force_cache
+    for_end_of_month
     limit
     metadata_version
     process_token

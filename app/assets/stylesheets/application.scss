@@ -693,3 +693,55 @@ span.inactive {
 	height: 43px;
 	width: 141px;
 }
+
+.error-body {
+    background-color: #F0F2F5;
+    color: #2E2F30;
+    display: flex;
+    justify-content: center;
+    font-family: Roboto, sans-serif;
+    line-height: 1.4;
+    margin: 84px 0px 0px 0px;
+    text-align: center;
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    a:link,
+    a:hover,
+    a:visited {
+        color: #0075EB;
+    }
+
+    img {
+        margin-bottom: 32px;
+        width: 80px;
+    }
+
+    .dialog {
+        background: #fff;
+        border-radius: 7px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        height: 320px;
+        padding: 40px;
+        width: 608px;
+    }
+
+    .title {
+        font-size: 36px;
+        font-weight: bold;
+        line-height: 1.4;
+        margin: 22px 0px;
+    }
+
+    .text {
+        margin: 22px 0px;
+        padding-bottom: 16px;
+    }
+
+    .return-link {
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+}

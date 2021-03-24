@@ -67,6 +67,10 @@ class Patient < ApplicationRecord
 
   belongs_to :deleted_by_user, class_name: "User", optional: true
 
+  has_many :merged_from_patients, -> { with_discarded }, class_name: "Patient", foreign_key: :merged_into_patient_id
+  belongs_to :merged_into_patient, class_name: "Patient", foreign_key: :merged_into_patient_id, optional: true
+  belongs_to :merged_by_user, class_name: "User", optional: true
+
   attribute :call_result, :string
 
   scope :with_nested_sync_resources, -> { includes(:address, :phone_numbers, :business_identifiers) }
@@ -94,6 +98,7 @@ class Patient < ApplicationRecord
   }
 
   validate :past_date_of_birth
+  validates :status, presence: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true

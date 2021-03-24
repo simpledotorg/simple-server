@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   let(:facility_group_with_stock_tracked) { create(:facility_group) }
-  let!(:facilities_with_stock_tracked) { create_list(:facility, 3, facility_group: facility_group_with_stock_tracked) }
+  let!(:facilities_with_stock_tracked) { create_list(:facility, 3, facility_group: facility_group_with_stock_tracked, facility_size: :small) }
+
   let(:allowed_facility_for_manager) { facilities_with_stock_tracked.first }
   let(:disallowed_facility_for_manager) { facilities_with_stock_tracked.second }
 
@@ -10,7 +11,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   let(:protocol_drug_2) { create(:protocol_drug, stock_tracked: true, protocol: facility_group_with_stock_tracked.protocol) }
 
   let(:facility_group) { create(:facility_group) }
-  let(:facilities) { create_list(:facility, 3, facility_group: facility_group) }
+  let(:facilities) { create_list(:facility, 3, facility_group: facility_group, facility_size: :large) }
 
   let(:power_user) { create(:admin, :power_user) }
   let(:manager) { create(:admin, :manager, :with_access, resource: allowed_facility_for_manager) }
@@ -42,6 +43,15 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
         expect(assigns(:facilities)).not_to include(*facility_group.facilities)
       end
+
+      it "excludes community facilities" do
+        community_facility_with_stock_tracked = create(:facility, facility_group: facility_group_with_stock_tracked, facility_size: :community)
+
+        sign_in(power_user.email_authentication)
+        get :drug_stocks, params: {facility_group: facility_group_with_stock_tracked.slug}
+
+        expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
+      end
     end
 
     context "as manager" do
@@ -51,6 +61,17 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
 
         expect(assigns(:facilities)).to contain_exactly(allowed_facility_for_manager)
       end
+
+      it "excludes community facilities" do
+        community_facility_with_stock_tracked = create(:facility, facility_group: facility_group_with_stock_tracked, facility_size: :community)
+        _access = create(:access, user: manager, resource: community_facility_with_stock_tracked)
+
+        sign_in(manager.email_authentication)
+        get :drug_stocks, params: {}
+
+        expect(assigns(:facilities)).to contain_exactly(allowed_facility_for_manager)
+        expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
+      end
     end
 
     context "as viewer_reports_only" do
@@ -59,6 +80,17 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         get :drug_stocks, params: {}
 
         expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
+      end
+
+      it "excludes community facilities" do
+        community_facility_with_stock_tracked = create(:facility, facility_group: facility_group_with_stock_tracked, facility_size: :community)
+        _access = create(:access, user: report_viewer, resource: community_facility_with_stock_tracked)
+
+        sign_in(report_viewer.email_authentication)
+        get :drug_stocks, params: {}
+
+        expect(assigns(:facilities)).to contain_exactly(*facilities_with_stock_tracked)
+        expect(assigns(:facilities)).not_to include(community_facility_with_stock_tracked)
       end
     end
   end
@@ -168,7 +200,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       sign_in(power_user.email_authentication)
 
       expect { post :create, params: params, session: session }.to change { DrugStock.count }.by(1)
-      expect(response).to redirect_to(redirect_url + "?force_cache=true")
+      expect(response).to redirect_to(redirect_url)
       expect(flash[:notice]).to eq "Saved drug stocks"
     end
 
@@ -198,7 +230,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
           session: session
       }.to change { DrugStock.count }.by(1)
 
-      expect(response).to redirect_to(redirect_url + "?force_cache=true")
+      expect(response).to redirect_to(redirect_url)
       expect(flash[:notice]).to eq "Saved drug stocks"
     end
   end

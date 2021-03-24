@@ -1,5 +1,6 @@
 class ControlRateService
-  CACHE_VERSION = 9
+  include BustCache
+  CACHE_VERSION = 10
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -36,7 +37,7 @@ class ControlRateService
   private
 
   def all_cached_data
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: force_cache?) {
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
       fetch_all_data
     }
   end
@@ -55,12 +56,12 @@ class ControlRateService
     results.fill_in_nil_registrations
     results.count_cumulative_registrations
     results.count_cumulative_assigned_patients
-    results.count_adjusted_registrations_with_ltfu
+    results.count_adjusted_patient_counts_with_ltfu
 
     if with_exclusions
-      results.count_adjusted_registrations
+      results.count_adjusted_patient_counts
     else
-      results.adjusted_registrations = results.adjusted_registrations_with_ltfu
+      results.adjusted_patient_counts = results.adjusted_patient_counts_with_ltfu
     end
 
     results.controlled_patients = repository.controlled_patients_count[region.slug]
@@ -92,7 +93,7 @@ class ControlRateService
     Patient
       .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.start_date)
+      .ltfu_as_of(period.end_date)
       .count
   end
 
@@ -110,10 +111,6 @@ class ControlRateService
 
   def cache_version
     "#{region.cache_version}/#{CACHE_VERSION}"
-  end
-
-  def force_cache?
-    RequestStore.store[:force_cache]
   end
 
   def group_date_formatter

@@ -52,6 +52,10 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :webview do
+    resources :drug_stocks, only: [:new, :create, :index]
+  end
+
   namespace :api, defaults: {format: "json"} do
     get "manifest.json", to: "manifests#show"
 
@@ -130,12 +134,19 @@ Rails.application.routes.draw do
       scope :teleconsultations do
         post "sync", to: "teleconsultations#sync_from_user"
       end
+
+      scope :medications do
+        get "sync", to: "medications#sync_to_user"
+      end
     end
   end
 
   devise_for :email_authentications,
     path: "email_authentications",
-    controllers: {invitations: "email_authentications/invitations"}
+    controllers: {
+      invitations: "email_authentications/invitations",
+      passwords: "email_authentications/passwords"
+    }
 
   post "email_authentications/validate", to: "email_authentications/password_validations#create"
 
@@ -211,6 +222,9 @@ Rails.application.routes.draw do
     # This is a temporary page to assist in clean up
     get "fix_zone_data", to: "fix_zone_data#show"
     post "update_zone", to: "fix_zone_data#update"
+
+    get "deduplication", to: "deduplicate_patients#show"
+    post "deduplication", to: "deduplicate_patients#merge"
 
     resources :error_traces, only: [:index, :create]
   end
