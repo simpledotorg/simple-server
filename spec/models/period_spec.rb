@@ -119,15 +119,15 @@ RSpec.describe Period, type: :model do
 
   it "can return its blood pressure control range" do
     range = jan_1_2020_month_period.blood_pressure_control_range
-    expect(range.begin).to eq(Date.parse("October 31st 2019").end_of_day)
+    expect(range.begin).to eq(Date.parse("November 1st 2019").beginning_of_day)
     expect(range.end).to eq(Date.parse("January 31st 2020").end_of_day)
 
     range = Period.month("July 1st 2020").blood_pressure_control_range
-    expect(range.begin).to eq(Date.parse("April 30th 2020").end_of_day)
+    expect(range.begin).to eq(Date.parse("May 1st 2020").beginning_of_day)
     expect(range.end).to eq(Date.parse("July 31st 2020").end_of_day)
 
     range = Period.month("February 1st 2020").blood_pressure_control_range
-    expect(range.begin).to eq(Date.parse("November 30th 2019").end_of_day)
+    expect(range.begin).to eq(Date.parse("December 1st 2019").beginning_of_day)
     expect(range.end).to eq(Date.parse("February 29th 2020").end_of_day)
   end
 
