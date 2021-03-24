@@ -150,12 +150,25 @@ a.help-back {
     }
 }
 
+.title-caps {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $grey-dark;
+  margin: 1em 0;
+}
+
 .float-right {
   float: right;
 }
 
 .light {
   color: $grey-mid;
+}
+
+.dark {
+  color: $grey-dark;
 }
 
 .text-green {
