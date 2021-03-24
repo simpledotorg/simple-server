@@ -50,7 +50,7 @@ RSpec.describe ControlRateQuery do
       expect(august).to eq(0)
     end
 
-    fit "includes patients who were registered at the end of the registration buffer" do
+    it "includes patients who were registered at the end of the registration buffer" do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       controlled = create(:patient, recorded_at: Time.parse("December 31st 2020 23:59:00 UTC"), assigned_facility: facility, registration_user: user)
       uncontrolled = create(:patient, status: :dead, recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
