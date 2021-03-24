@@ -87,18 +87,18 @@ class Period
 
   def start_date
     if quarter?
-      value.start_date
+      value.begin
     else
-      value.beginning_of_month.to_date
+      value.beginning_of_month.beginning_of_day
     end
   end
   alias_method :begin, :start_date
 
   def end_date
     if quarter?
-      value.end_date
+      value.end
     else
-      value.end_of_month.to_date
+      value.end_of_month.end_of_day
     end
   end
   alias_method :end, :end_date
