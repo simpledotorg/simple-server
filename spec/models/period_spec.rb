@@ -64,6 +64,17 @@ RSpec.describe Period, type: :model do
     end
   end
 
+  context "display dates" do
+    it "knows the registration end date" do
+      expect(jan_1_2019.to_period.bp_control_registrations_until_date).to eq("31-Oct-2018")
+    end
+
+    it "can display the begin / end range of the BP control range" do
+      expect(jan_1_2019.to_period.bp_control_range_start_date).to eq("1-Nov-2018")
+      expect(jan_1_2019.to_period.bp_control_range_end_date).to eq("31-Jan-2019")
+    end
+  end
+
   it "times and dates can convert themselves into periods" do
     expect(jan_1_2019.to_period).to eq(Date.parse("January 1st 2019").to_period)
     expect(jan_1_2019.to_period.value).to eq(Date.parse("January 1st 2019").to_period.value)

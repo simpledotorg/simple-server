@@ -93,7 +93,7 @@ class ControlRateService
     Patient
       .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.end_date)
+      .ltfu_as_of(period.end)
       .count
   end
 

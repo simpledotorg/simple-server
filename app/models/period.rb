@@ -66,11 +66,11 @@ class Period
   alias_method :bp_control_range, :blood_pressure_control_range
 
   def bp_control_registrations_until_date
-    bp_control_range.begin.to_s(:day_mon_year)
+    adjusted_period.end.to_s(:day_mon_year)
   end
 
   def bp_control_range_start_date
-    bp_control_range.begin.next_day.to_s(:day_mon_year)
+    bp_control_range.begin.to_s(:day_mon_year)
   end
 
   def bp_control_range_end_date
