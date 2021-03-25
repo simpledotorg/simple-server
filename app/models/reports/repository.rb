@@ -56,6 +56,17 @@ module Reports
       end
     end
 
+    alias_method :adjusted_patient_counts_with_ltfu, :adjusted_patient_counts
+
+    smart_memoize def adjusted_patient_counts_without_ltfu
+      cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
+        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
+          region_result[period] = result[period.adjusted_period] - ltfu_counts[entry][period]
+        }
+        results[entry] = values
+      end
+    end
+
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_assigned_patients_counts
@@ -89,6 +100,13 @@ module Reports
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
         RegisteredPatientsQuery.new.count(entry.region, :month)
       }
+    end
+
+    def ltfu_counts
+      cached_query(__method__) do |entry|
+        facility_ids = entry.region.facilities.pluck(:id)
+        Patient.for_reports(with_exclusions: with_exclusions).where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
+      end
     end
 
     smart_memoize def controlled_patients_count

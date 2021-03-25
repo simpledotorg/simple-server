@@ -89,6 +89,7 @@ class ControlRateService
 
   def ltfu_patients(period)
     return 0 unless with_exclusions
+    logger.info "ltfu_patients"
 
     Patient
       .for_reports(with_exclusions: with_exclusions)

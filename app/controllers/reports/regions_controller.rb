@@ -28,6 +28,11 @@ class Reports::RegionsController < AdminController
     }
   end
 
+  def log(msg)
+    pp msg
+    logger.info msg
+  end
+
   def show
     @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
     @with_ltfu = with_ltfu?
@@ -43,8 +48,8 @@ class Reports::RegionsController < AdminController
       @children.map { |child|
         slug = child.slug
         data = Reports::RegionService.new(region: child, period: @period, with_exclusions: report_with_exclusions?).call
-        pp "adjusted patient counts from repo", child_data_repo.adjusted_patient_counts[slug]
-        pp "adjusted patient counts from legacy", data[:adjusted_patient_counts]
+        log ["adjusted patient counts from repo for #{@period}", child_data_repo.adjusted_patient_counts[slug]]
+        log ["adjusted patient counts from legacy #{@period}", data[:adjusted_patient_counts][@period]]
         {
           region: child,
           adjusted_patient_counts: child_data_repo.adjusted_patient_counts[slug],

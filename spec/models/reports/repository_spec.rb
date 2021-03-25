@@ -298,62 +298,73 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "legacy control specs" do
-    it "returns same results as ControlRateService" do
-      facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
-      facility_1, facility_2, facility_3 = *facilities.take(3)
+    [true, false].each do |with_exclusions|
+      it "returns same results as ControlRateService with_exclusion set to #{with_exclusions}" do
+        facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
+        facility_1, facility_2, facility_3 = *facilities.take(3)
 
-      _ltfu_patient = create(:patient, recorded_at: 2.years.ago, assigned_facility: facility_1, registration_facility: facility_1)
-      _dead_patient = create(:patient, full_name: "dead", recorded_at: jan_2019, status: :dead, assigned_facility: facility_1, registration_user: user)
-      controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-      uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
-      controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
-      patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: create(:facility), registration_user: user)
+        _ltfu_patient = create(:patient, recorded_at: 2.years.ago, assigned_facility: facility_1)
+        _dead_patient = create(:patient, full_name: "dead", recorded_at: jan_2019, status: :dead, assigned_facility: facility_1, registration_user: user)
+        controlled_in_jan_and_june = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+        uncontrolled_in_jan = create_list(:patient, 2, full_name: "uncontrolled", recorded_at: jan_2019, assigned_facility: facility_2, registration_user: user)
+        controlled_just_for_june = create(:patient, full_name: "just for june", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+        patient_from_other_facility = create(:patient, full_name: "other facility", recorded_at: jan_2019, assigned_facility: create(:facility), registration_user: user)
 
-      Timecop.freeze(jan_2020) do
-        controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 3.days.from_now, user: user)
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 4.days.from_now, user: user)
-        end
-        uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient, recorded_at: 4.days.from_now) }
-        create(:blood_pressure, :under_control, facility: patient_from_other_facility.assigned_facility, patient: patient_from_other_facility, recorded_at: 4.days.from_now)
-      end
-
-      Timecop.freeze(june_1_2020) do
-        controlled_in_jan_and_june.map do |patient|
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago, user: user)
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
+        Timecop.freeze(jan_2020) do
+          controlled_in_jan_and_june.map do |patient|
+            create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 3.days.from_now, user: user)
+            create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 4.days.from_now, user: user)
+          end
+          uncontrolled_in_jan.map { |patient| create(:blood_pressure, :hypertensive, facility: facility_2, patient: patient, recorded_at: 4.days.from_now) }
+          create(:blood_pressure, :under_control, facility: patient_from_other_facility.assigned_facility, patient: patient_from_other_facility, recorded_at: 4.days.from_now)
         end
 
-        create(:blood_pressure, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+        Timecop.freeze(june_1_2020) do
+          controlled_in_jan_and_june.map do |patient|
+            create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+            create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 4.days.ago, user: user)
+            create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 35.days.ago, user: user)
+          end
 
-        uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility_1, registration_user: user)
-        uncontrolled_in_june.map do |patient|
-          create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 1.days.ago, user: user)
-          create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+          create(:blood_pressure, :under_control, facility: facility_3, patient: controlled_just_for_june, recorded_at: 4.days.ago, user: user)
+
+          uncontrolled_in_june = create_list(:patient, 5, recorded_at: 4.months.ago, assigned_facility: facility_1, registration_user: user)
+          uncontrolled_in_june.map do |patient|
+            create(:blood_pressure, :hypertensive, facility: facility_1, patient: patient, recorded_at: 1.days.ago, user: user)
+            create(:blood_pressure, :under_control, facility: facility_1, patient: patient, recorded_at: 2.days.ago, user: user)
+          end
         end
+
+        refresh_views
+
+        start_range = july_2020.advance(months: -24)
+        range = (Period.month(start_range)..Period.month(july_2020))
+        repo = Reports::Repository.new(facility_1, periods: range, with_exclusions: with_exclusions)
+        service_result = ControlRateService.new(facility_1, periods: range, with_exclusions: with_exclusions).call
+        result = repo.controlled_patients_count
+
+        facility_1_results = result[facility_1.slug]
+        slug = facility_1.slug
+
+        pp service_result[:ltfu_patients]
+
+        range.each do |period|
+          # If with_exclusions if false, the legacy service ignores LTFU patients and does not count them
+          if !with_exclusions
+            expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+          else
+          # If with_exclusions if true, the legacy service counts LTFU patients and substracts them from the adjusted_patient_counts
+            expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+            expect(repo.adjusted_patient_counts_without_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+          end
+          expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
+          expect(repo.cumulative_assigned_patients_count[slug][period.adjusted_period]).to eq(service_result[:adjusted_patient_counts][period])
+          expect(repo.controlled_patient_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
+          expect(repo.uncontrolled_patient_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
+        end
+        expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
+        expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
       end
-
-      refresh_views
-
-      start_range = july_2020.advance(months: -24)
-      range = (Period.month(start_range)..Period.month(july_2020))
-      repo = Reports::Repository.new(facility_1, periods: range)
-      service_result = ControlRateService.new(facility_1, periods: range).call
-      result = repo.controlled_patients_count
-
-      facility_1_results = result[facility_1.slug]
-      slug = facility_1.slug
-
-      range.each do |period|
-        expect(repo.adjusted_patient_counts[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
-        expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
-        expect(repo.cumulative_assigned_patients_count[slug][period.adjusted_period]).to eq(service_result[:adjusted_patient_counts][period])
-        expect(repo.controlled_patient_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
-        expect(repo.uncontrolled_patient_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
-      end
-      expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-      expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
     end
 
     it "gets same results as RegionService for missed_visits" do
