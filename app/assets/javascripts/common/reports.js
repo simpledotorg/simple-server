@@ -28,13 +28,13 @@ Reports = function () {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
-    const controlledGraphControlRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
-    const controlledGraphAdjustedPatientCounts = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
-    const controlledGraphControlledPatients = window.withLtfu ? data.controlledPatientsWithLtfu : data.controlledPatients;
+    const controlledGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+    const controlledGraphDenominatorCounts = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const controlledGraphNumerator = data.controlledPatients;
 
     const controlledGraphConfig = this.createBaseGraphConfig();
     controlledGraphConfig.data = {
-      labels: Object.keys(controlledGraphControlRate),
+      labels: Object.keys(controlledGraphRate),
       datasets: [{
         label: "BP controlled",
         backgroundColor: this.lightGreenColor,
@@ -43,7 +43,7 @@ Reports = function () {
         pointBackgroundColor: this.whiteColor,
         hoverBackgroundColor: this.whiteColor,
         hoverBorderWidth: 2,
-        data: Object.values(controlledGraphControlRate),
+        data: Object.values(controlledGraphRate),
       }],
     };
     controlledGraphConfig.options.scales = {
@@ -105,8 +105,8 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedPatientCounts = controlledGraphAdjustedPatientCounts[label];
-        const totalPatients = controlledGraphControlledPatients[label];
+        const adjustedPatientCounts = controlledGraphDenominatorCounts[label];
+        const totalPatients = controlledGraphNumerator[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
@@ -613,7 +613,6 @@ Reports = function () {
       controlRate: jsonData.controlled_patients_rate,
       controlWithLtfuRate: jsonData.controlled_patients_with_ltfu_rate,
       controlledPatients: jsonData.controlled_patients,
-      controlledPatientsWithLtfu: jsonData.controlled_patients_with_ltfu,
       missedVisits: jsonData.missed_visits,
       missedVisitsRate: jsonData.missed_visits_rate,
       monthlyRegistrations: jsonData.registrations,
