@@ -51,7 +51,7 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
     t.date "remind_on", null: false
     t.string "status", null: false
     t.string "message", null: false
-    t.bigint "reminder_template_id"
+    t.uuid "reminder_template_id"
     t.uuid "patient_id", null: false
     t.uuid "appointment_id", null: false
     t.datetime "created_at", null: false
@@ -527,19 +527,19 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
     t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"
   end
 
-  create_table "reminder_experiments", force: :cascade do |t|
-    t.boolean "active", null: false
+  create_table "reminder_experiments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "active", null: false
     t.date "start_date"
     t.date "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "reminder_templates", force: :cascade do |t|
+  create_table "reminder_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "experiment_group", null: false
     t.string "message", null: false
     t.integer "appointment_offset", null: false
-    t.bigint "reminder_experiment_id", null: false
+    t.uuid "reminder_experiment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["reminder_experiment_id"], name: "index_reminder_templates_on_reminder_experiment_id"
