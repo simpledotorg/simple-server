@@ -4,7 +4,6 @@ describe AppointmentReminder, type: :model do
   describe "associations" do
     it { should belong_to(:appointment) }
     it { should belong_to(:patient) }
-    xit { should belong_to(:reminder_template) }
   end
 
   describe "validations" do

@@ -4,7 +4,7 @@ class CreateReminderExperiments < ActiveRecord::Migration[5.2]
       t.boolean :active, null: false
       t.date :start_date, null: true
       t.date :end_date, null: true
-      t.timestamps
+      t.timestamps null: false
     end
   end
 end

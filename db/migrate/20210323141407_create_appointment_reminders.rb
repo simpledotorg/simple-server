@@ -7,7 +7,7 @@ class CreateAppointmentReminders < ActiveRecord::Migration[5.2]
       t.references :reminder_template, null: true, foreign_key: true
       t.references :patient, type: :uuid, null: false, foreign_key: true
       t.references :appointment, type: :uuid, null: false, foreign_key: true
-      t.timestamps
+      t.timestamps null: false
     end
   end
 end
