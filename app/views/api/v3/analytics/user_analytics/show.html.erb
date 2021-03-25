@@ -266,7 +266,7 @@
         <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
           <div class="card cohort">
               <h6>
-                <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>&nbsp;
+                <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
                 <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
               </h6>
 

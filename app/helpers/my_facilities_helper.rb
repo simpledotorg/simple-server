@@ -19,15 +19,15 @@ module MyFacilitiesHelper
     end
   end
 
-  def patient_days_bg_color(patient_days)
+  def patient_days_css_class(patient_days, prefix: "bg")
     return if patient_days.nil?
-    return "bg-red" if patient_days == "error"
-    if patient_days < 30 then "bg-red"
-    elsif patient_days < 60 then "bg-orange"
-    elsif patient_days < 90 then "bg-yellow"
-    else
-      "bg-green"
+    color = if patient_days == "error" then :red
+    elsif patient_days < 30 then :red
+    elsif patient_days < 60 then :orange
+    elsif patient_days < 90 then :yellow
+    else :green
     end
+    "#{prefix}-#{color}"
   end
 
   def protocol_drug_labels

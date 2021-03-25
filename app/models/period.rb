@@ -6,6 +6,8 @@ class Period
 
   attr_accessor :type, :value
 
+  REGISTRATION_BUFFER_MONTHS = -3
+
   def self.month(date)
     new(type: :month, value: date.to_date)
   end
@@ -42,6 +44,10 @@ class Period
     {type: type, value: value}
   end
 
+  def adjusted_period
+    advance(months: REGISTRATION_BUFFER_MONTHS)
+  end
+
   # Convert this Period to a quarter period - so:
   #   a Period month of June 2020 will return a quarter Period of Q2-2020
   #   a Period quarter just returns itself
@@ -50,25 +56,21 @@ class Period
     self.class.quarter(value)
   end
 
-  def adjusted_period
-    advance(months: -3)
-  end
-
-  # Returns a range of dates that correspond to the 'control range' for this period.
-  # For example, for a month period of July 1st 2020, this will return the range of April 30th..July 31st.
+  # Returns a range of times that correspond to the 'BP control range' for this period.
+  # For example, for a reporting period of July 1st 2020, this will return the times of April 30th..July 31st.
   def blood_pressure_control_range
-    three_months_ago = end_date.advance(months: -3).end_of_month
-    (three_months_ago..end_date)
+    start_time = advance(months: -2).begin
+    (start_time..end_time)
   end
 
   alias_method :bp_control_range, :blood_pressure_control_range
 
   def bp_control_registrations_until_date
-    bp_control_range.begin.to_s(:day_mon_year)
+    adjusted_period.end.to_s(:day_mon_year)
   end
 
   def bp_control_range_start_date
-    bp_control_range.begin.next_day.to_s(:day_mon_year)
+    bp_control_range.begin.to_s(:day_mon_year)
   end
 
   def bp_control_range_end_date
@@ -83,21 +85,23 @@ class Period
     value.to_date
   end
 
-  def start_date
+  def begin
     if quarter?
-      value.start_date
+      value.begin
     else
-      value.beginning_of_month.to_date
+      value.beginning_of_month.beginning_of_day
     end
   end
+  alias_method :start_time, :begin
 
-  def end_date
+  def end
     if quarter?
-      value.end_date
+      value.end
     else
-      value.end_of_month.to_date
+      value.end_of_month.end_of_day
     end
   end
+  alias_method :end_time, :end
 
   def succ
     if quarter?

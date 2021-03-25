@@ -1,11 +1,6 @@
 module Reports
   class DrugStockCalculation
-    def initialize(state:,
-      protocol:,
-      drug_category:,
-      stocks_by_rxnorm_code:,
-      patient_count: nil,
-      previous_month_stocks_by_rxnorm_code: nil)
+    def initialize(state:, protocol:, drug_category:, stocks_by_rxnorm_code:, patient_count: nil, previous_month_stocks_by_rxnorm_code: nil)
       @protocol = protocol
       @drug_category = drug_category
       @stocks_by_rxnorm_code = stocks_by_rxnorm_code

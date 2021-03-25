@@ -17,15 +17,15 @@ class PatientBreakdownService
 
   def call
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
-      breakdown_date = @period.end_date
+      period_end = @period.end
       patients = Patient.with_hypertension.where(assigned_facility: facilities)
 
       {
         dead_patients: patients.status_dead.count,
-        ltfu_patients: patients.excluding_dead.ltfu_as_of(breakdown_date).count,
-        not_ltfu_patients: patients.excluding_dead.not_ltfu_as_of(breakdown_date).count,
-        ltfu_transferred_patients: patients.ltfu_as_of(breakdown_date).status_migrated.count,
-        not_ltfu_transferred_patients: patients.not_ltfu_as_of(breakdown_date).status_migrated.count,
+        ltfu_patients: patients.excluding_dead.ltfu_as_of(period_end).count,
+        not_ltfu_patients: patients.excluding_dead.not_ltfu_as_of(period_end).count,
+        ltfu_transferred_patients: patients.ltfu_as_of(period_end).status_migrated.count,
+        not_ltfu_transferred_patients: patients.not_ltfu_as_of(period_end).status_migrated.count,
         total_patients: patients.count
       }
     }
