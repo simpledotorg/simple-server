@@ -1,6 +1,7 @@
-class AppointmentReminder < ActiveRecord::Base
+class AppointmentReminder < ApplicationRecord
   belongs_to :appointment
   belongs_to :patient
+  belongs_to :experiment, optional: true
   belongs_to :reminder_template, optional: true
 
   validates :status, presence: true

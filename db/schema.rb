@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_23_141407) do
+ActiveRecord::Schema.define(version: 2021_03_25_164437) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -51,12 +51,15 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
     t.date "remind_on", null: false
     t.string "status", null: false
     t.string "message", null: false
+    t.uuid "experiment_id"
     t.uuid "reminder_template_id"
     t.uuid "patient_id", null: false
     t.uuid "appointment_id", null: false
+    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["appointment_id"], name: "index_appointment_reminders_on_appointment_id"
+    t.index ["experiment_id"], name: "index_appointment_reminders_on_experiment_id"
     t.index ["patient_id"], name: "index_appointment_reminders_on_patient_id"
     t.index ["reminder_template_id"], name: "index_appointment_reminders_on_reminder_template_id"
   end
@@ -246,6 +249,14 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
     t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
     t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
     t.index ["whitelist_status"], name: "index_exotel_phone_number_details_on_whitelist_status"
+  end
+
+  create_table "experiments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "state", null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -527,22 +538,13 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
     t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"
   end
 
-  create_table "reminder_experiments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "active", null: false
-    t.date "start_date"
-    t.date "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "reminder_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "experiment_group", null: false
     t.string "message", null: false
     t.integer "appointment_offset", null: false
-    t.uuid "reminder_experiment_id", null: false
+    t.uuid "treatment_cohort_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["reminder_experiment_id"], name: "index_reminder_templates_on_reminder_experiment_id"
+    t.index ["treatment_cohort_id"], name: "index_reminder_templates_on_treatment_cohort_id"
   end
 
   create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
@@ -568,6 +570,14 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
     t.index ["patient_id"], name: "index_teleconsultations_on_patient_id"
     t.index ["requested_medical_officer_id"], name: "index_teleconsultations_on_requested_medical_officer_id"
     t.index ["requester_id"], name: "index_teleconsultations_on_requester_id"
+  end
+
+  create_table "treatment_cohorts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "cohort_identifier"
+    t.uuid "experiment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["experiment_id"], name: "index_treatment_cohorts_on_experiment_id"
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
@@ -617,6 +627,7 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
 
   add_foreign_key "accesses", "users"
   add_foreign_key "appointment_reminders", "appointments"
+  add_foreign_key "appointment_reminders", "experiments"
   add_foreign_key "appointment_reminders", "patients"
   add_foreign_key "appointment_reminders", "reminder_templates"
   add_foreign_key "appointments", "facilities"
@@ -638,11 +649,12 @@ ActiveRecord::Schema.define(version: 2021_03_23_141407) do
   add_foreign_key "patients", "patients", column: "merged_into_patient_id"
   add_foreign_key "patients", "users", column: "merged_by_user_id"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "reminder_templates", "reminder_experiments"
+  add_foreign_key "reminder_templates", "treatment_cohorts"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
+  add_foreign_key "treatment_cohorts", "experiments"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (

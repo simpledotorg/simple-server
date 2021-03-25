@@ -4,9 +4,11 @@ class CreateAppointmentReminders < ActiveRecord::Migration[5.2]
       t.date :remind_on, null: false
       t.string :status, null: false
       t.string :message, null: false
+      t.references :experiment, type: :uuid, null: true, foreign_key: true
       t.references :reminder_template, type: :uuid, null: true, foreign_key: true
       t.references :patient, type: :uuid, null: false, foreign_key: true
       t.references :appointment, type: :uuid, null: false, foreign_key: true
+      t.datetime :deleted_at, null: true
       t.timestamps null: false
     end
   end
