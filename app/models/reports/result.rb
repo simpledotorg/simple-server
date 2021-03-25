@@ -17,7 +17,6 @@ module Reports
           adjusted_patient_counts_with_ltfu: Hash.new(0),
           assigned_patients: Hash.new(0),
           controlled_patients: Hash.new(0),
-          controlled_patients_with_ltfu: Hash.new(0),
           controlled_patients_rate: Hash.new(0),
           controlled_patients_with_ltfu_rate: Hash.new(0),
           cumulative_registrations: Hash.new(0),
@@ -30,7 +29,8 @@ module Reports
           period_info: {},
           registrations: Hash.new(0),
           uncontrolled_patients: Hash.new(0),
-          uncontrolled_patients_rate: Hash.new(0)
+          uncontrolled_patients_rate: Hash.new(0),
+          uncontrolled_patients_with_ltfu_rate: Hash.new(0)
         }.with_indifferent_access
     end
 
@@ -177,12 +177,15 @@ module Reports
     def calculate_missed_visits_percentages(range, with_ltfu: false)
       self.missed_visits_rate = range.each_with_object(Hash.new(0)) do |period, hsh|
         remaining_percentages = if with_ltfu
-          controlled_patients_rate_for(period) + uncontrolled_patients_rate_for(period) + visited_without_bp_taken_rate_for(period)
-        else
           controlled_patients_with_ltfu_rate_for(period) +
             uncontrolled_patients_with_ltfu_rate_for(period) +
             visited_without_bp_taken_with_ltfu_rate_for(period)
+        else
+          controlled_patients_rate_for(period) +
+            uncontrolled_patients_rate_for(period) +
+            visited_without_bp_taken_rate_for(period)
         end
+
         hsh[period] = 100 - remaining_percentages
       end
     end
@@ -191,7 +194,6 @@ module Reports
     QUARTELY_DENOMINATORS = {
       controlled_patients: :assigned_patients,
       uncontrolled_patients: :assigned_patients,
-      controlled_patients_with_ltfu: :assigned_patients,
       visited_without_bp_taken: :assigned_patients,
       ltfu_patients: :cumulative_registrations
     }

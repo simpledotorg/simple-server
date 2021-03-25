@@ -70,6 +70,7 @@ class ControlRateService
     results.calculate_percentages(:controlled_patients)
     results.calculate_percentages(:controlled_patients, with_ltfu: true)
     results.calculate_percentages(:uncontrolled_patients)
+    results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
     results.calculate_percentages(:ltfu_patients)
     results
   end

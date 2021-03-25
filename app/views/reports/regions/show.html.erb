@@ -74,8 +74,8 @@
             <% if @data.last_value(:controlled_patients_rate) %>
               <p class="m-0px c-black">
                 <% if @with_ltfu %>
-                  <span data-total-patients="<%= @data.last_value(:controlled_patients_with_ltfu) %>">
-                    <%= number_with_delimiter(@data.last_value(:controlled_patients_with_ltfu)) %>
+                  <span data-total-patients="<%= @data.last_value(:controlled_patients) %>">
+                    <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
                   </span>
                 <% else %>
                   <span data-total-patients="<%= @data.last_value(:controlled_patients) %>">
