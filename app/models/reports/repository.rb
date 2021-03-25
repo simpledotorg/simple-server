@@ -125,7 +125,6 @@ module Reports
       cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = cumulative_assigned_patients_count[slug][entry.adjusted_period]
-        pp "patient_count #{entry.region.id} via Repo for missed_visits #{entry}: #{patient_count}"
         controlled = controlled_patients_count[slug][entry.period]
         uncontrolled = uncontrolled_patients_count[slug][entry.period]
         visits = visited_without_bp_taken[slug][entry.period]

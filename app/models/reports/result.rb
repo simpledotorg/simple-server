@@ -157,7 +157,6 @@ module Reports
     def calculate_missed_visits(range)
       self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
         patient_count = adjusted_patient_counts_for(period)
-        pp "patient_count #{region.id} via Result: #{period} #{patient_count}"
         controlled = controlled_patients_for(period)
         uncontrolled = uncontrolled_patients_for(period)
         visited_without_bp_taken = visited_without_bp_taken_for(period)
