@@ -50,6 +50,22 @@ RSpec.describe ControlRateQuery do
       expect(august).to eq(0)
     end
 
+    it "includes patients who were registered at the end of the registration buffer" do
+      facility = FactoryBot.create(:facility, facility_group: facility_group_1)
+      controlled = create(:patient, recorded_at: Time.parse("December 31st 2020 23:59:00 UTC"), assigned_facility: facility, registration_user: user)
+      uncontrolled = create(:patient, status: :dead, recorded_at: jan_2019, assigned_facility: facility, registration_user: user)
+
+      Timecop.freeze("January 1st 2021 00:01:00 UTC") do
+        create(:blood_pressure, :under_control, facility: facility, patient: controlled, user: user)
+        create(:blood_pressure, :hypertensive, facility: facility, patient: uncontrolled, user: user)
+      end
+
+      refresh_views
+
+      expect(query.controlled(facility_group_1, Period.month("March 1 2021")).count).to eq(1)
+      expect(query.uncontrolled(facility_group_1, Period.month("March 1 2021")).count).to eq(1)
+    end
+
     it "excludes patients who are dead when with_exclusions is true" do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       patients = [

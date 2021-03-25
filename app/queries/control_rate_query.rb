@@ -41,8 +41,8 @@ class ControlRateQuery
       .for_reports(with_exclusions: with_exclusions)
       .select("distinct on (latest_blood_pressures_per_patient_per_months.patient_id) *")
       .where(assigned_facility_id: region.facilities)
-      .where("patient_recorded_at < ?", control_range.begin) # TODO this doesn't seem right -- revisit this exclusion
-      .where("bp_recorded_at > ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
+      .where("patient_recorded_at <= ?", period.adjusted_period.end)
+      .where("bp_recorded_at >= ? and bp_recorded_at <= ?", control_range.begin, control_range.end)
       .order("latest_blood_pressures_per_patient_per_months.patient_id, bp_recorded_at DESC, bp_id")
   end
 end
