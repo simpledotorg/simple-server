@@ -341,29 +341,23 @@ RSpec.describe Reports::Repository, type: :model do
         range = (Period.month(start_range)..Period.month(july_2020))
         repo = Reports::Repository.new(facility_1, periods: range, with_exclusions: with_exclusions)
         service_result = ControlRateService.new(facility_1, periods: range, with_exclusions: with_exclusions).call
-        result = repo.controlled_patients_count
-
-        facility_1_results = result[facility_1.slug]
         slug = facility_1.slug
 
-        pp service_result[:ltfu_patients]
-
         range.each do |period|
-          # If with_exclusions if false, the legacy service ignores LTFU patients and does not count them
-          if !with_exclusions
-            expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
-          else
-          # If with_exclusions if true, the legacy service counts LTFU patients and substracts them from the adjusted_patient_counts
-            expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+          if with_exclusions
+            # If with_exclusions if true, the legacy service counts LTFU patients and substracts them from the adjusted_patient_counts
             expect(repo.adjusted_patient_counts_without_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+            expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+          else
+            # If with_exclusions if false, the legacy service ignores LTFU patients and does not count them or subtract them
+            expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
           end
+          expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
+
           expect(repo.cumulative_assigned_patients_count[slug][period]).to eq(service_result[:cumulative_assigned_patients][period])
-          expect(repo.cumulative_assigned_patients_count[slug][period.adjusted_period]).to eq(service_result[:adjusted_patient_counts][period])
           expect(repo.controlled_patient_rates[slug][period]).to eq(service_result[:controlled_patients_rate][period])
           expect(repo.uncontrolled_patient_rates[slug][period]).to eq(service_result[:uncontrolled_patients_rate][period])
         end
-        expect(facility_1_results[Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-        expect(facility_1_results[Period.month(june_1_2020)]).to eq(3)
       end
     end
 

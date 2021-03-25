@@ -141,10 +141,20 @@ module Reports
       end
     end
 
+    # If we are calculating percentages when with_exclusions is true, we have to manually subtract out the LTFU
+    # patient counts as well from the patient counts.
+    def denominator(region, period)
+      if with_exclusions
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+      else
+        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
+      end
+    end
+
     smart_memoize def controlled_patient_rates
       cached_query(__method__) do |entry|
         controlled = controlled_patients_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug][entry.adjusted_period]
+        total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
     end
@@ -152,7 +162,7 @@ module Reports
     smart_memoize def uncontrolled_patient_rates
       cached_query(__method__) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug][entry.adjusted_period]
+        total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
     end
