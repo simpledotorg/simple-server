@@ -28,9 +28,14 @@ Reports = function () {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
-    const controlledGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
-    const controlledGraphDenominatorCounts = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const controlGraphDenominator = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+
     const controlledGraphNumerator = data.controlledPatients;
+    const controlledGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+    const uncontrolledGraphNumerator = data.uncontrolledPatients;
+    const uncontrolledGraphRate = window.withLtfu ? data.uncontrolledWithLtfuRate : data.uncontrolledRate;
+    const missedVisitsGraphNumerator = data.missedVisits;
+    const missedVisitsGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
 
     const controlledGraphConfig = this.createBaseGraphConfig();
     controlledGraphConfig.data = {
@@ -105,7 +110,7 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedPatientCounts = controlledGraphDenominatorCounts[label];
+        const adjustedPatientCounts = controlGraphDenominator[label];
         const totalPatients = controlledGraphNumerator[label];
 
         rateNode.innerHTML = rate;
@@ -124,7 +129,7 @@ Reports = function () {
 
     const missedVisitsConfig = this.createBaseGraphConfig();
     missedVisitsConfig.data = {
-      labels: Object.keys(data.missedVisitsRate),
+      labels: Object.keys(missedVisitsGraphRate),
       datasets: [{
         label: "Missed visits",
         backgroundColor: this.lightBlueColor,
@@ -133,7 +138,7 @@ Reports = function () {
         pointBackgroundColor: this.whiteColor,
         hoverBackgroundColor: this.whiteColor,
         hoverBorderWidth: 2,
-        data: Object.values(data.missedVisitsRate),
+        data: Object.values(missedVisitsGraphRate),
         type: "line",
       }],
     };
@@ -196,8 +201,8 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedPatientCounts = data.adjustedPatientCounts[label];
-        const totalPatients = data.missedVisits[label];
+        const adjustedPatientCounts = controlGraphDenominator[label];
+        const totalPatients = missedVisitsGraphNumerator[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
@@ -215,7 +220,7 @@ Reports = function () {
 
     const uncontrolledGraphConfig = this.createBaseGraphConfig();
     uncontrolledGraphConfig.data = {
-      labels: Object.keys(data.uncontrolledRate),
+      labels: Object.keys(uncontrolledGraphRate),
       datasets: [{
         label: "BP uncontrolled",
         backgroundColor: this.lightRedColor,
@@ -224,7 +229,7 @@ Reports = function () {
         pointBackgroundColor: this.whiteColor,
         hoverBackgroundColor: this.whiteColor,
         hoverBorderWidth: 2,
-        data: Object.values(data.uncontrolledRate),
+        data: Object.values(uncontrolledGraphRate),
         type: "line",
       }],
     };
@@ -287,8 +292,8 @@ Reports = function () {
           label = mostRecentPeriod;
         }
         const period = data.periodInfo[label];
-        const adjustedPatientCounts = data.adjustedPatientCounts[label];
-        const totalPatients = data.uncontrolledPatients[label];
+        const adjustedPatientCounts = controlGraphDenominator[label];
+        const totalPatients = uncontrolledGraphNumerator[label];
 
         rateNode.innerHTML = rate;
         totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
@@ -610,17 +615,19 @@ Reports = function () {
     const jsonData = JSON.parse(this.getChartDataNode().textContent);
 
     return {
+      controlledPatients: jsonData.controlled_patients,
       controlRate: jsonData.controlled_patients_rate,
       controlWithLtfuRate: jsonData.controlled_patients_with_ltfu_rate,
-      controlledPatients: jsonData.controlled_patients,
       missedVisits: jsonData.missed_visits,
       missedVisitsRate: jsonData.missed_visits_rate,
+      missedVisitsWithLtfuRate: jsonData.missed_visits_with_ltfu_rate,
       monthlyRegistrations: jsonData.registrations,
       adjustedPatientCounts: jsonData.adjusted_patient_counts,
       adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
-      uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledPatients: jsonData.uncontrolled_patients,
+      uncontrolledRate: jsonData.uncontrolled_patients_rate,
+      uncontrolledWithLtfuRate: jsonData.uncontrolled_patients_with_ltfu_rate,
       visitButNoBPMeasure: jsonData.visited_without_bp_taken,
       visitButNoBPMeasureRate: jsonData.visited_without_bp_taken_rate,
       periodInfo: jsonData.period_info
