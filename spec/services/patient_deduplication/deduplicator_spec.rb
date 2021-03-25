@@ -16,6 +16,11 @@ def with_comparable_attributes(related_entities)
   end
 end
 
+def duplicate_records(deduped_record_ids)
+  deduped_record_ids = deduped_record_ids.is_a?(Array) ? deduped_record_ids : [deduped_record_ids]
+  DeduplicationLog.where(deduped_record_id: deduped_record_ids).flat_map(&:duplicate_records).uniq
+end
+
 describe PatientDeduplication::Deduplicator do
   context "#merge" do
     it "creates a new patient with the right associated facilities and users" do
@@ -29,6 +34,7 @@ describe PatientDeduplication::Deduplicator do
       expect(new_patient.device_created_at.to_i).to eq(patient_blue.device_created_at.to_i)
       expect(new_patient.device_updated_at.to_i).to eq(patient_blue.device_updated_at.to_i)
       expect(new_patient.merged_by_user_id).to eq(patient_blue.registration_user.id)
+      expect(duplicate_records(new_patient.id)).to match_array([patient_blue, patient_red])
     end
 
     it "Uses the latest available name, gender, status, address,and reminder consent" do
@@ -36,13 +42,15 @@ describe PatientDeduplication::Deduplicator do
       patient_not_latest = create(:patient, recorded_at: 2.months.ago, full_name: "patient not latest", gender: :male, reminder_consent: "granted")
       patient_latest = create(:patient, recorded_at: 1.month.ago, full_name: "patient latest", gender: :female, reminder_consent: "denied", address: nil)
 
-      new_patient = described_class.new([patient_earliest, patient_not_latest, patient_latest]).merge
+      patients = [patient_earliest, patient_not_latest, patient_latest]
+      new_patient = described_class.new(patients).merge
 
       expect(new_patient.full_name).to eq(patient_latest.full_name)
       expect(new_patient.gender).to eq(patient_latest.gender)
       expect(new_patient.status).to eq(patient_latest.status)
       expect(new_patient.reminder_consent).to eq(patient_latest.reminder_consent)
       expect(new_patient.address.street_address).to eq(patient_not_latest.address.street_address)
+      expect(duplicate_records(new_patient.address)).to match_array(patients.map(&:address).compact)
     end
 
     context "age and dob" do
@@ -79,6 +87,7 @@ describe PatientDeduplication::Deduplicator do
       new_patient = described_class.new([patient_blue, patient_red]).merge
       expect(new_patient.prescription_drugs.count).to eq(patient_blue.prescription_drugs.with_discarded.count + patient_red.prescription_drugs.with_discarded.count)
       expect(with_comparable_attributes(new_patient.prescribed_drugs)).to match_array(with_comparable_attributes(patient_red.prescribed_drugs.with_discarded))
+      expect(duplicate_records(new_patient.prescription_drugs.map(&:id))).to match_array([patient_blue, patient_red].flat_map { |p| p.prescription_drugs.with_discarded })
     end
 
     it "merges phone numbers uniqued by the number" do
@@ -91,6 +100,7 @@ describe PatientDeduplication::Deduplicator do
       new_patient = described_class.new([patient_blue, patient_red]).merge
 
       expect(with_comparable_attributes(new_patient.phone_numbers)).to match_array(with_comparable_attributes([phone_number_2, phone_number_3]))
+      expect(duplicate_records(new_patient.phone_numbers.map(&:id))).to match_array([phone_number_2, phone_number_3])
     end
 
     it "merges patient business identifiers uniqued by the identifier" do
@@ -104,6 +114,7 @@ describe PatientDeduplication::Deduplicator do
       new_patient = described_class.new([patient_blue, patient_red]).merge
 
       expect(with_comparable_attributes(new_patient.business_identifiers)).to match_array(with_comparable_attributes([business_identifier_2, business_identifier_3]))
+      expect(duplicate_records(new_patient.business_identifiers.map(&:id))).to match_array([business_identifier_2, business_identifier_3])
     end
 
     it "merges medical histories" do
@@ -164,6 +175,8 @@ describe PatientDeduplication::Deduplicator do
         device_created_at: later_medical_history.device_created_at,
         device_updated_at: later_medical_history.device_updated_at
       }.with_indifferent_access.with_int_timestamps)
+
+      expect(duplicate_records(new_patient.medical_history.id)).to match_array([earlier_medical_history, later_medical_history])
     end
 
     it "copies over encounters, observations and all observables" do
@@ -184,9 +197,16 @@ describe PatientDeduplication::Deduplicator do
       new_patient = described_class.new(patients).merge
 
       expect(with_comparable_attributes(new_patient.encounters)).to eq with_comparable_attributes(encounters)
+      expect(duplicate_records(new_patient.encounters.map(&:id))).to match_array(encounters)
+
       expect(with_comparable_attributes(new_patient.blood_pressures)).to match_array with_comparable_attributes(blood_pressures - [soft_deleted_bp])
+      expect(duplicate_records(new_patient.blood_pressures.map(&:id))).to match_array(blood_pressures - [soft_deleted_bp])
+
       expect(with_comparable_attributes(new_patient.blood_sugars)).to match_array with_comparable_attributes(blood_sugars - [soft_deleted_sugar])
+      expect(duplicate_records(new_patient.blood_sugars.map(&:id))).to match_array(blood_sugars - [soft_deleted_sugar])
+
       expect(with_comparable_attributes(new_patient.observations.map(&:observable))).to match_array with_comparable_attributes(observables - [soft_deleted_bp, soft_deleted_sugar])
+      expect(duplicate_records(new_patient.observations.map(&:observable))).to match_array(observables - [soft_deleted_bp, soft_deleted_sugar])
     end
 
     it "copies over appointments, keeps only one scheduled appointment and marks the rest as cancelled" do
@@ -199,6 +219,7 @@ describe PatientDeduplication::Deduplicator do
       expect(with_comparable_attributes(new_patient.appointments.status_scheduled)).to eq with_comparable_attributes(scheduled_appointments.take(1))
       expected_appointments = Appointment.with_discarded.where(patient_id: [patient_red, patient_blue])
       expect(with_comparable_attributes(new_patient.appointments)).to match_array with_comparable_attributes(expected_appointments)
+      expect(duplicate_records(new_patient.appointments.map(&:id))).to match_array(expected_appointments)
     end
 
     it "copies over teleconsultations" do
@@ -208,6 +229,7 @@ describe PatientDeduplication::Deduplicator do
       new_patient = described_class.new(patients).merge
 
       expect(with_comparable_attributes(new_patient.teleconsultations)).to match_array with_comparable_attributes(teleconsultations)
+      expect(duplicate_records(new_patient.teleconsultations.map(&:id))).to match_array(teleconsultations)
     end
 
     context "marks patients as merged" do
