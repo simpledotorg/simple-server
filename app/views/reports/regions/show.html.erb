@@ -25,24 +25,7 @@
               BP controlled
             </h3>
           <% end %>
-          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-            <div class="align-right custom-control custom-switch">
-              <form method="get">
-                <input type="checkbox"
-                       onChange="this.form.submit()"
-                       name="with_ltfu"
-                       class="custom-control-input"
-                       id="controlGraphltfuSwitch"
-                       <% if @with_ltfu %>checked<% end %>>
-                <label class="font-weight-normal
-                              <% unless @with_ltfu %>c-grey-dark<% end %>
-                              custom-control-label"
-                       for="controlGraphltfuSwitch">
-                  Include LTFU
-                </label>
-              </form>
-            </div>
-          <% end %>
+          <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
         </div>
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <p class="c-grey-dark">
@@ -115,6 +98,7 @@
           </div>
         </div>
       </div>
+
       <div>
         <div class="p-relative mb-12px">
           <div class="h-320px mr-16px mb-12px ml-13px">
