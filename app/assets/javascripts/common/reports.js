@@ -31,138 +31,8 @@ Reports = function () {
     this.setupControlledGraph(data);
     this.setupUncontrolledGraph(data);
     this.setupMissedVisitsGraph(data);
-    // this.setupCumulativeRegistrationsGraph();
+    this.setupCumulativeRegistrationsGraph(data);
     // this.setupVisitDetailsGraph();
-
-    const cumulativeRegistrationsYAxis = this.createAxisMaxAndStepSize(data.cumulativeRegistrations);
-    const monthlyRegistrationsYAxis = this.createAxisMaxAndStepSize(data.monthlyRegistrations);
-
-    const cumulativeRegistrationsGraphConfig = this.createBaseGraphConfig();
-    cumulativeRegistrationsGraphConfig.type = "bar";
-    cumulativeRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeRegistrations",
-          label: "cumulative registrations",
-          backgroundColor: this.transparent,
-          borderColor: this.darkPurpleColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyRegistrations",
-          label: "monthly registrations",
-          backgroundColor: this.lightPurpleColor,
-          hoverBackgroundColor: this.darkPurpleColor,
-          data: Object.values(data.monthlyRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.scales = {
-      xAxes: [{
-        stacked: true,
-        display: true,
-        gridLines: {
-          display: false,
-          drawBorder: false,
-        },
-        ticks: {
-          autoSkip: false,
-          fontColor: this.darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          min: 0,
-          beginAtZero: true,
-        },
-      }],
-      yAxes: [
-        {
-          id: "cumulativeRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeRegistrationsYAxis.stepSize,
-            max: cumulativeRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto Condensed",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyRegistrationsYAxis.stepSize,
-            max: monthlyRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        const cardNode = document.getElementById("cumulative-registrations");
-        const mostRecentPeriod = cardNode.getAttribute("data-period");
-        const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-        const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
-        const monthlyRegistrationsNode = cardNode.querySelector("[data-monthly-registrations]");
-        const registrationsMonthEndNode = cardNode.querySelector("[data-registrations-month-end]");
-        let label = null;
-        if (tooltip.dataPoints) {
-          label = tooltip.dataPoints[0].label;
-        } else {
-          label = mostRecentPeriod;
-        }
-        const period = data.periodInfo[label];
-        const cumulativeRegistrations = data.cumulativeRegistrations[label];
-        const monthlyRegistrations = data.monthlyRegistrations[label];
-
-        monthlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(monthlyRegistrations);
-        totalPatientsNode.innerHTML = this.formatNumberWithCommas(cumulativeRegistrations);
-        registrationsPeriodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsMonthEndNode.innerHTML = label;
-      }
-    };
-
-    const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
-    if (cumulativeRegistrationsGraphCanvas) {
-      new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
-    }
 
     const visitDetailsGraphConfig = this.createBaseGraphConfig();
     visitDetailsGraphConfig.type = "bar";
@@ -620,6 +490,150 @@ Reports = function () {
       populateMissedVisitsGraphDefault();
 
       return missedVisitsGraph;
+    }
+  }
+
+  this.setupCumulativeRegistrationsGraph = (data) => {
+    const cumulativeRegistrationsYAxis = this.createAxisMaxAndStepSize(data.cumulativeRegistrations);
+    const monthlyRegistrationsYAxis = this.createAxisMaxAndStepSize(data.monthlyRegistrations);
+
+    const cumulativeRegistrationsGraphConfig = this.createBaseGraphConfig();
+    cumulativeRegistrationsGraphConfig.type = "bar";
+    cumulativeRegistrationsGraphConfig.data = {
+      labels: Object.keys(data.cumulativeRegistrations),
+      datasets: [
+        {
+          yAxisID: "cumulativeRegistrations",
+          label: "cumulative registrations",
+          backgroundColor: this.transparent,
+          borderColor: this.darkPurpleColor,
+          borderWidth: 2,
+          pointBackgroundColor: this.whiteColor,
+          hoverBackgroundColor: this.whiteColor,
+          hoverBorderWidth: 2,
+          data: Object.values(data.cumulativeRegistrations),
+          type: "line",
+        },
+        {
+          yAxisID: "monthlyRegistrations",
+          label: "monthly registrations",
+          backgroundColor: this.lightPurpleColor,
+          hoverBackgroundColor: this.darkPurpleColor,
+          data: Object.values(data.monthlyRegistrations),
+          type: "bar",
+        },
+      ],
+    };
+    cumulativeRegistrationsGraphConfig.options.scales = {
+      xAxes: [{
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: this.darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+        },
+      }],
+      yAxes: [
+        {
+          id: "cumulativeRegistrations",
+          position: "left",
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: this.darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: cumulativeRegistrationsYAxis.stepSize,
+            max: cumulativeRegistrationsYAxis.max,
+            callback: (label) => {
+              return this.formatNumberWithCommas(label);
+            },
+          },
+        },
+        {
+          id: "monthlyRegistrations",
+          position: "right",
+          stacked: true,
+          display: true,
+          gridLines: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            fontColor: this.darkGreyColor,
+            fontSize: 12,
+            fontFamily: "Roboto Condensed",
+            padding: 8,
+            min: 0,
+            beginAtZero: true,
+            stepSize: monthlyRegistrationsYAxis.stepSize,
+            max: monthlyRegistrationsYAxis.max,
+            callback: (label) => {
+              return this.formatNumberWithCommas(label);
+            },
+          },
+        },
+      ],
+    };
+    cumulativeRegistrationsGraphConfig.options.tooltips = {
+      enabled: false,
+      custom: (tooltip) => {
+        let hoveredOnDatapoint = tooltip.dataPoints
+        if(hoveredOnDatapoint)
+          populateCumulativeRegistrationsGraph(tooltip.dataPoints[0].label);
+        else
+          populateCumulativeRegistrationsGraphDefault();
+      }
+    };
+
+    let populateCumulativeRegistrationsGraph = (period) => {
+      const cardNode = document.getElementById("cumulative-registrations");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
+      const monthlyRegistrationsNode = cardNode.querySelector("[data-monthly-registrations]");
+      const registrationsMonthEndNode = cardNode.querySelector("[data-registrations-month-end]");
+
+      const periodInfo = data.periodInfo[period];
+      const cumulativeRegistrations = data.cumulativeRegistrations[period];
+      const monthlyRegistrations = data.monthlyRegistrations[period];
+
+      monthlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(monthlyRegistrations);
+      totalPatientsNode.innerHTML = this.formatNumberWithCommas(cumulativeRegistrations);
+      registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
+      registrationsMonthEndNode.innerHTML = period;
+    }
+
+    let populateCumulativeRegistrationsGraphDefault = () => {
+      const cardNode = document.getElementById("cumulative-registrations");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+      populateCumulativeRegistrationsGraph(mostRecentPeriod);
+    }
+
+    const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
+    if (cumulativeRegistrationsGraphCanvas) {
+      const cumulativeRegistrationsGraph = new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
+      populateCumulativeRegistrationsGraphDefault();
+
+      return cumulativeRegistrationsGraph;
     }
   }
 

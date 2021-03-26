@@ -3,6 +3,8 @@
 <% controlled_graph_no_data = @with_ltfu && !@data.last_value(:controlled_patients_with_ltfu_rate) || !@data.last_value(:controlled_patients_rate) %>
 <% uncontrolled_graph_no_data = @with_ltfu && !@data.last_value(:uncontrolled_patients_with_ltfu_rate) || !@data.last_value(:uncontrolled_patients_rate) %>
 <% missed_visits_graph_no_data = @with_ltfu && !@data.last_value(:missed_visits_with_ltfu_rate) || !@data.last_value(:missed_visits_rate) %>
+<% cumulative_registrations_graph_no_data = @data.last_value(:cumulative_registrations).blank? %>
+<% latest_registrations = @data.last_value(:registrations) %>
 
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
@@ -252,10 +254,14 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="cumulative-registrations" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+    <div id="cumulative-registrations"
+         data-period="<%= @period.to_s %>"
+         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
+        <div class="d-flex mb-8px">
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <div class="d-flex flex-1 mb-8px">
+          <div class="d-flex flex-1">
             <h3 class="mb-0px mr-8px">
               Registrations
             </h3>
@@ -263,132 +269,60 @@
                        definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
                                       "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
           </div>
+        <% else %>
+          <h3 class="mb-0px w-75">
+            Monthly and cumulative registrations
+          </h3>
+        <% end %>
+        </div>
+        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <p class="c-grey-dark">
             <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
           </p>
-        <% else %>
-          <div class="mb-16px">
-            <h3 class="mb-0px">
-              Monthly and cumulative registrations
-            </h3>
-          </div>
         <% end %>
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <div class="d-flex align-center mb-12px">
-            <div class="flex-1 d-lg-flex align-lg-center">
-              <p
-                class="mb-0px fs-32px fw-bold
-                  <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium
-                  <% else %>c-purple
-                  <% end %> mr-lg-12px"
-                data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>"
-              >
-                <% if @data.last_value(:cumulative_registrations).blank? %>
-                  No data
-                <% else %>
-                  <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
-                <% end %>
-              </p>
-              <div>
-                <% if @data.last_value(:cumulative_registrations) %>
-                  <p class="m-0px c-black c-print-black">
-                    total <%= "registration".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
-                    <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
-                      <%= @period.bp_control_range_end_date %>
-                    </span>
-                  </p>
-                <% else %>
-                  <p class="m-0px c-grey-medium c-print-black">
-                    No total registered patients<br>
-                    data available
-                  </p>
-                <% end %>
-              </div>
-            </div>
-            <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-              <p
-                class="mb-0px fs-32px fw-bold
-                  <% if @data.last_value(:registrations).blank? %>c-grey-medium
-                  <% else %>c-purple-medium
-                  <% end %> mr-lg-12px"
-                data-monthly-registrations="<%= number_with_delimiter(@data.dig(:registrations, @period)) %>"
-              >
-                <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
-              </p>
-              <div>
-                <% if @data.last_value(:registrations) %>
-                  <p class="m-0px c-black c-print-black">
-                    new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
-                    <span data-registrations-month-end="<%= @period %>">
-                      <%= @period %>
-                    </span>
-                  </p>
-                <% else %>
-                  <p class="m-0px c-grey-medium c-print-black">
-                    No monthly registered patients<br>
-                    data available
-                  </p>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        <% else %>
-          <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold
-              <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium
-              <% else %>c-purple
-              <% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>">
-              <% if @data.last_value(:cumulative_registrations).blank? %>
-                No data
-              <% else %>
-                <%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>
-              <% end %>
+        <div class="d-flex align-center mb-12px">
+          <div class="flex-1 d-lg-flex align-lg-center">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if cumulative_registrations_graph_no_data %>c-grey-medium<% else %>c-purple<% end %>"
+              data-total-patients="">
+              <% if cumulative_registrations_graph_no_data %>No data<% end %>
             </p>
             <div>
-              <% if @data.last_value(:cumulative_registrations) %>
-                <p class="m-0px c-black">
-                  patients registered till
-                  <span data-registrations-period-end="<%= @period.bp_control_range_end_date %>">
-                    <%= @period.bp_control_range_end_date %>
-                  </span>
-                </p>
-                <p class="m-0px c-grey-dark c-print-black">
-                  <span data-monthly-registrations="<%= number_with_delimiter(@data.dig(:registrations, @period)) %>">
-                    <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
-                  </span>
-                  new <%= "patient".pluralize(@data.dig(:registrations, @period)) %> registered in
-                  <span data-registrations-month-end="<%= @period %>">
-                    <%= @period %>
-                  </span>
+              <% if cumulative_registrations_graph_no_data %>
+                <p class="m-0px c-grey-medium c-print-black">
+                  No total registered patients<br>dwedw
+                  data available
                 </p>
               <% else %>
-                <p class="m-0px c-grey-medium c-print-black">
-                  No registration data available
+                <p class="m-0px c-black c-print-black">
+                  total <%= "registration".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
+                  <span data-registrations-period-end=""></span>
                 </p>
               <% end %>
             </div>
           </div>
-        <% end %>
+          <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if latest_registrations.blank? %>c-grey-medium<% else %>c-purple-medium<% end %>"
+              data-monthly-registrations="">
+            </p>
+            <div>
+              <% if latest_registrations.blank? %>
+                <p class="m-0px c-grey-medium c-print-black">
+                  No monthly registered patients<br>
+                  data available
+                </p>
+              <% else %>
+                <p class="m-0px c-black c-print-black">
+                  new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
+                  <span data-registrations-month-end=""></span>
+                </p>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="h-320px mr-13px mb-16px ml-13px pb-4px">
         <canvas id="cumulativeRegistrationsTrend"></canvas>
       </div>
-      <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
-        <div class="px-20px pb-8px pb-lg-0">
-          <div class="d-flex">
-            <div class="h-12px w-12px mr-8px b-2px bc-purple br-6px"></div>
-            <p class="fs-14px lh-1 c-grey-dark c-print-black">
-              Cumulative registrations
-            </p>
-          </div>
-          <div class="d-flex">
-            <div class="h-12px w-12px mr-8px bg-purple-light br-2px"></div>
-            <p class="fs-14px lh-1 c-grey-dark c-6print-black">
-              Monthly registrations
-            </p>
-          </div>
-        </div>
-      <% end %>
     </div>
   </div>
 </div>
