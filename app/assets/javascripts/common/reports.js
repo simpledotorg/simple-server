@@ -1,4 +1,4 @@
-Reports = function () {
+Reports = function (withLtfu) {
   this.darkGreenColor = "rgba(0, 122, 49, 1)";
   this.mediumGreenColor = "rgba(0, 184, 73, 1)";
   this.lightGreenColor = "rgba(242, 248, 245, 0.9)";
@@ -36,9 +36,9 @@ Reports = function () {
   }
 
   this.setupControlledGraph = (data) => {
-    const controlGraphDenominator = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const controlGraphDenominator = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const controlledGraphNumerator = data.controlledPatients;
-    const controlledGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+    const controlledGraphRate = withLtfu ? data.controlWithLtfuRate : data.controlRate;
 
     const controlledGraphConfig = this.createBaseGraphConfig();
     controlledGraphConfig.data = {
@@ -140,9 +140,9 @@ Reports = function () {
   }
 
   this.setupUncontrolledGraph = (data) => {
-    const controlGraphDenominator = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const controlGraphDenominator = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const uncontrolledGraphNumerator = data.uncontrolledPatients;
-    const uncontrolledGraphRate = window.withLtfu ? data.uncontrolledWithLtfuRate : data.uncontrolledRate;
+    const uncontrolledGraphRate = withLtfu ? data.uncontrolledWithLtfuRate : data.uncontrolledRate;
 
     const uncontrolledGraphConfig = this.createBaseGraphConfig();
     uncontrolledGraphConfig.data = {
@@ -245,9 +245,9 @@ Reports = function () {
   }
 
   this.setupMissedVisitsGraph = (data) => {
-    const controlGraphDenominator = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const controlGraphDenominator = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const missedVisitsGraphNumerator = data.missedVisits;
-    const missedVisitsGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+    const missedVisitsGraphRate = withLtfu ? data.controlWithLtfuRate : data.controlRate;
 
     const missedVisitsConfig = this.createBaseGraphConfig();
     missedVisitsConfig.data = {
