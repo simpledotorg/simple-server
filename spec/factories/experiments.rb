@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :experiment, class: "Experimentation::Experiment" do
+  factory :experiment, class: Experimentation::Experiment do
     name { "any unique string" }
     state { "active" }
     start_date {}
