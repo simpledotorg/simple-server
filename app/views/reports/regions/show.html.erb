@@ -1,10 +1,11 @@
 <%= render "header" %>
+
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_copy" : "denominator_excluding_ltfu_copy" %>
 <% controlled_graph_no_data = @with_ltfu && !@data.last_value(:controlled_patients_with_ltfu_rate) || !@data.last_value(:controlled_patients_rate) %>
 <% uncontrolled_graph_no_data = @with_ltfu && !@data.last_value(:uncontrolled_patients_with_ltfu_rate) || !@data.last_value(:uncontrolled_patients_rate) %>
 <% missed_visits_graph_no_data = @with_ltfu && !@data.last_value(:missed_visits_with_ltfu_rate) || !@data.last_value(:missed_visits_rate) %>
 <% cumulative_registrations_graph_no_data = @data.last_value(:cumulative_registrations).blank? %>
-<% latest_registrations = @data.last_value(:registrations) %>
+<% no_latest_registrations = @data.last_value(:registrations).blank? %>
 
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
@@ -294,18 +295,18 @@
                 </p>
               <% else %>
                 <p class="m-0px c-black c-print-black">
-                  total <%= "registration".pluralize(@data.last_value(:cumulative_registrations)) %><br>till
+                  total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>till
                   <span data-registrations-period-end=""></span>
                 </p>
               <% end %>
             </div>
           </div>
           <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if latest_registrations.blank? %>c-grey-medium<% else %>c-purple-medium<% end %>"
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if no_latest_registrations %>c-grey-medium<% else %>c-purple-medium<% end %>"
               data-monthly-registrations="">
             </p>
             <div>
-              <% if latest_registrations.blank? %>
+              <% if no_latest_registrations %>
                 <p class="m-0px c-grey-medium c-print-black">
                   No monthly registered patients<br>
                   data available

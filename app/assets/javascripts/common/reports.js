@@ -103,7 +103,7 @@ Reports = function (withLtfu) {
       }
     };
 
-    let populateControlledGraph = (period) => {
+    const populateControlledGraph = (period) => {
       const cardNode = document.getElementById("bp-controlled");
       const rateNode = cardNode.querySelector("[data-rate]");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
@@ -125,7 +125,7 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_registration_date;
     }
 
-    let populateControlledGraphDefault = () => {
+    const populateControlledGraphDefault = () => {
       const cardNode = document.getElementById("bp-controlled");
       const mostRecentPeriod = cardNode.getAttribute("data-period");
 
@@ -208,7 +208,7 @@ Reports = function (withLtfu) {
       }
     };
 
-    let populateUncontrolledGraph = (period) => {
+    const populateUncontrolledGraph = (period) => {
       const cardNode = document.getElementById("bp-uncontrolled");
       const rateNode = cardNode.querySelector("[data-rate]");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
@@ -230,7 +230,7 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_registration_date;
     }
 
-    let populateUncontrolledGraphDefault = () => {
+    const populateUncontrolledGraphDefault = () => {
       const cardNode = document.getElementById("bp-uncontrolled");
       const mostRecentPeriod = cardNode.getAttribute("data-period");
 
@@ -313,7 +313,7 @@ Reports = function (withLtfu) {
       }
     };
 
-    let populateMissedVisitsGraph = (period) => {
+    const populateMissedVisitsGraph = (period) => {
       const cardNode = document.getElementById("missed-visits");
       const rateNode = cardNode.querySelector("[data-rate]");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
@@ -335,7 +335,7 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_registration_date;
     }
 
-    let populateMissedVisitsGraphDefault = () => {
+    const populateMissedVisitsGraphDefault = () => {
       const cardNode = document.getElementById("missed-visits");
       const mostRecentPeriod = cardNode.getAttribute("data-period");
 
@@ -460,7 +460,7 @@ Reports = function (withLtfu) {
       }
     };
 
-    let populateCumulativeRegistrationsGraph = (period) => {
+    const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
       const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
@@ -477,7 +477,7 @@ Reports = function (withLtfu) {
       registrationsMonthEndNode.innerHTML = period;
     }
 
-    let populateCumulativeRegistrationsGraphDefault = () => {
+    const populateCumulativeRegistrationsGraphDefault = () => {
       const cardNode = document.getElementById("cumulative-registrations");
       const mostRecentPeriod = cardNode.getAttribute("data-period");
 
@@ -571,63 +571,66 @@ Reports = function (withLtfu) {
       mode: "x",
       enabled: false,
       custom: (tooltip) => {
-        const cardNode = document.getElementById("visit-details");
-        const mostRecentPeriod = cardNode.getAttribute("data-period");
-        const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
-        const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
-        const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
-        const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
-        const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
-        const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
-        const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
-        const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
-        const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-        const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-        const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
-        const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
-        let label = null;
-        let missedVisitsRate = null;
-        let visitButNoBPMeasureRate = null;
-        let uncontrolledRate = null;
-        let controlledRate = null;
-        if (tooltip.dataPoints) {
-          missedVisitsRate = tooltip.dataPoints[3].value + "%";
-          visitButNoBPMeasureRate = tooltip.dataPoints[2].value + "%";
-          uncontrolledRate = tooltip.dataPoints[1].value + "%";
-          controlledRate = tooltip.dataPoints[0].value + "%";
-          label = tooltip.dataPoints[0].label;
-        } else {
-          missedVisitsRate = missedVisitsRateNode.getAttribute("data-missed-visits-rate");
-          visitButNoBPMeasureRate = visitButNoBPMeasureRateNode.getAttribute("data-visit-but-no-bp-measure-rate");
-          uncontrolledRate = uncontrolledRateNode.getAttribute("data-uncontrolled-rate");
-          controlledRate = controlledRateNode.getAttribute("data-controlled-rate");
-          label = mostRecentPeriod;
-        }
-        const period = data.periodInfo[label];
-        const adjustedPatientCounts = data.adjustedPatientCounts[label];
-        const totalMissedVisits = data.missedVisits[label];
-        const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[label];
-        const totalUncontrolledPatients = data.uncontrolledPatients[label];
-        const totalControlledPatients = data.controlledPatients[label];
-
-        missedVisitsRateNode.innerHTML = missedVisitsRate;
-        visitButNoBPMeasureRateNode.innerHTML = visitButNoBPMeasureRate;
-        uncontrolledRateNode.innerHTML = uncontrolledRate;
-        controlledRateNode.innerHTML = controlledRate;
-        missedVisitsPatientsNode.innerHTML = this.formatNumberWithCommas(totalMissedVisits);
-        visitButNoBPMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(totalVisitButNoBPMeasure);
-        uncontrolledPatientsNode.innerHTML = this.formatNumberWithCommas(totalUncontrolledPatients);
-        controlledPatientsNode.innerHTML = this.formatNumberWithCommas(totalControlledPatients);
-        periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
-        periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
-        registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
-        adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
-      },
+        let hoveredOnDatapoint = tooltip.dataPoints
+        if(hoveredOnDatapoint)
+          populateVisitDetailsGraph(tooltip.dataPoints[0].label);
+        else
+          populateVisitDetailsGraphDefault();
+      }
     };
+
+    const populateVisitDetailsGraph = (period) => {
+      const cardNode = document.getElementById("visit-details");
+      const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
+      const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
+      const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
+      const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
+      const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
+      const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
+      const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
+      const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
+      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
+      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
+      const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
+      const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
+
+      const missedVisitsRate = data.missedVisitsRate[period] + "%";
+      const visitButNoBPMeasureRate = data.visitButNoBPMeasureRate[period] + "%";
+      const uncontrolledRate = data.uncontrolledRate[period] + "%";
+      const controlledRate = data.controlRate[period] + "%";
+
+      const periodInfo = data.periodInfo[period];
+      const adjustedPatientCounts = data.adjustedPatientCounts[period];
+      const totalMissedVisits = data.missedVisits[period];
+      const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[period];
+      const totalUncontrolledPatients = data.uncontrolledPatients[period];
+      const totalControlledPatients = data.controlledPatients[period];
+
+      missedVisitsRateNode.innerHTML = missedVisitsRate;
+      visitButNoBPMeasureRateNode.innerHTML = visitButNoBPMeasureRate;
+      uncontrolledRateNode.innerHTML = uncontrolledRate;
+      controlledRateNode.innerHTML = controlledRate;
+      missedVisitsPatientsNode.innerHTML = this.formatNumberWithCommas(totalMissedVisits);
+      visitButNoBPMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(totalVisitButNoBPMeasure);
+      uncontrolledPatientsNode.innerHTML = this.formatNumberWithCommas(totalUncontrolledPatients);
+      controlledPatientsNode.innerHTML = this.formatNumberWithCommas(totalControlledPatients);
+      periodStartNodes.forEach(node => node.innerHTML = periodInfo.bp_control_start_date);
+      periodEndNodes.forEach(node => node.innerHTML = periodInfo.bp_control_end_date);
+      registrationPeriodEndNodes.forEach(node => node.innerHTML = periodInfo.bp_control_registration_date);
+      adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
+    }
+
+    const populateVisitDetailsGraphDefault = () => {
+      const cardNode = document.getElementById("visit-details");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+      populateVisitDetailsGraph(mostRecentPeriod);
+    }
 
     const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
     if (visitDetailsGraphCanvas) {
       new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
+      populateVisitDetailsGraphDefault();
     }
   }
 

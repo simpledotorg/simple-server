@@ -1,8 +1,14 @@
-<div id="visit-details" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid pb-after-always b-print-black w-print-16cm">
+<% graph_no_data = @data[:cumulative_assigned_patients].values&.last %>
+<% missed_visits_no_data = !@data.last_value(:missed_visits_rate) %>
+
+<div id="visit-details"
+     data-period="<%= @period.to_s %>"
+     class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column
+            justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid pb-after-always b-print-black w-print-16cm">
   <h3 class="mb-0px pl-20px">
     Treatment outcomes of patients under care
   </h3>
-  <% if @data[:cumulative_assigned_patients].values&.last %>
+  <% if graph_no_data %>
     <div class="d-flex fd-column fd-lg-row">
       <div class="pl-lg-12px w-lg-50 h-lg-auto h-print-12cm">
         <canvas id="missedVisitDetails"></canvas>
@@ -14,41 +20,30 @@
                      numerator: t("missed_visits_copy.numerator"),
                      denominator: t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="rate mb-0px fs-32px fw-bold <% if @data.last_value(:missed_visits_rate) %>c-blue<% else %>c-grey-medium<% end %> mr-lg-12px" data-missed-visits-rate="<%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>">
-              <% if @data.last_value(:missed_visits_rate) %>
-                <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
-              <% else %>
+            <p class="rate mb-0px fs-32px fw-bold mr-lg-12px <% if missed_visits_no_data %>c-grey-medium<% else %>c-blue<% end %>"
+               data-missed-visits-rate="">
+              <% if missed_visits_no_data %>
                 No data
               <% end %>
             </p>
             <div>
-              <% if @data.last_value(:missed_visits) %>
+              <% if missed_visits_no_data %>
+                <p class="m-0px c-grey-medium c-print-black">
+                  No missed visits data available
+                </p>
+              <% else %>
                 <p class="m-0px c-black">
-                  <span data-missed-visits-patients="<%= number_with_delimiter(@data.last_value(:missed_visits)) %>">
-                    <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
-                  </span>
+                  <span data-missed-visits-patients=""></span>
                   patients with no visit from
-                  <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
-                  </span>
+                  <span data-period-start=""></span>
                   to
-                  <span data-period-end="<%= @period.bp_control_range_end_date%>">
-                    <%= @period.bp_control_range_end_date%>
-                  </span>
+                  <span data-period-end=""></span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>
-                  </span>
+                  <span data-adjusted-registrations=""></span>
                   patients registered till
-                  <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
-                    <%= @period.bp_control_registrations_until_date %>
-                  </span>
-                </p>
-              <% else %>
-                <p class="m-0px c-grey-medium c-print-black">
-                  No BP not controlled data available
+                  <span data-registrations-period-end=""></span>
                 </p>
               <% end %>
             </div>
@@ -70,27 +65,17 @@
             <div>
               <% if @data.last_value(:visited_without_bp_taken) %>
                 <p class="m-0px c-black">
-                  <span data-visit-but-no-bp-measure-patients="<%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>">
-                    <%= number_with_delimiter(@data.last_value(:visited_without_bp_taken)) %>
-                  </span>
+                  <span data-visit-but-no-bp-measure-patients=""></span>
                   patients with a visit but no BP taken from
-                  <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
-                  </span>
+                  <span data-period-start=""></span>
                   to
-                  <span data-period-end="<%= @period.bp_control_range_end_date %>">
-                    <%= @period.bp_control_range_end_date %>
-                  </span>
+                  <span data-period-end=""></span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>
-                  </span>
+                  <span data-adjusted-registrations=""></span>
                   patients registered till
-                  <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
-                    <%= @period.bp_control_registrations_until_date %>
-                  </span>
+                  <span data-registrations-period-end=""></span>
                 </p>
               <% else %>
                 <p class="m-0px c-grey-medium c-print-black">
@@ -116,27 +101,17 @@
             <div>
               <% if @data.last_value(:uncontrolled_patients) %>
                 <p class="m-0px c-black">
-                  <span data-uncontrolled-patients="<%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>">
-                    <%= number_with_delimiter(@data.last_value(:uncontrolled_patients)) %>
-                  </span>
+                  <span data-uncontrolled-patients=""></span>
                   patients with not controlled BP from
-                  <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
-                  </span>
+                  <span data-period-start=""></span>
                   to
-                  <span data-period-end="<%= @period.bp_control_range_end_date%>">
-                    <%= @period.bp_control_range_end_date%>
-                  </span>
+                  <span data-period-end=""></span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>
-                  </span>
+                  <span data-adjusted-registrations=""></span>
                   patients registered till
-                  <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
-                    <%= @period.bp_control_registrations_until_date %>
-                  </span>
+                  <span data-registrations-period-end=""></span>
                 </p>
               <% else %>
                 <p class="m-0px c-grey-medium c-print-black">
@@ -162,27 +137,17 @@
             <div>
               <% if @data.last_value(:controlled_patients) %>
                 <p class="m-0px c-black">
-                  <span data-controlled-patients="<%= number_with_delimiter(@data.last_value(:controlled_patients)) %>">
-                    <%= number_with_delimiter(@data.last_value(:controlled_patients)) %>
-                  </span>
+                  <span data-controlled-patients=""></span>
                   patients with controlled BP from
-                  <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                    <%= @period.bp_control_range_start_date %>
-                  </span>
+                  <span data-period-start=""></span>
                   to
-                  <span data-period-end="<%= @period.bp_control_range_end_date%>">
-                    <%= @period.bp_control_range_end_date%>
-                  </span>
+                  <span data-period-end=""></span>
                 </p>
                 <p class="m-0px c-grey-dark c-print-black">
                   of
-                  <span data-adjusted-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>">
-                    <%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>
-                  </span>
+                  <span data-adjusted-registrations=""></span>
                   patients registered till
-                  <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
-                    <%= @period.bp_control_registrations_until_date %>
-                  </span>
+                  <span data-registrations-period-end=""></span>
                 </p>
               <% else %>
                 <p class="m-0px c-grey-medium c-print-black">
