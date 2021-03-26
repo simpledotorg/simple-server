@@ -36,7 +36,7 @@ Reports = function (withLtfu) {
   }
 
   this.setupControlledGraph = (data) => {
-    const controlGraphDenominator = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const adjustedPatients = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const controlledGraphNumerator = data.controlledPatients;
     const controlledGraphRate = withLtfu ? data.controlWithLtfuRate : data.controlRate;
 
@@ -95,9 +95,9 @@ Reports = function (withLtfu) {
     controlledGraphConfig.options.tooltips = {
       enabled: false,
       custom: (tooltip) => {
-        let hoveredOnDatapoint = tooltip.dataPoints
-        if(hoveredOnDatapoint)
-          populateControlledGraph(tooltip.dataPoints[0].label);
+        let hoveredDatapoint = tooltip.dataPoints
+        if(hoveredDatapoint)
+          populateControlledGraph(hoveredDatapoint[0].label);
         else
           populateControlledGraphDefault();
       }
@@ -114,7 +114,7 @@ Reports = function (withLtfu) {
 
       const rate = controlledGraphRate[period] + "%";
       const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = controlGraphDenominator[period];
+      const adjustedPatientCounts = adjustedPatients[period];
       const totalPatients = controlledGraphNumerator[period];
 
       rateNode.innerHTML = rate;
@@ -140,7 +140,7 @@ Reports = function (withLtfu) {
   }
 
   this.setupUncontrolledGraph = (data) => {
-    const controlGraphDenominator = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const adjustedPatients = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const uncontrolledGraphNumerator = data.uncontrolledPatients;
     const uncontrolledGraphRate = withLtfu ? data.uncontrolledWithLtfuRate : data.uncontrolledRate;
 
@@ -200,9 +200,9 @@ Reports = function (withLtfu) {
     uncontrolledGraphConfig.options.tooltips = {
       enabled: false,
       custom: (tooltip) => {
-        let hoveredOnDatapoint = tooltip.dataPoints
-        if(hoveredOnDatapoint)
-          populateUncontrolledGraph(tooltip.dataPoints[0].label);
+        let hoveredDatapoint = tooltip.dataPoints
+        if(hoveredDatapoint)
+          populateUncontrolledGraph(hoveredDatapoint[0].label);
         else
           populateUncontrolledGraphDefault();
       }
@@ -219,7 +219,7 @@ Reports = function (withLtfu) {
 
       const rate = uncontrolledGraphRate[period] + "%";
       const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = controlGraphDenominator[period];
+      const adjustedPatientCounts = adjustedPatients[period];
       const totalPatients = uncontrolledGraphNumerator[period];
 
       rateNode.innerHTML = rate;
@@ -245,7 +245,7 @@ Reports = function (withLtfu) {
   }
 
   this.setupMissedVisitsGraph = (data) => {
-    const controlGraphDenominator = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const adjustedPatients = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const missedVisitsGraphNumerator = data.missedVisits;
     const missedVisitsGraphRate = withLtfu ? data.controlWithLtfuRate : data.controlRate;
 
@@ -305,9 +305,9 @@ Reports = function (withLtfu) {
     missedVisitsConfig.options.tooltips = {
       enabled: false,
       custom: (tooltip) => {
-        let hoveredOnDatapoint = tooltip.dataPoints
-        if(hoveredOnDatapoint)
-          populateMissedVisitsGraph(tooltip.dataPoints[0].label);
+        let hoveredDatapoint = tooltip.dataPoints
+        if(hoveredDatapoint)
+          populateMissedVisitsGraph(hoveredDatapoint[0].label);
         else
           populateMissedVisitsGraphDefault();
       }
@@ -324,7 +324,7 @@ Reports = function (withLtfu) {
 
       const rate = missedVisitsGraphRate[period] + "%";
       const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = controlGraphDenominator[period];
+      const adjustedPatientCounts = adjustedPatients[period];
       const totalPatients = missedVisitsGraphNumerator[period];
 
       rateNode.innerHTML = rate;
@@ -452,9 +452,9 @@ Reports = function (withLtfu) {
     cumulativeRegistrationsGraphConfig.options.tooltips = {
       enabled: false,
       custom: (tooltip) => {
-        let hoveredOnDatapoint = tooltip.dataPoints
-        if(hoveredOnDatapoint)
-          populateCumulativeRegistrationsGraph(tooltip.dataPoints[0].label);
+        let hoveredDatapoint = tooltip.dataPoints
+        if(hoveredDatapoint)
+          populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
         else
           populateCumulativeRegistrationsGraphDefault();
       }
@@ -571,9 +571,9 @@ Reports = function (withLtfu) {
       mode: "x",
       enabled: false,
       custom: (tooltip) => {
-        let hoveredOnDatapoint = tooltip.dataPoints
-        if(hoveredOnDatapoint)
-          populateVisitDetailsGraph(tooltip.dataPoints[0].label);
+        let hoveredDatapoint = tooltip.dataPoints
+        if(hoveredDatapoint)
+          populateVisitDetailsGraph(hoveredDatapoint[0].label);
         else
           populateVisitDetailsGraphDefault();
       }
