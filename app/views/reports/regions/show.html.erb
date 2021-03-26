@@ -108,7 +108,7 @@
               </h3>
               <%= render "definition_tooltip",
                          definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
-                                        "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
+                                        "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
             </div>
             <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
           <% else %>
@@ -192,7 +192,7 @@
               </h3>
               <%= render "definition_tooltip",
                          definitions: { "Numerator" => t("missed_visits_copy.numerator"),
-                                        "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
+                                        "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
             </div>
             <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
           <% else %>
