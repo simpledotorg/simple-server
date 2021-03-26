@@ -28,11 +28,6 @@ class Reports::RegionsController < AdminController
     }
   end
 
-  def log(msg)
-    pp msg
-    logger.info msg
-  end
-
   def show
     @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
     @with_ltfu = with_ltfu?
