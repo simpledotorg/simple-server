@@ -4,7 +4,8 @@
 
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="bp-controlled" data-period="<%= @period.to_s %>"
+    <div id="bp-controlled"
+         data-period="<%= @period.to_s %>"
          class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
                 justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
@@ -31,12 +32,16 @@
           </p>
         <% end %>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:controlled_patients_rate) %>c-green-dark<% else %>c-grey-medium<% end %> mr-lg-12px"
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if control_graph_no_data %>c-grey-medium<% else %>c-green-dark<% end %>"
              data-rate="">
             <% if control_graph_no_data %>No data<% end %>
           </p>
           <div>
-            <% if @data.last_value(:controlled_patients_rate) %>
+            <% if control_graph_no_data %>
+              <p class="m-0px c-grey-medium c-print-black">
+                No BP controlled data available
+              </p>
+            <% else %>
               <p class="m-0px c-black">
                 <span data-total-patients=""></span>
                 patients with controlled BP from
@@ -48,10 +53,6 @@
                 of <span data-registrations=""></span>
                 patients registered till
                 <span data-registrations-period-end=""></span>
-              </p>
-            <% else %>
-              <p class="m-0px c-grey-medium c-print-black">
-                No BP controlled data available
               </p>
             <% end %>
           </div>
