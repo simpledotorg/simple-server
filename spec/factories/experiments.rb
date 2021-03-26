@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
-    name { "any unique string" }
+    name { Faker::Lorem.unique.word }
     state { "active" }
     start_date {}
     end_date {}
