@@ -262,7 +262,7 @@ RSpec.describe Reports::Repository, type: :model do
       end
     end
 
-    it "memoizes calls and will ignore memoization via bust_cache" do
+    it "memoizes calls to queries" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       Timecop.freeze(jan_2020) do
         controlled_in_jan.map do |patient|
@@ -280,7 +280,7 @@ RSpec.describe Reports::Repository, type: :model do
       3.times { _result = repo.controlled_patient_rates }
     end
 
-    it "will ignore memoization when bust_cache is true" do
+    it "will not ignore memoization when bust_cache is true" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       Timecop.freeze(jan_2020) do
         controlled_in_jan.map do |patient|
@@ -291,7 +291,7 @@ RSpec.describe Reports::Repository, type: :model do
 
       RequestStore[:bust_cache] = true
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(3).times
+      expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(1).times
 
       3.times { _result = repo.controlled_patients_count }
     end
