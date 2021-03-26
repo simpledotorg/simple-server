@@ -133,7 +133,7 @@ module Reports
     smart_memoize def missed_visits
       cached_query(__method__) do |entry|
         slug = entry.slug
-        patient_count = cumulative_assigned_patients_count[slug][entry.adjusted_period]
+        patient_count = denominator(entry.region, entry.period)
         controlled = controlled_patients_count[slug][entry.period]
         uncontrolled = uncontrolled_patients_count[slug][entry.period]
         visits = visited_without_bp_taken[slug][entry.period]
@@ -184,7 +184,7 @@ module Reports
     smart_memoize def visited_without_bp_taken_rate
       cached_query(__method__) do |entry|
         controlled = visited_without_bp_taken[entry.region.slug][entry.period]
-        total = cumulative_assigned_patients_count[entry.region.slug][entry.period]
+        total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
     end
