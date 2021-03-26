@@ -32,145 +32,7 @@ Reports = function () {
     this.setupUncontrolledGraph(data);
     this.setupMissedVisitsGraph(data);
     this.setupCumulativeRegistrationsGraph(data);
-    // this.setupVisitDetailsGraph();
-
-    const visitDetailsGraphConfig = this.createBaseGraphConfig();
-    visitDetailsGraphConfig.type = "bar";
-
-    const maxBarsToDisplay = 6;
-    const barsToDisplay = Math.min(Object.keys(data.controlRate).length, maxBarsToDisplay);
-
-    visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: this.mediumGreenColor,
-          hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.controlRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "BP uncontrolled",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no BP measure",
-          backgroundColor: this.mediumGreyColor,
-          hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: this.mediumBlueColor,
-          hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-      ],
-    };
-    visitDetailsGraphConfig.options.scales = {
-      xAxes: [{
-        stacked: true,
-        display: true,
-        gridLines: {
-          display: false,
-          drawBorder: false,
-        },
-        ticks: {
-          autoSkip: false,
-          fontColor: this.darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          min: 0,
-          beginAtZero: true,
-        },
-      }],
-      yAxes: [{
-        stacked: true,
-        display: false,
-        gridLines: {
-          display: false,
-          drawBorder: false,
-        },
-        ticks: {
-          autoSkip: false,
-          fontColor: this.darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          min: 0,
-          beginAtZero: true,
-        },
-      }],
-    };
-    visitDetailsGraphConfig.options.tooltips = {
-      mode: "x",
-      enabled: false,
-      custom: (tooltip) => {
-        const cardNode = document.getElementById("visit-details");
-        const mostRecentPeriod = cardNode.getAttribute("data-period");
-        const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
-        const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
-        const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
-        const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
-        const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
-        const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
-        const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
-        const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
-        const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-        const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-        const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
-        const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
-        let label = null;
-        let missedVisitsRate = null;
-        let visitButNoBPMeasureRate = null;
-        let uncontrolledRate = null;
-        let controlledRate = null;
-        if (tooltip.dataPoints) {
-          missedVisitsRate = tooltip.dataPoints[3].value + "%";
-          visitButNoBPMeasureRate = tooltip.dataPoints[2].value + "%";
-          uncontrolledRate = tooltip.dataPoints[1].value + "%";
-          controlledRate = tooltip.dataPoints[0].value + "%";
-          label = tooltip.dataPoints[0].label;
-        } else {
-          missedVisitsRate = missedVisitsRateNode.getAttribute("data-missed-visits-rate");
-          visitButNoBPMeasureRate = visitButNoBPMeasureRateNode.getAttribute("data-visit-but-no-bp-measure-rate");
-          uncontrolledRate = uncontrolledRateNode.getAttribute("data-uncontrolled-rate");
-          controlledRate = controlledRateNode.getAttribute("data-controlled-rate");
-          label = mostRecentPeriod;
-        }
-        const period = data.periodInfo[label];
-        const adjustedPatientCounts = data.adjustedPatientCounts[label];
-        const totalMissedVisits = data.missedVisits[label];
-        const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[label];
-        const totalUncontrolledPatients = data.uncontrolledPatients[label];
-        const totalControlledPatients = data.controlledPatients[label];
-
-        missedVisitsRateNode.innerHTML = missedVisitsRate;
-        visitButNoBPMeasureRateNode.innerHTML = visitButNoBPMeasureRate;
-        uncontrolledRateNode.innerHTML = uncontrolledRate;
-        controlledRateNode.innerHTML = controlledRate;
-        missedVisitsPatientsNode.innerHTML = this.formatNumberWithCommas(totalMissedVisits);
-        visitButNoBPMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(totalVisitButNoBPMeasure);
-        uncontrolledPatientsNode.innerHTML = this.formatNumberWithCommas(totalUncontrolledPatients);
-        controlledPatientsNode.innerHTML = this.formatNumberWithCommas(totalControlledPatients);
-        periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
-        periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
-        registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
-        adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
-      },
-    };
-
-    const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
-    if (visitDetailsGraphCanvas) {
-      new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
-    }
+    this.setupVisitDetailsGraph(data);
   }
 
   this.setupControlledGraph = (data) => {
@@ -249,8 +111,8 @@ Reports = function () {
       const periodEndNode = cardNode.querySelector("[data-period-end]");
       const registrationsNode = cardNode.querySelector("[data-registrations]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
-      const rate = controlledGraphRate[period] + "%";
 
+      const rate = controlledGraphRate[period] + "%";
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = controlGraphDenominator[period];
       const totalPatients = controlledGraphNumerator[period];
@@ -272,10 +134,8 @@ Reports = function () {
 
     const controlledGraphCanvas = document.getElementById("controlledPatientsTrend");
     if (controlledGraphCanvas) {
-      const controlledGraph = new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
+      new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
       populateControlledGraphDefault();
-
-      return controlledGraph;
     }
   }
 
@@ -356,8 +216,8 @@ Reports = function () {
       const periodEndNode = cardNode.querySelector("[data-period-end]");
       const registrationsNode = cardNode.querySelector("[data-registrations]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
-      const rate = uncontrolledGraphRate[period] + "%";
 
+      const rate = uncontrolledGraphRate[period] + "%";
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = controlGraphDenominator[period];
       const totalPatients = uncontrolledGraphNumerator[period];
@@ -379,10 +239,8 @@ Reports = function () {
 
     const uncontrolledGraphCanvas = document.getElementById("uncontrolledPatientsTrend");
     if (uncontrolledGraphCanvas) {
-      const uncontrolledGraph = new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
+      new Chart(uncontrolledGraphCanvas.getContext("2d"), uncontrolledGraphConfig);
       populateUncontrolledGraphDefault();
-
-      return uncontrolledGraph;
     }
   }
 
@@ -463,8 +321,8 @@ Reports = function () {
       const periodEndNode = cardNode.querySelector("[data-period-end]");
       const registrationsNode = cardNode.querySelector("[data-registrations]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
-      const rate = missedVisitsGraphRate[period] + "%";
 
+      const rate = missedVisitsGraphRate[period] + "%";
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = controlGraphDenominator[period];
       const totalPatients = missedVisitsGraphNumerator[period];
@@ -486,10 +344,8 @@ Reports = function () {
 
     const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
-      const missedVisitsGraph = new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
+      new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
       populateMissedVisitsGraphDefault();
-
-      return missedVisitsGraph;
     }
   }
 
@@ -630,10 +486,148 @@ Reports = function () {
 
     const cumulativeRegistrationsGraphCanvas = document.getElementById("cumulativeRegistrationsTrend");
     if (cumulativeRegistrationsGraphCanvas) {
-      const cumulativeRegistrationsGraph = new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
+      new Chart(cumulativeRegistrationsGraphCanvas.getContext("2d"), cumulativeRegistrationsGraphConfig);
       populateCumulativeRegistrationsGraphDefault();
+    }
+  }
 
-      return cumulativeRegistrationsGraph;
+  this.setupVisitDetailsGraph = (data) => {
+    const visitDetailsGraphConfig = this.createBaseGraphConfig();
+    visitDetailsGraphConfig.type = "bar";
+
+    const maxBarsToDisplay = 6;
+    const barsToDisplay = Math.min(Object.keys(data.controlRate).length, maxBarsToDisplay);
+
+    visitDetailsGraphConfig.data = {
+      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
+      datasets: [
+        {
+          label: "BP controlled",
+          backgroundColor: this.mediumGreenColor,
+          hoverBackgroundColor: this.darkGreenColor,
+          data: Object.values(data.controlRate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "BP uncontrolled",
+          backgroundColor: this.mediumRedColor,
+          hoverBackgroundColor: this.darkRedColor,
+          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Visit but no BP measure",
+          backgroundColor: this.mediumGreyColor,
+          hoverBackgroundColor: this.darkGreyColor,
+          data: Object.values(data.visitButNoBPMeasureRate).slice(-barsToDisplay),
+          type: "bar",
+        },
+        {
+          label: "Missed visits",
+          backgroundColor: this.mediumBlueColor,
+          hoverBackgroundColor: this.darkBlueColor,
+          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
+          type: "bar",
+        },
+      ],
+    };
+    visitDetailsGraphConfig.options.scales = {
+      xAxes: [{
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: this.darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+        },
+      }],
+      yAxes: [{
+        stacked: true,
+        display: false,
+        gridLines: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: this.darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+        },
+      }],
+    };
+    visitDetailsGraphConfig.options.tooltips = {
+      mode: "x",
+      enabled: false,
+      custom: (tooltip) => {
+        const cardNode = document.getElementById("visit-details");
+        const mostRecentPeriod = cardNode.getAttribute("data-period");
+        const missedVisitsRateNode = cardNode.querySelector("[data-missed-visits-rate]");
+        const visitButNoBPMeasureRateNode = cardNode.querySelector("[data-visit-but-no-bp-measure-rate]");
+        const uncontrolledRateNode = cardNode.querySelector("[data-uncontrolled-rate]");
+        const controlledRateNode = cardNode.querySelector("[data-controlled-rate]");
+        const missedVisitsPatientsNode = cardNode.querySelector("[data-missed-visits-patients]");
+        const visitButNoBPMeasurePatientsNode = cardNode.querySelector("[data-visit-but-no-bp-measure-patients]");
+        const uncontrolledPatientsNode = cardNode.querySelector("[data-uncontrolled-patients]");
+        const controlledPatientsNode = cardNode.querySelector("[data-controlled-patients]");
+        const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
+        const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
+        const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
+        const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
+        let label = null;
+        let missedVisitsRate = null;
+        let visitButNoBPMeasureRate = null;
+        let uncontrolledRate = null;
+        let controlledRate = null;
+        if (tooltip.dataPoints) {
+          missedVisitsRate = tooltip.dataPoints[3].value + "%";
+          visitButNoBPMeasureRate = tooltip.dataPoints[2].value + "%";
+          uncontrolledRate = tooltip.dataPoints[1].value + "%";
+          controlledRate = tooltip.dataPoints[0].value + "%";
+          label = tooltip.dataPoints[0].label;
+        } else {
+          missedVisitsRate = missedVisitsRateNode.getAttribute("data-missed-visits-rate");
+          visitButNoBPMeasureRate = visitButNoBPMeasureRateNode.getAttribute("data-visit-but-no-bp-measure-rate");
+          uncontrolledRate = uncontrolledRateNode.getAttribute("data-uncontrolled-rate");
+          controlledRate = controlledRateNode.getAttribute("data-controlled-rate");
+          label = mostRecentPeriod;
+        }
+        const period = data.periodInfo[label];
+        const adjustedPatientCounts = data.adjustedPatientCounts[label];
+        const totalMissedVisits = data.missedVisits[label];
+        const totalVisitButNoBPMeasure = data.visitButNoBPMeasure[label];
+        const totalUncontrolledPatients = data.uncontrolledPatients[label];
+        const totalControlledPatients = data.controlledPatients[label];
+
+        missedVisitsRateNode.innerHTML = missedVisitsRate;
+        visitButNoBPMeasureRateNode.innerHTML = visitButNoBPMeasureRate;
+        uncontrolledRateNode.innerHTML = uncontrolledRate;
+        controlledRateNode.innerHTML = controlledRate;
+        missedVisitsPatientsNode.innerHTML = this.formatNumberWithCommas(totalMissedVisits);
+        visitButNoBPMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(totalVisitButNoBPMeasure);
+        uncontrolledPatientsNode.innerHTML = this.formatNumberWithCommas(totalUncontrolledPatients);
+        controlledPatientsNode.innerHTML = this.formatNumberWithCommas(totalControlledPatients);
+        periodStartNodes.forEach(node => node.innerHTML = period.bp_control_start_date);
+        periodEndNodes.forEach(node => node.innerHTML = period.bp_control_end_date);
+        registrationPeriodEndNodes.forEach(node => node.innerHTML = period.bp_control_registration_date);
+        adjustedPatientCountsNodes.forEach(node => node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts));
+      },
+    };
+
+    const visitDetailsGraphCanvas = document.getElementById("missedVisitDetails");
+    if (visitDetailsGraphCanvas) {
+      new Chart(visitDetailsGraphCanvas.getContext("2d"), visitDetailsGraphConfig);
     }
   }
 
