@@ -35,28 +35,22 @@ class Reports::RegionsController < AdminController
     @child_regions = @region.reportable_children
     repo = Reports::Repository.new(@child_regions, periods: @period, with_exclusions: report_with_exclusions?)
 
-    @children_data = if params[:legacy] == "1"
-      @child_regions.map { |child|
-        Reports::RegionService.new(region: child, period: @period, with_exclusions: report_with_exclusions?).call
+    @children_data = @child_regions.map { |region|
+      slug = region.slug
+      {
+        region: region,
+        adjusted_patient_counts: repo.adjusted_patient_counts[slug],
+        controlled_patients: repo.controlled_patients_count[slug],
+        controlled_patients_rate: repo.controlled_patient_rates[slug],
+        uncontrolled_patients: repo.uncontrolled_patients_count[slug],
+        uncontrolled_patients_rate: repo.uncontrolled_patient_rates[slug],
+        missed_visits: repo.missed_visits[slug],
+        missed_visits_rate: repo.missed_visits_rate[slug],
+        registrations: repo.registration_counts[slug],
+        cumulative_patients: repo.cumulative_assigned_patients_count[slug],
+        cumulative_registrations: repo.cumulative_registrations[slug]
       }
-    else
-      @child_regions.map { |region|
-        slug = region.slug
-        {
-          region: region,
-          adjusted_patient_counts: repo.adjusted_patient_counts[slug],
-          controlled_patients: repo.controlled_patients_count[slug],
-          controlled_patients_rate: repo.controlled_patient_rates[slug],
-          uncontrolled_patients: repo.uncontrolled_patients_count[slug],
-          uncontrolled_patients_rate: repo.uncontrolled_patient_rates[slug],
-          missed_visits: repo.missed_visits[slug],
-          missed_visits_rate: repo.missed_visits_rate[slug],
-          registrations: repo.registration_counts[slug],
-          cumulative_patients: repo.cumulative_assigned_patients_count[slug],
-          cumulative_registrations: repo.cumulative_registrations[slug]
-        }
-      }
-    end
+    }
   end
 
   def details
@@ -91,7 +85,7 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
     @period = Period.new(type: params[:period], value: Date.current)
     unless @period.valid?
-      raise ArgumentError, "invalid Period #{@period} #{@period.inspect}"
+      raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
     end
 
     @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
