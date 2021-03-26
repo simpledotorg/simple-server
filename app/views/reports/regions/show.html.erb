@@ -37,17 +37,13 @@
           </p>
         <% end %>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px
-            <% if controlled_graph_no_data %>c-grey-medium
-            <% else %>c-green-dark
-            <% end %>"
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if controlled_graph_no_data %>c-grey-medium<% else %>c-green-dark<% end %>"
              data-rate="">
-            <% if controlled_graph_no_data %>No data
-            <% end %>
           </p>
           <div>
             <% if controlled_graph_no_data %>
               <p class="m-0px c-grey-medium c-print-black">
+                dwediewjeodij o
                 No BP controlled data available
               </p>
             <% else %>
@@ -126,7 +122,6 @@
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if uncontrolled_graph_no_data %>c-grey-medium<% else %>c-red<% end %>"
              data-rate="">
-            <% if uncontrolled_graph_no_data %>No data<% end %>
           </p>
           <div>
             <% if uncontrolled_graph_no_data %>
@@ -210,7 +205,6 @@
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if missed_visits_graph_no_data %>c-grey-medium<% else %>c-blue<% end %>"
              data-rate="">
-            <% if missed_visits_graph_no_data %>No data<% end %>
           </p>
           <div>
             <% if missed_visits_graph_no_data %>
@@ -285,7 +279,6 @@
           <div class="flex-1 d-lg-flex align-lg-center">
             <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if cumulative_registrations_graph_no_data %>c-grey-medium<% else %>c-purple<% end %>"
               data-total-patients="">
-              <% if cumulative_registrations_graph_no_data %>No data<% end %>
             </p>
             <div>
               <% if cumulative_registrations_graph_no_data %>
@@ -310,6 +303,7 @@
                 <p class="m-0px c-grey-medium c-print-black">
                   No monthly registered patients<br>
                   data available
+                  <span data-registrations-month-end=""></span>
                 </p>
               <% else %>
                 <p class="m-0px c-black c-print-black">
