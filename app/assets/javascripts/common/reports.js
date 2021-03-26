@@ -28,106 +28,11 @@ Reports = function () {
   this.initializeCharts = () => {
     const data = this.getReportingData();
 
-    const controlGraphDenominator = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
-    const missedVisitsGraphNumerator = data.missedVisits;
-    const missedVisitsGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
-
     this.setupControlledGraph(data);
     this.setupUncontrolledGraph(data);
-    // this.setupMissedVisitsGraph();
+    this.setupMissedVisitsGraph(data);
     // this.setupCumulativeRegistrationsGraph();
     // this.setupVisitDetailsGraph();
-
-    const missedVisitsConfig = this.createBaseGraphConfig();
-    missedVisitsConfig.data = {
-      labels: Object.keys(missedVisitsGraphRate),
-      datasets: [{
-        label: "Missed visits",
-        backgroundColor: this.lightBlueColor,
-        borderColor: this.mediumBlueColor,
-        borderWidth: 2,
-        pointBackgroundColor: this.whiteColor,
-        hoverBackgroundColor: this.whiteColor,
-        hoverBorderWidth: 2,
-        data: Object.values(missedVisitsGraphRate),
-        type: "line",
-      }],
-    };
-    missedVisitsConfig.options.scales = {
-      xAxes: [{
-        stacked: false,
-        display: true,
-        gridLines: {
-          display: false,
-          drawBorder: true,
-        },
-        ticks: {
-          autoSkip: false,
-          fontColor: this.darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          min: 0,
-          beginAtZero: true,
-        },
-      }],
-      yAxes: [{
-        stacked: false,
-        display: true,
-        gridLines: {
-          display: true,
-          drawBorder: false,
-        },
-        ticks: {
-          autoSkip: false,
-          fontColor: this.darkGreyColor,
-          fontSize: 12,
-          fontFamily: "Roboto Condensed",
-          padding: 8,
-          min: 0,
-          beginAtZero: true,
-          stepSize: 25,
-          max: 100,
-        },
-      }],
-    }
-    missedVisitsConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        const cardNode = document.getElementById("missed-visits");
-        const mostRecentPeriod = cardNode.getAttribute("data-period");
-        const rateNode = cardNode.querySelector("[data-rate]");
-        const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-        const periodStartNode = cardNode.querySelector("[data-period-start]");
-        const periodEndNode = cardNode.querySelector("[data-period-end]");
-        const registrationsNode = cardNode.querySelector("[data-registrations]");
-        const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
-        let label = null;
-        let rate = null;
-        if (tooltip.dataPoints) {
-          rate = tooltip.dataPoints[0].value + "%";
-          label = tooltip.dataPoints[0].label;
-        } else {
-          rate = rateNode.getAttribute("data-rate");
-          label = mostRecentPeriod;
-        }
-        const period = data.periodInfo[label];
-        const adjustedPatientCounts = controlGraphDenominator[label];
-        const totalPatients = missedVisitsGraphNumerator[label];
-
-        rateNode.innerHTML = rate;
-        totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-        periodStartNode.innerHTML = period.bp_control_start_date;
-        periodEndNode.innerHTML = period.bp_control_end_date;
-        registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
-        registrationsPeriodEndNode.innerHTML = period.bp_control_registration_date;
-      }
-    };
-
-    const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
-    if (missedVisitsGraphCanvas) {
-      new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
-    }
 
     const cumulativeRegistrationsYAxis = this.createAxisMaxAndStepSize(data.cumulativeRegistrations);
     const monthlyRegistrationsYAxis = this.createAxisMaxAndStepSize(data.monthlyRegistrations);
@@ -608,6 +513,113 @@ Reports = function () {
       populateUncontrolledGraphDefault();
 
       return uncontrolledGraph;
+    }
+  }
+
+  this.setupMissedVisitsGraph = (data) => {
+    const controlGraphDenominator = window.withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
+    const missedVisitsGraphNumerator = data.missedVisits;
+    const missedVisitsGraphRate = window.withLtfu ? data.controlWithLtfuRate : data.controlRate;
+
+    const missedVisitsConfig = this.createBaseGraphConfig();
+    missedVisitsConfig.data = {
+      labels: Object.keys(missedVisitsGraphRate),
+      datasets: [{
+        label: "Missed visits",
+        backgroundColor: this.lightBlueColor,
+        borderColor: this.mediumBlueColor,
+        borderWidth: 2,
+        pointBackgroundColor: this.whiteColor,
+        hoverBackgroundColor: this.whiteColor,
+        hoverBorderWidth: 2,
+        data: Object.values(missedVisitsGraphRate),
+        type: "line",
+      }],
+    };
+    missedVisitsConfig.options.scales = {
+      xAxes: [{
+        stacked: false,
+        display: true,
+        gridLines: {
+          display: false,
+          drawBorder: true,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: this.darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+        },
+      }],
+      yAxes: [{
+        stacked: false,
+        display: true,
+        gridLines: {
+          display: true,
+          drawBorder: false,
+        },
+        ticks: {
+          autoSkip: false,
+          fontColor: this.darkGreyColor,
+          fontSize: 12,
+          fontFamily: "Roboto Condensed",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: 25,
+          max: 100,
+        },
+      }],
+    }
+    missedVisitsConfig.options.tooltips = {
+      enabled: false,
+      custom: (tooltip) => {
+        let hoveredOnDatapoint = tooltip.dataPoints
+        if(hoveredOnDatapoint)
+          populateMissedVisitsGraph(tooltip.dataPoints[0].label);
+        else
+          populateMissedVisitsGraphDefault();
+      }
+    };
+
+    let populateMissedVisitsGraph = (period) => {
+      const cardNode = document.getElementById("missed-visits");
+      const rateNode = cardNode.querySelector("[data-rate]");
+      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
+      const periodStartNode = cardNode.querySelector("[data-period-start]");
+      const periodEndNode = cardNode.querySelector("[data-period-end]");
+      const registrationsNode = cardNode.querySelector("[data-registrations]");
+      const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
+      const rate = missedVisitsGraphRate[period] + "%";
+
+      const periodInfo = data.periodInfo[period];
+      const adjustedPatientCounts = controlGraphDenominator[period];
+      const totalPatients = missedVisitsGraphNumerator[period];
+
+      rateNode.innerHTML = rate;
+      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
+      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
+      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
+      registrationsNode.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts);
+      registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_registration_date;
+    }
+
+    let populateMissedVisitsGraphDefault = () => {
+      const cardNode = document.getElementById("missed-visits");
+      const mostRecentPeriod = cardNode.getAttribute("data-period");
+
+      populateMissedVisitsGraph(mostRecentPeriod);
+    }
+
+    const missedVisitsGraphCanvas = document.getElementById("missedVisitsTrend");
+    if (missedVisitsGraphCanvas) {
+      const missedVisitsGraph = new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
+      populateMissedVisitsGraphDefault();
+
+      return missedVisitsGraph;
     }
   }
 

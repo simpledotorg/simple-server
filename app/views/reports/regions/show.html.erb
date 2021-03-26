@@ -2,6 +2,7 @@
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_copy" : "denominator_excluding_ltfu_copy" %>
 <% controlled_graph_no_data = @with_ltfu && !@data.last_value(:controlled_patients_with_ltfu_rate) || !@data.last_value(:controlled_patients_rate) %>
 <% uncontrolled_graph_no_data = @with_ltfu && !@data.last_value(:uncontrolled_patients_with_ltfu_rate) || !@data.last_value(:uncontrolled_patients_rate) %>
+<% missed_visits_graph_no_data = @with_ltfu && !@data.last_value(:missed_visits_with_ltfu_rate) || !@data.last_value(:missed_visits_rate) %>
 
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
@@ -20,12 +21,12 @@
                          definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
                                         "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
             </div>
+            <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
           <% else %>
             <h3 class="mb-0px w-75">
               BP controlled
             </h3>
           <% end %>
-          <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
         </div>
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <p class="c-grey-dark">
@@ -33,9 +34,13 @@
           </p>
         <% end %>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if controlled_graph_no_data %>c-grey-medium<% else %>c-green-dark<% end %>"
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px
+            <% if controlled_graph_no_data %>c-grey-medium
+            <% else %>c-green-dark
+            <% end %>"
              data-rate="">
-            <% if controlled_graph_no_data %>No data<% end %>
+            <% if controlled_graph_no_data %>No data
+            <% end %>
           </p>
           <div>
             <% if controlled_graph_no_data %>
@@ -103,12 +108,12 @@
                          definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
                                         "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
             </div>
+            <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
           <% else %>
             <h3 class="mb-0px w-75">
               BP not controlled
             </h3>
           <% end %>
-          <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
         </div>
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <p class="c-grey-dark">
@@ -172,63 +177,56 @@
     </div>
   </div>
   <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="missed-visits" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+    <div id="missed-visits"
+         data-period="<%= @period.to_s %>"
+         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <div class="d-flex flex-1 mb-8px">
-            <h3 class="mb-0px mr-8px">
+        <div class="d-flex mb-8px">
+          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
+            <div class="d-flex flex-1">
+              <h3 class="mb-0px mr-8px">
+                Missed visits
+              </h3>
+              <%= render "definition_tooltip",
+                         definitions: { "Numerator" => t("missed_visits_copy.numerator"),
+                                        "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
+            </div>
+            <%= render "reports/regions/ltfu_toggle", enabled: @with_ltfu %>
+          <% else %>
+            <h3 class="mb-0px w-75">
               Missed visits
             </h3>
-            <%= render "definition_tooltip",
-                       definitions: { "Numerator" => t("missed_visits_copy.numerator"),
-                                      "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
-          </div>
+          <% end %>
+        </div>
+        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <p class="c-grey-dark">
             <%= t("missed_visits_copy.reports_card_subtitle") %>
           </p>
-        <% else %>
-          <div class="mb-16px">
-            <h3 class="mb-0px">
-              Missed visits
-            </h3>
-          </div>
         <% end %>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:missed_visits_rate) %>c-blue<% else %>c-grey-medium<% end %> mr-lg-12px" data-rate="<%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>">
-            <% if @data.last_value(:missed_visits_rate) %>
-              <%= number_to_percentage(@data.last_value(:missed_visits_rate), precision: 0) %>
-            <% else %>
-              No data
-            <% end %>
+          <p class="mb-0px fs-32px fw-bold mr-lg-12px <% if missed_visits_graph_no_data %>c-grey-medium<% else %>c-blue<% end %>"
+             data-rate="">
+            <% if missed_visits_graph_no_data %>No data<% end %>
           </p>
           <div>
-            <% if @data.last_value(:missed_visits_rate) %>
+            <% if missed_visits_graph_no_data %>
+              <p class="m-0px c-grey-medium c-print-black">
+                No missed visits data available
+              </p>
+            <% else %>
               <p class="m-0px c-black">
-                <span data-total-patients="<%= number_with_delimiter(@data.last_value(:missed_visits)) %>">
-                  <%= number_with_delimiter(@data.last_value(:missed_visits)) %>
-                </span>
+                <span data-total-patients=""></span>
                 patients with no visit from
-                <span data-period-start="<%= @period.bp_control_range_start_date %>">
-                  <%= @period.bp_control_range_start_date %>
-                </span>
+                <span data-period-start=""></span>
                 to
-                <span data-period-end="<%= @period.bp_control_range_end_date%>">
-                  <%= @period.bp_control_range_end_date%>
-                </span>
+                <span data-period-end=""></span>
               </p>
               <p class="m-0px c-grey-dark c-print-black">
                 of
-                <span data-registrations="<%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>">
-                  <%= number_with_delimiter(@data.last_value(:adjusted_patient_counts)) %>
-                </span>
+                <span data-registrations=""></span>
                 patients registered till
-                <span data-registrations-period-end="<%= @period.bp_control_registrations_until_date %>">
-                  <%= @period.bp_control_registrations_until_date %>
-                </span>
-              </p>
-            <% else %>
-              <p class="m-0px c-grey-medium c-print-black">
-                No missed visits data available
+                <span data-registrations-period-end=""></span>
               </p>
             <% end %>
           </div>
@@ -279,7 +277,10 @@
           <div class="d-flex align-center mb-12px">
             <div class="flex-1 d-lg-flex align-lg-center">
               <p
-                class="mb-0px fs-32px fw-bold <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px"
+                class="mb-0px fs-32px fw-bold
+                  <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium
+                  <% else %>c-purple
+                  <% end %> mr-lg-12px"
                 data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>"
               >
                 <% if @data.last_value(:cumulative_registrations).blank? %>
@@ -306,7 +307,10 @@
             </div>
             <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
               <p
-                class="mb-0px fs-32px fw-bold <% if @data.last_value(:registrations).blank? %>c-grey-medium<% else %>c-purple-medium<% end %> mr-lg-12px"
+                class="mb-0px fs-32px fw-bold
+                  <% if @data.last_value(:registrations).blank? %>c-grey-medium
+                  <% else %>c-purple-medium
+                  <% end %> mr-lg-12px"
                 data-monthly-registrations="<%= number_with_delimiter(@data.dig(:registrations, @period)) %>"
               >
                 <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
@@ -330,7 +334,10 @@
           </div>
         <% else %>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium<% else %>c-purple<% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>">
+            <p class="mb-0px fs-32px fw-bold
+              <% if @data.last_value(:cumulative_registrations).blank? %>c-grey-medium
+              <% else %>c-purple
+              <% end %> mr-lg-12px" data-total-patients="<%= number_with_delimiter(@data.last_value(:cumulative_registrations)) %>">
               <% if @data.last_value(:cumulative_registrations).blank? %>
                 No data
               <% else %>

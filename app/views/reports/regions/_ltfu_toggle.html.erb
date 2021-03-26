@@ -1,16 +1,17 @@
-<% if current_admin.feature_enabled?(:report_with_exclusions) %>
-  <div class="align-right custom-control custom-switch">
-    <form method="get">
-      <input type="checkbox"
-             onChange="this.form.submit()"
-             name="with_ltfu"
-             class="custom-control-input"
-             id="controlGraphltfuSwitch"
-             <% if enabled %>checked<% end %>>
-      <label class="font-weight-normal <% unless enabled %>c-grey-dark<% end %> custom-control-label"
-             for="controlGraphltfuSwitch">
-        Include LTFU
-      </label>
-    </form>
-  </div>
-<% end %>
+<div class="align-right custom-control custom-switch">
+  <form method="get">
+    <input type="checkbox"
+           onChange="this.form.submit()"
+           name="with_ltfu"
+           class="custom-control-input"
+           id="controlGraphltfuSwitch"
+           <% if enabled %>checked
+           <% end %>>
+    <label class="font-weight-normal
+      <% unless enabled %>c-grey-dark
+      <% end %> custom-control-label"
+           for="controlGraphltfuSwitch">
+      Include LTFU
+    </label>
+  </form>
+</div>
