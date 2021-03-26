@@ -28,7 +28,7 @@ module Reports
     # Uses Memery to memoize a method, but takes into account our bust_cache setting. If bust_cache is true,
     # a caller is asking for all values to be retrieved fresh from the database, so we want to skip memoization and caching.
     def self.smart_memoize(method)
-      memoize(method, condition: -> { !bust_cache? })
+      memoize(method)
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query

@@ -37,31 +37,28 @@ class Reports::RegionsController < AdminController
     @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
     @with_ltfu = with_ltfu?
 
-    @children = @region.reportable_children
+    @child_regions = @region.reportable_children
+    repo = Reports::Repository.new(@child_regions, periods: @period, with_exclusions: report_with_exclusions?)
 
-    child_data_repo = Reports::Repository.new(@children, periods: @period, with_exclusions: report_with_exclusions?)
     @children_data = if params[:legacy] == "1"
-      @children.map { |child|
+      @child_regions.map { |child|
         Reports::RegionService.new(region: child, period: @period, with_exclusions: report_with_exclusions?).call
       }
     else
-      @children.map { |child|
-        slug = child.slug
-        data = Reports::RegionService.new(region: child, period: @period, with_exclusions: report_with_exclusions?).call
-        log ["adjusted patient counts from repo for #{@period}", child_data_repo.adjusted_patient_counts[slug]]
-        log ["adjusted patient counts from legacy #{@period}", data[:adjusted_patient_counts][@period]]
+      @child_regions.map { |region|
+        slug = region.slug
         {
-          region: child,
-          adjusted_patient_counts: child_data_repo.adjusted_patient_counts[slug],
-          controlled_patients: child_data_repo.controlled_patients_count[slug],
-          controlled_patients_rate: child_data_repo.controlled_patient_rates[slug],
-          uncontrolled_patients: child_data_repo.uncontrolled_patients_count[slug],
-          uncontrolled_patients_rate: child_data_repo.uncontrolled_patient_rates[slug],
-          missed_visits: child_data_repo.missed_visits[slug],
-          missed_visits_rate: child_data_repo.missed_visits_rate[slug],
-          registrations: child_data_repo.registration_counts[slug],
-          cumulative_patients: child_data_repo.cumulative_assigned_patients_count[slug],
-          cumulative_registrations: child_data_repo.cumulative_registrations[slug]
+          region: region,
+          adjusted_patient_counts: repo.adjusted_patient_counts[slug],
+          controlled_patients: repo.controlled_patients_count[slug],
+          controlled_patients_rate: repo.controlled_patient_rates[slug],
+          uncontrolled_patients: repo.uncontrolled_patients_count[slug],
+          uncontrolled_patients_rate: repo.uncontrolled_patient_rates[slug],
+          missed_visits: repo.missed_visits[slug],
+          missed_visits_rate: repo.missed_visits_rate[slug],
+          registrations: repo.registration_counts[slug],
+          cumulative_patients: repo.cumulative_assigned_patients_count[slug],
+          cumulative_registrations: repo.cumulative_registrations[slug]
         }
       }
     end
