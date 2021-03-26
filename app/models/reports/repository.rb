@@ -102,6 +102,15 @@ module Reports
       }
     end
 
+    smart_memoize def cumulative_registrations
+      complete_registration_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
+        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
+        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+        }
+      end
+    end
+
     def ltfu_counts
       cached_query(__method__) do |entry|
         facility_ids = entry.region.facilities.pluck(:id)
