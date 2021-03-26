@@ -111,7 +111,7 @@ module Reports
       end
     end
 
-    def ltfu_counts
+    smart_memoize def ltfu_counts
       cached_query(__method__) do |entry|
         facility_ids = entry.region.facilities.pluck(:id)
         Patient.for_reports(with_exclusions: with_exclusions).where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
