@@ -1,4 +1,4 @@
-class DeduplicationLog < ActiveRecord::Base
+class DeduplicationLog < ApplicationRecord
   belongs_to :deleted_record, -> { with_discarded }, polymorphic: true, foreign_type: :record_type
   belongs_to :deduped_record, -> { with_discarded }, polymorphic: true, foreign_type: :record_type
   belongs_to :user, optional: true
