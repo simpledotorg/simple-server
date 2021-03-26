@@ -230,21 +230,25 @@ module Reports
       end
     end
 
-    def denominator_for_quarterly_percentage(numerator)
+    def quarterly_denominator(numerator)
       self[QUARTELY_DENOMINATORS[numerator]]
     end
 
-    def denominator_for_monthly_percentage(numerator, with_ltfu:)
-      ltfu_key = with_ltfu ? :with_ltfu : :excluding_lftu
+    def monthly_denominator(numerator, with_ltfu:)
+      ltfu_key = if with_ltfu
+        :with_ltfu
+      else
+        :excluding_lftu
+      end
 
       self[MONTHLY_DENOMINATORS[ltfu_key][numerator]]
     end
 
     def denominator_for_percentage_calculation(period, key, with_ltfu:)
       if quarterly_report?
-        denominator_for_quarterly_percentage(key)[period.previous] || 0
+        quarterly_denominator(key)[period.previous] || 0
       else
-        denominator_for_monthly_percentage(key, with_ltfu: with_ltfu)[period]
+        monthly_denominator(key, with_ltfu: with_ltfu)[period]
       end
     end
 
