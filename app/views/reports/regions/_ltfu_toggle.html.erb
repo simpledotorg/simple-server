@@ -5,11 +5,8 @@
            name="with_ltfu"
            class="custom-control-input"
            id="controlGraphltfuSwitch"
-           <% if enabled %>checked
-           <% end %>>
-    <label class="font-weight-normal
-      <% unless enabled %>c-grey-dark
-      <% end %> custom-control-label"
+           <% if enabled %>checked<% end %>>
+    <label class="font-weight-normal custom-control-label <% unless enabled %>c-grey-dark<% end %>"
            for="controlGraphltfuSwitch">
       Include LTFU
     </label>

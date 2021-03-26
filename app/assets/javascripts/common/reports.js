@@ -16,7 +16,7 @@ Reports = function (withLtfu) {
   this.whiteColor = "rgba(255, 255, 255, 1)";
   this.transparent = "rgba(0, 0, 0, 0)";
 
-  this.listen = () => {
+  this.initialize = () => {
     this.initializeCharts();
     this.initializeTables();
   }
