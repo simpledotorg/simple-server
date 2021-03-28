@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :experiment, class: Experimentation::Experiment do
-    name { Faker::Lorem.unique.word }
-    state { "active" }
-    subject_type { "scheduled_patients" }
+    lookup_name { Faker::Lorem.unique.word }
+    state { "inactive" }
+    experiment_type { "current_patient_reminder" }
     start_date {}
     end_date {}
   end

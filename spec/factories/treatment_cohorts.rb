@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :treatment_cohort, class: Experimentation::TreatmentCohort do
-    cohort_identifier { 0 }
+    bucketing_index { 0 }
+    description { "emotional plea" }
     association :experiment, factory: :experiment
   end
 end
