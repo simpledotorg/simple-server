@@ -1,6 +1,6 @@
 class ControlRateService
   include BustCache
-  CACHE_VERSION = 10
+  CACHE_VERSION = 11
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -89,7 +89,6 @@ class ControlRateService
 
   def ltfu_patients(period)
     return 0 unless with_exclusions
-    logger.info "ltfu_patients"
 
     Patient
       .for_reports(with_exclusions: with_exclusions)
