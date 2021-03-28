@@ -2,26 +2,21 @@
 
 ## Context
 
-We generate a lot of reports for Simple.org (the dashboard) and the mobile app, and retrieving those values in a
-consistent and performant manner has been challenge.
+We generate many reports for the Simple dashboard and the mobile app. Retreving all the data for these reports in a 
+consistent and performant manner is a challenge.  We need to aggregate and filter a large amount of data across multiple reports, and its important for user confidence that we have the same numbers reported regardless of what report they are on.
 
 Our current reports retrieve their data in a variety of ways:
 
 * Region reports grab from the RegionService, which grabs a large amount of data via the ControlRateService and Result object.
 * Cohort reports grab data from the CohortService
-* The mobile app Progress Tab grabs data from a mix of the ActivityService, ControlRateService, and other legacy objects.
+* The Progress Tab in the mobile app grabs data from a mix of the ActivityService, ControlRateService, and other legacy objects.
 
 ## Decision
 
-We will introduce a [Repository]() layer that will be responsible for returning reporting data. It will provide a consistent
-interface where callers provide one to many Regions, and one to many Periods, and then can retreive whatever values they want
-from the Repository for the intersection of those Regions and Periods.
+We will introduce a [Repository](https://martinfowler.com/eaaCatalog/repository.html) layer that will be responsible for returning reporting data. It will provide a consistent
+interface where callers provide one to many Regions, and one to many Periods, and then can retreive whatever values they want from the Repository for the intersection of those Regions and Periods.
 
-The Repository will be responsible for grabbing the values from whatever queries, calculations, or data sources are necessary,
-and will also handle åny rqeuired caching to make sure things are performant.
-
-### Model
-
+The Repository will be responsible for grabbing the values from whatever queries, calculations, or data sources are necessary, and will also handle any rqeuired caching to make sure things are performant.
 
 ## Status
 
