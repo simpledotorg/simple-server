@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :treatment_bucket, class: Experimentation::TreatmentBucket do
-    index { 0 }
+    sequence(:index) { |n| n - 1 }
     description { "emotional plea" }
     association :experiment, factory: :experiment
   end

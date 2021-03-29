@@ -8,5 +8,9 @@ class AppointmentReminder < ApplicationRecord
   validates :remind_on, presence: true
   validates :message, presence: true
 
-  enum status: [:pending, :sent, :cancelled], _prefix: true
+  enum status: {
+    pending: "pending",
+    sent: "sent",
+    cancelled: "cancelled"
+  }, _prefix: true
 end
