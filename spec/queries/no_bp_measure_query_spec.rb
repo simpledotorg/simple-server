@@ -12,7 +12,7 @@ RSpec.describe NoBPMeasureQuery do
   end
 
   it "returns a count of 0 for a region with no facilities" do
-    facility_group = double(FacilityGroup, facilities: [], cache_key: "district/xxxx-zzzz", cache_version: "")
+    facility_group = double(FacilityGroup, slug: "region-slug", logger: Rails.logger, facilities: [], cache_key: "district/xxxx-zzzz", cache_version: "")
     result = NoBPMeasureQuery.new.call(facility_group, Period.month("October 1 2018"))
     expect(result).to eq(0)
   end

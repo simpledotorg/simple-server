@@ -28,6 +28,7 @@ module Reports
           missed_visits_rate: {},
           missed_visits: {},
           period_info: {},
+          region: region,
           registrations: Hash.new(0),
           uncontrolled_patients: Hash.new(0),
           uncontrolled_patients_rate: Hash.new(0)
