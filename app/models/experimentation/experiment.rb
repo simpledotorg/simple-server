@@ -16,6 +16,5 @@ module Experimentation
       current_patient_reminder: "current_patient_reminder",
       stale_patient_reminder: "stale_patient_reminder"
     }, _prefix: true
-
   end
 end
