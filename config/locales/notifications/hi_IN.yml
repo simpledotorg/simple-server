@@ -8,7 +8,6 @@ hi-IN:
     emotional_guilt: "अगर इलाज न किया जाए, तो हाई बी पी आपके पूरे समुदाय के लिए खतरनाक हो सकता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     professional_request: "आपका डॉक्टर आपको अपने बी पी की जांच के लिए याद दिलाना चाहता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment date} को %{assigned_facility_name} आएं।"
     response: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
- 
  set02:
     basic: "हम आज आपके आने की उम्मीद कर रहे हैं। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     gratitude: "हम आज आपके आने की उम्मीद कर रहे हैं। हाई बी पी के लिए नियमित दवाएं लेने के लिए धन्यवाद। %{patient_name}, कृप्या बीपी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
