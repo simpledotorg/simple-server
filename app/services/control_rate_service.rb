@@ -1,6 +1,6 @@
 class ControlRateService
   include BustCache
-  CACHE_VERSION = 10
+  CACHE_VERSION = 11
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -93,7 +93,7 @@ class ControlRateService
     Patient
       .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.end_date)
+      .ltfu_as_of(period.end)
       .count
   end
 

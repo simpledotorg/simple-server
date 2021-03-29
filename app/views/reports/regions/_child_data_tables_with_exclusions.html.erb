@@ -140,11 +140,12 @@
           </td>
         </tr>
         <% data.each do |result| %>
+          <% child = result[:region] %>
           <% next if result.dig(:missed_visits_rate, @period).nil? %>
           <tr>
             <td class="ta-left">
-              <%= link_to(reports_region_path(result.region, report_scope: region_type)) do %>
-                <%= result.region.name %>
+              <%= link_to(reports_region_path(child, report_scope: region_type)) do %>
+                <%= child.name %>
               <% end %>
             </td>
             <td

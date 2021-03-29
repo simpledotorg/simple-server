@@ -8,7 +8,7 @@
           <% if current_admin.feature_enabled?(:report_with_exclusions) %>
             <div class="d-flex flex-1">
               <h3 class="mb-0px mr-8px">
-                BP controlled 
+                BP controlled
               </h3>
               <% if @with_ltfu %>
                 <%= render "definition_tooltip",
@@ -157,12 +157,12 @@
         <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <div class="d-flex flex-1 mb-8px">
             <h3 class="mb-0px mr-8px">
-              BP not controlled 
+              BP not controlled
             </h3>
             <%= render "definition_tooltip",
                        definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
                                       "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name) } %>
-          </div>          
+          </div>
           <p class="c-grey-dark">
             <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
           </p>
@@ -460,7 +460,7 @@
 <%= render "treatment_outcomes_card" %>
 
 <% if @children_data.any? %>
-  <%= render "child_data_tables", data: @children_data, region_type: @children.first.region_type %>
+  <%= render "child_data_tables", data: @children_data, region_type: @child_regions.first.region_type %>
 <% end %>
 
 <% if current_admin.feature_enabled?(:report_with_exclusions) %>
