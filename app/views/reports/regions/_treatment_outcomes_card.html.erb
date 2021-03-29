@@ -1,9 +1,3 @@
-<% no_assigned_patients = @data[:cumulative_assigned_patients].values&.last %>
-<% controlled_patients_no_data = !@data.last_value(:controlled_patients_rate) %>
-<% uncontrolled_patients_no_data = !@data.last_value(:uncontrolled_patients_rate) %>
-<% missed_visits_no_data = !@data.last_value(:missed_visits_rate) %>
-<% visited_without_bp_taken_no_data = !@data.last_value(:visited_without_bp_taken_rate) %>
-
 <div id="visit-details"
      data-period="<%= @period.to_s %>"
      class="mt-8px mx-0px mb-16px p-20px py-lg-20px pr-lg-20px pl-lg-0px bg-white br-4px bs-small d-lg-flex fd-lg-column
@@ -11,8 +5,8 @@
   <h3 class="mb-0px pl-20px">
     Treatment outcomes of patients under care
   </h3>
-  <% if no_assigned_patients %>
-    <div class="d-flex fd-column fd-lg-row">
+
+  <div class="d-flex fd-column fd-lg-row">
       <div class="pl-lg-12px w-lg-50 h-lg-auto h-print-12cm">
         <canvas id="missedVisitDetails"></canvas>
       </div>
@@ -23,29 +17,23 @@
                      numerator: t("missed_visits_copy.numerator"),
                      denominator: t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="rate mb-0px fs-32px fw-bold mr-lg-12px <% if missed_visits_no_data %>c-grey-medium<% else %>c-blue<% end %>"
+            <p class="rate mb-0px fs-32px fw-bold mr-lg-12px c-blue"
                data-missed-visits-rate="">
             </p>
             <div>
-              <% if missed_visits_no_data %>
-                <p class="m-0px c-grey-medium c-print-black">
-                  No missed visits data available
-                </p>
-              <% else %>
-                <p class="m-0px c-black">
-                  <span data-missed-visits-patients=""></span>
-                  patients with no visit from
-                  <span data-period-start=""></span>
-                  to
-                  <span data-period-end=""></span>
-                </p>
-                <p class="m-0px c-grey-dark c-print-black">
-                  of
-                  <span data-adjusted-registrations=""></span>
-                  patients registered till
-                  <span data-registrations-period-end=""></span>
-                </p>
-              <% end %>
+              <p class="m-0px c-black">
+                <span data-missed-visits-patients=""></span>
+                patients with no visit from
+                <span data-period-start=""></span>
+                to
+                <span data-period-end=""></span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-adjusted-registrations=""></span>
+                patients registered till
+                <span data-registrations-period-end=""></span>
+              </p>
             </div>
           </div>
         </div>
@@ -57,25 +45,19 @@
           <div class="mb-12px d-lg-flex align-lg-center">
             <p class="mb-0px fs-32px fw-bold c-grey-medium mr-lg-12px" data-visit-but-no-bp-measure-rate=""></p>
             <div>
-              <% if visited_without_bp_taken_no_data %>
-                <p class="m-0px c-grey-medium c-print-black">
-                  No BP not controlled data available
-                </p>
-              <% else %>
-                <p class="m-0px c-black">
-                  <span data-visit-but-no-bp-measure-patients=""></span>
-                  patients with a visit but no BP taken from
-                  <span data-period-start=""></span>
-                  to
-                  <span data-period-end=""></span>
-                </p>
-                <p class="m-0px c-grey-dark c-print-black">
-                  of
-                  <span data-adjusted-registrations=""></span>
-                  patients registered till
-                  <span data-registrations-period-end=""></span>
-                </p>
-              <% end %>
+              <p class="m-0px c-black">
+                <span data-visit-but-no-bp-measure-patients=""></span>
+                patients with a visit but no BP taken from
+                <span data-period-start=""></span>
+                to
+                <span data-period-end=""></span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-adjusted-registrations=""></span>
+                patients registered till
+                <span data-registrations-period-end=""></span>
+              </p>
             </div>
           </div>
         </div>
@@ -85,29 +67,23 @@
                      numerator: t("bp_not_controlled_copy.numerator"),
                      denominator: t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-print-black <% if uncontrolled_patients_no_data %>c-grey-medium<% else %>c-red<% end %>"
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-print-black c-red"
                data-uncontrolled-rate="">
             </p>
             <div>
-              <% if uncontrolled_patients_no_data %>
-                <p class="m-0px c-grey-medium c-print-black">
-                  No BP not controlled data available
-                </p>
-              <% else %>
-                <p class="m-0px c-black">
-                  <span data-uncontrolled-patients=""></span>
-                  patients with not controlled BP from
-                  <span data-period-start=""></span>
-                  to
-                  <span data-period-end=""></span>
-                </p>
-                <p class="m-0px c-grey-dark c-print-black">
-                  of
-                  <span data-adjusted-registrations=""></span>
-                  patients registered till
-                  <span data-registrations-period-end=""></span>
-                </p>
-              <% end %>
+              <p class="m-0px c-black">
+                <span data-uncontrolled-patients=""></span>
+                patients with not controlled BP from
+                <span data-period-start=""></span>
+                to
+                <span data-period-end=""></span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-adjusted-registrations=""></span>
+                patients registered till
+                <span data-registrations-period-end=""></span>
+              </p>
             </div>
           </div>
         </div>
@@ -117,29 +93,23 @@
                      numerator: t("bp_controlled_copy.numerator"),
                      denominator: t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
           <div class="mb-12px d-lg-flex align-lg-center">
-            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-print-black <% if controlled_patients_no_data %>c-grey-medium<% else %>c-green-dark<% end %>"
+            <p class="mb-0px fs-32px fw-bold mr-lg-12px c-print-black c-green-dark"
                data-controlled-rate="">
             </p>
             <div>
-              <% if controlled_patients_no_data %>
-                <p class="m-0px c-grey-medium c-print-black">
-                  No BP controlled data available
-                </p>
-              <% else %>
-                <p class="m-0px c-black">
-                  <span data-controlled-patients=""></span>
-                  patients with controlled BP from
-                  <span data-period-start=""></span>
-                  to
-                  <span data-period-end=""></span>
-                </p>
-                <p class="m-0px c-grey-dark c-print-black">
-                  of
-                  <span data-adjusted-registrations=""></span>
-                  patients registered till
-                  <span data-registrations-period-end=""></span>
-                </p>
-              <% end %>
+              <p class="m-0px c-black">
+                <span data-controlled-patients=""></span>
+                patients with controlled BP from
+                <span data-period-start=""></span>
+                to
+                <span data-period-end=""></span>
+              </p>
+              <p class="m-0px c-grey-dark c-print-black">
+                of
+                <span data-adjusted-registrations=""></span>
+                patients registered till
+                <span data-registrations-period-end=""></span>
+              </p>
             </div>
           </div>
         </div>
@@ -158,11 +128,4 @@
         <% end %>
       </div>
     </div>
-  <% else %>
-    <div class="d-flex align-center justify-center w-100pt h-200px h-lg-380px bl-1px bb-1px bl-grey-medium bb-grey-medium">
-      <p class="c-grey-medium c-print-black">
-        No data available
-      </p>
-    </div>
-  <% end %>
 </div>
