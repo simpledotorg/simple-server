@@ -3,7 +3,7 @@ class Admin::DeduplicatePatientsController < AdminController
   DUPLICATE_LIMIT = 250
 
   def show
-    authorize { current_admin.current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_organizations(:manage).any? }
 
     duplicate_patient_ids = PatientDeduplication::Strategies.identifier_match(limit: DUPLICATE_LIMIT)
     @duplicate_count = duplicate_patient_ids.count
