@@ -17,8 +17,7 @@ def with_comparable_attributes(related_entities)
 end
 
 def duplicate_records(deduped_record_ids)
-  deduped_record_ids = deduped_record_ids.is_a?(Array) ? deduped_record_ids : [deduped_record_ids]
-  DeduplicationLog.where(deduped_record_id: deduped_record_ids).flat_map(&:duplicate_records).uniq
+  DeduplicationLog.where(deduped_record_id: Array(deduped_record_ids)).flat_map(&:duplicate_records).uniq
 end
 
 describe PatientDeduplication::Deduplicator do
