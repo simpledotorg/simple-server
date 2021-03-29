@@ -5,7 +5,7 @@ class Admin::DeduplicatePatientsController < AdminController
   def show
     authorize { current_admin.power_user? }
 
-    duplicate_patient_ids = PatientDeduplication::Strategies.identifier_match(limit: DUPLICATE_LIMIT)
+    duplicate_patient_ids = PatientDeduplication::Strategies.identifier_excluding_full_name_match(limit: DUPLICATE_LIMIT)
     @duplicate_count = duplicate_patient_ids.count
     @patients = Patient.where(id: duplicate_patient_ids.sample)
   end
