@@ -5,7 +5,6 @@ module Experimentation
     validates :lookup_name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
-    validate :bucket_index_order
 
     enum state: {
       inactive: "inactive",
