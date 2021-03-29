@@ -1,6 +1,6 @@
 module Experimentation
   class Experiment < ActiveRecord::Base
-    has_many :treatment_cohorts
+    has_many :treatment_buckets
 
     validates :lookup_name, presence: true, uniqueness: true
     validates :state, presence: true

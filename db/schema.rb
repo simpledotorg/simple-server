@@ -544,10 +544,10 @@ ActiveRecord::Schema.define(version: 2021_03_25_164437) do
   create_table "reminder_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "message", null: false
     t.integer "appointment_offset", null: false
-    t.uuid "treatment_cohort_id", null: false
+    t.uuid "treatment_bucket_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["treatment_cohort_id"], name: "index_reminder_templates_on_treatment_cohort_id"
+    t.index ["treatment_bucket_id"], name: "index_reminder_templates_on_treatment_bucket_id"
   end
 
   create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
@@ -575,13 +575,13 @@ ActiveRecord::Schema.define(version: 2021_03_25_164437) do
     t.index ["requester_id"], name: "index_teleconsultations_on_requester_id"
   end
 
-  create_table "treatment_cohorts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "bucketing_index", null: false
+  create_table "treatment_buckets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "index", null: false
     t.string "description", null: false
     t.uuid "experiment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["experiment_id"], name: "index_treatment_cohorts_on_experiment_id"
+    t.index ["experiment_id"], name: "index_treatment_buckets_on_experiment_id"
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
@@ -653,12 +653,12 @@ ActiveRecord::Schema.define(version: 2021_03_25_164437) do
   add_foreign_key "patients", "patients", column: "merged_into_patient_id"
   add_foreign_key "patients", "users", column: "merged_by_user_id"
   add_foreign_key "protocol_drugs", "protocols"
-  add_foreign_key "reminder_templates", "treatment_cohorts"
+  add_foreign_key "reminder_templates", "treatment_buckets"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
-  add_foreign_key "treatment_cohorts", "experiments"
+  add_foreign_key "treatment_buckets", "experiments"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
