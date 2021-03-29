@@ -7,7 +7,7 @@ class Admin::DeduplicatePatientsController < AdminController
 
     duplicate_patient_ids = PatientDeduplication::Strategies.identifier_excluding_full_name_match(limit: DUPLICATE_LIMIT)
     @duplicate_count = duplicate_patient_ids.count
-    @patients = Patient.where(id: duplicate_patient_ids.sample)
+    @patients = Patient.where(id: duplicate_patient_ids.sample).order(recorded_at: :asc)
   end
 
   def merge
