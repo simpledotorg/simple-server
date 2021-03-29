@@ -19,15 +19,15 @@
   </div>
   <table class="table table-responsive-md table-hover">
     <thead>
-    <th>Select</th>
+      <th>Select</th>
       <th style="min-width: 150px">Full name</th>
       <th>Gender</th>
       <th>Age</th>
+      <th>Address</th>
+      <th>Phone numbers</th>
       <th>Registered on</th>
       <th>Registration facility</th>
       <th>Last visited</th>
-      <th>Address</th>
-      <th>Phone numbers</th>
     </thead>
     <tbody>
     <% @patients.each do |patient| %>
@@ -40,30 +40,31 @@
                  form="deduplicate_patients"
                  checked>
         </td>
-        <td><%= patient.full_name %></td>
-        <td><%= patient.gender.capitalize %></td>
-        <td><%= patient.current_age.to_i %></td>
-        <td><%= patient.recorded_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M %p") %></td>
-        <td><%= patient.registration_facility.name %>, <%= patient.registration_facility.block_region.name %>
-          <br>
-          <%= patient.registration_facility.region.district_region.name %>, <%= patient.registration_facility.region.state_region.name %></td>
-        <td>
-          <% if patient.latest_blood_pressure&.recorded_at.present? %>
-            <%= patient.latest_blood_pressure.facility.name %>
-            <%= rounded_time_ago_in_words(patient.latest_blood_pressure.recorded_at) %>
-          <% end %>
-        </td>
+        <td class="<%= no_difference_class(@patients.pluck(:full_name)) %>"> <%= patient.full_name %></td>
+        <td class="<%= no_difference_class(@patients.pluck(:gender)) %>"><%= patient.gender.capitalize %></td>
+        <td class="<%= no_difference_class(@patients.map(&:current_age)) %>"><%= patient.current_age.to_i %></td>
         <td>
           <%= "#{patient.address.street_address}, " if patient.address.street_address.present? %>
           <%= patient.address.village_or_colony %>
         </td>
-        <td>
+        <td class="<%= no_difference_class(@patients.map { |p| p.phone_numbers.pluck(:number) }) %>">
           <% if patient.phone_numbers.present? %>
             <% patient.phone_numbers.pluck(:number).each do |phone_number| %>
               <%= phone_number %> <br/>
             <% end %>
           <% else %>
             Not present
+          <% end %>
+        </td>
+        <td><%= patient.recorded_at.in_time_zone(Rails.application.config.country[:time_zone]).strftime("%d-%^b-%Y %I:%M %p") %></td>
+        <td class="<%= no_difference_class(@patients.map { |p| p.registration_facility.name }) %>">
+          <%= patient.registration_facility.name %>, <%= patient.registration_facility.block_region.name %>
+          <br>
+          <%= patient.registration_facility.region.district_region.name %>, <%= patient.registration_facility.region.state_region.name %></td>
+        <td>
+          <% if patient.latest_blood_pressure&.recorded_at.present? %>
+            <%= patient.latest_blood_pressure.facility.name %>
+            <%= rounded_time_ago_in_words(patient.latest_blood_pressure.recorded_at) %>
           <% end %>
         </td>
         </label>
