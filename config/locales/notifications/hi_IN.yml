@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   set01:
     basic: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     gratitude: "हाई बी पी के लिए नियमित दवाएं लेने के लिए आपका धन्यवाद। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं ।"
