@@ -6,7 +6,7 @@ class Period
 
   attr_accessor :type, :value
 
-  REGISTRATION_BUFFER_MONTHS = -3
+  REGISTRATION_BUFFER_MONTHS = 3
 
   def self.month(date)
     new(type: :month, value: date.to_date)
@@ -45,7 +45,7 @@ class Period
   end
 
   def adjusted_period
-    advance(months: REGISTRATION_BUFFER_MONTHS)
+    advance(months: -REGISTRATION_BUFFER_MONTHS)
   end
 
   # Convert this Period to a quarter period - so:

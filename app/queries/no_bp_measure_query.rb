@@ -1,7 +1,10 @@
 class NoBPMeasureQuery
+  delegate :logger, to: Rails
   delegate :sanitize_sql, to: ActiveRecord::Base
 
   def call(region, period, with_exclusions: false)
+    logger.info { "#{self.class} called for region=#{region.slug} period=#{period} with_exclusions=#{with_exclusions}" }
+
     facility_ids = region.facilities.map(&:id)
     return 0 if facility_ids.blank?
     start_time = period.blood_pressure_control_range.begin
