@@ -1,0 +1,316 @@
+so:
+  date:
+    month_names: [~, "Janaayo", "Febraayo", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoobar", "Noofember", "Diseember"]
+    abbr_month_names: [~, "Janaayo", "Febraayo", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoober", "Noofember", "Diseember"]
+  today_str: "Maanta"
+  registration: "Isduwaan Gelin Cusub"
+  reset_password: "PIN-ka Cusboonaysii"
+  login:
+    error_messages:
+      unknown_user: "Ma garanayno magacaas isticmaala. Fadlan eeg oo ku celi."
+      invalid_otp: "OTP-gaagu isma laha. Markale isku day?"
+      expired_otp: "OTP-gaagu wuu dhacay. Mid cusub dalbo."
+      invalid_password: "Baaswoodhkaaga isma laha. Mar kale isku day?"
+      account_locked: "Xisaabtaada waa la xidhay %{minutes} daqiiqo ee soo socda. Fadlan sug oo isku day mar kale."
+  sms:
+    request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
+    appointment_reminders:
+      missed_visit_sms_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
+      missed_visit_whatsapp_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
+    patient_request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta BP Passport\n%{app_signature}"
+  dashboard:
+    graphics:
+      graphics_title_html: "Maxaa ku dhacay <b>%{current_quarter_string}</b> ee %{patients_in_previous_quarter} bukaanada is duwaan geliyay intii lagu jiray <b>%{previous_quarter_string}</b>?"
+      report_name: "Warbixinta Kacsanaanta"
+      patients_controlled_in_quarter_html: "bukaanada uu boodday BP &lt;"
+      patients_uncontrolled_in_quarter_html: "bukaanada uu boodday BP &ge;"
+      patients_defaulted_in_quarter_html: "bukaanu mayna iman booqashada la socodka la filanayo"
+      new_patients_registered: "Is duwaan gelin cusub"
+      patients_called_for_followup: "La socodka bukaanka"
+  analytics:
+    page_title: "Isticmaalka Qiimaynta"
+    updated: "La cusboonaysiiyay: %{time}"
+    tap_sync: "Taabo \"Sync\" ee shaashada hore wixii macluumaad cusub ah."
+    registered: "Isduwaan geliyay"
+    follow_up: "La soco"
+    patient:
+      one: "bukaanada"
+      other: "bukaanada"
+    registered_patients: "Bukaanada duwaan gashan"
+    follow_up_patients: "La socodka bukaanka"
+    hypertension_controlled: "Kacsanaanta la xakameeyay"
+    hypertension_control_desc: "Imisa bukaan oo qaba kacsanaanta BP <140/90 3 bilood ee lasoo dhaafay?"
+    last_12_months: "12 bilood ee lasoo dhaafay"
+    achievements: "Guulaha"
+    hypertension_patients: "Bukaanada kacsan"
+    notes: "Qoraalo"
+    footer_note_1: "Macluumaadka waxaa loogu talo geley dhamaan hawsha %{facility_name}. Hadii macluumaadku uu wakhti hore ahaa, waxa aad taabataa linkga \"Sync pending\" ee shaashada hore."
+    thank_you: "Mahadsanid"
+    thank_you_note: "Waad ku mahadsan tahay dhamaan dagaalkaaga daawaynta bukaanka qaba dhiikarka. Shaqaadu waxay ka badbaadisaa nololo wadne xanuun iyo faalig."
+    definition: "Sharaxa"
+    registered_patients_desc: "Bukaanka waxaa ku duwaan geliyay Simple shaqaalaha xarunta. Bukaanka \"Xarunta uu doorbidaa\" waxay noqon kartaa xarun kasta."
+    follow_up_patients_desc: "Bukaanka qaba BP ama cabirka sonkorta dhiiga ee ay duwaan gelisay xaruntan. Tirada la socodka bukaanka kuma laha saamayn meesha uu bukaanku ka duwaan gashan yahay ama waxa ay tahay \"Xarunta Uu Doorbido\" bukaanku."
+    numerator: "La qaybiyo"
+    denominator: "Loo qaybiye"
+    hypertension_cohort_report: "Warbixinta kooxda dhiikarka"
+    hypertension_cohort_report_desc: "Warbixinaha kooxda waxaa ay muujisaa natiijada bukaanada cusub ee is duwaan geliyay ee qaba dhiikarka dhawrkooda bilood ee ugu horeeya ee daawaynta."
+    patients_with_controlled_bp: "Bukaanka booqday BP &lt;140/90"
+    patients_with_uncontrolled_bp: "Bukaanka booqday BP &ge;140/90"
+    patients_with_no_bp_measure: "Bukaanka aan qabin cabirka BP"
+    registered_in: "ka duwaan gashan"
+    result_from_last_visit_in: "Natiijada booqashada ugu danbaysa"
+    no_patients: "Tirada bukaanka"
+    cohort_report_footnote_1: "Booqashooyinka la socodka ee ugu danbeeyay ee <em>xarun kasta</em> sadex bilood kadib is duwaan galinta."
+    cohort_report_footnote_2: "Dhamaan bukaanka qaba dhiikarka ee lagu qoray xaruntan, is qoray sadex bilood. Dhintay oo laga waayay bukaanka la socodka waa laga saaray."
+    cohort_report_footnote_3: "Hadii bukaanku uu leeyahay booqashooyin badan, waxaa loo isticmaalayaa BP ga ugu danbeeya si loo xisaabiyo BP ga xamayntiisa."
+    all_hypertension_and_diabetes: "Dhamaan dhiigarka iyo macaanka"
+    hypertension_controlled_numerator: "Bukaanka qabay BP <140/90 booqashadoodii ugu danbeeya ee<em>xarun kasta</em> 3 bilood ee lasoo dhaafay"
+    hypertension_controlled_denominator: "Bukaanka dhiikarka ee lagu qoray xaruntan, duwaan gashanaa wixii ka horeeyay 3 bilood ee u danbeeyay. Dhintay oo laga waayay bukaanka la socodka waa laga saaray."
+    hypertension: "Dhiikar"
+    diabetes: "Macaan"
+    all_time: "Wakhti kastaa"
+    genders:
+      all: "Dhamaan"
+      female: "Dhedig"
+      male: "Lab"
+      transgender: "Jinsiga Badalay"
+  help:
+    menu:
+      videos: Fiidyawyo
+      start: 1. Bilawga
+      register: 2. Duwaan gelinta bukaanka
+      search: 3. Hel bukaanka saxda ah
+      record: 4. Duwaanka booqashada bukaanka
+      overdue: 5. La hadal bukaanka mudadu ka dhaaftay
+      faq: Su'aalaha caamka ah
+    support:
+      heading: Dalbo kaalmo
+      contents: "Hadii aad qabto mushkilad ama su'aalo, fadlan waxa aad riixdaa badhanka si aad u hesho taageerada kooxdeena. Kooxdeena soo dhawaynta leh ayaa ku caawin doona."
+    bp_passport_app_summary:
+      new: CUSUB!
+      heading: App-ka bukaanadaada
+      contents_1: Bukaanadu waxay iminka ku duwaan gelin kartaa BP-gooda iyo sonkorta dhiigooda app fudud oo loo yaqaan app-ka "BP Passport".
+      contents_2: Ka dalbo bukaankaaga inuu qabto Google Play Store ama Apple App Store oo uu ku shubto app-ka "BP Passport".
+      learn_more: Wax ka badan ka oggow...
+    videos:
+      heading: Fiidyawyo tobobar ah
+      class:
+        heading: Qaado fasalka
+        contents: Daawo fasalka si aad u barato isticmaalka Simple.
+        training_videos_link: "Tobobar: Dhamaan Cutubyada"
+        training_videos_subtitle: "Qoraalka hoose ee Ingiriisiga Hindiga lagu turjubay 36:15"
+      chapters:
+        heading: Cutubyada fasalka
+        chapter_1: "1. Ku shub app-ka"
+        chapter_2: "2: Hordhac"
+        chapter_3: "3: Duwaan gelinta bukaanka"
+        chapter_4: "4: Baadhitaanka la socodka bukaanka"
+        chapter_5: "5: Hel bukaanka saxda ah"
+        chapter_6: "6: La hadal bukaanka mudadu ka dhaaftay"
+        chapter_7: "7: Waxyaabo muhiim ah oo uu leeyahay"
+        chapter_8: "8: Su'aalaha badanaa la iska waydiiyo (FAQ)"
+        chapter_9: "9: Sida loo heleyo kaalmo"
+        chapter_10: "10: Bilawga isticmaalka Simple"
+      teleconsultation:
+        heading: Tobobarka wada tashiga taleefanka
+        contents: "Hadii uu isticmaalkaagu u isticmaalo wada tashiga taleefanka Simple, tobobarkan adiga ayaa markaa laguugu talo geley."
+        english_video_link: Wada tashiga taleefanka iyada oo la isticmaalayao Simple
+        english_video_link_language: Ingiriisi
+        hindi_video_link: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_video_link_language: Hindi
+      bp_passports:
+        heading: BP Passports
+        contents: Baro sida loo isticmaalo kaadhadhka BP Passports ama waraaqaha dhajiska BP Passports ee isbitaalkaaga.
+        video_link: Sida loo isticmaalo BP Passports
+        video_link_subtitle: Qoraalka hoose ee Ingiriisiga Hindiga lagu turjubay
+      film:
+        heading: Fillinka Simple
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Nolosha maalin ee Simple"</a> waxaa weeye filin gaaban oo muujinaya sida kaaliya caafimaad ee Bunjaab, Hindiya, ee isticmaala Simple si uu ugu daweeyo bukaanka qaba dhiikarka.'
+    start:
+      heading: Bilaabida
+      getting_started_video:
+        heading: Daawo fiidyaw
+        contents: Ku baro waxyaabaha aas aasiga ah ee Simple 5 daqiiqo gudaheed.
+      who_to_record:
+        heading: "Yaa ku duwaan geliya Simple?"
+        contents_1_html: Isticmaal Simple si aad u duwaan geliso <i>qof kasta oo qaba dhiikar</i> ama qaadanaya dawooyinka BP kacsan.
+        contents_2: Marka uu bukaanku kusoo laabto baadhitaanka la socodka ee isla bukaanka oo BP-ga cusub geli.
+      step_1:
+        label: Talaabada 1
+        heading: Qaab BP-ga bukaanka
+        contents: "Qaad BP-da saxda ah: cagaha dhulka yaal, ku noqo kursiga, lama qaadanayo."
+      step_2:
+        label: Talaabada 2
+        heading: Ku qor BP Passports
+        contents: "Hadii aad leedahay BP Passports, ku qor magaca bukaanka. Kadibna, sawir adiga oo isticmaalaya app-ka Simple."
+      step_3:
+        label: Talaabada 3
+        heading: Bukaanka duwaanka gashan
+        contents: "Hadii uu cusub yahay, duwaan geli bukaanka."
+      step_4:
+        label: Talaabada 4
+        heading: Geli BP-ga Simple
+        contents_html: <i>Lambarka ugu dhaw ha ku qorin</i> akhriska BP.
+      step_5:
+        label: Talaabada 5
+        heading: Geli dawooyinka
+        contents: Geli dawooyinka dhiikarka wakhtigan ee bukaanka.
+      step_6:
+        label: Talaabada 6
+        heading: Kaydi bukaanka
+        contents_html: "Guji <span class=\"code\">SAVE</span> oo u qabo balanta booqashada xigta bukaanka. Ku qor taariikhda BP Passport."
+      missed_visit:
+        label: Booqashada laga maqnaaday
+        heading: "Maxaa xiga?"
+        contents: "Hadii uu bukaanku ka maqnaado booqashadiisa, Simple waxay uu u diri doonaa fariin qoraal ah oo uu ku xasuusinayo intii soo laabto."
+      tip:
+        heading: Tilmaamo
+        contents: "Mar kasta waa inaad ku duwaan geliso bukaanada xarunta saxda ah. Shaashada hore, mar kasta waxa aad ka eegtaa xarunta xaga sare."
+    register:
+      heading: Duwaan geli bukaan
+      contents: "Waxaa jira laba dariiqo oo loo duwaan geliyo bukaanka cusub:"
+      option_1:
+        label: Ikhtiyaar 1
+        heading: Hadi aad leedahay BP Passports
+        step_1: Riix badhankan ku yaal shaashada hore
+        step_2_html: Qaado BP Passports <i>madhan</i> oo sawir koodhka QR.
+        step_3: Baadh magaca sadexan ee bukaanka
+        step_4_html: "Hadii aanad bukaanka ku arag natiijada baadhitaanka <span class=\"code\">U diwaan geli bukaan cusub ahaan.</span>."
+        step_5: Buuxi foomka duwaan gelinta.
+        step_6: La hadal bukaankaaga oo kadibna buuxi taariikhda caafimaadka.
+        step_7_html: "Duwaanka booqashada bukaanka, riix <span class=\"code\">Kaydi</span>."
+      option_2:
+        label: Ikhtiyaar 2
+        heading_html: Hadii <i>aanad</i> lahayn BP Passports
+        step_1_html: "Riix <span class=\"code\">Geli magaca bukaanka"
+        step_2: Geli magaca bukaanka oo sadexan.
+        step_3_html: "Hadii aanad bukaanka ku arag natiijada baadhitaanka <span class=\"code\">U diwaan geli bukaan cusub ahaan.</span>."
+        step_4: Buuxi foomka duwaan gelinta.
+        step_5: La hadal bukaankaaga oo kadibna buuxi taariikhda caafimaadka.
+        step_6_html: "Duwaanka booqashada bukaanka, riix <span class=\"code\">Kaydi</span>."
+      tips:
+        heading: Tilmaamo
+        tip_1: "Mar kasta waa inaad ku duwaan geliso bukaanada xarunta saxda ah. Shaashada hore, mar kasta waxa aad ka eegtaa xarunta xaga sare."
+        tip_2: Geli lambarka mobile-ka hadii aad karto!
+        tip_3: "Hadii aanad heli karin la socodka bukaanka, waa caadi inaad u duwaan geliso bukaan cusub ahaan."
+        tip_4: "Hadii bukaanku uu waayo BP Passport, fadlan sii mid cuusb. Bukaanku waxa uu yeelan karaa dhawr BP Passport, waxay dhamaan u shaqayn doonaan si sax ah."
+    search:
+      heading: Hel bukaanka saxda ah
+      find_patient:
+        heading: Sida loo helo bukaano
+        contents: "Marka aad bukaanka ku baadhayso magaca ama lambarka mobile-ka, waxaa muhiim ah in la dooro bukaanka saxda ah."
+      choose_patient:
+        heading_html: Dooro bukaanka <i>saxda</i> ah
+        contents_1: "Natiijada baadhitaanka, waxaa muhiim ah in laga doorbo bukaanka saxda ah. Mar kasta eeg:"
+        check_item_1_html: "<span class=\"code\">Magucu</span> wuu is leeyahay"
+        check_item_2_html: "<span class=\"code\">Da'du</span> way saxan tahay"
+        check_item_3_html: "<span class=\"code\">Cinwaanku</span> waa meesha uu bukaanku degan yahay"
+        check_item_4_html: "<span class=\"code\">Lambarka mobile-ku</span> wuu is leeyahay"
+        check_item_5_html: "<span class=\"code\">Taariikhda ugu danbeysay booqashadu</span> waxaa weeye maalinta bukaanku uu booqday isbitaalka."
+        contents_2: "Hadii bukaanka aan laga helin liiska bukaanada marka la baadho, fadlan u duwaan geli bukaan cusub ahaan."
+      tip:
+        heading: Tilmaamo
+        contents: "Hadii iskaanarka BP Passport aanu shaqaynaynin, waxa aad weli ku qori kartaa lambarka BP Passport Simple isla shaashada aad ku sawirto."
+    record:
+      heading: Duwaanka booqashada bukaanka
+      find_patient:
+        heading: "Marka kowaad, hel bukaanka"
+        contents: "Waxa aad u heli kartaa bukaanka laba dariiqo: sawir BP Passport-kiisa ama ku baadh bukaanka magaca ama lambarka mobile-ka."
+      record_info:
+        heading: Duwaanka BP iyo dawooyinka
+        step_1_html: "Shaashada guudmarka bukaanka, riix  <span class=\"code\">+&nbsp; Dhiikar</span>"
+        step_2: "Kadibna, ku dar dawooyinka dhiikarka bukaanka."
+        step_3_html: "Dooro dawada saxada ah iyo inta laga qaadanayo. Si aad dawada uga saarto, taabo xadiga oo dooro<span class=\"code\">Waxba</span>"
+        step_4_html: "Riix <span class=\"code\">Save</span> oo dooro taariikhda booqashada xigta. Ikhtiyaar: Waxa aad badali kartaa halka uu bukaanku booqanayo ee xigta adiga oo riixaya 'Change' hoos ee xarunta wakhtigan ee bukaanka."
+        step_5: Dhameeyay. Bukaanka booqashadiisa waa la kaydiyay.
+      medicine_refills:
+        heading: Dib qaadashada dawada
+        contents: "Hadii aad dib u qaadayso dawada wakhtigan ee bukaanka:"
+        step_1_html: "Shaashada guudmarka bukaanka, riix <span class=\"code\">+ Medicines</span>"
+        step_2_html: "Riix <span class=\"code\">Refill medicines</span>"
+        step_3: Dhameeyay!
+        english_video_link: Sida dib loogu qaado bukaanka dawooyinka
+        english_video_link_language: Ingiriisi
+        hindi_video_link: Sida dib loogu qaado bukaanka dawooyinka
+        hindi_video_link_language: Hindi
+      tips:
+        heading: Tilmaamo
+        tip_1_html: "Waxa aad dooran kartaa taariikhda xigta ee booqashada ee taariikhda ku taal adiga oo taabanaya<span class=\"code\">CHANGE</span> marka aad qabsanayso balanta."
+        tip_2_html: "Hadii aad doorato <span class=\"code\">MAYA IMINKA</span>, bukaanka uma qabanaysid balanta booqashada."
+        tip_3_html: "Waxa aad gelin kartaa BP booqashadii hore. U geli BP sida caadiga ah oo  <span class=\"code\">BADAL</span> taariikhda."
+    overdue:
+      heading: La hadal bukaanka mudadu ka dhaaftay
+      what_is_overdue:
+        heading: "Waa maxay \"Mudo dhaafin\"?"
+        contents_1: Bukaanku dhaafiyay mudadu waxaa weeye hadii aanad ku haynin duwaanka BP-ga taariikhda booqashadii ugu danbaysay.
+        contents_2: "Bukaanka xaga sare kaga jiira liisa bukaanada dhaafay wakhtiga, waxaa weeye kuwa ugu muhiimsan. Waxa aad bilawdaa inaad la hadasho bukaanka ugu sareeya liiska inta mudada soo dhaaftay."
+      calling:
+        heading: La hadalka bukaanka
+        contents_html: "Waxa aad la hadashaa bukaanka adiga oo gujinaya badhanka calaamada taleefanka. Waxa aad arki kartaa laba ikhtiyaar: <span class=\"code\">Taleefan caadi ah</span> iyo <span class=\"code\">Taleefan amaan ah</span>. Taleefanka \"Amaanka\" ah waxaa weeye bilaash oo waxa uu ka qarinayaa bukaanka lambarkaaga."
+      result_of_call:
+        heading: Calaamadi "natiijada taleefanka"
+        contents: "Fadlan calaamadi natiijada taleefanka kasta oo aad dirtay. Riix kaadhka bukaanka si aad u aragtid ikhtiyaarada soo socda:"
+        agreed_to_visit_html: "<span class=\"code\">Ogolaaday booqashada</span> hadii bukaanku uu kuu sheego inay u imanayaan booqashada la socodka."
+        remind_to_call_later_html: "<span class=\"code\">Xasuusinta inaad hadhaw la hadasho...</span> hadii aanu bukaanku sheegin wakhtiga ay u iman karaan booqashada la socodka ama aanu qaban taleefanka."
+        remove_from_overdue_list:
+          contents_html: "<span class=\"code\">Ka saar liiska dadka mudada dhaajiyay</span> hadii:"
+          condition_1: Bukaanku uu hore u booqday
+          condition_2: Bukaanku aanu ka jawaabin
+          condition_3: Lambarka taleefanku aanu shaqaynaynin
+          condition_4: U wareeji xarun kale
+          condition_5: U wareeji xarun caafimaad oo gaar loo leeyahay
+          condition_6: Dhintay
+    faq:
+      heading: Su'aalaha caamka ah
+      app_crash_question: "Maxaan samaynayaa hadii uu shaqayn waayo app-kaygu?"
+      app_crash_answer_html: "Marka hore waxa aad isku daydaa inaad dib u shido aaladaada. Hadii Simple uu shaqayn waayo oo aad hagaajina kari waydi, fadlan waxa aad qabataa shaashada <span class=\"help\">Help</span> oo la xidhiidh horjoogaha kooxda ama kooxdeena."
+      scan_not_working_question: "Iskaankii ayaan shaqaynaynin. Maxaan samaynayaa?"
+      scan_not_working_answer: "Geli lambarka BP Passport xaga hoose ee shaashada. Hadii mushkiladu ay sii jirto, dib u shid taleefanka. Hadii aanu weli shaqaynin, la xidhiidh horjoogahaaga."
+      udpate_app_question: "Sidee ayaan u cusboonaysiinayaa app-ka?"
+      udpate_app_answer_html: "Cusboonaysii app-ka adiga oo riixaya astaanka buuxinta oo kadibna gujinaya<span class=\"code\">Update</span>. Waa muhiim inuu kuugu jiro noocii ugu danbeeyay ee Simple aaladaada."
+      cant_find_followup_question: Waan waayay la socodka bukaanka
+      cant_find_followup_answer: "Mararka qaar way adag tahay in la helo la socodka bukaanka marka ayna lahayn BP Passport. Hadii, 5 daqiiqo kadib, aad waydo bukaanka, waxa aad u duwaan gelisaa bukaan cusub ahaan. Waa macquul in la isku daro duwaanka bukaanka mardanbe."
+      two_bp_passports_question: "Miyuu bukaanku yeelan karaa 2 BP Passport?"
+      two_bp_passports_answer: Haa. Bukaanku waxa uu yeelan karaa dhawr BP Passport. Dhamaan way u wada shaqaynayaan.
+      no_more_bp_passports_question: Waxa iga dhamaaday BP Passport.
+      no_more_bp_passports_answer_html: "Fadlan u sheeg horjoogahaaga inuu dalbado BP Passport, kahor inta ayna idinka dhamaan. Xasuusnaw, waxa aad ku duwaan gelin kartaa bukaanka xataa hadii aanay haysan BP Passport &#8212; waxa aad ku qori kartaa BP Passport mar danbe."
+      what_is_sync_question: "Waa maxay \"sync\"?"
+      what_is_sync_answer: "\"Sync\" waxa uu ku kaydiyaa macluumaadka serferka dhexe. Fadlan waxa aad xaqiijisaa in macluumaadkaagu uu ugu yaraan hal mar maalintii kaydsanto. Hadii aanad haysan internet wanaagsan, macluumaadkaagu waxay qaadan kartaa mudo inay sync garaysanto."
+      data_usage_question: "Internet intee le'eg ayuu isticmaalaa Simple?"
+      data_usage_answer: Simple waxa uu isticmaalaa internet yar. Celcelis ahaan 20 MB ayuu isticmaalaa bishii.
+      access_my_info_question: "Simple ma geli karaa macluumaadkayga?"
+      access_my_info_answer: Simple ma galo wax macluumaadka shakhsi ahaaneed ee taleefanka ama taableetkaaga ku jira.
+    bp_passport_app:
+      heading: BP Passport app
+      features:
+        heading: App bilaash ah oo bukaanka loogu talo geley
+        contents: "Bukaanka waxa ay sawiri karaan BP Passport warqada ah oo app-ku waxa uu muujinayaa cabirka wakhtigan iyo dawooyinka aad ku dartay isbitaalkaaga ama xaruntaada caafimaadku, oo aad ka arkaydaa taleefankaaga."
+        feature_1: Shaxda BP
+        feature_2: Shaxda sonkorta dhiiga
+        feature_3: Xasuusinta qaadashada dawooyinka
+        feature_4: Talada caafimaad
+        feature_5: "Bilaash, malaha xayaysiis"
+        learn_more: "Wax badan ka baro"
+      platforms:
+        headings: Apple iyo Android
+        contents_html: "U sheeg bukaankaaga inuu samaysto app-ka isaga oo ka baadhaya <span class=\"code\">BP Passsport</span> Google Play Store ama Apple App Store."
+        apple_app_store: Apple App Store
+        google_play_store: Google Play Store
+      languages:
+        heading: Luuqado
+        contents: "App-ka BP Passport waxaa lagu heli karaa:"
+        language_amharic: Amharic
+        language_bengali: Bengali
+        language_english: Ingiriisi
+        language_french: Faransiis
+        language_hindi: Hindi
+        language_kannada: Kannada
+        language_marathi: Marathi
+        language_oromo: Oromo
+        language_punjabi: Punjabi
+        language_spanish: Isbaanish
+        language_tamil: Tamil
+        language_telugu: Telugu
+        language_tigrinya: Tigrinya
+    privacy_policy: Xeerka Sirta
+    terms_of_service: Shuruudaha Adeega
