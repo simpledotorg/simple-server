@@ -7,9 +7,9 @@ module Experimentation
     validates :experiment_type, presence: true
 
     enum state: {
-      inactive: "inactive",
-      active_selection: "active_selection",
-      active_preselected: "active_preselected"
+      new: "new",
+      ongoing: "ongoing",
+      complete: "complete"
     }, _prefix: true
     enum experiment_type: {
       current_patient_reminder: "current_patient_reminder",
