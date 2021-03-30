@@ -1,14 +1,14 @@
 require "rails_helper"
-require Rails.root.join('db/data/20210330105500_move_deduplication_tracking_from_patient_to_dedup_log')
+require Rails.root.join("db/data/20210330105500_move_deduplication_tracking_from_patient_to_dedup_log")
 
 RSpec.describe MoveDeduplicationTrackingFromPatientToDedupLog do
   it "copies over dedupe tracking information from Patient to DeduplicationLog" do
     deduped_patient = create(:patient)
     dedupe_time = Time.current
     deleted_patient = create(:patient,
-                             merged_into_patient: deduped_patient,
-                             merged_by_user: deduped_patient.registration_user,
-                             deleted_at: dedupe_time)
+      merged_into_patient: deduped_patient,
+      merged_by_user: deduped_patient.registration_user,
+      deleted_at: dedupe_time)
 
     described_class.new.up
     dedup_log = DeduplicationLog.first
