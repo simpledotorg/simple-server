@@ -1,6 +1,6 @@
 module Experimentation
   class ReminderTemplate < ActiveRecord::Base
-    belongs_to :treatment_bucket
+    belongs_to :treatment_group
     has_many :appointment_reminders
 
     validates :message, presence: true

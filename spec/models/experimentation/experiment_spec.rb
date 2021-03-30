@@ -4,7 +4,7 @@ RSpec.describe Experimentation::Experiment, type: :model do
   let(:experiment) { create(:experiment) }
 
   describe "associations" do
-    it { should have_many(:treatment_buckets) }
+    it { should have_many(:treatment_groups) }
   end
 
   describe "validations" do

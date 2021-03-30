@@ -1,9 +1,11 @@
 require "rails_helper"
 
-RSpec.describe Experimentation::TreatmentBucket, type: :model do
+RSpec.describe Experimentation::TreatmentGroup, type: :model do
   describe "associations" do
     it { should belong_to(:experiment) }
     it { should have_many(:reminder_templates) }
+    it { should have_many(:treatment_group_memberships) }
+    it { should have_many(:patients).through(:treatment_group_memberships) }
   end
 
   describe "validations" do
@@ -12,10 +14,10 @@ RSpec.describe Experimentation::TreatmentBucket, type: :model do
     it { should validate_numericality_of(:index) }
 
     it "does not allow indexes less than zero" do
-      bucket = build(:treatment_bucket, index: -1)
-      expect(bucket.valid?).to eq(false)
-      bucket.index = 0
-      expect(bucket.valid?).to eq(true)
+      group = build(:treatment_group, index: -1)
+      expect(group.valid?).to eq(false)
+      group.index = 0
+      expect(group.valid?).to eq(true)
     end
   end
 end

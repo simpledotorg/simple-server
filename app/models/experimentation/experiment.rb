@@ -1,6 +1,7 @@
 module Experimentation
   class Experiment < ActiveRecord::Base
-    has_many :treatment_buckets
+    has_many :treatment_groups
+    has_many :patients, through: :treatment_groups
 
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true

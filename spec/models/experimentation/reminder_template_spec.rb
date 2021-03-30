@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Experimentation::ReminderTemplate, type: :model do
   describe "associations" do
-    it { should belong_to(:treatment_bucket) }
+    it { should belong_to(:treatment_group) }
     it { should have_many(:appointment_reminders) }
   end
 
