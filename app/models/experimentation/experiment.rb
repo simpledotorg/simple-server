@@ -9,7 +9,8 @@ module Experimentation
 
     enum state: {
       new: "new",
-      ongoing: "ongoing",
+      selecting: "selecting",
+      live: "live",
       complete: "complete"
     }, _prefix: true
     enum experiment_type: {
