@@ -13,14 +13,16 @@ module PatientDeduplication
           .map(&:patient_ids)
       end
 
-      # Exact match of just identifiers
-      def identifier_match(limit: nil)
+      # Exact match of just identifiers, excluding exact name matches
+      def identifier_excluding_full_name_match(limit: nil)
         matches = PatientBusinessIdentifier
           .select("identifier, array_agg(patient_id) as patient_ids")
+          .joins(:patient)
           .where.not(identifier: "")
           .where(identifier_type: simple_bp_passport)
           .group("identifier")
           .having("COUNT(distinct patient_id) > 1")
+          .having("COUNT(distinct lower(full_name)) > 1")
 
         matches = matches.limit(limit) if limit.present?
         matches.map(&:patient_ids)
