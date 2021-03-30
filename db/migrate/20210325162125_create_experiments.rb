@@ -1,7 +1,7 @@
 class CreateExperiments < ActiveRecord::Migration[5.2]
   def change
     create_table :experiments, id: :uuid do |t|
-      t.string :lookup_name, null: false
+      t.string :name, null: false
       t.string :state, null: false
       t.string :experiment_type, null: false
       t.date :start_date, null: true
@@ -9,6 +9,6 @@ class CreateExperiments < ActiveRecord::Migration[5.2]
       t.timestamps null: false
     end
 
-    add_index :experiments, :lookup_name, unique: true
+    add_index :experiments, :name, unique: true
   end
 end
