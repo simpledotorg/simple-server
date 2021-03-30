@@ -3,7 +3,7 @@ class Admin::DeduplicatePatientsController < AdminController
   DUPLICATE_LIMIT = 250
 
   def show
-    authorize { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_facilities(:manage).any? }
 
     duplicate_patient_ids =
       PatientDeduplication::Strategies.identifier_excluding_full_name_match(
@@ -15,7 +15,7 @@ class Admin::DeduplicatePatientsController < AdminController
   end
 
   def merge
-    authorize { current_admin.accessible_organizations(:manage).any? }
+    authorize { current_admin.accessible_facilities(:manage).any? }
 
     duplicate_patients = Patient.where(id: params[:duplicate_patients])
     deduplicator = PatientDeduplication::Deduplicator.new(duplicate_patients, user: current_admin)

@@ -26,7 +26,7 @@ module PatientDeduplication
           .where(identifier_type: simple_bp_passport)
           .group("identifier")
           .having("COUNT(distinct patient_id) > 1")
-          .having(sanitize_sql(["array_agg(patients.registration_facility_id)::text[] && ARRAY[?]", facilities.pluck(:id)]))
+          .having(sanitize_sql(["array_agg(patients.registration_facility_id)::text[] && ARRAY[?]", facilities.to_a.pluck(:id)]))
           .having("COUNT(distinct lower(full_name)) > 1")
 
         matches = matches.limit(limit) if limit.present?
