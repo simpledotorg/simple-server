@@ -96,7 +96,7 @@ module Reports
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_registration_counts
-      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
+      items = regions.map { |region| RegionEntry.new(region, :complete_registration_counts, with_exclusions: with_exclusions) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
         RegisteredPatientsQuery.new.count(entry.region, :month)
       }
