@@ -17,5 +17,10 @@ module Experimentation
       current_patient_reminder: "current_patient_reminder",
       stale_patient_reminder: "stale_patient_reminder"
     }, _prefix: true
+
+    def group_for(uuid)
+      hash = Zlib.crc32(uuid) % treatment_groups.length
+      treatment_groups.find_by(index: hash)
+    end
   end
 end
