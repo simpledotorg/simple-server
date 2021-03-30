@@ -56,12 +56,17 @@ RSpec.describe Reports::RegionService, type: :model do
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
       create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
-      service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
+      service = Reports::RegionService.new(region: facility, period: july_2020.to_period, with_exclusions: true)
       result = service.call
+      expect(result[:missed_visits_with_ltfu].size).to eq(service.range.entries.size)
+      expect(result[:missed_visits_with_ltfu][Period.month("August 1 2018")]).to eq(1)
+      expect(result[:missed_visits_with_ltfu][jan_2020.to_period]).to eq(1)
+      expect(result[:missed_visits_with_ltfu][Period.month("April 1 2020")]).to eq(3)
+
       expect(result[:missed_visits].size).to eq(service.range.entries.size)
-      expect(result[:missed_visits][Period.month("August 1 2018")]).to eq(1)
-      expect(result[:missed_visits][jan_2020.to_period]).to eq(1)
-      expect(result[:missed_visits][Period.month("April 1 2020")]).to eq(4)
+      expect(result[:missed_visits][Period.month("August 1 2018")]).to eq(0)
+      expect(result[:missed_visits][jan_2020.to_period]).to eq(0)
+      expect(result[:missed_visits][Period.month("April 1 2020")]).to eq(2)
     end
   end
 
