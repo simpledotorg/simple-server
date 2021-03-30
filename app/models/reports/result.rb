@@ -79,15 +79,6 @@ module Reports
       end
     end
 
-    def fill_in_nil_registrations
-      registrations.default = 0
-      assigned_patients.default = 0
-      full_data_range.each do |period|
-        registrations[period] ||= 0
-        assigned_patients[period] ||= 0
-      end
-    end
-
     def to_s
       "#{self.class} #{object_id} region=#{@region.name} period_type=#{period_type}"
     end
@@ -133,31 +124,6 @@ module Reports
       define_method("#{key}_for!") do |period|
         self[key].fetch(period) { raise ArgumentError, "no data found for #{period} for #{key}" }
       end
-    end
-
-    # Adjusted patient counts are the cumulative patient counts (with exclusions) as of three months ago.
-    # We use these for all the percentage calculations to exclude recently registered patients.
-    def count_adjusted_patient_counts_with_ltfu
-      adjusted_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
-        adjusted_period = period.advance(months: -3)
-        counts[period] = assigned_patients[adjusted_period]
-      }
-
-      self.adjusted_patient_counts_with_ltfu = running_totals(adjusted_counts)
-    end
-
-    def count_adjusted_patient_counts
-      self.adjusted_patient_counts = full_data_range.each_with_object(Hash.new(0)) do |period, running_totals|
-        running_totals[period] = adjusted_patient_counts_with_ltfu[period] - ltfu_patients[period]
-      end
-    end
-
-    def count_cumulative_assigned_patients
-      self.cumulative_assigned_patients = running_totals(assigned_patients)
-    end
-
-    def count_cumulative_registrations
-      self.cumulative_registrations = running_totals(registrations)
     end
 
     # "Missed visits" is the remaining patients when we subtract out the other three groups.
