@@ -4,10 +4,10 @@
            onChange="this.form.submit()"
            name="with_ltfu"
            class="custom-control-input"
-           id="controlGraphltfuSwitch"
+           id="<%= id %>"
            <% if enabled %>checked<% end %>>
     <label class="font-weight-normal custom-control-label <% unless enabled %>c-grey-dark<% end %>"
-           for="controlGraphltfuSwitch">
+           for="<%= id %>">
       Include LTFU
     </label>
   </form>
