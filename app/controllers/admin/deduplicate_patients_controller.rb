@@ -5,7 +5,11 @@ class Admin::DeduplicatePatientsController < AdminController
   def show
     authorize { current_admin.accessible_organizations(:manage).any? }
 
-    duplicate_patient_ids = PatientDeduplication::Strategies.identifier_excluding_full_name_match(limit: DUPLICATE_LIMIT)
+    duplicate_patient_ids =
+      PatientDeduplication::Strategies.identifier_excluding_full_name_match(
+        limit: DUPLICATE_LIMIT,
+        facilities: current_admin.accessible_facilities(:manage)
+      )
     @duplicate_count = duplicate_patient_ids.count
     @patients = Patient.where(id: duplicate_patient_ids.sample).order(recorded_at: :asc)
   end

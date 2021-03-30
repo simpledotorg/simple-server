@@ -40,7 +40,7 @@ RSpec.describe PatientDeduplication::Strategies do
     end
   end
 
-  describe "#identifier_match" do
+  describe "#identifier_excluding_full_name_match" do
     it "finds patients with the same identifier without matching names" do
       patient_1 = create(:patient, full_name: "Patient one")
       passport_id = patient_1.business_identifiers.first.identifier
@@ -78,6 +78,20 @@ RSpec.describe PatientDeduplication::Strategies do
 
       expect(described_class.identifier_excluding_full_name_match(limit: 1).count).to eq 1
       expect(described_class.identifier_excluding_full_name_match.count).to eq 2
+    end
+
+    it "scopes results to facilities" do
+      patient = create(:patient, full_name: "Patient one")
+      patient_passport_id = patient.business_identifiers.first.identifier
+
+      patient_dup = create(:patient, full_name: "Patient one dup")
+      patient_dup.business_identifiers.first.update(identifier: patient_passport_id)
+
+      other_facility = create(:facility)
+
+      expect(described_class.identifier_excluding_full_name_match(facilities: [patient.registration_facility]).count).to eq 1
+      expect(described_class.identifier_excluding_full_name_match(facilities: [patient_dup.registration_facility]).count).to eq 1
+      expect(described_class.identifier_excluding_full_name_match(facilities: [other_facility]).count).to eq 0
     end
   end
 end
