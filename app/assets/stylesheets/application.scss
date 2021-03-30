@@ -169,6 +169,7 @@ nav.secondary-nav a.active {
 .tooltip-inner {
     font-family: $font-condensed;
     padding: 6px 8px;
+    max-width: 200px;
 }
 
 #app-footer {
