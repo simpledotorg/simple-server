@@ -247,7 +247,7 @@ Reports = function (withLtfu) {
   this.setupMissedVisitsGraph = (data) => {
     const adjustedPatients = withLtfu ? data.adjustedPatientCountsWithLtfu : data.adjustedPatientCounts;
     const missedVisitsGraphNumerator = data.missedVisits;
-    const missedVisitsGraphRate = withLtfu ? data.controlWithLtfuRate : data.controlRate;
+    const missedVisitsGraphRate = withLtfu ? data.missedVisitsWithLtfuRate : data.missedVisitsRate;
 
     const missedVisitsConfig = this.createBaseGraphConfig();
     missedVisitsConfig.data = {
