@@ -37,11 +37,14 @@
     <main role="main" class="container pb-5">
       <% flash.each do |type, message| %>
         <% next unless message.is_a? String %>
-        <div class="<% if !email_authentication_signed_in? %>col-md-6 mx-auto<% end %> alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
-          <%= message %>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
-          </button>
+
+        <div class="<%= "col-md-6" unless email_authentication_signed_in? %> mx-auto">
+          <div class="mb-4 alert <%= bootstrap_class_for_flash(type) %> alert-dismissable fade show">
+            <%= message %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <i class="fas fa-times" style="font-size: 85%; position: relative; bottom: 2px;"></i>
+            </button>
+          </div>
         </div>
       <% end %>
       <%= content_for?(:content) ? yield(:content) : yield %>

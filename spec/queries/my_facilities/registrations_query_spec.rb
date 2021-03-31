@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MyFacilities::RegistrationsQuery do
+RSpec.describe RegistrationsQuery do
   context "Registrations queries" do
     describe "#total_registrations" do
       let!(:registrations_query) { described_class.new }

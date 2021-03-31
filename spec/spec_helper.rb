@@ -8,7 +8,6 @@ WebMock.allow_net_connect!
 
 RSpec.configure do |config|
   SimpleCov.start if ENV["CI"]
-
   config.include FlipperHelpers
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true
@@ -20,6 +19,12 @@ RSpec.configure do |config|
     render_views if ENV["CI"]
   end
 
+  if ENV["CI"]
+    config.before(:example, :focus) do
+      fail "This example was committed to CI with `:focus` turned on. Please remove any focus specs to make sure all tests run on CI"
+    end
+  end
+
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
@@ -29,14 +34,4 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
-
-  config.before(:each) do
-    Rails.cache.clear
-    RequestStore.clear!
-  end
-
-  config.before :all do
-    # create a root region and persist across all tests (the root region is effectively a singleton)
-    Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
-  end
 end

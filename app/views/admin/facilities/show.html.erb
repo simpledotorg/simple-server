@@ -46,7 +46,9 @@
   <div class="col-md-3 d-flex">
     <div class="card flex-fill">
       <h3>Facility type &amp; size</h3>
-      <%= @facility.facility_type || "(No type set)" %> (<%= @facility.facility_size&.capitalize || "No size set" %>)
+      Type: <%= @facility.facility_type || "(No type set)" %>
+      <br>
+      Size: <%= @facility.localized_facility_size || "No size set" %>
     </div>
   </div>
   <div class="col-md-3 d-flex">

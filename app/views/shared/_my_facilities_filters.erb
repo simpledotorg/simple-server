@@ -1,0 +1,141 @@
+<% if @selected_facility_group %>
+  <div class="dropdown show mb-8px mr-8px">
+    <a
+      id="dropdownMenuLink"
+      class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+      href="#"
+      role="button"
+      data-toggle="dropdown"
+      data-display="static"
+      aria-haspopup="true"
+      aria-expanded="false"
+    >
+      <%= @selected_facility_group.name %>
+    </a>
+    <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
+      <form id="query-filters">
+        <% @facility_groups.each do |facility_group| %>
+          <button
+            class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group.name == facility_group.name %>"
+            value="<%= facility_group.slug %>"
+            name="facility_group"
+            type="submit"
+            form="query-filters"
+            onclick="$('#selected-facility-group').remove(); $('#selected-size').remove(); $('#selected-zone').remove();"
+          >
+            <%= facility_group.name %>
+          </button>
+        <% end %>
+      </form>
+    </div>
+  </div>
+<% end %>
+<div class="dropdown show mb-8px mr-8px">
+  <a
+    id="dropdownMenuLink"
+    class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+    href="#"
+    role="button"
+    data-toggle="dropdown"
+    data-display="static"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <% if @selected_zones.size == 1 %>
+      <%= @selected_zones.first.titleize %>
+    <% else %>
+      All blocks
+    <% end %>
+  </a>
+  <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
+    <form id="query-filters">
+      <button
+        class="dropdown-item <%= "active" unless @selected_zones.size == 1 %>"
+        value=""
+        name="size"
+        type="submit"
+        form="query-filters"
+        onclick="$('#selected-zone').remove()"
+      >
+        All blocks
+      </button>
+      <div class="dropdown-divider"></div>
+      <% @zones.each do |zone| %>
+        <button
+          class="dropdown-item query-filter-zone <%= "active" if @selected_zones.size == 1 && @selected_zones.first == zone %>"
+          value="<%= zone %>"
+          name="zone"
+          type="submit"
+          form="query-filters"
+          onclick="$('#selected-zone').remove(); $('#selected-size').remove()"
+        >
+          <%= zone.titleize %>
+        </button>
+      <% end %>
+    </form>
+  </div>
+</div>
+<div class="dropdown show mb-8px mr-8px">
+  <a
+    id="dropdownMenuLink"
+    class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+    href="#"
+    role="button"
+    data-toggle="dropdown"
+    data-display="static"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <% if @selected_facility_sizes.size == 1 %>
+      <%= Facility.localized_facility_size(@selected_facility_sizes.first) %>
+    <% else %>
+      All facility sizes
+    <% end %>
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <button
+      class="dropdown-item <%= "active" unless @selected_facility_sizes.size == 1 %>"
+      value=""
+      name="size"
+      type="submit"
+      form="query-filters"
+      onclick="$('#selected-size').remove()"
+    >
+      All facility sizes
+    </button>
+    <div class="dropdown-divider"></div>
+    <% @facility_sizes.each do |size| %>
+      <button
+        class="dropdown-item query-filter-size <%= "active" if @selected_facility_sizes.size == 1 && @selected_facility_sizes.first == size %> filter-by-size"
+        value="<%= size %>"
+        name="size"
+        type="submit"
+        form="query-filters"
+        onclick="$('#selected-size').remove()"
+      >
+        <%= Facility.localized_facility_size(size) %>
+      </button>
+    <% end %>
+  </div>
+</div>
+<input
+  id="selected-facility-group"
+  name="facility_group"
+  value="<%= @selected_facility_group.slug %>"
+  form="query-filters"
+  hidden
+>
+<input
+  id="selected-zone"
+  name="zone"
+  value="<%= @selected_zones.size == 1 ? @selected_zones.first : "" %>"
+  form="query-filters"
+  hidden
+>
+<input
+  id="selected-size"
+  name="size"
+  value="<%= @selected_facility_sizes.size == 1 ? @selected_facility_sizes.first : "" %>"
+  form="query-filters"
+  hidden
+>

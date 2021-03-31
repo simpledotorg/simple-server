@@ -34,8 +34,8 @@ en:
     registered: "Registered"
     follow_up: "Follow-up"
     patient:
-      one: "Patient"
-      other: "Patients"
+      one: "patient"
+      other: "patients"
     registered_patients: "Registered patients"
     follow_up_patients: "Follow-up patients"
     hypertension_controlled: "Hypertension controlled"
@@ -60,12 +60,12 @@ en:
     registered_in: "registered in"
     result_from_last_visit_in: "Result from last visit in"
     no_patients: "No patients"
-    cohort_report_footnote_1: "Latest follow-up visit at any facility in quarter after registration."
-    cohort_report_footnote_2: "All HTN patients assigned to this facility, registered in the quarter."
+    cohort_report_footnote_1: "Latest follow-up visit at <em>any facility</em> in a quarter after registration."
+    cohort_report_footnote_2: "All hypertension patients assigned to this facility, registered in a quarter. Dead and lost to follow-up patients are excluded."
     cohort_report_footnote_3: "If a patient has multiple visits, their last BP is used to calculate BP control."
     all_hypertension_and_diabetes: "All hypertension and diabetes"
-    hypertension_controlled_numerator: "Patients with at least one BP measure recorded in the last 3 months at <em>any facility</em>. At the most recent visit the patient had BP&nbsp;&lt;140 and &lt;90."
-    hypertension_controlled_denominator: "All patients diagnosed with hypertension who have this facility as their \"Preferred Facility.\" Patients registered in the most recent 3 months are excluded, so the facility has the opportunity to get their BP controlled."
+    hypertension_controlled_numerator: "Patients with BP <140/90 at their last visit at <em>any facility</em> in the last 3 months"
+    hypertension_controlled_denominator: "Hypertension patients assigned to this facility, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
     hypertension: "Hypertension"
     diabetes: "Diabetes"
     all_time: "All-time"
@@ -74,3 +74,243 @@ en:
       female: "Female"
       male: "Male"
       transgender: "Transgender"
+  help:
+    menu:
+      videos: Videos
+      start: 1. Getting started
+      register: 2. Register a patient
+      search: 3. Find the correct patient
+      record: 4. Record a patient’s visit
+      overdue: 5. Call overdue patients
+      faq: Common questions
+    support:
+      heading: Ask for help
+      contents: If you have problems or questions, please press the button for our support group. Our friendly team will help you.
+    bp_passport_app_summary:
+      new: NEW!
+      heading: App for your patients
+      contents_1: Patients can now chart their own BPs and blood sugars with a simple app called the "BP Passport" app.
+      contents_2: Ask your patients to go to the Google Play Store or Apple App Store and install the "BP Passport" app.
+      learn_more: Learn more...
+    videos:
+      heading: Training videos
+      class:
+        heading: Take the class
+        contents: Watch a class to learn to use Simple.
+        training_videos_link: "Training: All Chapters"
+        training_videos_subtitle: "English with Hindi subtitles 36:15"
+      chapters:
+        heading: Class chapters
+        chapter_1: "1: Install the app"
+        chapter_2: "2: Introduction"
+        chapter_3: "3: Register a patient"
+        chapter_4: "4: Search for a follow-up patient"
+        chapter_5: "5: Find the right patient"
+        chapter_6: "6: Call overdue patients"
+        chapter_7: "7: Important features"
+        chapter_8: "8: FAQ"
+        chapter_9: "9: How to get help"
+        chapter_10: "10: Start using Simple"
+      teleconsultation:
+        heading: Tele-consultation training
+        contents: If your hospital is using Simple for tele-consultation, this training is for you.
+        english_video_link: Tele-consultation with Simple
+        english_video_link_language: English
+        hindi_video_link: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_video_link_language: Hindi
+      bp_passports:
+        heading: BP Passports
+        contents: Learn how to use BP Passport cards or BP Passport stickers in your hospital.
+        video_link: How to use a BP Passport
+        video_link_subtitle: Hindi with English subtitles
+      film:
+        heading: Simple film
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.'
+    start:
+      heading: Getting started
+      getting_started_video:
+        heading: Watch a video
+        contents: Learn the basics of Simple in 5 minutes.
+      who_to_record:
+        heading: Who to record in Simple?
+        contents_1_html: Use Simple to record <i>every patient who has hypertension</i> or who is taking medicines for high BP.
+        contents_2: When the patient returns for follow-up, search for the same patient and enter a new BP.
+      step_1:
+        label: Step 1
+        heading: Take patient's BP
+        contents: "Take an accurate BP: feet on floor, back against chair, no talking."
+      step_2:
+        label: Step 2
+        heading: Write in BP Passport
+        contents: If you have BP Passports, write the patient's name. Then, scan it using the Simple app.
+      step_3:
+        label: Step 3
+        heading: Register patient
+        contents: If they are new, register the patient.
+      step_4:
+        label: Step 4
+        heading: Enter BP in Simple
+        contents_html: <i>Do not round</i> the BP reading.
+      step_5:
+        label: Step 5
+        heading: Enter medicines
+        contents: Enter the patient's current hypertension medicines.
+      step_6:
+        label: Step 6
+        heading: Save the patient
+        contents_html: "Hit <span class=\"code\">SAVE</span> and schedule the patient's next visit. Write that date on the BP Passport."
+      missed_visit:
+        label: Missed visit
+        heading: What happens next?
+        contents: If your patient misses their visit, Simple will send a text message reminding them to come back.
+      tip:
+        heading: Tip
+        contents: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
+    register:
+      heading: Register a patient
+      contents: "There are two ways to register new patients:"
+      option_1:
+        label: Option 1
+        heading: If you have BP Passports
+        step_1: Press this button on the main screen
+        step_2_html: Pick up a <i>blank</i> BP Passport and scan the QR code.
+        step_3: Search for the patient’s full name.
+        step_4_html: "If you do not see the patient in the search results, tap <span class=\"code\">Register as a new patient</span>."
+        step_5: Fill the registration form.
+        step_6: Talk to your patient and then complete the medical history.
+        step_7_html: "Record the patient visit, press <span class=\"code\">Save</span>."
+      option_2:
+        label: Option 2
+        heading_html: If you <i>do not</i> have BP Passports
+        step_1_html: "Press <span class=\"code\">Enter patient’s name</span>"
+        step_2: Enter your patient's full name.
+        step_3_html: "If you do not see the patient in the search results, tap <span class=\"code\">Register as a new patient</span>."
+        step_4: Fill the registration form.
+        step_5: Talk to your patient and then complete the medical history.
+        step_6_html: "Record the patient visit, press <span class=\"code\">Save</span>."
+      tips:
+        heading: Tips
+        tip_1: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
+        tip_2: Enter mobile number if you can!
+        tip_3: If you cannot find a follow-up patient, it is okay to register them as a new patient.
+        tip_4: If a patient loses their BP Passport, please give them a new one. Patients can have multiple BP Passports, they will all work correctly.
+    search:
+      heading: Find the correct patient
+      find_patient:
+        heading: How to find patients
+        contents: When you search for a patient by name or mobile number, it is important to select the correct patient.
+      choose_patient:
+        heading_html: Choose the <i>correct</i> patient
+        contents_1: "In the search results, it is very important to choose the correct patient. Always check:"
+        check_item_1_html: "<span class=\"code\">Name</span> matches"
+        check_item_2_html: "<span class=\"code\">Age</span> is correct"
+        check_item_3_html: "<span class=\"code\">Address</span> is where the patient lives"
+        check_item_4_html: "<span class=\"code\">Mobile number</span> matches"
+        check_item_5_html: "<span class=\"code\">Last visit date</span> was a day the patient visited the hospital."
+        contents_2: If the patient does not match any of the patients in the search, please register them as a new patient.
+      tip:
+        heading: Tip
+        contents: If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.
+    record:
+      heading: Record a patient's visit
+      find_patient:
+        heading: First, find the patient
+        contents: "You can find patients two ways: scan their BP Passport or search for the patient by name or mobile number."
+      record_info:
+        heading: Record BP and medicines
+        step_1_html: "On the patient's summary screen, press <span class=\"code\">+&nbsp;Blood pressure</span>"
+        step_2: Then, add patient's hypertension medicines.
+        step_3_html: "Select the correct medicines and their dosages. To remove a medicine, tap the dosage and select <span class=\"code\">None</span>"
+        step_4_html: "Press <span class=\"code\">Save</span> and select the next visit date. Optional: You can change where the patient should visit next by pressing ‘Change’ below the patient’s current facility."
+        step_5: Done. The patient visit is saved.
+      medicine_refills:
+        heading: Medicine refills
+        contents: "If you are refilling a patient’s current medicines:"
+        step_1_html: "On the patient's summary screen, press <span class=\"code\">+ Medicines</span>"
+        step_2_html: "Press <span class=\"code\">Refill medicines</span>"
+        step_3: Done!
+        english_video_link: How to refill a patient's medicines
+        english_video_link_language: English
+        hindi_video_link: How to refill a patient's medicines
+        hindi_video_link_language: Hindi
+      tips:
+        heading: Tips
+        tip_1_html: "You can select the next visit date on a calendar by tapping <span class=\"code\">CHANGE</span> when scheduling the visit."
+        tip_2_html: "If you select <span class=\"code\">NOT NOW</span>, the patient will not have a scheduled visit."
+        tip_3_html: "You can enter a BP from a previous visit. Enter the BP like normal and <span class=\"code\">CHANGE</span> the date."
+    overdue:
+      heading: Call overdue patients
+      what_is_overdue:
+        heading: What is "Overdue"?
+        contents_1: Patients are overdue if they did not have a BP recorded by their scheduled visit date.
+        contents_2: Patients at the top of the overdue patients list, are the most critical. Start calling patients at the top of the overdue list.
+      calling:
+        heading: Calling patients
+        contents_html: "Call patients by pressing the phone icon. You may see two options: <span class=\"code\">Normal call</span> and <span class=\"code\">Secure call</span>. A \"secure\" call is toll-free will hide your phone number from the patient."
+      result_of_call:
+        heading: Mark "result of call"
+        contents: "Please mark the result of each phone call that you make. Press on the patient card to see the following options:"
+        agreed_to_visit_html: "<span class=\"code\">Agreed to visit</span> if the patients tells you that they are coming for a follow-up."
+        remind_to_call_later_html: "<span class=\"code\">Remind to call later...</span> if the patient didn’t mention when they can follow-up or didn’t answer their phone call."
+        remove_from_overdue_list:
+          contents_html: "<span class=\"code\">Remove from overdue list</span> if:"
+          condition_1: Patient has already visited
+          condition_2: Patient is not responding
+          condition_3: Phone number does not work
+          condition_4: Transferred to another facility
+          condition_5: Moved to private practitioner
+          condition_6: Died
+    faq:
+      heading: Common questions
+      app_crash_question: What should I do if my app crashes?
+      app_crash_answer_html: First try restarting your device. If Simple is crashing and you cannot fix it, please go to the <span class="help">Help</span> screen and contact your supervisor or our team.
+      scan_not_working_question: Scan isn't working. What should I do?
+      scan_not_working_answer: Enter the BP Passport number at the bottom of the screen. If the problem persists, restart your phone. If it still does not work, contact your supervisor.
+      udpate_app_question: How do I update the app?
+      udpate_app_answer_html: "Update the app by pressing the settings icon and pressing <span class=\"code\">Update</span>. It is important to have the latest version of Simple on your device."
+      cant_find_followup_question: I cannot find a follow-up patient
+      cant_find_followup_answer: Sometimes it is difficult to find a follow-up patient when they do not have a BP Passport. If, after 5 minutes, you cannot find the patient, register them as a new patient. It is possible to combine the patient records in the future.
+      two_bp_passports_question: Can a patient have 2 BP Passports?
+      two_bp_passports_answer: Yes. A patient can have multiple BP Passports. They will all continue to work.
+      no_more_bp_passports_question: I ran out of BP Passports
+      no_more_bp_passports_answer_html: Please ask your supervisor to order more BP Passports, before you run out. Remember, you can still record patients even if you do not have any BP Passports &#8212; you can assign BP Passports later.
+      what_is_sync_question: What is a "sync"?
+      what_is_sync_answer: A "sync" saves your data to a central server. Please make sure that your data gets saved at least once per day. If you do not have a good internet connection, your data might take some time to sync.
+      data_usage_question: How much data does Simple use?
+      data_usage_answer: Simple uses very little data. On average about 20 MB is used each month.
+      access_my_info_question: Can Simple access my information?
+      access_my_info_answer: Simple does not access any of the personal information on your phone or tablet.
+    bp_passport_app:
+      heading: BP Passport app
+      features:
+        heading: A free app for patients
+        contents: Patients can scan their paper BP Passports and the app will show the current measures and medications that you add in your hospital or clinic, right on their smartphone.
+        feature_1: Chart BPs
+        feature_2: Chart blood sugars
+        feature_3: Reminders to take medicines
+        feature_4: Healthy advice
+        feature_5: Free, with no ads
+        learn_more: "Learn more"
+      platforms:
+        headings: Apple and Android
+        contents_html: "Tell your patients to get the app by searching for <span class=\"code\">BP Passsport</span> on the Google Play Store or Apple App Store."
+        apple_app_store: Apple App Store
+        google_play_store: Google Play Store
+      languages:
+        heading: Languages
+        contents: "The BP Passport app is available in:"
+        language_amharic: Amharic
+        language_bengali: Bengali
+        language_english: English
+        language_french: French
+        language_hindi: Hindi
+        language_kannada: Kannada
+        language_marathi: Marathi
+        language_oromo: Oromo
+        language_punjabi: Punjabi
+        language_spanish: Spanish
+        language_tamil: Tamil
+        language_telugu: Telugu
+        language_tigrinya: Tigrinya
+    privacy_policy: Privacy Policy
+    terms_of_service: Terms of Service

@@ -33,10 +33,10 @@ RSpec.describe AutomaticPhoneNumberWhitelistingWorker, type: :job do
   end
 
   describe "perform_async" do
-    it "queues the job on the phone_number_details_queue" do
+    it "queues the job on the low" do
       expect {
         AutomaticPhoneNumberWhitelistingWorker.perform_async(phones_numbers_need_whitelisting.map(&:id), virtual_number, account_sid, token)
-      }.to change(Sidekiq::Queues["phone_number_details_queue"], :size).by(1)
+      }.to change(Sidekiq::Queues["low"], :size).by(1)
       AutomaticPhoneNumberWhitelistingWorker.clear
     end
   end

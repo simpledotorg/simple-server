@@ -2,11 +2,7 @@ class Patient < ApplicationRecord
   include ApplicationHelper
   include Mergeable
   include Hashable
-
-  enum reminder_consent: {
-    granted: "granted",
-    denied: "denied"
-  }, _prefix: true
+  include PatientReportable
 
   GENDERS = Rails.application.config.country[:supported_genders].freeze
   STATUSES = %w[active dead migrated unresponsive inactive].freeze
@@ -17,6 +13,23 @@ class Patient < ApplicationRecord
 
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
   DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
+
+  enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
+
+  enum reminder_consent: {
+    granted: "granted",
+    denied: "denied"
+  }, _prefix: true
+
+  enum could_not_contact_reasons: {
+    not_responding: "not_responding",
+    moved: "moved",
+    dead: "dead",
+    invalid_phone_number: "invalid_phone_number",
+    public_hospital_transfer: "public_hospital_transfer",
+    moved_to_private: "moved_to_private",
+    other: "other"
+  }
 
   belongs_to :address, optional: true
   has_many :phone_numbers, class_name: "PatientPhoneNumber"
@@ -54,14 +67,15 @@ class Patient < ApplicationRecord
 
   belongs_to :deleted_by_user, class_name: "User", optional: true
 
+  has_many :merged_from_patients, -> { with_discarded }, class_name: "Patient", foreign_key: :merged_into_patient_id
+  belongs_to :merged_into_patient, class_name: "Patient", foreign_key: :merged_into_patient_id, optional: true
+  belongs_to :merged_by_user, class_name: "User", optional: true
+
   attribute :call_result, :string
 
-  scope :search_by_address,
-    ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
-
-  scope :with_diabetes, -> { joins(:medical_history).merge(MedicalHistory.diabetes_yes) }
-  scope :with_hypertension, -> { joins(:medical_history).merge(MedicalHistory.hypertension_yes) }
-
+  scope :with_nested_sync_resources, -> { includes(:address, :phone_numbers, :business_identifiers) }
+  scope :for_sync, -> { with_discarded.with_nested_sync_resources }
+  scope :search_by_address, ->(term) { joins(:address).merge(Address.search_by_street_or_village(term)) }
   scope :follow_ups_by_period, ->(period, at_region: nil, current: true, last: nil) {
     follow_ups_with(Encounter, period, at_region: at_region, current: current, time_column: "encountered_on", last: last)
   }
@@ -83,9 +97,14 @@ class Patient < ApplicationRecord
       .merge(PatientPhoneNumber.phone_type_mobile)
   }
 
-  scope :syncable_to_region, ->(region) {
-    with_discarded.where(registration_facility: region.facilities)
-  }
+  validate :past_date_of_birth
+  validates :status, presence: true
+
+  validates :device_created_at, presence: true
+  validates :device_updated_at, presence: true
+
+  validates_associated :address, if: :address
+  validates_associated :phone_numbers, if: :phone_numbers
 
   def self.follow_ups_with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
     table_name = model_name.table_name.to_sym
@@ -103,24 +122,6 @@ class Patient < ApplicationRecord
 
     relation
   end
-
-  enum could_not_contact_reasons: {
-    not_responding: "not_responding",
-    moved: "moved",
-    dead: "dead",
-    invalid_phone_number: "invalid_phone_number",
-    public_hospital_transfer: "public_hospital_transfer",
-    moved_to_private: "moved_to_private",
-    other: "other"
-  }
-
-  validate :past_date_of_birth
-
-  validates :device_created_at, presence: true
-  validates :device_updated_at, presence: true
-
-  validates_associated :address, if: :address
-  validates_associated :phone_numbers, if: :phone_numbers
 
   def past_date_of_birth
     if date_of_birth.present? && date_of_birth > Date.current
@@ -239,6 +240,7 @@ class Patient < ApplicationRecord
     medical_history&.discard
     phone_numbers.discard_all
     prescription_drugs.discard_all
+    teleconsultations.discard_all
     discard
   end
 end

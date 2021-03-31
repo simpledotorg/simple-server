@@ -5,6 +5,7 @@
 @import "bootstrap";
 @import 'bootstrap-select';
 @import "tablesort/tablesort";
+@import "bootstrap-datepicker";
 
 // Local imports
 @import "partials/dashboard";
@@ -168,6 +169,7 @@ nav.secondary-nav a.active {
 .tooltip-inner {
     font-family: $font-condensed;
     padding: 6px 8px;
+    max-width: 200px;
 }
 
 #app-footer {
@@ -287,32 +289,6 @@ footer {
     .desktop {
         display: none;
     }
-    .navbar {
-        border-bottom: 1px solid rgba(0,0,0,0.07);
-        
-        #navbarNav, 
-        .navbar-nav {
-          display: inline;
-        }
-        
-        .nav-item,
-        .nav-link {
-          display: inline-block;
-        }
-        
-        .nav-link {
-          padding: 6px 10px 6px 0;
-        }
-        
-        .nav-item .dropdown-menu {
-          position: fixed;
-          top: 58px;
-          left: 0;
-          width: 92%;
-          left: 4%;
-          box-shadow: 0 0 0 10px rgba(0,0,0,0.5);
-        }
-    }
     
     button.navbar-toggler {
         font-size: 15px;
@@ -328,15 +304,44 @@ footer {
     .dropdown-item {
         font-size: 18px;
     }
+}
+
+@include media-breakpoint-down(md) {
+    .navbar {
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      
+      #navbarNav, 
+      .navbar-nav {
+        display: inline;
+      }
+      
+      .nav-item,
+      .nav-link {
+        display: inline-block;
+      }
+      
+      .nav-link {
+        padding: 6px 10px 6px 0;
+      }
+      
+      .nav-item .dropdown-menu {
+        position: fixed;
+        top: 58px;
+        left: 0;
+        width: 92%;
+        left: 4%;
+        box-shadow: 0 0 0 10px rgba(0,0,0,0.5);
+      }
+    }
     
     .sub-nav {
-        margin: -16px -16px 0 -16px !important;
-        line-height: 1.4;
-        
-        .container {
-          border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
+      margin: -16px -16px 0 -16px !important;
+      line-height: 1.4;
+      
+      .container {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
       }
+    }
 }
 
 @include media-breakpoint-up(lg) {
@@ -361,7 +366,7 @@ footer {
     }
     .navbar .nav-link,
     .dropdown-item {
-        font-size: 16px;
+        font-size: 18px;
         margin-right: 6px;
     }
     .sub-nav-link {
@@ -621,4 +626,123 @@ span.inactive {
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
+}
+
+.password-toggle-button {
+	color: $blue;
+	bottom: 10px;
+	font-size: 14px;
+	height: 24px;
+	left: 425px;
+	line-height: 0;
+	padding: 0px;
+	position: absolute;
+	width: 47px;
+	z-index: 10;
+}
+
+.password-form {
+	position: relative;
+
+	.form-group {
+		margin-bottom: 7px
+	}
+}
+
+.password-input {
+	height: 44px;
+	width: 480px;
+}
+
+.error-message {
+    color: red;
+    &.hidden {
+        display: none;
+    }
+}
+
+.password-prompt {
+	color: $grey-dark;
+	margin-bottom: 4px;
+}
+
+.password-validation-checklist {
+	color: $grey-mid;
+	list-style-type: none;
+	padding-left: 0;
+
+	li {
+		margin-bottom: 4px;
+	}
+
+	.completed {
+		color: black;
+		i {
+			color: $green-dark
+		}
+	}
+
+	.fa-check-circle {
+		height: 16px;
+		margin-right: 8px;
+		width: 16px;
+	}
+}
+
+.password-submit {
+	font-size: 16px;
+	height: 43px;
+	width: 141px;
+}
+
+.error-body {
+    background-color: #F0F2F5;
+    color: #2E2F30;
+    display: flex;
+    justify-content: center;
+    font-family: Roboto, sans-serif;
+    line-height: 1.4;
+    margin: 84px 0px 0px 0px;
+    text-align: center;
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    a:link,
+    a:hover,
+    a:visited {
+        color: #0075EB;
+    }
+
+    img {
+        margin-bottom: 32px;
+        width: 80px;
+    }
+
+    .dialog {
+        background: #fff;
+        border-radius: 7px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        height: 320px;
+        padding: 40px;
+        width: 608px;
+    }
+
+    .title {
+        font-size: 36px;
+        font-weight: bold;
+        line-height: 1.4;
+        margin: 22px 0px;
+    }
+
+    .text {
+        margin: 22px 0px;
+        padding-bottom: 16px;
+    }
+
+    .return-link {
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
 }

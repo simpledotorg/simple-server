@@ -7,6 +7,7 @@ class Organization < ApplicationRecord
   has_many :appointments, through: :facilities
   has_many :users
   has_many :protocols, through: :facility_groups
+  has_many :registered_patients, through: :facility_groups, source: :patients
 
   validates :name, presence: true
 
@@ -20,8 +21,8 @@ class Organization < ApplicationRecord
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_create :make_region
+  after_update :update_region
 
   def make_region
     return if region&.persisted?

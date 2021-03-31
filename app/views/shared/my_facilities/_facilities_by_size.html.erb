@@ -33,7 +33,7 @@
       </tr>
       <tr>
         <td>
-          Large
+          <%= Facility.localized_facility_size("large") %>
         </td>
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:total]["large"].to_i) %>
@@ -44,7 +44,7 @@
       </tr>
       <tr>
         <td>
-          Medium
+          <%= Facility.localized_facility_size("medium") %>
         </td>
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:total]["medium"].to_i) %>
@@ -55,7 +55,7 @@
       </tr>
       <tr>
         <td>
-          Small
+          <%= Facility.localized_facility_size("small") %>
         </td>
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:total]["small"].to_i) %>
@@ -66,7 +66,7 @@
       </tr>
       <tr>
         <td>
-          Community
+          <%= Facility.localized_facility_size("community") %>
         </td>
         <td class="text-right">
           <%= number_with_delimiter(@facility_counts_by_size[:total]["community"].to_i) %>

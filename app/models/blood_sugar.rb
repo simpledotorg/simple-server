@@ -30,10 +30,7 @@ class BloodSugar < ApplicationRecord
   V3_TYPES = %i[random post_prandial fasting].freeze
 
   scope :for_v3, -> { where(blood_sugar_type: V3_TYPES) }
-
-  scope :syncable_to_region, ->(region) {
-    with_discarded.where(patient: Patient.syncable_to_region(region))
-  }
+  scope :for_sync, -> { with_discarded }
 
   THRESHOLDS = {
     high: {random: 300,

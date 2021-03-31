@@ -9,12 +9,20 @@ module Seed
           "small"
         when "test"
           "test"
-        when "sandbox", "staging"
+        when "sandbox", "demo"
           "large"
         else
           raise ArgumentError, "Invalid SimpleServer.env #{SimpleServer.env} for Seed configuration"
         end
       Dotenv.load!(".env.seed.#{type}")
+    end
+
+    def stdout
+      @stdout ||= if SimpleServer.env == "test"
+        StringIO.new
+      else
+        $stdout
+      end
     end
 
     attr_reader :type
@@ -41,8 +49,16 @@ module Seed
       end
     end
 
+    def admin_password
+      ENV["SEED_ADMIN_PASSWORD"]
+    end
+
     def seed_generated_active_user_role
       ENV["SEED_GENERATED_ACTIVE_USER_ROLE"]
+    end
+
+    def number_of_states
+      Integer(ENV["NUMBER_OF_STATES"])
     end
 
     def number_of_facility_groups

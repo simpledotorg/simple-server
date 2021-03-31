@@ -82,7 +82,12 @@ class RegionBackfill
     raise ArgumentError, "Provide either a name or a source" if (name && source) || (name.blank? && source.blank?)
     region_name = name || source.name
 
-    existing_region = parent.children.reload.find_by(name: region_name, region_type: region_type)
+    existing_region = if source
+      Region.find_by(source_id: source.id)
+    else
+      parent.children.reload.find_by(name: region_name, region_type: region_type)
+    end
+
     return existing_region if existing_region
 
     region = DryRunRegion.new(Region.new(name: region_name, region_type: region_type, reparent_to: parent), dry_run: dry_run?, logger: logger)
@@ -109,5 +114,45 @@ class RegionBackfill
   def count_invalid(region_type)
     invalid_counts[region_type] ||= 0
     invalid_counts[region_type] += 1
+  end
+
+  # Wraps a Region object and allows us to easily avoid persistence
+  # methods when we are exercising Regions in a backfill dry_run scenario
+  class DryRunRegion < SimpleDelegator
+    attr_reader :logger
+
+    def initialize(region, dry_run:, logger:)
+      super(region)
+      @dry_run = dry_run
+      @logger = logger
+      @region = region
+      logger.info msg: "initialize", region: log_payload
+    end
+
+    def dry_run?
+      @dry_run
+    end
+
+    def save_or_check_validity
+      result = if dry_run?
+        valid?
+      else
+        @region.save
+      end
+      logger.info msg: "save", result: result, region: log_payload, valid: result, errors: errors.full_messages.join(",")
+      result
+    end
+
+    def set_slug(normalized_slug = nil)
+      @region.send(:set_slug, normalized_slug)
+    end
+
+    def save
+      raise ArgumentError, "call save_or_check_validity instead"
+    end
+
+    def save!
+      raise ArgumentError, "call save_or_check_validity instead"
+    end
   end
 end
