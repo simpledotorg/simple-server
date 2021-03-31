@@ -28,6 +28,7 @@ class Facility < ApplicationRecord
   has_many :prescription_drugs
   has_many :appointments
   has_many :teleconsultations
+  has_many :drug_stocks
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -49,6 +50,11 @@ class Facility < ApplicationRecord
     foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
+  scope :with_block_region_id, -> {
+    joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
+      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
+      .select("block_region.id AS block_region_id, facilities.*")
+  }
 
   enum facility_size: {
     community: "community",
@@ -89,11 +95,13 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
-  validate :valid_block, if: -> { Flipper.enabled?(:regions_prep) && facility_group.present? }
+  validate :valid_block, if: -> { facility_group.present? }
 
   delegate :protocol, to: :facility_group, allow_nil: true
   delegate :organization, :organization_id, to: :facility_group, allow_nil: true
   delegate :follow_ups_by_period, to: :patients, prefix: :patient
+  delegate :district_region?, :block_region?, :facility_region?, :region_type, to: :region
+  delegate :cache_key, :cache_version, to: :region
 
   def self.parse_facilities_from_file(file_contents)
     Csv::FacilitiesParser.parse(file_contents)
@@ -105,8 +113,8 @@ class Facility < ApplicationRecord
   # * These callbacks are medium-term temporary.
   # * This class and the Region callbacks should ideally be totally superseded by the Region class.
   # * Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
-  after_create :make_region, if: -> { Flipper.enabled?(:regions_prep) }
-  after_update :update_region, if: -> { Flipper.enabled?(:regions_prep) }
+  after_create :make_region
+  after_update :update_region
 
   def make_region
     return if region&.persisted?
@@ -126,6 +134,11 @@ class Facility < ApplicationRecord
 
   def block_region
     facility_group.region.block_regions.find_by(name: block)
+  end
+
+  # Remove me after region_reports is mainline
+  def source
+    self
   end
 
   private :update_region
@@ -148,18 +161,20 @@ class Facility < ApplicationRecord
     [self]
   end
 
+  def child_region_type
+    nil
+  end
+
   def recent_blood_pressures
     blood_pressures.includes(:patient, :user).order(Arel.sql("DATE(recorded_at) DESC, recorded_at ASC"))
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
   def dashboard_analytics(period: :month, prev_periods: 3, include_current_period: false)
-    query = FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period)
-    query.call
+    FacilityAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def diabetes_enabled?
@@ -200,19 +215,23 @@ class Facility < ApplicationRecord
     registered_patients.none? && blood_pressures.none? && blood_sugars.none? && appointments.none?
   end
 
-  # For regions compatibility
-  def facility_region?
-    true
-  end
-
-  # For regions compatibility
-  def district_region?
-    false
-  end
-
   def valid_block
     unless facility_group.region.block_regions.pluck(:name).include?(block)
       errors.add(:zone, "not present in the facility group")
     end
+  end
+
+  def prioritized_patients
+    registered_patients.with_discarded
+  end
+
+  def self.localized_facility_size(facility_size)
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
+  end
+
+  def localized_facility_size
+    return unless facility_size
+    I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 end

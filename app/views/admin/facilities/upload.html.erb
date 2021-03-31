@@ -14,11 +14,7 @@
 <ol>
   <li>
     Download and fill in
-    <% if Flipper.enabled?(:regions_prep) %>
-      <%= link_to 'this template', '/documents/upload_facilities_without_state.csv' %>
-    <% else %>
-      <%= link_to 'this template', '/documents/upload_facilities.csv' %>
-    <% end %>
+    <%= link_to 'this template', '/documents/upload_facilities.csv' %>
     to create multiple facilities via file upload.
   </li>
   <li>Organizations for the facilities must already exist.
@@ -39,6 +35,6 @@
   </li>
 </ol>
 <%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
-  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label:'Upload your filled in facilities file'%>
+  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label: 'Upload your filled in facilities file' %>
   <%= f.primary 'Upload' %>
 <% end %>

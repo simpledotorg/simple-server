@@ -1,6 +1,12 @@
 require "rails_helper"
 
 RSpec.describe RefreshMaterializedViews do
+  around(:example) do |example|
+    Rails.cache.clear
+    example.run
+    Rails.cache.clear
+  end
+
   it "returns nil if no time set" do
     expect(RefreshMaterializedViews.last_updated_at).to be_nil
   end

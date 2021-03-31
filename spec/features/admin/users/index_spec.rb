@@ -16,9 +16,6 @@ RSpec.feature "Admin User page functionality", type: :feature do
   login_page = AdminPage::Sessions::New.new
   navigation = Navigations::DashboardPageNavigation.new
 
-  before(:all) { Flipper.enable(:new_permissions_system_aug_2020) }
-  after(:all) { Flipper.disable(:new_permissions_system_aug_2020) }
-
   context "Admin User landing page" do
     before(:each) do
       visit reports_regions_path

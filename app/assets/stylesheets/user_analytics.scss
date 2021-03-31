@@ -17,13 +17,13 @@ body#progress {
 }
 
 .cohort {
-    
+
     h6 {
         font-size: 18px;
         text-align: left;
         margin: 0;
     }
-    
+
     p {
         text-align: left;
         padding: 6px 0 0 0;
@@ -36,31 +36,31 @@ body#progress {
     text-align: center;
     min-height: 46px;
     margin: 0 -2px;
-    
+
     td {
         padding: 12px 6px;
         font-weight: bold;
         font-size: 16px;
     }
-    
+
     .cohort-controlled {
         background: $green;
         color: #fff;
         border-radius: 0 3px 3px 0;
     }
-    
+
     .cohort-uncontrolled {
         background: $red;
         color: #fff;
         border-radius: none;
     }
-    
+
     .cohort-nobp {
         background: $grey-light;
         color: #444;
         border-radius: 3px 0 0 3px;
     }
-    
+
     .cohort-none {
         background: $grey-light;
         color: #444;
@@ -71,7 +71,7 @@ body#progress {
 .key {
     margin: 24px 0 32px 0;
     font-size: 16px;
-    
+
     span {
         display: inline-block;
         width: 16px;
@@ -80,16 +80,16 @@ body#progress {
         background: #999;
         margin: -3px 8px 0 0;
         border-radius: 3px;
-        
+
         &.green {
             background: $green;
         }
-        
+
         &.red {
             background: $red;
         }
     }
-    
+
 }
 
 .progress-contents {
@@ -136,6 +136,55 @@ a.help-back {
 
 .card {
     position: relative;
+
+    .card-row {
+      border-top: 1px solid $grey-lightest;
+      padding: 16px 0 0 0;
+      margin: 16px 0 0 0;
+    }
+
+    h6 {
+      font-size: 18px;
+      font-weight: normal;
+      margin: 0 0 8px 0;
+    }
+}
+
+.title-caps {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $grey-dark;
+  margin: 1em 0;
+}
+
+.float-right {
+  float: right;
+}
+
+.light {
+  color: $grey-mid;
+}
+
+.dark {
+  color: $grey-dark;
+}
+
+.text-green {
+  color: $green;
+}
+
+.text-yellow {
+  color: $yellow-dark;
+}
+
+.text-orange {
+  color: $orange;
+}
+
+.text-red {
+  color: $red;
 }
 
 .day {
@@ -190,8 +239,9 @@ sup {
   padding-left: 2px;
 }
 
-.card-dropdown {
+#progress select {
   width: 100%;
+  display: block;
   border: 1px solid $blue;
   color: $blue;
   font-weight: bold;
@@ -297,7 +347,7 @@ span.percent {
 .updated-date {
   margin-top: 12px;
   padding: 0;
-  text-align: right;
+  text-align: center;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
   letter-spacing: 1px;
@@ -306,7 +356,7 @@ span.percent {
 p.control-desc {
     line-height: 1.5;
     font-size: 18px;
-    
+
     .green {
         color: $green;
         font-size: 32px;
@@ -329,7 +379,7 @@ p.control-desc {
         margin-right: 16px;
         transition: 0.3s ease-in-out;
     }
-    
+
     &:active {
         .tip {
             opacity: 1;
@@ -341,7 +391,7 @@ p.control-desc {
 .bar-chart {
     width: 100%;
     margin-bottom: 8px;
-    background-image: linear-gradient(to top, 
+    background-image: linear-gradient(to top,
         #fff 35px, $grey-lightest 35px, #fff 36px,
         #fff 55px, $grey-lightest 55px, #fff 56px,
         #fff 75px, $grey-lightest 75px, #fff 76px,
@@ -355,7 +405,7 @@ p.control-desc {
         #fff 235px, $grey-lightest 235px, #fff 236px,
         #fff 255px, $grey-lightest 255px, #fff 256px,
     );
-    
+
     .bar {
         background: $green-light;
         width: 12px;
@@ -363,7 +413,7 @@ p.control-desc {
         position: relative;
         border-radius: 100px;
         min-height: 20px;
-        
+
         span {
             display: block;
             background: #fff;
@@ -374,13 +424,13 @@ p.control-desc {
             margin-left: -1px;
         }
     }
-    
+
     .bar-value {
         position: relative;
         height: 30px;
         width: 10px;
         margin: 0 auto 16px auto;
-        
+
         span {
             font-size: 14px;
             transform: translate(-96px, -80px) rotate(90deg);
@@ -391,12 +441,12 @@ p.control-desc {
             z-index: 100000;
         }
     }
-    
+
     tbody td {
         height: 160px;
         vertical-align: bottom;
         text-align: center;
-        
+
         &:last-of-type {
             .bar-value {
                 font-weight: bold;
@@ -406,6 +456,14 @@ p.control-desc {
             }
         }
     }
+}
+
+ul .check {
+  background: transparent url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMkMyIDE3LjUyIDYuNDggMjIgMTIgMjJDMTcuNTIgMjIgMjIgMTcuNTIgMjIgMTJDMjIgNi40OCAxNy41MiAyIDEyIDJaTTEyIDIwQzcuNTkgMjAgNCAxNi40MSA0IDEyQzQgNy41OSA3LjU5IDQgMTIgNEMxNi40MSA0IDIwIDcuNTkgMjAgMTJDMjAgMTYuNDEgMTYuNDEgMjAgMTIgMjBaTTEwIDE0LjE3TDE1Ljg4IDguMjlDMTYuMjcgNy45IDE2LjkxIDcuOSAxNy4zIDguMjlDMTcuNjkgOC42OCAxNy42OSA5LjMxIDE3LjMgOS43TDEwLjcxIDE2LjI5QzEwLjMyIDE2LjY4IDkuNjkgMTYuNjggOS4zIDE2LjI5TDYuNzEgMTMuN0M2LjMyIDEzLjMxIDYuMzIgMTIuNjggNi43MSAxMi4yOUM2Ljg5NjgzIDEyLjEwMjcgNy4xNTA0OCAxMS45OTc1IDcuNDE1IDExLjk5NzVDNy42Nzk1MiAxMS45OTc1IDcuOTMzMTcgMTIuMTAyNyA4LjEyIDEyLjI5TDEwIDE0LjE3WiIgZmlsbD0iIzAwQjg0OSIvPgo8L3N2Zz4K) no-repeat 0 50%;
+  list-style: none;
+  padding: 8px 0 8px 32px;
+  margin: 0 0 0 -40px;
+  font-size: 15px;
 }
 
 .trophies {
@@ -609,4 +667,83 @@ footer p {
 
 .day {
   min-height: 250px;
+}
+
+.form-group {
+  padding: 10px 0 16px 0 !important;
+  width: 100%;
+
+  label {
+    display: block;
+    font-weight: bold;
+    margin: 0;
+  }
+  small {
+    display: block;
+    font-size: 14px;
+    margin: 6px 0 0 0;
+    opacity: 0.8;
+  }
+}
+
+.form-row {
+  display: flex;
+}
+
+.col {
+  flex-wrap: nowrap;
+  width: 43%;
+  margin-left: 8%;
+}
+
+.col:first-child {
+  margin-left: 0;
+}
+
+select.form-control, input.form-control {
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+  border: 1px solid white;
+  
+  &:focus {
+    outline: none;
+    border: 1px solid $blue;
+  }
+}
+
+.button {
+  display: block;
+  padding: 16px;
+  text-align: center;
+  background: #E0F0FF;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold !important;
+  border: none;
+  box-shadow: 0 2px 1px rgba(0,0,0,.16), 0 2px 0 #9CC8F3;
+  color: #0075EB !important;
+}
+
+.button-fixed-bottom {
+  z-index: 10000000000;
+  background: #F3F9FF;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 -2px 3px rgba(0,0,0,.16);
+
+  .button {
+    width: 100%;
+    background: $blue;
+    color: #fff !important;
+    box-shadow: 0 2px 1px rgba(0,0,0,.16);
+    box-sizing: border-box;
+  }
 }

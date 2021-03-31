@@ -10,7 +10,8 @@ Datadog.configure do |c|
   c.tracer.enabled = SEND_DATA_TO_DD_AGENT
   c.version = SimpleServer.git_ref(short: true)
   c.use :rails, analytics_enabled: true
-  c.use :rack, headers: {request: ["X-USER-ID", "X-FACILITY-ID", "X-SYNC-REGION-ID"], response: ["Content-Type", "X-Request-ID"]}
+  c.use :rack, headers: {request: %w[X-USER-ID X-FACILITY-ID X-SYNC-REGION-ID], response: %w[Content-Type X-Request-ID]}
+  c.use :sidekiq, analytics_enabled: true
 end
 
 require "statsd"

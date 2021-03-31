@@ -27,7 +27,8 @@ module AppointmentsPage
     def get_all_facility_count
       click(FACILITY_DROPDOWN)
       all_option = find(:css, "select[name='facility_id']").all("option").collect(&:text)
-      all_option.length
+      # We subtract 1 to exclude the value of "All Facilities"
+      all_option.length - 1
     end
 
     def select_page_dropdown

@@ -1,10 +1,6 @@
 require "rails_helper"
 
 RSpec.describe RegionsIntegrityCheck, type: :model do
-  before do
-    enable_flag(:regions_prep)
-  end
-
   let!(:organization) { create(:organization) }
   let!(:state) { create(:region, :state, reparent_to: organization.region) }
   let!(:facility_groups) { create_list(:facility_group, 2, state: state.name, organization: organization) }
@@ -15,32 +11,32 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
 
   context "missing regions" do
     it "tracks missing org" do
-      missing = Organization.import(build_list(:organization, 2)).ids
+      orgs = create_list(:organization, 2)
+      orgs.each { |org| org.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.inconsistencies.dig(:organizations, :missing_regions)).to match_array(missing)
+      expect(swept.inconsistencies.dig(:organizations, :missing_regions)).to match_array(orgs.pluck(:id))
     end
 
     it "tracks missing state" do
       missing_state = "Goa"
-      facilities_without_region =
-        build_list(:facility, 2, state: missing_state, block: block_1.name, facility_group: facility_groups[0])
-          .yield_self { |facilities| Facility.import(facilities) }
-          .ids
+      facilities_without_region = create_list(:facility, 2, state: missing_state, block: block_1.name, facility_group: facility_groups[0])
+      facilities_without_region.each { |facility| facility.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
       expect(swept.inconsistencies.dig(:states, :missing_regions)).to match_array([[missing_state, organization.id]])
-      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
+      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region.map(&:id))
     end
 
     it "tracks missing facility_groups" do
-      missing = FacilityGroup.import(build_list(:facility_group, 2, state: state.name)).ids
+      groups = create_list(:facility_group, 2, state: state.name)
+      groups.each { |fg| fg.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.inconsistencies.dig(:districts, :missing_regions)).to match_array(missing)
+      expect(swept.inconsistencies.dig(:districts, :missing_regions)).to match_array(groups.pluck(:id))
     end
 
     it "tracks missing blocks" do
@@ -53,14 +49,12 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
     end
 
     it "tracks missing facilities" do
-      facilities_without_region =
-        build_list(:facility, 2, state: state.name, block: block_1.name, facility_group: facility_groups[0])
-          .yield_self { |facilities| Facility.import(facilities) }
-          .ids
+      facilities_without_region = create_list(:facility, 2, state: state.name, block: block_1.name, facility_group: facility_groups[0])
+      facilities_without_region.each { |facility| facility.region.delete }
 
       swept = RegionsIntegrityCheck.sweep
 
-      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region)
+      expect(swept.inconsistencies.dig(:facilities, :missing_regions)).to match_array(facilities_without_region.map(&:id))
     end
   end
 
@@ -129,7 +123,7 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
         class: "RegionsIntegrityCheck",
         msg: {
           resource: :blocks,
-          result: {missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]}
+          result: {missing_regions: array_including(["B2", facility_groups[1].id], ["B1", facility_groups[0].id])}
         }
       }
 
@@ -157,21 +151,20 @@ RSpec.describe RegionsIntegrityCheck, type: :model do
             resource: :blocks,
             result:
               {
-                missing_regions: [["B2", facility_groups[1].id], ["B1", facility_groups[0].id]]
+                missing_regions: array_including(["B2", facility_groups[1].id], ["B1", facility_groups[0].id])
               }
           },
-          logger: "logger",
           tags: {type: "regions"}
         }
       ]
 
-      expect(Raven).to receive(:capture_message).with(*expected_msg)
+      expect(Sentry).to receive(:capture_message).with(*expected_msg)
 
       RegionsIntegrityCheck.sweep
     end
 
     it "does not report errors if there are none" do
-      expect(Raven).to_not receive(:capture_message)
+      expect(Sentry).to_not receive(:capture_message)
 
       RegionsIntegrityCheck.sweep
     end
