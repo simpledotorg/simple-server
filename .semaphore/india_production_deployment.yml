@@ -3,18 +3,19 @@ name: India Production Deployment
 blocks:
   - name: Deploy to India Production
     task:
+      secrets:
+        - name: semaphore-deploy-key
+        - name: sentry-release-auth-token
       jobs:
         - name: Deploy to India Production
           commands:
             - checkout
-            - sem-version ruby 2.5.1
+            - sem-version ruby 2.6.6
             - cache restore
             - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
-            - 'bundle exec cap india:production deploy'
-      secrets:
-        - name: semaphore-deploy-key
+            - 'BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap india:production deploy'
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa

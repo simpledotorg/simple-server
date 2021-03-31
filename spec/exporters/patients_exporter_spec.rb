@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe PatientsExporter do
+RSpec.describe PatientsExporter, type: :model do
   include QuarterHelper
 
   let!(:facility) { create(:facility) }
@@ -18,7 +18,6 @@ RSpec.describe PatientsExporter do
   let!(:prescription_drug_1) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_2) { create(:prescription_drug, patient: patient) }
   let!(:prescription_drug_3) { create(:prescription_drug, :deleted, patient: patient) }
-  let(:now) { Time.current }
 
   let!(:old_blood_pressure) { create(:blood_pressure, recorded_at: 1.year.ago, patient: patient) }
   let!(:old_appointment) {
@@ -50,10 +49,10 @@ RSpec.describe PatientsExporter do
     [
       "Registration Date",
       "Registration Quarter",
-      "Patient died?",
       "Patient Name",
       "Patient Age",
       "Patient Gender",
+      "Patient Status",
       "Patient Phone Number",
       "Patient Street Address",
       "Patient Village/Colony",
@@ -102,12 +101,12 @@ RSpec.describe PatientsExporter do
 
   let(:fields) do
     [
-      I18n.l(patient.recorded_at),
+      I18n.l(patient.recorded_at.to_date),
       quarter_string(patient.recorded_at),
-      "Died",
       patient.full_name,
       patient.current_age,
       patient.gender.capitalize,
+      "Died",
       patient.phone_numbers.last&.number,
       patient.address.street_address,
       patient.address.village_or_colony,
@@ -124,7 +123,7 @@ RSpec.describe PatientsExporter do
       registration_facility.state,
       "no",
       "yes",
-      I18n.l(blood_pressure.recorded_at),
+      I18n.l(blood_pressure.recorded_at.to_date),
       blood_pressure.systolic,
       blood_pressure.diastolic,
       quarter_string(blood_pressure.recorded_at),
@@ -132,7 +131,7 @@ RSpec.describe PatientsExporter do
       blood_pressure.facility.facility_type,
       blood_pressure.facility.district,
       blood_pressure.facility.state,
-      I18n.l(blood_sugar.recorded_at),
+      I18n.l(blood_sugar.recorded_at.to_date),
       "#{blood_sugar.blood_sugar_value} mg/dL",
       "Fasting",
       appointment.facility.name,
@@ -151,17 +150,19 @@ RSpec.describe PatientsExporter do
   before do
     allow(patient).to receive(:high_risk?).and_return(true)
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
-
     blood_sugar.update!(encounter: blood_pressure.encounter)
     patient.medical_history.update!(hypertension: "no", diabetes: "yes")
+    MaterializedPatientSummary.refresh
   end
 
   describe "#csv" do
+    let(:now) { Time.current }
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
       travel_to now do
-        expect(subject.csv(Patient.all)).to eq(timestamp.to_csv + headers.to_csv + fields.to_csv)
+        actual_csv = timestamp.to_csv + headers.to_csv + fields.to_csv
+        expect(subject.csv(Patient.all).to_s.strip).to eq(actual_csv.to_s.strip)
       end
     end
 
@@ -171,26 +172,21 @@ RSpec.describe PatientsExporter do
       end
     end
 
-    it "uses fetches patients in batches" do
-      expect_any_instance_of(facility.assigned_patients.class)
-        .to receive(:in_batches).and_return([patient_batch])
-
-      subject.csv(facility.assigned_patients)
-    end
-
     it "does not include the zone column if the country config is set to false" do
       allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(false)
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
-      expect(subject.csv_fields(patient)).not_to include(patient.address.zone)
+      expect(subject.csv_fields(MaterializedPatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
     end
 
     it "includes blood sugars from other visits" do
       blood_sugar.destroy
       _other_blood_sugar = create(:blood_sugar, :fasting, :with_encounter, facility: facility, patient: patient)
+      MaterializedPatientSummary.refresh
 
-      expect(subject.csv_fields(patient)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
-      expect(subject.csv_fields(patient)).to include("Fasting")
+      patient_summary = MaterializedPatientSummary.find_by(id: patient)
+      expect(subject.csv_fields(patient_summary)).to include("#{blood_sugar.blood_sugar_value} mg/dL")
+      expect(subject.csv_fields(patient_summary)).to include("Fasting")
     end
   end
 end

@@ -69,20 +69,20 @@ class Quarter
     date
   end
 
-  def start_date
-    date.beginning_of_quarter
+  def begin
+    date.beginning_of_quarter.beginning_of_day
   end
 
-  def end_date
-    date.end_of_quarter
+  def end
+    date.end_of_quarter.end_of_day
   end
 
   def to_period
     Period.quarter(self)
   end
 
-  alias_method :beginning_of_quarter, :start_date
-  alias_method :end_of_quarter, :end_date
+  alias_method :beginning_of_quarter, :begin
+  alias_method :end_of_quarter, :end
 
   def inspect
     "#<Quarter:#{object_id} #{to_s.inspect}>"

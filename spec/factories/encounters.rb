@@ -54,3 +54,21 @@ def updated_encounters_payload(existing_encounter)
     "systolic" => rand(80..240)
   )
 end
+
+def associate_encounter(observable)
+  encountered_on = Encounter.generate_encountered_on(observable.recorded_at, 0)
+  encounter_id = Encounter.generate_id(observable.facility_id, observable.patient_id, encountered_on)
+
+  Encounter.find_by(id: encounter_id) || create(:encounter,
+    id: encounter_id,
+    patient: observable.patient,
+    observable: observable,
+    facility: observable.facility,
+    encountered_on: encountered_on)
+
+  create(:observation,
+    encounter_id: encounter_id,
+    observable: observable,
+    observable_type: observable.class.name,
+    user: observable.user)
+end

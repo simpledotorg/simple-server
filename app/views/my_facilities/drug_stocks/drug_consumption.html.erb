@@ -1,0 +1,50 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card card-responsive">
+      <div>
+        <div class="d-flex align-baseline jc-between">
+          <h3>
+            Drug consumption during <%= @for_end_of_month_display %>
+          </h3>
+          <p class="c-grey-dark">
+            Last updated: <%= @report&.fetch(:last_updated_at) %>
+          </p>
+        </div>
+
+        <p class="mb-4">
+          Consumption is calculated by:
+          <span class="badge badge-light text-muted">CLOSING BALANCE OF PREVIOUS MONTH</span>
+          <small><i class="fas fa-plus"></i></small>
+          <span class="badge badge-light text-muted">STOCK RECEIVED THIS MONTH</span>
+          <small><i class="fas fa-minus"></i></small>
+          <span class="badge badge-light text-muted">CLOSING BALANCE OF THIS MONTH</span>
+        </p>
+        <p>
+
+        </p>
+      </div>
+      <div class="d-flex fw-wrap mb-16px">
+        <%= render "shared/my_facilities_filters" %>
+        <div class="dropdown show mb-8px mr-8px">
+          <a id="dropdownMenuLink" class="btn btn-sm btn-outline btn-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
+            <%= @for_end_of_month_display %>
+          </a>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <% last_n_months(n: 6, inclusive: true).each do |month| %>
+              <% button_class = "dropdown-item query-filter-size filter-by-size" %>
+              <% button_class = "dropdown-item active " if month.end_of_month == @for_end_of_month %>
+              <button class="<%= button_class %>" value="<%= month.strftime("%b-%Y") %>" name="for_end_of_month" type="submit" form="query-filters">
+                <%= month.strftime("%b-%Y") %>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <% if @facilities.present? %>
+        <%= render "drug_consumption_table" %>
+      <% else %>
+        <p>There is no data for this selection.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

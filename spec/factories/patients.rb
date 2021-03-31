@@ -9,7 +9,7 @@ FactoryBot.define do
     end
 
     id { SecureRandom.uuid }
-    gender { Seed::Runner.random_gender }
+    gender { Seed::Gender.random_gender }
     full_name { common_names[gender.to_sym].sample + " " + common_names[gender.to_sym].sample }
     status { Patient::STATUSES[0] }
     date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
@@ -19,16 +19,15 @@ FactoryBot.define do
     device_updated_at { Time.current }
     recorded_at { device_created_at }
     association :address, strategy: :build
-    phone_numbers { build_list(:patient_phone_number, 1, patient_id: id) }
+    phone_numbers do
+      [association(:patient_phone_number, strategy: :build, patient: instance)]
+    end
     association :registration_facility, factory: :facility
     assigned_facility { registration_facility }
     association :registration_user, factory: :user_created_on_device
     business_identifiers do
-      build_list(:patient_business_identifier,
-        1,
-        patient_id: id,
-        metadata: {assigning_facility_id: registration_facility.id,
-                   assigning_user_id: registration_user.id})
+      [association(:patient_business_identifier, strategy: :build, patient: instance,
+                                                 metadata: {assigning_facility_id: registration_facility.id, assigning_user_id: registration_user.id})]
     end
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }
@@ -57,6 +56,10 @@ FactoryBot.define do
       reminder_consent { Patient.reminder_consents[:denied] }
     end
 
+    trait(:seed) do
+      business_identifiers { nil }
+    end
+
     trait(:with_sanitized_phone_number) do
       phone_numbers { build_list(:patient_phone_number, 1, patient_id: id, number: "9876543210") }
     end
@@ -77,6 +80,8 @@ def build_patient_payload(patient = FactoryBot.build(:patient))
     .except("registration_user_id")
     .except("test_data")
     .except("deleted_by_user_id")
+    .except("merged_into_patient_id")
+    .except("merged_by_user_id")
     .merge(
       "address" => patient.address.attributes.with_payload_keys,
       "phone_numbers" => patient.phone_numbers.map { |phno| phno.attributes.with_payload_keys.except("patient_id", "dnd_status") },
@@ -117,4 +122,36 @@ def updated_patient_payload(existing_patient)
       "metadata" => business_identifier.metadata&.to_json
     )]
   )
+end
+
+def create_visit(patient, facility: patient.registration_facility, user: patient.registration_user, visited_at: Time.now)
+  patient.prescription_drugs.where("device_created_at < ?", visited_at).update_all(is_deleted: true)
+  patient.appointments.where("device_created_at < ?", visited_at).update_all(status: :visited)
+  {
+    blood_pressure: create(:blood_pressure, :with_encounter, :critical, recorded_at: visited_at, facility: facility, patient: patient, user: user),
+    blood_sugar: create(:blood_sugar, :fasting, :with_encounter, recorded_at: visited_at, facility: facility, patient: patient, user: user),
+    protocol_prescription_drug: create(:prescription_drug, :protocol, device_created_at: visited_at, facility: facility, patient: patient, user: user),
+    non_protocol_prescription_drug: create(:prescription_drug, device_created_at: visited_at, facility: facility, patient: patient, user: user),
+    appointment: create(:appointment, status: :scheduled, device_created_at: visited_at, scheduled_date: 1.month.after(visited_at), creation_facility: facility, facility: facility, patient: patient, user: user),
+    teleconsultation: create(:teleconsultation, patient: patient, facility: facility, requester: user, medical_officer: user, requested_medical_officer: user)
+  }
+end
+
+def add_visits(visit_count, patient:, facility: patient.registration_facility, user: patient.registration_user)
+  (1..visit_count).to_a.reverse_each do |num_months|
+    create_visit(patient, facility: facility, user: user, visited_at: num_months.months.ago)
+  end
+end
+
+def create_patient_with_visits(registration_time: Time.now, facility: create(:facility), user: create(:admin, :power_user))
+  patient = create(:patient,
+    recorded_at: registration_time,
+    registration_facility: facility,
+    registration_user: user,
+    device_created_at: registration_time,
+    device_updated_at: registration_time)
+
+  add_visits(3, patient: patient, facility: facility, user: user)
+
+  patient
 end

@@ -30,3 +30,8 @@ coverage
 
 # Ignore leftover pulls from cap db:pull
 /*.sql
+
+# Ignore utility configuration files
+.idea/
+.rubocop.yml
+config/spring.rb

@@ -7,7 +7,6 @@ FactoryBot.define do
     end
 
     full_name { Faker::Name.name }
-    organization
     device_created_at { Time.current }
     device_updated_at { Time.current }
     teleconsultation_phone_number { Faker::PhoneNumber.phone_number }
@@ -54,7 +53,7 @@ FactoryBot.define do
   end
 
   sequence(:strong_password) do |n|
-    [Faker::Name.first_name, Faker::Name.last_name, Faker::Internet.domain_word, n].join("-")
+    Faker::Lorem.characters(number: 9, min_alpha: 9).capitalize + n.to_s
   end
 
   factory :admin, class: User do
@@ -69,8 +68,8 @@ FactoryBot.define do
     device_updated_at { Time.current }
     sync_approval_status { User.sync_approval_statuses[:denied] }
     email_authentications { build_list(:email_authentication, 1, email: email, password: password) }
-    organization
     role { "power user" }
+    receive_approval_notifications { true }
     access_level { :power_user }
 
     trait :call_center do

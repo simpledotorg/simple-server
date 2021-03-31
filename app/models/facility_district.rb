@@ -13,6 +13,17 @@ class FacilityDistrict
     scope.where(district: name)
   end
 
+  def child_region_type
+    "facility"
+  end
+
+  alias_method :children, :facilities
+
+  # FacilityDistrict always returns child facilities for reports
+  def reportable_children
+    children
+  end
+
   def organization
     facility_group_ids = facilities.pluck(:facility_group_id).uniq
     organization_ids = FacilityGroup.where(id: facility_group_ids).pluck(:organization_id).uniq
@@ -20,19 +31,11 @@ class FacilityDistrict
   end
 
   def dashboard_analytics(period:, prev_periods:, include_current_period: true)
-    query = DistrictAnalyticsQuery.new(
-      self,
-      period,
-      prev_periods,
-      include_current_period: include_current_period
-    )
-    query.call
+    DistrictAnalyticsQuery.new(self, period, prev_periods, include_current_period: include_current_period).call
   end
 
   def cohort_analytics(period:, prev_periods:)
-    query = CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods)
-
-    query.call
+    CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end
 
   def registered_hypertension_patients
@@ -57,6 +60,32 @@ class FacilityDistrict
 
   def updated_at
     facilities.maximum(:updated_at) || Time.current.beginning_of_day
+  end
+
+  def region
+    self
+  end
+
+  def cache_key
+    ["facility_districts", id].join("/")
+  end
+
+  def slug
+    name.parameterize
+  end
+
+  def cache_version
+    updated_at.utc.to_s(:usec)
+  end
+
+  # For regions compatibility
+  def source
+    self
+  end
+
+  # For regions compatibility
+  def region_type
+    "facility_district"
   end
 
   # For regions compatibility

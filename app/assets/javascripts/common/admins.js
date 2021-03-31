@@ -4,6 +4,7 @@
 const ACCESS_LIST_INPUT_SELECTOR = "input.access-input"
 const ACCESS_LEVEL_ID = "access-level"
 const ACCESS_LEVEL_POWER_USER = "power_user"
+const ACCESS_LIST_CLICK_ELEMENT = "access-item__dropdown"
 
 AdminAccess = function (accessDivId) {
   this.facilityAccess = document.getElementById(accessDivId)
@@ -13,18 +14,6 @@ AdminAccess.prototype = {
   accessLevel: () => document.getElementById(ACCESS_LEVEL_ID),
 
   facilityAccessPowerUser: () => document.getElementById("facility-access-power-user"),
-
-  facilityAccessItemsPadding: function () {
-    return document.getElementsByClassName("access-item__padding")
-  },
-
-  facilityAccessItemsAccessRatio: function () {
-    return document.getElementsByClassName("access-ratio")
-  },
-
-  facilityAccessItemsDropdown: function () {
-    return document.getElementsByClassName("access-item__dropdown")
-  },
 
   selectAllFacilitiesContainer: function () {
     return document.getElementById("select-all-facilities")
@@ -52,9 +41,7 @@ AdminAccess.prototype = {
 
   resourceRowCollapseListener: function () {
     const collapsibleItems = [
-      this.facilityAccessItemsPadding(),
-      this.facilityAccessItemsAccessRatio(),
-      this.facilityAccessItemsDropdown()
+      document.getElementsByClassName(ACCESS_LIST_CLICK_ELEMENT)
     ].map(htmlCollection => Array.from(htmlCollection)).flat()
 
     for (const item of collapsibleItems) {
@@ -216,8 +203,18 @@ AdminAccess.prototype = {
     });
   },
 
-  initialize: function () {
-    this.onAsyncLoaded()
+  onDOMLoaded: function() {
+    document.addEventListener('DOMContentLoaded', (_event) => {
+      this.resourceRowCollapseListener()
+    });
+  },
+
+  initialize: function (async = true) {
+    if(async) {
+      this.onAsyncLoaded()
+    } else {
+      this.onDOMLoaded()
+    }
   }
 }
 
