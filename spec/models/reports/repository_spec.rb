@@ -32,11 +32,14 @@ RSpec.describe Reports::Repository, type: :model do
       facility_1, facility_2 = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1)
       region = facility_group_1.region
       other_facility = create(:facility)
-      patient_1 = create(:patient, recorded_at: july_2018, assigned_facility: facility_2)
-      patient_2 = create(:patient, recorded_at: june_1_2018, assigned_facility: other_facility, registration_facility: facility_1)
+      _patient_1 = create(:patient, recorded_at: july_2018, assigned_facility: facility_2)
+      _patient_2 = create(:patient, recorded_at: june_1_2018, assigned_facility: other_facility, registration_facility: facility_1)
+      facility_3 = create(:facility)
+      region_with_no_patients = facility_3.region
 
       repo = Reports::Repository.new(facility_group_1.region, periods: jan_2019.to_period)
       expect(repo.earliest_patient_recorded_at[region.slug]).to eq(june_1_2018)
+      expect(repo.earliest_patient_recorded_at[region_with_no_patients.slug]).to be_nil
     end
   end
 
