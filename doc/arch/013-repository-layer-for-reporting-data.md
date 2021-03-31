@@ -35,4 +35,4 @@ calculations that are dependant on many other queries or calculations (like miss
 * We need to be aware of certain inputs that impact a wide range of queries, and ensure they are passed into the repository and
 part of respective cache keys.  One example of this is the `with_exclusions` flag that we have introduced to filter out patients
 from our common denominators.
-* This sort of approach makes it easy to change out data sources - for example, if we introduce proper ETL based tables for determining control counts, we can subsitute the underlying ControlRateQuery Repository uses. Callers should not have to care at all about the change.
+* This sort of approach makes it easier to change out data sources - for example, if we introduce proper ETL based tables for determining control counts, we can subsitute the underlying ControlRateQuery Repository uses. Callers should not have to care at all about the change.
