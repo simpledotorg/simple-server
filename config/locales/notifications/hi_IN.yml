@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   set01:
     basic: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     gratitude: "हाई बी पी के लिए नियमित दवाएं लेने के लिए आपका धन्यवाद। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं ।"
@@ -9,11 +9,11 @@ hi-IN:
     professional_request: "आपका डॉक्टर आपको अपने बी पी की जांच के लिए याद दिलाना चाहता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     response: "%{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
   set02:
-    basic: "हम आज आपके आने की उम्मीद कर रहे हैं। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
-    gratitude: "हम आज आपके आने की उम्मीद कर रहे हैं। । हाई बी पी के लिए नियमित दवाएं लेने के लिए धन्यवाद। %{patient_name}, कृप्या बीपी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
-    free: "हम आज आपके आने की उम्मीद कर रहे हैं। मुफ्त में बी पी की जांच करवाएं और बी पी की दवाएं ले। %{patient_name}, कृप्या %{appointment_date} को %{assigned_facility_name} आएं।"
-    alarm: "हम आज आपके आने की उम्मीद कर रहे हैं। हाई बी पी हार्ट अटैक और स्ट्रोक से मार सकता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
-    emotional_relatives: "हम आज आपके आने की उम्मीद कर रहे हैं। आपका परिवार यह जानकर प्रसन्न होगा कि आप अपने दिल के स्वास्थ्य की देखभाल कर रहे हैं। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
+    basic: "हम आज आपके आने की उम्मीद कर रहे हैं। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{assigned_facility_name} आएं।"
+    gratitude: "हम आज आपके आने की उम्मीद कर रहे हैं। । हाई बी पी के लिए नियमित दवाएं लेने के लिए धन्यवाद। %{patient_name}, कृप्या बीपी की जांच और दवाओं के लिए  %{assigned_facility_name} आएं।"
+    free: "हम आज आपके आने की उम्मीद कर रहे हैं। मुफ्त में बी पी की जांच करवाएं और बी पी की दवाएं ले। %{patient_name}, कृप्या %{assigned_facility_name} आएं।"
+    alarm: "हम आज आपके आने की उम्मीद कर रहे हैं। हाई बी पी हार्ट अटैक और स्ट्रोक से मार सकता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए  %{assigned_facility_name} आएं।"
+    emotional_relatives: "हम आज आपके आने की उम्मीद कर रहे हैं। आपका परिवार यह जानकर प्रसन्न होगा कि आप अपने दिल के स्वास्थ्य की देखभाल कर रहे हैं। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए  %{assigned_facility_name} आएं।"
     emotional_guilt: "हम आज आपके आने की उम्मीद कर रहे हैं। अगर इलाज न किया जाए, तो हाई बी पी आपके पूरे समुदाय के लिए खतरनाक हो सकता है। । %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     professional_request: "हम आज आपके आने की उम्मीद कर रहे हैं।  आपका डॉक्टर आपको अपने बी पी की जांच के लिए याद दिलाना चाहता है। %{patient_name}, कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं।"
     response: "हम आज आपके आने की उम्मीद कर रहे हैं। कृप्या बी पी की जांच और दवाओं के लिए %{appointment_date} को %{assigned_facility_name} आएं। इस लिंक पर क्लिक करके हमें बताएं कि आप आयेगे।"
