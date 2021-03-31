@@ -1,8 +1,8 @@
-# Repository Layer for Metrics
+# Repository Layer for Reporting Data
 
 ## Context
 
-We generate many reports for the Simple dashboard and the mobile app. Retreving all the data for these reports in a 
+We generate many reports for the Simple dashboard and the mobile app. Retreving all the data for these reports in a
 consistent and performant manner is a challenge.  We need to aggregate and filter a large amount of data across multiple reports, and its important for user confidence that we have the same numbers reported regardless of what report they are on.
 
 Our current reports retrieve their data in a variety of ways:
