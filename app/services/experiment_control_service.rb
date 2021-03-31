@@ -1,44 +1,44 @@
+class InvalidExperiment < StandardError; end
 module ExperimentControlService
-
   def self.start_current_patient_experiment(name, percentage_of_patients, delay_start=5)
     # error if percentage_of_patients is > 100
+    existing_experiment = Experimentation::Experiment.where(experiment_type: "current_patient_reminder", state: ["selecting", "live"])
+    raise InvalidExperiment if existing_experiment.any?
+
     experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patient_reminder")
     percentage_of_patients = Integer(percentage_of_patients)
-    experiment_start = Date.current + delay_start.days
-    experiment_end = experiment_start + 30.days
+    experiment_start = delay_start.days.from_now.beginning_of_day
+    experiment_end = (experiment_start + 30.days).end_of_day
+
     experiment.update(state: "selecting")
-    eligible = patient_pool
-      .joins(:appointments)
-      .where("appointments.status = ?", "scheduled")
-      .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
-      .order(Arel.sql("random()"))
+
+    eligible = patient_pool(experiment_start, experiment_end)
     experiment_patient_count = (0.01 * percentage_of_patients * eligible.length).round
     experiment_patients = eligible.take(experiment_patient_count)
     experiment_patients.each do |patient|
       group = experiment.group_for(patient.id)
-      appointment = patient.appointments.where(status: "scheduled").where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end).limit(1).first
+      appointment = patient.appointments.where(status: "scheduled")
+        .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end).first
       schedule_reminders(patient, appointment, experiment, group, appointment.scheduled_date)
       Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
     end
+
     experiment.update(state: "live", start_date: experiment_start, end_date: experiment_end)
   end
 
-  def self.start_stale_patient_experiment(name, max_patients = 300_000)
+  # consider adding a total days and # per day args
+  def self.start_stale_patient_experiment(name)
     experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patient_reminder")
-    eligibility_start = (Date.current - 365.days).beginning_of_day
-    eligibility_end = (Date.current - 35.days).end_of_day
-    eligible_patients = patient_pool
-      .joins(:appointments)
-      .where("appointments.status = ?", "scheduled")
-      .where("appointments.scheduled_date BETWEEN ? AND ?", eligibility_start, eligibility_end)
-      .limit(max_patients)
-      .order(Arel.sql("random()"))
-    selectable_patients = eligible_patients.to_a
     date = Date.current
+    eligibility_start = (date - 365.days).beginning_of_day
+    eligibility_end = (date - 35.days).end_of_day
+
+    eligible_patients = patient_pool(eligibility_start, eligibility_end).to_a
+
     30.times do
-      schedule_patients = selectable_patients.pop(10_000)
-      break if schedule_patients.empty?
-      schedule_patients.each do |patient|
+      daily_patients = eligible_patients.pop(10_000)
+      break if daily_patients.empty?
+      daily_patients.each do |patient|
         group = experiment.group_for(patient.id)
         appointment = patient.appointments.where(status: "scheduled").last # i think this should suffice
         schedule_reminders(patient, appointment, experiment, group, date)
@@ -51,13 +51,16 @@ module ExperimentControlService
 
   protected
 
-  def self.patient_pool
+  def self.patient_pool(start_date, end_date)
     Patient.from(Patient.with_hypertension, :patients)
-      .where(reminder_consent: "granted")
-      .where.not(status: "dead")
-      .joins(:phone_numbers)
-      .merge(PatientPhoneNumber.phone_type_mobile.unscoped)
+      .contactable
       .where("age >= ?", 18)
+      .includes(treatment_group_memberships: [treatment_group: [:experiment]])
+      .where(["experiments.end_date < ? OR experiments.id IS NULL", 14.days.ago]).references(:experiment)
+      .joins(:appointments)
+      .where("appointments.status = ?", "scheduled")
+      .where("appointments.scheduled_date BETWEEN ? AND ?", start_date, end_date)
+      .order(Arel.sql("random()"))
   end
 
   def self.schedule_reminders(patient, appointment, experiment, group, schedule_date)
