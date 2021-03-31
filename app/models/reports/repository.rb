@@ -96,7 +96,7 @@ module Reports
     smart_memoize def cumulative_assigned_patients_count
       complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         slug = region_entry.slug
-        next totals[slug] = 0 if earliest_patient_recorded_at[slug].nil?
+        next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
         range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
         totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
           sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
