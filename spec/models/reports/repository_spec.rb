@@ -16,9 +16,6 @@ RSpec.describe Reports::Repository, type: :model do
   let(:july_2018) { Time.parse("July 1st, 2018 00:00:00+00:00") }
   let(:july_2020) { Time.parse("July 1st, 2020 00:00:00+00:00") }
 
-  before do
-    Rails.cache.clear
-  end
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh

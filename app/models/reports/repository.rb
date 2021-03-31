@@ -33,12 +33,16 @@ module Reports
 
     # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
     # the periods that are passed in for the Repository - this is the true 'earliest report date' for a Region.
-    def earliest_patient_recorded_at
+    memoize def earliest_patient_recorded_at
       region_entries = regions.map { |region| RegionEntry.new(region, __method__) }
       cached_results = cache.fetch_multi(*region_entries, force: bust_cache?) { |region_entry|
         EarliestPatientDataQuery.call(region_entry.region)
       }
       cached_results.each_with_object({}) { |(region_entry, time), results| results[region_entry.slug] = time }
+    end
+
+    memoize def earliest_patient_recorded_at_period
+      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.month(time) if time }
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
@@ -89,8 +93,10 @@ module Reports
     # Return the running total of cumulative assigned patient counts.
     smart_memoize def cumulative_assigned_patients_count
       complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
-        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
-        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+        slug = region_entry.slug
+        next totals[slug] = 0 if earliest_patient_recorded_at[slug].nil?
+        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
+        totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
           sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
         }
       end
@@ -213,8 +219,8 @@ module Reports
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
         results[entry.region.slug] ||= Hash.new(0)
-        next if earliest_patient_recorded_at[entry.slug].nil?
-        next if entry.period < Period.month(earliest_patient_recorded_at[entry.slug])
+        next if earliest_patient_recorded_at_period[entry.slug].nil?
+        next if entry.period < earliest_patient_recorded_at_period[entry.slug]
         results[entry.region.slug][entry.period] = count
       end
     end
