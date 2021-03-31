@@ -112,19 +112,6 @@ module Reports
       }
     end
 
-    def earliest_patient_registration_period
-      items = regions.map { |region| RegionEntry.new(region, __method__, with_exclusions: with_exclusions) }
-      results = cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        assigned = region_entry.region.assigned_patients.minimum(:recorded_at)
-        registered = region_entry.region.assigned_patients.minimum(:recorded_at)
-        earliest = [assigned, registered].compact.min
-        earliest ? Period.month(earliest) : nil
-      }
-      results.each_with_object({}) do |(region_entry, period), hsh|
-        hsh[region_entry.slug] = period
-      end
-    end
-
     smart_memoize def cumulative_registrations
       complete_registration_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         range = Range.new(patient_counts.keys.first || periods.first, periods.end)
@@ -226,8 +213,8 @@ module Reports
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
         results[entry.region.slug] ||= Hash.new(0)
-        next if earliest_patient_registration_period[entry.slug].nil?
-        next if entry.period < earliest_patient_registration_period[entry.slug]
+        next if earliest_patient_recorded_at[entry.slug].nil?
+        next if entry.period < Period.month(earliest_patient_recorded_at[entry.slug])
         results[entry.region.slug][entry.period] = count
       end
     end
