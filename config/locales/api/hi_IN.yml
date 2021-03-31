@@ -226,7 +226,7 @@ hi_IN:
       medicine_refills:
         heading: दवाई रिफ़िल
         contents: "यदि आप किसी रोगी की वर्तमान दवाओं को रिफ़िल कर रहे हैं:"
-        step_1_html: "रोगी की सारांश स्क्रीन पर, <span class=\"code\">+ दवाइयां</span> दबाएँ"
+        step_1_html: "रोगी की सारांश स्क्रीन पर, <span class=\"code\">+ दवाइयां</span> दबाएं"
         step_2_html: "<span class=\"code\">दवाइयां रिफ़िल करें</span> दबाएं"
         step_3: हो गया!
         english_video_link: किसी रोगी की दवाओं को कैसे रिफ़िल करें
