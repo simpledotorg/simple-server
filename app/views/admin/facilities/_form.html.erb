@@ -8,29 +8,21 @@
       <% end %>
       <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off", help: "Include the facility type in the name. Example: PHC Brooklyn", label: "Facility name *" %>
       <%= form.text_field :facility_type, id: :facility_type, help: "Examples: DH, SDH, CHC, PHC, UPHC, HWC, SC", required: true %>
-      <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [key.capitalize, value] }, id: :facility_size, help: "Select the closest relative size", required: true %>
+      <%= form.select :facility_size, Facility.facility_sizes.map { |key, value| [Facility.localized_facility_size(key), value] }, id: :facility_size, help: "Select the closest relative size", required: true %>
       <h3 class="mt-5">Address</h3>
       <%= form.text_field :street_address, id: :facility_street_address %>
       <%= form.text_field :village_or_colony, id: :facility_village_or_colony %>
-      <% if Flipper.enabled?(:regions_prep) %>
-        <%= form.select :zone,
-                        @available_zones.zip(@available_zones),
-                        {id: :facility_zone, include_blank: true, wrapper_class: "mb-0"},
-                        required: true %>
-        <small class="form-text text-muted mb-3">
-          If you don't see a block in the list,
-          <%= link_to "add it to the facility group", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
-          and refresh this page.
-        </small>
-      <% else %>
-        <%= form.text_field :zone, id: :facility_zone, required: true %>
-      <% end %>
+      <%= form.select :zone,
+          @available_zones.zip(@available_zones),
+          {id: :facility_zone, include_blank: true, wrapper_class: "mb-0"},
+          required: true %>
+      <small class="form-text text-muted mb-3">
+        If you don't see a block in the list,
+        <%= link_to "add it to the facility group", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
+        and refresh this page.
+      </small>
       <%= form.text_field :district, id: :facility_district, required: true %>
-      <% if Flipper.enabled?(:regions_prep) %>
-        <%= form.text_field :state, id: :facility_state, required: true, disabled: true %>
-      <% else %>
-        <%= form.text_field :state, id: :facility_state, required: true %>
-      <% end %>
+      <%= form.text_field :state, id: :facility_state, required: true, disabled: true %>
       <%= form.text_field :country, id: :facility_country, required: true, disabled: true %>
       <%= form.text_field :pin, id: :facility_pin %>
 

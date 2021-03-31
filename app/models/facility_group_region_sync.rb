@@ -5,7 +5,6 @@
 # Keep the callbacks simple (avoid branching and optimization), idempotent (if possible) and loud when things break.
 class FacilityGroupRegionSync < SimpleDelegator
   def after_create
-    return true unless Flipper.enabled?(:regions_prep)
     return if region&.persisted?
 
     create_region!(
@@ -16,14 +15,12 @@ class FacilityGroupRegionSync < SimpleDelegator
   end
 
   def after_update
-    return true unless Flipper.enabled?(:regions_prep)
     region.reparent_to = state_region
     region.name = name
     region.save!
   end
 
   def sync_block_regions
-    return true unless Flipper.enabled?(:regions_prep)
     create_block_regions
     remove_block_regions
   end

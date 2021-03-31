@@ -8,6 +8,12 @@ describe "RateLimiter", type: :controller do
     Rails.application
   end
 
+  around(:example) do |example|
+    Rails.cache.clear
+    example.run
+    Rails.cache.clear
+  end
+
   describe "throttle authentication APIs" do
     context "admin logins by IP address" do
       let(:limit) { 5 }
@@ -114,10 +120,12 @@ describe "RateLimiter", type: :controller do
       end
 
       context "edit page" do
+        let(:token) { build(:email_authentication).send_reset_password_instructions }
+
         context "number of requests is lower than the limit" do
           it "does not change the request status" do
             limit.times do
-              get "/email_authentications/password/edit", reset_password_token: "zzSUazFCxzom5XzmGTNQ"
+              get "/email_authentications/password/edit", reset_password_token: token
 
               expect(last_response.status).to_not eq(429)
             end
@@ -127,7 +135,7 @@ describe "RateLimiter", type: :controller do
         context "number of requests is higher than the limit" do
           it "changes the request status to 429" do
             (limit * 2).times do |i|
-              get "/email_authentications/password/edit", reset_password_token: "zzSUazFCxzom5XzmGTNQ"
+              get "/email_authentications/password/edit", reset_password_token: token
 
               if i > limit
                 expect(last_response.status).to eq(429)

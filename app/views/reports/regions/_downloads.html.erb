@@ -19,14 +19,16 @@
       Monthly cohort report
     <% end %>
 
-    <% if @region.facilities.to_set.subset?(current_admin.accessible_facilities(:view_pii).to_set) %>
-      <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
-        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
-        Patient list 
-      <% end %>
-      <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true), class: "dropdown-item") do %>
-        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
-        Patient list with med. history
+    <% unless @region.region_type.in?(["state", "block"]) %>
+      <% if @region.facilities.to_set.subset?(current_admin.accessible_facilities(:view_pii).to_set) %>
+        <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
+          <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+          Patient list
+        <% end %>
+        <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope], medication_history: true), class: "dropdown-item") do %>
+          <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+          Patient list with med. history
+        <% end %>
       <% end %>
     <% end %>
 
@@ -44,7 +46,7 @@
 
     <%= link_to(reports_graphics_path(@region, report_scope: params[:report_scope], quarter: previous_quarter, year: previous_quarter_year, format: "png"), class: "dropdown-item") do %>
       <i class="far fa-image w-16px ta-center mr-4px c-grey-medium"></i>
-      Download as an image 
+      Download as an image
     <% end %>
 
     <div class="dropdown-divider"></div>

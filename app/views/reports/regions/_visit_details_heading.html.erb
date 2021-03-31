@@ -1,0 +1,13 @@
+<% if current_admin.feature_enabled?(:report_with_exclusions) %>
+  <div class="d-flex flex-1 mb-8px">
+    <p class="mb-0px mr-6px fw-bold">
+      <%= title %>
+    </p>
+    <%= render "definition_tooltip",
+               definitions: {"Numerator" => numerator, "Denominator" => denominator}%>
+  </div>
+<% else %>
+  <p class="mb-8px fw-bold">
+    <%= title %>
+  </p>
+<% end %>

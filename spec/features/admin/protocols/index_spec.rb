@@ -9,14 +9,9 @@ RSpec.feature "test protocol screen functionality", type: :feature do
   protocol_show = AdminPage::Protocols::Show.new
 
   before(:each) do
-    enable_flag(:new_permissions_system_aug_2020, owner)
     visit root_path
     sign_in(owner.email_authentication)
     visit admin_protocols_path
-  end
-
-  after(:each) do
-    disable_flag(:new_permissions_system_aug_2020, owner)
   end
 
   context "protocol landing page" do
@@ -42,13 +37,6 @@ RSpec.feature "test protocol screen functionality", type: :feature do
         expect(page).to have_content("Edit")
         expect(page).to have_selector("a.btn-outline-danger")
         expect(page).to have_content("40")
-      end
-    end
-
-    skip "JS specs are currently disabled" do
-      it "delete protocol", js: true do
-        protocol_page.delete_protocol(var_protocol.name)
-        protocol_page.click_on_message_close_button
       end
     end
   end

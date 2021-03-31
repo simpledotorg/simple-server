@@ -4,6 +4,16 @@ module DashboardHelper
     number_with_delimiter(value, options)
   end
 
+  def number_or_zero_with_delimiter(value, options = {})
+    return 0 unless value
+    number_with_delimiter(value, options)
+  end
+
+  def number_to_percentage_with_symbol(value, options = {})
+    symbol = value > 0 ? "+" : ""
+    symbol + number_to_percentage(value, options)
+  end
+
   def dash_if_zero(value)
     zero?(value) ? "-" : value
   end
@@ -33,6 +43,10 @@ module DashboardHelper
     period == :month ? value.strftime("%b-%Y") : quarter_string(value)
   end
 
+  def multiline_format_period(period, value)
+    format_period(period, value).gsub("-", "-\n")
+  end
+
   def analytics_totals(analytics, metric, date)
     analytics.sum { |_, row| row.dig(metric, date) || 0 }
   end
@@ -49,5 +63,13 @@ module DashboardHelper
     return "< 1%" if percentage < 1
 
     "#{percentage.round(0)}%"
+  end
+
+  def six_month_rate_change(facility, rate_name)
+    @data_for_facility[facility.name][rate_name][@period] - @data_for_facility[facility.name][rate_name][@start_period] || 0
+  end
+
+  def facility_size_six_month_rate_change(facility_size_data, rate_name)
+    facility_size_data[@period][rate_name] - facility_size_data[@start_period][rate_name] || 0
   end
 end

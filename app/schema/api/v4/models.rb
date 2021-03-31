@@ -302,6 +302,25 @@ class Api::V4::Models
        required: %w[id password]}
     end
 
+    def medication
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         name: {"$ref" => "#/definitions/non_empty_string"},
+         category: {type: [:string, "null"], enum: Medication::CATEGORIES.keys << nil},
+         frequency: {type: [:string, "null"], enum: Medication::FREQUENCIES.keys << nil},
+         composition: {type: [:string, "null"]},
+         dosage: {type: [:string, "null"]},
+         rxnorm_code: {type: [:string, "null"]},
+         protocol: {type: [:string, "null"], enum: [:yes, :no]},
+         common: {type: [:string, "null"], enum: [:yes, :no]},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
+       },
+       required: %w[id name created_at updated_at]}
+    end
+
     def definitions
       {timestamp: timestamp,
        uuid: uuid,
@@ -320,7 +339,9 @@ class Api::V4::Models
        facility_medical_officer: facility_medical_officer,
        facility_medical_officers: array_of("facility_medical_officer"),
        teleconsultation: teleconsultation,
-       teleconsultations: array_of("teleconsultation")}
+       teleconsultations: array_of("teleconsultation"),
+       medication: medication,
+       medications: array_of("medication")}
     end
   end
 end

@@ -37,7 +37,7 @@ RSpec.describe BloodSugar, type: :model do
     end
   end
 
-  describe "scopes" do
+  describe "Scopes" do
     let!(:fasting) { create(:blood_sugar, blood_sugar_type: :fasting) }
     let!(:random) { create(:blood_sugar, blood_sugar_type: :random) }
     let!(:post_prandial) { create(:blood_sugar, blood_sugar_type: :post_prandial) }
@@ -50,28 +50,11 @@ RSpec.describe BloodSugar, type: :model do
       end
     end
 
-    describe ".syncable_to_region" do
-      it "returns all patients registered in the region" do
-        facility_group = create(:facility_group)
-        facility = create(:facility, facility_group: facility_group)
-        patient = create(:patient)
-        other_patient = create(:patient)
+    describe ".for_sync" do
+      it "includes discarded blood sugars" do
+        discarded_blood_sugar = create(:blood_sugar, deleted_at: Time.now)
 
-        allow(Patient).to receive(:syncable_to_region).with(facility_group).and_return([patient])
-
-        blood_sugars = [
-          create(:blood_sugar, patient: patient, facility: facility),
-          create(:blood_sugar, patient: patient, facility: facility).tap(&:discard),
-          create(:blood_sugar, patient: patient)
-        ]
-
-        _other_blood_sugars = [
-          create(:blood_sugar, patient: other_patient, facility: facility),
-          create(:blood_sugar, patient: other_patient, facility: facility).tap(&:discard),
-          create(:blood_sugar, patient: other_patient)
-        ]
-
-        expect(BloodSugar.syncable_to_region(facility_group)).to contain_exactly(*blood_sugars)
+        expect(described_class.for_sync).to include(discarded_blood_sugar)
       end
     end
   end

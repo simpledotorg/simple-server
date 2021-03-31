@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe MyFacilities::BloodPressureControlQuery do
+RSpec.describe BloodPressureControlQuery do
   include QuarterHelper
 
   describe "BP control queries" do
@@ -130,17 +130,60 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                                                                 patients_with_uncontrolled_bp +
                                                                 patients_with_missed_visit)
           end
+
+          context "when with_exclusions is true" do
+            it "excludes dead patients" do
+              patients_with_controlled_bp.first.update(status: :dead)
+
+              query = described_class.new(facilities: assigned_facility,
+                                          cohort_period: {cohort_period: :quarter,
+                                                          registration_quarter: registration_quarter,
+                                                          registration_year: registration_quarter_year},
+                                          with_exclusions: true)
+
+              expect(query.cohort_patients).not_to include(patients_with_controlled_bp.first)
+            end
+          end
         end
 
         describe "#cohort_controlled_bps" do
           specify do
             expect(query.cohort_controlled_bps.pluck(:bp_id)).to match_array(controlled_blood_pressures.pluck(:id))
           end
+
+          context "when with_exclusions is true" do
+            it "excludes dead patients" do
+              controlled_blood_pressures.first.patient.update(status: :dead)
+
+              query = described_class.new(facilities: assigned_facility,
+                                          cohort_period: {cohort_period: :quarter,
+                                                          registration_quarter: registration_quarter,
+                                                          registration_year: registration_quarter_year},
+                                          with_exclusions: true)
+
+              expect(query.cohort_controlled_bps.pluck(:bp_id)).not_to include(controlled_blood_pressures.first.id)
+            end
+          end
         end
 
         describe "#cohort_uncontrolled_bps" do
           specify do
             expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).to match_array(uncontrolled_blood_pressures.pluck(:id))
+          end
+
+          context "when with_exclusions is true" do
+            it "excludes dead patients" do
+              uncontrolled_blood_pressures.first.patient.update(status: :dead)
+              uncontrolled_blood_pressures.second.patient.update(status: :migrated)
+
+              query = described_class.new(facilities: assigned_facility,
+                                          cohort_period: {cohort_period: :quarter,
+                                                          registration_quarter: registration_quarter,
+                                                          registration_year: registration_quarter_year},
+                                          with_exclusions: true)
+
+              expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).not_to include(uncontrolled_blood_pressures.first.id)
+            end
           end
         end
 
@@ -436,6 +479,12 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
           user: user)
       end
 
+      let!(:ltfu_patient) do
+        create(:patient,
+          assigned_facility: assigned_facility,
+          recorded_at: 2.years.ago)
+      end
+
       before do
         ActiveRecord::Base.transaction do
           LatestBloodPressuresPerPatientPerMonth.refresh
@@ -450,7 +499,21 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
               patient_without_recent_bp,
               patients_with_uncontrolled_bp,
               patients_with_missed_visit,
-              old_patient)
+              old_patient,
+              ltfu_patient)
+          end
+
+          context "when with_exclusions is true" do
+            it "excludes dead patients" do
+              patient_with_recent_bp.update(status: :dead)
+
+              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(patient_with_recent_bp)
+            end
+
+            it "excludes LTFU patients" do
+              expect(described_class.new(with_exclusions: false).overall_patients).to include(ltfu_patient)
+              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(ltfu_patient)
+            end
           end
         end
 
@@ -467,7 +530,8 @@ RSpec.describe MyFacilities::BloodPressureControlQuery do
                 patient_without_recent_bp,
                 patients_with_uncontrolled_bp,
                 patients_with_missed_visit,
-                old_patient].length)
+                old_patient,
+                ltfu_patient].length)
             end
           end
 

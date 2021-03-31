@@ -3,18 +3,19 @@ name: Bangladesh Demo Deployment
 blocks:
   - name: Deploy to Bangladesh Demo
     task:
+      secrets:
+        - name: semaphore-deploy-key
+        - name: sentry-release-auth-token
       jobs:
         - name: Deploy to Bangladesh Demo
           commands:
             - checkout
-            - sem-version ruby 2.5.1
+            - sem-version ruby 2.6.6
             - cache restore
             - yarn install
             - bundle install --deployment --path vendor/bundle
             - cache store
             - 'BRANCH=$SEMAPHORE_GIT_BRANCH bundle exec cap bangladesh:demo deploy'
-      secrets:
-        - name: semaphore-deploy-key
       prologue:
         commands:
           - chmod 600 ~/.ssh/semaphore_id_rsa
@@ -26,3 +27,5 @@ agent:
 promotions:
   - name: Bangladesh Production Deployment
     pipeline_file: bangladesh_production_deployment.yml
+    auto_promote:
+      when: tag =~ '^release-.*' AND result = 'passed'
