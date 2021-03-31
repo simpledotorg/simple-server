@@ -1,17 +1,11 @@
 class AdminController < ApplicationController
+  include BustCache
   before_action :authenticate_email_authentication!
+  before_action :set_bust_cache
 
   after_action :verify_authorization_attempted, except: [:root]
 
   rescue_from UserAccess::NotAuthorizedError, with: :user_not_authorized
-
-  rescue_from ActiveRecord::RecordInvalid do
-    head :bad_request
-  end
-
-  rescue_from ActionController::ParameterMissing do
-    head :bad_request
-  end
 
   def switch_locale(&action)
     locale =
@@ -30,12 +24,19 @@ class AdminController < ApplicationController
     end
   end
 
+  def set_bust_cache
+    RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
+  end
+
   helper_method :current_admin
 
   private
 
   def current_admin
-    current_email_authentication.user
+    return @current_admin if defined?(@current_admin)
+    admin = current_email_authentication.user
+    admin.email_authentications.load
+    @current_admin = admin
   end
 
   def pundit_user
@@ -54,11 +55,13 @@ class AdminController < ApplicationController
       capture = yield(blk)
 
       unless current_admin.power_user? || capture
+        logger.error "authorize error: user does not have access to specified resource(s)"
         raise UserAccess::NotAuthorizedError
       end
 
       capture
     rescue ActiveRecord::RecordNotFound
+      logger.error "authorize error: RecordNotFound raised, turning it into a NotAuthorizedError"
       raise UserAccess::NotAuthorizedError
     end
   end

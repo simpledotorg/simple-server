@@ -12,20 +12,23 @@
     max-height: 150px;
     overflow-y: auto;
     display: none;
-    align-items: center;
     z-index: 1000;
 
     &-row {
       padding: 12px;
-      height: 65px;
       border-bottom: 1px solid $grey-light;
       cursor: pointer;
       width: 100%;
     }
 
     &-row:hover {
+      color: #000;
       background: $grey-lightest;
     }
+  }
+
+  .regions {
+    max-height: 425px;
   }
 
   &-spinner {

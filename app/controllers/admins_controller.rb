@@ -2,7 +2,7 @@ class AdminsController < AdminController
   include Pagination
   include SearchHelper
 
-  before_action :set_admin, only: [:show, :edit, :update, :access_tree, :destroy]
+  before_action :set_admin, only: [:show, :edit, :update, :resend_invitation, :access_tree, :destroy]
   before_action :verify_params, only: [:update]
 
   def index
@@ -25,7 +25,7 @@ class AdminsController < AdminController
       when :new, :edit
         AdminAccessPresenter.new(current_admin).visible_access_tree
       else
-        head :not_found and return
+        head(:not_found) && return
       end
 
     user_being_edited = page_for_access_tree.eql?(:edit) ? AdminAccessPresenter.new(@admin) : nil
@@ -36,7 +36,7 @@ class AdminsController < AdminController
              root: access_tree[:root],
              user_being_edited: user_being_edited,
              tree_depth: 0,
-             page: page_for_access_tree,
+             page: page_for_access_tree
            }
   end
 
@@ -53,6 +53,23 @@ class AdminsController < AdminController
     end
 
     redirect_to admins_url, notice: "Admin was successfully updated."
+  end
+
+  def resend_invitation
+    admin = authorize { current_admin.accessible_admins(:manage).find_by!(id: params[:id]) }
+    email_authentication = admin.email_authentication
+
+    if email_authentication.blank?
+      redirect_to admins_url,
+        alert: "An invitation couldn't be sent to #{admin.full_name}. Please delete the invited administrator and try again."
+    elsif email_authentication.invited_to_sign_up?
+      email_authentication.invite!
+
+      redirect_to admins_url, notice: "An invitation was sent again to #{admin.full_name} (#{email_authentication.email})."
+    else
+      redirect_to admins_url,
+        alert: "#{admin.full_name} (#{email_authentication.email}) hasn't been invited, or has already accepted their invitation"
+    end
   end
 
   def destroy
@@ -97,6 +114,7 @@ class AdminsController < AdminController
       role: params[:role],
       organization_id: params[:organization_id],
       access_level: params[:access_level],
+      receive_approval_notifications: params[:receive_approval_notifications],
       device_updated_at: Time.current
     }.compact
   end

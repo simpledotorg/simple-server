@@ -56,6 +56,23 @@ RSpec.describe Period, type: :model do
       expect(period.value).to be_instance_of(Quarter)
       expect(period).to eq(Period.quarter(quarter_1_2020))
     end
+
+    it "coerces month dates to the beginning of the month" do
+      date = Date.parse("December 12, 2020")
+      period = Period.new(type: :month, value: date)
+      expect(period.value).to eq(Date.parse("December 1, 2020"))
+    end
+  end
+
+  context "display dates" do
+    it "knows the registration end date" do
+      expect(jan_1_2019.to_period.bp_control_registrations_until_date).to eq("31-Oct-2018")
+    end
+
+    it "can display the begin / end range of the BP control range" do
+      expect(jan_1_2019.to_period.bp_control_range_start_date).to eq("1-Nov-2018")
+      expect(jan_1_2019.to_period.bp_control_range_end_date).to eq("31-Jan-2019")
+    end
   end
 
   it "times and dates can convert themselves into periods" do
@@ -113,12 +130,16 @@ RSpec.describe Period, type: :model do
 
   it "can return its blood pressure control range" do
     range = jan_1_2020_month_period.blood_pressure_control_range
-    expect(range.begin).to eq(Date.parse("October 31st 2019"))
-    expect(range.end).to eq(Date.parse("January 31st 2020"))
+    expect(range.begin).to eq(Date.parse("November 1st 2019").beginning_of_day)
+    expect(range.end).to eq(Date.parse("January 31st 2020").end_of_day)
 
     range = Period.month("July 1st 2020").blood_pressure_control_range
-    expect(range.begin).to eq(Date.parse("April 30th 2020"))
-    expect(range.end).to eq(Date.parse("July 31st 2020"))
+    expect(range.begin).to eq(Date.parse("May 1st 2020").beginning_of_day)
+    expect(range.end).to eq(Date.parse("July 31st 2020").end_of_day)
+
+    range = Period.month("February 1st 2020").blood_pressure_control_range
+    expect(range.begin).to eq(Date.parse("December 1st 2019").beginning_of_day)
+    expect(range.end).to eq(Date.parse("February 29th 2020").end_of_day)
   end
 
   it "can be used in ranges" do
@@ -136,14 +157,14 @@ RSpec.describe Period, type: :model do
     expect(q1_01.hash).to_not eq(q2.hash)
   end
 
-  it "months provide start and end dates" do
-    expect(may_8_2020_month_period.start_date).to eq(Date.parse("May 1st, 2020"))
-    expect(may_8_2020_month_period.end_date).to eq(Date.parse("May 31st, 2020"))
+  it "months provide begin and end" do
+    expect(may_8_2020_month_period.begin).to eq(Time.zone.parse("May 1st, 2020").beginning_of_day)
+    expect(may_8_2020_month_period.end).to eq(Time.zone.parse("May 31st, 2020").end_of_day)
   end
 
-  it "quarters provide start and end dates" do
-    expect(q2_2020_period.start_date).to eq(Date.parse("April 1st, 2020"))
-    expect(q2_2020_period.end_date).to eq(Date.parse("June 30, 2020"))
+  it "quarters provide start and end" do
+    expect(q2_2020_period.begin).to eq(Date.parse("April 1st, 2020").beginning_of_day)
+    expect(q2_2020_period.end).to eq(Date.parse("June 30, 2020").end_of_day)
   end
 
   it "has adjective description" do

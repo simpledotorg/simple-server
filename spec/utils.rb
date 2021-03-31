@@ -20,7 +20,12 @@ class Hash
 
   def with_payload_keys
     Api::V3::Transformer.rename_attributes(
-      self, Api::V3::Transformer.inverted_key_mapping
+      self, Api::V3::Transformer.to_response_key_mapping
     )
   end
+end
+
+def reset_controller
+  controller.instance_variable_set(:@current_facility_records, nil)
+  controller.instance_variable_set(:@other_facility_records, nil)
 end

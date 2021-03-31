@@ -60,6 +60,12 @@ class User < ApplicationRecord
     class_name: "Facility",
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
+  has_many :drug_stocks
+  has_many :merged_patients,
+    -> { with_discarded },
+    inverse_of: :merged_by_user,
+    class_name: "Patient",
+    foreign_key: :merged_by_user_id
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
@@ -78,11 +84,16 @@ class User < ApplicationRecord
   scope :non_admins, -> { joins(:phone_number_authentications).where.not(phone_number_authentications: {id: nil}) }
   scope :admins, -> { joins(:email_authentications).where.not(email_authentications: {id: nil}) }
 
+  def self.find_by_email(email)
+    joins(:email_authentications).find_by(email_authentications: {email: email})
+  end
+
   validates :full_name, presence: true
   validates :role, presence: true, if: -> { email_authentication.present? }
   validates :teleconsultation_phone_number, allow_blank: true, format: {with: /\A[0-9]+\z/, message: "only allows numbers"}
   validates_presence_of :teleconsultation_isd_code, if: -> { teleconsultation_phone_number.present? }
   validates :access_level, presence: true, if: -> { email_authentication.present? }
+  validates :receive_approval_notifications, inclusion: {in: [true, false]}
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
@@ -103,6 +114,9 @@ class User < ApplicationRecord
   delegate :accessible_organizations,
     :accessible_facilities,
     :accessible_facility_groups,
+    :accessible_district_regions,
+    :accessible_block_regions,
+    :accessible_facility_regions,
     :accessible_users,
     :accessible_admins,
     :accessible_protocols,
@@ -114,6 +128,7 @@ class User < ApplicationRecord
     :permitted_access_levels, to: :user_access, allow_nil: false
 
   after_destroy :destroy_email_authentications
+  after_discard :destroy_email_authentications
 
   def phone_number_authentication
     phone_number_authentications.first
@@ -125,6 +140,10 @@ class User < ApplicationRecord
 
   def user_access
     UserAccess.new(self)
+  end
+
+  def region_access(memoized: false)
+    @region_access ||= RegionAccess.new(self, memoized: memoized)
   end
 
   def registration_facility_id
@@ -219,10 +238,6 @@ class User < ApplicationRecord
     where(sync_approval_status: :requested)
   end
 
-  def has_role?(*roles)
-    roles.map(&:to_sym).include?(role.to_sym)
-  end
-
   def destroy_email_authentications
     destroyable_email_auths = email_authentications.load
 
@@ -237,7 +252,7 @@ class User < ApplicationRecord
   end
 
   def block_level_sync?
-    Flipper.enabled?(:regions_prep) && feature_enabled?(:block_level_sync)
+    feature_enabled?(:block_level_sync) && !can_teleconsult?
   end
 
   def flipper_id

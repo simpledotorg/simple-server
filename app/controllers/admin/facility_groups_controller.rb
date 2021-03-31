@@ -2,8 +2,8 @@ class Admin::FacilityGroupsController < AdminController
   before_action :set_facility_group, only: [:show, :edit, :update, :destroy]
   before_action :set_organizations, only: [:new, :edit, :update, :create]
   before_action :set_protocols, only: [:new, :edit, :update, :create]
-  before_action :set_available_states, only: [:new, :create, :edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
-  before_action :set_blocks, only: [:edit, :update], if: -> { Flipper.enabled?(:regions_prep) }
+  before_action :set_available_states, only: [:new, :create, :edit, :update]
+  before_action :set_blocks, only: [:edit, :update]
 
   def show
     @facilities = @facility_group.facilities.order(:name)
@@ -25,15 +25,15 @@ class Admin::FacilityGroupsController < AdminController
     if create_facility_group
       redirect_to admin_facilities_url, notice: "FacilityGroup was successfully created."
     else
-      render :new, status: :bad_request
+      render :new, status: :unprocessable_entity
     end
   end
 
   def update
     if update_facility_group
-      redirect_to admin_facilities_url, notice: "FacilityGroup was successfully updated."
+      redirect_to admin_facilities_url, notice: "Facility group was successfully updated."
     else
-      render :edit, status: :bad_request
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -58,6 +58,8 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Sentry.capture_exception(e)
   end
 
   # Do all the things for update inside a single transaction. Note that we explicitly return true if everything
@@ -69,6 +71,8 @@ class Admin::FacilityGroupsController < AdminController
       @facility_group.toggle_diabetes_management
       true
     end
+  rescue ActiveRecord::RecordInvalid => e
+    Sentry.capture_exception(e)
   end
 
   def set_organizations

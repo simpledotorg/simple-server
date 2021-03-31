@@ -10,6 +10,10 @@
 # This is needed for recyclable cache keys.
 Rails.application.config.active_record.cache_versioning = true
 
+# We need to configure this at the AR level as well, the top level setting above
+# isn't getting set into ActiveRecord
+ActiveRecord::Base.cache_versioning = true
+
 # Use AES-256-GCM authenticated encryption for encrypted cookies.
 # Also, embed cookie expiry in signed or encrypted cookies for increased security.
 #

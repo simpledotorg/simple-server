@@ -8,6 +8,12 @@ Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
 
+  config.around(:example) do |example|
+    Rails.cache.clear
+    example.run
+    Rails.cache.clear
+  end
+
   Capybara.default_max_wait_time = 5
 
   Webdrivers::Chromedriver.update

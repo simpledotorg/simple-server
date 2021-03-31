@@ -66,10 +66,6 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe "#create_state_region!" do
-    before do
-      enable_flag(:regions_prep)
-    end
-
     it "creates a new state region if it doesn't exist" do
       org = create(:organization, name: "IHCI")
       facility_group = build(:facility_group, name: "FG", state: "Punjab", organization: org)
@@ -91,10 +87,6 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe "keeps block regions in sync" do
-    before do
-      enable_flag(:regions_prep)
-    end
-
     it "deletes blocks from remove_block_ids" do
       facility_group = create(:facility_group, name: "FG", state: "Punjab")
       district_region = facility_group.region
@@ -194,43 +186,37 @@ RSpec.describe FacilityGroup, type: :model do
   end
 
   describe "Callbacks" do
-    context "when regions_prep is enabled" do
-      before do
-        enable_flag(:regions_prep)
+    context "after_create" do
+      let!(:org) { create(:organization, name: "IHCI") }
+      let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org) }
+
+      it "creates a region" do
+        expect(facility_group.region).to be_present
+        expect(facility_group.region).to be_persisted
+        expect(facility_group.region.name).to eq "FG"
+        expect(facility_group.region.path).to eq "india.ihci.punjab.fg"
       end
 
-      context "after_create" do
-        let!(:org) { create(:organization, name: "IHCI") }
-        let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org) }
+      it "creates the state region if it doesn't exist" do
+        expect(facility_group.region.state_region.name).to eq "Punjab"
+      end
+    end
 
-        it "creates a region" do
-          expect(facility_group.region).to be_present
-          expect(facility_group.region).to be_persisted
-          expect(facility_group.region.name).to eq "FG"
-          expect(facility_group.region.path).to eq "india.ihci.punjab.fg"
-        end
+    context "after_update" do
+      let!(:org) { create(:organization, name: "IHCI") }
+      let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org) }
 
-        it "creates the state region if it doesn't exist" do
-          expect(facility_group.region.state_region.name).to eq "Punjab"
-        end
+      it "updates the associated region" do
+        facility_group.update(name: "New FG name")
+        expect(facility_group.region.name).to eq "New FG name"
+        expect(facility_group.region.path).to eq "india.ihci.punjab.fg"
       end
 
-      context "after_update" do
-        let!(:org) { create(:organization, name: "IHCI") }
-        let!(:facility_group) { create(:facility_group, name: "FG", state: "Punjab", organization: org) }
-
-        it "updates the associated region" do
-          facility_group.update(name: "New FG name")
-          expect(facility_group.region.name).to eq "New FG name"
-          expect(facility_group.region.path).to eq "india.ihci.punjab.fg"
-        end
-
-        it "updates the state region" do
-          new_state = create(:region, :state, name: "Maharashtra", reparent_to: org.region)
-          facility_group.update(state: new_state.name)
-          expect(facility_group.region.state_region.name).to eq "Maharashtra"
-          expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
-        end
+      it "updates the state region" do
+        new_state = create(:region, :state, name: "Maharashtra", reparent_to: org.region)
+        facility_group.update(state: new_state.name)
+        expect(facility_group.region.state_region.name).to eq "Maharashtra"
+        expect(facility_group.region.path).to eq "india.ihci.maharashtra.fg"
       end
     end
   end

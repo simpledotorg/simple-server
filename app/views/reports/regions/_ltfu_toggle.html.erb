@@ -1,0 +1,14 @@
+<div class="align-right custom-control custom-switch">
+  <form method="get">
+    <input type="checkbox"
+           onChange="this.form.submit()"
+           name="with_ltfu"
+           class="custom-control-input"
+           id="<%= id %>"
+           <% if enabled %>checked<% end %>>
+    <label class="font-weight-normal custom-control-label <% unless enabled %>c-grey-dark<% end %>"
+           for="<%= id %>">
+      Include LTFU
+    </label>
+  </form>
+</div>

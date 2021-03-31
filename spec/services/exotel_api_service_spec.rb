@@ -81,7 +81,7 @@ describe ExotelAPIService, type: :model do
     it "should report an error if there is a network timeout while calling the api" do
       stub_request(:get, request_url).to_timeout
 
-      expect(Raven).to receive(:capture_message).and_return(true)
+      expect(Sentry).to receive(:capture_message).and_return(true)
 
       expect {
         described_class.new(sid, token).call_details(call_sid)

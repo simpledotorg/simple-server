@@ -28,7 +28,8 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def verify_params
     user = User.new(user_params)
-    email_authentication = user.email_authentications.new(invite_params.merge(password: temporary_password))
+    password = EmailAuthentication.generate_password
+    email_authentication = user.email_authentications.new(invite_params.merge(password: password))
 
     if validate_selected_facilities?
       flash[:alert] = "At least one facility should be selected for access before inviting an Admin."
@@ -58,6 +59,7 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
       role: params[:role],
       access_level: params[:access_level],
       organization_id: params[:organization_id],
+      receive_approval_notifications: params[:receive_approval_notifications],
       device_created_at: Time.current,
       device_updated_at: Time.current,
       sync_approval_status: :denied
@@ -74,10 +76,6 @@ class EmailAuthentications::InvitationsController < Devise::InvitationsControlle
 
   def invite_params
     {email: params[:email]}
-  end
-
-  def temporary_password
-    SecureRandom.base64(16)
   end
 
   def validate_selected_facilities?

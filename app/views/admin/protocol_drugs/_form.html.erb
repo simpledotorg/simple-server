@@ -1,9 +1,36 @@
-<div>
-    <%= bootstrap_form_with(model: [:admin, @protocol, @protocol_drug], local: true, label_errors: true) do |form| %>
-      <%= form.text_field :name, id: :protocol_drug_name %>
-      <%= form.text_field :dosage, id: :protocol_drug_dosage %>
-      <%= form.text_field :rxnorm_code, id: :protocol_drug_rxnorm_code, label: "RxNorm code" %>
+<div class="col">
+  <%= bootstrap_form_with(model: [:admin, @protocol, @protocol_drug], local: true, label_errors: true) do |form| %>
 
-      <%= form.primary %>
-    <% end %>
+    <div class="row">
+      <div class="col-md-4">
+        <%= form.text_field :name, id: :protocol_drug_name %>
+      </div>
+      <div class="col-md-2">
+        <%= form.text_field :dosage, id: :protocol_drug_dosage %>
+      </div>
+      <div class="col-md-2">
+        <%= form.text_field :rxnorm_code, id: :protocol_drug_rxnorm_code, label: "RxNorm code", help: "Optional" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <%= form.select :drug_category,
+                        ProtocolDrug.drug_categories.map { |k, v| [v, k] },
+                        {include_blank: true},
+                        required: false %>
+        <small class="form-text text-muted mb-3">
+          Select "Other" if unsure
+        </small>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <%= form.select :stock_tracked,
+                        [["Yes", true], ["No", false]],
+                        required: true %>
+        <%= form.primary %>
+      </div>
+    </div>
+  <% end %>
 </div>
