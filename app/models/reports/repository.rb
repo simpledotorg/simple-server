@@ -31,6 +31,12 @@ module Reports
       memoize(method)
     end
 
+    def earliest_patient_recorded_at
+      regions.each_with_object({}) do |region, results|
+        results[region.slug] = EarliestPatientDataQuery.call(region)
+      end
+    end
+
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
     # because it is easier and fast enough to do so. We still return _just_ the periods the Repository was created with
     # to conform to the same interface as all the other queries here.
