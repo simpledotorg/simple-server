@@ -15,11 +15,13 @@ module Reports
       else
         periods
       end
+      @period_type = @periods.first.type
     end
 
     attr_reader :control_rate_query
     attr_reader :no_bp_measure_query
     attr_reader :periods
+    attr_reader :period_type
     attr_reader :regions
     attr_reader :with_exclusions
 
@@ -42,7 +44,7 @@ module Reports
     end
 
     memoize def earliest_patient_recorded_at_period
-      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.month(time) if time }
+      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
@@ -84,9 +86,9 @@ module Reports
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_assigned_patients_counts
-      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
-      cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        AssignedPatientsQuery.new.count(entry.region, :month, with_exclusions: with_exclusions)
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type, with_exclusions: with_exclusions) }
+      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+        AssignedPatientsQuery.new.count(region_entry.region, period_type, with_exclusions: with_exclusions)
       }
     end
 
@@ -112,9 +114,9 @@ module Reports
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_registration_counts
-      items = regions.map { |region| RegionEntry.new(region, :complete_registration_counts, with_exclusions: with_exclusions) }
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type, with_exclusions: with_exclusions) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        RegisteredPatientsQuery.new.count(entry.region, :month)
+        RegisteredPatientsQuery.new.count(entry.region, period_type)
       }
     end
 
@@ -168,10 +170,11 @@ module Reports
     # If we are calculating percentages when with_exclusions is true, we have to manually subtract out the LTFU
     # patient counts as well from the patient counts.
     def denominator(region, period)
+      denominator_period = @period_type == :quarter ? period.previous : period.adjusted_period
       if with_exclusions
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
+        cumulative_assigned_patients_count[region.slug][denominator_period] - ltfu_counts[region.slug][denominator_period]
       else
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
+        cumulative_assigned_patients_count[region.slug][denominator_period]
       end
     end
 
