@@ -1,5 +1,4 @@
 class ExperimentNotificationService
-
   def initialize(experiment:)
     @patients = experiment.patients
   end

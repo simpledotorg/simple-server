@@ -22,10 +22,10 @@ class ExperimentNotification::Worker
       notification_service = NotificationService.new
 
       response = if communication_type == "experimental_whatsapp_reminder"
-                   notification_service.send_whatsapp(patient_phone_number, message, callback_url)
-                 else
-                   notification_service.send_sms(patient_phone_number, message, callback_url)
-                 end
+        notification_service.send_whatsapp(patient_phone_number, message, callback_url)
+      else
+        notification_service.send_sms(patient_phone_number, message, callback_url)
+      end
 
       Communication.create_with_twilio_details!(
         appointment: appointment,

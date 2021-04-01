@@ -15,7 +15,7 @@ module Experimentation
     }, _prefix: true
 
     def fetch_message(appointment, communication_type, locale, date: Date.today)
-    #  traverse the experiment's data and fetch the appropriate message to queue
+      #  traverse the experiment's data and fetch the appropriate message to queue
     end
 
     def queueable_message_exists?(appointment, date: Date.today)
