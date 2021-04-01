@@ -5,11 +5,14 @@ class Admin::DeduplicatePatientsController < AdminController
   def show
     authorize { current_admin.accessible_facilities(:manage).any? }
 
-    duplicate_patient_ids =
-      PatientDeduplication::Strategies.identifier_excluding_full_name_match(
-        limit: DUPLICATE_LIMIT,
-        facilities: current_admin.accessible_facilities(:manage)
-      )
+    # Scoping by facilities is costly for users who have a lot of facilities
+    duplicate_patient_ids = if current_admin.accessible_organizations(:manage).any? || current_admin.power_user?
+      PatientDeduplication::Strategies.identifier_excluding_full_name_match(limit: DUPLICATE_LIMIT)
+    else
+      PatientDeduplication::Strategies.identifier_excluding_full_name_match(limit: DUPLICATE_LIMIT,
+                                                                            facilities: current_admin.accessible_facilities(:manage))
+    end
+
     @duplicate_count = duplicate_patient_ids.count
     @patients = Patient.where(id: duplicate_patient_ids.sample).order(recorded_at: :asc)
   end
