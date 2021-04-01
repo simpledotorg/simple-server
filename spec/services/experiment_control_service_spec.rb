@@ -11,7 +11,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(old_patient)).to be_truthy
       expect(group.patients.include?(old_patient)).to be_truthy
@@ -28,7 +28,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(patient1)).to be_truthy
       expect(group.patients.include?(patient1)).to be_truthy
@@ -46,7 +46,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(group.patients.include?(patient1)).to be_falsey
@@ -55,17 +55,20 @@ describe ExperimentControlService, type: :model do
     end
 
     it "only selects from patients with appointments scheduled during the experiment date range" do
+      days_til_start = 5
+      days_til_end = 5
+
       patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: Date.current)
+      create(:appointment, patient: patient1, scheduled_date: 4.days.from_now)
       patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 40.days.from_now)
+      create(:appointment, patient: patient2, scheduled_date: 6.days.from_now)
       patient3 = create(:patient, age: 80)
       create(:appointment, patient: patient3, scheduled_date: 5.days.from_now)
 
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100, 5)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, days_til_start, days_til_end)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(group.patients.include?(patient1)).to be_falsey
@@ -75,58 +78,32 @@ describe ExperimentControlService, type: :model do
       expect(group.patients.include?(patient3)).to be_truthy
     end
 
-    it "only selects the provided percentage of eligible patients" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
-
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
-
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 50)
-
-      expect(experiment.patients.count).to eq(1)
-      expect(group.patients.count).to eq(1)
-    end
-
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, name: "old", end_date: 2.days.ago)
+      old_experiment = create(:experiment, name: "old", end_date: 1.day.ago)
       old_group = create(:treatment_group, experiment: old_experiment, index: 0)
+
+      older_experiment = create(:experiment, name: "older", end_date: 15.day.ago)
+      older_group = create(:treatment_group, experiment: older_experiment, index: 0)
 
       patient1 = create(:patient, age: 80)
       old_group.treatment_group_memberships.create!(patient: patient1)
+      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
 
-      appointment1 = create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      reminder = create(:appointment_reminder, patient: patient1, experiment: old_experiment, appointment: appointment1, remind_on: 10.day.from_now)
       patient2 = create(:patient, age: 80)
-      # old_group.treatment_group_memberships.create!(patient: patient2)
-      appointment2 = create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
-      # reminder = create(:appointment_reminder, patient: patient2, experiment: old_experiment, appointment: appointment2, remind_on: 15.days.ago)
+      older_group.treatment_group_memberships.create!(patient: patient2)
+      create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
+
       patient3 = create(:patient, age: 80)
-      appointment3 = create(:appointment, patient: patient3, scheduled_date: 10.days.from_now)
+      create(:appointment, patient: patient3, scheduled_date: 10.days.from_now)
 
       experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
       expect(experiment.patients.include?(patient3)).to be_truthy
-    end
-
-    it "adds reminders for currently scheduled appointments" do
-      patient = create(:patient, age: 80)
-      create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
-
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
-
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
-
-      membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: patient.id, treatment_group_id: group.id)
-      expect(membership).to be_truthy
     end
 
     it "adds patients to treatment groups predictably based on patient id" do
@@ -139,108 +116,91 @@ describe ExperimentControlService, type: :model do
       group1 = create(:treatment_group, experiment: experiment, index: 0)
       group2 = create(:treatment_group, experiment: experiment, index: 1)
 
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(group1.patients.include?(patient2)).to be_truthy
       expect(group2.patients.include?(patient1)).to be_truthy
     end
 
-    it "schedules cascading reminders" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
+    it "adds reminders for currently scheduled appointments" do
+      patient = create(:patient, age: 80)
+      create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
 
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
 
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-
-
-
-
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100)
-
-      expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(group.patients.include?(patient1)).to be_falsey
-      expect(experiment.patients.include?(patient2)).to be_truthy
+      membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: patient.id, treatment_group_id: group.id)
+      expect(membership).to be_truthy
     end
 
-    it "updates the experiment state and start date" do
+    it "schedules reminders based on reminder templates" do
+      patient1 = create(:patient, age: 80)
+      appointment_date = 10.days.from_now.to_date
+      create(:appointment, patient: patient1, scheduled_date: appointment_date)
+
       experiment = create(:experiment)
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 100, 5)
+      group = create(:treatment_group, experiment: experiment, index: 0)
+      create(:reminder_template, treatment_group: group, message: "come in 3 days", appointment_offset: -3)
+      create(:reminder_template, treatment_group: group, message: "come today", appointment_offset: 0)
+      create(:reminder_template, treatment_group: group, message: "you're late", appointment_offset: 3)
+
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+
+      reminder1, reminder2, reminder3 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
+      expect(reminder1.remind_on).to eq(appointment_date - 3.days)
+      expect(reminder2.remind_on).to eq(appointment_date)
+      expect(reminder3.remind_on).to eq(appointment_date + 3.days)
+    end
+
+    it "sets status to 'selecting' while selecting patients" do
+      experiment = create(:experiment)
+      expect_any_instance_of(Experimentation::Experiment).to receive(:state_selecting!)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+    end
+
+    it "updates the experiment state, start date, and end date" do
+      days_til_start = 5
+      days_til_end = 35
+      experiment = create(:experiment)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, days_til_start, days_til_end)
       experiment.reload
 
       expect(experiment.state).to eq("live")
-      expect(experiment.start_date).to eq(Date.current + 5.days)
+      expect(experiment.start_date).to eq(days_til_start.days.from_now.to_date)
+      expect(experiment.end_date).to eq(days_til_end.days.from_now.to_date)
     end
 
-    it "raises an error if an another experiment is already in progress" do
+    it "raises an error if an another current patient experiment is already in progress" do
       experiment = create(:experiment)
       other_experiment = create(:experiment, state: "selecting")
 
       expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 100, 5)
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
       }.to raise_error(InvalidExperiment)
 
       other_experiment.state_live!
 
       expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 100, 5)
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
       }.to raise_error(InvalidExperiment)
 
       other_experiment.state_complete!
 
       expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 100, 5)
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
       }.not_to raise_error(InvalidExperiment)
+    end
+
+    it "raises an error if the days_til_end is less than days_til_start" do
+      expect {
+        ExperimentControlService.start_current_patient_experiment("name", 35, 5)
+      }.to raise_error(ArgumentError)
     end
   end
 
   describe "self.start_stale_patient_experiment" do
-    it "only selects patients whose last encounter was in the selected date range" do
-      patient1 = create(:patient, age: 80)
-      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
-      # create(:appointment, patient: patient1, scheduled_date: 100.day.ago, status: "scheduled")
-
-      patient2 = create(:patient, age: 80)
-      create(:encounter, patient: patient2, device_created_at: 366.days.ago)
-      patient3 = create(:patient, age: 80)
-      create(:encounter, patient: patient3, device_created_at: 1.days.ago)
-
-      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
-
-      ExperimentControlService.start_stale_patient_experiment(experiment.name)
-
-      expect(experiment.patients.include?(patient1)).to be_truthy
-      expect(group.patients.include?(patient1)).to be_truthy
-      expect(experiment.patients.include?(patient2)).to be_falsey
-      expect(group.patients.include?(patient2)).to be_falsey
-      expect(experiment.patients.include?(patient3)).to be_falsey
-      expect(group.patients.include?(patient3)).to be_falsey
-    end
-
-    it "only selects patients who have no appointments after the selected date range" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 1.day.from_now, status: "scheduled")
-      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
-
-      patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 100.days.ago, status: "scheduled")
-      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
-
-      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
-
-      ExperimentControlService.start_stale_patient_experiment(experiment.name)
-
-      expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(group.patients.include?(patient1)).to be_falsey
-      expect(experiment.patients.include?(patient2)).to be_truthy
-      expect(group.patients.include?(patient2)).to be_truthy
-    end
-
     it "only selects from patients 18 and older" do
       young_patient = create(:patient, age: 17)
       create(:encounter, patient: young_patient, device_created_at: 100.days.ago)
@@ -250,7 +210,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_stale_patient_experiment(experiment.name)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
 
       expect(experiment.patients.include?(old_patient)).to be_truthy
       expect(group.patients.include?(old_patient)).to be_truthy
@@ -267,7 +227,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_stale_patient_experiment(experiment.name)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
 
       expect(experiment.patients.include?(patient1)).to be_truthy
       expect(group.patients.include?(patient1)).to be_truthy
@@ -285,12 +245,113 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       group = create(:treatment_group, experiment: experiment, index: 0)
 
-      ExperimentControlService.start_stale_patient_experiment(experiment.name)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(group.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
       expect(group.patients.include?(patient2)).to be_truthy
+    end
+
+    it "only selects patients whose last encounter was in the selected date range" do
+      patient1 = create(:patient, age: 80)
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+      patient2 = create(:patient, age: 80)
+      create(:encounter, patient: patient2, device_created_at: 366.days.ago)
+      patient3 = create(:patient, age: 80)
+      create(:encounter, patient: patient3, device_created_at: 1.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      group = create(:treatment_group, experiment: experiment, index: 0)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+
+      expect(experiment.patients.include?(patient1)).to be_truthy
+      expect(group.patients.include?(patient1)).to be_truthy
+      expect(experiment.patients.include?(patient2)).to be_falsey
+      expect(group.patients.include?(patient2)).to be_falsey
+      expect(experiment.patients.include?(patient3)).to be_falsey
+      expect(group.patients.include?(patient3)).to be_falsey
+    end
+
+    it "only selects patients who have no appointments scheduled today or after" do
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, scheduled_date: Date.current, status: "scheduled")
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+
+      patient2 = create(:patient, age: 80)
+      create(:appointment, patient: patient2, scheduled_date: 100.days.ago, status: "scheduled")
+      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      group = create(:treatment_group, experiment: experiment, index: 0)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+
+      expect(experiment.patients.include?(patient1)).to be_falsey
+      expect(group.patients.include?(patient1)).to be_falsey
+      expect(experiment.patients.include?(patient2)).to be_truthy
+      expect(group.patients.include?(patient2)).to be_truthy
+    end
+
+    it "excludes patients who have recently been in an experiment" do
+      old_experiment = create(:experiment, name: "old", end_date: 1.day.ago)
+      old_group = create(:treatment_group, experiment: old_experiment, index: 0)
+
+      older_experiment = create(:experiment, name: "older", end_date: 15.day.ago)
+      older_group = create(:treatment_group, experiment: older_experiment, index: 0)
+
+      patient1 = create(:patient, age: 80)
+      old_group.treatment_group_memberships.create!(patient: patient1)
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+
+      patient2 = create(:patient, age: 80)
+      older_group.treatment_group_memberships.create!(patient: patient2)
+      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
+
+      patient3 = create(:patient, age: 80)
+      create(:encounter, patient: patient3, device_created_at: 100.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      create(:treatment_group, experiment: experiment, index: 0)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+
+      expect(experiment.patients.include?(patient1)).to be_falsey
+      expect(experiment.patients.include?(patient2)).to be_truthy
+      expect(experiment.patients.include?(patient3)).to be_truthy
+    end
+
+    it "adds patients to treatment groups predictably based on patient id" do
+      patient1 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+      patient2 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff")
+      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      group1 = create(:treatment_group, experiment: experiment, index: 0)
+      group2 = create(:treatment_group, experiment: experiment, index: 1)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+
+      expect(group1.patients.include?(patient2)).to be_truthy
+      expect(group2.patients.include?(patient1)).to be_truthy
+    end
+
+    it "sets status to 'selecting' while selecting patients" do
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      expect_any_instance_of(Experimentation::Experiment).to receive(:state_selecting!)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+    end
+
+    it "updates the experiment state and start date" do
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+      experiment.reload
+
+      expect(experiment.state).to eq("live")
+      expect(experiment.start_date).to eq(Date.current)
+      expect(experiment.end_date).to eq(30.days.from_now.to_date)
     end
   end
 end
