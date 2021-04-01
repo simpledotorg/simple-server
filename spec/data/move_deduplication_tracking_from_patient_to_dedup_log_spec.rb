@@ -13,7 +13,7 @@ RSpec.describe MoveDeduplicationTrackingFromPatientToDedupLog do
     described_class.new.up
     dedup_log = DeduplicationLog.first
 
-    expect(dedup_log.created_at).to eq dedupe_time
+    expect(dedup_log.created_at.to_i).to eq dedupe_time.to_i
     expect(dedup_log.deleted_record).to eq deleted_patient
     expect(dedup_log.deduped_record).to eq deduped_patient
     expect(dedup_log.user).to eq deduped_patient.registration_user
