@@ -16,6 +16,7 @@ class AppointmentNotificationService
 
   def send_after_missed_visit
     eligible_appointments = appointments.eligible_for_reminders(days_overdue: days_overdue)
+    # Exclude patients enrolled in an experiment
 
     eligible_appointments.each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
