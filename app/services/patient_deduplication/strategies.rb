@@ -19,8 +19,10 @@ module PatientDeduplication
       # where at least one duplicate patient belongs to given facilities.
       def identifier_excluding_full_name_match(limit: nil, facilities: [])
         matches = PatientBusinessIdentifier
-          .select("identifier, array_agg(patient_id) as patient_ids")
           .joins(:patient)
+          .select("identifier, array_agg(patient_id) as patient_ids")
+          .where.not(identifier: "")
+          .where(identifier_type: simple_bp_passport)
           .group("identifier")
           .having("COUNT(distinct patient_id) > 1")
           .having("COUNT(distinct lower(full_name)) > 1")
@@ -30,8 +32,6 @@ module PatientDeduplication
             PatientBusinessIdentifier
               .joins(:patient)
               .where(patients: {assigned_facility: facilities})
-              .where.not(identifier: "")
-              .where(identifier_type: simple_bp_passport)
               .pluck("identifier")
 
           matches = matches.where(identifier: identifiers_for_facilities)
