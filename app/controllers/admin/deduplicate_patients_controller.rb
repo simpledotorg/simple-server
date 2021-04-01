@@ -21,6 +21,8 @@ class Admin::DeduplicatePatientsController < AdminController
     authorize { current_admin.accessible_facilities(:manage).any? }
 
     duplicate_patients = Patient.where(id: params[:duplicate_patients])
+    return head :unauthorized unless can_admin_duplicate_patients?(duplicate_patients)
+
     deduplicator = PatientDeduplication::Deduplicator.new(duplicate_patients, user: current_admin)
     merged_patient = deduplicator.merge
 
@@ -31,5 +33,12 @@ class Admin::DeduplicatePatientsController < AdminController
       PatientDeduplication::Stats.report("manual", duplicate_patients.count, duplicate_patients.count, 0)
       redirect_to admin_deduplication_path, notice: "Patients merged into #{merged_patient.full_name}."
     end
+  end
+
+  def can_admin_duplicate_patients?(patients)
+    current_admin
+      .accessible_facilities(:manage)
+      .where(id: patients.pluck(:assigned_facility_id))
+      .any?
   end
 end
