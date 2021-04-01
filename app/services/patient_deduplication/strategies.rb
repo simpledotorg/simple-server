@@ -16,17 +16,21 @@ module PatientDeduplication
       end
 
       # Exact match of just identifiers, excluding exact name matches
+      # where at least one duplicate patient belongs to given facilities.
       def identifier_excluding_full_name_match(limit: nil, facilities: Facility.all)
-        # The HAVING clause here includes a set of duplicates if
-        # any patient in the set belongs to the facilities.
+        identifiers_for_facilities = PatientBusinessIdentifier
+          .joins(:patient)
+          .where(patients: {assigned_facility: facilities})
+          .where.not(identifier: "")
+          .where(identifier_type: simple_bp_passport)
+          .pluck("identifier")
+
         matches = PatientBusinessIdentifier
           .select("identifier, array_agg(patient_id) as patient_ids")
           .joins(:patient)
-          .where.not(identifier: "")
-          .where(identifier_type: simple_bp_passport)
+          .where(identifier: identifiers_for_facilities)
           .group("identifier")
           .having("COUNT(distinct patient_id) > 1")
-          .having(sanitize_sql(["array_agg(patients.registration_facility_id)::text[] && ARRAY[?]", facilities.to_a.pluck(:id)]))
           .having("COUNT(distinct lower(full_name)) > 1")
 
         matches = matches.limit(limit) if limit.present?
