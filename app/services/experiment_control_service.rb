@@ -22,7 +22,9 @@ class ExperimentControlService
 
       experiment_patients.each do |patient|
         group = experiment.group_for(patient.id)
-        appointment = patient.appointments.where(status: "scheduled").last
+        appointment = patient.appointments
+          .where(status: "scheduled")
+          .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end).first
         schedule_reminders(patient, appointment, experiment, group, appointment.scheduled_date)
         Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
       end
