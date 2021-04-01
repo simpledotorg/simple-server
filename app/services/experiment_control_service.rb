@@ -10,9 +10,13 @@ module ExperimentControlService
     experiment_start = delay_start.days.from_now.beginning_of_day
     experiment_end = (experiment_start + 30.days).end_of_day
 
-    experiment.update(state: "selecting")
+    experiment.state_selecting!
 
-    eligible = patient_pool(experiment_start, experiment_end)
+    eligible = patient_pool
+      .joins(:appointments)
+      .where("appointments.status = ?", "scheduled")
+      .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
+      .order(Arel.sql("random()"))
     experiment_patient_count = (0.01 * percentage_of_patients * eligible.length).round
     experiment_patients = eligible.take(experiment_patient_count)
     experiment_patients.each do |patient|
@@ -23,7 +27,7 @@ module ExperimentControlService
       Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
     end
 
-    experiment.update(state: "live", start_date: experiment_start, end_date: experiment_end)
+    experiment.update!(state: "live", start_date: experiment_start, end_date: experiment_end)
   end
 
   # consider adding a total days and # per day args
@@ -33,7 +37,18 @@ module ExperimentControlService
     eligibility_start = (date - 365.days).beginning_of_day
     eligibility_end = (date - 35.days).end_of_day
 
-    eligible_patients = patient_pool(eligibility_start, eligibility_end).to_a
+    experiment.state_selecting!
+
+    eligible_patients = patient_pool
+      .joins(:encounters)
+      .where("encounters.device_created_at BETWEEN ? AND ?", eligibility_start, eligibility_end)
+      .where("NOT EXISTS (SELECT 1 FROM encounters as e2 WHERE e2.patient_id = patients.id AND
+              e2.device_created_at > ?)", eligibility_end)
+      .left_joins(:appointments)
+      .where("NOT EXISTS (SELECT 1 FROM appointments as a2 WHERE a2.patient_id = patients.id AND
+              a2.scheduled_date > ?)", eligibility_end)
+      .order(Arel.sql("random()"))
+      .to_a
 
     30.times do
       daily_patients = eligible_patients.pop(10_000)
@@ -46,21 +61,17 @@ module ExperimentControlService
       end
       date += 1.day
     end
-    experiment.update(state: "live", start_date: Date.current, end_date: Date.current + 30.days)
+    experiment.update!(state: "live", start_date: Date.current, end_date: Date.current + 30.days)
   end
 
   protected
 
-  def self.patient_pool(start_date, end_date)
+  def self.patient_pool
     Patient.from(Patient.with_hypertension, :patients)
       .contactable
       .where("age >= ?", 18)
       .includes(treatment_group_memberships: [treatment_group: [:experiment]])
       .where(["experiments.end_date < ? OR experiments.id IS NULL", 14.days.ago]).references(:experiment)
-      .joins(:appointments)
-      .where("appointments.status = ?", "scheduled")
-      .where("appointments.scheduled_date BETWEEN ? AND ?", start_date, end_date)
-      .order(Arel.sql("random()"))
   end
 
   def self.schedule_reminders(patient, appointment, experiment, group, schedule_date)

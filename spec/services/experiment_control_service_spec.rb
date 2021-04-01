@@ -90,7 +90,7 @@ describe ExperimentControlService, type: :model do
       expect(group.patients.count).to eq(1)
     end
 
-    it "excludes patients who have recently received an experimental reminder" do
+    it "excludes patients who have recently been in an experiment" do
       old_experiment = create(:experiment, name: "old", end_date: 2.days.ago)
       old_group = create(:treatment_group, experiment: old_experiment, index: 0)
 
@@ -148,7 +148,6 @@ describe ExperimentControlService, type: :model do
     it "schedules cascading reminders" do
       patient1 = create(:patient, age: 80)
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      patient1.phone_numbers.destroy_all
       patient2 = create(:patient, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
@@ -170,7 +169,9 @@ describe ExperimentControlService, type: :model do
     it "updates the experiment state and start date" do
       experiment = create(:experiment)
       ExperimentControlService.start_current_patient_experiment(experiment.name, 100, 5)
-      expect(experiment.reload.state).to eq("live")
+      experiment.reload
+
+      expect(experiment.state).to eq("live")
       expect(experiment.start_date).to eq(Date.current + 5.days)
     end
 
@@ -197,11 +198,54 @@ describe ExperimentControlService, type: :model do
   end
 
   describe "self.start_stale_patient_experiment" do
+    it "only selects patients whose last encounter was in the selected date range" do
+      patient1 = create(:patient, age: 80)
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+      # create(:appointment, patient: patient1, scheduled_date: 100.day.ago, status: "scheduled")
+
+      patient2 = create(:patient, age: 80)
+      create(:encounter, patient: patient2, device_created_at: 366.days.ago)
+      patient3 = create(:patient, age: 80)
+      create(:encounter, patient: patient3, device_created_at: 1.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      group = create(:treatment_group, experiment: experiment, index: 0)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name)
+
+      expect(experiment.patients.include?(patient1)).to be_truthy
+      expect(group.patients.include?(patient1)).to be_truthy
+      expect(experiment.patients.include?(patient2)).to be_falsey
+      expect(group.patients.include?(patient2)).to be_falsey
+      expect(experiment.patients.include?(patient3)).to be_falsey
+      expect(group.patients.include?(patient3)).to be_falsey
+    end
+
+    it "only selects patients who have no appointments after the selected date range" do
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, scheduled_date: 1.day.from_now, status: "scheduled")
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+
+      patient2 = create(:patient, age: 80)
+      create(:appointment, patient: patient2, scheduled_date: 100.days.ago, status: "scheduled")
+      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      group = create(:treatment_group, experiment: experiment, index: 0)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name)
+
+      expect(experiment.patients.include?(patient1)).to be_falsey
+      expect(group.patients.include?(patient1)).to be_falsey
+      expect(experiment.patients.include?(patient2)).to be_truthy
+      expect(group.patients.include?(patient2)).to be_truthy
+    end
+
     it "only selects from patients 18 and older" do
       young_patient = create(:patient, age: 17)
+      create(:encounter, patient: young_patient, device_created_at: 100.days.ago)
       old_patient = create(:patient, age: 18)
-      create(:appointment, patient: young_patient, scheduled_date: 100.days.ago)
-      create(:appointment, patient: old_patient, scheduled_date: 100.days.ago)
+      create(:encounter, patient: old_patient, device_created_at: 100.days.ago)
 
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       group = create(:treatment_group, experiment: experiment, index: 0)
@@ -216,9 +260,9 @@ describe ExperimentControlService, type: :model do
 
     it "only selects hypertensive patients" do
       patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 100.days.ago)
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
       patient2 = create(:patient, :without_hypertension, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 100.days.ago)
+      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       group = create(:treatment_group, experiment: experiment, index: 0)
@@ -233,10 +277,10 @@ describe ExperimentControlService, type: :model do
 
     it "only selects patients with mobile phones" do
       patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: 100.days.ago)
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
       patient1.phone_numbers.destroy_all
       patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 100.days.ago)
+      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       group = create(:treatment_group, experiment: experiment, index: 0)
