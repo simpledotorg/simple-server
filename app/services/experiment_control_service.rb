@@ -43,11 +43,11 @@ class ExperimentControlService
       eligible_patients = patient_pool
         .joins(:encounters)
         .where("encounters.device_created_at BETWEEN ? AND ?", eligibility_start, eligibility_end)
-        .where("NOT EXISTS (SELECT 1 FROM encounters as e2 WHERE e2.patient_id = patients.id AND
-                e2.device_created_at > ?)", eligibility_end)
+        .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
+                encounters.device_created_at > ?)", eligibility_end)
         .left_joins(:appointments)
-        .where("NOT EXISTS (SELECT 1 FROM appointments as a2 WHERE a2.patient_id = patients.id AND
-                a2.scheduled_date >= ?)", date)
+        .where("NOT EXISTS (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id AND
+                appointments.scheduled_date >= ?)", date)
         .order(Arel.sql("random()"))
         .to_a
 
@@ -56,7 +56,7 @@ class ExperimentControlService
         break if daily_patients.empty?
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
-          appointment = patient.appointments.where(status: "scheduled").last # i think this should suffice
+          appointment = patient.appointments.where(status: "scheduled").last
           schedule_reminders(patient, appointment, experiment, group, date)
           Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
         end
