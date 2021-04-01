@@ -224,6 +224,7 @@ RSpec.describe ControlRateService, type: :model do
       expect(result_with_exclusions[:controlled_patients_with_ltfu_rate][report_month]).to eq(100.0)
       expect(result_with_exclusions[:uncontrolled_patients][report_month]).to eq(0)
       expect(result_with_exclusions[:uncontrolled_patients_rate][report_month]).to eq(0)
+      expect(result_with_exclusions[:uncontrolled_patients_with_ltfu_rate][report_month]).to eq(0)
     end
   end
 
