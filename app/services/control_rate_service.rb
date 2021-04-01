@@ -1,6 +1,6 @@
 class ControlRateService
   include BustCache
-  CACHE_VERSION = 10
+  CACHE_VERSION = 12
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
@@ -65,12 +65,12 @@ class ControlRateService
     end
 
     results.controlled_patients = repository.controlled_patients_count[region.slug]
-    results.controlled_patients_with_ltfu = repository.controlled_patients_count[region.slug]
     results.uncontrolled_patients = repository.uncontrolled_patients_count[region.slug]
 
     results.calculate_percentages(:controlled_patients)
-    results.calculate_percentages(:controlled_patients_with_ltfu)
+    results.calculate_percentages(:controlled_patients, with_ltfu: true)
     results.calculate_percentages(:uncontrolled_patients)
+    results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
     results.calculate_percentages(:ltfu_patients)
     results
   end
@@ -93,7 +93,7 @@ class ControlRateService
     Patient
       .for_reports(with_exclusions: with_exclusions)
       .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.end_date)
+      .ltfu_as_of(period.end)
       .count
   end
 
