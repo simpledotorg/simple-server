@@ -11,8 +11,7 @@ class ExperimentControlService
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
       eligible = patient_pool
-        .joins(:appointments)
-        .where("appointments.status = ?", "scheduled")
+        .joins(:appointments).merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
         .order(Arel.sql("random()"))
 
@@ -21,9 +20,7 @@ class ExperimentControlService
 
       experiment_patients.each do |patient|
         group = experiment.group_for(patient.id)
-        appointments = patient.appointments
-          .where(status: "scheduled")
-          .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
+        appointments = patient.appointments.status_scheduled.between(experiment_start, experiment_end)
         appointments.each do |appointment|
           schedule_reminders(patient, appointment, group, appointment.scheduled_date)
         end
