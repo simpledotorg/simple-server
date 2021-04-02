@@ -2,10 +2,10 @@ class InvalidExperiment < StandardError; end
 
 class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
-  PATIENTS_PER_DAY = 10_000.freeze
+  PATIENTS_PER_DAY = 10_000
 
   class << self
-    def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients=100)
+    def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
       raise ArgumentError, "Start date must be before end date" if days_til_end < days_til_start
 
       existing_experiment = Experimentation::Experiment.where(experiment_type: "current_patient_reminder", state: ["selecting", "live"])
