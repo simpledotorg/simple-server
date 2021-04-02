@@ -16,8 +16,6 @@ class ExperimentControlService
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible.length).round
 
-      Rails.logger.info("going to create memberships")
-
       eligible.limit(experiment_patient_count).find_each do |patient|
         group = experiment.group_for(patient.id)
         appointments = patient.appointments.status_scheduled.between(experiment_start, experiment_end)
@@ -67,7 +65,6 @@ class ExperimentControlService
     protected
 
     def patient_pool
-      Rails.logger.info("grabbing patient pool")
       Patient.from(Patient.with_hypertension, :patients)
         .contactable
         .where("age >= ?", 18)
