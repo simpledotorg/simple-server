@@ -22,7 +22,7 @@ class ExperimentControlService
         appointments.each do |appointment|
           schedule_reminders(patient, appointment, group, appointment.scheduled_date)
         end
-        Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
+        group.patients << patient
       end
 
       experiment.update!(state: "live", start_date: experiment_start, end_date: experiment_end)
