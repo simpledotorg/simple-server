@@ -1,8 +1,6 @@
 module PatientDeduplication
   module Strategies
     class << self
-      delegate :sanitize_sql, to: ActiveRecord::Base
-
       # Exact match based on identifiers, and case insensitive full names
       def identifier_and_full_name_match(limit: nil)
         matches =
