@@ -7,6 +7,7 @@ module Experimentation
     validates :state, presence: true
     validates :experiment_type, presence: true
     validate :start_date_preceeds_end_date
+    validate :one_live_experiment_per_type
 
     enum state: {
       new: "new",
@@ -25,6 +26,14 @@ module Experimentation
     end
 
     private
+
+    def one_live_experiment_per_type
+      existing = self.class.where(state: ["live", "selecting"], experiment_type: experiment_type)
+      existing = existing.where("id != ?", id) if persisted?
+      if existing.any?
+        errors.add(:state, "you cannot have multiple selecting or live experiments of type #{experiment_type}")
+      end
+    end
 
     def start_date_preceeds_end_date
       return unless start_date && end_date

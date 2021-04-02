@@ -13,10 +13,9 @@ RSpec.describe Experimentation::Experiment, type: :model do
     it { should validate_presence_of(:state) }
     it { should validate_presence_of(:experiment_type) }
 
-
-    it "there can only be one live experiment at a time" do
-      experiment_1 = create(:experiment, state: :live, experiment_type: "current_patient_reminder")
-      experiment_2 = create(:experiment, state: :live, experiment_type: "stale_patient_reminder")
+    it "there can only be one live experiment of a particular type at a time" do
+      create(:experiment, state: :live, experiment_type: "current_patient_reminder")
+      create(:experiment, state: :live, experiment_type: "stale_patient_reminder")
 
       experiment_3 = build(:experiment, state: :live, experiment_type: "current_patient_reminder")
       expect(experiment_3).to be_invalid
