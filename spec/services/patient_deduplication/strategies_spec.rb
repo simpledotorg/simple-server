@@ -89,9 +89,9 @@ RSpec.describe PatientDeduplication::Strategies do
 
       other_facility = create(:facility)
 
-      expect(described_class.identifier_excluding_full_name_match(facilities: [patient.registration_facility]).count).to eq 1
-      expect(described_class.identifier_excluding_full_name_match(facilities: [patient_dup.registration_facility]).count).to eq 1
-      expect(described_class.identifier_excluding_full_name_match(facilities: [other_facility]).count).to eq 0
+      expect(described_class.identifier_excluding_full_name_match_for_facilities(facilities: [patient.registration_facility]).count).to eq 1
+      expect(described_class.identifier_excluding_full_name_match_for_facilities(facilities: [patient_dup.registration_facility]).count).to eq 1
+      expect(described_class.identifier_excluding_full_name_match_for_facilities(facilities: [other_facility]).count).to eq 0
     end
   end
 end
