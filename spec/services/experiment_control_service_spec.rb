@@ -185,23 +185,16 @@ describe ExperimentControlService, type: :model do
       expect(experiment.end_date).to eq(days_til_end.days.from_now.to_date)
     end
 
-    it "raises an error if an another current patient experiment is already in progress" do
+    it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment)
       other_experiment = create(:experiment, state: "selecting")
-
       expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
-      }.to raise_error(InvalidExperiment)
-
-      other_experiment.state_live!
-
-      expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
-      }.to raise_error(InvalidExperiment)
-
-      other_experiment.state_complete!
-
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+        begin
+          ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+        rescue ActiveRecord::RecordInvalid
+        end
+      }.to_not change{ AppointmentReminder.count }
+      expect(experiment.reload.state).to eq("new")
     end
 
     it "raises an error if the days_til_end is less than days_til_start" do

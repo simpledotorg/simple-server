@@ -1,14 +1,9 @@
-class InvalidExperiment < StandardError; end
-
 class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
   PATIENTS_PER_DAY = 10_000
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
-      existing_experiment = Experimentation::Experiment.where(experiment_type: "current_patient_reminder", state: ["selecting", "live"])
-      raise InvalidExperiment, "A current patient experiment is already in progress" if existing_experiment.any?
-
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patient_reminder")
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
