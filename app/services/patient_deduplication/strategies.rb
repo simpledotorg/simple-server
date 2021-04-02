@@ -3,36 +3,30 @@ module PatientDeduplication
     class << self
       # Exact match based on identifiers, and case insensitive full names
       def identifier_and_full_name_match(limit: nil)
-        matches =
-          duplicate_identifiers
-            .group("lower(full_name)")
-
-        result(matches, limit)
+        duplicate_identifiers
+          .group("lower(full_name)")
+          .then { |matches| duplicate_patient_ids(matches, limit: limit) }
       end
 
       # Exact match of just identifiers, excluding exact name matches
       def identifier_excluding_full_name_match(limit: nil)
-        matches =
-          duplicate_identifiers
-            .having("COUNT(distinct lower(full_name)) > 1")
-
-        result(matches, limit)
+        duplicate_identifiers
+          .having("COUNT(distinct lower(full_name)) > 1")
+          .then { |matches| duplicate_patient_ids(matches, limit: limit) }
       end
 
       # Exact match of just identifiers, excluding exact name matches
       # optimised to work well for a small set of facilities, say within a district.
       def identifier_excluding_full_name_match_for_facilities(facilities:, limit: nil)
-        matches =
-          duplicate_identifiers
-            .where(identifier: identifiers_for_facilities(facilities))
-            .having("COUNT(distinct lower(full_name)) > 1")
-
-        result(matches, limit)
+        duplicate_identifiers
+          .where(identifier: identifiers_for_facilities(facilities))
+          .having("COUNT(distinct lower(full_name)) > 1")
+          .then { |matches| duplicate_patient_ids(matches, limit: limit) }
       end
 
       private
 
-      def result(matches, limit)
+      def duplicate_patient_ids(matches, limit: nil)
         return matches.map(&:patient_ids) unless limit.present?
 
         matches.limit(limit).map(&:patient_ids)
