@@ -4,6 +4,6 @@ module Experimentation
     has_many :appointment_reminders
 
     validates :message, presence: true
-    validates :appointment_offset, presence: true, numericality: {only_integer: true}
+    validates :remind_on_in_days, presence: true, numericality: {only_integer: true}
   end
 end
