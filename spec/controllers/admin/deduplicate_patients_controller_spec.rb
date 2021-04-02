@@ -1,6 +1,38 @@
 require "rails_helper"
 
 RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
+  context "#show" do
+    it "shows patients accessible by the user" do
+      patient = create(:patient, full_name: "Patient one")
+      patient_passport_id = patient.business_identifiers.first.identifier
+
+      patient_dup = create(:patient, full_name: "Patient one dup")
+      patient_dup.business_identifiers.first.update(identifier: patient_passport_id)
+
+      admin = create(:admin, :manager, :with_access, resource: patient.assigned_facility)
+      sign_in(admin.email_authentication)
+
+      get :show
+
+      expect(assigns(:patients)).to contain_exactly(patient, patient_dup)
+    end
+
+    it "omits patients not accessible by the user" do
+      patient = create(:patient, full_name: "Patient one")
+      patient_passport_id = patient.business_identifiers.first.identifier
+
+      patient_dup = create(:patient, full_name: "Patient one dup")
+      patient_dup.business_identifiers.first.update(identifier: patient_passport_id)
+
+      admin = create(:admin, :manager, :with_access, resource: create(:facility))
+      sign_in(admin.email_authentication)
+
+      get :show
+
+      expect(assigns(:patients)).to be_empty
+    end
+  end
+
   context "#merge" do
     it "merges patients given their IDs" do
       patients = [create(:patient, full_name: "Patient one"), create(:patient, full_name: "Patient two")]
