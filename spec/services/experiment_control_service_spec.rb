@@ -173,12 +173,6 @@ describe ExperimentControlService, type: :model do
       expect(reminder3.remind_on).to eq(appointment_date + 3.days)
     end
 
-    it "sets status to 'selecting' while selecting patients" do
-      experiment = create(:experiment)
-      expect_any_instance_of(Experimentation::Experiment).to receive(:update!).with(state: "selecting", start_date: 5.days.from_now.to_date, end_date: 35.days.from_now.to_date)
-      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
-    end
-
     it "updates the experiment state, start date, and end date" do
       days_til_start = 5
       days_til_end = 35
@@ -207,9 +201,7 @@ describe ExperimentControlService, type: :model do
 
       other_experiment.state_complete!
 
-      expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
-      }.not_to raise_error(InvalidExperiment)
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
     end
 
     it "raises an error if the days_til_end is less than days_til_start" do
