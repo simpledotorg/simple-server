@@ -124,7 +124,7 @@ PatientBreakdownReports = function () {
 
     const chartSegments = {
       "ltfu_patients": { "description" : "Lost to follow-up", color: reports.darkBlueColor},
-      "not_ltfu_patients": { "description": "Not lost to follow-up", color: reports.mediumGreenColor},
+      "not_ltfu_patients": { "description": "Patients under care", color: reports.mediumGreenColor},
       "dead_patients": {"description": "Died", color: reports.mediumRedColor}
     }
 

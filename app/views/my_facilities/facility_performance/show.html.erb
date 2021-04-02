@@ -51,11 +51,11 @@
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="controlled_patients_rate" colspan="2">
                 Patients with controlled BP from<br>
-                <%= @period.start_date.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end_date.to_s(:day_mon_year) %>
+                <%= @period.begin.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end.to_s(:day_mon_year) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="missed_visits_rate" colspan="2">
                 Patients with no visit from<br>
-                <%= @period.start_date.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end_date.to_s(:day_mon_year) %>
+                <%= @period.begin.advance(months: -2).to_s(:day_mon_year) %> to <%= @period.end.to_s(:day_mon_year) %>
               </th>
               <th class="row-label sort-label" data-sort-method="number" data-sort-column-key="monthly_registrations" colspan="2">
                 Registrations as % of OPD load<br>

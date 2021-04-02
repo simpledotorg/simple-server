@@ -8,7 +8,7 @@ RSpec.describe Experimentation::ReminderTemplate, type: :model do
 
   describe "validations" do
     it { should validate_presence_of(:message) }
-    it { should validate_presence_of(:appointment_offset) }
-    it { should validate_numericality_of(:appointment_offset) }
+    it { should validate_presence_of(:remind_on_in_days) }
+    it { should validate_numericality_of(:remind_on_in_days) }
   end
 end

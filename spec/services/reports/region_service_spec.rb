@@ -45,7 +45,7 @@ RSpec.describe Reports::RegionService, type: :model do
     end
 
     it "counts missed visits for the reporting range _only_" do
-      may_1 = Time.parse("May 1st, 2020")
+      may_1 = Time.parse("May 1st, 2020").end_of_day
       may_15 = Time.parse("May 15th, 2020")
       facility = create(:facility, facility_group: facility_group_1)
       _patient_missed_visit_1 = FactoryBot.create(:patient, registration_facility: facility, recorded_at: Time.parse("December 1st 2010"))
@@ -56,12 +56,18 @@ RSpec.describe Reports::RegionService, type: :model do
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
       create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
-      service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
+      service = Reports::RegionService.new(region: facility, period: july_2020.to_period, with_exclusions: true)
       result = service.call
+      expect(result[:missed_visits_with_ltfu].size).to eq(service.range.entries.size)
+      expect(result[:missed_visits_with_ltfu][Period.month("August 1 2018")]).to eq(1)
+      expect(result[:missed_visits_with_ltfu][jan_2020.to_period]).to eq(1)
+      expect(result[:missed_visits_with_ltfu][Period.month("April 1 2020")]).to eq(4)
+      expect(result[:missed_visits_with_ltfu][Period.month(may_15)]).to eq(3)
+
       expect(result[:missed_visits].size).to eq(service.range.entries.size)
-      expect(result[:missed_visits][Period.month("August 1 2018")]).to eq(1)
-      expect(result[:missed_visits][jan_2020.to_period]).to eq(1)
-      expect(result[:missed_visits][Period.month("April 1 2020")]).to eq(4)
+      expect(result[:missed_visits][Period.month("August 1 2018")]).to eq(0)
+      expect(result[:missed_visits][jan_2020.to_period]).to eq(0)
+      expect(result[:missed_visits][Period.month("April 1 2020")]).to eq(3)
     end
   end
 

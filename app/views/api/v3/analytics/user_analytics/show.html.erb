@@ -111,13 +111,15 @@
 
   <!-- drug stock -->
   <% if current_user.feature_enabled?(:drug_stocks_mobile) %>
-    <div class="card">
-        <h3>Drug stock report</h3>
-        <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
-        <%= link_to "Submit Drug Stock", new_webview_drug_stock_url(user_id: current_user.id,
-          access_token: current_user.access_token,
-          facility_id: current_facility.id), class: "button" %>
-    </div>
+    <% unless current_facility.community? %>
+      <div class="card">
+          <h3>Drug stock report</h3>
+          <p style="text-align: left; padding: 6px 0;">Please submit your monthly hypertension drug stock report for end of <%= @for_end_of_month.to_s(:mon_year) %></p>
+          <%= link_to "Submit Drug Stock", new_webview_drug_stock_url(user_id: current_user.id,
+            access_token: current_user.access_token,
+            facility_id: current_facility.id), class: "button" %>
+      </div>
+    <% end %>
   <% end %>
 
   <!-- monthly hypertension control view -->
@@ -264,7 +266,7 @@
         <% @user_analytics.statistics.dig(:cohorts).each do |cohort| %>
           <div class="card cohort">
               <h6>
-                <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>&nbsp;
+                <%= cohort[:registered] %> <%= raw t("analytics.patient", count: cohort[:registered]) %>
                 <%= raw t("analytics.registered_in") %> <%= cohort[:patients_registered] %>
               </h6>
 

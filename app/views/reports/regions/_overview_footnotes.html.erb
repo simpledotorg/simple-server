@@ -41,12 +41,7 @@
         <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
       </p>
       <p class="mb-0px fs-14px c-grey-dark">
-        <strong>Denominator:</strong>
-        <% if @with_ltfu %>
-          <%= t("denominator_copy", region_name: @region.name) %>
-        <% else %>
-          <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
-        <% end %>
+        <strong>Denominator:</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
       </p>
     </div>
   </div>
@@ -86,6 +81,16 @@
       </p>
       <p class="mb-0px fs-14px c-grey-dark">
         <strong>Denominator</strong> <%= t("denominator_excluding_ltfu_copy", region_name: @region.name) %>
+      </p>
+    </div>
+  </div>
+  <div class="mb-24px">
+    <p class="mb-8px fs-16px fw-bold c-grey-dark">
+      Patients under care
+    </p>
+    <div class="pl-16px">
+      <p class="mb-0px fs-14px c-grey-dark">
+        <%= t("patients_under_care_copy") %>
       </p>
     </div>
   </div>
