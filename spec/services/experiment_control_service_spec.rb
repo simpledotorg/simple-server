@@ -144,7 +144,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
-      create(:reminder_template, treatment_group: group, message: "come today", appointment_offset: 0)
+      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
@@ -161,9 +161,9 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
-      create(:reminder_template, treatment_group: group, message: "come in 3 days", appointment_offset: -3)
-      create(:reminder_template, treatment_group: group, message: "come today", appointment_offset: 0)
-      create(:reminder_template, treatment_group: group, message: "you're late", appointment_offset: 3)
+      create(:reminder_template, treatment_group: group, message: "come in 3 days", remind_on_in_days: -3)
+      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
+      create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 

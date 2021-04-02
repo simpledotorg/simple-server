@@ -86,7 +86,7 @@ class ExperimentControlService
 
     def schedule_reminders(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|
-        remind_on = schedule_date + template.appointment_offset.days
+        remind_on = schedule_date + template.remind_on_in_days.days
         AppointmentReminder.create!(
           remind_on: remind_on,
           status: "pending",
