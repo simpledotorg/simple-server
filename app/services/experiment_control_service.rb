@@ -25,7 +25,7 @@ class ExperimentControlService
         group.patients << patient
       end
 
-      experiment.update!(state: "live", start_date: experiment_start, end_date: experiment_end)
+      experiment.update!(state: "live")
     end
 
     def start_stale_patient_experiment(name, total_days)
@@ -34,7 +34,7 @@ class ExperimentControlService
       eligibility_start = (date - 365.days).beginning_of_day
       eligibility_end = (date - 35.days).end_of_day
 
-      experiment.state_selecting!
+      experiment.update!(state: "selecting", start_date: Date.current, end_date: total_days.days.from_now.to_date)
 
       eligible_patients = patient_pool
         .joins(:encounters)
@@ -59,7 +59,7 @@ class ExperimentControlService
         date += 1.day
       end
 
-      experiment.update!(state: "live", start_date: Date.current, end_date: total_days.days.from_now.to_date)
+      experiment.update!(state: "live")
     end
 
     protected

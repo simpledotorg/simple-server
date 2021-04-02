@@ -344,12 +344,6 @@ describe ExperimentControlService, type: :model do
       expect(group2.patients.include?(patient1)).to be_truthy
     end
 
-    it "sets status to 'selecting' while selecting patients" do
-      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
-      expect_any_instance_of(Experimentation::Experiment).to receive(:state_selecting!)
-      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
-    end
-
     it "updates the experiment state and start date" do
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
