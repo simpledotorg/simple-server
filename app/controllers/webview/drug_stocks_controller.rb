@@ -10,11 +10,13 @@ class Webview::DrugStocksController < ApplicationController
   layout false
 
   def new
+    puts @for_end_of_month
     @protocol_drugs = @current_facility.protocol.protocol_drugs.where(stock_tracked: true).sort_by(&:sort_key)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
   end
 
   def create
+    puts @for_end_of_month
     DrugStocksCreator.call(current_user, current_facility, @for_end_of_month, safe_params[:drug_stocks])
     redirect_to webview_drug_stocks_url(for_end_of_month: @for_end_of_month,
                                         facility_id: current_facility.id,
@@ -78,6 +80,7 @@ class Webview::DrugStocksController < ApplicationController
 
   def set_for_end_of_month
     @for_end_of_month ||= if params[:for_end_of_month]
+      p 'parsing'
       Date.parse(params[:for_end_of_month]).end_of_month
     else
       Date.current.end_of_month
