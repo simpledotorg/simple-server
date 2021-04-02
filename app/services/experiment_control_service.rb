@@ -1,6 +1,7 @@
 class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
   PATIENTS_PER_DAY = 10_000
+  BATCH_SIZE = 100
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
@@ -10,15 +11,14 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible = patient_pool
-        .joins(:appointments).merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
-        .order(Arel.sql("random()"))
+      eligible = patient_pool.joins(:appointments).merge(Appointment.status_scheduled)
+        .where("appointments.scheduled_date BETWEEN ? and ?", experiment_start, experiment_end)
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible.length).round
-      experiment_patients = eligible.take(experiment_patient_count)
 
-      experiment_patients.each do |patient|
+      Rails.logger.info("going to create memberships")
+
+      eligible.limit(experiment_patient_count).find_each do |patient|
         group = experiment.group_for(patient.id)
         appointments = patient.appointments.status_scheduled.between(experiment_start, experiment_end)
         appointments.each do |appointment|
@@ -67,6 +67,7 @@ class ExperimentControlService
     protected
 
     def patient_pool
+      Rails.logger.info("grabbing patient pool")
       Patient.from(Patient.with_hypertension, :patients)
         .contactable
         .where("age >= ?", 18)
