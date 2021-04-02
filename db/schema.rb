@@ -168,6 +168,18 @@ ActiveRecord::Schema.define(version: 2021_03_29_202937) do
     t.index ["version"], name: "unique_data_migrations", unique: true
   end
 
+  create_table "deduplication_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id"
+    t.string "record_type", null: false
+    t.string "deleted_record_id", null: false
+    t.string "deduped_record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["record_type", "deleted_record_id"], name: "idx_deduplication_logs_lookup_deleted_record", unique: true
+    t.index ["user_id"], name: "index_deduplication_logs_on_user_id"
+  end
+
   create_table "drug_stocks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "facility_id", null: false
     t.uuid "user_id", null: false
