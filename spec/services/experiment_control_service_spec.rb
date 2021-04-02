@@ -175,7 +175,7 @@ describe ExperimentControlService, type: :model do
 
     it "sets status to 'selecting' while selecting patients" do
       experiment = create(:experiment)
-      expect_any_instance_of(Experimentation::Experiment).to receive(:state_selecting!)
+      expect_any_instance_of(Experimentation::Experiment).to receive(:update!).with(state: "selecting", start_date: 5.days.from_now.to_date, end_date: 35.days.from_now.to_date)
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
     end
 
@@ -213,9 +213,11 @@ describe ExperimentControlService, type: :model do
     end
 
     it "raises an error if the days_til_end is less than days_til_start" do
+      experiment = create(:experiment)
+
       expect {
-        ExperimentControlService.start_current_patient_experiment("name", 35, 5)
-      }.to raise_error(ArgumentError)
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 35, 5)
+      }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 

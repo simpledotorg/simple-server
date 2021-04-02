@@ -6,8 +6,6 @@ class ExperimentControlService
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
-      raise ArgumentError, "Start date must be before end date" if days_til_end < days_til_start
-
       existing_experiment = Experimentation::Experiment.where(experiment_type: "current_patient_reminder", state: ["selecting", "live"])
       raise InvalidExperiment, "A current patient experiment is already in progress" if existing_experiment.any?
 
@@ -15,7 +13,7 @@ class ExperimentControlService
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
 
-      experiment.state_selecting!
+      experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
       eligible = patient_pool
         .joins(:appointments)
