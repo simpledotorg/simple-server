@@ -106,6 +106,21 @@ describe ExperimentControlService, type: :model do
       expect(experiment.patients.include?(patient3)).to be_truthy
     end
 
+    it "only includes the specified percentage of eligible patients" do
+      percentage = 50
+      patient1 = create(:patient, age: 80)
+      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
+      patient2 = create(:patient, age: 80)
+      create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
+
+      experiment = create(:experiment)
+      group = create(:treatment_group, experiment: experiment, index: 0)
+
+      ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35, percentage)
+
+      expect(experiment.patients.count).to eq(1)
+    end
+
     it "adds patients to treatment groups predictably based on patient id" do
       patient1 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
       create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
@@ -122,20 +137,24 @@ describe ExperimentControlService, type: :model do
       expect(group2.patients.include?(patient1)).to be_truthy
     end
 
-    it "adds reminders for currently scheduled appointments" do
+    it "adds reminders for all appointments scheduled in the date range" do
       patient = create(:patient, age: 80)
-      create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
+      appointment1 = create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
+      appointment2 = create(:appointment, patient: patient, scheduled_date: 20.days.from_now)
 
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
+      create(:reminder_template, treatment_group: group, message: "come today", appointment_offset: 0)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      membership = Experimentation::TreatmentGroupMembership.find_by(patient_id: patient.id, treatment_group_id: group.id)
-      expect(membership).to be_truthy
+      reminder1 = AppointmentReminder.find_by(patient: patient, appointment: appointment1)
+      reminder2 = AppointmentReminder.find_by(patient: patient, appointment: appointment2)
+      expect(reminder1).to be_truthy
+      expect(reminder2).to be_truthy
     end
 
-    it "schedules reminders based on reminder templates" do
+    it "schedules cascading reminders based on reminder templates" do
       patient1 = create(:patient, age: 80)
       appointment_date = 10.days.from_now.to_date
       create(:appointment, patient: patient1, scheduled_date: appointment_date)

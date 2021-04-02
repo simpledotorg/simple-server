@@ -1,8 +1,11 @@
 class InvalidExperiment < StandardError; end
 
 class ExperimentControlService
+  LAST_EXPERIMENT_BUFFER = 14.days.freeze
+  PATIENTS_PER_DAY = 10_000.freeze
+
   class << self
-    def start_current_patient_experiment(name, days_til_start, days_til_end)
+    def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients=100)
       raise ArgumentError, "Start date must be before end date" if days_til_end < days_til_start
 
       existing_experiment = Experimentation::Experiment.where(experiment_type: "current_patient_reminder", state: ["selecting", "live"])
@@ -14,18 +17,23 @@ class ExperimentControlService
 
       experiment.state_selecting!
 
-      experiment_patients = patient_pool
+      eligible = patient_pool
         .joins(:appointments)
         .where("appointments.status = ?", "scheduled")
         .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
         .order(Arel.sql("random()"))
 
+      experiment_patient_count = (0.01 * percentage_of_patients * eligible.length).round
+      experiment_patients = eligible.take(experiment_patient_count)
+
       experiment_patients.each do |patient|
         group = experiment.group_for(patient.id)
-        appointment = patient.appointments
+        appointments = patient.appointments
           .where(status: "scheduled")
-          .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end).first
-        schedule_reminders(patient, appointment, experiment, group, appointment.scheduled_date)
+          .where("appointments.scheduled_date BETWEEN ? AND ?", experiment_start, experiment_end)
+        appointments.each do |appointment|
+          schedule_reminders(patient, appointment, group, appointment.scheduled_date)
+        end
         Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
       end
 
@@ -52,12 +60,12 @@ class ExperimentControlService
         .to_a
 
       total_days.times do
-        daily_patients = eligible_patients.pop(10_000)
+        daily_patients = eligible_patients.pop(PATIENTS_PER_DAY)
         break if daily_patients.empty?
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
           appointment = patient.appointments.where(status: "scheduled").last
-          schedule_reminders(patient, appointment, experiment, group, date)
+          schedule_reminders(patient, appointment, group, date)
           Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
         end
         date += 1.day
@@ -73,17 +81,17 @@ class ExperimentControlService
         .contactable
         .where("age >= ?", 18)
         .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where(["experiments.end_date < ? OR experiments.id IS NULL", 14.days.ago]).references(:experiment)
+        .where(["experiments.end_date < ? OR experiments.id IS NULL", LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
     end
 
-    def schedule_reminders(patient, appointment, experiment, group, schedule_date)
+    def schedule_reminders(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|
         remind_on = schedule_date + template.appointment_offset.days
         AppointmentReminder.create!(
           remind_on: remind_on,
           status: "pending",
           message: template.message,
-          experiment: experiment,
+          experiment: group.experiment,
           reminder_template: template,
           appointment: appointment,
           patient: patient
