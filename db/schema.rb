@@ -543,7 +543,7 @@ ActiveRecord::Schema.define(version: 2021_03_29_202937) do
 
   create_table "reminder_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "message", null: false
-    t.integer "appointment_offset", null: false
+    t.integer "remind_on_in_days", null: false
     t.uuid "treatment_group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
