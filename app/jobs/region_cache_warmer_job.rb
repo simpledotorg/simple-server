@@ -1,11 +1,9 @@
 class RegionCacheWarmerJob
-  DEFAULT_CONCURRENCY_LIMIT = 3
-
   include Sidekiq::Worker
   include Sidekiq::Throttled::Worker
 
   sidekiq_options queue: :default
-  sidekiq_throttle(concurrency: {limit: ENV["REGION_CACHE_WARMER_CONCURRENCY"] || DEFAULT_CONCURRENCY_LIMIT})
+  # sidekiq_throttle(concurrency: {limit: ENV["REGION_CACHE_WARMER_CONCURRENCY"] || DEFAULT_CONCURRENCY_LIMIT})
 
   def perform(region_id, period_attributes)
     region = Region.find(region_id)
