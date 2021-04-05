@@ -20,7 +20,6 @@ module Reports
 
       Region.where.not(region_type: ["root", "organization"]).pluck(:id).each do |region_id|
         RegionCacheWarmerJob.perform_async(region_id, period.attributes)
-        ActiveRecord::Base.connection.clear_query_cache
       end
 
       notify "queued region reports cache warming"
