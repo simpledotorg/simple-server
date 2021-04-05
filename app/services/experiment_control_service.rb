@@ -1,5 +1,7 @@
 class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
+  INACTIVE_PATIENTS_ELIGIBILITY_START = 365.days.freeze
+  INACTIVE_PATIENTS_ELIGIBILITY_END = 35.days.freeze
   PATIENTS_PER_DAY = 10_000
   BATCH_SIZE = 100
 
@@ -11,18 +13,27 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible = patient_pool.joins(:appointments).merge(Appointment.status_scheduled)
+      eligible_ids = patient_pool.joins(:appointments).merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", experiment_start, experiment_end)
+        .distinct
+        .pluck(:id)
+      eligible_ids.shuffle!
 
-      experiment_patient_count = (0.01 * percentage_of_patients * eligible.length).round
+      experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
+      eligible_ids = eligible_ids.pop(experiment_patient_count)
 
-      eligible.limit(experiment_patient_count).find_each do |patient|
-        group = experiment.group_for(patient.id)
-        appointments = patient.appointments.status_scheduled.between(experiment_start, experiment_end)
-        appointments.each do |appointment|
-          schedule_reminders(patient, appointment, group, appointment.scheduled_date)
+      while eligible_ids.any?
+        batch = eligible_ids.pop(BATCH_SIZE)
+        patients = Patient.where(id: batch).includes(:appointments)
+          .where(appointments: { scheduled_date: experiment_start..experiment_end })
+
+        patients.each do |patient|
+          group = experiment.group_for(patient.id)
+          patient.appointments.each do |appointment|
+            schedule_reminders(patient, appointment, group, appointment.scheduled_date)
+          end
+          group.patients << patient
         end
-        group.patients << patient
       end
 
       experiment.update!(state: "live")
@@ -31,29 +42,31 @@ class ExperimentControlService
     def start_stale_patient_experiment(name, total_days)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patient_reminder")
       date = Date.current
-      eligibility_start = (date - 365.days).beginning_of_day
-      eligibility_end = (date - 35.days).end_of_day
+      eligibility_start = (date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
+      eligibility_end = (date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
 
       experiment.update!(state: "selecting", start_date: Date.current, end_date: total_days.days.from_now.to_date)
 
-      eligible_patients = patient_pool
+      eligible_ids = patient_pool
         .joins(:encounters)
-        .where("encounters.device_created_at BETWEEN ? AND ?", eligibility_start, eligibility_end)
+        .where(encounters: { device_created_at: eligibility_start..eligibility_end })
         .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
                 encounters.device_created_at > ?)", eligibility_end)
         .left_joins(:appointments)
         .where("NOT EXISTS (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id AND
                 appointments.scheduled_date >= ?)", date)
-        .order(Arel.sql("random()"))
-        .to_a
+        .distinct
+        .pluck(:id)
+      eligible_ids.shuffle!
 
       total_days.times do
-        daily_patients = eligible_patients.pop(PATIENTS_PER_DAY)
-        break if daily_patients.empty?
+        daily_ids = eligible_ids.pop(PATIENTS_PER_DAY)
+        break if daily_ids.empty?
+        # TODO: remove references to appointment after removing appointment dependency
+        daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
-          appointment = patient.appointments.where(status: "scheduled").last
-          schedule_reminders(patient, appointment, group, date)
+          schedule_reminders(patient, patient.appointments.last, group, date)
           Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
         end
         date += 1.day

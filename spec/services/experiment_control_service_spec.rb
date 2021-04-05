@@ -137,10 +137,12 @@ describe ExperimentControlService, type: :model do
       expect(group2.patients.include?(patient1)).to be_truthy
     end
 
-    it "adds reminders for all appointments scheduled in the date range" do
+    it "adds reminders for all appointments scheduled in the date range and not for appointments outside the range" do
       patient = create(:patient, age: 80)
-      appointment1 = create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
-      appointment2 = create(:appointment, patient: patient, scheduled_date: 20.days.from_now)
+      old_appointment = create(:appointment, patient: patient, scheduled_date: 10.days.ago)
+      far_future_appointment = create(:appointment, patient: patient, scheduled_date: 100.days.from_now)
+      upcoming_appointment1 = create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
+      upcoming_appointment2 = create(:appointment, patient: patient, scheduled_date: 20.days.from_now)
 
       experiment = create(:experiment)
       group = create(:treatment_group, experiment: experiment, index: 0)
@@ -148,10 +150,14 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1 = AppointmentReminder.find_by(patient: patient, appointment: appointment1)
-      reminder2 = AppointmentReminder.find_by(patient: patient, appointment: appointment2)
+      reminder1 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment1)
       expect(reminder1).to be_truthy
+      reminder2 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment2)
       expect(reminder2).to be_truthy
+      unexpected_reminder1 = AppointmentReminder.find_by(patient: patient, appointment: old_appointment)
+      expect(unexpected_reminder1).to be_falsey
+      unexpected_reminder2 = AppointmentReminder.find_by(patient: patient, appointment: far_future_appointment)
+      expect(unexpected_reminder2).to be_falsey
     end
 
     it "schedules cascading reminders based on reminder templates" do
@@ -189,10 +195,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment)
       other_experiment = create(:experiment, state: "selecting")
       expect {
-        begin
-          ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
-        rescue ActiveRecord::RecordInvalid
-        end
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35) rescue ActiveRecord::RecordInvalid
       }.to_not change{ AppointmentReminder.count }
       expect(experiment.reload.state).to eq("new")
     end
@@ -280,7 +283,7 @@ describe ExperimentControlService, type: :model do
       expect(group.patients.include?(patient3)).to be_falsey
     end
 
-    it "only selects patients who have no appointments scheduled today or after" do
+    it "only selects patients who have no appointments scheduled in the future" do
       patient1 = create(:patient, age: 80)
       create(:appointment, patient: patient1, scheduled_date: Date.current, status: "scheduled")
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
@@ -344,7 +347,26 @@ describe ExperimentControlService, type: :model do
       expect(group2.patients.include?(patient1)).to be_truthy
     end
 
-    it "updates the experiment state and start date" do
+    it "schedules cascading reminders based on reminder templates" do
+      patient1 = create(:patient, age: 80)
+      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+      # TODO: remove this after removing appointment dependency
+      create(:appointment, patient: patient1, scheduled_date: 100.days.ago)
+
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      group = create(:treatment_group, experiment: experiment, index: 0)
+      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
+      create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
+
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+
+      today = Date.today
+      reminder1, reminder2 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
+      expect(reminder1.remind_on).to eq(today)
+      expect(reminder2.remind_on).to eq(today + 3.days)
+    end
+
+    it "updates the experiment state, start date, and end date" do
       experiment = create(:experiment, experiment_type: "stale_patient_reminder")
       ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
       experiment.reload
@@ -352,6 +374,15 @@ describe ExperimentControlService, type: :model do
       expect(experiment.state).to eq("live")
       expect(experiment.start_date).to eq(Date.current)
       expect(experiment.end_date).to eq(30.days.from_now.to_date)
+    end
+
+    it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
+      experiment = create(:experiment, experiment_type: "stale_patient_reminder")
+      other_experiment = create(:experiment, experiment_type: "stale_patient_reminder", state: "selecting")
+      expect {
+        ExperimentControlService.start_stale_patient_experiment(experiment.name, 30) rescue ActiveRecord::RecordInvalid
+      }.to_not change{ AppointmentReminder.count }
+      expect(experiment.reload.state).to eq("new")
     end
   end
 end
