@@ -1,4 +1,4 @@
-ti-ET:
+ti:
   date:
     month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቕምቲ", "ሕዳር", "ታሕሳስ"]
     abbr_month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቅምቲ", "ሕዳር", "ታሕ"]
@@ -60,12 +60,12 @@ ti-ET:
     registered_in: "ክኣትዉ ዝተመዝገቡ"
     result_from_last_visit_in: "ውጽኢት ናይ ዝሓለፈ ምብጻሕ"
     no_patients: "ተሓከምቲ የለውን"
-    cohort_report_footnote_1: "ኣብ ዝኾነ ትካል ድሕሪ ምምዝጋቦም ኣብ ርብዒ ዓመት ዝነበረ ናይ ቀረባ እዋን ክትትል።"
-    cohort_report_footnote_2: "ኣብ ርብዒ ዓመት ዝተመዝገቡ፣ ኣብዚ ትካል ዝተመደቡ ኩሎም HTN ተሓከምቲ።"
+    cohort_report_footnote_1: "ኣብ <em>ዝኾነ ትካል</em> ድሕሪ ምምዝጋቦም ኣብ ርብዒ ዓመት ዝነበረ ናይ ቀረባ እዋን ክትትል።"
+    cohort_report_footnote_2: "ኣብ ርብዒ ዓመት ዝተመዝገቡ፣ ኣብዚ ትካል ዝተመደቡ ኩሎም ናይ ሃይፐርቴንሽን ተሓከምቲ። ዝሞቱን ክትትትል ዘይገብሩን ተሓከምቲ ኣይተኻተቱን።"
     cohort_report_footnote_3: "ተሓከምቲ ዝተፈላለየ ምብጻሓት እንተለዎም፣ BP ናይ BP ምቁጽጻር ንምቕማር እዩ ዝጠቅም።"
     all_hypertension_and_diabetes: "ኩሎም ጸቕጢ ደም ከምኡውን ሕማም ሽኮር"
-    hypertension_controlled_numerator: "ኣብ ዝሓለፋ 3 ኣዋርሕ <em>ኣብ ዝኾነ ትካል</em> እንተውሓደ ዝተመዝገበ ሓደ ናይ BP ልክዒት ዘለዎም ተሓከምቲ። ኣብ ናይ ቀረባ እዋን ምብጻሕ እቲ ተሓካማይ BP&nbsp;&lt;140 ከምኡውን &lt;90 ነይርዎ።"
-    hypertension_controlled_denominator: "ጸቕጢ ደም ዘለዎም ነዚ ትካል ከም \"ዝተመርጸ ትካል\" ገይሮም ዝወሰዱ ኩሎም ተሓከምቲ። ኣብ ዝሓለፋ 3 ኣዋርሕ ዝተመዝገቡ ተሓከምቲ ተውጊዶም እዮም፣ እዚ ድማ እቲ ትካ ናቶም BP ንምቁጽጻር ዕድል ንኽረክብ እዩ።"
+    hypertension_controlled_numerator: "ኣብ ዝሓለፋ 3 ኣዋርሕ ኣብ <em>ዝኾነ ትካል</em> ኣብ ዝነበሮም ናይ መወዳእታ ምብጻሕ ናይ BP ልክዒቶም  <140/90 ዝኾኑ ተሓከምቲ።"
+    hypertension_controlled_denominator: "ቅድሚ እዘን ዝሓለፋ 3 ኣዋርሕ ዝተመዝገቡ፣ ኣብዚ ትካል ዝተመደቡ ኩሎም ናይ ሃይፐርቴንሽን ተሓከምቲ። ዝሞቱን ክትትትል ዘይገብሩን ተሓከምቲ ኣይተኻተቱን።"
     hypertension: "ልዑል ጸቕጢ ደም"
     diabetes: "ሕማም ሽኮር"
     all_time: "ኩሉ ጊዜ"
@@ -74,3 +74,243 @@ ti-ET:
       female: "ጓል-አነስተይቲ"
       male: "ወዲ-ተባዕታይ"
       transgender: "ፆታ-ዝቐየረ"
+  help:
+    menu:
+      videos: ቪዲዮታት
+      start: 1. ኣብ ምጅማር
+      register: 2. ተሓካሚ መዝግብ
+      search: 3. ንእትደልዮ ተሓካሚ ብልክዕ ርኸቦ
+      record: 4. ናይ ተሓካማይ ምብፃሕ ምምዝጋብ
+      overdue: 5. ጊዚኦም ዝሓለፎም ተሓከምቲ ጸዉዕዎም
+      faq: ብኣብዝሓ ዝሕተቱ ሕቶታት
+    support:
+      heading: ሓገዝ ሕተት
+      contents: ጸገማት ወይ ሕቶታት እንተድኣ ኣለኩም ኮይኑ፣ ነቲ ናትና ናይ ሓገዝ ጉጅለ ንምርካብ ነዚ መፍትሕ ይጠውቑ። ጉጅለና ሓገዝ የቕርቡ እዮም።
+    bp_passport_app_summary:
+      new: ሓድሽ!
+      heading: ንተሓከምትኹም ዝኸውን ኣፕሊኬሽን
+      contents_1: "ተሓከምቲ ነቲ ናይ ባዕሎም BP ከምኡ'ውን ናይ ደም ሽኮር ብ \"BP Passport\" ዝበሃል ቀሊል ኣፕሊኬሽን ብገዛእ ርእሶም ክምዝግብዎ ይኽእሉ እዮም። "
+      contents_2: ንተሓከምትኻ ናብ Google Play Store ወይ Apple App Store ንክኸዱን ነቲ "BP Passport" ዝብል ኣፕሊኬሽን ንኽጽዕንዎን ሓብሮም።
+      learn_more: ብዝበለጸ ይፍለጡ...
+    videos:
+      heading: ናይ ስልጠና ቪዲዮታት
+      class:
+        heading: ነቲ ክፍሊ ይውሰዱ
+        contents: Simple ንምጥቃም ንምምሃር ክላስ ተመልከት።
+        training_videos_link: "ስልጠና: ኩሎም ምዕራፋት"
+        training_videos_subtitle: "ብኢልግሊሽ ኮይኑ ብህንዲ ትርጉም ዘለዎ 36:15"
+      chapters:
+        heading: ናይ ክፍሊ ምዕራፋት
+        chapter_1: "1: ነቲ ኣፕሊኬሽን ይጽዓንዎ"
+        chapter_2: "2: መእተዊ"
+        chapter_3: "3: ተሓካሚ መዝግብ"
+        chapter_4: "4: ናይ ክትትል ተሓከምቲ የናድዩ"
+        chapter_5: "5: ንእትደልዮ ተሓካሚ ብልክዕ ርኸቦ"
+        chapter_6: "6: ጊዚኦም ዝሓለፎም ተሓከምቲ ጸዉዕዎም"
+        chapter_7: "7: ኣገደስቲ ባህሪያት"
+        chapter_8: "8: ብተደጋጋሚ ዝሕተቱ ሕቶታት"
+        chapter_9: "9: ሓገዝ ብኸመይ ክትረክብ ትኽእል"
+        chapter_10: "10: Simple ምጥቃም ጀምር"
+      teleconsultation:
+        heading: ቴሌ-ኮንሳልት ስልጠና
+        contents: እቲ ናትካ ሆስፒታል Simple ን ቴሌ-ኮንሳልት ዕላማ ይጥቀም እኝተድኣ ኾይኑ፣ እዚ ስልጠና ንዓኻ እዩ።
+        english_video_link: ቴሌ-ኮንሳልት ምስ Simple
+        english_video_link_language: ኢንግሊሽ
+        hindi_video_link: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_video_link_language: ህንዲ
+      bp_passports:
+        heading: ናይ BP ፓስፖርትታት
+        contents: ኣብ ናትካ ሆስፒታል BP ፓስፖርት ካርድታት ወይ BP ፓስፖርት ስቲከር ብኸመይ ከምእትጥቀመሎም ተማሃር።
+        video_link: ናይ BP ፓስፖርት ብኸመይ ትጥቀም
+        video_link_subtitle: ብኢልግሊሽ ኮይኑ ብህንዲ ትርጉም ዘለዎ
+      film:
+        heading: Simple ፊልሚ
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"ሓደ መዓልቲ ኣብ ህይወት Simple"</a> እትብል ሓጻር ፊልሚ፣ ኣብ ፑንጃብ፣ ህንዲ እትነብር ነርስ፣ Simple ተጠቒማ ሃይፐርቴንሽን ዘለዎም ተሓከምቲ ብኸመይ ከም እትሕክም እተርኢ እያ።'
+    start:
+      heading: ኣብ ምጅማር
+      getting_started_video:
+        heading: ቪድዮ ተመልከት
+        contents: መሰረታዊ ናይ Simple ኣካይዳ ኣብ ውሽጢ 5 ደቒቓ ይማሃሩ።
+      who_to_record:
+        heading: "ኣብ Simple መን ይመዝገብ?"
+        contents_1_html: ሕድሕድ ጸቕጢ ደም ዘለዎ ሰብ<i>ወይ ድማ ናይ ከቢድ BP(ጸቕቲ ደም) መድሓኒት ዝወስድ ሰብ ን ምምዝጋብ Simple ይጠቐሙ</i> ።
+        contents_2: ተሓካሚ ናብ ቖጾራ እንትምለስ ነቲ ተሓካሚ ብምድላይ ሓድሽ BP የእትዉ።
+      step_1:
+        label: ደረጃ 1
+        heading: ናይ ተሓካማይ BP ውሰድ
+        contents: "ሓቀኛ BP ንምምዝጋብ፡ ኣእጋር ኣብ መሬት፣ ሑቖ ናብ ወምበር ይጸጋዕ፣ ምዝራብ ኣይፍቀድን"
+      step_2:
+        label: ደረጃ 2
+        heading: ናይ BP ፓስፖርት ጸሓፍ
+        contents: BP ፓስፖርት እንተሃልዩኩም ናይ ተሓካሚ ሽም ይጽሓፉ ካብኡ ናይ Simple መተግበሪ ብምጥቃም ስካን ይግበሩ።
+      step_3:
+        label: ደረጃ 3
+        heading: ተሓካሚ መዝግብ
+        contents: ሓደሽቲ ተሓከምቲ እንተሃልዮም ምምዝጋብ።
+      step_4:
+        label: ደረጃ 4
+        heading: "ኣብ Simple ነቲ BP የእትዎ "
+        contents_html: ነቲ ናይ BP ንባብ <i>ኣይተጸጋግዕ</i>።
+      step_5:
+        label: ደረጃ 5
+        heading: መድሃኒታት የእቱ
+        contents: ናይ ተሓካሚ ስም ኣብ Simple/ሲምፕል ኣእቱ
+      step_6:
+        label: ደረጃ 6
+        heading: ነቲ ተሓካሚ ኣድሕኖ
+        contents_html: "<span class=\"code\">ሓዝ</span> ዝብል ጠውቕ እሞ ቀጻሊ ናይ ተሓካሚ ቆጸሮ መደብ ሓዝ። ነቲ ውህሉል ሓበሬታ ኣብ ናይ ጸቕጢ ደም ፓስፖርት ጽሓፎ።"
+      missed_visit:
+        label: ዝተዘለለ ምብጻሕ
+        heading: "ቀጺሉ እንታይ የጋጥም?"
+        contents: ተሓካማይ ኣብ ቆፆሮኡ ተዘይተረኺቡ simple ናይ መዘኻኸሪ ፅሑፍ መልእኽቲ ይሰድድ።
+      tip:
+        heading: ምኽሪ
+        contents: ንተሓከምቲ ኣብቲ ቅኑዕ መሳለጥያ ትምዝግብ ምህላውካ ኩሉግዜ ኣረጋግጽ። ኩሉ ጊዜ ኣብቲ ዋና ገፅ ላዕለዋይ ፀጋም ዝርከብ መሳለጥያ ምርግጋፅ የድሊ
+    register:
+      heading: ተሓካሚ መዝግብ
+      contents: "ሓድሽ ተሓካማይ ንምምዝጋብ ክልተ መንገድታት ምጥቃም ይከኣል፡"
+      option_1:
+        label: ኣማራጺ 1
+        heading: ናይ BP ፓስፖርት እንተድኣ ኣለካ
+        step_1: ኣብቲ ዋና ገፅ ዝርከብ ምፍትሕ ምጥዋቕ
+        step_2_html: <i>ባዶ</i> BP ፓስፖርት ብምልዓል QR ኮድ ስካን ምግባር
+        step_3: ን ናይቲ ተሓካሚ ምሉእ ስም ኣልሽ።
+        step_4_html: "እቲ ተሓካማይ ኣብ ናይ ኣለሻ ዉፅኢት ተዘይተረኺቡ፣ <span class=\"code\">ከም ሓድሽ ተሓካማይ ምምዝጋብ</span> ዝብል ጠውቕ።"
+        step_5: መመዝገቢ ቅጥዒ ምምላእ
+        step_6: ንታሓካማይ ኣዘራሪብካ ናይ ሕክምና ታሪኽ ምምላእ
+        step_7_html: "ናይ ተሓካማይ ምብፃሕ ምስ መዝገብካ <span class=\"code\">ሓዝ</span> ጠውቕ።"
+      option_2:
+        label: ኣማራጺ 2
+        heading_html: እተድኣ BP ፓስፖርት <i>ዘይብልካ</i> ኾይኑ
+        step_1_html: "ን <span class=\"code\">ናይ ተሓካሚ ሽም ኣእትው</span> ጠውቕ"
+        step_2: ናይቲ ተሓካሚ ምሉእ ስም ኣእቱ
+        step_3_html: "እቲ ተሓካማይ ኣብ ናይ ኣለሻ ዉፅኢት ተዘይተረኺቡ፣ <span class=\"code\">ከም ሓድሽ ተሓካማይ ምምዝጋብ</span> ዝብል ጠውቕ።"
+        step_4: መመዝገቢ ቅጥዒ ምምላእ
+        step_5: ንታሓካማይ ኣዘራሪብካ ናይ ሕክምና ታሪኽ ምምላእ
+        step_6_html: "ናይ ተሓካማይ ምብፃሕ ምስ መዝገብካ <span class=\"code\">ሓዝ</span> ጠውቕ።"
+      tips:
+        heading: ምኽሪ
+        tip_1: ንተሓከምቲ ኣብቲ ቅኑዕ መሳለጥያ ትምዝግብ ምህላውካ ኩሉግዜ ኣረጋግጽ። ኩሉ ጊዜ ኣብቲ ዋና ገፅ ላዕለዋይ ፀጋም ዝርከብ መሳለጥያ ምርግጋፅ የድሊ
+        tip_2: ስልኪ ቁፅሪ ተተኻኢሉ ምእታው!
+        tip_3: ናይ ታሓካማይ ክትትል ክርከብ ተዘይተኻኢሉ ከም ሓድሽ ታሓካማይ ምምዝጋብ ፀገም የብሉን።
+        tip_4: ተሓካሚ ንናይ ጸቕጢ ደም ፓስፖርቱ ኣብ ዝርስዓሉ እዋን፡ ሓድሽ ሃቦ። ሓደ ተሓካሚ  ብዙሕ ናይ ጸቕጢ ደም ፓስፖርትታት ክህልውዎ ይኽእሉ ክሎም ከኣ ክሰርሑ እዮም።
+    search:
+      heading: ንእትደልዮ ተሓካሚ ብልክዕ ርኸቦ
+      find_patient:
+        heading: ታሓካማይ ከመይ ጌርካ ይርከብ
+        contents: ሽም ወይድማ ስልኪ ቁፅሪ ብምጥቃም እንተኣሊሽካ እቲ ትኽክለኛ  ታሓካማይ ምምራፅ ኣገዳሲ እዩ።
+      choose_patient:
+        heading_html: ነቲ <i>ትኽክለኛ</i> ተሓካሚ ምረጽ።
+        contents_1: "ኣብቲ ናይ ምንዳይ ዉፅኢት እቲ ትኽክለኛ ታሓካማይ  ምምራፅ ኣገዳሲ እዩ። ኩሉ ጊዜ ምርግጋፅ ዘድሊ፡"
+        check_item_1_html: "ናይ <span class=\"code\">ሽም</span> ተዛመድቲ"
+        check_item_2_html: "<span class=\"code\">ዕድመ</span> ትኽክል እዩ"
+        check_item_3_html: "<span class=\"code\">ኣድራሻ</span> ማለት እቲ ተሓካማይ ዝነብረሉ ማለት እዩ"
+        check_item_4_html: "<span class=\"code\">ናይ ሞባይል ቁጽሪ</span> ተዛመድቲ"
+        check_item_5_html: "<span class=\"code\">ናይ መጨረሻ ምብጻሕ ዕለት</span> ማለት እቲ ተሓካማይ."
+        contents_2: እቲ ተሓካማይ ኣብ ምንዳይ ዉፅኢት ምስዝተረኽቡ ዉፅኢታት ዘይሰማማዕ እንተኾይኑ ከም ሓድሽ ተሓካማይ ምምዝጋብ የድሊ።
+      tip:
+        heading: ምኽሪ
+        contents: BP ፓስፖርት ስካን ምግባር ተዘይተኻኢሉ ስካን ኣብዝገበርናሉ ገፅ እቲ BP ፓስፖርት ቁፅሪ ናብ Simple ምሕፃፍ ይከኣል እዩ።
+    record:
+      heading: ናይ ተሓካማይ ምብፃሕ ምምዝጋብ
+      find_patient:
+        heading: ፈለማ እቲ ታሓካማይ ምርካብ የድሊ
+        contents: "ታሓካማይ ንምርካብ ክልተ መንገዲ ምጥቃም ይከኣል፡ BP ፓስፖርት ስካን ብምግባር ወይ ድማ ናይቲ ታሓካማይ ሽም ወይ ከዓ ስልኪ ቁፅሪ ብምጥቃም ምድላይ"
+      record_info:
+        heading: ምምዝጋብ ዓቐናት ጸቕጢ ደምን ናይ ጸቕጢ ደም መድሃኒታትን
+        step_1_html: "ኣብ ናይቲ ታሓካማይ መጠቓለሊ ገፅ <span class=\"code\">+ ደም ጸቕጢ</span> ዝብል ጠውቕ"
+        step_2: ብምቕፃል ናይቲ ታሓካሚ ናይ ደም ድፍኢት መድሓኒታት ምእታው
+        step_3_html: "እቲ ትኽክለኛ መድሓኒት ምስ መጠኑ ምምራፅ የድሊ። መድሓኒት ንምእላይ፡ ነቲ ናይ መድሓኒት መጠን ዝብል ብምንካእ<span class=\"code\"> የለን </span> ዝብል ከዓ ሕረ"
+        step_4_html: "<span class=\"code\">ሓዝ</span> ጠውቕ ድሕሪኡ ቀፃሊ ዝበፅሕሉ ዕለት ምረፅ። ኣማራፂ፡ እቲ ታሓካማይ ቀፃሊ ናብ ሕክምና ዝበፅሐሉ ማዓልቲ ለውጥ ብምንካእ ኣብ ትሕቲ ተሓካሚ ህሉው መሳለጥያ ብምጥቃም ምቕያር ይከኣል።"
+        step_5: ተፈጸመ ናይቲ ታሓካሚ ምብፃሕ ሴቭ ተጌሩ
+      medicine_refills:
+        heading: መድሃኒት ምምላእ
+        contents: "እንተድኣ እዋናዊ ናይ ተሓካማይ መድሃኒት ተምልእ ኣለኻ፥"
+        step_1_html: "ኣብቲ ናይቲ ተሓካማይ ናይ ጸብጻብ መስኮት፣ ነዚ ጠውቕ <span class=\"code\">+ መድሃኒታት</span>"
+        step_2_html: "ነዚ ጠውቕ <span class=\"code\">መድሃኒታት ምላእ</span>"
+        step_3: ተወዲኡ!
+        english_video_link: ናይ ተሓካማይ መድሃኒት ከመይ ጌርካ ይምላእ
+        english_video_link_language: ኢንግሊሽ
+        hindi_video_link: ናይ ተሓካማይ መድሃኒት ከመይ ጌርካ ይምላእ
+        hindi_video_link_language: ህንዲ
+      tips:
+        heading: ምኽሪ
+        tip_1_html: "ታሓካማይ ኣብ ቀፃሊ ዝመፀሉ ዕለት ኣብ ካላንደር ቆፀሮ ክትሕዝ ከለኻ <span class=\"code\">ለውጥ</span> ዝብል ምምራጽ ይከኣል።"
+        tip_2_html: "<span class=\"code\">]ሕዚ ኣይኮነን</span> ዝብል እንተመሪፅካ፣ እቲ ታሓካማይ ቆፀሮ ኣይተሓዘሉን።"
+        tip_3_html: "ኣብ ዝሓለፈ ታሓካማይ ዝመፀሉ እዋን ዝተመዝገበ BP ምእታው ይከኣል ነቲ BP ከም ኖርማል ብምእታው ነቲ ዕለት <span class=\"code\">ለውጥ</span>።"
+    overdue:
+      heading: ጊዚኦም ዝሓለፎም ተሓከምቲ ጸዉዕዎም
+      what_is_overdue:
+        heading: "&lsquo;&rsquo;ኦቨርዱ&rsquo;&rsquo; እንታይ እዩ"
+        contents_1: ኣብ ማዓልቲ ቆፀሮ BP እንተዘይተዓቂኑ እቲ ታሓካማይ ኦቨርዱ ይበሃል
+        contents_2: ኣብ ላዕሊ እቲ ኦቨርዱ ዝርዝር ዝርከቡ ታሓከምቲ እቶም ዉፁዓት ሕሙማት እዮም ካብቲ ላዕሊ ናይቲ Overdue (ግዜ ናይ ዘሕለፉ) ተሓከምቲ ዝርዝር ጀምር።
+      calling:
+        heading: ናብ ታሓካማይ ምድዋል
+        contents_html: "ናይ ስልኪ ምልክት ብምጥዋቕ ናብ ታሓካማይ ምድዋል ክልተ ኣማራፅታት ክንርኢ ንኽእል ኢና፡ <span class=\"code\">ኖርማል ደወል</span> ን <span class=\"code\">ውሑስ ደወልl</span>. &lsquo;&rsquo;ሰኪዩር&rsquo;&rsquo; ኮል ካብ ክፍሊት ነፃ ኮይኑ ናትና ስልኪ ቁፅሪ ካብቲ ታሓካማይ ዝሓብእ እዩ።"
+      result_of_call:
+        heading: "&lsquo;&rsquo;ዉፅኢት እቲ ምድዋል&rsquo;&rsquo; ኣብ ዝብል ምልክት ምግባር"
+        contents: "ሕድሕድ ናይ ዝደወልናዮ ውፅኢት ምልክት ምግባር የድሊ ናይቲ ታሓካማይ ካርዲ ብምንካእ እዞም ዝስዕቡ ኣማራፅታት ንርኢ፡"
+        agreed_to_visit_html: "<span class=\"code\">ንምብፃሕ ተስማሚዐ</span> እቲ ታሓካማይ ናብ ክትትል ከምዝመፅእ እንትነጊሩ/ራ።"
+        remind_to_call_later_html: "<span class=\"code\">ዳሓር ንኽድውል ኣዘኻኽረኒ...</span> እቲ ታሓካማይ ናብ ክትትል ከምዝመፅእ ተዘይተዛሪቡ ወይድማ እቲ ስልኪ እንተዘይ ኣልዒሉዎ"
+        remove_from_overdue_list:
+          contents_html: "<span class=\"code\">ካብ መዝገብ ዝደንጎዩ ኣውጽኣዮ</span> እንድሕር ደኣ፤"
+          condition_1: ተሓካሚ ድሮ ዳግማይ በጺሑ&rsquo;ሎ
+          condition_2: ተሓካሚ ምላሽ ኣይህብን ኣሎ
+          condition_3: ስልኪ ቁጽሪ ኣይሰርሕን ኣሎ
+          condition_4: ናብ ካሊእ መሳለጥያ እንተተማሓላሊፉ
+          condition_5: ናብ ናይ ግሊ ብዓል ሞያ ግዒዙ/ዛ
+          condition_6: ሞይቱ/ታ
+    faq:
+      heading: ብኣብዝሓ ዝሕተቱ ሕቶታት
+      app_crash_question: መተግበሪ ተተበላሺዩኒ እንታይ ክገብር
+      app_crash_answer_html: ፈለማ እቲ መሳርሒ ኣጥፊእካ ምዉላዕ Simple ተተበላሽዩ ምዕራይ እንተዘይተኻኢሉ ናብ <span class="help">ሓገዝ</span>  ስክሪን ብምኻድ ምስ ተቖጻጸርካ  ወይ ድማ ናትና ጉጅለ ምርኻብ።
+      scan_not_working_question: "ስካን ምግባር ኣይሰርሕን ዘሎ። እንታይ ክገብር?"
+      scan_not_working_answer: ኣብ ታሕቲ እቲ ገፅ ኣብ ዝርከብ ቦታ ናይ BP ፓስፖርት ቁፅሪ ምእታው እቲ ፀገም ቀፃሊ እንተኾይኑ ስልክኻ ኣጥፊእካ ምዉላዕ ሕዚዉን ዘይሰርሕ እንተኾይኑ ምስ ተቖፃፃሪኻ ምርኻብ
+      udpate_app_question: እቲ መተግበሪ ከመይ ጌረ የመሓይሾ
+      udpate_app_answer_html: "እቲ መተግበሪ መዐረዪ ድሕሪ ምንካእ <span class=\"code\">ኣምሓይሽ</span> ዝብል ጠውቕካ ኣመሓይሽ። ኣብ መሳርሒና ናይ ቀረባ ጊዜ Simple ምህላዉ ኣገዳሲ እዩ"
+      cant_find_followup_question: ከመይ ገይርካ ተኸታታሊ/ሰዓቢ ተሓካሚ ትረክብ
+      cant_find_followup_answer: BP ፓስፖርት ዘይብሎም ታሓከምቲ ንምርካብ ከቢድ ክኸዉን ይኽእል እዩ ድሕሪ 5 ደቒቓ እቲ ትሓካማይ ምርካብ ተዘይተኻኢሉ ከም ሓድሽ ታሓካማይ ምምዝጋብ የድሊ ኣብ ቀፃሊ ናይቲ ታሓካማይ መዝገብ ምጥማር ይከኣል
+      two_bp_passports_question: "ሓደ ታሓካማይ 2 BP ፓስፖርት ክህልዎ ይኽእል ዶ?"
+      two_bp_passports_answer: እወ ሓደ ታሓካማይ ቡዙሕ BP ክህልዎ ይኽእል እዩ ኩሎም ምስራሕ ይቕፅሉ
+      no_more_bp_passports_question: BP ፓስፖርት ወዲአ
+      no_more_bp_passports_answer_html: ቅድሚ ምዉዳኡ ተወሳኺ BP ፓስፖርት ንክእዘዘልካ ንተቖፃፃሪኻ ምንጋር ኣይትረስዕ፣ ዋላ BP ፓስፖርት ተዘይሃሊዩካ ታሕከምቲ ምምዝጋብ ይከኣል እዩ&mdash; BP ፓስፖርት ፀኒሕካ  ምምዳብ ይከኣል እዩ
+      what_is_sync_question: "\"ሲንክ/ኣስተኻኽል\" እንታይ እዩ?"
+      what_is_sync_answer: "&lsquo;&rsquo;ሲንክ&rsquo;&rsquo; ብምባል ዳታ ናብ ማእኸላይ ሰርቨር ሴቭ ምግባር ይከኣል ተነኣሰ ኣብ ማዓልቲ ሓደ ሻዕ ዳታ ሴቭ ምግባርና ክነረጋግፅ ይግባእ ፅቡቕ ናይ ኢንተርኔት ኮኔክሽን ተዘይሃሊዩ ሲንክ ንምግባር ጊዜ ክወስድ ይኽእል እዩ"
+      data_usage_question: Simple ክንደየናይ ዝኣክል ዳታ ይጥቀም
+      data_usage_answer: Simple ብጣዕሚ ንእሽተይ ዳታ እዩ ዝጥቀም ብገምጋም ንወርሒ ኣስታት 20 ሜጋ-ባይት ኣብ ጠቕሚ ይውዕል።
+      access_my_info_question: "Simple መረዳእታይ ክጥቀም ይኽእል ዶ?"
+      access_my_info_answer: Simple  ኣብ ስልኪ ወይድማ ታብሌት ዝርከብ ናይ ዉልቀ መረዳእታ ኣይጥቀምን
+    bp_passport_app:
+      heading: ናይ BP ፓስፖርት ኣፕሊኬሽን
+      features:
+        heading: ንተሓከምትኹም ዝኸውን ናጻ ኣፕሊኬሽን
+        contents: ተሓከምቲ ኣብ ወረቐት BP ፓስፖርት ስካን ክገብርዎ ይኽእሉ እዮም እቲ ኣፕሊኬሽን እቲ ኣብ ሆስፒታል ወይ ክሊኒክ ዘእተኻዮ እዋናዊ ልክዒትን መድሃኒታትን፣ ኣብቲ ስማርትፎን ከርእዮም እዩ።
+        feature_1: ቻርት BPs
+        feature_2: ቻርት ናይ ደም ሽኮር
+        feature_3: መድሃኒታት ንምውሳድ መዘኻኸሪ
+        feature_4: ምኽሪ ጥዕና
+        feature_5: ናጻ፣ መዋዓውዒ ዘይብሉ
+        learn_more: "ብዝበለጸ ይፍለጡ"
+      platforms:
+        headings: Apple ከምኡ'ውን Android
+        contents_html: "ነዚ ኣፕሊከሽን ነዚ <span class=\"code\">BP Passsport</span> ዝብል ኣብ Google Play Store ወይ Apple App Store ብምድላይ ክረኽብዎ ከምዝኽእሉ ንተሓከምትኻ ንገሮም።"
+        apple_app_store: Apple App Store
+        google_play_store: Google Play Store
+      languages:
+        heading: ቋንቋታት
+        contents: "እቲ ናይ BP ፓስፖርት ኣፕሊኬሽን ኣብዚ ዝስዕብ ይርከብ፥"
+        language_amharic: ኣምሕርኛ
+        language_bengali: ቤንጋሊ
+        language_english: ኢንግሊሽ
+        language_french: ፍሬንች
+        language_hindi: ህንዲ
+        language_kannada: ካናዳ
+        language_marathi: ማራቲ
+        language_oromo: ኦሮምኛ
+        language_punjabi: ፑንጃቢ
+        language_spanish: ስፓኒሽ
+        language_tamil: ታሚል
+        language_telugu: ተሉጉ
+        language_tigrinya: ትግርኛ
+    privacy_policy: ናይ ብሕታውነት ፖሊሲ
+    terms_of_service: ናይ ኣገልግሎት ውዕላት
