@@ -6,7 +6,7 @@ module Experimentation
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
-    validate :start_date_preceeds_end_date
+    validate :start_date_precedes_end_date
     validate :one_live_experiment_per_type
 
     enum state: {
@@ -35,7 +35,7 @@ module Experimentation
       end
     end
 
-    def start_date_preceeds_end_date
+    def start_date_precedes_end_date
       return unless start_date && end_date
       if start_date.nil? || end_date.nil?
         errors.add(:date_range, "start date and end date must be present")
