@@ -15,14 +15,8 @@ class RegionCacheWarmerJob
       Reports::RegionService.call(region: region, period: period, with_exclusions: true)
       Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
 
-      ActiveRecord::Base.connection.clear_query_cache
-      GC.start
-
       PatientBreakdownService.call(region: region, period: period)
       Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
-
-      ActiveRecord::Base.connection.clear_query_cache
-      GC.start
     end
     notify "finished region caching for region #{region_id}"
   end

@@ -37,9 +37,7 @@ class ControlRateService
   private
 
   def all_cached_data
-    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
-      fetch_all_data
-    }
+    fetch_all_data
   end
 
   def repository

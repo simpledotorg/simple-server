@@ -16,7 +16,6 @@ class PatientBreakdownService
   attr_reader :facilities
 
   def call
-    Rails.cache.write(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
       period_end = @period.end
       patients = Patient.with_hypertension.where(assigned_facility: facilities)
 
@@ -28,7 +27,6 @@ class PatientBreakdownService
         not_ltfu_transferred_patients: patients.not_ltfu_as_of(period_end).status_migrated.count,
         total_patients: patients.count
       }
-    }
   end
 
   def cache_key
