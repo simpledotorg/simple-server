@@ -30,7 +30,7 @@ class ExperimentControlService
         patients.each do |patient|
           group = experiment.group_for(patient.id)
           patient.appointments.each do |appointment|
-            schedule_reminders(patient, appointment, group, appointment.scheduled_date)
+            schedule_reminders(patient, group, appointment.scheduled_date, appointment)
           end
           group.patients << patient
         end
@@ -62,11 +62,10 @@ class ExperimentControlService
       total_days.times do
         daily_ids = eligible_ids.pop(PATIENTS_PER_DAY)
         break if daily_ids.empty?
-        # TODO: remove references to appointment after removing appointment dependency
-        daily_patients = Patient.where(id: daily_ids).includes(:appointments)
+        daily_patients = Patient.where(id: daily_ids)
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
-          schedule_reminders(patient, patient.appointments.last, group, date)
+          schedule_reminders(patient, group, date)
           Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
         end
         date += 1.day
@@ -85,10 +84,10 @@ class ExperimentControlService
         .where(["experiments.end_date < ? OR experiments.id IS NULL", LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
     end
 
-    def schedule_reminders(patient, appointment, group, schedule_date)
+    def schedule_reminders(patient, group, schedule_date, appointment=nil)
       group.reminder_templates.each do |template|
         remind_on = schedule_date + template.remind_on_in_days.days
-        AppointmentReminder.create!(
+        Reminder.create!(
           remind_on: remind_on,
           status: "pending",
           message: template.message,

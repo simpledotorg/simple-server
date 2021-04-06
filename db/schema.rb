@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_29_202937) do
+ActiveRecord::Schema.define(version: 2021_04_06_153556) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -45,23 +45,6 @@ ActiveRecord::Schema.define(version: 2021_03_29_202937) do
     t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
     t.index ["zone"], name: "index_addresses_on_zone"
-  end
-
-  create_table "appointment_reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.date "remind_on", null: false
-    t.string "status", null: false
-    t.string "message", null: false
-    t.uuid "experiment_id"
-    t.uuid "reminder_template_id"
-    t.uuid "patient_id", null: false
-    t.uuid "appointment_id", null: false
-    t.datetime "deleted_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["appointment_id"], name: "index_appointment_reminders_on_appointment_id"
-    t.index ["experiment_id"], name: "index_appointment_reminders_on_experiment_id"
-    t.index ["patient_id"], name: "index_appointment_reminders_on_patient_id"
-    t.index ["reminder_template_id"], name: "index_appointment_reminders_on_reminder_template_id"
   end
 
   create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -562,6 +545,23 @@ ActiveRecord::Schema.define(version: 2021_03_29_202937) do
     t.index ["treatment_group_id"], name: "index_reminder_templates_on_treatment_group_id"
   end
 
+  create_table "reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "remind_on", null: false
+    t.string "status", null: false
+    t.string "message", null: false
+    t.uuid "experiment_id"
+    t.uuid "reminder_template_id"
+    t.uuid "patient_id", null: false
+    t.uuid "appointment_id"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_reminders_on_appointment_id"
+    t.index ["experiment_id"], name: "index_reminders_on_experiment_id"
+    t.index ["patient_id"], name: "index_reminders_on_patient_id"
+    t.index ["reminder_template_id"], name: "index_reminders_on_reminder_template_id"
+  end
+
   create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.uuid "medical_officer_id", null: false
@@ -651,10 +651,6 @@ ActiveRecord::Schema.define(version: 2021_03_29_202937) do
   end
 
   add_foreign_key "accesses", "users"
-  add_foreign_key "appointment_reminders", "appointments"
-  add_foreign_key "appointment_reminders", "experiments"
-  add_foreign_key "appointment_reminders", "patients"
-  add_foreign_key "appointment_reminders", "reminder_templates"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
@@ -675,6 +671,10 @@ ActiveRecord::Schema.define(version: 2021_03_29_202937) do
   add_foreign_key "patients", "users", column: "merged_by_user_id"
   add_foreign_key "protocol_drugs", "protocols"
   add_foreign_key "reminder_templates", "treatment_groups"
+  add_foreign_key "reminders", "appointments"
+  add_foreign_key "reminders", "experiments"
+  add_foreign_key "reminders", "patients"
+  add_foreign_key "reminders", "reminder_templates"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
