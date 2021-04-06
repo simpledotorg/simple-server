@@ -44,6 +44,5 @@ module Experimentation
         errors.add(:date_range, "start date must precede end date")
       end
     end
-
   end
 end
