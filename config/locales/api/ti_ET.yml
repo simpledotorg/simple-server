@@ -241,20 +241,20 @@ ti-ET:
     overdue:
       heading: ጊዚኦም ዝሓለፎም ተሓከምቲ ጸዉዕዎም
       what_is_overdue:
-        heading: "&lsquo;&rsquo;ኦቨርዱ&rsquo;&rsquo; እንታይ እዩ"
+        heading: "‘’ኦቨርዱ’’ እንታይ እዩ"
         contents_1: ኣብ ማዓልቲ ቆፀሮ BP እንተዘይተዓቂኑ እቲ ታሓካማይ ኦቨርዱ ይበሃል
         contents_2: ኣብ ላዕሊ እቲ ኦቨርዱ ዝርዝር ዝርከቡ ታሓከምቲ እቶም ዉፁዓት ሕሙማት እዮም ካብቲ ላዕሊ ናይቲ Overdue (ግዜ ናይ ዘሕለፉ) ተሓከምቲ ዝርዝር ጀምር።
       calling:
         heading: ናብ ታሓካማይ ምድዋል
-        contents_html: "ናይ ስልኪ ምልክት ብምጥዋቕ ናብ ታሓካማይ ምድዋል ክልተ ኣማራፅታት ክንርኢ ንኽእል ኢና፡ <span class=\"code\">ኖርማል ደወል</span> ን <span class=\"code\">ውሑስ ደወልl</span>. &lsquo;&rsquo;ሰኪዩር&rsquo;&rsquo; ኮል ካብ ክፍሊት ነፃ ኮይኑ ናትና ስልኪ ቁፅሪ ካብቲ ታሓካማይ ዝሓብእ እዩ።"
+        contents_html: "ናይ ስልኪ ምልክት ብምጥዋቕ ናብ ታሓካማይ ምድዋል ክልተ ኣማራፅታት ክንርኢ ንኽእል ኢና፡ <span class=\"code\">ኖርማል ደወል</span> ን <span class=\"code\">ውሑስ ደወልl</span>. ‘’ሰኪዩር’’ ኮል ካብ ክፍሊት ነፃ ኮይኑ ናትና ስልኪ ቁፅሪ ካብቲ ታሓካማይ ዝሓብእ እዩ።"
       result_of_call:
-        heading: "&lsquo;&rsquo;ዉፅኢት እቲ ምድዋል&rsquo;&rsquo; ኣብ ዝብል ምልክት ምግባር"
+        heading: "‘’ዉፅኢት እቲ ምድዋል’’ ኣብ ዝብል ምልክት ምግባር"
         contents: "ሕድሕድ ናይ ዝደወልናዮ ውፅኢት ምልክት ምግባር የድሊ ናይቲ ታሓካማይ ካርዲ ብምንካእ እዞም ዝስዕቡ ኣማራፅታት ንርኢ፡"
         agreed_to_visit_html: "<span class=\"code\">ንምብፃሕ ተስማሚዐ</span> እቲ ታሓካማይ ናብ ክትትል ከምዝመፅእ እንትነጊሩ/ራ።"
         remind_to_call_later_html: "<span class=\"code\">ዳሓር ንኽድውል ኣዘኻኽረኒ...</span> እቲ ታሓካማይ ናብ ክትትል ከምዝመፅእ ተዘይተዛሪቡ ወይድማ እቲ ስልኪ እንተዘይ ኣልዒሉዎ"
         remove_from_overdue_list:
           contents_html: "<span class=\"code\">ካብ መዝገብ ዝደንጎዩ ኣውጽኣዮ</span> እንድሕር ደኣ፤"
-          condition_1: ተሓካሚ ድሮ ዳግማይ በጺሑ&rsquo;ሎ
+          condition_1: ተሓካሚ ድሮ ዳግማይ በጺሑ’ሎ
           condition_2: ተሓካሚ ምላሽ ኣይህብን ኣሎ
           condition_3: ስልኪ ቁጽሪ ኣይሰርሕን ኣሎ
           condition_4: ናብ ካሊእ መሳለጥያ እንተተማሓላሊፉ
@@ -275,7 +275,7 @@ ti-ET:
       no_more_bp_passports_question: BP ፓስፖርት ወዲአ
       no_more_bp_passports_answer_html: ቅድሚ ምዉዳኡ ተወሳኺ BP ፓስፖርት ንክእዘዘልካ ንተቖፃፃሪኻ ምንጋር ኣይትረስዕ፣ ዋላ BP ፓስፖርት ተዘይሃሊዩካ ታሕከምቲ ምምዝጋብ ይከኣል እዩ&mdash; BP ፓስፖርት ፀኒሕካ  ምምዳብ ይከኣል እዩ
       what_is_sync_question: "\"ሲንክ/ኣስተኻኽል\" እንታይ እዩ?"
-      what_is_sync_answer: "&lsquo;&rsquo;ሲንክ&rsquo;&rsquo; ብምባል ዳታ ናብ ማእኸላይ ሰርቨር ሴቭ ምግባር ይከኣል ተነኣሰ ኣብ ማዓልቲ ሓደ ሻዕ ዳታ ሴቭ ምግባርና ክነረጋግፅ ይግባእ ፅቡቕ ናይ ኢንተርኔት ኮኔክሽን ተዘይሃሊዩ ሲንክ ንምግባር ጊዜ ክወስድ ይኽእል እዩ"
+      what_is_sync_answer: "‘’ሲንክ’’ ብምባል ዳታ ናብ ማእኸላይ ሰርቨር ሴቭ ምግባር ይከኣል ተነኣሰ ኣብ ማዓልቲ ሓደ ሻዕ ዳታ ሴቭ ምግባርና ክነረጋግፅ ይግባእ ፅቡቕ ናይ ኢንተርኔት ኮኔክሽን ተዘይሃሊዩ ሲንክ ንምግባር ጊዜ ክወስድ ይኽእል እዩ"
       data_usage_question: Simple ክንደየናይ ዝኣክል ዳታ ይጥቀም
       data_usage_answer: Simple ብጣዕሚ ንእሽተይ ዳታ እዩ ዝጥቀም ብገምጋም ንወርሒ ኣስታት 20 ሜጋ-ባይት ኣብ ጠቕሚ ይውዕል።
       access_my_info_question: "Simple መረዳእታይ ክጥቀም ይኽእል ዶ?"
