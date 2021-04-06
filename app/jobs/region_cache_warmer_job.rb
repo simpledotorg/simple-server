@@ -19,7 +19,7 @@ class RegionCacheWarmerJob
       Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
     end
 
-    Rails.logger.info("Active memory:" + ObjectSpace.memsize_of_all + GC.stat[:heap_free_slots] * GC::INTERNAL_CONSTANTS[:RVALUE_SIZE])
+    Rails.logger.info("Active memory: #{ObjectSpace.memsize_of_all + GC.stat[:heap_free_slots] * GC::INTERNAL_CONSTANTS[:RVALUE_SIZE]}")
 
     notify "finished region caching for region #{region_id}"
   end
