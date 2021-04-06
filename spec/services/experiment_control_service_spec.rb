@@ -8,15 +8,12 @@ describe ExperimentControlService, type: :model do
       create(:appointment, patient: young_patient, scheduled_date: 10.days.from_now)
       create(:appointment, patient: old_patient, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(old_patient)).to be_truthy
-      expect(group.patients.include?(old_patient)).to be_truthy
       expect(experiment.patients.include?(young_patient)).to be_falsey
-      expect(group.patients.include?(young_patient)).to be_falsey
     end
 
     it "only selects hypertensive patients" do
@@ -25,15 +22,12 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, :without_hypertension, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(patient1)).to be_truthy
-      expect(group.patients.include?(patient1)).to be_truthy
       expect(experiment.patients.include?(patient2)).to be_falsey
-      expect(group.patients.include?(patient2)).to be_falsey
     end
 
     it "only selects patients with mobile phones" do
@@ -43,15 +37,12 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(group.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
-      expect(group.patients.include?(patient2)).to be_truthy
     end
 
     it "only selects from patients with appointments scheduled during the experiment date range" do
@@ -65,25 +56,21 @@ describe ExperimentControlService, type: :model do
       patient3 = create(:patient, age: 80)
       create(:appointment, patient: patient3, scheduled_date: 5.days.from_now)
 
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, days_til_start, days_til_end)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(group.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_falsey
-      expect(group.patients.include?(patient2)).to be_falsey
       expect(experiment.patients.include?(patient3)).to be_truthy
-      expect(group.patients.include?(patient3)).to be_truthy
     end
 
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, name: "old", end_date: 1.day.ago)
-      old_group = create(:treatment_group, experiment: old_experiment, index: 0)
+      old_experiment = create(:experiment, :with_treatment_group, name: "old", end_date: 1.day.ago)
+      old_group = old_experiment.treatment_groups.first
 
-      older_experiment = create(:experiment, name: "older", end_date: 15.day.ago)
-      older_group = create(:treatment_group, experiment: older_experiment, index: 0)
+      older_experiment = create(:experiment, :with_treatment_group, name: "older", end_date: 15.day.ago)
+      older_group = older_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
       old_group.treatment_group_memberships.create!(patient: patient1)
@@ -96,8 +83,7 @@ describe ExperimentControlService, type: :model do
       patient3 = create(:patient, age: 80)
       create(:appointment, patient: patient3, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment)
-      create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
@@ -113,8 +99,7 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, age: 80)
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
-      experiment = create(:experiment)
-      create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35, percentage)
 
@@ -144,9 +129,8 @@ describe ExperimentControlService, type: :model do
       upcoming_appointment1 = create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
       upcoming_appointment2 = create(:appointment, patient: patient, scheduled_date: 20.days.from_now)
 
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
-      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
+      experiment = create(:experiment, :with_treatment_group)
+      create(:reminder_template, treatment_group: experiment.treatment_groups.first, message: "come today", remind_on_in_days: 0)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
@@ -165,8 +149,9 @@ describe ExperimentControlService, type: :model do
       appointment_date = 10.days.from_now.to_date
       create(:appointment, patient: patient1, scheduled_date: appointment_date)
 
-      experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group)
+      group = experiment.treatment_groups.first
+
       create(:reminder_template, treatment_group: group, message: "come in 3 days", remind_on_in_days: -3)
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
@@ -219,15 +204,12 @@ describe ExperimentControlService, type: :model do
       old_patient = create(:patient, age: 18)
       create(:encounter, patient: old_patient, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
       expect(experiment.patients.include?(old_patient)).to be_truthy
-      expect(group.patients.include?(old_patient)).to be_truthy
       expect(experiment.patients.include?(young_patient)).to be_falsey
-      expect(group.patients.include?(young_patient)).to be_falsey
     end
 
     it "only selects hypertensive patients" do
@@ -236,15 +218,12 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, :without_hypertension, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
       expect(experiment.patients.include?(patient1)).to be_truthy
-      expect(group.patients.include?(patient1)).to be_truthy
       expect(experiment.patients.include?(patient2)).to be_falsey
-      expect(group.patients.include?(patient2)).to be_falsey
     end
 
     it "only selects patients with mobile phones" do
@@ -254,15 +233,12 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(group.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
-      expect(group.patients.include?(patient2)).to be_truthy
     end
 
     it "only selects patients whose last encounter was in the selected date range" do
@@ -273,17 +249,13 @@ describe ExperimentControlService, type: :model do
       patient3 = create(:patient, age: 80)
       create(:encounter, patient: patient3, device_created_at: 1.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
       expect(experiment.patients.include?(patient1)).to be_truthy
-      expect(group.patients.include?(patient1)).to be_truthy
       expect(experiment.patients.include?(patient2)).to be_falsey
-      expect(group.patients.include?(patient2)).to be_falsey
       expect(experiment.patients.include?(patient3)).to be_falsey
-      expect(group.patients.include?(patient3)).to be_falsey
     end
 
     it "only selects patients who have no appointments scheduled in the future" do
@@ -295,23 +267,20 @@ describe ExperimentControlService, type: :model do
       create(:appointment, patient: patient2, scheduled_date: 100.days.ago, status: "scheduled")
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(group.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
-      expect(group.patients.include?(patient2)).to be_truthy
     end
 
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, name: "old", end_date: 1.day.ago)
-      old_group = create(:treatment_group, experiment: old_experiment, index: 0)
+      old_experiment = create(:experiment, :with_treatment_group, name: "old", end_date: 1.day.ago)
+      old_group = old_experiment.treatment_groups.first
 
-      older_experiment = create(:experiment, name: "older", end_date: 15.day.ago)
-      older_group = create(:treatment_group, experiment: older_experiment, index: 0)
+      older_experiment = create(:experiment, :with_treatment_group, name: "older", end_date: 15.day.ago)
+      older_group = older_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
       old_group.treatment_group_memberships.create!(patient: patient1)
@@ -324,8 +293,7 @@ describe ExperimentControlService, type: :model do
       patient3 = create(:patient, age: 80)
       create(:encounter, patient: patient3, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -354,8 +322,8 @@ describe ExperimentControlService, type: :model do
       patient1 = create(:patient, age: 80)
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      group = experiment.treatment_groups.first
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
 
@@ -395,8 +363,7 @@ describe ExperimentControlService, type: :model do
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
       patient2 = create(:patient, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      experiment.treatment_groups.create(:treatment_group, index: 0)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
 
       expect {
         ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 1)
