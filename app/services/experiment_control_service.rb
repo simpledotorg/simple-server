@@ -43,13 +43,14 @@ class ExperimentControlService
       experiment.update!(state: "live")
     end
 
-    def start_inactive_patient_experiment(name, total_days)
+    def start_inactive_patient_experiment(name, days_til_start, days_til_end)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "inactive_patient_reminder")
-      date = Date.current
+      total_days = days_til_end - days_til_start + 1
+      date = days_til_start.days.from_now.to_date
       eligibility_start = (date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
       eligibility_end = (date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
 
-      experiment.update!(state: "selecting", start_date: Date.current, end_date: total_days.days.from_now.to_date)
+      experiment.update!(state: "selecting", start_date: days_til_start.days.from_now.to_date, end_date: days_til_end.days.from_now.to_date)
 
       eligible_ids = patient_pool
         .joins(:encounters)
