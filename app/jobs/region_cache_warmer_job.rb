@@ -12,21 +12,15 @@ class RegionCacheWarmerJob
 
     notify "starting region caching for region #{region_id}"
     Statsd.instance.time("region_cache_warmer.#{region_id}") do
-      Reports::RegionService.call(region: region, period: period)
-      Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
-
-      ActiveRecord::Base.connection.clear_query_cache
-
       Reports::RegionService.call(region: region, period: period, with_exclusions: true)
       Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
 
-      ActiveRecord::Base.connection.clear_query_cache
-
       PatientBreakdownService.call(region: region, period: period)
       Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
-
-      ActiveRecord::Base.connection.clear_query_cache
     end
+
+    Rails.logger.info("Active memory:" + ObjectSpace.memsize_of_all + GC.stat[:heap_free_slots] * GC::INTERNAL_CONSTANTS[:RVALUE_SIZE])
+
     notify "finished region caching for region #{region_id}"
   end
 
