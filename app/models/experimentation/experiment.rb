@@ -6,7 +6,7 @@ module Experimentation
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
-    validate :date_range, if: Proc.new { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
+    validate :date_range, if: proc { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
     validate :one_live_experiment_per_type
 
     enum state: {
