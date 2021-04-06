@@ -29,7 +29,7 @@ class ExperimentControlService
         patients = Patient
           .where(id: batch)
           .includes(:appointments)
-          .where(appointments: { scheduled_date: experiment_start..experiment_end })
+          .where(appointments: {scheduled_date: experiment_start..experiment_end})
 
         patients.each do |patient|
           group = experiment.group_for(patient.id)
@@ -54,7 +54,7 @@ class ExperimentControlService
 
       eligible_ids = patient_pool
         .joins(:encounters)
-        .where(encounters: { device_created_at: eligibility_start..eligibility_end })
+        .where(encounters: {device_created_at: eligibility_start..eligibility_end})
         .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
                 encounters.device_created_at > ?)", eligibility_end)
         .left_joins(:appointments)
@@ -89,7 +89,7 @@ class ExperimentControlService
         .where(["experiments.end_date < ? OR experiments.id IS NULL", LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
     end
 
-    def schedule_reminders(patient, group, schedule_date, appointment=nil)
+    def schedule_reminders(patient, group, schedule_date, appointment = nil)
       group.reminder_templates.each do |template|
         remind_on = schedule_date + template.remind_on_in_days.days
         Reminder.create!(

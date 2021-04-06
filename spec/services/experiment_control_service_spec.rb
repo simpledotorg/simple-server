@@ -114,7 +114,7 @@ describe ExperimentControlService, type: :model do
       create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
 
       experiment = create(:experiment)
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      create(:treatment_group, experiment: experiment, index: 0)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35, percentage)
 
@@ -193,10 +193,13 @@ describe ExperimentControlService, type: :model do
 
     it "does not create reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment)
-      other_experiment = create(:experiment, state: "selecting")
+      create(:experiment, state: "selecting")
       expect {
-        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35) rescue ActiveRecord::RecordInvalid
-      }.to_not change{ Reminder.count }
+        begin
+          ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+        rescue ActiveRecord::RecordInvalid
+        end
+      }.to_not change { Reminder.count }
       expect(experiment.reload.state).to eq("new")
     end
 
@@ -376,10 +379,13 @@ describe ExperimentControlService, type: :model do
 
     it "does not create reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      other_experiment = create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
+      create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
       expect {
-        ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31) rescue ActiveRecord::RecordInvalid
-      }.to_not change{ Reminder.count }
+        begin
+          ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
+        rescue ActiveRecord::RecordInvalid
+        end
+      }.to_not change { Reminder.count }
       expect(experiment.reload.state).to eq("new")
     end
 
@@ -390,9 +396,9 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
       experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      group = create(:treatment_group, experiment: experiment, index: 0)
+      experiment.treatment_groups.create(:treatment_group, index: 0)
 
-      expect{
+      expect {
         ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 1)
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end

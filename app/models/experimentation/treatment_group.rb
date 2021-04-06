@@ -6,7 +6,7 @@ module Experimentation
     has_many :patients, through: :treatment_group_memberships
 
     validates :index, presence: true, numericality: {greater_than_or_equal_to: 0}
-    validates :description, presence: true, uniqueness: { scope: :experiment_id }
+    validates :description, presence: true, uniqueness: {scope: :experiment_id}
     validate :index_order_within_experiment, if: :index_changed?
 
     private
