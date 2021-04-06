@@ -1,0 +1,28 @@
+am_ET:
+  set01:
+    basic: "%{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date}ይጎብኙ።"
+    gratitude: "ለከፍተኛ የደም ግፊት መደበኛ መድሃኒቶች መዉሰድዎን እናመሰግናለን። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date} ይጎብኙ።"
+    free: "ነጻ የደም ግፊት መድሃኒቶችዎን እና ነጻ የደም ግፊት ልኬትዎን ያግኙ። %{patient_name}፣ እባክዎ  %{assigned_facility_name} በ %{appointment_date}።"
+    alarm: "ከፍተኛ የደም ግፊት ከልብ ድካም እና ከደም መርጋት ሊገድል ይችላል። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date} ይጎብኙ።"
+    emotional_relatives: "ቤተሰብዎ ለልብ ጤናዎ እንደሚንከባከቡ ቢያውቁ ይደሰታሉ። %{patient_name}፣ እባክዎ  ለደም ግፊት ልኬት እና ለመድሃኒቶች%{assigned_facility_name} በ %{appointment_date} ይጎብኙ።"
+    emotional_guilt: "በማይታከምበት ጊዜ ከፍተኛ የደም ግፊት ለሙሉ ማህበረሰብ ከፍተኛ ወጪዎች አሉት። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date} ይጎብኙ።"
+    professional_request: "የደም ግፊትዎ እንዲለካ ሐኪምዎ እርስዎን ለማስታወስ ይመኛል። %{patient_name}፣ እባክዎ ለደም ግፊት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date} ይጎብኙ።"
+    response: "%{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች  %{assigned_facility_name} በ %{appointment_date} ይጎብኙ። እንደሚሳተፉ እንድናውቅ ይህንን አገናኝ ጠቅ ያድርጉ፦"
+  set02:
+    basic: "ዛሬ እንጠብቅዎታለን።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች %{assigned_facility_name} ይጎብኙ።"
+    gratitude: "ዛሬ እንጠብቅዎታለን። ለከፍተኛ የደም ግፊት መደበኛ መድሃኒቶች መዉሰድዎን እናመስግናለን።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች %{assigned_facility_name} ይጎብኙ።"
+    free: "ዛሬ እንጠብቅዎታለን። ነጻ የደም ግፊት መድሃኒቶችዎን እና ነጻ የደም ግፊት ልኬትዎን ያግኙ። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች  %{assigned_facility_name} ይጎብኙ።"
+    alarm: "ዛሬ እንጠብቅዎታለን። ከፍተኛ የደም ግፊት ከልብ ድካም እና የደም መርጋት ሊገድል ይችላል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች  %{assigned_facility_name} ይጎብኙ።"
+    emotional_relatives: "ዛሬ እንጠብቅዎታለን። ቤተሰብዎ ለልብ ጤናዎ እንደሚንከባከቡ ቢያውቁ ይደሰታሉ። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች %{assigned_facility_name} ይጎብኙ።"
+    emotional_guilt: "ዛሬ እንጠብቅዎታለን። በማይታከምበት ጊዜ፣ ከፍተኛ የደም ግፊት ለሙሉ ማህበረሰብዎ ከፍተኛ ወጪዎች አለው። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች  %{assigned_facility_name} ይጎብኙ።"
+    professional_request: "ዛሬ እንጠብቅዎታለን። የደም ግፊትዎ እንዲለካ ሐኪምዎ እርስዎን ለማስታወስ ይመኛል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች %{assigned_facility_name} ይጎብኙ።"
+    response: "ዛሬ እንጠብቅዎታለን።%{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች %{assigned_facility_name} ይጎብኙ። እንደሚሳተፉ እንድናውቅ ይህንን አገናኝ ጠቅ ያድርጉ፦"
+  set03:
+    basic: "ለደም ግፊትዎ መለካት ዘግይተዋል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን  %{assigned_facility_name} ይጎብኙ።"
+    gratitude: "ለደም ግፊትዎ መለካት ዘግይተዋል። ለከፍተኛ የደም ግፊት መደበኛ መድሃኒቶች መውሰድዎ እናመሰግንዎታለን።  %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና መድሃኒቶች በተቻለ መጠን  %{assigned_facility_name} ይጎብኙ።"
+    free: "ለደም ግፊትዎ መለካት ዘግይተዋል። ነጻ የደም ግፊት መድሃኒቶችዎ እና ነጻ የደም ግፊት መለካት ያግኙ።  %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና መድሃኒቶች በተቻለ መጠን  %{assigned_facility_name} ይጎብኙ።"
+    alarm: "ለደም ግፊትዎ መለካት ዘግይተዋል። ከፈተኛ የደም ግፊት ከልብ ድካም እና የደም መርጋት ሊገድል ይችላል።  %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና መድሃኒቶች በተቻለ መጠን  %{assigned_facility_name} ይጎብኙ።"
+    emotional_relatives: "ለደም ግፊትዎ መለካት ዘግይተዋል። ቤተሰብዎ ለልብ ጤናዎ እንደሚንከባከቡ ቢያውቁ ይደሰታሉ። %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና ለመድሃኒቶች በተቻለ መጠን %{assigned_facility_name}ይጎብኙ። "
+    emotional_guilt: "ለደም ግፊትዎ መለካት ዘግይተዋል። በማይታከምበት ጊዜ ከፍተኛ የደም ግፊት ለሙሉ ማህበረሰብ ከፍተኛ ወጪዎች አሉት። %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና ለመድሃኒቶች  %{assigned_facility_name} ይጎብኙ።"
+    professional_request: "ዛሬ እንጠብቅዎታለን። የደም ግፊትዎ እንዲለካ ሐኪምዎ እርስዎን ለማስታወስ ይመኛል።  %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና መድሃኒቶች በተቻለ መጠን%{assigned_facility_name}ይጎብኙ። "
+    response: "ለደም ግፊትዎ መለካት ዘግይተዋል። %{patient_name}፣ እባክዎ ለደም ግፊት መለካት እና ለመድሃኒቶች በተቻለ መጠን %{assigned_facility_name} ይጎብኙ። እንደሚሳተፉ እንድናውቅ ይህንን አገናኝ ጠቅ ያድርጉ፦"
