@@ -13,7 +13,9 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = patient_pool.joins(:appointments).merge(Appointment.status_scheduled)
+      eligible_ids = patient_pool
+        .joins(:appointments)
+        .merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", experiment_start, experiment_end)
         .distinct
         .pluck(:id)
@@ -24,7 +26,9 @@ class ExperimentControlService
 
       while eligible_ids.any?
         batch = eligible_ids.pop(BATCH_SIZE)
-        patients = Patient.where(id: batch).includes(:appointments)
+        patients = Patient
+          .where(id: batch)
+          .includes(:appointments)
           .where(appointments: { scheduled_date: experiment_start..experiment_end })
 
         patients.each do |patient|
@@ -39,8 +43,8 @@ class ExperimentControlService
       experiment.update!(state: "live")
     end
 
-    def start_stale_patient_experiment(name, total_days)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patient_reminder")
+    def start_inactive_patient_experiment(name, total_days)
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "inactive_patient_reminder")
       date = Date.current
       eligibility_start = (date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
       eligibility_end = (date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
