@@ -66,10 +66,10 @@ describe ExperimentControlService, type: :model do
     end
 
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, :with_treatment_group, name: "old", end_date: 1.day.ago)
+      old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
       old_group = old_experiment.treatment_groups.first
 
-      older_experiment = create(:experiment, :with_treatment_group, name: "older", end_date: 15.day.ago)
+      older_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
       older_group = older_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
@@ -276,10 +276,10 @@ describe ExperimentControlService, type: :model do
     end
 
     it "excludes patients who have recently been in an experiment" do
-      old_experiment = create(:experiment, :with_treatment_group, name: "old", end_date: 1.day.ago)
+      old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
       old_group = old_experiment.treatment_groups.first
 
-      older_experiment = create(:experiment, :with_treatment_group, name: "older", end_date: 15.day.ago)
+      older_experiment = create(:experiment, :with_treatment_group, name: "older", start_date: 16.days.ago, end_date: 15.day.ago)
       older_group = older_experiment.treatment_groups.first
 
       patient1 = create(:patient, age: 80)
