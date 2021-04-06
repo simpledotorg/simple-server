@@ -81,11 +81,11 @@
         <div class="card">
           <h3><%= t("help.videos.class.heading") %></h3>
           <p><%= t("help.videos.class.contents") %></p>
-          <a href="%{help_screen_youtube_training_url}" class="video">
+          <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>" class="video">
           <%= inline_svg('thumb_training.svg') %>
           </a>
           <p>
-            <a href="%{help_screen_youtube_training_url}"><%= t("help.videos.class.training_videos_link") %></a>
+            <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>"><%= t("help.videos.class.training_videos_link") %></a>
             <br>
             <%= t("help.videos.class.training_videos_subtitle") %>
           </p>
