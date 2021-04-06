@@ -16,7 +16,7 @@ class PatientBreakdownService
   attr_reader :facilities
 
   def call
-    Rails.cache.write(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
+    Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
       period_end = @period.end
       patients = Patient.with_hypertension.where(assigned_facility: facilities)
 
