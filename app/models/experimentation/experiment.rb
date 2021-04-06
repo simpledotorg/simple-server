@@ -6,7 +6,7 @@ module Experimentation
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
-    validate :start_date_precedes_end_date
+    validate :date_range, if: Proc.new { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
     validate :one_live_experiment_per_type
 
     enum state: {
@@ -35,10 +35,10 @@ module Experimentation
       end
     end
 
-    def start_date_precedes_end_date
-      return unless start_date && end_date
+    def date_range
       if start_date.nil? || end_date.nil?
-        errors.add(:date_range, "start date and end date must be present")
+        errors.add(:date_range, "start date and end date must be set together")
+        return
       end
       if start_date > end_date
         errors.add(:date_range, "start date must precede end date")

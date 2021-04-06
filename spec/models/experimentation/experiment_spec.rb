@@ -23,5 +23,17 @@ RSpec.describe Experimentation::Experiment, type: :model do
       experiment_4 = build(:experiment, state: :live, experiment_type: "inactive_patient_reminder")
       expect(experiment_4).to be_invalid
     end
+
+    it "can only be updated to a complete and valid date range" do
+      experiment = create(:experiment)
+      experiment.update(start_date: Date.today)
+      expect(experiment).to be_invalid
+      experiment.update(start_date: nil, end_date: Date.today)
+      expect(experiment).to be_invalid
+      experiment.update(start_date: Date.today + 3.days, end_date: Date.today)
+      expect(experiment).to be_invalid
+      experiment.update(start_date: Date.today, end_date: Date.today + 3.days)
+      expect(experiment).to be_valid
+    end
   end
 end
