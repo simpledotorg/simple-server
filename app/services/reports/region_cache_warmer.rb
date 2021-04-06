@@ -17,7 +17,7 @@ module Reports
         return
       end
 
-      Region.where.not(region_type: ["root", "organization"]).pluck(:id).each do |region_id|
+      Region.where.not(region_type: ["root").pluck(:id).each do |region_id|
         RegionCacheWarmerJob.perform_async(region_id, period.attributes)
       end
 
