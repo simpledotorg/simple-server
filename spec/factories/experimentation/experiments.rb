@@ -6,4 +6,8 @@ FactoryBot.define do
     start_date {}
     end_date {}
   end
+
+  trait :with_treatment_group do
+    treatment_groups { create_list(:treatment_group, 1, index: 0) }
+  end
 end
