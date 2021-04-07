@@ -15,10 +15,6 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   private
 
-  def report_with_exclusions?
-    current_user.feature_enabled?(:report_with_exclusions)
-  end
-
   def respond_to_html_or_json(stats)
     respond_to do |format|
       format.html { render :show }
