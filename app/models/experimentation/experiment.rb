@@ -7,14 +7,14 @@ module Experimentation
     validates :state, presence: true
     validates :experiment_type, presence: true
     validate :date_range, if: proc { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
-    validate :one_live_experiment_per_type
+    validate :one_active_experiment_per_type
 
     enum state: {
       new: "new",
       selecting: "selecting",
-      live: "live",
+      running: "running",
       complete: "complete"
-    }, _prefix: true
+    }, _suffix: true
 
     enum experiment_type: {
       active_patients: "active_patients",
@@ -28,11 +28,11 @@ module Experimentation
 
     private
 
-    def one_live_experiment_per_type
-      existing = self.class.where(state: ["live", "selecting"], experiment_type: experiment_type)
+    def one_active_experiment_per_type
+      existing = self.class.where(state: ["running", "selecting"], experiment_type: experiment_type)
       existing = existing.where("id != ?", id) if persisted?
       if existing.any?
-        errors.add(:state, "you cannot have multiple selecting or live experiments of type #{experiment_type}")
+        errors.add(:state, "you cannot have multiple active experiments of type #{experiment_type}")
       end
     end
 

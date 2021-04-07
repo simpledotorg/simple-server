@@ -171,7 +171,7 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.start_current_patient_experiment(experiment.name, days_til_start, days_til_end)
       experiment.reload
 
-      expect(experiment.state).to eq("live")
+      expect(experiment).to be_running_state
       expect(experiment.start_date).to eq(days_til_start.days.from_now.to_date)
       expect(experiment.end_date).to eq(days_til_end.days.from_now.to_date)
     end
@@ -341,7 +341,7 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 0, 30)
       experiment.reload
 
-      expect(experiment.state).to eq("live")
+      expect(experiment).to be_running_state
       expect(experiment.start_date).to eq(Date.current)
       expect(experiment.end_date).to eq(30.days.from_now.to_date)
     end

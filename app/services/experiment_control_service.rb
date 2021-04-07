@@ -40,7 +40,7 @@ class ExperimentControlService
         end
       end
 
-      experiment.update!(state: "live")
+      experiment.update!(state: "running")
     end
 
     def start_inactive_patient_experiment(name, days_til_start, days_til_end)
@@ -77,7 +77,7 @@ class ExperimentControlService
         date += 1.day
       end
 
-      experiment.update!(state: "live")
+      experiment.update!(state: "running")
     end
 
     protected
