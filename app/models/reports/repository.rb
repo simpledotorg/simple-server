@@ -72,7 +72,7 @@ module Reports
     smart_memoize def complete_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        AssignedPatientsQuery.new.count(entry.region, :month, with_exclusions: with_exclusions)
+        AssignedPatientsQuery.new.count(entry.region, :month)
       }
     end
 
@@ -114,19 +114,19 @@ module Reports
     smart_memoize def ltfu_counts
       cached_query(__method__) do |entry|
         facility_ids = entry.region.facilities.pluck(:id)
-        Patient.for_reports(with_exclusions: with_exclusions).where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
+        Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
       end
     end
 
     smart_memoize def controlled_patients_count
       cached_query(__method__) do |entry|
-        control_rate_query.controlled(entry.region, entry.period, with_exclusions: with_exclusions).count
+        control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
     smart_memoize def uncontrolled_patients_count
       cached_query(__method__) do |entry|
-        control_rate_query.uncontrolled(entry.region, entry.period, with_exclusions: with_exclusions).count
+        control_rate_query.uncontrolled(entry.region, entry.period).count
       end
     end
 

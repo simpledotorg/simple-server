@@ -81,7 +81,6 @@ class BloodPressureControlQuery
     @overall_patients ||=
       Patient
         .for_reports(
-          with_exclusions: @with_exclusions,
           exclude_ltfu_as_of: Date.today.end_of_month
         )
         .where(assigned_facility: facilities)
@@ -103,7 +102,7 @@ class BloodPressureControlQuery
   def quarterly_patients
     @quarterly_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_quarter_start(@registration_year, @registration_quarter),
@@ -129,7 +128,7 @@ class BloodPressureControlQuery
   def monthly_patients
     @monthly_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_month_start(@registration_year, @registration_month),

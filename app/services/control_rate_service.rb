@@ -84,14 +84,14 @@ class ControlRateService
   def assigned_patients_counts
     return @assigned_patients_counts if defined? @assigned_patients_counts
 
-    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type, with_exclusions: with_exclusions)
+    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type)
   end
 
   def ltfu_patients(period)
     return 0 unless with_exclusions
 
     Patient
-      .for_reports(with_exclusions: with_exclusions)
+      .for_reports
       .where(assigned_facility: facilities.pluck(:id))
       .ltfu_as_of(period.end)
       .count
