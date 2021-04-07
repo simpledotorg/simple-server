@@ -348,13 +348,13 @@ describe ExperimentControlService, type: :model do
 
     it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      other_experiment = create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
+      create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
       expect {
         begin
           ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
         rescue ActiveRecord::RecordInvalid
         end
-      }.to_not change{ AppointmentReminder.count }
+      }.to_not change { AppointmentReminder.count }
       expect(experiment.reload.state).to eq("new")
     end
 
