@@ -112,7 +112,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
     end
-
   end
 
   context "cohort" do
