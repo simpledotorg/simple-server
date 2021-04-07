@@ -18,9 +18,9 @@ RSpec.describe NoBPMeasureQuery do
   end
 
   it "counts visits in past three months for appts, drugs updated, blood sugar taken without blood pressures" do
-    jan_1 = Time.parse("January 1st, 2020")
-    may_1 = Time.parse("May 1st, 2020")
-    may_15 = Time.parse("May 15th, 2020")
+    jan_1 = Time.parse("January 1st, 2020").end_of_day
+    may_1 = Time.parse("May 1st, 2020").end_of_day
+    may_15 = Time.parse("May 15th, 2020").end_of_day
     facility = create(:facility, facility_group: facility_group_1)
     facility_2 = create(:facility)
 
@@ -63,24 +63,19 @@ RSpec.describe NoBPMeasureQuery do
     end
   end
 
-  context "when with_exclusions is true" do
-    it "doesn't include dead patients" do
-      facility = create(:facility, facility_group: facility_group_1)
-      appointment_date = Time.parse("May 1st, 2020")
-      appointment_month = Period.month("May 2020")
+  it "doesn't include dead patients" do
+    facility = create(:facility, facility_group: facility_group_1)
+    appointment_date = Time.parse("May 1st, 2020")
+    appointment_month = Period.month("May 2020")
 
-      dead_patient_with_visit =
-        create(:patient,
-          status: :dead,
-          recorded_at: Time.parse("January 1st, 2020"),
-          assigned_facility: facility)
-      create(:appointment, creation_facility: facility, patient: dead_patient_with_visit, device_created_at: appointment_date)
+    dead_patient_with_visit =
+      create(:patient,
+        status: :dead,
+        recorded_at: Time.parse("January 1st, 2020"),
+        assigned_facility: facility)
+    create(:appointment, creation_facility: facility, patient: dead_patient_with_visit, device_created_at: appointment_date)
 
-      results = NoBPMeasureQuery.new.call(facility, appointment_month)
-      expect(results).to eq(1)
-
-      results_with_exclusions = NoBPMeasureQuery.new.call(facility, appointment_month, with_exclusions: true)
-      expect(results_with_exclusions).to eq(0)
-    end
+    results_with_exclusions = NoBPMeasureQuery.new.call(facility, appointment_month)
+    expect(results_with_exclusions).to eq(0)
   end
 end
