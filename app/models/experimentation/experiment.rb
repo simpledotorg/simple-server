@@ -17,7 +17,7 @@ module Experimentation
     }, _suffix: true
 
     enum experiment_type: {
-      active_patients: "active_patients",
+      current_patients: "current_patients",
       stale_patients: "stale_patients"
     }, _prefix: true
 

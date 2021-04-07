@@ -7,7 +7,7 @@ module Seed
     end
 
     def call
-      experiment = Experimentation::Experiment.create!(name: "test-experiment", experiment_type: "active_patients",
+      experiment = Experimentation::Experiment.create!(name: "test-experiment", experiment_type: "current_patients",
                                                        state: "new", start_date: 2.days.from_now, end_date: 42.days.from_now)
       experiment.treatment_groups.create!(description: "control", index: 0)
       single = experiment.treatment_groups.create!(description: "single message", index: 1)
