@@ -5,7 +5,7 @@ module PurgeUsersData
     # These are in a "valid" order so that we don't run into Foreign-Key violations
     models = [BloodPressure,
       BloodSugar,
-      Reminder,
+      AppointmentReminder,
       Experimentation::TreatmentGroupMembership,
       Appointment,
       CallLog,
