@@ -15,9 +15,10 @@ module Experimentation
       live: "live",
       complete: "complete"
     }, _prefix: true
+
     enum experiment_type: {
-      current_patient_reminder: "current_patient_reminder",
-      inactive_patient_reminder: "inactive_patient_reminder"
+      active_patients: "active_patients",
+      stale_patients: "stale_patients"
     }, _prefix: true
 
     def group_for(uuid)

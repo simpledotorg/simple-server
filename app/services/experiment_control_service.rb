@@ -7,7 +7,7 @@ class ExperimentControlService
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patient_reminder")
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "active_patients")
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
 
@@ -44,7 +44,7 @@ class ExperimentControlService
     end
 
     def start_inactive_patient_experiment(name, days_til_start, days_til_end)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "inactive_patient_reminder")
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
       total_days = days_til_end - days_til_start + 1
       date = days_til_start.days.from_now.to_date
       eligibility_start = (date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
