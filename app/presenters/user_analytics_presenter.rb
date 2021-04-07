@@ -279,8 +279,7 @@ class UserAnalyticsPresenter
     controlled_visits =
       ControlRateService.new(
         current_facility,
-        periods: control_rate_start..control_rate_end,
-        with_exclusions: with_exclusions
+        periods: control_rate_start..control_rate_end
       ).call.to_hash
 
     {

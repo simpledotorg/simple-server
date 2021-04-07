@@ -29,11 +29,11 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
+    @data = Reports::RegionService.new(region: @region, period: @period).call
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period, with_exclusions: report_with_exclusions?)
+    repo = Reports::Repository.new(@child_regions, periods: @period)
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -63,9 +63,7 @@ class Reports::RegionsController < AdminController
                                                        include_current_period: true)
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: Reports::RegionService.new(region: @region,
-                                             period: @period,
-                                             with_exclusions: report_with_exclusions?).call
+      ltfu_trend: Reports::RegionService.new(region: @region, period: @period).call
     }
 
     region_source = @region.source

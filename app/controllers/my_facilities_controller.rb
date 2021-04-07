@@ -88,7 +88,7 @@ class MyFacilitiesController < AdminController
 
     facilities.each do |facility|
       @data_for_facility[facility.name] = Reports::RegionService.new(
-        region: facility, period: @period, with_exclusions: report_with_exclusions?, months: 6
+        region: facility, period: @period, months: 6
       ).call
     end
     sizes = @data_for_facility.map { |_, facility| facility.region.source.facility_size }.uniq
