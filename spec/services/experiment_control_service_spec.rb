@@ -321,7 +321,6 @@ describe ExperimentControlService, type: :model do
     it "schedules cascading reminders based on reminder templates" do
       patient1 = create(:patient, age: 80)
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
-      # TODO: remove this after removing appointment dependency
       create(:appointment, patient: patient1, scheduled_date: 100.days.ago)
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
@@ -331,7 +330,7 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 0, 30)
 
-      today = Date.today
+      today = Date.current
       reminder1, reminder2 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(today)
       expect(reminder2.remind_on).to eq(today + 3.days)
@@ -349,10 +348,10 @@ describe ExperimentControlService, type: :model do
 
     it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      other_experiment = create(:experiment, experiment_type: "stale_patient_reminder", state: "selecting")
+      other_experiment = create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
       expect {
         begin
-          ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
+          ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
         rescue ActiveRecord::RecordInvalid
         end
       }.to_not change{ AppointmentReminder.count }
