@@ -53,15 +53,17 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility = create(:facility, name: "CHC Barnagar", facility_group: @facility_group)
     end
 
-    it "is successful for a facility" do
+    it "is successful for an organization" do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
       create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
       refresh_views
 
+      org = @facility_group.organization
+
       Timecop.freeze("June 1 2020") do
         sign_in(cvho.email_authentication)
-        get :details, params: {id: @facility.region.slug, report_scope: "facility"}
+        get :details, params: {id: org.slug, report_scope: "organization"}
       end
       expect(response).to be_successful
     end
@@ -97,6 +99,20 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
       expect(response).to be_successful
     end
+
+    it "is successful for a facility" do
+      patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -1))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
+      create(:blood_pressure, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      refresh_views
+
+      Timecop.freeze("June 1 2020") do
+        sign_in(cvho.email_authentication)
+        get :details, params: {id: @facility.region.slug, report_scope: "facility"}
+      end
+      expect(response).to be_successful
+    end
+
   end
 
   context "cohort" do
@@ -181,6 +197,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(user.email_authentication)
       get :show, params: {id: region.slug, report_scope: "district"}
       expect(response).to be_successful
+    end
+
+    it "renders successfully for an organization" do
+      other_fg = create(:facility_group, name: "other facility group", organization: organization)
+      other_fg.facilities << build(:facility, name: "other facility")
+      user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
+
+      sign_in(user.email_authentication)
+      get :show, params: {id: organization.slug, report_scope: "organization"}
     end
 
     it "renders successfully if report viewer has access to region" do
