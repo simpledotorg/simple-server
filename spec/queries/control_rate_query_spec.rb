@@ -66,7 +66,7 @@ RSpec.describe ControlRateQuery do
       expect(query.uncontrolled(facility_group_1, Period.month("March 1 2021")).count).to eq(1)
     end
 
-    it "excludes patients who are dead when with_exclusions is true" do
+    it "excludes patients who are dead" do
       facility = FactoryBot.create(:facility, facility_group: facility_group_1)
       patients = [
         create(:patient, recorded_at: jan_2019, assigned_facility: facility, registration_user: user),
@@ -81,10 +81,10 @@ RSpec.describe ControlRateQuery do
 
       refresh_views
 
-      may = query.controlled(facility_group_1, Period.month("May 1 2020"), with_exclusions: true).count
-      june = query.controlled(facility_group_1, june_1_2020.to_period, with_exclusions: true).count
-      august = query.controlled(facility_group_1, Period.month("August 1 2020"), with_exclusions: true).count
-      july = query.controlled(facility_group_1, Period.month("July 1 2020"), with_exclusions: true).count
+      may = query.controlled(facility_group_1, Period.month("May 1 2020")).count
+      june = query.controlled(facility_group_1, june_1_2020.to_period).count
+      august = query.controlled(facility_group_1, Period.month("August 1 2020")).count
+      july = query.controlled(facility_group_1, Period.month("July 1 2020")).count
 
       expect(may).to eq(1)
       expect(june).to eq(1)

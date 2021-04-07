@@ -78,10 +78,6 @@ class MyFacilitiesController < AdminController
     params.permit(:id, :bust_cache, :report_scope, {period: [:type, :value]})
   end
 
-  def report_with_exclusions?
-    current_admin.feature_enabled?(:report_with_exclusions)
-  end
-
   def process_facility_stats(type)
     facilities = filter_facilities
     @data_for_facility = {}

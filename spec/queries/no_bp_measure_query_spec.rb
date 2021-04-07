@@ -75,7 +75,7 @@ RSpec.describe NoBPMeasureQuery do
         assigned_facility: facility)
     create(:appointment, creation_facility: facility, patient: dead_patient_with_visit, device_created_at: appointment_date)
 
-    results_with_exclusions = NoBPMeasureQuery.new.call(facility, appointment_month)
-    expect(results_with_exclusions).to eq(0)
+    results = NoBPMeasureQuery.new.call(facility, appointment_month)
+    expect(results).to eq(0)
   end
 end
