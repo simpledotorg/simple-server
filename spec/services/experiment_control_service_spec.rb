@@ -134,13 +134,13 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1 = Reminder.find_by(patient: patient, appointment: upcoming_appointment1)
+      reminder1 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment1)
       expect(reminder1).to be_truthy
-      reminder2 = Reminder.find_by(patient: patient, appointment: upcoming_appointment2)
+      reminder2 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment2)
       expect(reminder2).to be_truthy
-      unexpected_reminder1 = Reminder.find_by(patient: patient, appointment: old_appointment)
+      unexpected_reminder1 = AppointmentReminder.find_by(patient: patient, appointment: old_appointment)
       expect(unexpected_reminder1).to be_falsey
-      unexpected_reminder2 = Reminder.find_by(patient: patient, appointment: far_future_appointment)
+      unexpected_reminder2 = AppointmentReminder.find_by(patient: patient, appointment: far_future_appointment)
       expect(unexpected_reminder2).to be_falsey
     end
 
@@ -158,7 +158,7 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1, reminder2, reminder3 = patient1.reminders.sort_by { |ar| ar.remind_on }
+      reminder1, reminder2, reminder3 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(appointment_date - 3.days)
       expect(reminder2.remind_on).to eq(appointment_date)
       expect(reminder3.remind_on).to eq(appointment_date + 3.days)
@@ -176,7 +176,7 @@ describe ExperimentControlService, type: :model do
       expect(experiment.end_date).to eq(days_til_end.days.from_now.to_date)
     end
 
-    it "does not create reminders or update the experiment if there's another experiment of the same type in progress" do
+    it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment)
       create(:experiment, state: "selecting")
       expect {
@@ -184,7 +184,7 @@ describe ExperimentControlService, type: :model do
           ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
         rescue ActiveRecord::RecordInvalid
         end
-      }.to_not change { Reminder.count }
+      }.to_not change { AppointmentReminder.count }
       expect(experiment.reload.state).to eq("new")
     end
 
@@ -321,6 +321,8 @@ describe ExperimentControlService, type: :model do
     it "schedules cascading reminders based on reminder templates" do
       patient1 = create(:patient, age: 80)
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+      # TODO: remove this after removing appointment dependency
+      create(:appointment, patient: patient1, scheduled_date: 100.days.ago)
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
       group = experiment.treatment_groups.first
@@ -330,7 +332,7 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 0, 30)
 
       today = Date.today
-      reminder1, reminder2 = patient1.reminders.sort_by { |ar| ar.remind_on }
+      reminder1, reminder2 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(today)
       expect(reminder2.remind_on).to eq(today + 3.days)
     end
@@ -345,15 +347,15 @@ describe ExperimentControlService, type: :model do
       expect(experiment.end_date).to eq(30.days.from_now.to_date)
     end
 
-    it "does not create reminders or update the experiment if there's another experiment of the same type in progress" do
+    it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
       experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
+      other_experiment = create(:experiment, experiment_type: "stale_patient_reminder", state: "selecting")
       expect {
         begin
-          ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
+          ExperimentControlService.start_stale_patient_experiment(experiment.name, 30)
         rescue ActiveRecord::RecordInvalid
         end
-      }.to_not change { Reminder.count }
+      }.to_not change{ AppointmentReminder.count }
       expect(experiment.reload.state).to eq("new")
     end
 

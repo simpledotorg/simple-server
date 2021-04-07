@@ -7,7 +7,7 @@ describe Appointment, type: :model do
     it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
     it { should have_many(:communications) }
-    it { should have_many(:reminders) }
+    it { should have_many(:appointment_reminders) }
   end
 
   context "Validations" do
