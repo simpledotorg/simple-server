@@ -135,9 +135,9 @@ RSpec.describe BloodPressureControlQuery do
             patients_with_controlled_bp.first.update(status: :dead)
 
             query = described_class.new(facilities: assigned_facility,
-                                        cohort_period: { cohort_period: :quarter,
-                                                         registration_quarter: registration_quarter,
-                                                         registration_year: registration_quarter_year })
+                                        cohort_period: {cohort_period: :quarter,
+                                                        registration_quarter: registration_quarter,
+                                                        registration_year: registration_quarter_year})
 
             expect(query.cohort_patients).not_to include(patients_with_controlled_bp.first)
           end
@@ -152,9 +152,9 @@ RSpec.describe BloodPressureControlQuery do
             controlled_blood_pressures.first.patient.update(status: :dead)
 
             query = described_class.new(facilities: assigned_facility,
-                                        cohort_period: { cohort_period: :quarter,
-                                                         registration_quarter: registration_quarter,
-                                                         registration_year: registration_quarter_year })
+                                        cohort_period: {cohort_period: :quarter,
+                                                        registration_quarter: registration_quarter,
+                                                        registration_year: registration_quarter_year})
 
             expect(query.cohort_controlled_bps.pluck(:bp_id)).not_to include(controlled_blood_pressures.first.id)
           end
