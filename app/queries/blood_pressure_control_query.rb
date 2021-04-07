@@ -10,7 +10,7 @@ class BloodPressureControlQuery
 
   REGISTRATION_BUFFER = 3.months
 
-  def initialize(facilities: Facility.all, cohort_period: {}, with_exclusions: false)
+  def initialize(facilities: Facility.all, cohort_period: {})
     # cohort_period is map that contains
     # - :cohort_period (:quarter/:month),
     # - :registration_quarter/:registration_month
@@ -20,7 +20,6 @@ class BloodPressureControlQuery
     @registration_month = cohort_period[:registration_month]
     @registration_year = cohort_period[:registration_year]
     @facilities = Facility.where(id: facilities)
-    @with_exclusions = with_exclusions
   end
 
   def cohort_patients_per_facility

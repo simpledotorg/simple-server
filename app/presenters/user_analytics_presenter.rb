@@ -211,7 +211,7 @@ class UserAnalyticsPresenter
 
   def cohort_stats
     periods = Period.quarter(Date.current).previous.downto(3)
-    CohortService.new(region: current_facility, periods: periods, with_exclusions: with_exclusions).call
+    CohortService.new(region: current_facility, periods: periods).call
   end
 
   #

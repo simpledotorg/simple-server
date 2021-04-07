@@ -1,14 +1,13 @@
 class CohortService
   include BustCache
-  CACHE_VERSION = 2
+  CACHE_VERSION = 3
   CACHE_TTL = 7.days
   attr_reader :periods
   attr_reader :region
 
-  def initialize(region:, periods:, with_exclusions: false)
+  def initialize(region:, periods:)
     @region = region
     @periods = periods
-    @with_exclusions = with_exclusions
   end
 
   def call
@@ -31,7 +30,7 @@ class CohortService
              registration_quarter: cohort_period.value.try(:number),
              registration_year: cohort_period.value.try(:year),
              registration_month: cohort_period.value.try(:month)}
-      query = BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: hsh, with_exclusions: @with_exclusions)
+      query = BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: hsh)
       {
         results_in: results_in,
         patients_registered: cohort_period.to_s,
@@ -48,11 +47,7 @@ class CohortService
   end
 
   def cache_key(period)
-    if @with_exclusions
-      "#{self.class}/#{region.cache_key}/#{period.cache_key}/with_exclusions"
-    else
-      "#{self.class}/#{region.cache_key}/#{period.cache_key}"
-    end
+    "#{self.class}/#{region.cache_key}/#{period.cache_key}"
   end
 
   def cache_version

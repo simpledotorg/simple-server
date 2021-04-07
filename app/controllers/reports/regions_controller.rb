@@ -76,7 +76,7 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
     periods = @period.downto(5)
 
-    @cohort_data = CohortService.new(region: @region, periods: periods, with_exclusions: report_with_exclusions?).call
+    @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
   def download
@@ -189,12 +189,8 @@ class Reports::RegionsController < AdminController
     Groupdate.time_zone = "UTC"
   end
 
-  def report_with_exclusions?
-    current_admin.feature_enabled?(:report_with_exclusions)
-  end
-
   def with_ltfu?
-    current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
+    params[:with_ltfu].present?
   end
 
   def log_cache_metrics
