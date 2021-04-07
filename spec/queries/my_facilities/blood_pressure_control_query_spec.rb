@@ -517,8 +517,7 @@ RSpec.describe BloodPressureControlQuery do
                 patient_without_recent_bp,
                 patients_with_uncontrolled_bp,
                 patients_with_missed_visit,
-                old_patient,
-                ltfu_patient].length)
+                old_patient].length)
             end
           end
 
