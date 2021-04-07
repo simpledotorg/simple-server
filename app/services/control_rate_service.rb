@@ -31,14 +31,14 @@ class ControlRateService
   # We cache all the data for a region to improve performance and cache hits, but then return
   # just the data the client requested
   def call
-    all_cached_data.report_data_for(report_range)
+    all_cached_data
   end
 
   private
 
   def all_cached_data
     Rails.cache.fetch(cache_key, version: cache_version, expires_in: 7.days, force: bust_cache?) {
-      fetch_all_data
+      (1..200).zip((1..200)).to_h
     }
   end
 

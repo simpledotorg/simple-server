@@ -29,17 +29,17 @@ module Reports
 
     def call
       result = ControlRateService.new(region, periods: range, with_exclusions: with_exclusions).call
-      result.visited_without_bp_taken = repository.visited_without_bp_taken[region.slug]
-      result.calculate_percentages(:visited_without_bp_taken)
-      result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
-
-      start_period = [result.earliest_registration_period, range.begin].compact.max
-      calc_range = (start_period..range.end)
-      result.calculate_missed_visits(calc_range)
-      result.calculate_missed_visits(calc_range, with_ltfu: true)
-      result.calculate_missed_visits_percentages(calc_range)
-      result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
-      result.calculate_period_info(calc_range)
+      # result.visited_without_bp_taken = repository.visited_without_bp_taken[region.slug]
+      # result.calculate_percentages(:visited_without_bp_taken)
+      # result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
+      #
+      # start_period = [result.earliest_registration_period, range.begin].compact.max
+      # calc_range = (start_period..range.end)
+      # result.calculate_missed_visits(calc_range)
+      # result.calculate_missed_visits(calc_range, with_ltfu: true)
+      # result.calculate_missed_visits_percentages(calc_range)
+      # result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
+      # result.calculate_period_info(calc_range)
 
       result
     end
