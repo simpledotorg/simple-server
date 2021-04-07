@@ -5,13 +5,11 @@ class UserAnalyticsPresenter
   include DashboardHelper
   include ActionView::Helpers::NumberHelper
 
-  def initialize(current_facility, with_exclusions: false)
+  def initialize(current_facility)
     @current_facility = current_facility
-    @with_exclusions = with_exclusions
   end
 
   attr_reader :current_facility
-  attr_reader :with_exclusions
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
