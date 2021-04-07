@@ -19,7 +19,7 @@
       Monthly cohort report
     <% end %>
 
-    <% unless @region.region_type.in?(["state", "block"]) %>
+    <% if @region.region_type.in?(["district", "facility"]) %>
       <% if @region.facilities.to_set.subset?(current_admin.accessible_facilities(:view_pii).to_set) %>
         <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>
           <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
