@@ -2,7 +2,8 @@ class NoBPMeasureQuery
   delegate :logger, to: Rails
   delegate :sanitize_sql, to: ActiveRecord::Base
 
-  def call(region, period, with_ltfu: false)
+  def call(region, period)
+    # TODO: This should take in a with_ltfu option, since LTFU patients are eligible to be counted.
     logger.info { "#{self.class} called for region=#{region.slug} period=#{period} with_exclusions=#{with_exclusions}" }
 
     facility_ids = region.facilities.map(&:id)
@@ -10,10 +11,9 @@ class NoBPMeasureQuery
     start_time = period.blood_pressure_control_range.begin
     end_time = period.blood_pressure_control_range.end
     registration_date = period.blood_pressure_control_range.begin
-    exclude_ltfu_as_of = with_ltfu ? nil : period.end_time
 
     Patient
-      .for_reports(exclude_ltfu_as_of: exclude_ltfu_as_of)
+      .for_reports
       .joins(sanitize_sql(["LEFT OUTER JOIN appointments ON appointments.patient_id = patients.id
           AND appointments.device_created_at >= ?
           AND appointments.device_created_at <= ?", start_time, end_time]))

@@ -4,9 +4,8 @@ module Reports
     include Memery
     PERCENTAGE_PRECISION = 0
 
-    def initialize(regions, periods:, with_exclusions: false)
+    def initialize(regions, periods:)
       @regions = Array(regions)
-      @with_exclusions = with_exclusions
       @no_bp_measure_query = NoBPMeasureQuery.new
       @control_rate_query = ControlRateQuery.new
 
@@ -21,7 +20,6 @@ module Reports
     attr_reader :no_bp_measure_query
     attr_reader :periods
     attr_reader :regions
-    attr_reader :with_exclusions
 
     delegate :cache, :logger, to: Rails
 
@@ -70,7 +68,7 @@ module Reports
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_assigned_patients_counts
-      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count, with_exclusions: with_exclusions) }
+      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
         AssignedPatientsQuery.new.count(entry.region, :month)
       }
@@ -96,7 +94,7 @@ module Reports
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_registration_counts
-      items = regions.map { |region| RegionEntry.new(region, :complete_registration_counts, with_exclusions: with_exclusions) }
+      items = regions.map { |region| RegionEntry.new(region, :complete_registration_counts) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
         RegisteredPatientsQuery.new.count(entry.region, :month)
       }
@@ -149,14 +147,12 @@ module Reports
       end
     end
 
-    # If we are calculating percentages when with_exclusions is true, we have to manually subtract out the LTFU
-    # patient counts as well from the patient counts.
+    # This method currently always returns the "excluding LTFU denominator".
+    # Repository only returns "excluding LTFU" rates.
+    # This only powers queries for children regions which do not require both variants of control rates, unlike Result.
+    # As we deprecate Result and shift to Repository, a Repository object should be able to return both rates.
     def denominator(region, period)
-      if with_exclusions
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
-      else
-        cumulative_assigned_patients_count[region.slug][period.adjusted_period]
-      end
+      cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
     end
 
     smart_memoize def controlled_patient_rates
@@ -177,7 +173,7 @@ module Reports
 
     smart_memoize def visited_without_bp_taken
       cached_query(__method__) do |entry|
-        no_bp_measure_query.call(entry.region, entry.period, with_exclusions: with_exclusions)
+        no_bp_measure_query.call(entry.region, entry.period)
       end
     end
 
@@ -209,7 +205,7 @@ module Reports
 
     def cache_entries(calculation)
       combinations = regions.to_a.product(periods.to_a)
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation, with_exclusions: with_exclusions) }
+      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation) }
     end
 
     def percentage(numerator, denominator)
