@@ -1,4 +1,4 @@
-pa:
+pa-Guru-IN:
   set01:
     basic: "%{patient_name}, ਕਿਰਪਾ ਕਰਕੇ %{assigned_facility_name} ਨੂੰ %{appointment_date} ਵਿੱਚ ਬੀ.ਪੀ. ਦੀ ਜਾਂਚ ਅਤੇ ਦਵਾਇਆਂ ਲਈ ਆਓ।"
     gratitude: "ਹਾਈ ਬੀ.ਪੀ. ਲਈ ਨਿਯਮਤ ਤੌਰ ਤੇ ਦਵਾਇਆਂ ਲੈਣ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ। %{patient_name}, ਕਿਰਪਾ ਕਰਕੇ %{appointment_date} ਨੂੰ %{assigned_facility_name} ਵਿੱਚ ਬੀ.ਪੀ. ਦੀ ਜਾਂਚ ਅਤੇ ਦਵਾਇਆਂ ਲਈ ਆਓ ।"
