@@ -7,6 +7,7 @@ describe Appointment, type: :model do
     it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
     it { should have_many(:communications) }
+    it { should have_many(:appointment_reminders) }
   end
 
   context "Validations" do
@@ -18,6 +19,19 @@ describe Appointment, type: :model do
   end
 
   context "Scopes" do
+    describe ".between" do
+      let(:old_appointment) { create(:appointment, scheduled_date: 3.days.ago) }
+      let(:current_appointment) { create(:appointment, scheduled_date: 1.day.ago) }
+      let(:future_appointment) { create(:appointment, scheduled_date: 1.day.from_now) }
+
+      it "only includes the appointments scheduled during the provided date range" do
+        appointments = Appointment.between(2.days.ago, Date.current)
+        expect(appointments).to include(current_appointment)
+        expect(appointments).not_to include(old_appointment)
+        expect(appointments).not_to include(future_appointment)
+      end
+    end
+
     describe ".overdue" do
       let(:overdue_appointment) { create(:appointment, :overdue) }
       let(:upcoming_appointment) { create(:appointment) }

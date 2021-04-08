@@ -14,7 +14,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
 
   it "queues a job on the default queue for every region" do
     create(:patient)
-    reporting_regions = Region.where.not(region_type: ["root", "organization"])
+    reporting_regions = Region.where.not(region_type: ["root"])
     expect {
       Reports::RegionCacheWarmer.call
     }.to change(Sidekiq::Queues["default"], :size).by(reporting_regions.count)
