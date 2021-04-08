@@ -1,4 +1,4 @@
-te_IN:
+te-IN:
   set01:
     basic: "%{patient_name}, దయచేసి బిపి అంచనా మరియు మందుల కోసం %{appointment_date}న %{assigned_facility_name}ను సందర్శించండి."
     gratitude: "అధిక బిపి కోసం క్రమంగా మందులు తీసుకున్నందుకు ధన్యవాదాలు. %{patient_name}, దయచేసి బిపి అంచనా మరియు మందుల కోసం %{appointment_date}న %{assigned_facility_name}ను సందర్శించండి."

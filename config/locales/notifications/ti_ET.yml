@@ -1,4 +1,4 @@
-ti:
+ti-ET:
   set01:
     basic: "%{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{assigned_facility_name} ኣብ %{appointment_date} ናይ BP ንምልካዕን መድሃኒታትን።"
     gratitude: "ናይ ልዑል BP ስሩዕ መድሃኒት ስለ ዝወሰድኩም ነመስግነኩም። %{patient_name}, ብኽብረትካ ናብዚ ዝስዕብ ብጻሕ %{assigned_facility_name} on %{appointment_date} ናይ BP ንምልካዕን መድሃኒታትን።"

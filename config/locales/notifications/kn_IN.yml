@@ -1,4 +1,4 @@
-kn_IN:
+kn-IN:
   set01:
     basic: "%{patient_name}, ಬಿಪಿ ಮಾಪನಕ್ಕಾಗಿ ಮತ್ತು ಔಷಧಿಗಳಿಗಾಗಿ %{assigned_facility_name} ಅವರನ್ನು %{appointment_date} ದಿನಾಂಕದಂದು ದಯವಿಟ್ಟು ಭೇಟಿ ಮಾಡಿ."
     gratitude: "ಅಧಿಕ ಬಿಪಿಗಾಗಿ ನಿಯಮಿತ ಔಷಧಿಗಳನ್ನು ತೆಗೆದುಕೊಂಡಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು. %{patient_name}, ಬಿಪಿ ಮಾಪನಕ್ಕಾಗಿ ಮತ್ತು ಔಷಧಿಗಳಿಗಾಗಿ %{assigned_facility_name} ಅವರನ್ನು %{appointment_date} ದಿನಾಂಕದಂದು ದಯವಿಟ್ಟು ಭೇಟಿ ಮಾಡಿ."

@@ -1,4 +1,4 @@
-bn_BD:
+bn-BD:
   set01:
     basic: "%{patient_name}, অনুগ্রহ করে রক্তচাপ পরিমাপ ও ওষুধের জন্য %{appointment_date} তারিখে %{assigned_facility_name}-এ যান।"
     gratitude: "উচ্চ রক্তচাপের জন্য নিয়মিত ওষুধ সেবনের জন্য ধন্যবাদ জানাই। %{patient_name}, অনুগ্রহ করে রক্তচাপ পরিমাপ ও ওষুধের জন্য %{appointment_date} তারিখে %{assigned_facility_name}-এ যান।"

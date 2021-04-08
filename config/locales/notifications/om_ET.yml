@@ -1,4 +1,4 @@
-om:
+om-ET:
   set01:
     basic: "Safara BP fi dawaatif %{patient_name}, maaloo %{assigned_facility_name}%{appointment_date}irratti daawwadhu."
     gratitude: "Dhaabbiidhaan dawaa BP fudhachuu keetif galatoomi. maaloo safara BP fi dawaatif %{patient_name}, maaloo%{assigned_facility_name}%{appointment_date}irratti daawwadhu."

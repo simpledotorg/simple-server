@@ -1,4 +1,4 @@
-ta_IN:
+ta-IN:
   set01:
     basic: "%{patient_name}, பிபி அளவிடவும் மருந்துகளைப் பெறவும் %{appointment_date} அன்று %{assigned_facility_name} மையத்திற்குச் செல்லவும்."
     gratitude: "உயர் பிபி-க்காகத் தொடர்ந்து மருந்துகளை எடுத்துக் கொள்வதற்கு நன்றி. %{patient_name}, பிபி அளவிடவும் மருந்துகளைப் பெறவும் %{appointment_date} அன்று %{assigned_facility_name} மையத்திற்குச் செல்லவும்."

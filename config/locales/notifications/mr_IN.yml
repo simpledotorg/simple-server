@@ -1,4 +1,4 @@
-mr:
+mr-IN:
   set01:
     basic: "%{patient_name}, कृपया बीपी मोजण्यासाठी आणि औषधांसाठी %{appointment_date} रोजी %{assigned_facility_name} येथे जा."
     gratitude: "उच्च बीपीसाठी नियमित औषधे घेतल्याबद्दल धन्यवाद. %{patient_name}, कृपया बीपी मोजण्यासाठी आणि औषधांसाठी %{appointment_date} रोजी %{assigned_facility_name} येथे जा."

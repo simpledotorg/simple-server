@@ -1,4 +1,4 @@
-am_ET:
+am-ET:
   set01:
     basic: "%{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date}ይጎብኙ።"
     gratitude: "ለከፍተኛ የደም ግፊት መደበኛ መድሃኒቶች መዉሰድዎን እናመሰግናለን። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{assigned_facility_name} በ %{appointment_date} ይጎብኙ።"

@@ -1,4 +1,4 @@
-so:
+so-ET:
   set01:
     basic: "%{patient_name}, fadlan booqo%{assigned_facility_name} waxyaabaha ku saabsan %{appointment_date}qiyaasta BP iyo daawooyinka."
     gratitude: "Waad ku mahadsantahay qaadashada dawooyinka joogtada ah ee BP Sare.%{patient_name},Fadlan booqo%{assigned_facility_name} waxyaabaha ku saabsan %{appointment_date} qiyaasta BP iyo daawooyinka."
