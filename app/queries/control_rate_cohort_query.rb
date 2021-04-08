@@ -1,5 +1,6 @@
-# frozen_string_literal: true
-
+# A "Cohort" for this query is defined depending on the period:
+#   Month: For patients registered in a month, find BPs taken for them in the following two months
+# . Quarter: For patients registered in a quarter, find BPs tken for them in the following quarter
 class ControlRateCohortQuery
   # Wrap query method calls with the appropriate timezone in which the reports will be consumed
   # This is probably the `Rails.application.config.country[:time_zone]`
@@ -10,11 +11,11 @@ class ControlRateCohortQuery
 
   REGISTRATION_BUFFER = 3.months
 
+  # cohort_period is map that contains
+  # - :cohort_period (:quarter/:month),
+  # - :registration_quarter/:registration_month
+  # - :registration_year
   def initialize(facilities: Facility.all, cohort_period: {}, with_exclusions: false)
-    # cohort_period is map that contains
-    # - :cohort_period (:quarter/:month),
-    # - :registration_quarter/:registration_month
-    # - :registration_year
     @cohort_period = cohort_period[:cohort_period]
     @registration_quarter = cohort_period[:registration_quarter]
     @registration_month = cohort_period[:registration_month]

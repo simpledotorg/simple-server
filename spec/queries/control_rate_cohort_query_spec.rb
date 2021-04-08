@@ -5,23 +5,23 @@ RSpec.describe ControlRateCohortQuery do
 
   describe "BP control queries" do
     context "Quarterly cohorts" do
-      let!(:facility) { create(:facility) }
-      let!(:assigned_facility) { create(:facility) }
-      let!(:user) { create(:user) }
+      let(:facility) { create(:facility) }
+      let(:assigned_facility) { create(:facility) }
+      let(:user) { create(:user) }
 
-      let!(:current_quarter) { quarter(Time.current) }
-      let!(:current_year) { Time.current.year }
-      let!(:registration_year_and_quarter) { previous_year_and_quarter(current_year, current_quarter) }
-      let!(:registration_quarter) { registration_year_and_quarter.second }
-      let!(:registration_quarter_year) { registration_year_and_quarter.first }
-      let!(:current_quarter_start) { Time.current.beginning_of_quarter }
-      let!(:registration_quarter_start) { quarter_start(*previous_year_and_quarter) }
+      let(:current_quarter) { quarter(Time.current) }
+      let(:current_year) { Time.current.year }
+      let(:registration_year_and_quarter) { previous_year_and_quarter(current_year, current_quarter) }
+      let(:registration_quarter) { registration_year_and_quarter.second }
+      let(:registration_quarter_year) { registration_year_and_quarter.first }
+      let(:current_quarter_start) { Time.current.beginning_of_quarter }
+      let(:registration_quarter_start) { quarter_start(*previous_year_and_quarter) }
 
-      let!(:cohort_range) do
+      let(:cohort_range) do
         (registration_quarter_start.to_date..registration_quarter_start.end_of_quarter.to_date).to_a
       end
 
-      let!(:current_quarter_range) do
+      let(:current_quarter_range) do
         (current_quarter_start.to_date..Time.current.to_date).to_a
       end
 
@@ -109,7 +109,7 @@ RSpec.describe ControlRateCohortQuery do
             user: user)]
       end
 
-      let!(:query) do
+      let(:query) do
         described_class.new(facilities: assigned_facility,
                             cohort_period: {cohort_period: :quarter,
                                             registration_quarter: registration_quarter,
@@ -218,30 +218,30 @@ RSpec.describe ControlRateCohortQuery do
     end
 
     context "Monthly cohorts" do
-      let!(:facility) { create(:facility) }
-      let!(:user) { create(:user) }
+      let(:facility) { create(:facility) }
+      let(:user) { create(:user) }
 
-      let!(:current_month) { Time.current.month }
-      let!(:current_year) { Time.current.year }
-      let!(:current_month_start) { Time.current.beginning_of_month }
+      let(:current_month) { Time.current.month }
+      let(:current_year) { Time.current.year }
+      let(:current_month_start) { Time.current.beginning_of_month }
 
-      let!(:registration_month_start) { current_month_start - 2.months }
-      let!(:registration_month) { registration_month_start.month }
-      let!(:registration_year) { registration_month_start.year }
+      let(:registration_month_start) { current_month_start - 2.months }
+      let(:registration_month) { registration_month_start.month }
+      let(:registration_year) { registration_month_start.year }
 
-      let!(:cohort_range) do
+      let(:cohort_range) do
         (registration_month_start.to_date..registration_month_start.end_of_month.to_date).to_a
       end
 
-      let!(:bp_recorded_range) do
+      let(:bp_recorded_range) do
         ((current_month_start - 1.months).to_date..Time.current.to_date).to_a
       end
 
-      let!(:current_month_range) do
+      let(:current_month_range) do
         (current_month_start.to_date..Time.current.to_date).to_a
       end
 
-      let!(:previous_month_range) do
+      let(:previous_month_range) do
         ((current_month_start - 1.months).to_date..(current_month_start - 1.months).end_of_month.to_date).to_a
       end
 
@@ -314,7 +314,7 @@ RSpec.describe ControlRateCohortQuery do
             user: user)]
       end
 
-      let!(:query) do
+      let(:query) do
         described_class.new(facilities: Facility.all,
                             cohort_period: {cohort_period: :month,
                                             registration_month: registration_month,
@@ -355,9 +355,9 @@ RSpec.describe ControlRateCohortQuery do
     end
 
     context "Overall queries" do
-      let!(:facility) { create(:facility) }
-      let!(:assigned_facility) { create(:facility) }
-      let!(:user) { create(:user) }
+      let(:facility) { create(:facility) }
+      let(:assigned_facility) { create(:facility) }
+      let(:user) { create(:user) }
 
       let!(:recent_patient) do
         create(:patient,
