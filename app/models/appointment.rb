@@ -43,6 +43,10 @@ class Appointment < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  def self.between(start_date, end_date)
+    where("scheduled_date BETWEEN ? and ?", start_date, end_date)
+  end
+
   def self.all_overdue
     where(status: "scheduled")
       .where(arel_table[:scheduled_date].lt(Date.current))

@@ -93,10 +93,11 @@ class Patient < ApplicationRecord
   }
 
   scope :contactable, -> {
+    # We don't want to add the device_created_at ORDER BY default scope from PatientPhoneNumber just for grabbing contactable records, so we do unscoped here
     where(reminder_consent: "granted")
       .where.not(status: "dead")
       .joins(:phone_numbers)
-      .merge(PatientPhoneNumber.phone_type_mobile)
+      .merge(PatientPhoneNumber.unscoped.phone_type_mobile)
   }
 
   validate :past_date_of_birth

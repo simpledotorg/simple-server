@@ -12,5 +12,28 @@ RSpec.describe Experimentation::Experiment, type: :model do
     it { experiment.should validate_uniqueness_of(:name) }
     it { should validate_presence_of(:state) }
     it { should validate_presence_of(:experiment_type) }
+
+    it "there can only be one active experiment of a particular type at a time" do
+      create(:experiment, state: :running, experiment_type: "current_patients")
+      create(:experiment, state: :selecting, experiment_type: "stale_patients")
+
+      experiment_3 = build(:experiment, state: :running, experiment_type: "current_patients")
+      expect(experiment_3).to be_invalid
+
+      experiment_4 = build(:experiment, state: :running, experiment_type: "stale_patients")
+      expect(experiment_4).to be_invalid
+    end
+
+    it "can only be updated to a complete and valid date range" do
+      experiment = create(:experiment)
+      experiment.update(start_date: Date.today)
+      expect(experiment).to be_invalid
+      experiment.update(start_date: nil, end_date: Date.today)
+      expect(experiment).to be_invalid
+      experiment.update(start_date: Date.today + 3.days, end_date: Date.today)
+      expect(experiment).to be_invalid
+      experiment.update(start_date: Date.today, end_date: Date.today + 3.days)
+      expect(experiment).to be_valid
+    end
   end
 end
