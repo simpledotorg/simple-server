@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe BloodPressureControlQuery do
+RSpec.describe ControlRateByCohortQuery do
   include QuarterHelper
 
   describe "BP control queries" do
