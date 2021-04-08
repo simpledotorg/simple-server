@@ -159,6 +159,9 @@ class Reports::RegionsController < AdminController
     report_scope = report_params[:report_scope]
     @region ||= authorize {
       case report_scope
+      when "organization"
+        organization = current_admin.user_access.accessible_organizations(:view_reports).find_by!(slug: report_params[:id])
+        organization.region
       when "state"
         current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
       when "facility_district"
