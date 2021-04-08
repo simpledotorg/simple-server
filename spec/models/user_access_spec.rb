@@ -178,7 +178,7 @@ RSpec.describe UserAccess, type: :model do
           _facility_group_1 = create(:facility_group, name: "district 1")
           _facility_group_2 = create(:facility_group, name: "district 2")
           state_regions = Region.state_regions
-          expect(power_user.user_access.accessible_state_regions(:view_reports).count).to eq(2)
+          expect(power_user.user_access.accessible_state_regions(:view_reports).count).to eq(state_regions.count)
           expect(power_user.user_access.accessible_state_regions(:view_reports)).to match_array(state_regions)
         end
 
