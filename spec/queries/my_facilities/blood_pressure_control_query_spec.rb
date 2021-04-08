@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ControlRateByCohortQuery do
+RSpec.describe ControlRateCohortQuery do
   include QuarterHelper
 
   describe "BP control queries" do
