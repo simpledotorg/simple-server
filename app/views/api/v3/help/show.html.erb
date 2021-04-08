@@ -19,40 +19,40 @@
       <div class="help-contents">
         <nav class="help-nav">
           <a href="#" onclick="openWindow('help-videos'); return false">
-          <%= t("help.menu.videos") %>
+          <%= t("help.menu.videos_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="openWindow('help-start'); return false">
-          <%= t("help.menu.start") %>
+          <%= t("help.menu.start_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="openWindow('help-register'); return false">
-          <%= t("help.menu.register") %>
+          <%= t("help.menu.register_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="openWindow('help-search'); return false">
-          <%= t("help.menu.search") %>
+          <%= t("help.menu.search_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="openWindow('help-record'); return false">
-          <%= t("help.menu.record") %>
+          <%= t("help.menu.record_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="openWindow('help-overdue'); return false">
-          <%= t("help.menu.overdue") %>
+          <%= t("help.menu.overdue_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="openWindow('help-faq'); return false">
-          <%= t("help.menu.faq") %>
+          <%= t("help.menu.faq_html") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
         </nav>
         <div class="card support <%= CountryConfig.current[:abbreviation] %>">
           <h3>
-            <%= t("help.support.heading") %>
+            <%= t("help.support.heading_html") %>
           </h3>
           <p>
-            <%= t("help.support.contents") %>
+            <%= t("help.support.contents_html") %>
           </p>
           <a href="<%= ENV['HELP_SCREEN_SUPPORT_GROUP_URL'] %>" class="support-button <%= CountryConfig.current[:abbreviation] %>-button">
             <%= inline_svg(ENV['HELP_SCREEN_SUPPORT_GROUP_ICON']) %> <%= ENV['HELP_SCREEN_SUPPORT_GROUP_NUMBER'] %>
@@ -61,12 +61,12 @@
         <div class="card">
           <a href="#" onclick="openWindow('help-bp-passport-app'); return false" class="card-header" style="background: #FF3355 url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQ0IiBoZWlnaHQ9IjI0MCIgdmlld0JveD0iMCAwIDM0NCAyNDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHg9IjEyMSIgeT0iMzAiIHdpZHRoPSIxMDkiIGhlaWdodD0iMTc5IiByeD0iOSIgZmlsbD0iIzAwNDc4RiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+CjxyZWN0IHg9IjE3OCIgeT0iODQiIHdpZHRoPSI2IiBoZWlnaHQ9Ijc1IiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE4MSIgY3k9Ijg0IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE4MSIgY3k9IjE1OSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIxODciIHk9Ijk5IiB3aWR0aD0iNiIgaGVpZ2h0PSI3MiIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIxOTAiIGN5PSI5OSIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzEiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTk2IiB5PSI4NiIgd2lkdGg9IjYiIGhlaWdodD0iNjgiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTk5IiBjeT0iODYiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTk5IiBjeT0iMTU0IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjIwNSIgeT0iOTIiIHdpZHRoPSI2IiBoZWlnaHQ9IjczIiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjIwOCIgY3k9IjkyIiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjIwOCIgY3k9IjE2NSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIyMTQiIHk9Ijk0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2NSIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIyMTciIGN5PSI5NCIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIyMTciIGN5PSIxNTkiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTMyIiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNzUiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTM1IiBjeT0iODQiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTM1IiBjeT0iMTU5IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjE0MSIgeT0iOTkiIHdpZHRoPSI2IiBoZWlnaHQ9IjcyIiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9Ijk5IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE0NCIgY3k9IjE3MSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSIxNTAiIHk9Ijg2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2OCIgZmlsbD0iIzNCN0NCRSIvPgo8Y2lyY2xlIGN4PSIxNTMiIGN5PSI4NiIgcj0iMyIgZmlsbD0iI0ZGMzM1NSIvPgo8Y2lyY2xlIGN4PSIxNTMiIGN5PSIxNTQiIHI9IjMiIGZpbGw9IiMwMEI4NDkiLz4KPHJlY3QgeD0iMTU5IiB5PSI5MiIgd2lkdGg9IjYiIGhlaWdodD0iNzMiIGZpbGw9IiMzQjdDQkUiLz4KPGNpcmNsZSBjeD0iMTYyIiBjeT0iOTIiIHI9IjMiIGZpbGw9IiNGRjMzNTUiLz4KPGNpcmNsZSBjeD0iMTYyIiBjeT0iMTY1IiByPSIzIiBmaWxsPSIjMDBCODQ5Ii8+CjxyZWN0IHg9IjE2OCIgeT0iOTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjY1IiBmaWxsPSIjM0I3Q0JFIi8+CjxjaXJjbGUgY3g9IjE3MSIgY3k9Ijk0IiByPSIzIiBmaWxsPSIjRkYzMzU1Ii8+CjxjaXJjbGUgY3g9IjE3MSIgY3k9IjE1OSIgcj0iMyIgZmlsbD0iIzAwQjg0OSIvPgo8cmVjdCB4PSI4NSIgeT0iMTI1IiB3aWR0aD0iNjMiIGhlaWdodD0iNjMiIHJ4PSI5IiBmaWxsPSIjMDAzNjZEIi8+CjxwYXRoIGQ9Ik0xMTUuNSAxNzZDMTIzLjUwOCAxNzYgMTMwIDE2OS40ODggMTMwIDE2MS40NTVDMTMwIDE1MC41NDUgMTE1LjUgMTM2IDExNS41IDEzNkMxMTUuNSAxMzYgMTAxIDE1MC41NDUgMTAxIDE2MS40NTVDMTAxIDE2OS40ODggMTA3LjQ5MiAxNzYgMTE1LjUgMTc2WiIgZmlsbD0iI0ZGMzM1NSIvPgo8cGF0aCBkPSJNMTA2LjQxNiAxNjcuODk5QzEwNS43NjEgMTY3LjEzIDEwNS44OTQgMTY2LjAwNyAxMDYuNzEzIDE2NS4zOTFDMTA3LjUzMyAxNjQuNzc1IDEwOC43MjggMTY0LjkgMTA5LjM4NCAxNjUuNjdDMTEyLjA4NiAxNjguODQyIDExNy4wMTUgMTY5LjM1NyAxMjAuMzkzIDE2Ni44MTlDMTIwLjg0NSAxNjYuNDc5IDEyMS4yNTUgMTY2LjA5NCAxMjEuNjE2IDE2NS42N0MxMjIuMjcyIDE2NC45IDEyMy40NjcgMTY0Ljc3NSAxMjQuMjg3IDE2NS4zOTFDMTI1LjEwNiAxNjYuMDA3IDEyNS4yMzkgMTY3LjEzIDEyNC41ODQgMTY3Ljg5OUMxMjQuMDQ3IDE2OC41MjkgMTIzLjQzOCAxNjkuMTAyIDEyMi43NjcgMTY5LjYwNkMxMTcuNzUgMTczLjM3NSAxMTAuNDMgMTcyLjYxMSAxMDYuNDE2IDE2Ny44OTlaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K) no-repeat 50% 50%; background-size: contain;">
           </a>
-          <h3><span style="color: #FF3355; font-size: 90%; float: right;"><%= t("help.bp_passport_app_summary.new") %></span> <%= t("help.bp_passport_app_summary.heading") %></h3>
-          <p><%= t("help.bp_passport_app_summary.contents_1") %></p>
-          <p><%= t("help.bp_passport_app_summary.contents_2") %></p>
-          <p class="card-footer-button"><a href="#" onclick="openWindow('help-bp-passport-app'); return false"><%= t("help.bp_passport_app_summary.learn_more") %></a></p>
+          <h3><span style="color: #FF3355; font-size: 90%; float: right;"><%= t("help.bp_passport_app_summary.new_html") %></span> <%= t("help.bp_passport_app_summary.heading_html") %></h3>
+          <p><%= t("help.bp_passport_app_summary.contents_1_html") %></p>
+          <p><%= t("help.bp_passport_app_summary.contents_2_html") %></p>
+          <p class="card-footer-button"><a href="#" onclick="openWindow('help-bp-passport-app'); return false"><%= t("help.bp_passport_app_summary.learn_more_html") %></a></p>
         </div>
-        <p class="tos"><a href="https://simple.org/simple-privacy"><%= t("help.privacy_policy") %></a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms"><%= t("help.terms_of_service") %></a></p>
+        <p class="tos"><a href="https://simple.org/simple-privacy"><%= t("help.privacy_policy_html") %></a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms"><%= t("help.terms_of_service_html") %></a></p>
       </div>
     </div>
 
@@ -77,71 +77,71 @@
         <a href="#" onclick="closeWindow('help-videos'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.videos.heading") %></h2>
+        <h2><%= t("help.videos.heading_html") %></h2>
         <div class="card">
-          <h3><%= t("help.videos.class.heading") %></h3>
-          <p><%= t("help.videos.class.contents") %></p>
-          <a href="%{help_screen_youtube_training_url}" class="video">
+          <h3><%= t("help.videos.class.heading_html") %></h3>
+          <p><%= t("help.videos.class.contents_html") %></p>
+          <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>" class="video">
           <%= inline_svg('thumb_training.svg') %>
           </a>
           <p>
-            <a href="%{help_screen_youtube_training_url}"><%= t("help.videos.class.training_videos_link") %></a>
+            <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>"><%= t("help.videos.class.training_videos_link_html") %></a>
             <br>
-            <%= t("help.videos.class.training_videos_subtitle") %>
+            <%= t("help.videos.class.training_videos_subtitle_html") %>
           </p>
         </div>
         <div class="card">
-          <h3><%= t("help.videos.chapters.heading") %></h3>
+          <h3><%= t("help.videos.chapters.heading_html") %></h3>
           <div class="video-small">
-            <a href="https://youtu.be/r0mbu1s0l7A"><%= t("help.videos.chapters.chapter_1") %></a>
+            <a href="https://youtu.be/r0mbu1s0l7A"><%= t("help.videos.chapters.chapter_1_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/YPySS9sL-EU"><%= t("help.videos.chapters.chapter_2") %></a>
+            <a href="https://youtu.be/YPySS9sL-EU"><%= t("help.videos.chapters.chapter_2_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/5P5mGQVQFOU"><%= t("help.videos.chapters.chapter_3") %></a>
+            <a href="https://youtu.be/5P5mGQVQFOU"><%= t("help.videos.chapters.chapter_3_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/6hR1vQ8hoTU"><%= t("help.videos.chapters.chapter_4") %></a>
+            <a href="https://youtu.be/6hR1vQ8hoTU"><%= t("help.videos.chapters.chapter_4_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/o3klwHrMEi0"><%= t("help.videos.chapters.chapter_5") %></a>
+            <a href="https://youtu.be/o3klwHrMEi0"><%= t("help.videos.chapters.chapter_5_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/PuM29XINOn4"><%= t("help.videos.chapters.chapter_6") %></a>
+            <a href="https://youtu.be/PuM29XINOn4"><%= t("help.videos.chapters.chapter_6_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/elCBnApJLIM"><%= t("help.videos.chapters.chapter_7") %></a>
+            <a href="https://youtu.be/elCBnApJLIM"><%= t("help.videos.chapters.chapter_7_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/Aj-dKn_kmlw"><%= t("help.videos.chapters.chapter_8") %></a>
+            <a href="https://youtu.be/Aj-dKn_kmlw"><%= t("help.videos.chapters.chapter_8_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/wF4t_pFuugY"><%= t("help.videos.chapters.chapter_9") %></a>
+            <a href="https://youtu.be/wF4t_pFuugY"><%= t("help.videos.chapters.chapter_9_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10") %></a>
-          </div>
-        </div>
-        <div class="card">
-          <h3><%= t("help.videos.teleconsultation.heading") %></h3>
-          <p><%= t("help.videos.teleconsultation.contents") %></p>
-          <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link") %><span><%= t("help.videos.teleconsultation.english_video_link_language") %></span></a>
-          </div>
-          <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_video_link") %><span><%= t("help.videos.teleconsultation.hindi_video_link_language") %></span></a>
+            <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10_html") %></a>
           </div>
         </div>
         <div class="card">
-          <h3><%= t("help.videos.bp_passports.heading") %></h3>
-          <p><%= t("help.videos.bp_passports.contents") %></p>
+          <h3><%= t("help.videos.teleconsultation.heading_html") %></h3>
+          <p><%= t("help.videos.teleconsultation.contents_html") %></p>
           <div class="video-small">
-            <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s"><%= t("help.videos.bp_passports.video_link") %><span><%= t("help.videos.bp_passports.video_link_subtitle") %></span></a>
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link_html") %><span><%= t("help.videos.teleconsultation.english_video_link_language_html") %></span></a>
+          </div>
+          <div class="video-small">
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_video_link_html") %><span><%= t("help.videos.teleconsultation.hindi_video_link_language_html") %></span></a>
           </div>
         </div>
         <div class="card">
-          <h3><%= t("help.videos.film.heading") %></h3>
+          <h3><%= t("help.videos.bp_passports.heading_html") %></h3>
+          <p><%= t("help.videos.bp_passports.contents_html") %></p>
+          <div class="video-small">
+            <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s"><%= t("help.videos.bp_passports.video_link_html") %><span><%= t("help.videos.bp_passports.video_link_subtitle_html") %></span></a>
+          </div>
+        </div>
+        <div class="card">
+          <h3><%= t("help.videos.film.heading_html") %></h3>
           <a href="https://www.youtube.com/watch?v=C26CoyeExmU" class="video">
           <%= inline_svg('thumb_documentary.svg') %>
           </a>
@@ -159,53 +159,53 @@
         <a href="#" onclick="closeWindow('help-start'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.start.heading") %></h2>
+        <h2><%= t("help.start.heading_html") %></h2>
         <div class="card">
-          <h3><%= t("help.start.getting_started_video.heading") %></h3>
+          <h3><%= t("help.start.getting_started_video.heading_html") %></h3>
           <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video">
             <%= inline_svg('thumb_demo.svg') %>
           </a>
-          <p><%= t("help.start.getting_started_video.contents") %></p>
+          <p><%= t("help.start.getting_started_video.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><%= t("help.start.who_to_record.heading") %></h3>
+          <h3><%= t("help.start.who_to_record.heading_html") %></h3>
           <p><%= t("help.start.who_to_record.contents_1_html") %></p>
-          <p><%= t("help.start.who_to_record.contents_2") %></p>
+          <p><%= t("help.start.who_to_record.contents_2_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_1.label") %></span></span><%= t("help.start.step_1.heading") %></h3>
-          <p><%= t("help.start.step_1.contents") %></p>
+          <h3><span class="header-label"><span><%= t("help.start.step_1.label_html") %></span></span><%= t("help.start.step_1.heading_html") %></h3>
+          <p><%= t("help.start.step_1.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_2.label") %></span></span><%= t("help.start.step_2.heading") %></h3>
-          <p><%= t("help.start.step_2.contents") %></p>
+          <h3><span class="header-label"><span><%= t("help.start.step_2.label_html") %></span></span><%= t("help.start.step_2.heading_html") %></h3>
+          <p><%= t("help.start.step_2.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_3.label") %></span></span><%= t("help.start.step_3.heading") %></h3>
-          <p><%= t("help.start.step_3.contents") %></p>
+          <h3><span class="header-label"><span><%= t("help.start.step_3.label_html") %></span></span><%= t("help.start.step_3.heading_html") %></h3>
+          <p><%= t("help.start.step_3.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_4.label") %></span></span><%= t("help.start.step_4.heading") %></h3>
+          <h3><span class="header-label"><span><%= t("help.start.step_4.label_html") %></span></span><%= t("help.start.step_4.heading_html") %></h3>
           <p><%= t("help.start.step_4.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_5.label") %></span></span><%= t("help.start.step_5.heading") %></h3>
-          <p><%= t("help.start.step_5.contents") %></p>
+          <h3><span class="header-label"><span><%= t("help.start.step_5.label_html") %></span></span><%= t("help.start.step_5.heading_html") %></h3>
+          <p><%= t("help.start.step_5.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_6.label") %></span></span><%= t("help.start.step_6.heading") %></h3>
+          <h3><span class="header-label"><span><%= t("help.start.step_6.label_html") %></span></span><%= t("help.start.step_6.heading_html") %></h3>
           <p><%= t("help.start.step_6.contents_html") %></p>
         </div>
         <hr>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.missed_visit.label") %></span></span><%= t("help.start.missed_visit.heading") %></h3>
-          <p><%= t("help.start.missed_visit.contents") %></p>
+          <h3><span class="header-label"><span><%= t("help.start.missed_visit.label_html") %></span></span><%= t("help.start.missed_visit.heading_html") %></h3>
+          <p><%= t("help.start.missed_visit.contents_html") %></p>
         </div>
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3><%= t("help.start.tip.heading") %></h3>
-          <p><%= t("help.start.tip.contents") %></p>
+          <h3><%= t("help.start.tip.heading_html") %></h3>
+          <p><%= t("help.start.tip.contents_html") %></p>
         </div>
       </div>
     </div>
@@ -217,48 +217,48 @@
         <a href="#" onclick="closeWindow('help-register'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.register.heading") %></h2>
+        <h2><%= t("help.register.heading_html") %></h2>
         <section style="margin: -16px 0 24px 8px;">
-          <p><%= t("help.register.contents") %></p>
+          <p><%= t("help.register.contents_html") %></p>
         </section>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.register.option_1.label") %></span></span><%= t("help.register.option_1.heading") %></h3>
+          <h3><span class="header-label"><span><%= t("help.register.option_1.label_html") %></span></span><%= t("help.register.option_1.heading_html") %></h3>
           <ol>
             <li class="num">
-              <%= t("help.register.option_1.step_1") %>
+              <%= t("help.register.option_1.step_1_html") %>
               <div class="help-example"><%= inline_svg('help/scan_bp_passport.svg') %></div>
             </li>
             <li class="num">
               <%= t("help.register.option_1.step_2_html") %>
               <div class="help-example"><%= inline_svg('help/bp_passport.svg') %></div>
             </li>
-            <li class="num"><%= t("help.register.option_1.step_3") %></li>
+            <li class="num"><%= t("help.register.option_1.step_3_html") %></li>
             <li class="num"><%= t("help.register.option_1.step_4_html") %></li>
-            <li class="num"><%= t("help.register.option_1.step_5") %></li>
-            <li class="num"><%= t("help.register.option_1.step_6") %></li>
+            <li class="num"><%= t("help.register.option_1.step_5_html") %></li>
+            <li class="num"><%= t("help.register.option_1.step_6_html") %></li>
             <li class="num"><%= t("help.register.option_1.step_7_html") %></li>
           </ol>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.register.option_2.label") %></span></span><%= t("help.register.option_2.heading") %></h3>
+          <h3><span class="header-label"><span><%= t("help.register.option_2.label_html") %></span></span><%= t("help.register.option_2.heading_html") %></h3>
           <ol>
             <li class="num"><%= t("help.register.option_2.step_1_html") %></li>
-            <li class="num"><%= t("help.register.option_2.step_2") %></li>
+            <li class="num"><%= t("help.register.option_2.step_2_html") %></li>
             <li class="num"><%= t("help.register.option_2.step_3_html") %></li>
-            <li class="num"><%= t("help.register.option_2.step_4") %></li>
-            <li class="num"><%= t("help.register.option_2.step_5") %></li>
+            <li class="num"><%= t("help.register.option_2.step_4_html") %></li>
+            <li class="num"><%= t("help.register.option_2.step_5_html") %></li>
             <li class="num"><%= t("help.register.option_2.step_6_html") %></li>
           </ol>
         </div>
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3><%= t("help.register.tips.heading") %></h3>
+          <h3><%= t("help.register.tips.heading_html") %></h3>
           <ul>
-            <li><%= t("help.register.tips.tip_1") %></li>
-            <li><%= t("help.register.tips.tip_2") %></li>
-            <li><%= t("help.register.tips.tip_3") %></li>
-            <li><%= t("help.register.tips.tip_4") %></li>
+            <li><%= t("help.register.tips.tip_1_html") %></li>
+            <li><%= t("help.register.tips.tip_2_html") %></li>
+            <li><%= t("help.register.tips.tip_3_html") %></li>
+            <li><%= t("help.register.tips.tip_4_html") %></li>
           </ul>
         </div>
       </div>
@@ -271,14 +271,14 @@
         <a href="#" onclick="closeWindow('help-search'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.search.heading") %></h2>
+        <h2><%= t("help.search.heading_html") %></h2>
         <div class="card">
-          <h3><%= t("help.search.find_patient.heading") %></h3>
-          <p><%= t("help.search.find_patient.contents") %></p>
+          <h3><%= t("help.search.find_patient.heading_html") %></h3>
+          <p><%= t("help.search.find_patient.contents_html") %></p>
         </div>
         <div class="card">
           <h3><%= t("help.search.choose_patient.heading_html") %></h3>
-          <p><%= t("help.search.choose_patient.contents_1") %></p>
+          <p><%= t("help.search.choose_patient.contents_1_html") %></p>
           <ol>
             <li class="num"><%= t("help.search.choose_patient.check_item_1_html") %></li>
             <li class="num"><%= t("help.search.choose_patient.check_item_2_html") %></li>
@@ -286,13 +286,13 @@
             <li class="num"><%= t("help.search.choose_patient.check_item_4_html") %></li>
             <li class="num"><%= t("help.search.choose_patient.check_item_5_html") %></li>
           </ol>
-          <p><%= t("help.search.choose_patient.contents_2") %></p>
+          <p><%= t("help.search.choose_patient.contents_2_html") %></p>
         </div>
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3><%= t("help.search.tip.heading") %></h3>
-          <p><%= t("help.search.tip.contents") %></p>
+          <h3><%= t("help.search.tip.heading_html") %></h3>
+          <p><%= t("help.search.tip.contents_html") %></p>
         </div>
       </div>
     </div>
@@ -304,27 +304,27 @@
         <a href="#" onclick="closeWindow('help-record'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.record.heading") %></h2>
+        <h2><%= t("help.record.heading_html") %></h2>
         <div class="card">
-          <h3><%= t("help.record.find_patient.heading") %></h3>
-          <p><%= t("help.record.find_patient.contents") %></p>
+          <h3><%= t("help.record.find_patient.heading_html") %></h3>
+          <p><%= t("help.record.find_patient.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><%= t("help.record.record_info.heading") %></h3>
+          <h3><%= t("help.record.record_info.heading_html") %></h3>
           <ol>
             <li class="num"><%= t("help.record.record_info.step_1_html") %></li>
-            <li class="num"><%= t("help.record.record_info.step_2") %></li>
+            <li class="num"><%= t("help.record.record_info.step_2_html") %></li>
             <li class="num"><%= t("help.record.record_info.step_3_html") %></li>
             <li class="num"><%= t("help.record.record_info.step_4_html") %></li>
-            <li class="num"><%= t("help.record.record_info.step_5") %></li>
+            <li class="num"><%= t("help.record.record_info.step_5_html") %></li>
           </ol>
         </div>
         <div class="card">
           <h3>
-            <%= t("help.record.medicine_refills.heading") %>
+            <%= t("help.record.medicine_refills.heading_html") %>
           </h3>
           <p>
-            <%= t("help.record.medicine_refills.contents") %>
+            <%= t("help.record.medicine_refills.contents_html") %>
           </p>
           <ol>
             <li class="num">
@@ -334,22 +334,22 @@
               <%= t("help.record.medicine_refills.step_2_html") %>
             </li>
             <li class="num">
-              <%= t("help.record.medicine_refills.step_3") %>
+              <%= t("help.record.medicine_refills.step_3_html") %>
             </li>
           </ol>
           <div class="video-small">
             <a href="https://www.youtube.com/watch?v=8EmUUGzLz3w">
-            <%= t("help.record.medicine_refills.english_video_link") %>
+            <%= t("help.record.medicine_refills.english_video_link_html") %>
             <span>
-            <%= t("help.record.medicine_refills.english_video_link_language") %>
+            <%= t("help.record.medicine_refills.english_video_link_language_html") %>
             </span>
             </a>
           </div>
           <div class="video-small">
             <a href="https://www.youtube.com/watch?v=zYGBczMmx9c">
-            <%= t("help.record.medicine_refills.hindi_video_link") %>
+            <%= t("help.record.medicine_refills.hindi_video_link_html") %>
             <span>
-            <%= t("help.record.medicine_refills.hindi_video_link_language") %>
+            <%= t("help.record.medicine_refills.hindi_video_link_language_html") %>
             </span>
             </a>
           </div>
@@ -357,7 +357,7 @@
         <hr>
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
-          <h3><%= t("help.record.tips.heading") %></h3>
+          <h3><%= t("help.record.tips.heading_html") %></h3>
           <ul>
             <li><%= t("help.record.tips.tip_1_html") %></li>
             <li><%= t("help.record.tips.tip_2_html") %></li>
@@ -374,20 +374,20 @@
         <a href="#" onclick="closeWindow('help-overdue'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.overdue.heading") %></h2>
+        <h2><%= t("help.overdue.heading_html") %></h2>
         <div class="card">
-          <h3><%= t("help.overdue.what_is_overdue.heading") %></h3>
-          <p><%= t("help.overdue.what_is_overdue.contents_1") %></p>
-          <p><%= t("help.overdue.what_is_overdue.contents_2") %></p>
+          <h3><%= t("help.overdue.what_is_overdue.heading_html") %></h3>
+          <p><%= t("help.overdue.what_is_overdue.contents_1_html") %></p>
+          <p><%= t("help.overdue.what_is_overdue.contents_2_html") %></p>
         </div>
         <div class="card">
-          <h3><%= t("help.overdue.calling.heading") %></h3>
+          <h3><%= t("help.overdue.calling.heading_html") %></h3>
           <p><%= t("help.overdue.calling.contents_html") %></p>
           <div class="help-example"><%= inline_svg('help/calling.svg') %></div>
         </div>
         <div class="card">
-          <h3><%= t("help.overdue.result_of_call.heading") %></h3>
-          <p><%= t("help.overdue.result_of_call.contents") %></p>
+          <h3><%= t("help.overdue.result_of_call.heading_html") %></h3>
+          <p><%= t("help.overdue.result_of_call.contents_html") %></p>
           <ol>
             <li class="num"><%= t("help.overdue.result_of_call.agreed_to_visit_html") %></li>
             <li class="num"><%= t("help.overdue.result_of_call.remind_to_call_later_html") %></li>
@@ -395,12 +395,12 @@
               <%= t("help.overdue.result_of_call.remove_from_overdue_list.contents_html") %>
               <div class="graphic-html help-example-text">
                 <ul>
-                  <li style="margin-top: 0;"><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_1") %></li>
-                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_2") %></li>
-                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_3") %></li>
-                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_4") %></li>
-                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_5") %></li>
-                  <li style="margin-bottom: 0;"><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_6") %></li>
+                  <li style="margin-top: 0;"><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_1_html") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_2_html") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_3_html") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_4_html") %></li>
+                  <li><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_5_html") %></li>
+                  <li style="margin-bottom: 0;"><%= t("help.overdue.result_of_call.remove_from_overdue_list.condition_6_html") %></li>
                 </ul>
               </div>
             </li>
@@ -416,61 +416,61 @@
         <a href="#" onclick="closeWindow('help-faq'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.faq.heading") %></h2>
+        <h2><%= t("help.faq.heading_html") %></h2>
         <div class="card">
-          <a class="faq"><%= t("help.faq.app_crash_question") %></a>
+          <a class="faq"><%= t("help.faq.app_crash_question_html") %></a>
           <div class="answer">
             <p><%= t("help.faq.app_crash_answer_html") %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.scan_not_working_question") %></a>
+          <a class="faq"><%= t("help.faq.scan_not_working_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.scan_not_working_answer") %></p>
+            <p><%= t("help.faq.scan_not_working_answer_html") %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.udpate_app_question") %></a>
+          <a class="faq"><%= t("help.faq.udpate_app_question_html") %></a>
           <div class="answer">
             <p><%= t("help.faq.udpate_app_answer_html") %></p>
             <div class="help-example"><%= inline_svg('icon_settings.svg') %></div>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.cant_find_followup_question") %></a>
+          <a class="faq"><%= t("help.faq.cant_find_followup_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.cant_find_followup_answer") %></p>
+            <p><%= t("help.faq.cant_find_followup_answer_html") %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.two_bp_passports_question") %></a>
+          <a class="faq"><%= t("help.faq.two_bp_passports_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.two_bp_passports_answer") %></p>
+            <p><%= t("help.faq.two_bp_passports_answer_html") %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.no_more_bp_passports_question") %></a>
+          <a class="faq"><%= t("help.faq.no_more_bp_passports_question_html") %></a>
           <div class="answer">
             <p><%= t("help.faq.no_more_bp_passports_answer_html") %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.what_is_sync_question") %></a>
+          <a class="faq"><%= t("help.faq.what_is_sync_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.what_is_sync_answer") %></p>
+            <p><%= t("help.faq.what_is_sync_answer_html") %></p>
             <div class="help-example"><%= inline_svg('help/sync.svg') %></div>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.data_usage_question") %></a>
+          <a class="faq"><%= t("help.faq.data_usage_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.data_usage_answer") %></p>
+            <p><%= t("help.faq.data_usage_answer_html") %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.access_my_info_question") %></a>
+          <a class="faq"><%= t("help.faq.access_my_info_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.access_my_info_answer") %></p>
+            <p><%= t("help.faq.access_my_info_answer_html") %></p>
           </div>
         </div>
       </div>
@@ -483,42 +483,42 @@
         <a href="#" onclick="closeWindow('help-bp-passport-app'); return false" class="help-back">
           <%= inline_svg('icon_back.svg') %>
         </a>
-        <h2><%= t("help.bp_passport_app.heading") %></h2>
+        <h2><%= t("help.bp_passport_app.heading_html") %></h2>
         <div class="card">
-          <h3><%= t("help.bp_passport_app.features.heading") %></h3>
-          <p><%= t("help.bp_passport_app.features.contents") %></p>
+          <h3><%= t("help.bp_passport_app.features.heading_html") %></h3>
+          <p><%= t("help.bp_passport_app.features.contents_html") %></p>
           <ol>
-            <li class="num"><%= t("help.bp_passport_app.features.feature_1") %></li>
-            <li class="num"><%= t("help.bp_passport_app.features.feature_2") %></li>
-            <li class="num"><%= t("help.bp_passport_app.features.feature_3") %></li>
-            <li class="num"><%= t("help.bp_passport_app.features.feature_4") %></li>
-            <li class="num"><%= t("help.bp_passport_app.features.feature_5") %></li>
+            <li class="num"><%= t("help.bp_passport_app.features.feature_1_html") %></li>
+            <li class="num"><%= t("help.bp_passport_app.features.feature_2_html") %></li>
+            <li class="num"><%= t("help.bp_passport_app.features.feature_3_html") %></li>
+            <li class="num"><%= t("help.bp_passport_app.features.feature_4_html") %></li>
+            <li class="num"><%= t("help.bp_passport_app.features.feature_5_html") %></li>
           </ol>
-          <p style="margin-top: 2.5em;"><%= t("help.bp_passport_app.features.learn_more") %>: <a href="http://simple.org/bp-passport">simple.org/bp-passport</a></p>
+          <p style="margin-top: 2.5em;"><%= t("help.bp_passport_app.features.learn_more_html") %>: <a href="http://simple.org/bp-passport">simple.org/bp-passport</a></p>
         </div>
         <div class="card">
-          <h3><%= t("help.bp_passport_app.platforms.heading") %></h3>
+          <h3><%= t("help.bp_passport_app.platforms.heading_html") %></h3>
           <p style="margin-bottom: 2.5em;"><%= t("help.bp_passport_app.platforms.contents_html") %></p>
-          <a href="https://apps.apple.com/us/app/bp-passport/id1510811893" class="app-button button"><%= inline_svg('icon_apple_icon.svg') %> <%= t("help.bp_passport_app.platforms.apple_app_store") %></a>
-          <a href="https://play.google.com/store/apps/details?id=org.simple.bppassport" class="app-button button"><%= inline_svg('icon_google_play_icon.svg') %> <%= t("help.bp_passport_app.platforms.google_play_store") %></a>
+          <a href="https://apps.apple.com/us/app/bp-passport/id1510811893" class="app-button button"><%= inline_svg('icon_apple_icon.svg') %> <%= t("help.bp_passport_app.platforms.apple_app_store_html") %></a>
+          <a href="https://play.google.com/store/apps/details?id=org.simple.bppassport" class="app-button button"><%= inline_svg('icon_google_play_icon.svg') %> <%= t("help.bp_passport_app.platforms.google_play_store_html") %></a>
         </div>
         <div class="card">
-          <h3><%= t("help.bp_passport_app.languages.heading") %></h3>
-          <p><%= t("help.bp_passport_app.languages.contents") %></p>
+          <h3><%= t("help.bp_passport_app.languages.heading_html") %></h3>
+          <p><%= t("help.bp_passport_app.languages.contents_html") %></p>
           <ul class="big-list">
-            <li><%= t("help.bp_passport_app.languages.language_amharic") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_bengali") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_english") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_french") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_hindi") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_kannada") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_marathi") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_oromo") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_punjabi") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_spanish") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_tamil") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_telugu") %></li>
-            <li><%= t("help.bp_passport_app.languages.language_tigrinya") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_amharic_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_bengali_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_english_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_french_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_hindi_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_kannada_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_marathi_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_oromo_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_punjabi_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_spanish_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_tamil_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_telugu_html") %></li>
+            <li><%= t("help.bp_passport_app.languages.language_tigrinya_html") %></li>
           </ul>
         </div>
       </div>
