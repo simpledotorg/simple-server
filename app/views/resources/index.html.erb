@@ -85,6 +85,11 @@
               <a href="<%= ExternalLinksHelper::TRAINING_VIDEO_ALL_CHAPTERS_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 515 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::TRAINING_VIDEO_ALL_CHAPTERS_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 892 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video">
               <%= image_tag 'resources/video-trainers.jpg', style: 'width: 100%;' %>
@@ -120,6 +125,11 @@
               <a href="<%= ExternalLinksHelper::INSTALL_THE_APP_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 48 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::INSTALL_THE_APP_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 89 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-2.jpg', style: 'width: 100%;' %>
@@ -135,6 +145,11 @@
               <a href="<%= ExternalLinksHelper::INTRODUCTION_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 59 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::INTRODUCTION_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 83 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-3.jpg', style: 'width: 100%;' %>
@@ -150,6 +165,11 @@
               <a href="<%= ExternalLinksHelper::REGISTER_A_PATIENT_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 86 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::REGISTER_A_PATIENT_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 179 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-4.jpg', style: 'width: 100%;' %>
@@ -165,6 +185,11 @@
                 <a href="<%= ExternalLinksHelper::SEARCH_FOR_PATIENT_DOWNLOAD_LINK %>">
                   <i class="fas fa-arrow-circle-down"></i> Download: 64 <small>MB</small>
                 </a>
+                <% if CountryConfig.current[:name] == "Ethiopia" %>
+                  <a href="<%= ExternalLinksHelper::SEARCH_FOR_PATIENT_AMHARIC_DOWNLOAD_LINK %>">
+                    <i class="fas fa-arrow-circle-down"></i> Download Amharic: 96 <small>MB</small>
+                  </a>
+                <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-5.jpg', style: 'width: 100%;' %>
@@ -180,6 +205,11 @@
               <a href="<%= ExternalLinksHelper::FIND_PATIENT_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 33 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::FIND_PATIENT_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 43 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-6.jpg', style: 'width: 100%;' %>
@@ -195,6 +225,11 @@
               <a href="<%= ExternalLinksHelper::CALL_OVERDUE_PATIENTS_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 35 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::CALL_OVERDUE_PATIENTS_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 68 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-7.jpg', style: 'width: 100%;' %>
@@ -210,6 +245,11 @@
               <a href="<%= ExternalLinksHelper::IMPORTANT_FEATURES_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 52 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::IMPORTANT_FEATURES_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 84 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-8.jpg', style: 'width: 100%;' %>
@@ -225,6 +265,11 @@
               <a href="<%= ExternalLinksHelper::FAQ_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 39 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::FAQ_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 72 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-9.jpg', style: 'width: 100%;' %>
@@ -240,6 +285,11 @@
               <a href="<%= ExternalLinksHelper::HOW_TO_GET_HELP_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 20 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::HOW_TO_GET_HELP_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 31 <small>MB</small>
+                </a>
+              <% end %>
             </div>
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-10.jpg', style: 'width: 100%;' %>
@@ -255,6 +305,11 @@
               <a href="<%= ExternalLinksHelper::START_USING_SIMPLE_DOWNLOAD_LINK %>">
                 <i class="fas fa-arrow-circle-down"></i> Download: 30 <small>MB</small>
               </a>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>
+                <a href="<%= ExternalLinksHelper::START_USING_SIMPLE_AMHARIC_DOWNLOAD_LINK %>">
+                  <i class="fas fa-arrow-circle-down"></i> Download Amharic: 48 <small>MB</small>
+                </a>
+              <% end %>
             </div>
           </div>
           <h4 class="mt-5">
