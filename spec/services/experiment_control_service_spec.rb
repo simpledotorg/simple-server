@@ -171,7 +171,7 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.start_current_patient_experiment(experiment.name, days_til_start, days_til_end)
       experiment.reload
 
-      expect(experiment.state).to eq("live")
+      expect(experiment).to be_running_state
       expect(experiment.start_date).to eq(days_til_start.days.from_now.to_date)
       expect(experiment.end_date).to eq(days_til_end.days.from_now.to_date)
     end
@@ -204,7 +204,7 @@ describe ExperimentControlService, type: :model do
       old_patient = create(:patient, age: 18)
       create(:encounter, patient: old_patient, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -218,7 +218,7 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, :without_hypertension, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -233,7 +233,7 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -249,7 +249,7 @@ describe ExperimentControlService, type: :model do
       patient3 = create(:patient, age: 80)
       create(:encounter, patient: patient3, device_created_at: 1.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -267,7 +267,7 @@ describe ExperimentControlService, type: :model do
       create(:appointment, patient: patient2, scheduled_date: 100.days.ago, status: "scheduled")
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -293,7 +293,7 @@ describe ExperimentControlService, type: :model do
       patient3 = create(:patient, age: 80)
       create(:encounter, patient: patient3, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
@@ -308,7 +308,7 @@ describe ExperimentControlService, type: :model do
       patient2 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff")
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
 
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, experiment_type: "stale_patients")
       group1 = create(:treatment_group, experiment: experiment, index: 0)
       group2 = create(:treatment_group, experiment: experiment, index: 1)
 
@@ -323,7 +323,7 @@ describe ExperimentControlService, type: :model do
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
       create(:appointment, patient: patient1, scheduled_date: 100.days.ago)
 
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
       group = experiment.treatment_groups.first
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
@@ -337,18 +337,18 @@ describe ExperimentControlService, type: :model do
     end
 
     it "updates the experiment state, start date, and end date" do
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, experiment_type: "stale_patients")
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 0, 30)
       experiment.reload
 
-      expect(experiment.state).to eq("live")
+      expect(experiment).to be_running_state
       expect(experiment.start_date).to eq(Date.current)
       expect(experiment.end_date).to eq(30.days.from_now.to_date)
     end
 
     it "does not create appointment reminders or update the experiment if there's another experiment of the same type in progress" do
-      experiment = create(:experiment, experiment_type: "inactive_patient_reminder")
-      create(:experiment, experiment_type: "inactive_patient_reminder", state: "selecting")
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      create(:experiment, experiment_type: "stale_patients", state: "selecting")
       expect {
         begin
           ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
@@ -364,7 +364,7 @@ describe ExperimentControlService, type: :model do
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
       patient2 = create(:patient, age: 80)
       create(:encounter, patient: patient2, device_created_at: 100.days.ago)
-      experiment = create(:experiment, :with_treatment_group, experiment_type: "inactive_patient_reminder")
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       expect {
         ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 1)
