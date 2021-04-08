@@ -23,7 +23,7 @@
           <%= render "definition_tooltip",
                      definitions: {
                        "Numerator" => t("bp_controlled_copy.numerator"),
-                       "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name)
+                       "Denominator" => t("denominator_copy", region_name: @region.name)
                      }
           %>
         </th>
@@ -32,7 +32,7 @@
           <%= render "definition_tooltip",
                      definitions: {
                        "Numerator" => t("bp_not_controlled_copy.numerator"),
-                       "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name)
+                       "Denominator" => t("denominator_copy", region_name: @region.name)
                      }
           %>
         </th>
@@ -41,7 +41,7 @@
           <%= render "definition_tooltip",
                      definitions: {
                        "Numerator" => t("missed_visits_copy.numerator"),
-                       "Denominator" => t("denominator_excluding_ltfu_copy", region_name: @region.name)
+                       "Denominator" => t("denominator_copy", region_name: @region.name)
                      }
           %>
         </th>
