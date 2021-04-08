@@ -26,13 +26,12 @@ module PatientReportable
     end
 
     scope :for_reports, ->(exclude_ltfu_as_of: nil) do
+      scope = with_hypertension.excluding_dead
+
       if exclude_ltfu_as_of
-        with_hypertension
-          .excluding_dead
-          .not_ltfu_as_of(exclude_ltfu_as_of)
+        scope.not_ltfu_as_of(exclude_ltfu_as_of)
       else
-        with_hypertension
-          .excluding_dead
+        scope
       end
     end
 
