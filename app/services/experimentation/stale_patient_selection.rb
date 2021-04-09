@@ -53,16 +53,6 @@ module Experimentation
                AND appointments.scheduled_date >= :start_date)
       SQL
       sql.values
-
-      # Experiment.candidate_patients.joins(:encounters)
-      #   .where(encounters: {device_created_at: eligible_range})
-      #   .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
-      #         encounters.device_created_at > ?)", eligible_range.end)
-      #   .left_joins(:appointments)
-      #   .where("NOT EXISTS (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id AND
-      #         appointments.scheduled_date >= ?)", start_date)
-      #   .distinct
-      #   .pluck(:id)
     end
   end
 end
