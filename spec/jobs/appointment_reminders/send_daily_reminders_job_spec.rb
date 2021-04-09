@@ -10,9 +10,9 @@ RSpec.describe AppointmentReminders::SendDailyRemindersJob, type: :job do
       schedule_time = 5.minutes.from_now
       allow(Communication).to receive(:next_messaging_time).and_return(schedule_time)
 
-      expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at).with(schedule_time, reminder1)
-      expect(AppointmentReminders::SendReminderJob).to receive(:perform_at).with(schedule_time, reminder2)
-      expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at).with(schedule_time, reminder3)
+      expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at).with(schedule_time, reminder1.id)
+      expect(AppointmentReminders::SendReminderJob).to receive(:perform_at).with(schedule_time, reminder2.id)
+      expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at).with(schedule_time, reminder3.id)
 
       AppointmentReminders::SendDailyRemindersJob.perform_now
     end

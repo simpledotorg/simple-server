@@ -1,52 +1,67 @@
-class AppointmentReminders::SendReminderJob < ApplicationJob
-  queue_as :high
+class AppointmentReminders::SendReminderJob
+  include Rails.application.routes.url_helpers
+  include Sidekiq::Worker
 
-  def perform(reminder)
-    @reminder = reminder
-    @patient = reminder.patient
-    @appointment = reminder.appointment
+  sidekiq_options queue: :high
+
+  # i think this should be based on country instead
+  DEFAULT_LOCALE = :en
+
+  def perform(reminder_id)
+    reminder = AppointmentReminder.includes(:appointment, :patient).find(reminder_id)
+    send_message(reminder)
   end
 
   private
 
-  def send_message
+  def send_message(reminder)
     notification_service = NotificationService.new
-    begin
-      response = notification_service.send_whatsapp(phone_number, appointment_message, callback_url)
-    rescue Twilio::REST::TwilioError => e
-      # report_error(e)
+    # i think this logic should be handled by the notification service
+    response = if communication_type == "missed_visit_whatsapp_reminder"
+      notification_service.send_whatsapp(
+        phone_number(reminder.patient),
+        appointment_message(reminder),
+        callback_url
+      )
+    else
+      notification_service.send_sms(
+        phone_number(reminder.patient),
+        appointment_message(reminder),
+        callback_url
+      )
     end
 
     Communication.create_with_twilio_details!(
-      appointment: @appointment,
+      appointment: reminder.appointment,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
       communication_type: communication_type
     )
   end
 
-  def appointment_message
+  def appointment_message(reminder)
     I18n.t(
-      @reminder.message,
-      assigned_facility_name: @appointment.facility.name, #slightly less accurate than @patient.assigned_facility
-      patient_name: @patient.name,
-      appointment_date: @appointment.scheduled_date,
-      locale: locale
+      reminder.message,
+      assigned_facility_name: reminder.appointment.facility.name,
+      patient_name: reminder.patient.full_name,
+      appointment_date: reminder.appointment.scheduled_date,
+      locale: patient_locale(reminder.patient)
     )
   end
 
-  def locale
-    @appointment.patient.address&.locale
+  def patient_locale(patient)
+    patient.address&.locale || DEFAULT_LOCALE
   end
 
+  # this should only be india for now
   def communication_type
-    type = CountryConfig.current[:name] == "India" ? :missed_visit_whatsapp_reminder : missed_visit_sms_reminder
-    Communication.communication_type[type]
+    type = CountryConfig.current[:name] == "India" ? :missed_visit_whatsapp_reminder : :missed_visit_sms_reminder
+    Communication.communication_types[type]
   end
 
   # perhaps abort if not found, but that shouldn't happen
-  def phone_number
-    @patient.latest_mobile_number
+  def phone_number(patient)
+    patient.latest_mobile_number
   end
 
   def callback_url
