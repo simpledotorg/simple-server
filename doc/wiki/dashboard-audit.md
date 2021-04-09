@@ -104,7 +104,7 @@ GROUP BY DATE_TRUNC('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 
 
 **Things we should fix**
 + [ ] Make copy definition more specific and more closely match how the query is calculated
-+ [ ] In `reports.js` rename `data-registraitons` -> `assigned-patients`
++ [ ] In `reports.js` rename `data-registrations` -> `assigned-patients`
 + [ ] Anything that grabs data from `dashboard_analytics` could display different numbers from the main Reports pages because of differences in when data is cached
 + [ ] Review `UserAnalytics` code paths
 
