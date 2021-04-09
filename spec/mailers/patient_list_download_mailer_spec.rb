@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe PatientListDownloadMailer, type: :mailer do
   describe "#patient_list" do
     let(:csv_content) { "This is a test csv" }
-    let!(:recipient_email) { "test@simple.org" }
-    let!(:mail) {
+    let(:recipient_email) { "test@simple.org" }
+    let(:mail) {
       described_class.patient_list(
         recipient_email,
         "facility_group",
