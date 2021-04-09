@@ -162,8 +162,10 @@ RSpec.describe UserAccess, type: :model do
 
       context "#accessible_state_regions" do
         it "managers of a district have view_reports access to the districts' states" do
-          facility_group_1 = create(:facility_group, name: "district 1")
-          facility_group_2 = create(:facility_group, name: "district 2")
+          state_1 = Region.create!(name: "state 1", region_type: "state", reparent_to: Region.root)
+          state_2 = Region.create!(name: "state 2", region_type: "state", reparent_to: Region.root)
+          facility_group_1 = create(:facility_group, name: "district 1", state: state_1.name)
+          facility_group_2 = create(:facility_group, name: "district 2", state: state_2.name)
           district_1 = facility_group_1.region
           district_2 = facility_group_2.region
           viewer_reports_only.accesses.create!(resource: district_1.source)
@@ -178,7 +180,7 @@ RSpec.describe UserAccess, type: :model do
           _facility_group_1 = create(:facility_group, name: "district 1")
           _facility_group_2 = create(:facility_group, name: "district 2")
           state_regions = Region.state_regions
-          expect(power_user.user_access.accessible_state_regions(:view_reports).count).to eq(2)
+          expect(power_user.user_access.accessible_state_regions(:view_reports).count).to eq(state_regions.count)
           expect(power_user.user_access.accessible_state_regions(:view_reports)).to match_array(state_regions)
         end
 
