@@ -1,19 +1,19 @@
 ## Dashboard query audit
 Reviewing the following Dashboard queries to ensure we're displaying and describing the data correctly:
 
-1. New registered patients
-2. Total registered patients
-3. Total assigned patients
-4. BP controlled
-5. BP not controlled
-6. Visited but no BP taken
-7. Missed visits
-8. Lost to follow-up
-9. Follow-up patients
-10. Inactive facilities
-11. BP measure taken
-12. BP log
-13. Cohort reports
+1. [New registered patients](#monthly-registered-patients)
+2. [Total registered patients](#total-registered-patients)
+3. [Total assigned patients](#total-assigned-patients)
+4. [BP controlled](#bp-controlled)
+5. [BP not controlled](#bp-not-controlled)
+6. [Visited but no BP taken](#visited-but-no-bp-taken)
+7. [Missed visits](#missed-visits)
+8. [Lost to follow-up](#lost-to-follow-up)
+9. [Follow-up patients](#follow-up-patients)
+10. [Inactive facilities](#inactive-facilities)
+11. [BP measure taken](#bp-measure-taken)
+12. [BP log](#bp-log)
+13. [Cohort reports](#cohort-reports)
 
 ---
 
@@ -272,7 +272,7 @@ WHERE "patients"."deleted_at" IS NULL
 
 ---
 
-## Lost to follow-up (LTFU)
+## Lost to follow-up
 **Copy used in the Dashboard**
 Hypertension patients with no BP taken in the last 12 months
 
