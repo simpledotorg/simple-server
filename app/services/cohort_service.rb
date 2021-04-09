@@ -30,7 +30,7 @@ class CohortService
              registration_quarter: cohort_period.value.try(:number),
              registration_year: cohort_period.value.try(:year),
              registration_month: cohort_period.value.try(:month)}
-      query = BloodPressureControlQuery.new(facilities: region.facilities, cohort_period: hsh)
+      query = ControlRateCohortQuery.new(facilities: region.facilities, cohort_period: hsh)
       {
         results_in: results_in,
         patients_registered: cohort_period.to_s,

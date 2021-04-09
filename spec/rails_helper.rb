@@ -33,6 +33,12 @@ RSpec.configure do |config|
     Region.root || Region.create!(name: "India", region_type: Region.region_types[:root], path: "india")
   end
 
+  def common_org
+    @common_org ||= begin
+      Organization.find_or_create_by!(name: "Common Test Organization")
+    end
+  end
+
   config.before(:each) do
     RequestStore.clear!
   end
