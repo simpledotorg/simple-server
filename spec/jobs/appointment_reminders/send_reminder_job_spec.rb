@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
   describe "#perform" do
-
     let(:reminder) { create(:appointment_reminder) }
     let(:notification_service) { double }
 
