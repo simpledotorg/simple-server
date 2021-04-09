@@ -258,7 +258,7 @@ describe ExperimentControlService, type: :model do
       expect(experiment.patients.include?(patient3)).to be_falsey
     end
 
-    fit "only selects patients who have no appointments scheduled in the future" do
+    it "only selects patients who have no appointments scheduled in the future" do
       patient_with_future_appt = create(:patient, age: 80)
       patient_with_future_appt.appointments << build(:appointment, scheduled_date: Date.current + 1.day, status: "scheduled")
       patient_with_future_appt.encounters << build(:encounter, device_created_at: 100.days.ago)
