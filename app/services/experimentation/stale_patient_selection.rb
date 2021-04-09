@@ -12,14 +12,14 @@ module Experimentation
 
     def call
       patient_pool.joins(:encounters)
-      .where(encounters: {device_created_at: @eligibility_start..@eligibility_end})
-      .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
+        .where(encounters: {device_created_at: @eligibility_start..@eligibility_end})
+        .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
               encounters.device_created_at > ?)", @eligibility_end)
-      .left_joins(:appointments)
-      .where("NOT EXISTS (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id AND
+        .left_joins(:appointments)
+        .where("NOT EXISTS (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id AND
               appointments.scheduled_date >= ?)", @date)
-      .distinct
-      .pluck(:id)
+        .distinct
+        .pluck(:id)
     end
 
     def patient_pool
