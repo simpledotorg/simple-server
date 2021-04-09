@@ -1,7 +1,7 @@
 require "rails_helper"
 require "tasks/scripts/delete_organization_data"
 
-RSpec.describe DeleteOrganizationData do
+RSpec.describe DeleteOrganizationData, :skip do
   describe ".call" do
     context "disabled" do
       before do
