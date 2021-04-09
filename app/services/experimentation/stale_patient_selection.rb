@@ -13,7 +13,7 @@ module Experimentation
     end
 
     def call
-      Experimentation::Experiment.candidate_patients.joins(:encounters)
+      Experiment.candidate_patients.joins(:encounters)
         .where(encounters: {device_created_at: eligible_range})
         .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
               encounters.device_created_at > ?)", eligible_range.end)
