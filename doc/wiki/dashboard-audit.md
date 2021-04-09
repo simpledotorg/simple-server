@@ -199,7 +199,7 @@ The number of patients assigned to a facility, registered before the last 3 moth
 + Is not deleted
 + Is hypertensive
 + Is not dead
-+ Has at least one of the following: An appointment created, A drug refilled, A blood sugar taken
++ Has at least one of the following in the last 3 months: An appointment created, A drug refilled, A blood sugar taken
 + Doesn't have a BP recorded within the last 3 months
 
 *Sample SQL query*
