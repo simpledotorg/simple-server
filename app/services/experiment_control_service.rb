@@ -60,7 +60,7 @@ class ExperimentControlService
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
           schedule_reminders(patient, patient.appointments.last, group, schedule_date)
-          Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
+          group.patients << patient
         end
         schedule_date += 1.day
       end
