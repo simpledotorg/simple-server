@@ -420,6 +420,10 @@ HAVING (SUM(bp_count) >= 10)
 **Things we should fix**
 + [X] Update "Facilities using Simple" subtitle to be "Inactive facilities <10 patients with BPs recorded in the last 7 days"
 
+**CVHO feedback** ([see CVHO WhatsApp conversation](https://simpledotorg.slack.com/archives/CK95QFJA2/p1617571926001200))
++ CVHOs suggest we don't count facilities with <3 registered patients as inactive
++ CVHOs suggest we redefine inactive facilities to be "facilities with <10 patients with a BP recorded in the last 30 days
+
 ---
 
 ## BP measure taken
