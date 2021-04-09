@@ -13,7 +13,7 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = patient_pool
+      eligible_ids = Experimentation::Experiment.candidate_patients
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", experiment_start, experiment_end)
@@ -74,14 +74,6 @@ class ExperimentControlService
     end
 
     protected
-
-    def patient_pool
-      Patient.from(Patient.with_hypertension, :patients)
-        .contactable
-        .where("age >= ?", 18)
-        .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where(["experiments.end_date < ? OR experiments.id IS NULL", LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
-    end
 
     def schedule_reminders(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|

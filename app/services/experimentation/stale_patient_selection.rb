@@ -13,7 +13,7 @@ module Experimentation
     end
 
     def call
-      patient_pool.joins(:encounters)
+      Experimentation::Experiment.candidate_patients.joins(:encounters)
         .where(encounters: {device_created_at: eligible_range})
         .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
               encounters.device_created_at > ?)", eligible_range.end)
@@ -22,14 +22,6 @@ module Experimentation
               appointments.scheduled_date >= ?)", start_date)
         .distinct
         .pluck(:id)
-    end
-
-    def patient_pool
-      Patient.from(Patient.with_hypertension, :patients)
-        .contactable
-        .where("age >= ?", 18)
-        .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where(["experiments.end_date < ? OR experiments.id IS NULL", ExperimentControlService::LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
     end
   end
 end
