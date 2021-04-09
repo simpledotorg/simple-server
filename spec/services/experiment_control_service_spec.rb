@@ -241,7 +241,7 @@ describe ExperimentControlService, type: :model do
       expect(experiment.patients.include?(patient2)).to be_truthy
     end
 
-    it "only selects patients whose last encounter was in the selected date range" do
+    it "only selects patients whose last visit was in the selected date range" do
       patient1 = create(:patient, age: 80)
       create(:encounter, patient: patient1, device_created_at: 100.days.ago)
       patient2 = create(:patient, age: 80)
@@ -258,21 +258,21 @@ describe ExperimentControlService, type: :model do
       expect(experiment.patients.include?(patient3)).to be_falsey
     end
 
-    it "only selects patients who have no appointments scheduled in the future" do
-      patient1 = create(:patient, age: 80)
-      create(:appointment, patient: patient1, scheduled_date: Date.current + 1.day, status: "scheduled")
-      create(:encounter, patient: patient1, device_created_at: 100.days.ago)
+    fit "only selects patients who have no appointments scheduled in the future" do
+      patient_with_future_appt = create(:patient, age: 80)
+      patient_with_future_appt.appointments << build(:appointment, scheduled_date: Date.current + 1.day, status: "scheduled")
+      patient_with_future_appt.encounters << build(:encounter, device_created_at: 100.days.ago)
 
-      patient2 = create(:patient, age: 80)
-      create(:appointment, patient: patient2, scheduled_date: 100.days.ago, status: "scheduled")
-      create(:encounter, patient: patient2, device_created_at: 100.days.ago)
+      patient_with_past_appt = create(:patient, age: 80)
+      patient_with_past_appt.appointments << build(:appointment, scheduled_date: 100.days.ago, status: "scheduled")
+      patient_with_past_appt.encounters << build(:encounter, device_created_at: 100.days.ago)
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
 
-      expect(experiment.patients.include?(patient1)).to be_falsey
-      expect(experiment.patients.include?(patient2)).to be_truthy
+      expect(experiment.patients.include?(patient_with_future_appt)).to be_falsey
+      expect(experiment.patients.include?(patient_with_past_appt)).to be_truthy
     end
 
     it "excludes patients who have recently been in an experiment" do
