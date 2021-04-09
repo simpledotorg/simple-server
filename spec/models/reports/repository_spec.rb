@@ -335,7 +335,7 @@ RSpec.describe Reports::Repository, type: :model do
       slug = facility_1.slug
 
       range.each do |period|
-        expect(repo.adjusted_patient_counts_without_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
+        expect(repo.adjusted_patient_counts[slug][period]).to eq(service_result[:adjusted_patient_counts][period])
         expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
         expect(repo.adjusted_patient_counts_with_ltfu[slug][period]).to eq(service_result[:adjusted_patient_counts_with_ltfu][period])
 

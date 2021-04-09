@@ -45,7 +45,7 @@ module Reports
       end
     end
 
-    smart_memoize def adjusted_patient_counts
+    smart_memoize def adjusted_patient_counts_with_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period]
@@ -54,9 +54,7 @@ module Reports
       end
     end
 
-    alias_method :adjusted_patient_counts_with_ltfu, :adjusted_patient_counts
-
-    smart_memoize def adjusted_patient_counts_without_ltfu
+    smart_memoize def adjusted_patient_counts
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period] - ltfu_counts[entry][period]
