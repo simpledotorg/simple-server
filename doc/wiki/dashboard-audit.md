@@ -18,10 +18,13 @@ Reviewing the following Dashboard queries to ensure we're displaying and describ
 ---
 
 ## Monthly registered patients
+
 **Copy used in the Dashboard**
+
 Hypertension patients registered during a month in `region_name`
 
 **How it's calculated**
+
 The number of patients registered at a facility during a month where the patient:
 + Is not deleted
 + The patient is hypertensive
@@ -42,40 +45,49 @@ GROUP BY date_trunc('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 
 ```
 
 **Where it's shown in the Dashboard** 
+
 + **Reports:** Overview, Details
 + **Home:** BP controlled, BP not controlled, Missed visits
 + **Simple app:** Progress tab
 
 **Things we should fix**
+
 + [ ] Rename query name from "Monthly registered patients" to "New registered patients"
 + [ ] Make copy more specific and more closely match how the query is calculated
-+ [ ] Resolve query duplication where needed and ensure all queries return the right data
 
 ---
 
 ## Total registered patients
+
 **Copy used in the Dashboard**
+
 Total hypertension patients registered in `region_name`
 
 **How it's calculated**
+
 The sum of all monthly registrations at a facility
 
 **Where it's shown in the Dashbaord**
+
 + **Reports:** Overview, Details
 + **Home:** BP controlled, BP not controlled, Missed visits
 + **Simple App:** Progress tab
 
 **Things we should fix**
+
 + [ ] Make copy definition more specific and more closely match how the query is calculated
 + [ ] Resolve query duplication where needed and ensure all queries return the right data
 
 ---
 
 ## Total assigned patients
+
 **Copy used in the Dashboard**
+
 Hypertension patients assigned to `region_name`
 
 **How it's calcualted**
+
 The number of patients assigned to a facility where the patient:
 + Is not deleted
 + Is hypertensive
@@ -98,24 +110,29 @@ GROUP BY DATE_TRUNC('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Overview, Details, Cohort reports
 + **Home:** BP controlled, BP not controlled, Missed visits
 + **Simple App:** Progress tab
 
 **Things we should fix**
+
 + [ ] Make copy definition more specific and more closely match how the query is calculated
 + [ ] In `reports.js` rename `data-registrations` -> `assigned-patients`
-+ [ ] Anything that grabs data from `dashboard_analytics` could display different numbers from the main Reports pages because of differences in when data is cached
++ [ ] Anything that grabs data from `dashboard_analytics` could display different numbers from the main Reports pages because of differences in when data is cached `IN PROGRESS` [see PR](https://github.com/simpledotorg/simple-server/pull/2328)
 + [ ] Review `UserAnalytics` code paths
 
 ---
 
 ## BP controlled
+
 **Copy used in the Dashboard**
+
 + Numerator: Patients with BP <140/90 at their last visit in the last 3 months
 + Denominator: Hypertension patients assigned to `region_name`, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
 
 **How it's calculated**
+
 The number of patients assigned to a facility registered before the last 3 months where the patient:
 + Is hypertensive
 + Is not dead
@@ -141,21 +158,26 @@ WHERE (systolic < 140
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Overview
 + **Home:** BP controlled
 + **Simple App:** Progress tab
 
 **Things we should fix**
-+ [ ] The "Home" and "Reports" pages in the Dashboard use `ControlRateQuery` and the "Progress tab" in the Simple App uses `ControlRateService`. We need to look into these queries and consolidate differences.
+
+*Nothing to fix*
 
 ---
 
 ## BP not controlled
+
 **Copy used in the Dashboard**
+
 + Numerator: Patients with BP >=140/90 at their last visit in the last 3 months
 + Denominator: Hypertension patients assigned to `region_name`, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
 
 **How it's calculated**
+
 The number of patients assigned to a facility, registered before the last 3 months where the patient:
 + Is hypertensive
 + Is not dead
@@ -181,20 +203,25 @@ WHERE (systolic >= 140
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Overview
 + **Home:** BP not controlled
 
 **Things we should fix**
-+ [ ] The "Home" and "Reports" pages in the Dashboard use `ControlRateQuery` and the "Progress tab" in the Simple App uses `ControlRateService`. We need to look into these queries and consolidate differences
+
+*Nothing to fix*
 
 ---
 
 ## Visited but no BP taken
+
 **Copy used in the Dashboard**
+
 + Numerator: Patients with no BP taken at their last visit in the last 3 months
 + Denominator: Hypertension patients assigned to `region_name`, registered before the last 3 months. Dead and lost to follow-up patients are exclued.
 
 **How it's calculated**
+
 The number of patients assigned to a facility, registered before the last 3 moths where the patient:
 + Is not deleted
 + Is hypertensive
@@ -241,19 +268,24 @@ WHERE "patients"."deleted_at" IS NULL
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Overview
 
 **Things we should fix**
-+ [ ] Review LTFU code paths in `Result` and `Repository` objects
+
++ [X] Review LTFU code paths in `Result` and `Repository` objects `DONE` [see PR](https://github.com/simpledotorg/simple-server/pull/2339)
 
 ---
 
 ## Missed visits
+
 **Copy used in the Dashboard**
+
 + Numerator: Patients with no visit in the last 3 months
 + Denominator: Hypertension patients assigned to `region_name`, registered before the last 3 months. Dead and lost to follow-up patients are excluded.
 
 **How it's calculated**
+
   Total assigned patients (registered before the last 3 months)
 — Patients with a visit but no BP taken 
 — Patients with controlled BP
@@ -263,20 +295,25 @@ WHERE "patients"."deleted_at" IS NULL
 *The SQL query is a combination of all the queries in the equation above*
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Overview
 + **Home:** Missed visits
 
 **Things we should fix**
+
 + [ ] Determine if there is a bug (see `calculate_missed_visits`) and how to make this easier to follow going forward
 + [ ] Rename missed visits method names in `blood_pressure_control_query.rb` to use `no_bp_taken...`
 
 ---
 
 ## Lost to follow-up
+
 **Copy used in the Dashboard**
+
 Hypertension patients with no BP taken in the last 12 months
 
 **How it's calculated**
+
 The number of patients assigned to a facility where the patient:
 + Didn't have a BP recorded within the last year
 + Was registered more than a year ago
@@ -303,22 +340,28 @@ WHERE "patients"."deleted_at" IS NULL
 ```
 
 **Where it's shown in the Dashboard**
+
 *Note: Anywhere that shows the "BP controlled", "BP not controlled", and "Missed visits" queries use the LTFU query to exclude LTFU patients*
+
 + **Home:** BP controlled, BP not controlled, Missed visits
 + **Reports:** Overview, Details, Patient line list downloads
 + **Simple app:** Progress tab
 
 **Things we should fix**
+
 + [ ] Investigate if `overall_patients` method in `BloodPressureControlQuery` is being used
 + [ ] Copy bug, the LTFU "Denominator" is missing a colon in the "Details" definitions section
 
 ---
 
 ## Follow-up patients
+
 **Copy used in the Dashboard**
+
 Hypertension patients with a BP measure taken during a month in `region_name`
 
 **How it's calculated**
+
 The number of patients assigned to a facility during a month where the patient:
 + Had a BP taken during a month
 + Is hypertensive
@@ -346,19 +389,24 @@ GROUP BY DATE_TRUNC('month', blood_pressures.recorded_at::timestamptz AT TIME ZO
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Details
 + **Simple App:** Progress tab
 
 **Things we should fix**
+
 *Nothing to fix*
 
 ---
 
 ## Inactive facilities
+
 **Copy used in the Dashboard**
+
 Facilities where <10 patients had any BPs recorded in the last 7 days
 
 **How it's calculated**
+
 First we calculate total active facilities (Facilities where <10 patients had any BPs recorded in the last 7 days). Then we:
 + Grab all facilties the admin has access to
 + Count the total number of patients with a BP taken in a day for the last 7 days at each facility
@@ -415,9 +463,11 @@ HAVING (SUM(bp_count) >= 10)
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Home:** "Facilities using Simple" and "Inactive facilities" cards
 
 **Things we should fix**
+
 + [X] Update "Facilities using Simple" subtitle to be "Inactive facilities <10 patients with BPs recorded in the last 7 days"
 
 **CVHO feedback** ([see CVHO WhatsApp conversation](https://simpledotorg.slack.com/archives/CK95QFJA2/p1617571926001200))
@@ -427,10 +477,13 @@ HAVING (SUM(bp_count) >= 10)
 ---
 
 ## BP measure taken
+
 **Copy used in the Dashboard**
+
 All BP measures taken in a month by healthcare workers at `region_name`
 
 **How it's calculated**
+
 Counts all blood pressures recorded by each user at a facility where the patient:
 + Is hypertensive
 + Is not deleted 
@@ -459,18 +512,23 @@ WHERE "blood_pressures"."deleted_at" IS NULL
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Facility Report:** Details
 
 **Things we should fix**
+
 *Nothing*
 
 ---
 
 ## BP log
+
 **Copy used in the Dashboard**
+
 A log of BP measures taken by healthcare workers at `region_name`
 
 **How it's calculated**
+
 All blood pressures recorded at a facility
 
 ```sql
@@ -492,18 +550,23 @@ OFFSET $4 [["facility_id", "acc3da36-c5d2-42e1-a1fe-29d6a40b0580"],
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Facility Report:** Details
 
 **Things we should fix**
+
 *Nothing*
 
 ---
 
 ## Cohort reports
+
 **Copy used in the Dashboard**
+
 The result for all assigned hypertensive patients registered in a month at their follow-up visit in the following two months.
 
 **How it's calculated**
+
 + BP controlled numerator: The number of patients assigned to a facility registered during a month where the patient:
   + Is hypertensive
   + Is not deleted
@@ -664,9 +727,11 @@ WHERE "latest_blood_pressures_per_patient_per_months"."deleted_at" IS NULL
 ```
 
 **Where it's shown in the Dashboard**
+
 + **Reports:** Cohort Reports
 + **Simple App:** Progress tab
 
 **Things we should fix**
+
 + [ ] Check with Dr. Reena if "Visit but no BP taken" should be added to Cohort reports
 + [X] Rename `BloodPressureControlQuery` so that it includes 'cohort' in the name (i.e. `BloodPressureControlCohortQuery`)
