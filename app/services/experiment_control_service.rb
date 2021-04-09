@@ -41,7 +41,7 @@ class ExperimentControlService
       experiment.update!(state: "running")
     end
 
-    def start_inactive_patient_experiment(name, days_til_start, days_til_end)
+    def start_stale_patient_experiment(name, days_til_start, days_til_end)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
       total_days = days_til_end - days_til_start + 1
       start_date = days_til_start.days.from_now.to_date

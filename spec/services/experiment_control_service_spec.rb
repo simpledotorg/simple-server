@@ -197,7 +197,7 @@ describe ExperimentControlService, type: :model do
     end
   end
 
-  describe "self.start_inactive_patient_experiment" do
+  describe "self.start_stale_patient_experiment" do
     it "excludes patients who have recently been in an experiment" do
       old_experiment = create(:experiment, :with_treatment_group, name: "old", start_date: 2.days.ago, end_date: 1.day.ago)
       old_group = old_experiment.treatment_groups.first
@@ -218,7 +218,7 @@ describe ExperimentControlService, type: :model do
 
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
-      ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
 
       expect(experiment.patients.include?(patient1)).to be_falsey
       expect(experiment.patients.include?(patient2)).to be_truthy
@@ -235,7 +235,7 @@ describe ExperimentControlService, type: :model do
       group1 = create(:treatment_group, experiment: experiment, index: 0)
       group2 = create(:treatment_group, experiment: experiment, index: 1)
 
-      ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
 
       expect(group1.patients.include?(patient2)).to be_truthy
       expect(group2.patients.include?(patient1)).to be_truthy
@@ -250,7 +250,7 @@ describe ExperimentControlService, type: :model do
       create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
       create(:reminder_template, treatment_group: group, message: "you're late", remind_on_in_days: 3)
 
-      ExperimentControlService.start_inactive_patient_experiment(experiment.name, 0, 30)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30)
 
       today = Date.current
       reminder1, reminder2 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
@@ -260,7 +260,7 @@ describe ExperimentControlService, type: :model do
 
     it "updates the experiment state, start date, and end date" do
       experiment = create(:experiment, experiment_type: "stale_patients")
-      ExperimentControlService.start_inactive_patient_experiment(experiment.name, 0, 30)
+      ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30)
       experiment.reload
 
       expect(experiment).to be_running_state
@@ -273,7 +273,7 @@ describe ExperimentControlService, type: :model do
       create(:experiment, experiment_type: "stale_patients", state: "selecting")
       expect {
         begin
-          ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 31)
+          ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
         rescue ActiveRecord::RecordInvalid
         end
       }.to_not change { AppointmentReminder.count }
@@ -289,7 +289,7 @@ describe ExperimentControlService, type: :model do
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       expect {
-        ExperimentControlService.start_inactive_patient_experiment(experiment.name, 1, 1)
+        ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 1)
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end
   end
