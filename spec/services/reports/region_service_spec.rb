@@ -56,7 +56,7 @@ RSpec.describe Reports::RegionService, type: :model do
       _appointment_2 = create(:appointment, creation_facility: facility, scheduled_date: may_15, device_created_at: may_15, patient: patient_with_bp)
       create(:blood_pressure, :under_control, facility: facility, patient: patient_with_bp, recorded_at: may_15)
 
-      service = Reports::RegionService.new(region: facility, period: july_2020.to_period, with_exclusions: true)
+      service = Reports::RegionService.new(region: facility, period: july_2020.to_period)
       result = service.call
       expect(result[:missed_visits_with_ltfu].size).to eq(service.range.entries.size)
       expect(result[:missed_visits_with_ltfu][Period.month("August 1 2018")]).to eq(1)
@@ -271,10 +271,12 @@ RSpec.describe Reports::RegionService, type: :model do
       expect(result[:adjusted_patient_counts][jan_2019.to_period]).to eq(0)
 
       expect(result[:controlled_patients][jan_2020.to_period]).to eq(2)
-      expect(result[:controlled_patients_rate][jan_2020.to_period]).to eq(40.0)
+      expect(result[:controlled_patients_rate][jan_2020.to_period]).to eq(50.0)
+      expect(result[:controlled_patients_with_ltfu_rate][jan_2020.to_period]).to eq(40.0)
       expect(result[:registrations][jan_2020.to_period]).to eq(0)
       expect(result[:cumulative_registrations][jan_2020.to_period]).to eq(5)
-      expect(result[:adjusted_patient_counts][jan_2020.to_period]).to eq(5)
+      expect(result[:adjusted_patient_counts][jan_2020.to_period]).to eq(4)
+      expect(result[:adjusted_patient_counts_with_ltfu][jan_2020.to_period]).to eq(5)
 
       expect(result[:controlled_patients][june_1.to_period]).to eq(3)
       expect(result[:controlled_patients_rate][june_1.to_period]).to eq(60.0)

@@ -29,11 +29,11 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    @data = Reports::RegionService.new(region: @region, period: @period, with_exclusions: report_with_exclusions?).call
+    @data = Reports::RegionService.new(region: @region, period: @period).call
     @with_ltfu = with_ltfu?
 
     @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period, with_exclusions: report_with_exclusions?)
+    repo = Reports::Repository.new(@child_regions, periods: @period)
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -63,9 +63,7 @@ class Reports::RegionsController < AdminController
                                                        include_current_period: true)
     @chart_data = {
       patient_breakdown: PatientBreakdownService.call(region: @region, period: @period),
-      ltfu_trend: Reports::RegionService.new(region: @region,
-                                             period: @period,
-                                             with_exclusions: report_with_exclusions?).call
+      ltfu_trend: Reports::RegionService.new(region: @region, period: @period).call
     }
 
     region_source = @region.source
@@ -78,7 +76,7 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
     periods = @period.downto(5)
 
-    @cohort_data = CohortService.new(region: @region, periods: periods, with_exclusions: report_with_exclusions?).call
+    @cohort_data = CohortService.new(region: @region, periods: periods).call
   end
 
   def download
@@ -194,12 +192,8 @@ class Reports::RegionsController < AdminController
     Groupdate.time_zone = "UTC"
   end
 
-  def report_with_exclusions?
-    current_admin.feature_enabled?(:report_with_exclusions)
-  end
-
   def with_ltfu?
-    current_admin.feature_enabled?(:report_with_exclusions) && params[:with_ltfu].present?
+    params[:with_ltfu].present?
   end
 
   def log_cache_metrics
