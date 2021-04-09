@@ -47,13 +47,10 @@ class ExperimentControlService
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
       total_days = days_til_end - days_til_start + 1
       start_date = days_til_start.days.from_now.to_date
-      eligibility_start = (start_date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
-      eligibility_end = (start_date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
-      range = Range.new(eligibility_start, eligibility_end)
 
       experiment.update!(state: "selecting", start_date: start_date, end_date: days_til_end.days.from_now.to_date)
 
-      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date, eligible_range: range)
+      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date)
       eligible_ids.shuffle!
 
       total_days.times do
