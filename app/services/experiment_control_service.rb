@@ -41,7 +41,7 @@ class ExperimentControlService
       experiment.update!(state: "running")
     end
 
-    def start_stale_patient_experiment(name, days_til_start, days_til_end)
+    def start_stale_patient_experiment(name, days_til_start, days_til_end, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
       total_days = days_til_end - days_til_start + 1
       start_date = days_til_start.days.from_now.to_date
@@ -51,10 +51,10 @@ class ExperimentControlService
       eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date)
       eligible_ids.shuffle!
 
+      schedule_date = start_date
       total_days.times do
-        daily_ids = eligible_ids.pop(PATIENTS_PER_DAY)
+        daily_ids = eligible_ids.pop(patients_per_day)
         break if daily_ids.empty?
-        schedule_date = start_date
         # TODO: remove references to appointment after removing appointment dependency
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|

@@ -258,6 +258,25 @@ describe ExperimentControlService, type: :model do
       expect(reminder2.remind_on).to eq(today + 3.days)
     end
 
+    it "schedules configured number of patients for each day of the experiment" do
+      Timecop.freeze(120.days.ago) do
+        patients = create_list(:patient, 3, age: 45)
+        patients.each { |patient| create(:appointment, patient: patient) }
+      end
+
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
+      group = experiment.treatment_groups.first
+      create(:reminder_template, treatment_group: group, message: "come today", remind_on_in_days: 0)
+
+      expect {
+        ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30, patients_per_day: 1)
+      }.to change { AppointmentReminder.count }.by(3)
+      reminder_dates = AppointmentReminder.group(:remind_on).count
+      expect(reminder_dates[Date.current]).to eq(1)
+      expect(reminder_dates[Date.current.advance(days: 1)]).to eq(1)
+      expect(reminder_dates[Date.current.advance(days: 2)]).to eq(1)
+    end
+
     it "updates the experiment state, start date, and end date" do
       experiment = create(:experiment, experiment_type: "stale_patients")
       ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30)
