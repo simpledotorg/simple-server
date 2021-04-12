@@ -46,10 +46,6 @@ describe Patient, type: :model do
     it { is_expected.to belong_to(:registration_facility).class_name("Facility").optional }
     it { is_expected.to belong_to(:registration_user).class_name("User") }
 
-    it { is_expected.to have_many(:merged_from_patients).class_name("Patient") }
-    it { is_expected.to belong_to(:merged_into_patient).class_name("Patient").optional }
-    it { is_expected.to belong_to(:merged_by_user).class_name("User").optional }
-
     it "has distinct facilities" do
       patient = create(:patient)
       facility = create(:facility)
