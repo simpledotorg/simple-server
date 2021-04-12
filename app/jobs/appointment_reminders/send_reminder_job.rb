@@ -18,7 +18,6 @@ class AppointmentReminders::SendReminderJob
 
   def send_message(reminder)
     notification_service = NotificationService.new
-    # i think this logic should be handled by the notification service
     response = if communication_type == "missed_visit_whatsapp_reminder"
       notification_service.send_whatsapp(
         phone_number(reminder.patient),
@@ -35,6 +34,7 @@ class AppointmentReminders::SendReminderJob
 
     Communication.create_with_twilio_details!(
       appointment: reminder.appointment,
+      appointment_reminder: reminder,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
       communication_type: communication_type

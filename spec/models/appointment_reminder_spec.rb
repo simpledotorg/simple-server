@@ -6,6 +6,7 @@ describe AppointmentReminder, type: :model do
     it { should belong_to(:patient) }
     it { should belong_to(:experiment).optional }
     it { should belong_to(:reminder_template).optional }
+    it { should have_many(:communications) }
   end
 
   describe "validations" do

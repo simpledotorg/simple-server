@@ -35,6 +35,7 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
 
       expect(Communication).to receive(:create_with_twilio_details!).with(
         appointment: reminder.appointment,
+        appointment_reminder: reminder,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
         communication_type: "missed_visit_whatsapp_reminder"
