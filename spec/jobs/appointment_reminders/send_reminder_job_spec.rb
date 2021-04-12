@@ -91,12 +91,21 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
       described_class.drain
     end
 
-    it "raises an error if the appointment notification status is not 'scheduled'" do
+    it "reports an error and does not create a communication if the appointment notification status is not 'scheduled'" do
       appointment_reminder = create(:appointment_reminder, status: "pending")
+      expect(Sentry).to receive(:capture_message)
       expect {
         described_class.perform_async(appointment_reminder.id)
         described_class.drain
-      }.to raise_error(AppointmentReminderNotificationError, "scheduled appointment reminder has invalid status")
+      }.not_to change { Communication.count }
+    end
+
+    it "reports an error and does not create a communication if an error is received from twilio" do
+      expect(Sentry).to receive(:capture_message)
+      expect {
+        described_class.perform_async(reminder.id)
+        described_class.drain
+      }.not_to change { Communication.count }
     end
   end
 end
