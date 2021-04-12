@@ -32,17 +32,25 @@ class AppointmentReminders::SendReminderJob
           callback_url
         )
       end
-
-      Communication.create_with_twilio_details!(
-        appointment: reminder.appointment,
-        appointment_reminder: reminder,
-        twilio_sid: response.sid,
-        twilio_msg_status: response.status,
-        communication_type: communication_type
-      )
+      create_communication(reminder, response)
+      mark_reminder_sent(reminder)
     rescue Twilio::REST::TwilioError => e
       report_error(e)
     end
+  end
+
+  def create_communication(reminder, response)
+    Communication.create_with_twilio_details!(
+      appointment: reminder.appointment,
+      appointment_reminder: reminder,
+      twilio_sid: response.sid,
+      twilio_msg_status: response.status,
+      communication_type: communication_type
+    )
+  end
+
+  def mark_reminder_sent(reminder)
+    reminder.status_sent!
   end
 
   def appointment_message(reminder)

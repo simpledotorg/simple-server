@@ -46,6 +46,15 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
       }.not_to raise_error
     end
 
+    it "updates the appointment reminder status to 'sent'" do
+      simulate_successful_delivery
+
+      expect {
+        described_class.perform_async(reminder.id)
+        described_class.drain
+      }.to change { reminder.reload.status }.from("scheduled").to("sent")
+    end
+
     it "selects the message language based on patient address" do
       simulate_successful_delivery
       reminder.patient.address.update(state: "punjab")
@@ -98,6 +107,7 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
         described_class.perform_async(appointment_reminder.id)
         described_class.drain
       }.not_to change { Communication.count }
+      expect(appointment_reminder.reload.status).to eq("pending")
     end
 
     it "reports an error and does not create a communication if an error is received from twilio" do
@@ -106,6 +116,7 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
         described_class.perform_async(reminder.id)
         described_class.drain
       }.not_to change { Communication.count }
+      expect(reminder.reload.status).to eq("scheduled")
     end
   end
 end
