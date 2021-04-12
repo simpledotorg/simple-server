@@ -58,14 +58,14 @@ class AppointmentReminders::SendReminderJob
   # i'm not convinced this is good enough
   def patient_locale(patient)
     patient.address&.locale ||
-    case CountryConfig.current[:name]
-    when "India"
-      "hi-IN"
-    when "Bangladesh"
-      "bn-BD"
-    when "Ethiopia"
-      "am-ET"
-    end
+      case CountryConfig.current[:name]
+      when "India"
+        "hi-IN"
+      when "Bangladesh"
+        "bn-BD"
+      when "Ethiopia"
+        "am-ET"
+      end
   end
 
   def communication_type

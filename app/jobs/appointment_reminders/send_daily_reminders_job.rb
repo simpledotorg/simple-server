@@ -2,7 +2,7 @@ class AppointmentReminders::SendDailyRemindersJob < ApplicationJob
   queue_as :high
 
   def perform
-    # add feature flag?
+    # this will need to be feature flagged
     # given that the cron runs in the middle of the night, i would imagine this will always
     # result in messages being sent the same day, but we will need to be certain of that
     # either by carefully scheduling the cron or by moving away from next_messaging_time

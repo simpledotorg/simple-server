@@ -40,9 +40,9 @@ RSpec.describe AppointmentReminders::SendDailyRemindersJob, type: :job do
       schedule_time = 5.minutes.from_now
       allow(Communication).to receive(:next_messaging_time).and_return(schedule_time)
 
-      expect{
+      expect {
         AppointmentReminders::SendDailyRemindersJob.perform_now
-      }.to change{ pending.reload.status }.from("pending").to("scheduled")
+      }.to change { pending.reload.status }.from("pending").to("scheduled")
     end
   end
 end
