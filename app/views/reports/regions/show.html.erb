@@ -1,6 +1,6 @@
 <%= render "header" %>
 
-<% control_graph_denominator_copy = @with_ltfu ? "denominator_copy" : "denominator_excluding_ltfu_copy" %>
+<% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
@@ -10,27 +10,19 @@
                 justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
-          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-            <div class="d-flex flex-1">
-              <h3 class="mb-0px mr-8px">
-                BP controlled
-              </h3>
-              <%= render "definition_tooltip",
-                         definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
-                                        "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-            </div>
-            <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
-          <% else %>
-            <h3 class="mb-0px w-75">
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
               BP controlled
             </h3>
-          <% end %>
+            <%= render "definition_tooltip",
+                       definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
+                                      "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
+          </div>
+          <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
         </div>
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <p class="c-grey-dark">
-            <%= t("bp_controlled_copy.reports_card_subtitle") %>
-          </p>
-        <% end %>
+        <p class="c-grey-dark">
+          <%= t("bp_controlled_copy.reports_card_subtitle") %>
+        </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold mr-lg-12px c-green-dark minw-32px"
              data-rate="">
@@ -57,18 +49,6 @@
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
         </div>
-        <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
-          <div class="px-20px pb-8px pb-lg-0">
-            <div class="mb-2">
-              <p class="mb-8px fs-14px c-grey-dark c-print-black">
-                <strong>Numerator:</strong> <%= t("bp_controlled_copy.numerator") %>
-              </p>
-              <p class="fs-14px c-grey-dark c-print-black">
-                <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
-              </p>
-            </div>
-          </div>
-        <% end %>
       </div>
     </div>
   </div>
@@ -79,7 +59,6 @@
           justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
-          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
             <div class="d-flex flex-1">
               <h3 class="mb-0px mr-8px">
                 BP not controlled
@@ -89,17 +68,10 @@
                                         "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
             </div>
             <%= render "reports/regions/ltfu_toggle", id: "uncontrolledGraphLtfuToggle", enabled: @with_ltfu %>
-          <% else %>
-            <h3 class="mb-0px w-75">
-              BP not controlled
-            </h3>
-          <% end %>
         </div>
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <p class="c-grey-dark">
-            <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
-          </p>
-        <% end %>
+        <p class="c-grey-dark">
+          <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
+        </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold mr-lg-12px c-red minw-32px"
              data-rate="">
@@ -127,18 +99,6 @@
             <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
         </div>
-        <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
-          <div class="px-20px pb-8px pb-lg-0">
-            <div class="mb-2">
-              <p class="mb-8px fs-14px c-grey-dark c-print-black">
-                <strong>Numerator:</strong> <%= t("bp_not_controlled_copy.numerator") %>
-              </p>
-              <p class="fs-14px c-grey-dark c-print-black">
-                <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
-              </p>
-            </div>
-          </div>
-        <% end %>
       </div>
     </div>
   </div>
@@ -149,27 +109,19 @@
           justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
-          <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-            <div class="d-flex flex-1">
-              <h3 class="mb-0px mr-8px">
-                Missed visits
-              </h3>
-              <%= render "definition_tooltip",
-                         definitions: { "Numerator" => t("missed_visits_copy.numerator"),
-                                        "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-            </div>
-            <%= render "reports/regions/ltfu_toggle", id: "missedVisitsGraphLtfuToggle", enabled: @with_ltfu %>
-          <% else %>
-            <h3 class="mb-0px w-75">
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
               Missed visits
             </h3>
-          <% end %>
+            <%= render "definition_tooltip",
+                       definitions: { "Numerator" => t("missed_visits_copy.numerator"),
+                                      "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
+          </div>
+          <%= render "reports/regions/ltfu_toggle", id: "missedVisitsGraphLtfuToggle", enabled: @with_ltfu %>
         </div>
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <p class="c-grey-dark">
-            <%= t("missed_visits_copy.reports_card_subtitle") %>
-          </p>
-        <% end %>
+        <p class="c-grey-dark">
+          <%= t("missed_visits_copy.reports_card_subtitle") %>
+        </p>
         <div class="mb-12px d-lg-flex align-lg-center">
           <p class="mb-0px fs-32px fw-bold mr-lg-12px c-blue minw-32px"
              data-rate="">
@@ -195,18 +147,6 @@
         <div class="h-320px mr-16px mb-16px ml-13px">
           <canvas id="missedVisitsTrend"></canvas>
         </div>
-        <% unless current_admin.feature_enabled?(:report_with_exclusions) %>
-          <div class="px-20px pb-8px pb-lg-0">
-            <div class="mb-2">
-              <p class="mb-8px fs-14px c-grey-dark c-print-black">
-                <strong>Numerator:</strong> <%= t("missed_visits_copy.numerator") %>
-              </p>
-              <p class="fs-14px c-grey-dark c-print-black">
-                <strong>Denominator:</strong> <%= t("denominator_without_exclusions_copy", region_name: @region.name) %>
-              </p>
-            </div>
-          </div>
-        <% end %>
       </div>
     </div>
   </div>
@@ -217,7 +157,6 @@
                 justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
       <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
           <div class="d-flex flex-1">
             <h3 class="mb-0px mr-8px">
               Registrations
@@ -226,17 +165,10 @@
                        definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
                                       "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
           </div>
-        <% else %>
-          <h3 class="mb-0px w-75">
-            Monthly and cumulative registrations
-          </h3>
-        <% end %>
         </div>
-        <% if current_admin.feature_enabled?(:report_with_exclusions) %>
-          <p class="c-grey-dark">
-            <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
-          </p>
-        <% end %>
+        <p class="c-grey-dark">
+          <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
+        </p>
         <div class="d-flex align-center mb-12px">
           <div class="flex-1 d-lg-flex align-lg-center">
             <p class="mb-0px fs-32px fw-bold mr-lg-12px c-purple"
@@ -275,9 +207,7 @@
   <%= render "child_data_tables", data: @children_data, region_type: @child_regions.first.region_type %>
 <% end %>
 
-<% if current_admin.feature_enabled?(:report_with_exclusions) %>
-  <%= render "overview_footnotes" %>
-<% end %>
+<%= render "overview_footnotes" %>
 
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>

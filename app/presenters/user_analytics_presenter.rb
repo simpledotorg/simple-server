@@ -5,13 +5,11 @@ class UserAnalyticsPresenter
   include DashboardHelper
   include ActionView::Helpers::NumberHelper
 
-  def initialize(current_facility, with_exclusions: false)
+  def initialize(current_facility)
     @current_facility = current_facility
-    @with_exclusions = with_exclusions
   end
 
   attr_reader :current_facility
-  attr_reader :with_exclusions
 
   DAYS_AGO = 30
   MONTHS_AGO = 6
@@ -211,7 +209,7 @@ class UserAnalyticsPresenter
 
   def cohort_stats
     periods = Period.quarter(Date.current).previous.downto(3)
-    CohortService.new(region: current_facility, periods: periods, with_exclusions: with_exclusions).call
+    CohortService.new(region: current_facility, periods: periods).call
   end
 
   #
@@ -279,8 +277,7 @@ class UserAnalyticsPresenter
     controlled_visits =
       ControlRateService.new(
         current_facility,
-        periods: control_rate_start..control_rate_end,
-        with_exclusions: with_exclusions
+        periods: control_rate_start..control_rate_end
       ).call.to_hash
 
     {

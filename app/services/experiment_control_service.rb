@@ -13,7 +13,7 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = patient_pool
+      eligible_ids = Experimentation::Experiment.candidate_patients
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", experiment_start, experiment_end)
@@ -46,49 +46,34 @@ class ExperimentControlService
     def start_inactive_patient_experiment(name, days_til_start, days_til_end)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
       total_days = days_til_end - days_til_start + 1
-      date = days_til_start.days.from_now.to_date
-      eligibility_start = (date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
-      eligibility_end = (date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
+      start_date = days_til_start.days.from_now.to_date
+      eligibility_start = (start_date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
+      eligibility_end = (start_date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
+      range = Range.new(eligibility_start, eligibility_end)
 
-      experiment.update!(state: "selecting", start_date: days_til_start.days.from_now.to_date, end_date: days_til_end.days.from_now.to_date)
+      experiment.update!(state: "selecting", start_date: start_date, end_date: days_til_end.days.from_now.to_date)
 
-      eligible_ids = patient_pool
-        .joins(:encounters)
-        .where(encounters: {device_created_at: eligibility_start..eligibility_end})
-        .where("NOT EXISTS (SELECT 1 FROM encounters WHERE encounters.patient_id = patients.id AND
-                encounters.device_created_at > ?)", eligibility_end)
-        .left_joins(:appointments)
-        .where("NOT EXISTS (SELECT 1 FROM appointments WHERE appointments.patient_id = patients.id AND
-                appointments.scheduled_date >= ?)", date)
-        .distinct
-        .pluck(:id)
+      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date, eligible_range: range)
       eligible_ids.shuffle!
 
       total_days.times do
         daily_ids = eligible_ids.pop(PATIENTS_PER_DAY)
         break if daily_ids.empty?
+        schedule_date = start_date
         # TODO: remove references to appointment after removing appointment dependency
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
-          schedule_reminders(patient, patient.appointments.last, group, date)
+          schedule_reminders(patient, patient.appointments.last, group, schedule_date)
           Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
         end
-        date += 1.day
+        schedule_date += 1.day
       end
 
       experiment.update!(state: "running")
     end
 
     protected
-
-    def patient_pool
-      Patient.from(Patient.with_hypertension, :patients)
-        .contactable
-        .where("age >= ?", 18)
-        .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where(["experiments.end_date < ? OR experiments.id IS NULL", LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
-    end
 
     def schedule_reminders(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|
