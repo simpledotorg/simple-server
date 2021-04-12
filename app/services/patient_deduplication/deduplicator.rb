@@ -71,7 +71,6 @@ module PatientDeduplication
         assigned_facility: latest_patient.assigned_facility,
         status: latest_patient.status,
         address: create_address,
-        merged_by_user_id: @user_id,
         **age_and_dob
       }
       Patient.create!(attributes)

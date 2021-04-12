@@ -32,7 +32,6 @@ describe PatientDeduplication::Deduplicator do
       expect(new_patient.assigned_facility).to eq(patient_red.assigned_facility)
       expect(new_patient.device_created_at.to_i).to eq(patient_blue.device_created_at.to_i)
       expect(new_patient.device_updated_at.to_i).to eq(patient_blue.device_updated_at.to_i)
-      expect(new_patient.merged_by_user_id).to eq(patient_blue.registration_user.id)
       expect(duplicate_records(new_patient.id)).to match_array([patient_blue, patient_red])
     end
 
