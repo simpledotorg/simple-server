@@ -1,14 +1,16 @@
+class AppointmentReminderNotificationError < StandardError; end
+
 class AppointmentReminders::SendReminderJob
   include Rails.application.routes.url_helpers
   include Sidekiq::Worker
 
   sidekiq_options queue: :high
 
-  # i think this should be based on country instead
-  DEFAULT_LOCALE = :en
-
   def perform(reminder_id)
     reminder = AppointmentReminder.includes(:appointment, :patient).find(reminder_id)
+    if reminder.status != "scheduled"
+      raise AppointmentReminderNotificationError, "scheduled appointment reminder has invalid status"
+    end
     send_message(reminder)
   end
 
@@ -61,7 +63,6 @@ class AppointmentReminders::SendReminderJob
     end
   end
 
-  # this should only be india for now
   def communication_type
     type = CountryConfig.current[:name] == "India" ? :missed_visit_whatsapp_reminder : :missed_visit_sms_reminder
     Communication.communication_types[type]

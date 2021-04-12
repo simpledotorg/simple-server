@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
   describe "#perform" do
-    let(:reminder) { create(:appointment_reminder) }
+    let(:reminder) { create(:appointment_reminder, status: "scheduled") }
     let(:notification_service) { double }
 
     def simulate_successful_delivery
@@ -88,6 +88,14 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
       )
       described_class.perform_async(reminder.id)
       described_class.drain
+    end
+
+    it "raises an error if the appointment notification status is not 'scheduled'" do
+      appointment_reminder = create(:appointment_reminder, status: "pending")
+      expect {
+        described_class.perform_async(appointment_reminder.id)
+        described_class.drain
+      }.to raise_error(AppointmentReminderNotificationError, "scheduled appointment reminder has invalid status")
     end
   end
 end
