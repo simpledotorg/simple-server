@@ -67,8 +67,9 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
       described_class.drain
     end
 
-    it "defaults to english if the patient does not have an address" do
+    it "it defaults to the primary language of the country the server is in if the patient has no address" do
       simulate_successful_delivery
+
       reminder.patient.update!(address_id: nil)
       localized_message = I18n.t(
         reminder.message,
@@ -76,7 +77,7 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
           appointment_date: reminder.appointment.scheduled_date,
           assigned_facility_name: reminder.appointment.facility.name,
           patient_name: reminder.patient.full_name,
-          locale: "en"
+          locale: "hi-IN"
         }
       )
 

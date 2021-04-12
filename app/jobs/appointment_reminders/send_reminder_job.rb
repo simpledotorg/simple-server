@@ -50,7 +50,15 @@ class AppointmentReminders::SendReminderJob
   end
 
   def patient_locale(patient)
-    patient.address&.locale || DEFAULT_LOCALE
+    patient.address&.locale ||
+    case CountryConfig.current[:name]
+    when "India"
+      "hi-IN"
+    when "Bangladesh"
+      "bn-BD"
+    when "Ethiopia"
+      "am-ET"
+    end
   end
 
   # this should only be india for now
