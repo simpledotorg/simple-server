@@ -159,7 +159,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
           expect(AppointmentReminders::SendReminderJob).to receive(:perform_at).with(
             fallback_time,
-            communication.appointment_reminder_id,
+            communication.appointment_reminder_id
           )
 
           set_twilio_signature_header(callback_url, params)
@@ -170,7 +170,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           session_id = SecureRandom.uuid
           fallback_time = 5.minutes.from_now
           appointment_reminder = create(:appointment_reminder)
-          whatsapp_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
+          _whatsapp_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
           sms_communication = create(:communication, :missed_visit_sms_reminder, appointment_reminder: appointment_reminder)
 
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: sms_communication)
