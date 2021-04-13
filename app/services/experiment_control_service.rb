@@ -55,7 +55,6 @@ class ExperimentControlService
       total_days.times do
         daily_ids = eligible_ids.pop(patients_per_day)
         break if daily_ids.empty?
-        # TODO: remove references to appointment after removing appointment dependency
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
