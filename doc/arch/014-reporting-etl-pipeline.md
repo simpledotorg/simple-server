@@ -143,5 +143,8 @@ Proposed
 
 * We will have more nightly cron tasks to refresh the reporting views. We need to monitor the performance of these
   refreshes closely to identify when database views are no longer a viable option for us.
-* We can start thinking of migrating existing dashboard reports to consume data from the reporting tables.
+* We can start thinking of migrating existing dashboard reports to consume data from the reporting tables. Some good
+  candidates to start migrating could possibly be:
+  * Registrations: It is a simple report and easy to verify
+  * Lost-to-follow-up breakdowns: It tests the more complex aspects of the reporting tables, but is fairly isolated.
 * We will need to maintain and evolve the reporting schema as reporting requirements change.
