@@ -35,7 +35,7 @@ caching strategy works well today.
 
 ## Decision
 
-We will introduce a set or reporting tables, implemented as database views, to start powering our reporting
+We will introduce a set of reporting tables, implemented as materialized database views, to start powering our reporting
 requirements. This reporting schema will transform the data in our application tables into a more reports-friendly
 format, exposing convenient building blocks to build reports with straightforward SQL queries.
 
@@ -53,12 +53,69 @@ eg. blood_pressures              eg. blood_pressures_over_time                  
 
 The reporting tables will be implemented as database views within the Simple database.
 
-We will use Metabase for the reports.
+### Reporting Tables
+
+To start, the reporting tables will be granular de-normalized records of patients, blood pressures, encounters, and
+prescribed drugs.
+
+* Time: Each record will feature a month as dimension of time
+* Location: Each record will feature a facility (facility ID) as dimension of location
+
+For example, if "Ashish" is a patient in Simple, the "blood pressures over time" table will have records like:
+* As of Jan 2020, what was Ashish's most recent BP?
+* As of Feb 2020, what was Ashish's most recent BP?
+* As of Mar 2020, what was Ashish's most recent BP?
+* ...and so on
+
+The "prescription drugs over time" table will have records like:
+* As of Jan 2020, what drugs were prescribed to Ashish?
+* As of Feb 2020, what drugs were prescribed to Ashish?
+* As of Mar 2020, what drugs were prescribed to Ashish?
+* ...and so on
+
+Since these tables are pre-computing questions like "What was the most recent BP as of X month", the reports queries
+become much simpler. Instead of dealing with this question, the reports query can instead fetch all records for a
+particular month, and the "most recent" information will be readily available in the record.
+
+### Calendar Table
+
+Time, down to the month, is an important dimension of all reporting tables. As such, a calendar table will be created to
+support a consistent and robust way to describe months across all reporting tables. Calendar tables are a common
+occurrence in data warehouse design ([Here's one such example](https://www.mssqltips.com/sqlservertip/4054/creating-a-date-dimension-or-calendar-table-in-sql-server/)).
+
+The important elements of our calendar will be:
+* Cardinal month (1-12)
+* Year
+* Quarter: Quarterly analysis is common, so precomputing will be beneficial.
+* A unique date, like first of the month: This helps uniquely identify or group by each record in the calendar table on
+  a single column. `GROUP BY (year, month)` is more awkward.
+
+The calendar table will usually be joined with Simple's application tables to populate the denormalized reporting
+tables. The calendar table will be implemented as a non-materialized database view, since it is fairly small and not
+expensive to compute when needed.
+
+### Reports
+
+Since reporting queries will be simplified, we can start using Metabase for new reports. Metabase is ideal for quick
+prototyping and validation of reports with stakeholders because:
+
 * Easy-to-use interface
 * Easy to grant access to stakeholders, and controlled access to ourselves if necessary
 * Dynamic queries (eg. pick your own date range)
 
+Once reports are validated, we may want to move them in-house into the Simple Server application/dashboard. The benefits
+of doing so would be:
+
+* Better test coverage
+* Less fragmentation
+
+In any case, the long-term location of the reports themselves will not greatly impact the reporting table design
+described here.
+
 ## Alternatives and constraints
+
+Apart from the proposed approach of reporting tables as database views, there are some alternatives that were
+considered.
 
 ### Reporting tables in a separate database
 
