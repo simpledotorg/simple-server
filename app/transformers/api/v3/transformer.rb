@@ -2,8 +2,8 @@ class Api::V3::Transformer
   class << self
     def redirect_to_deduped_patient(attributes)
       # NOTE: Move this to a different layer if/when this becomes more complex
-      deduped_record = DeduplicationLog.find_by_deleted_record_id(attributes["id"])&.deduped_record
-      deduped_patient = DeduplicationLog.find_by_deleted_record_id(attributes["patient_id"])&.deduped_record
+      deduped_record = DeduplicationLog.find_by(deleted_record_id: attributes["id"])&.deduped_record
+      deduped_patient = DeduplicationLog.find_by(deleted_record_id: attributes["patient_id"])&.deduped_record
       return attributes unless deduped_record || deduped_patient
 
       attributes["id"] = deduped_record.id if deduped_record.present?
