@@ -1,7 +1,5 @@
 class ExperimentControlService
   LAST_EXPERIMENT_BUFFER = 14.days.freeze
-  INACTIVE_PATIENTS_ELIGIBILITY_START = 365.days.freeze
-  INACTIVE_PATIENTS_ELIGIBILITY_END = 35.days.freeze
   PATIENTS_PER_DAY = 10_000
   BATCH_SIZE = 100
 
@@ -43,29 +41,25 @@ class ExperimentControlService
       experiment.update!(state: "running")
     end
 
-    def start_inactive_patient_experiment(name, days_til_start, days_til_end)
+    def start_stale_patient_experiment(name, days_til_start, days_til_end, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
       total_days = days_til_end - days_til_start + 1
       start_date = days_til_start.days.from_now.to_date
-      eligibility_start = (start_date - INACTIVE_PATIENTS_ELIGIBILITY_START).beginning_of_day
-      eligibility_end = (start_date - INACTIVE_PATIENTS_ELIGIBILITY_END).end_of_day
-      range = Range.new(eligibility_start, eligibility_end)
 
       experiment.update!(state: "selecting", start_date: start_date, end_date: days_til_end.days.from_now.to_date)
 
-      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date, eligible_range: range)
+      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date)
       eligible_ids.shuffle!
 
+      schedule_date = start_date
       total_days.times do
-        daily_ids = eligible_ids.pop(PATIENTS_PER_DAY)
+        daily_ids = eligible_ids.pop(patients_per_day)
         break if daily_ids.empty?
-        schedule_date = start_date
-        # TODO: remove references to appointment after removing appointment dependency
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.group_for(patient.id)
           schedule_reminders(patient, patient.appointments.last, group, schedule_date)
-          Experimentation::TreatmentGroupMembership.create!(treatment_group: group, patient: patient)
+          group.patients << patient
         end
         schedule_date += 1.day
       end
