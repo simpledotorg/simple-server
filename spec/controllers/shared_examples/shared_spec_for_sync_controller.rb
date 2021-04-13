@@ -180,6 +180,24 @@ RSpec.shared_examples "a working sync controller updating records" do
                            .with_int_timestamps)
       end
     end
+
+    it "updates deduped records if a record was merged" do
+      deduped_record = create_record_list(1).first
+      merged_record = existing_records.first
+      updated_record = updated_records.first
+
+      DeduplicationLog.create!(
+        record_type: merged_record.class.to_s,
+        deduped_record_id: deduped_record.id,
+        deleted_record_id: merged_record.id
+      )
+
+      post :sync_from_user, params: updated_payload, as: :json
+
+      db_record = model.find(deduped_record["id"])
+      expect(db_record.attributes.to_json_and_back.except("id", "user_id").with_payload_keys.with_int_timestamps)
+        .to eq(updated_record.to_json_and_back.except("id", "user_id").with_int_timestamps)
+    end
   end
 end
 
