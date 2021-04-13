@@ -16,17 +16,28 @@ class AppointmentNotificationService
 
   def send_after_missed_visit
     eligible_appointments = appointments.eligible_for_reminders(days_overdue: days_overdue)
+    next_messaging_time = Communication.next_messaging_time
 
     eligible_appointments.each do |appointment|
       next if appointment.previously_communicated_via?(communication_type)
 
-      next_messaging_time = Communication.next_messaging_time
+      appointment_reminder = create_appointment_reminder(appointment)
 
-      AppointmentNotification::Worker.perform_at(next_messaging_time, appointment.id, communication_type)
+      AppointmentNotification::Worker.perform_at(next_messaging_time, appointment_reminder.id)
     end
   end
 
   private
+
+  def create_appointment_reminder(appointment)
+    AppointmentReminder.create!(
+      appointment: appointment,
+      patient: appointment.patient,
+      remind_on: appointment.remind_on,
+      status: "pending",
+      message: "sms.appointment_reminders.#{communication_type}" # i believe the messages are always the same for both communication types
+    )
+  end
 
   attr_reader :appointments, :communication_type, :days_overdue
 end

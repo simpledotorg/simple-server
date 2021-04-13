@@ -3,13 +3,13 @@ require "rails_helper"
 RSpec.describe AppointmentNotificationService do
   context "#send_after_missed_visit" do
     let!(:overdue_appointments) do
-      overdue_appointment_ids = create_list(:appointment, 4, :overdue).map(&:id)
+      overdue_appointment_ids = create_list(:appointment, 4, :overdue, remind_on: Date.current).map(&:id)
       Appointment.where(id: overdue_appointment_ids)
         .includes(patient: [:phone_numbers], facility: {facility_group: :organization})
     end
 
     let!(:recently_overdue_appointments) do
-      recently_overdue_appointment_ids = create_list(:appointment, 2, scheduled_date: 1.day.ago, status: :scheduled).map(&:id)
+      recently_overdue_appointment_ids = create_list(:appointment, 2, scheduled_date: 1.day.ago, status: :scheduled, remind_on: Date.current).map(&:id)
       Appointment.where(id: recently_overdue_appointment_ids)
         .includes(patient: [:phone_numbers], facility: {facility_group: :organization})
     end
@@ -126,7 +126,7 @@ RSpec.describe AppointmentNotificationService do
         create(:patient, status: "dead"),
         create(:patient, phone_numbers: [mobile_number, landline_number, invalid_number])]
 
-      appointments = patients.map { |patient| create(:appointment, :overdue, patient: patient) }
+      appointments = patients.map { |patient| create(:appointment, :overdue, patient: patient, remind_on: Date.current) }
       overdue_appointments = Appointment.where(id: appointments)
         .includes(patient: [:phone_numbers])
         .includes(facility: {facility_group: :organization})
