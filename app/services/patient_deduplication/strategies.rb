@@ -37,7 +37,7 @@ module PatientDeduplication
           .joins(:patient)
           .select("identifier, array_agg(patient_id) as patient_ids")
           .where.not(identifier: "")
-          .group("identifier")
+          .group("identifier, identifier_type")
           .having("COUNT(distinct patient_id) > 1")
       end
 
