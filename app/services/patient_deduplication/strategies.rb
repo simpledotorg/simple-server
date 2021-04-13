@@ -37,7 +37,6 @@ module PatientDeduplication
           .joins(:patient)
           .select("identifier, array_agg(patient_id) as patient_ids")
           .where.not(identifier: "")
-          .where(identifier_type: simple_bp_passport)
           .group("identifier")
           .having("COUNT(distinct patient_id) > 1")
       end
@@ -47,10 +46,6 @@ module PatientDeduplication
           .joins(:patient)
           .where(patients: {assigned_facility: facilities})
           .pluck("identifier")
-      end
-
-      def simple_bp_passport
-        PatientBusinessIdentifier.identifier_types[:simple_bp_passport]
       end
     end
   end
