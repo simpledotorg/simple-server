@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :communication do
     id { SecureRandom.uuid }
     appointment
+    appointment_reminder { nil }
     user
     communication_type { :manual_call }
     device_created_at { Time.current }

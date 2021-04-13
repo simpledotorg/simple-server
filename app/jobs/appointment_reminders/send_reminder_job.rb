@@ -8,6 +8,8 @@ class AppointmentReminders::SendReminderJob
     reminder = AppointmentReminder.includes(:appointment, :patient).find(reminder_id)
     if reminder.status != "scheduled"
       report_error("scheduled appointment reminder has invalid status")
+    elsif reminder.next_communication_type.nil?
+      report_error("scheduled appointment reminder does not have a next communication type")
     else
       send_message(reminder)
     end
@@ -19,7 +21,7 @@ class AppointmentReminders::SendReminderJob
     notification_service = NotificationService.new
 
     begin
-      response = if communication_type == "missed_visit_whatsapp_reminder"
+      response = if reminder.next_communication_type == "missed_visit_whatsapp_reminder"
         notification_service.send_whatsapp(
           phone_number(reminder.patient),
           appointment_message(reminder),
@@ -45,7 +47,7 @@ class AppointmentReminders::SendReminderJob
       appointment_reminder: reminder,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
-      communication_type: communication_type
+      communication_type: reminder.next_communication_type
     )
   end
 
@@ -74,11 +76,6 @@ class AppointmentReminders::SendReminderJob
       when "Ethiopia"
         "am-ET"
       end
-  end
-
-  def communication_type
-    type = CountryConfig.current[:name] == "India" ? :missed_visit_whatsapp_reminder : :missed_visit_sms_reminder
-    Communication.communication_types[type]
   end
 
   def phone_number(patient)

@@ -115,6 +115,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             communication.appointment_id,
             "missed_visit_sms_reminder"
           )
+          expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at)
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params
@@ -134,6 +135,55 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           )
 
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
+          expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at)
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
+        end
+
+        it "schedules an appointment reminder worker if the communication has an appointment reminder" do
+          session_id = SecureRandom.uuid
+          fallback_time = 5.minutes.from_now
+          appointment_reminder = create(:appointment_reminder)
+          communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
+
+          create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
+
+          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
+
+          params = base_callback_params.merge(
+            "MessageSid" => session_id,
+            "MessageStatus" => "failed"
+          )
+
+          expect(AppointmentNotification::Worker).not_to receive(:perform_at)
+          expect(AppointmentReminders::SendReminderJob).to receive(:perform_at).with(
+            fallback_time,
+            communication.appointment_reminder_id,
+          )
+
+          set_twilio_signature_header(callback_url, params)
+          post :create, params: params
+        end
+
+        it "does not schedule any workers if an sms message has already been sent" do
+          session_id = SecureRandom.uuid
+          fallback_time = 5.minutes.from_now
+          appointment_reminder = create(:appointment_reminder)
+          whatsapp_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
+          sms_communication = create(:communication, :missed_visit_sms_reminder, appointment_reminder: appointment_reminder)
+
+          create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: sms_communication)
+
+          allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
+
+          params = base_callback_params.merge(
+            "MessageSid" => session_id,
+            "MessageStatus" => "failed"
+          )
+
+          expect(AppointmentNotification::Worker).not_to receive(:perform_at)
+          expect(AppointmentReminders::SendReminderJob).not_to receive(:perform_at)
 
           set_twilio_signature_header(callback_url, params)
           post :create, params: params

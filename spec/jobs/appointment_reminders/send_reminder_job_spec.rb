@@ -11,20 +11,21 @@ RSpec.describe AppointmentReminders::SendReminderJob, type: :job do
       allow(notification_service).to receive(:sid).and_return("12345")
     end
 
-    it "sends a whatsapp message when in India" do
+    it "sends a whatsapp message when next_communication_type is whatsapp" do
       simulate_successful_delivery
 
+      allow_any_instance_of(AppointmentReminder).to receive(:next_communication_type).and_return("missed_visit_whatsapp_reminder")
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
       described_class.perform_async(reminder.id)
       described_class.drain
     end
 
-    it "sends sms when not in India" do
+    it "sends sms when next_communication_type is sms" do
       allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_service)
       allow(notification_service).to receive(:status).and_return("sent")
       allow(notification_service).to receive(:sid).and_return("12345")
 
-      allow(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD))
+      allow_any_instance_of(AppointmentReminder).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
       expect_any_instance_of(NotificationService).to receive(:send_sms)
       described_class.perform_async(reminder.id)
       described_class.drain
