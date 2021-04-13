@@ -251,6 +251,37 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         end
       end
 
+      context "when a patient record has been deduped" do
+        it "updates the deduped patient record" do
+          deduped_patient = create(:patient)
+          merged_patient = existing_patients.first
+          updated_patient = updated_patients_payload.first
+
+          DeduplicationLog.create!(
+            record_type: merged_patient.class.to_s,
+            deduped_record_id: deduped_patient.id,
+            deleted_record_id: merged_patient.id
+          )
+
+          post :sync_from_user, params: {patients: updated_patients_payload}, as: :json
+
+          db_patient = model.find(deduped_patient["id"])
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps
+                           .except("id")
+                           .except("address_id")
+                           .except("registration_user_id")
+                           .except("registration_facility_id")
+                           .except("test_data")
+                           .except("deleted_by_user_id"))
+            .to eq(updated_patient.with_int_timestamps
+                     .except("id")
+                     .except("address")
+                     .except("phone_numbers")
+                     .except("business_identifiers")
+                     .except("registration_facility_id"))
+        end
+      end
+
       context "patient business_identifier" do
         it "disallows missing identifier for bangladesh_national_id" do
           patients_payload = build_payload.call(create(:patient))
