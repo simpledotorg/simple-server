@@ -62,9 +62,9 @@ am-ET:
     no_patients: "ህመምተኞች የሉም"
     cohort_report_footnote_1: "ከምዝገባ በኋላ በሩብ ውስጥ በማንኛውም ተቋም ውስጥ የቅርብ ጊዜ ክትትል ጉብኝት።"
     cohort_report_footnote_2: "ለዚህ ተቋም የተመደቡ ሁሉም የHTN ህመምተኞች በሩብ ዓመቱ ተመዝግበዋል።"
-    cohort_report_footnote_3: "አንድ ታካሚ ብዙ ጉብኝቶች ካሉት የመጨረሻው BPአቸው የBP ቁጥጥርን ለማስላት ጥቅም ላይ ይውላል።"
+    cohort_report_footnote_3: "አንድ ታካሚ ብዙ ጉብኝቶች ካሉት የመጨረሻው የደም ግፊታቸው የደም ግፊት ቁጥጥርን ለማስላት ጥቅም ላይ ይውላል።"
     all_hypertension_and_diabetes: "ሁሉም የደም ግፊት እና የስኳር በሽታ"
-    hypertension_controlled_numerator: "ባለፉት 3 ወሮች ውስጥ በማንኛውም ተቋም ውስጥ ቢያንስ አንድ የBP መለኪያ ያላቸው ታካሚዎች ተመዝግበዋል ፡፡ በጣም በቅርብ ጉብኝቱ ታካሚው BP&nbsp;&lt;140 and &lt;90 ነበረው።"
+    hypertension_controlled_numerator: " ባለፉት 3 ወሮች የመጨረሻ ጉብኝታቸው <em>በማንኛውም ተቋም</em> ውስጥ ከ  <140/90 የደም ግፊት ጋር"
     hypertension_controlled_denominator: "ይህ ተቋም እንደ “ተመራጭ ተቋማቸው” ያለባቸው የደም ግፊት ምርመራ የተደረገባቸው ሁሉም ታካሚዎች። በጣም በቅርብ ባሉት 3 ወሮች ውስጥ የተመዘገቡ ታካሚዎች አልተካተቱም ስለሆነም ተቋሙ ቢፒአቸውን እንዲቆጣጠር እድሉ አለው።"
     hypertension: "ደም ግፊት"
     diabetes: "ደም ግፊት"
@@ -74,3 +74,243 @@ am-ET:
       female: "ሴት"
       male: "ወንድ"
       transgender: "ወንዳገረድ"
+  help:
+    menu:
+      videos_html: ቪዲዮዎች
+      start_html: 1. ጀምር
+      register_html: 2. ታካሚ መዝግብ
+      search_html: 3. ትክክለኛውን ታካሚ ፈልግ
+      record_html: 4. የታካሚ ጉብኝት መዝግብ
+      overdue_html: 5. የዘገዩ ታካሚዎችን ይጥሩ
+      faq_html: የተለመዱ ጥያቄዎች
+    support:
+      heading_html: እገዛ ይጠይቁ
+      contents_html: ችግሮች ወይም ጥያቄዎች ካልዎት፣ እባክዎ የድጋፍ ቡድናችንን አዝራር ይጫኑ። ተወዳጅ የሆነ ቡድናችን ያግዝዎታል።
+    bp_passport_app_summary:
+      new_html: አዲስ!
+      heading_html: ለታካሚዎችዎ መተግበሪያ
+      contents_1_html: ታካሚዎች የራሳቸውን የደም ግፊት እና የደም ስኳሮች ከቀላል መተግበሪያ ጋር "የደም ግፊት ፓስፖርት" መተግበሪያ ተብለው ይጠራሉ።
+      contents_2_html: ታካሚዎችዎ ወደ Google Play መደብር ወይም Apple መተግበሪያ መደብር ሄደው ''የደም ግፊት ፓስፖርት" መተግበሪያ እንዲጭኑ ይጠይቁዋቸው።
+      learn_more_html: ተጨማሪ ይወቁ...
+    videos:
+      heading_html: የስልጠና ቪደዮዎች
+      class:
+        heading_html: ትምህርቱን ይውሰዱ
+        contents_html: ሲምፕል ለመጠቀም ለመማር ትምህርት ይመልከቱ።
+        training_videos_link_html: "ስልጠና፦ ሁሉም ምዕራፎች"
+        training_videos_subtitle_html: "እንግሊዝኛ ከሂንዱ ንዑስ ርዕስ 36፡15"
+      chapters:
+        heading_html: የትምህርት ምዕራፎች
+        chapter_1_html: "1. መተግበሪያውን ጫን"
+        chapter_2_html: "2፡ መግቢያ"
+        chapter_3_html: "3፡ ታካሚ መዝግብ"
+        chapter_4_html: "4፡ ለተከታታይ ታካሚ ፈልግ"
+        chapter_5_html: "5፡ ትክክለኛውን ታካሚ ፈልግ"
+        chapter_6_html: "6፡ የዘገዩ ታካሚዎችን ይጥሩ"
+        chapter_7_html: "7፡ አስፈላጊ ባህሪያት"
+        chapter_8_html: "8፡ ተደጋጋሚ የሚቀርቡ ጥያቄዎች"
+        chapter_9_html: "9: እገዛ እንዴት ያገኛሉ"
+        chapter_10_html: "10፡ ሲምፕል መጠቀምን ይጀምሩ"
+      teleconsultation:
+        heading_html: የቴለ-ምክክር ስልጠና
+        contents_html: ለቴለ-ምክክር ሆስፒታልዎ ሲምፕል የሚጠቀም ከሆነ፣ ይህ ስልጠና ለእርስዎ ነው።
+        english_video_link_html: ከሲምፕል ጋር ቴለ-ምክክርን ያድርጉ
+        english_video_link_language_html: እንግሊዘኛ
+        hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_video_link_language_html: ሂንዱ
+      bp_passports:
+        heading_html: የደም ግፊት ፓስፖርቶች
+        contents_html: የደም ግፊት ፓስፖርት ካርዶች ወይም የደም ግፊት ፓስፖርት ስቲከሮች በሆስፒታሎ ውስጥ እንዴት እንደሚጠቀሙ ይወቁ።
+        video_link_html: የደም ግፊት ፓስፖርት እንዴት መጠቀም ይችላሉ
+        video_link_subtitle_html: ሂንዱ ከእንግሊዘኛ ንዑስ ርዕስ ጋር
+      film:
+        heading_html: የሲምፕል ፊልም
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"በሲምፕል ሂወት አንድ ቀን"</a> በህንድ የፑንጃብ ነርስ የደም ግፊት ያለባቸውን ታካሚዎች ለማከም ሲምፕለን እንዴት እንደምትጠቀም የሚያሳይ አጭር ፊልም ነው።'
+    start:
+      heading_html: ይጀምሩ
+      getting_started_video:
+        heading_html: ቪዲዮውን ይመልከቱ
+        contents_html: የሲምፕል መሰረታዊዎችን በ 5 ደቂቃዎች ይማሩ።
+      who_to_record:
+        heading_html: "ሲምፕል ውስጥ ማን እንደሚመዘገብ?"
+        contents_1_html: ሲምፕል መተግበሪያን በመጠቀም <i>እያንዳንዱን ከፍተኛ የደም ግፊት ያለው </i>ወይም ለከፍተኛ የደም ግፊት መድሃኒት እየወሰደ ያለን ታካሚ ይመዝግቡ።
+        contents_2_html: ታካሚው ለክትትል ሲመለስ፣ እራሱ ታካሚውን ይፈልጉና አዲስ የደም ግፊት ያስገቡ።
+      step_1:
+        label_html: ደረጃ 1
+        heading_html: የታካሚ የደግም ግፊት ይውሰዱ
+        contents_html: "በትክክለኛ ሁኔታ የደም ግፊት ይለኩ፤ እግር መሬት ላይ፣ ወገብ ወንበር ተደግፎ፣ ያለምንም ማውራት።"
+      step_2:
+        label_html: ደረጃ 2
+        heading_html: በደም ግፊት ፓስፖርት ይጻፉ
+        contents_html: የደም ግፊት ፓስፖርት ካለዎት፣ የታካሚውን ስም ይፃፉ። ከዚያ፣ ሲምፕል መተግበሪያን በመጠቀም ስካን ያድርጉት።
+      step_3:
+        label_html: ደረጃ 3
+        heading_html: ታካሚ መዝግብ
+        contents_html: አዲስ ከሆኑ፣ ታካሚውን ይመዝግቡ።
+      step_4:
+        label_html: ደረጃ 4
+        heading_html: የደም ግፊት በሲምፕል አስገባ
+        contents_html: የደም ግፊት ንባቡን<i>አያጠጋጉ</i>።
+      step_5:
+        label_html: ደረጃ 5
+        heading_html: መድሃኒቶችን ያስገቡ
+        contents_html: ታካሚው አሁን እየወሰዱ ያሉትን የደም ግፊት መድሃኒት ያስገቡ
+      step_6:
+        label_html: ደረጃ 6
+        heading_html: ታካሚውን ያቀምጡ
+        contents_html: "<span class=\"code\">አስቀምጥን</span> ጫን ያድርጉ እና የታካሚውን ቀጣይ ጉብኝት ቀጠሮ ይያዙ። የቀጠሮ ቀኑን በ ደም ግፊት ፓስፖርት ላይ ይጻፉ።"
+      missed_visit:
+        label_html: ያመለጠ ጉብኝት
+        heading_html: "ቀጥሎ ምን ይሆናል?"
+        contents_html: ታካሚዎ ጉብኝቱ ካመለጣቸው፣ ሲምፕል መተግበሪያ ዳግም እንዲመለሱ የሚያስታውስ የፅሑፍ መልዕክት ይልካል።
+      tip:
+        heading_html: ጠቃሚ ምክር
+        contents_html: ታካሚዎችን በትክክለኛው ተቋም ስር እየመዘገቡ እንደሆነ ሁሌም ያረጋግጡ። የመነሻ ገፁ ላይ፣ ሁሌም ከላይ በግራ በኩል ተቋሙን ይመልከቱ።
+    register:
+      heading_html: ታካሚውን ይመዝግቡ
+      contents_html: "አዲስ ታካሚዎችን ለመመዝገብ ሁለት አማራጭ መንገዶች አሉ፡"
+      option_1:
+        label_html: አማራጭ 1
+        heading_html: የደም ግፊት ፓስፖርቶች ካልዎት
+        step_1_html: ዋናው ማሳያ ገጽ ላይ ይህንን መጫኛ ይጫኑ
+        step_2_html: <i>ባዶ</i> የደም ግፊት ፓስፖርት ያንሱ እና QR ኮዱን ስካን ይድርጉ።
+        step_3_html: የታካሚውን ሙሉ ስም ይፈልጉ።
+        step_4_html: "የፍለጋ ውጤቶቹ ውስጥ ታካሚውን ካላዩት፣ <span class=\"code\">እንደ አዲስ ታካሚውን ይመዝግቡ</span> የሚለውን ጠቅ ያድርጉ።"
+        step_5_html: የምዝገባ ቅፁን ይሙሉ።
+        step_6_html: ታካሚዎ ካነጋገሩ በኋላ የሕክምና ታሪኩን ያሟሉ።
+        step_7_html: "የታካሚ ጉብኝቱን ይመዝግቡ፣ <span class=\"code\">አስቀምጥን</span> ይጫኑ።"
+      option_2:
+        label_html: አማራጭ 2
+        heading_html: የደም ግፊት ፓስፖርቶች <i>ከሌልዎት</i>
+        step_1_html: "<span class=\"code\">የታካሚውን ስም ያስገቡ</span>የሚለውን ይጫኑ"
+        step_2_html: የታካሚውን ሙሉ ስም ያስገቡ።
+        step_3_html: "የፍለጋ ውጤቶቹ ውስጥ ታካሚውን ካላዩት፣ <span class=\"code\">እንደ አዲስ ታካሚውን ይመዝግቡ</span> የሚለውን ጠቅ ያድርጉ።"
+        step_4_html: የምዝገባ ቅፁን ይሙሉ።
+        step_5_html: ታካሚዎ ካነጋገሩ በኋላ የሕክምና ታሪኩን ያሟሉ።
+        step_6_html: "የታካሚ ጉብኝቱን ይመዝግቡ፣ <span class=\"code\">አስቀምጥን</span> ይጫኑ።"
+      tips:
+        heading_html: ጠቃሚ ምክሮች
+        tip_1_html: ታካሚዎችን በትክክለኛው ተቋም ስር እየመዘገቡ እንደሆነ ሁሌም ያረጋግጡ። የመነሻ ገፁ ላይ፣ ሁሌም ከላይ በግራ በኩል ተቋሙን ይመልከቱ።
+        tip_2_html: ከቻሉ የሞባይል ቁጥር ያስገቡ!
+        tip_3_html: ተከታታይ ታካሚ ማግኘት ካልቻሉ፣ታካሚውን እንደ አዲስ መመዝገብ ይቻላል።
+        tip_4_html: አንድ ታካሚ የደም ግፊት ፓስፖርታቸውን ከረሱ ወይም ከጠፋባቸው፤ እባክዎ ሌላ አዲስ ይስጧቸው። ታካሚዎች ብዙ የደም ግፊት ፓስፖርቶች ሊኖራቸው ይችላል ፣ ቢሆንም ሁሉም በትክክል መስራት ይችላሉ።
+    search:
+      heading_html: ትክክለኛውን ታካሚ ያግኙ
+      find_patient:
+        heading_html: ታካሚዎችን እንዴት ማግኘት ይችላሉ
+        contents_html: አንድ ታካሚን በስም ወይም በሞባይል ቁጥር ሲፈልጉ፣ ትክክለኛውን ታካሚ መምረጥ አስፈላጊ ነው።
+      choose_patient:
+        heading_html: <i>ትክክለኛውን</i> ታካሚ ይምረጡ
+        contents_1_html: "የፍለጋ ውጤቶች ውስጥ፣ ትክክለኛውን ታካሚ መምረጥ በጣም አስፈላጊ ነው። ሁሌም የሚከተሉትን ያረጋግጡ፡"
+        check_item_1_html: "<span class=\"code\">ስም</span> ይዛመዳል"
+        check_item_2_html: "<span class=\"code\">ዕድሜ</span> ትክክል ነው"
+        check_item_3_html: "<span class=\"code\">አድራሻ</span> ታካሚው የሚኖርበት ነው"
+        check_item_4_html: "<span class=\"code\">የተንቀሳቃሽ ስልክ ቁጥር</span> ይዛመዳል"
+        check_item_5_html: "<span class=\"code\">የመጨረሻ የጉብኝት ቀን</span> ታካሚው ሆስፒታሉን የጎበኘበት ቀን ነበር።"
+        contents_2_html: ታካሚው ፍለጋው ውስጥ ካሉት ማንኛውም ታካሚዎች ጋር ካልተዛመደ፣ እባክዎ እንደ አዲስ ታካሚ ይመዝግቧቸው።
+      tip:
+        heading_html: ጠቃሚ ምክር
+        contents_html: የደም ግፊት ፓስፖርት ስካን ማድረግ እየሰራ ካልሆነ፣ የደም ግፊት ፓስፖርት ቁጥሩን አሁንም ቢሆን ሲምፕል መተግበሪያ ውስጥ ስካን የሚያደርጉበት ራሱ ማሳያ ገፅ ላይ መጻፍ ይችላሉ።
+    record:
+      heading_html: የታካሚን ጉብኝት ይመዝግቡ
+      find_patient:
+        heading_html: መጀመሪያ፣ ታካሚውን ያግኙ
+        contents_html: "ታካሚዎችን በሁለት መንገዶች ማግኘት ይችላሉ፡ የደም ግፊት ፓስፖርታቸውን ስካን በማረግ ወይም ታካሚውን በስም ወይም በሞባይል ቁጥር በመፈለግ።"
+      record_info:
+        heading_html: የደም ግፊት ንባብን እና መድኃኒቶችን ይመዝግቡ
+        step_1_html: "የታካሚው ማጠቃለያ ማያ ገፅ ላይ፣ <span class=\"code\">+&nbsp;የደም ግፊት</span> ይጫኑ"
+        step_2_html: ከዚያ፣ የታካሚውን የደም ግፊት መድሃኒቶች ያክሉ።
+        step_3_html: "ትክክለኛውን መድሃኒቶች እና የአወሳሰድ መጠናቸውን ይምረጡ። አንድ መድሃኒት ለማስወገድ፣ የአወሳሰድ መጠኑን ይጫኑ እና <span class=\"code\">ምንም</span>ን ይምረጡ"
+        step_4_html: "<span class=\"code\">አስቀምጥ</span>ን ይጫኑ እና ቀጣዩን የጉብኝት ቀን ይምረጡ። እንደ አማራጭ፡ ታካሚው ቀጣይ የት መጎብኘት እንዳለበት ከታካሚው የአሁን ተቋም ስር 'ቀይር'ን በመጫን መቀየር ይችላሉ።"
+        step_5_html: ተጠናቅቋል። የታካሚ ጉብኝት ሴቭ ሆኗል።
+      medicine_refills:
+        heading_html: መድሃኒ ዳግም ይሞላል
+        contents_html: "የታካሚ የአሁን ህክምናዎች ዳግም በመሙላት ላይ ካሉ፡"
+        step_1_html: "በታካሚ ማጠቃለያ ማያ ላይ፣ <span class=\"code\">+ ህክምናዎች</span> ይጫኑ"
+        step_2_html: "<span class=\"code\">ህክምናዎች ዳግም ሙላ</span> ይጫኑ"
+        step_3_html: ተጠናቋል!
+        english_video_link_html: የታካሚ ህክምናዎች እንዴት ዳግም መሙላት እችላለሁ
+        english_video_link_language_html: እንግሊዘኛ
+        hindi_video_link_html: የታካሚ ህክምናዎች እንዴት ዳግም መሙላት እችላለሁ
+        hindi_video_link_language_html: ሂንዱ
+      tips:
+        heading_html: ጠቃሚ ምክሮች
+        tip_1_html: "ጉብኝቱን ቀጠሮ ሲያስይዙ ቀጣዩን የጉብኝት ቀን የቀን መቁጠሪያ ላይ <span class=\"code\">ቀይር</span>ን ጠቅ በማድረግ መምረጥ ይችላሉ።"
+        tip_2_html: "<span class=\"code\">አሁን አይደለም</span>ን ከመረጡ፣ ታካሚው የጉብኝት ቀጠሮ አይኖረውም።"
+        tip_3_html: "ከቀዳሚ ጉብኝት የደም ግፊት ልኬት ማስገባት ይችላሉ። የደም ግፊት ልኬቱን እንደ መደበኛ ያስገቡ እና ቀኑን <span class=\"code\">ቀይር</span>።"
+    overdue:
+      heading_html: ለዘገዩ ታካሚዎች ስልክ ይደውሉ።
+      what_is_overdue:
+        heading_html: "\"የዘገዩ \" ምን ማለት ነው?"
+        contents_1_html: በጉብኝት ቀጠሮዋቸው ቀን ላይ የተመዘገበ የደም ግፊት ልኬት ካልነበራቸው ፤ ታካሚዎች የዘገዩ ናቸው ማለት ነው።
+        contents_2_html: የዘገዩ ታካሚዎች ዝርዝር ውስጥ ከላይ ያሉት ታካሚዎች፣ በጣም ወሳኞቹ ናቸው። የቀጠሮ ጊዜ ካለፈባቸው ታካሚዎች ዝርዝር ውስጥ ከላይ ካሉት ይጀምሩ።
+      calling:
+        heading_html: ለታካሚዎች መደወል
+        contents_html: "ስልክ የሚለውን ምልክት በመጫን ለታካሚዎች ይደውሉ። ሁለት አማራጮች ሊያዩ ይችላሉ<span class=\"code\">መደበኛ ጥሪ</span> እና <span class=\"code\">ደህንነቱ የተጠበቀ ጥሪ</span>። \"ደህንነቱ የተጠበቀ ጥሪ\" ከክፍያ ነፃ የሆነ እና ለታካሚው ስልክ ቁጥርዎን አያሳይም።"
+      result_of_call:
+        heading_html: "\"የጥሪ ውጤትን\" ምልክት ያድርጉ"
+        contents_html: "እባክዎ እያንዳንዱ የሚያረጉት የስልክ ጥሪ ውጤት ላይ ምልክት ያድርጉ። የሚከተሉትን አማራጮች ለማየት የታካሚው ካርድ ላይ ይጫኑ፡"
+        agreed_to_visit_html: "<span class=\"code\">ለመጎብኘት ተስማምተዋል</span> ታካሚዎቹ ለክትትል እንደሚመጡ ከነገርዎ።"
+        remind_to_call_later_html: "<span class=\"code\">በኋላ ለመደወል ያስታውሱ... </span>ታካሚው መቼ ክትትል ማድረግ እንደሚችሉ ካልነገርዎ ወይም ስልክ ጥሪውን ካልመለሱ።"
+        remove_from_overdue_list:
+          contents_html: "የሚከተሉት ከሆኑ <span class=\"code\">የዘገዩ ከሚለው ዝርዝር ወስጥ ያስወግዱ</span>፡"
+          condition_1_html: ታካሚው ቀድሞውኑ ጎብኝት አርገዋል
+          condition_2_html: ታካሚው ምላሽ አይሰጡ አይደለም
+          condition_3_html: ስልክ ቁጥሩ አይሰራም
+          condition_4_html: ወደ ሌላ ተቋም ተዛውሯል
+          condition_5_html: ወደ የግል ባለሙያው ተዛውሯል
+          condition_6_html: በህይወት የሉም
+    faq:
+      heading_html: የተለመዱ ጥያቄዎች
+      app_crash_question_html: "መተግበሪያየ ከተበላሸ ምን ማድረግ እችላለሁ?"
+      app_crash_answer_html: መጀመሪያ ስልክዎን በድጋሚ ለማስጀመርን ይሞክሩ። ሲምፕል መተግበሪያ እየተሰናከለ ከሆነና ማስተካከል ካልቻሉ፣ እባክዎ ወደ <span class="help">እገዛ</span> ማሳያ ገፅ ይሂዱ እና ተቆጣጣሪዎን ወይም የኛን ቡድን ያግኙ።
+      scan_not_working_question_html: "ስካን አይሰራም። ምን ማድረግ አለብኝ?"
+      scan_not_working_answer_html: የደም ግፊት ፓስፖርት ቁጥሩን የማሳያ ገፁ ላይ ከስር ያስገቡ። ችግሩ ካልተፈታ፣ ስልክዎን በድጋሚ ያስጀምሩ። አሁንም ካልሰራ፣ ተቆጣጣሪዎን ያግኙ።
+      udpate_app_question_html: "መተግበሪያ እንዴት ማዘመን እችላለሁ?"
+      udpate_app_answer_html: "የየቅንብሮች ምልክትን በመጫን እና ዳግም <span class=\"code\">አዘምን</span>የሚለውን በመጫን፤ መተግበሪያውን ያዘምኑ። ስልክዎ ላይ ዘመናዊ ወይም ቅርብ የሲመፕል መተግበሪያ እትም መኖሩ ጠቃሚ ነው።"
+      cant_find_followup_question_html: ተከታታይ ታካሚ ማግኘት አልቻልኩም
+      cant_find_followup_answer_html: አንዳንዴ የደም ግፊት ፓስፖርት የሌላቸውን ተከታታይ ታካሚዎችን ማግኘት ከባድ ነው። ከ5 ደቂቃዎች በኋላ፣ ታካሚውን ማግኘት ካልቻሉ፣ እንደ አዲስ ታካሚ ይመዝግቧቸው። የታካሚውን የተመዘገቡ መረጃዎች ወደፊት ማዋሃድ ይቻላል።
+      two_bp_passports_question_html: "ታካሚ 2 የደም ግፊት ፓስፖርቶች ሊኖሩት ይችላል?"
+      two_bp_passports_answer_html: አዎ። አንድ ታካሚ ብዙ የደም ግፊት ፓስፖርቶች ሊኖሩት ይችላል። ሁሉም መስራት ይቀጥላሉ።
+      no_more_bp_passports_question_html: የደም ግፊት ፓስፖርቶች ጨርሻለሁ
+      no_more_bp_passports_answer_html: ከመጨረስዎ በፊት፣ ተጨማሪ የደም ግፊት ፓስፖርቶች ለማዘዝ እባክዎ ተቆጣጣሪዎን ይጠይቁ። ያስታውሱ፣ ምንም የደም ግፊት ፓስፖርቶች ባይኖርዎትም ታካሚዎችን መመዝገብ ይችላሉ ፤ የደም ግፊት ፓስፖርቶችን በኋላ ማዛወር ይችላሉ።
+      what_is_sync_question_html: "\"ማስመር\" ምንድነው?"
+      what_is_sync_answer_html: "\"ማጣመር\" ጥሬ መረጃን ወደ ማዕከላዊ መረጃ አገልጋይ ያስቀምጣል። ጥሬ መረጃዎ ቢያንስ በቀን አንድ ጊዜ ሴቭ መደረጉን ያረጋግጡ። ጥሩ የበይነ መረብ ግንኙነት ከሌለዎት፣ ጥሬ መረጃዎ ለመጣመር ትንሽ ጊዜ ሊወስድ ይችላል።"
+      data_usage_question_html: "ሲምፕል ምንያህል ውሂብ ይጠቀማል?"
+      data_usage_answer_html: ሲምፕል በጣም ትንሽ ኢንተርኔት ዳታን ይጠቀማል። በአማካይ በወር ጥቅም ላይ የሚውለው 20 ሜባ ያህል ነው።
+      access_my_info_question_html: "ሲምፕል መረጃየን መዳረስ ይችላል?"
+      access_my_info_answer_html: ሲምፕል ስልክዎ ወይም ታብሌትዎ ላይ ያለውን ማንኛውም የግል መረጃ ማግኘት ወይም መድረስ አይችልም።
+    bp_passport_app:
+      heading_html: BP ፓስፖርት መተግበሪያ
+      features:
+        heading_html: ነጻ መተግበሪያ ለታካሚዎች
+        contents_html: ታካሚዎች የደም ግፊት ፓስፖርቶች ወረቀቶቻቸውን ስካን ማድረግ ይችላሉ እና መተግበሪያው በሆስፒታልዎ ወይም ክሊኒክዎ ያከሉት የአሁኑ ልኬቶች እና ህክምናዎች ወዲያውኑ በስማርት ስልካቸው ያሳያል።
+        feature_1_html: የደም ግፊት ቻርት
+        feature_2_html: የደም ሱካሮች ቻርት
+        feature_3_html: መድሃኒቶችን ለመውሰድ አስታዋሾች
+        feature_4_html: ጤነኛ ምክር
+        feature_5_html: ነጻ፣ ማሳወቂያዎች የሌሉበት
+        learn_more_html: "ተጨማሪ ይወቁ"
+      platforms:
+        headings_html: Apple እና Android
+        contents_html: "በ  Google Play መደብር ወይም Apple መተግበሪያ መደብር ላይ <span class=\"code\">የደም ግፊት ፓስፖርት</span> በመፈለግ መተግበሪያውን ለማግኘት ታካሚዎችዎን ይንገሩ።"
+        apple_app_store_html: Apple መተግበሪያ መደብር
+        google_play_store_html: Google Play መደብር
+      languages:
+        heading_html: ቋንቋዎች
+        contents_html: "የደም ግፊት ፓስፖርት መተግበሪያ ይገኛል በ፦"
+        language_amharic_html: አማርኛ
+        language_bengali_html: ባንጋሊኛ
+        language_english_html: እንግሊዘኛ
+        language_french_html: ፈረንሳይኛ
+        language_hindi_html: ሂንዱ
+        language_kannada_html: ካናዳ
+        language_marathi_html: ማራቲ
+        language_oromo_html: ኦሮሞ
+        language_punjabi_html: ፑንጃብ
+        language_spanish_html: ስፓኛ
+        language_tamil_html: ታሚል
+        language_telugu_html: ተሉጋ
+        language_tigrinya_html: ትግርኛ
+    privacy_policy_html: የግላዊነት ፖሊሲ
+    terms_of_service_html: የአገልግሎት ደንቦች

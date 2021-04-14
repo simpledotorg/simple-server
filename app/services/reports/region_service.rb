@@ -11,13 +11,12 @@ module Reports
       new(*args).call
     end
 
-    def initialize(region:, period:, with_exclusions: false, months: MAX_MONTHS_OF_DATA)
+    def initialize(region:, period:, months: MAX_MONTHS_OF_DATA)
       @current_user = current_user
       @region = region
       @period = period
       start_period = period.advance(months: -(months - 1))
       @range = Range.new(start_period, @period)
-      @with_exclusions = with_exclusions
     end
 
     attr_reader :current_user
@@ -25,10 +24,9 @@ module Reports
     attr_reader :period
     attr_reader :range
     attr_reader :region
-    attr_reader :with_exclusions
 
     def call
-      result = ControlRateService.new(region, periods: range, with_exclusions: with_exclusions).call
+      result = ControlRateService.new(region, periods: range).call
       result.visited_without_bp_taken = repository.visited_without_bp_taken[region.slug]
       result.calculate_percentages(:visited_without_bp_taken)
       result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
@@ -47,7 +45,7 @@ module Reports
     private
 
     def repository
-      @repository ||= Reports::Repository.new(region, periods: range, with_exclusions: with_exclusions)
+      @repository ||= Reports::Repository.new(region, periods: range)
     end
 
     # We want the current quarter and then the previous four

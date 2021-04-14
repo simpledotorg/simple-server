@@ -35,6 +35,8 @@ describe Patient, type: :model do
     it { is_expected.to have_many(:facilities).through(:blood_pressures) }
     it { is_expected.to have_many(:users).through(:blood_pressures) }
     it { is_expected.to have_many(:appointments) }
+    it { is_expected.to have_many(:appointment_reminders) }
+    it { is_expected.to have_many(:treatment_group_memberships) }
     it { is_expected.to have_many(:teleconsultations) }
 
     it { is_expected.to have_many(:encounters) }
@@ -514,6 +516,17 @@ describe Patient, type: :model do
         patient.date_of_birth = Date.parse("1980-01-01")
 
         expect(patient.current_age).to eq(Date.current.year - 1980)
+      end
+
+      it "takes into account months for date_of_birth" do
+        patient.date_of_birth = Date.parse("June 1st 1960")
+
+        Timecop.freeze("January 1st 2020") do
+          expect(patient.current_age).to eq(59)
+        end
+        Timecop.freeze("June 2nd 2020") do
+          expect(patient.current_age).to eq(60)
+        end
       end
 
       it "returns age based on age_updated_at if date of birth is not present" do

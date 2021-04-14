@@ -129,8 +129,8 @@ module Reports
     # "Missed visits" is the remaining patients when we subtract out the other three groups.
     def calculate_missed_visits(range, with_ltfu: false)
       if with_ltfu
-        self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-          patient_count = adjusted_patient_counts_for(period)
+        self.missed_visits_with_ltfu = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
+          patient_count = adjusted_patient_counts_with_ltfu_for(period)
           controlled = controlled_patients_for(period)
           uncontrolled = uncontrolled_patients_for(period)
           visited_without_bp_taken = visited_without_bp_taken_for(period)
@@ -138,8 +138,8 @@ module Reports
           hsh[period] = missed_visits.try(:floor) || 0
         }
       else
-        self.missed_visits_with_ltfu = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-          patient_count = adjusted_patient_counts_with_ltfu_for(period)
+        self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
+          patient_count = adjusted_patient_counts_for(period)
           controlled = controlled_patients_for(period)
           uncontrolled = uncontrolled_patients_for(period)
           visited_without_bp_taken = visited_without_bp_taken_for(period)

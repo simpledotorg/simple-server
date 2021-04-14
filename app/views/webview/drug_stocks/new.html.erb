@@ -34,19 +34,16 @@
             <li class="check">Enter "0" if stock is out</li>
           </ul>
 
-          <%= bootstrap_form_with(url: webview_drug_stocks_url(format: :json),
-            method: :post,
-            autocomplete: "off",
-            label_errors: true) do |form| %>
+          <%= bootstrap_form_with(url: webview_drug_stocks_url(format: :json), method: :post, autocomplete: "off", label_errors: true) do |form| %>
             <%= form.hidden_field :facility_id, value: current_facility.id %>
             <%= form.hidden_field :user_id, value: current_user.id %>
             <%= form.hidden_field :access_token, value: current_user.access_token %>
 
           <div class="form-group">
             <div class="form-row">
-              <% options = last_n_months(n: 6, inclusive: true).map { |d| [d.to_date.to_s(:mon_year), d.to_date.to_s(:mon_year)] }
+              <% choices = last_n_months(n: 6, inclusive: true).map { |d| [d.to_date.to_s(:mon_year), d.to_date.end_of_month] }
               %>
-              <%= form.select :for_end_of_month, options, class: "card-dropdown"  %>
+              <%= form.select :for_end_of_month, choices, { selected: @for_end_of_month }, { id: "for_end_of_month", class: "card-dropdown" } %>
             </div>
           </div>
 
@@ -77,5 +74,16 @@
       </div>
     </div>
   </div>
+
   </body>
+
+  <script type="text/javascript" charset="utf-8">
+  window.addEventListener("load", function() {
+    monthSelect = document.getElementById("for_end_of_month");
+    monthSelect.addEventListener("change", function(e) {
+      window.location.href = location.origin + location.pathname + location.search + "&for_end_of_month=" + encodeURIComponent(monthSelect.value);
+    });
+  })
+  </script>
+
 </html>

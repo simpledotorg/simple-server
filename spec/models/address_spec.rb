@@ -10,8 +10,8 @@ RSpec.describe Address, type: :model do
   end
 
   describe ".has_street_address?" do
-    let!(:address_without_street_address) { create(:address, :no_street_address) }
-    let!(:address_with_street_address) { create(:address) }
+    let(:address_without_street_address) { create(:address, :no_street_address) }
+    let(:address_with_street_address) { create(:address) }
 
     it "should return false for an address without a street address" do
       expect(address_without_street_address.has_street_address?).to be_falsey

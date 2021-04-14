@@ -42,6 +42,8 @@ class Patient < ApplicationRecord
   has_many :facilities, -> { distinct }, through: :blood_pressures
   has_many :users, -> { distinct }, through: :blood_pressures
   has_many :appointments
+  has_many :appointment_reminders
+  has_many :treatment_group_memberships, class_name: "Experimentation::TreatmentGroupMembership"
   has_one :medical_history
   has_many :teleconsultations
 
@@ -91,10 +93,11 @@ class Patient < ApplicationRecord
   }
 
   scope :contactable, -> {
+    # We don't want to add the device_created_at ORDER BY default scope from PatientPhoneNumber just for grabbing contactable records, so we do unscoped here
     where(reminder_consent: "granted")
       .where.not(status: "dead")
       .joins(:phone_numbers)
-      .merge(PatientPhoneNumber.phone_type_mobile)
+      .merge(PatientPhoneNumber.unscoped.phone_type_mobile)
   }
 
   validate :past_date_of_birth
@@ -185,7 +188,7 @@ class Patient < ApplicationRecord
 
   def current_age
     if date_of_birth.present?
-      Date.current.year - date_of_birth.year
+      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
     elsif age.present?
       return 0 if age == 0
 

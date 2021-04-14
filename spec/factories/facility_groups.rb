@@ -7,9 +7,9 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     name { Seed::FakeNames.instance.district }
     description { Faker::Company.catch_phrase }
-    organization
+    organization { common_org }
     state { state_name }
-    protocol { create(:protocol, :with_tracked_drugs) }
+    protocol { create(:protocol, :with_minimal_drugs) }
 
     transient do
       create_parent_region { true }
