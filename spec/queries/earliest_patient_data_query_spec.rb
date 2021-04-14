@@ -23,4 +23,9 @@ RSpec.describe EarliestPatientDataQuery do
     region_1 = facility.region
     expect(EarliestPatientDataQuery.call(region_1)).to be_nil
   end
+
+  it "returns nil if there are no facilities for a region" do
+    facility_group = create(:facility_group)
+    expect(EarliestPatientDataQuery.call(facility_group.region)).to be_nil
+  end
 end

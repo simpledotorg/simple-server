@@ -8,6 +8,7 @@ class EarliestPatientDataQuery
   end
 
   def call
+    return nil if @region.facilities.blank?
     parameters = {
       facility_ids: @region.facilities.pluck(:id),
       hypertension: "yes"
