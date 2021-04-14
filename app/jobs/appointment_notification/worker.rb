@@ -9,17 +9,14 @@ class AppointmentNotification::Worker
   def perform(appointment_reminder_id, communication_type)
     reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
     return if reminder.appointment.previously_communicated_via?(communication_type)
-    check_for_errors(reminder)
+    if reminder.status != "scheduled"
+      report_error("scheduled appointment reminder has invalid status")
+      return
+    end
     send_message(reminder, communication_type)
   end
 
   private
-
-  def check_for_errors(reminder)
-    if reminder.status != "scheduled"
-      report_error("scheduled appointment reminder has invalid status")
-    end
-  end
 
   def send_message(reminder, communication_type)
     notification_service = NotificationService.new
