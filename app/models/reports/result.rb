@@ -247,15 +247,6 @@ module Reports
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
     end
 
-    def running_totals(periodwise_counts)
-      full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_total = running_totals[period.previous]
-        current_count = periodwise_counts[period]
-        total = previous_total + current_count
-        running_totals[period] = total
-      }
-    end
-
     def quarterly_report?
       @quarterly_report
     end
