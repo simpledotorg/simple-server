@@ -54,12 +54,7 @@ class ControlRateService
     results.cumulative_registrations = repository.cumulative_registrations[slug]
     results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
     results.adjusted_patient_counts_with_ltfu = repository.adjusted_patient_counts_with_ltfu[slug]
-    # if with_exclusions is true, our default adjusted patient numbers should exclude LTFU
-    results.adjusted_patient_counts = if with_exclusions
-      repository.adjusted_patient_counts_without_ltfu[slug]
-    else
-      repository.adjusted_patient_counts_with_ltfu[slug]
-    end
+    results.adjusted_patient_counts = repository.adjusted_patient_counts_without_ltfu[slug]
 
     results.earliest_registration_period = [results.cumulative_registrations.keys.first, results.cumulative_assigned_patients.keys.first].compact.min
     results.full_data_range.each do |(period, count)|

@@ -79,6 +79,8 @@ module Reports
       end
     end
 
+    alias_method :adjusted_patient_counts_without_ltfu, :adjusted_patient_counts
+
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     smart_memoize def complete_assigned_patients_counts
