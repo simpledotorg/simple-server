@@ -16,9 +16,9 @@ Our current reports retrieve their data in a variety of ways:
 We will introduce a [Repository](https://martinfowler.com/eaaCatalog/repository.html) layer that will be responsible for returning reporting data. It will provide a consistent
 interface where callers provide one to many Regions, and one to many Periods, and then can retreive whatever values they want from the Repository for the intersection of those Regions and Periods.
 
-The Repository will be responsible for grabbing the values from whatever queries, calculations, or data sources are necessary, and will also handle any required caching to make sure things are performant.
+The Repository will be responsible for grabbing the values from whatever queries, calculations, or data sources are necessary, and will also handle any required caching to make sure things are performant. We can use technies like [`fetch_multi`](https://apidock.com/rails/ActiveSupport/Cache/Store/fetch_multi) to retreive and set multiple values with one round trip to the cache.
 
-The caching and query implementation will be entirely handled by the Repository (plus any related objects helping), and will be transparent to callers. In other words, callers should be able to ask for
+The caching and query implementation will be entirely handled by the Repository (plus any related objects helping), and will be opaque to callers. In other words, callers should be able to ask for
 things like control rates and patient counts without caring about how the underlying query is actually done.
 
 ## Status
