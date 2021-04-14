@@ -9,11 +9,20 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       facility: create(:facility, name: facility_name),
       scheduled_date: appointment_scheduled_date)
   end
+  let(:appointment_reminder) do
+    create(:appointment_reminder, appointment: appointment, patient: appointment.patient, status: "pending", message: "sms.appointment_reminders.missed_visit_sms_reminder")
+  end
 
   let(:appointment_phone_number) { appointment.patient.latest_mobile_number }
   let(:communication_type) { "missed_visit_sms_reminder" }
   let(:locale) { "en" }
-  let(:expected_message) { "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA." }
+  let(:expected_message) do
+    I18n.t(
+      appointment_reminder.message,
+      facility_name: appointment.facility.name,
+      locale: appointment.patient.address.locale
+    )
+  end
   let(:callback_url) { "https://localhost/api/v3/twilio_sms_delivery" }
 
   before do
@@ -29,7 +38,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       it "sends a reminder SMS" do
         expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-        described_class.perform_async(appointment.id, "missed_visit_sms_reminder", locale)
+        described_class.perform_async(appointment_reminder.id, communication_type)
         described_class.drain
       end
     end
@@ -38,30 +47,31 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       it "sends a reminder WhatsApp" do
         expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
 
-        described_class.perform_async(appointment.id, "missed_visit_whatsapp_reminder", locale)
+        described_class.perform_async(appointment_reminder.id, "missed_visit_whatsapp_reminder")
         described_class.drain
       end
     end
 
     it "records a Communication log if successful" do
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async(appointment_reminder.id, communication_type)
         described_class.drain
       }.to change { Communication.count }.by(1)
     end
 
-    it "does not send if Appointment is missing" do
+    it "raises an error if appointment reminder is not found" do
       expect {
-        described_class.perform_async("12345", communication_type, locale)
+        described_class.perform_async("12345", communication_type)
         described_class.drain
-      }.not_to change { Communication.count }
+      }.to raise_error(ActiveRecord::RecordNotFound)
+      expect(Communication.count).to eq 0
     end
 
     it "does not send if Communication already sent" do
       allow_any_instance_of(Appointment).to receive(:previously_communicated_via?).and_return(true)
 
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async(appointment_reminder.id, communication_type)
         described_class.drain
       }.not_to change { Communication.count }
     end
@@ -71,7 +81,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_raise(Twilio::REST::TwilioError)
 
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async(appointment_reminder.id, communication_type)
         described_class.drain
       }.not_to change { Communication.count }
     end
@@ -85,7 +95,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
             expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-            described_class.perform_async(appointment.id, "missed_visit_sms_reminder", locale)
+            described_class.perform_async(appointment_reminder.id, communication_type)
             described_class.drain
           end
         end
@@ -97,7 +107,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
             expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
 
-            described_class.perform_async(appointment.id, "missed_visit_whatsapp_reminder", locale)
+            described_class.perform_async(appointment_reminder.id, "missed_visit_whatsapp_reminder")
             described_class.drain
           end
         end
@@ -111,7 +121,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
           expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-          described_class.perform_async(appointment.id, "missed_visit_sms_reminder")
+          described_class.perform_async(appointment_reminder.id, communication_type)
           described_class.drain
         end
 
@@ -122,7 +132,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
           expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-          described_class.perform_async(appointment.id, "missed_visit_sms_reminder")
+          described_class.perform_async(appointment_reminder.id, communication_type)
           described_class.drain
         end
 
@@ -133,19 +143,10 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
           expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
-          described_class.perform_async(appointment.id, "missed_visit_sms_reminder")
+          described_class.perform_async(appointment_reminder.id, communication_type)
           described_class.drain
         end
       end
-    end
-
-    it "should raise an error if locale is invalid" do
-      locale = "fr"
-
-      expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
-        described_class.drain
-      }.to raise_error(I18n::InvalidLocale)
     end
   end
 end

@@ -6,11 +6,11 @@ class AppointmentNotification::Worker
 
   DEFAULT_LOCALE = :en
 
-  def perform(appointment_reminder_id)
+  def perform(appointment_reminder_id, communication_type)
     reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
     return if reminder.appointment.previously_communicated_via?(communication_type)
     check_for_errors(reminder)
-    send_message(reminder)
+    send_message(reminder, communication_type)
   end
 
   private
@@ -19,16 +19,13 @@ class AppointmentNotification::Worker
     if reminder.status != "scheduled"
       report_error("scheduled appointment reminder has invalid status")
     end
-    if reminder.next_communication_type.nil?
-      report_error("scheduled appointment reminder does not have a next communication type")
-    end
   end
 
-  def send_message(reminder)
+  def send_message(reminder, communication_type)
     notification_service = NotificationService.new
 
     begin
-      response = if reminder.next_communication_type == "missed_visit_whatsapp_reminder"
+      response = if communication_type == "missed_visit_whatsapp_reminder"
         notification_service.send_whatsapp(
           phone_number(reminder.patient),
           appointment_message(reminder),
@@ -41,20 +38,20 @@ class AppointmentNotification::Worker
           callback_url
         )
       end
-      create_communication(reminder, response)
+      create_communication(reminder, communication_type, response)
       mark_reminder_sent(reminder)
     rescue Twilio::REST::TwilioError => e
       report_error(e)
     end
   end
 
-  def create_communication(reminder, response)
+  def create_communication(reminder, communication_type, response)
     Communication.create_with_twilio_details!(
       appointment: reminder.appointment,
       appointment_reminder: reminder,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
-      communication_type: reminder.next_communication_type
+      communication_type: communication_type
     )
   end
 
@@ -65,7 +62,7 @@ class AppointmentNotification::Worker
   def appointment_message(reminder)
     I18n.t(
       reminder.message,
-      facility_name: appointment.facility.name,
+      facility_name: reminder.appointment.facility.name,
       locale: patient_locale(reminder.patient)
     )
   end
