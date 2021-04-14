@@ -183,13 +183,13 @@ RSpec.shared_examples "a working sync controller updating records" do
 
     it "updates deduped records if a record was merged" do
       deduped_record = create_record_list(1).first
-      merged_record = existing_records.first
+      deleted_record = existing_records.first
       updated_record = updated_records.first
 
       DeduplicationLog.create!(
-        record_type: merged_record.class.to_s,
+        record_type: deleted_record.class.to_s,
         deduped_record_id: deduped_record.id,
-        deleted_record_id: merged_record.id
+        deleted_record_id: deleted_record.id
       )
 
       post :sync_from_user, params: updated_payload, as: :json
