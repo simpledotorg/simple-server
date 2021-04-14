@@ -161,6 +161,10 @@ class Facility < ApplicationRecord
     [self]
   end
 
+  def facility_ids
+    [id]
+  end
+
   def child_region_type
     nil
   end

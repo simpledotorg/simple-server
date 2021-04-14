@@ -10,7 +10,7 @@ class EarliestPatientDataQuery
   def call
     return nil if @region.facilities.blank?
     parameters = {
-      facility_ids: @region.facilities.pluck(:id),
+      facility_ids: @region.facility_ids,
       hypertension: "yes"
     }
     sql = GitHub::SQL.new(<<~SQL, parameters)
