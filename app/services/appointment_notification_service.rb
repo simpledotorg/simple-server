@@ -19,6 +19,9 @@ class AppointmentNotificationService
     next_messaging_time = Communication.next_messaging_time
 
     eligible_appointments.each do |appointment|
+      # i actually don't this is correct. the twilio controller handles resend for failed communications
+      # i think it makes more sense to check for any communications on the appoinment
+      # leaving it in place for now
       next if appointment.previously_communicated_via?(communication_type)
 
       appointment_reminder = create_appointment_reminder(appointment)

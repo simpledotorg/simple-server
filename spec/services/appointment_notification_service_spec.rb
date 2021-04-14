@@ -2,17 +2,17 @@ require "rails_helper"
 
 RSpec.describe AppointmentNotificationService do
   describe "#send_after_missed_visit" do
-    let(:overdue_appointment) do
-      overdue_appointment_id = create(:appointment, :overdue, remind_on: Date.current)
-      Appointment.where(id: overdue_appointment_id)
+    let(:overdue_appointment) { create(:appointment, :overdue, remind_on: Date.current) }
+    let(:overdue_appointment_relation) do
+      Appointment.where(id: overdue_appointment.id).includes(patient: [:phone_numbers], facility: {facility_group: :organization})
     end
     let(:overdue_appointments) do
-      overdue_appointment_ids = create_list(:appointment, 2, :overdue, remind_on: Date.current).map(&:id)
+      overdue_appointment_ids = create_list(:appointment, 2, :overdue, remind_on: Date.current)
       Appointment.where(id: overdue_appointment_ids)
         .includes(patient: [:phone_numbers], facility: {facility_group: :organization})
     end
     let(:recently_overdue_appointments) do
-      recently_overdue_appointment_ids = create_list(:appointment, 2, scheduled_date: 1.day.ago, status: :scheduled, remind_on: Date.current).map(&:id)
+      recently_overdue_appointment_ids = create_list(:appointment, 2, scheduled_date: 1.day.ago, status: :scheduled, remind_on: Date.current)
       Appointment.where(id: recently_overdue_appointment_ids)
         .includes(patient: [:phone_numbers], facility: {facility_group: :organization})
     end
@@ -21,7 +21,7 @@ RSpec.describe AppointmentNotificationService do
       allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
     end
 
-    it "spawns a reminder job for each appointment" do
+    it "spawns a reminder job for each appointment with a remind_on of today" do
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(overdue_appointments.count)
@@ -33,13 +33,21 @@ RSpec.describe AppointmentNotificationService do
       }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
-    it "creates appointment reminders for each provided appointment" do
+    it "spawns reminder jobs for each appointment with a remind_on before today" do
+      ids = create(:appointment, :overdue, remind_on: 100.days.ago)
+      appointments = Appointment.where(id: ids)
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointment)
-      }.to change { overdue_appointment.first.appointment_reminders.count }.by(1)
+        AppointmentNotificationService.send_after_missed_visit(appointments: appointments)
+      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
     end
 
-    it "should send reminders for appointments for which previous reminders failed" do
+    it "creates appointment reminders for provided appointments" do
+      expect(overdue_appointment.appointment_reminders).to be_empty
+      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointment_relation)
+      expect(overdue_appointment.appointment_reminders).not_to be_empty
+    end
+
+    it "should send reminders for appointments for which previous reminders of the type failed" do
       overdue_appointments.each do |appointment|
         communication = FactoryBot.create(:communication, communication_type: "missed_visit_sms_reminder",
                                                           detailable: create(:twilio_sms_delivery_detail, :failed))
