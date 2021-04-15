@@ -33,9 +33,6 @@
     "APPOINTMENT_NOTIFICATION_HOUR_OF_DAY_START": {
       "value": "14"
     },
-    "APPOINTMENT_NOTIFICATION_ORG_IDS": {
-      "value": "89008920-021e-4116-b74c-8edf86180dd6"
-    },
     "BACKFILL_ENCOUNTERS_FOR_BPS_TIMEZONE_OFFSET": {
       "value": "19800"
     },
