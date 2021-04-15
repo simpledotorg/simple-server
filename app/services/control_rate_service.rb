@@ -47,6 +47,7 @@ class ControlRateService
   end
 
   def fetch_all_data
+    results.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
     results.registrations = repository.registration_counts[slug]
     results.assigned_patients = repository.assigned_patients_count[slug]
     results.cumulative_registrations = repository.cumulative_registrations[slug]
@@ -54,7 +55,6 @@ class ControlRateService
     results.adjusted_patient_counts_with_ltfu = repository.adjusted_patient_counts_with_ltfu[slug]
     results.adjusted_patient_counts = repository.adjusted_patient_counts_without_ltfu[slug]
 
-    results.earliest_registration_period = [results.cumulative_registrations.keys.first, results.cumulative_assigned_patients.keys.first].compact.min
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period)
     end
