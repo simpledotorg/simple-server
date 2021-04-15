@@ -158,8 +158,6 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                    .except("address_id")
                    .except("registration_user_id")
                    .except("test_data")
-                   .except("merged_into_patient_id")
-                   .except("merged_by_user_id")
                    .except("deleted_by_user_id"))
             .to eq(updated_patient.with_int_timestamps)
         end
@@ -206,9 +204,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                      .except("address_id")
                      .except("registration_user_id")
                      .except("test_data")
-                     .except("deleted_by_user_id")
-                     .except("merged_into_patient_id")
-                     .except("merged_by_user_id"))
+                     .except("deleted_by_user_id"))
               .to eq(updated_patient.except("address", "phone_numbers", "business_identifiers"))
           end
         end
@@ -248,6 +244,39 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
             expect(db_business_identifier.attributes.with_payload_keys.with_int_timestamps)
               .to eq(updated_business_identifier.merge("metadata" => updated_business_identifier_metadata))
           end
+        end
+      end
+
+      context "when a patient record has been deduped" do
+        it "updates the deduped patient record" do
+          deduped_patient = create(:patient)
+          deleted_patient = existing_patients.first
+          updated_patient_payload = updated_patients_payload.first
+
+          DeduplicationLog.create!(
+            record_type: deleted_patient.class.to_s,
+            deduped_record_id: deduped_patient.id,
+            deleted_record_id: deleted_patient.id
+          )
+
+          post :sync_from_user, params: {patients: updated_patients_payload}, as: :json
+
+          db_patient = model.find(deduped_patient["id"])
+          expect(db_patient.attributes.with_payload_keys.with_int_timestamps
+                           .except("id")
+                           .except("address_id")
+                           .except("registration_user_id")
+                           .except("registration_facility_id")
+                           .except("merged_by_user_id")
+                           .except("merged_into_patient_id")
+                           .except("test_data")
+                           .except("deleted_by_user_id"))
+            .to eq(updated_patient_payload.with_int_timestamps
+                     .except("id")
+                     .except("address")
+                     .except("phone_numbers")
+                     .except("business_identifiers")
+                     .except("registration_facility_id"))
         end
       end
 
