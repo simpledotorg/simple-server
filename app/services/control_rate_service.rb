@@ -48,9 +48,7 @@ class ControlRateService
 
   def fetch_all_data
     results.registrations = repository.registration_counts[slug]
-    results.registrations.default = 0
     results.assigned_patients = repository.assigned_patients_count[slug]
-    results.assigned_patients.default = 0
     results.cumulative_registrations = repository.cumulative_registrations[slug]
     results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
     results.adjusted_patient_counts_with_ltfu = repository.adjusted_patient_counts_with_ltfu[slug]

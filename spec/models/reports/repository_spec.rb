@@ -82,10 +82,10 @@ RSpec.describe Reports::Repository, type: :model do
 
       expect(repo.assigned_patients_count[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.assigned_patients_count[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.assigned_patients_count[slug][july_2020]).to be_nil
+      expect(repo.assigned_patients_count[slug][july_2020]).to eq(0)
       expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.registration_counts[slug][july_2020]).to be_nil
+      expect(repo.registration_counts[slug][july_2020]).to eq(0)
     end
 
     it "gets registration and assigned patient counts for branch new regions with no data" do
