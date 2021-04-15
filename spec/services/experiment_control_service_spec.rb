@@ -106,20 +106,14 @@ describe ExperimentControlService, type: :model do
       expect(experiment.patients.count).to eq(1)
     end
 
-    it "adds patients to treatment groups predictably based on patient id" do
-      patient1 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
-      create(:appointment, patient: patient1, scheduled_date: 10.days.from_now)
-      patient2 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff")
-      create(:appointment, patient: patient2, scheduled_date: 10.days.from_now)
-
-      experiment = create(:experiment)
-      group1 = create(:treatment_group, experiment: experiment, index: 0)
-      group2 = create(:treatment_group, experiment: experiment, index: 1)
+    it "adds patients to treatment groups" do
+      patient = create(:patient, age: 80)
+      create(:appointment, patient: patient, scheduled_date: 10.days.from_now)
+      experiment = create(:experiment, :with_treatment_group)
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      expect(group1.patients.include?(patient2)).to be_truthy
-      expect(group2.patients.include?(patient1)).to be_truthy
+      expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
     end
 
     it "adds reminders for all appointments scheduled in the date range and not for appointments outside the range" do
@@ -226,19 +220,13 @@ describe ExperimentControlService, type: :model do
     end
 
     it "adds patients to treatment groups predictably based on patient id" do
-      patient1 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
-      create(:blood_pressure, patient: patient1, device_created_at: 100.days.ago)
-      patient2 = create(:patient, age: 80, id: "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff")
-      create(:blood_sugar, patient: patient2, device_created_at: 100.days.ago)
-
-      experiment = create(:experiment, experiment_type: "stale_patients")
-      group1 = create(:treatment_group, experiment: experiment, index: 0)
-      group2 = create(:treatment_group, experiment: experiment, index: 1)
+      patient = create(:patient, age: 80)
+      create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
+      experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
 
       ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
 
-      expect(group1.patients.include?(patient2)).to be_truthy
-      expect(group2.patients.include?(patient1)).to be_truthy
+      expect(experiment.treatment_groups.first.patients.include?(patient)).to be_truthy
     end
 
     it "schedules cascading reminders based on reminder templates" do
