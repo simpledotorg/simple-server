@@ -8,7 +8,8 @@ class Admin::PatientImportsController < AdminController
   def create
     authorize { current_admin.power_user? }
 
-    contents = read_xlsx_or_csv_file(params[:patient_import_file])
-    render plain: contents
+    data = read_xlsx_or_csv_file(params[:patient_import_file])
+    params = PatientImport::SpreadsheetTransformer.transform(data)
+    render plain: params
   end
 end
