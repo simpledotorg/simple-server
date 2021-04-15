@@ -161,5 +161,12 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.not_to change { Communication.count }
       expect(reminder.reload.status).to eq("scheduled")
     end
+
+    it "raises an error if appointment reminder is not found" do
+      expect {
+        described_class.perform_async("does-not-exist", communication_type)
+        described_class.drain
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 end
