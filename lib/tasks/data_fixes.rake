@@ -1,4 +1,4 @@
-require "tasks/scripts/move_user_recorded_data_to_registration_facility"
+require "tasks/scripts/move_facility_data"
 require "tasks/scripts/discard_invalid_appointments"
 
 namespace :data_fixes do
@@ -7,7 +7,7 @@ namespace :data_fixes do
     user = User.find(args.user_id)
     source_facility = Facility.find(args.source_facility_id)
     destination_facility = Facility.find(args.destination_facility_id)
-    service = MoveUserRecordedDataToRegistrationFacility.new(user, source_facility, destination_facility)
+    service = MoveFacilityData.new(source_facility, destination_facility, user: user)
     patient_count = service.fix_patient_data
     bp_count = service.fix_blood_pressure_data
     bs_count = service.fix_blood_sugar_data
@@ -18,6 +18,8 @@ namespace :data_fixes do
          "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
          "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
   end
+
+
 
   desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
   task :discard_invalid_scheduled_appointments, [:dry_run] => :environment do |_t, args|

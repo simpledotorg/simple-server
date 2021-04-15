@@ -1,12 +1,12 @@
 require "rails_helper"
-require "tasks/scripts/move_user_recorded_data_to_registration_facility"
+require "tasks/scripts/move_facility_data"
 
-RSpec.describe MoveUserRecordedDataToRegistrationFacility do
+RSpec.describe MoveFacilityData do
   let(:source_facility) { create(:facility) }
   let(:destination_facility) { create(:facility) }
   let(:another_source_facility) { create(:facility) }
   let(:user) { create(:user, registration_facility: destination_facility) }
-  let(:service) { MoveUserRecordedDataToRegistrationFacility.new(user, source_facility, destination_facility) }
+  let(:service) { MoveFacilityData.new(source_facility, destination_facility, user: user) }
 
   describe "#fix_patient_data" do
     let!(:patients_at_correct_facility) { create_list(:patient, 2, registration_user: user, registration_facility: destination_facility) }
