@@ -24,19 +24,21 @@ class AppointmentNotification::Worker
     begin
       response = if communication_type == "missed_visit_whatsapp_reminder"
         notification_service.send_whatsapp(
-          phone_number(reminder.patient),
+          reminder.patient.latest_mobile_number,
           appointment_message(reminder),
           callback_url
         )
       else
         notification_service.send_sms(
-          phone_number(reminder.patient),
+          reminder.patient.latest_mobile_number,
           appointment_message(reminder),
           callback_url
         )
       end
-      create_communication(reminder, communication_type, response)
-      mark_reminder_sent(reminder)
+      ActiveRecord::Base.transaction do
+        create_communication(reminder, communication_type, response)
+        reminder.status_sent!
+      end
     rescue Twilio::REST::TwilioError => e
       report_error(e)
     end
@@ -52,10 +54,6 @@ class AppointmentNotification::Worker
     )
   end
 
-  def mark_reminder_sent(reminder)
-    reminder.status_sent!
-  end
-
   def appointment_message(reminder)
     I18n.t(
       reminder.message,
@@ -66,10 +64,6 @@ class AppointmentNotification::Worker
 
   def patient_locale(patient)
     patient.address&.locale || DEFAULT_LOCALE
-  end
-
-  def phone_number(patient)
-    patient.latest_mobile_number
   end
 
   def callback_url
