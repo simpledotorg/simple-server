@@ -13,7 +13,8 @@ class MoveFacilityData
       bp_count: fix_blood_pressure_data,
       bs_count: fix_blood_sugar_data,
       appointment_count: fix_appointment_data,
-      prescription_drug_count: fix_prescription_drug_data
+      prescription_drug_count: fix_prescription_drug_data,
+      teleconsultation_count: fix_teleconsultation_data
     }
   end
 
@@ -58,7 +59,7 @@ class MoveFacilityData
     fix_data_for_relation(blood_sugars)
   end
 
-  def fix_teleconsultation
+  def fix_teleconsultation_data
     fix_data_for_relation(records_to_move(Teleconsultation, user_key: :requester_id))
   end
 
