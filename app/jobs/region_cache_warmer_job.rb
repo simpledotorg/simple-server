@@ -14,8 +14,8 @@ class RegionCacheWarmerJob
 
     notify "starting region caching for region #{region_id}"
     Statsd.instance.time("region_cache_warmer.#{region_id}") do
-      Reports::RegionService.call(region: region, period: period, with_exclusions: true)
-      Statsd.instance.increment("region_cache_warmer.with_exclusions.#{region.region_type}.cache")
+      Reports::RegionService.call(region: region, period: period)
+      Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
 
       PatientBreakdownService.call(region: region, period: period)
       Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")

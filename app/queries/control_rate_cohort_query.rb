@@ -1,6 +1,7 @@
-# frozen_string_literal: true
-
-class BloodPressureControlQuery
+# A "Cohort" for this query is defined depending on the period:
+#   Month: For patients registered in a month, find BPs taken for them in the following two months
+# . Quarter: For patients registered in a quarter, find BPs tken for them in the following quarter
+class ControlRateCohortQuery
   # Wrap query method calls with the appropriate timezone in which the reports will be consumed
   # This is probably the `Rails.application.config.country[:time_zone]`
   # Example: `Time.use_zone('timezone string') { bp_control_query_object.cohort_patients }`
@@ -10,17 +11,16 @@ class BloodPressureControlQuery
 
   REGISTRATION_BUFFER = 3.months
 
-  def initialize(facilities: Facility.all, cohort_period: {}, with_exclusions: false)
-    # cohort_period is map that contains
-    # - :cohort_period (:quarter/:month),
-    # - :registration_quarter/:registration_month
-    # - :registration_year
+  # cohort_period is map that contains
+  # - :cohort_period (:quarter/:month),
+  # - :registration_quarter/:registration_month
+  # - :registration_year
+  def initialize(facilities: Facility.all, cohort_period: {})
     @cohort_period = cohort_period[:cohort_period]
     @registration_quarter = cohort_period[:registration_quarter]
     @registration_month = cohort_period[:registration_month]
     @registration_year = cohort_period[:registration_year]
     @facilities = Facility.where(id: facilities)
-    @with_exclusions = with_exclusions
   end
 
   def cohort_patients_per_facility
@@ -80,10 +80,7 @@ class BloodPressureControlQuery
   def overall_patients
     @overall_patients ||=
       Patient
-        .for_reports(
-          with_exclusions: @with_exclusions,
-          exclude_ltfu_as_of: Date.today.end_of_month
-        )
+        .for_reports(exclude_ltfu_as_of: Date.today.end_of_month)
         .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
@@ -103,7 +100,7 @@ class BloodPressureControlQuery
   def quarterly_patients
     @quarterly_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_quarter_start(@registration_year, @registration_quarter),
@@ -129,7 +126,7 @@ class BloodPressureControlQuery
   def monthly_patients
     @monthly_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_month_start(@registration_year, @registration_month),

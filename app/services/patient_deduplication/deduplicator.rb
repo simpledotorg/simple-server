@@ -52,10 +52,6 @@ module PatientDeduplication
 
     def mark_as_merged(new_patient)
       @patients.each do |patient|
-        patient.update!(
-          merged_into_patient_id: new_patient.id,
-          merged_by_user_id: @user_id
-        )
         track(Patient, patient, new_patient)
       end
       @patients.map(&:discard_data)
@@ -75,7 +71,6 @@ module PatientDeduplication
         assigned_facility: latest_patient.assigned_facility,
         status: latest_patient.status,
         address: create_address,
-        merged_by_user_id: @user_id,
         **age_and_dob
       }
       Patient.create!(attributes)
