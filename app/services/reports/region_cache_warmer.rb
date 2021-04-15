@@ -6,7 +6,7 @@ module Reports
 
     def initialize(period: RegionService.default_period)
       @period = period
-      notify "queueing region reports cache warming"
+      notify "starting region reports cache warming"
     end
 
     attr_reader :period
@@ -17,6 +17,7 @@ module Reports
         return
       end
 
+      start_time = Time.current
       Region.where.not(region_type: ["organization", "root"]).each do |region|
         warm_region_cache(region)
       end
@@ -27,7 +28,7 @@ module Reports
         end
       end
 
-      notify "queued region reports cache warming"
+      notify "finished region reports cache warming in #{Time.current.to_i - start_time.to_i}s"
     end
 
     def warm_region_cache(region)
