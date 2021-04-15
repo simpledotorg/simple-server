@@ -235,7 +235,7 @@ RSpec.describe MoveFacilityData do
 
   describe "#move_data" do
     context "when user is not supplied" do
-      it do
+      it "moves all data from source facility to destination facility" do
         create_list(:patient, 2, registration_facility: source_facility)
         create_list(:blood_pressure, 2, facility: source_facility)
         create_list(:blood_sugar, 2, facility: source_facility)
