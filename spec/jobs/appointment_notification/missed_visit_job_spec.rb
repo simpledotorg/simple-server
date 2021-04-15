@@ -17,7 +17,7 @@ RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
     allow(FeatureToggle).to receive(:enabled?).with("APPOINTMENT_REMINDERS").and_return(true)
   end
 
-  it "should send reminders to all organizations in env" do
+  it "should send reminders to all organizations" do
     Organization.all.each do |org|
       expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: org.appointments)
     end
