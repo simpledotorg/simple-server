@@ -8,29 +8,23 @@ RSpec.describe MoveFacilityData do
   let(:user) { create(:user, registration_facility: destination_facility) }
 
   describe "#fix_patient_data" do
-    let!(:patients_at_correct_facility) { create_list(:patient, 2, registration_user: user, registration_facility: destination_facility) }
-    let!(:patients_at_source_facility) { create_list(:patient, 2, registration_user: user, registration_facility: source_facility) }
-    let!(:patients_at_another_source_facility) { create_list(:patient, 2, registration_user: user, registration_facility: another_source_facility) }
-
-    it "Moves all patients registered at the wrong facility to the user's registration facility" do
+    it "Moves all patients registered at the source facility to the destination facility" do
+      create_list(:patient, 2, registration_user: user, registration_facility: source_facility)
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_patient_data
       }.to change(Patient.where(registration_user: user, registration_facility: destination_facility), :count).by(2)
     end
 
-    it "Ensures no patients are registered by the user at the wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.to change(Patient.where(registration_user: user, registration_facility: source_facility), :count).to(0)
-    end
+    it "Does not move patients from a different facility" do
+      create_list(:patient, 2, registration_user: user, registration_facility: another_source_facility)
 
-    it "Does not move patients at a different wrong facility to the user's registration facility" do
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_patient_data
       }.not_to change(Patient.where(registration_user: user, registration_facility: another_source_facility), :count)
     end
 
-    it "Updates the patients_at_source_facility's updated at timestamp" do
+    it "Updates the patients at source facility's updated at timestamp" do
+      patients_at_source_facility = create_list(:patient, 2, registration_user: user, registration_facility: source_facility)
       described_class.new(source_facility, destination_facility, user: user).fix_patient_data
 
       patients_at_source_facility.each do |patient|
@@ -39,16 +33,19 @@ RSpec.describe MoveFacilityData do
       end
     end
 
-    it "Doesn't update the patients_at_correct_facility's updated at timestamp" do
+    it "Doesn't update the patients at destination facility's updated at timestamp" do
+      patients_at_destination_facility = create_list(:patient, 2, registration_user: user, registration_facility: destination_facility)
       described_class.new(source_facility, destination_facility, user: user).fix_patient_data
 
-      patients_at_correct_facility.each do |patient|
+      patients_at_destination_facility.each do |patient|
         patient.reload
         expect(patient.updated_at).to eq(patient.created_at)
       end
     end
 
-    it "Updates the patients_at_source_facility's business identifier metadata" do
+    it "Updates the patients at source facility's business identifier metadata" do
+      patients_at_source_facility = create_list(:patient, 2, registration_user: user, registration_facility: source_facility)
+
       described_class.new(source_facility, destination_facility, user: user).fix_patient_data
       patients_at_source_facility.each do |patient|
         patient.reload
@@ -59,34 +56,16 @@ RSpec.describe MoveFacilityData do
   end
 
   describe "#fix_blood_pressures_data" do
-    let!(:bps_at_correct_facility) { create_list(:blood_pressure, 2, facility: destination_facility, user: user) }
-    let!(:bps_at_source_facility) { create_list(:blood_pressure, 2, user: user, facility: source_facility) }
-    let!(:bps_at_another_source_facility) { create_list(:blood_pressure, 2, user: user, facility: another_source_facility) }
-    let!(:encounters) do
-      [bps_at_correct_facility + bps_at_source_facility + bps_at_another_source_facility].flatten.each do |record|
-        create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility)
-      end
-    end
+    it "Moves all blood pressures recorded at the source facility to the destination facility" do
+      create_list(:blood_pressure, 2, user: user, facility: source_facility)
 
-    it "Moves all blood pressures recorded at the wrong facility to the user's registration facility" do
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
       }.to change(BloodPressure.where(user: user, facility: destination_facility), :count).by 2
     end
 
-    it "Ensures no blood pressures are recorded by the user at the wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
-      }.to change(BloodPressure.where(user: user, facility: source_facility), :count).to(0)
-    end
-
-    it "Does not move blood pressures at a different wrong facility to the user's registration facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.not_to change(BloodPressure.where(user: user, facility: another_source_facility), :count)
-    end
-
     it "Updates the bps_at_source_facility's updated at timestamp" do
+      bps_at_source_facility = create_list(:blood_pressure, 2, user: user, facility: source_facility)
       described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
 
       bps_at_source_facility.each do |blood_pressure|
@@ -95,58 +74,43 @@ RSpec.describe MoveFacilityData do
       end
     end
 
-    it "Doesn't update the bps_at_correct_facility's updated at timestamp" do
+    it "Doesn't update the bps_at_destination_facility's updated at timestamp" do
+      bps_at_destination_facility = create_list(:blood_pressure, 2, facility: destination_facility, user: user)
       described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
 
-      bps_at_correct_facility.each do |blood_pressure|
+      bps_at_destination_facility.each do |blood_pressure|
         blood_pressure.reload
         expect(blood_pressure.updated_at).to eq(blood_pressure.created_at)
       end
     end
 
     it "Moves the blood pressures' encounters away from the source facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
-      }.to change(Encounter.where(facility: source_facility), :count).to(0)
+      create_list(:blood_pressure, 2, :with_encounter, user: user, facility: source_facility)
+
+      described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
+
+      expect(Encounter.where(facility: source_facility).count).to eq(0)
+      expect(Encounter.where(facility: destination_facility).count).to eq(2)
     end
 
-    it "Moves the blood pressures' encounters to the destination facility" do
+    it "Does not move encounters from a different source facility" do
       expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
-      }.to change(Encounter.where(facility: destination_facility), :count).to(4)
-    end
-
-    it "Does not move encounters at a different wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_pressure_data
+        described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
       }.not_to(change { Encounter.where(facility: another_source_facility).pluck(:id) })
     end
   end
 
   describe "#fix_appointments_data" do
-    let!(:appointments_at_correct_facility) { create_list(:appointment, 2, facility: destination_facility, user: user) }
-    let!(:appointments_at_source_facility) { create_list(:appointment, 2, facility: source_facility, user: user) }
-    let!(:appointments_at_another_source_facility) { create_list(:appointment, 2, facility: another_source_facility, user: user) }
+    it "Moves all appointments recorded at the source facility to the destination facility" do
+      create_list(:appointment, 2, facility: source_facility, user: user)
 
-    it "Moves all appointments recorded at the wrong facility to the user's registration facility" do
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_appointment_data
       }.to change(Appointment.where(facility: destination_facility), :count).by 2
     end
 
-    it "Ensures no appointments are recorded by the user at the wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_appointment_data
-      }.to change(Appointment.where(facility: source_facility), :count).by(-2)
-    end
-
-    it "Does not move appointments at a different wrong facility to the user's registration facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.not_to change(Appointment.where(facility: another_source_facility), :count)
-    end
-
     it "Updates the appointments_at_source_facility's updated at timestamp" do
+      appointments_at_source_facility = create_list(:appointment, 2, facility: source_facility, user: user)
       described_class.new(source_facility, destination_facility, user: user).fix_appointment_data
 
       appointments_at_source_facility.each do |appointment|
@@ -155,10 +119,12 @@ RSpec.describe MoveFacilityData do
       end
     end
 
-    it "Doesn't update the appointments_at_correct_facility's updated at timestamp" do
+    it "Doesn't update the appointments_at_destination_facility's updated at timestamp" do
+      appointments_at_destination_facility = create_list(:appointment, 2, facility: destination_facility, user: user)
+
       described_class.new(source_facility, destination_facility, user: user).fix_appointment_data
 
-      appointments_at_correct_facility.each do |appointment|
+      appointments_at_destination_facility.each do |appointment|
         appointment.reload
         expect(appointment.updated_at).to eq(appointment.created_at)
       end
@@ -166,29 +132,15 @@ RSpec.describe MoveFacilityData do
   end
 
   describe "#fix_prescription_drugs_data" do
-    let!(:prescription_drugs_at_correct_facility) { create_list(:prescription_drug, 2, facility: destination_facility, user: user) }
-    let!(:prescription_drugs_at_source_facility) { create_list(:prescription_drug, 2, facility: source_facility, user: user) }
-    let!(:prescription_drugs_at_another_source_facility) { create_list(:prescription_drug, 2, facility: another_source_facility, user: user) }
-
-    it "Moves all prescription_drugs recorded at the wrong facility to the user's registration facility" do
+    it "Moves all prescription_drugs recorded at the source facility to the destination facility" do
+      create_list(:prescription_drug, 2, facility: source_facility, user: user)
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_prescription_drug_data
       }.to change(PrescriptionDrug.where(facility: destination_facility), :count).by 2
     end
 
-    it "Ensures no prescription drugs are recorded by the user at the wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_prescription_drug_data
-      }.to change(PrescriptionDrug.where(facility: source_facility), :count).by(-2)
-    end
-
-    it "Does not move prescription drugs at a different wrong facility to the user's registration facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.not_to change(PrescriptionDrug.where(facility: another_source_facility), :count)
-    end
-
     it "Updates the prescription_drugs_at_source_facility's updated at timestamp" do
+      prescription_drugs_at_source_facility = create_list(:prescription_drug, 2, facility: source_facility, user: user)
       described_class.new(source_facility, destination_facility, user: user).fix_prescription_drug_data
 
       prescription_drugs_at_source_facility.each do |prescription_drug|
@@ -197,10 +149,11 @@ RSpec.describe MoveFacilityData do
       end
     end
 
-    it "Doesn't update the prescription_drugs_at_correct_facility's updated at timestamp" do
+    it "Doesn't update the prescription_drugs_at_destination_facility's updated at timestamp" do
+      prescription_drugs_at_destination_facility = create_list(:prescription_drug, 2, facility: destination_facility, user: user)
       described_class.new(source_facility, destination_facility, user: user).fix_prescription_drug_data
 
-      prescription_drugs_at_correct_facility.each do |prescription_drug|
+      prescription_drugs_at_destination_facility.each do |prescription_drug|
         prescription_drug.reload
         expect(prescription_drug.updated_at).to eq(prescription_drug.created_at)
       end
@@ -208,29 +161,15 @@ RSpec.describe MoveFacilityData do
   end
 
   describe "#fix_teleconsultations_data" do
-    let!(:teleconsultations_at_correct_facility) { create_list(:teleconsultation, 2, facility: destination_facility, requester: user) }
-    let!(:teleconsultations_at_source_facility) { create_list(:teleconsultation, 2, facility: source_facility, requester: user) }
-    let!(:teleconsultations_at_another_source_facility) { create_list(:teleconsultation, 2, facility: another_source_facility, requester: user) }
-
-    it "Moves all teleconsultations recorded at the wrong facility to the user's registration facility" do
+    it "Moves all teleconsultations recorded at the source facility to the destination facility" do
+      create_list(:teleconsultation, 2, facility: source_facility, requester: user)
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_teleconsultation_data
       }.to change(Teleconsultation.where(facility: destination_facility), :count).by 2
     end
 
-    it "Ensures no prescription drugs are recorded by the user at the wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_teleconsultation_data
-      }.to change(Teleconsultation.where(facility: source_facility), :count).by(-2)
-    end
-
-    it "Does not move prescription drugs at a different wrong facility to the user's registration facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.not_to change(Teleconsultation.where(facility: another_source_facility), :count)
-    end
-
     it "Updates the teleconsultations_at_source_facility's updated at timestamp" do
+      teleconsultations_at_source_facility = create_list(:teleconsultation, 2, facility: source_facility, requester: user)
       described_class.new(source_facility, destination_facility, user: user).fix_teleconsultation_data
 
       teleconsultations_at_source_facility.each do |teleconsultation|
@@ -239,10 +178,11 @@ RSpec.describe MoveFacilityData do
       end
     end
 
-    it "Doesn't update the teleconsultations_at_correct_facility's updated at timestamp" do
+    it "Doesn't update the teleconsultations_at_destination_facility's updated at timestamp" do
+      teleconsultations_at_destination_facility = create_list(:teleconsultation, 2, facility: destination_facility, requester: user)
       described_class.new(source_facility, destination_facility, user: user).fix_teleconsultation_data
 
-      teleconsultations_at_correct_facility.each do |teleconsultation|
+      teleconsultations_at_destination_facility.each do |teleconsultation|
         teleconsultation.reload
         expect(teleconsultation.updated_at).to eq(teleconsultation.created_at)
       end
@@ -250,35 +190,15 @@ RSpec.describe MoveFacilityData do
   end
 
   describe "#fix_blood_sugars_data" do
-    let!(:blood_sugars_at_correct_facility) { create_list(:blood_sugar, 2, facility: destination_facility, user: user) }
-    let!(:blood_sugars_at_source_facility) { create_list(:blood_sugar, 2, user: user, facility: source_facility) }
-    let!(:blood_sugars_at_another_source_facility) { create_list(:blood_sugar, 2, user: user, facility: another_source_facility) }
-
-    let!(:encounters) do
-      [blood_sugars_at_correct_facility + blood_sugars_at_source_facility + blood_sugars_at_another_source_facility].flatten.each do |record|
-        create(:encounter, :with_observables, patient: record.patient, observable: record, facility: record.facility)
-      end
-    end
-
-    it "Moves all blood sugars recorded at the wrong facility to the user's registration facility" do
+    it "Moves all blood sugars recorded at the source facility to the destination facility" do
+      create_list(:blood_sugar, 2, user: user, facility: source_facility)
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
       }.to change(BloodSugar.where(user: user, facility: destination_facility), :count).by 2
     end
 
-    it "Ensures no blood sugars are recorded by the user at the wrong facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
-      }.to change(BloodSugar.where(user: user, facility: source_facility), :count).to(0)
-    end
-
-    it "Does not move blood sugars at a different wrong facility to the user's registration facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.not_to change(BloodSugar.where(user: user, facility: another_source_facility), :count)
-    end
-
     it "Updates the blood_sugars_at_source_facility's updated at timestamp" do
+      blood_sugars_at_source_facility = create_list(:blood_sugar, 2, user: user, facility: source_facility)
       described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
 
       blood_sugars_at_source_facility.each do |blood_sugar|
@@ -287,28 +207,26 @@ RSpec.describe MoveFacilityData do
       end
     end
 
-    it "Doesn't update the blood_sugars_at_correct_facility's updated at timestamp" do
+    it "Doesn't update the blood_sugars_at_destination_facility's updated at timestamp" do
+      blood_sugars_at_destination_facility = create_list(:blood_sugar, 2, facility: destination_facility, user: user)
       described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
 
-      blood_sugars_at_correct_facility.each do |blood_sugar|
+      blood_sugars_at_destination_facility.each do |blood_sugar|
         blood_sugar.reload
         expect(blood_sugar.updated_at).to eq(blood_sugar.created_at)
       end
     end
 
-    it "Moves the blood sugars' encounters away from the source facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
-      }.to change(Encounter.where(facility: source_facility), :count).to(0)
+    it "Moves the blood sugar's encounters away from the source facility" do
+      create_list(:blood_sugar, 2, :with_encounter, user: user, facility: source_facility)
+
+      described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
+
+      expect(Encounter.where(facility: source_facility).count).to eq(0)
+      expect(Encounter.where(facility: destination_facility).count).to eq(2)
     end
 
-    it "Moves the blood sugars' encounters to the destination facility" do
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
-      }.to change(Encounter.where(facility: destination_facility), :count).to(4)
-    end
-
-    it "Does not move encounters at a different wrong facility" do
+    it "Does not move encounters from a different source facility" do
       expect {
         described_class.new(source_facility, destination_facility, user: user).fix_blood_sugar_data
       }.not_to(change { Encounter.where(facility: another_source_facility).pluck(:id) })
