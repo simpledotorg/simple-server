@@ -7,10 +7,9 @@ end
 
 RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
   describe "#create" do
-    let!(:callback_url) { api_v3_twilio_sms_delivery_url(host: request.host) }
-
+    let(:callback_url) { api_v3_twilio_sms_delivery_url(host: request.host) }
     let(:base_session_id) { SecureRandom.uuid }
-    let!(:base_callback_params) do
+    let(:base_callback_params) do
       {"SmsSid" => base_session_id,
        "SmsStatus" => "delivered",
        "MessageSid" => base_session_id,
@@ -100,7 +99,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         it "schedules a fallback SMS if a whatsapp message failed" do
           session_id = SecureRandom.uuid
           fallback_time = 5.minutes.from_now
-          communication = create(:communication, :missed_visit_whatsapp_reminder)
+          appointment_reminder = create(:appointment_reminder)
+          communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
 
           allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
@@ -112,7 +112,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
           expect(AppointmentNotification::Worker).to receive(:perform_at).with(
             fallback_time,
-            communication.appointment_id,
+            communication.appointment_reminder_id,
             "missed_visit_sms_reminder"
           )
 
