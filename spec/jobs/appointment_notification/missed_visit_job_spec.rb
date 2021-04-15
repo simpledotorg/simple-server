@@ -17,12 +17,10 @@ RSpec.describe AppointmentNotification::MissedVisitJob, type: :job do
     allow(FeatureToggle).to receive(:enabled?).with("APPOINTMENT_REMINDERS").and_return(true)
   end
 
-  it "should send reminders to enabled organizations in env" do
-    enabled_organizations = [ihci, path]
-    allow_any_instance_of(described_class).to receive(:enabled_organizations).and_return(enabled_organizations)
-
-    expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: overdue_appointments_from_ihci)
-    expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: overdue_appointments_from_path)
+  it "should send reminders to all organizations in env" do
+    Organization.all.each do |org|
+      expect(AppointmentNotificationService).to receive(:send_after_missed_visit).with(appointments: org.appointments)
+    end
 
     described_class.perform_now
   end
