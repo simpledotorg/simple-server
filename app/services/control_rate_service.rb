@@ -72,24 +72,8 @@ class ControlRateService
     results
   end
 
-  def registration_counts
-    return @registration_counts if defined? @registration_counts
-
-    @registration_counts = RegisteredPatientsQuery.new.count(region, period_type)
-  end
-
-  def assigned_patients_counts
-    return @assigned_patients_counts if defined? @assigned_patients_counts
-
-    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type)
-  end
-
   def ltfu_patients(period)
-    Patient
-      .for_reports
-      .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.end)
-      .count
+    Patient.for_reports.where(assigned_facility: facilities.pluck(:id)).ltfu_as_of(period.end).count
   end
 
   def quarterly_report?
