@@ -7,19 +7,11 @@ namespace :data_fixes do
     user = User.find(args.user_id)
     source_facility = Facility.find(args.source_facility_id)
     destination_facility = Facility.find(args.destination_facility_id)
-    service = MoveFacilityData.new(source_facility, destination_facility, user: user)
-    patient_count = service.fix_patient_data
-    bp_count = service.fix_blood_pressure_data
-    bs_count = service.fix_blood_sugar_data
-    appointment_count = service.fix_appointment_data
-    prescription_drug_count = service.fix_prescription_drug_data
+    results = MoveFacilityData.new(source_facility, destination_facility, user: user)
     puts "[DATA FIXED]"\
          "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
-         "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
-         "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
+         "#{results}"
   end
-
-
 
   desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
   task :discard_invalid_scheduled_appointments, [:dry_run] => :environment do |_t, args|

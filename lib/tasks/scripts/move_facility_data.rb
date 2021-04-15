@@ -7,6 +7,16 @@ class MoveFacilityData
     @destination_facility = destination_facility
   end
 
+  def move_data
+    {
+      patient_count: fix_patient_data,
+      bp_count: fix_blood_pressure_data,
+      bs_count: fix_blood_sugar_data,
+      appointment_count: fix_appointment_data,
+      prescription_drug_count: fix_prescription_drug_data
+    }
+  end
+
   def fix_patient_data
     patients = records_to_move(
       Patient,
