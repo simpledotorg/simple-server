@@ -22,7 +22,7 @@ module Experimentation
     }, _prefix: true
 
     def self.candidate_patients
-      Patient.from(Patient.with_hypertension, :patients)
+      Patient.with_hypertension
         .contactable
         .where("age >= ?", 18)
         .includes(treatment_group_memberships: [treatment_group: [:experiment]])

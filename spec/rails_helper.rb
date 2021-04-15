@@ -34,9 +34,7 @@ RSpec.configure do |config|
   end
 
   def common_org
-    @common_org ||= begin
-      Organization.find_or_create_by!(name: "Common Test Organization")
-    end
+    @common_org ||= Organization.find_or_create_by!(name: "Common Test Organization")
   end
 
   config.before(:each) do

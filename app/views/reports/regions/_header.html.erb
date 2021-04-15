@@ -99,6 +99,11 @@
                     <%= period.value.to_s(:mon_year) %>
                   </button>
                 <% end %>
+
+                <% if @with_ltfu %>
+                  <!-- Preserve LTFU selection -->
+                  <input type="hidden" name="with_ltfu" value="true">
+                <% end %>
               <% end %>
             </div>
           <% end %>

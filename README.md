@@ -1,7 +1,8 @@
 # Simple Server
 
-[![Build Status](https://resolvetosavelives.semaphoreci.com/badges/simple-server/branches/master.svg)](https://resolvetosavelives.semaphoreci.com/projects/simple-server)
+[![Build Status](https://simple.semaphoreci.com/badges/simple-server/branches/master.svg)](https://simple.semaphoreci.com/projects/simple-server)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
+
 
 This is the backend for the Simple app to help track hypertensive patients across a population.
 
@@ -292,7 +293,7 @@ Simple Server is deployed to several environments using a mixture of tools.
 * Ansible: Server management and configuration is done using Ansible. See the [deployment repository](https://github.com/simpledotorg/deployment/tree/master/ansible)
   for more information.
 * Capistrano: Application code is deployed to servers for a specific country and environment using Capistrano.
-* SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to Sandbox via Semaphore after CI has run successfully.  
+* SemaphoreCI: Continuous deployment - all merges to master are auto-deployed to Sandbox via Semaphore after CI has run successfully.
 
 To make a full production release, run the release script from master:
 
