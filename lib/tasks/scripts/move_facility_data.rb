@@ -85,7 +85,7 @@ class MoveFacilityData
     patient_business_identifiers =
       patients
         .flat_map(&:business_identifiers)
-        .select { |pbi| (metadata_to_select_identifiers - pbi.metadata).empty? }
+        .select { |pbi| (metadata_to_select_identifiers.to_a - pbi.metadata.to_a).empty? }
 
     Rails.logger.info "Fixing metadata for #{patient_business_identifiers.count} PatientBusinessIdentifier records,"\
                       "changing assigning_facility_id to #{destination_facility.name}"

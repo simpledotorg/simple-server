@@ -7,7 +7,7 @@ namespace :data_fixes do
     user = User.find(args.user_id)
     source_facility = Facility.find(args.source_facility_id)
     destination_facility = Facility.find(args.destination_facility_id)
-    results = MoveFacilityData.new(source_facility, destination_facility, user: user)
+    results = MoveFacilityData.new(source_facility, destination_facility, user: user).move_data
     puts "[DATA FIXED]"\
          "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
          "#{results}"
