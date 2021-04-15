@@ -2,6 +2,16 @@ require "tasks/scripts/move_facility_data"
 require "tasks/scripts/discard_invalid_appointments"
 
 namespace :data_fixes do
+  desc "Move all data from a source facility to a destination facility"
+  task :move_data_from_source_to_destination_facility, [:source_facility_id, :destination_facility_id] => :environment do |_t, args|
+    source_facility = Facility.find(args.source_facility_id)
+    destination_facility = Facility.find(args.destination_facility_id)
+    results = MoveFacilityData.new(source_facility, destination_facility).move_data
+    puts "[DATA FIXED]"\
+         "source: #{source_facility.name}, destination: #{destination_facility.name}, "\
+         "#{results}"
+  end
+
   desc "Move all data recorded by a user from a source facility to a destination facility"
   task :move_user_data_from_source_to_destination_facility, [:user_id, :source_facility_id, :destination_facility_id] => :environment do |_t, args|
     user = User.find(args.user_id)
