@@ -151,5 +151,13 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         expect(TwilioSmsDeliveryDetail.count).to be(0)
       end
     end
+
+    context ":not_found" do
+      it "returns 404 when twilio detail is not found" do
+        set_twilio_signature_header(callback_url, base_callback_params)
+        post :create, params: base_callback_params
+        expect(response).to have_http_status(404)
+      end
+    end
   end
 end

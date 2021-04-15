@@ -4,6 +4,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
 
   def create
     twilio_message = TwilioSmsDeliveryDetail.find_by(session_id: message_session_id)
+    return head :not_found unless twilio_message
 
     twilio_message.update(update_params)
     communication_type = twilio_message.communication.communication_type
