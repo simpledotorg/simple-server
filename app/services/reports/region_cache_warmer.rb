@@ -17,17 +17,32 @@ module Reports
         return
       end
 
-      Region.where.not(region_type: ["organization", "root"]).pluck(:id).each do |region_id|
-        RegionCacheWarmerJob.perform_async(region_id, period.attributes)
+      Region.where.not(region_type: ["organization", "root"]).each do |region|
+        warm_region_cache(region)
       end
 
       if Flipper.feature(:organization_reports).state.in?([:on, :conditional])
-        Region.where(region_type: "organization").pluck(:id).each do |region_id|
-          RegionCacheWarmerJob.perform_async(region_id, period.attributes)
+        Region.where(region_type: "organization").each do |region|
+          warm_region_cache(region)
         end
       end
 
       notify "queued region reports cache warming"
+    end
+
+    def warm_region_cache(region)
+      RequestStore.store[:bust_cache] = true
+
+      notify "starting region caching for region #{region.id}"
+      Statsd.instance.time("region_cache_warmer.#{region.id}") do
+        Reports::RegionService.call(region: region, period: period)
+        Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
+
+        PatientBreakdownService.call(region: region, period: period)
+        Statsd.instance.increment("patient_breakdown_service.#{region.region_type}.cache")
+      end
+
+      notify "finished region caching for region #{region.id}"
     end
 
     private
