@@ -15,6 +15,7 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
+      raise ArgumentError, "Quarter periods not supported" if @period_type != :month
     end
 
     attr_reader :control_rate_query
