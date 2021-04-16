@@ -19,14 +19,20 @@ class MoveFacilityData
   end
 
   def fix_patient_data
-    patients = records_to_move(
+    registered_patients = records_to_move(
       Patient,
       user_key: :registration_user,
       facility_key: :registration_facility
     )
-    fix_pbi_metadata(patients)
-    fix_data_for_relation(patients, facility_key: :registration_facility)
-    fix_data_for_relation(patients, facility_key: :assigned_facility)
+    fix_pbi_metadata(registered_patients)
+    fix_data_for_relation(registered_patients, facility_key: :registration_facility)
+
+    assigned_patients = records_to_move(
+      Patient,
+      user_key: :registration_user,
+      facility_key: :assigned_facility
+    )
+    fix_data_for_relation(assigned_patients, facility_key: :assigned_facility)
   end
 
   def fix_appointment_data
