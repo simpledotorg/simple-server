@@ -17,7 +17,6 @@ RSpec.describe ControlRateService, type: :model do
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
   end
@@ -215,52 +214,6 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:uncontrolled_patients][report_month]).to eq(0)
     expect(result[:uncontrolled_patients_rate][report_month]).to eq(0)
     expect(result[:uncontrolled_patients_with_ltfu_rate][report_month]).to eq(0)
-  end
-
-  it "quarterly control rate looks only at patients registered in the previous quarter" do
-    facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
-    facility = facilities.first
-    facility_2 = create(:facility)
-
-    controlled_in_q1 = create_list(:patient, 3, recorded_at: jan_2020, assigned_facility: facility, registration_user: user)
-    controlled_in_q1.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    controlled_in_q3 = create_list(:patient, 3, recorded_at: june_1_2020, assigned_facility: facility, registration_user: user)
-    controlled_in_q3.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    uncontrolled_in_q3 = create_list(:patient, 7, recorded_at: june_1_2020, assigned_facility: facility, registration_user: user)
-    uncontrolled_in_q3.each do |patient|
-      create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    controlled_in_q3_other_region = create_list(:patient, 3, recorded_at: june_1_2020, assigned_facility: facility_2, registration_user: user)
-    controlled_in_q3_other_region.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility_2, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    refresh_views
-
-    periods = Period.quarter(july_2018)..Period.quarter(july_2020)
-    service = ControlRateService.new(facility_group_1, periods: periods)
-    result = service.call
-
-    # expect(result[:registrations].keys.size).to eq(3) # 3 quarters of data
-    # expect(result[:registrations].keys.first.to_s).to eq("Q1-2020")
-    # expect(result[:registrations].keys.last.to_s).to eq("Q3-2020")
-
-    q1_2020 = Period.quarter("Q1-2020")
-    q3_2020 = Period.quarter("Q3-2020")
-    expect(result[:assigned_patients][q1_2020]).to eq(3)
-    expect(result[:cumulative_assigned_patients][q1_2020]).to eq(3)
-    expect(result[:cumulative_assigned_patients][q3_2020]).to eq(13)
-    expect(result[:controlled_patients][q3_2020]).to eq(3)
-    expect(result[:controlled_patients_rate][q3_2020]).to eq(30.0)
-    expect(result[:uncontrolled_patients][q3_2020]).to eq(7)
-    expect(result[:uncontrolled_patients_rate][q3_2020]).to eq(70.0)
   end
 
   it "returns control rate for a single facility" do
