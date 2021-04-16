@@ -10,9 +10,11 @@ RSpec.describe MoveFacilityData do
   describe "#fix_patient_data" do
     it "Moves all patients registered at the source facility to the destination facility" do
       create_list(:patient, 2, registration_user: user, registration_facility: source_facility)
-      expect {
-        described_class.new(source_facility, destination_facility, user: user).fix_patient_data
-      }.to change(Patient.where(registration_user: user, registration_facility: destination_facility), :count).by(2)
+
+      described_class.new(source_facility, destination_facility, user: user).fix_patient_data
+
+      expect(Patient.where(registration_user: user, registration_facility: destination_facility).count).to eq(2)
+      expect(Patient.where(registration_user: user, assigned_facility: destination_facility).count).to eq(2)
     end
 
     it "Does not move patients from a different facility" do

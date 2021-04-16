@@ -26,6 +26,7 @@ class MoveFacilityData
     )
     fix_pbi_metadata(patients)
     fix_data_for_relation(patients, facility_key: :registration_facility)
+    fix_data_for_relation(patients, facility_key: :assigned_facility)
   end
 
   def fix_appointment_data
@@ -66,7 +67,7 @@ class MoveFacilityData
   private
 
   def fix_data_for_relation(relation, facility_key: :facility)
-    Rails.logger.info "Moving #{relation.count} #{relation.klass} records"\
+    Rails.logger.info "Moving #{facility_key} of #{relation.count} #{relation.klass} records"\
                       "to #{destination_facility.name}"
     updated_records = relation.update(facility_key => destination_facility)
     updated_records.count
