@@ -8,6 +8,7 @@ module Reports
       @regions = Array(regions)
       @no_bp_measure_query = NoBPMeasureQuery.new
       @control_rate_query = ControlRateQuery.new
+      @earliest_patient_data_query = EarliestPatientDataQuery.new
 
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -19,6 +20,7 @@ module Reports
     end
 
     attr_reader :control_rate_query
+    attr_reader :earliest_patient_data_query
     attr_reader :no_bp_measure_query
     attr_reader :periods
     attr_reader :period_type
@@ -37,7 +39,7 @@ module Reports
     memoize def earliest_patient_recorded_at
       region_entries = regions.map { |region| RegionEntry.new(region, __method__) }
       cached_results = cache.fetch_multi(*region_entries, force: bust_cache?) { |region_entry|
-        EarliestPatientDataQuery.call(region_entry.region)
+        earliest_patient_data_query.call(region_entry.region)
       }
       cached_results.each_with_object({}) { |(region_entry, time), results| results[region_entry.slug] = time }
     end

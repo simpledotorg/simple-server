@@ -1,16 +1,12 @@
 class EarliestPatientDataQuery
-  def self.call(*args)
-    new(*args).call
+  def self.call(region)
+    new.call(region)
   end
 
-  def initialize(region)
-    @region = region
-  end
-
-  def call
-    return nil if @region.facilities.blank?
+  def call(region)
+    return nil if region.facilities.blank?
     parameters = {
-      facility_ids: @region.facility_ids,
+      facility_ids: region.facility_ids,
       hypertension: "yes"
     }
     sql = GitHub::SQL.new(<<~SQL, parameters)
