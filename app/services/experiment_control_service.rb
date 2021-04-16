@@ -11,7 +11,7 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = Experimentation::CurrentPatientSelection.call(start_date: experiment_start, end_date: experiment_end).shuffle
+      eligible_ids = Experimentation::CurrentPatientSelection.call(start_date: experiment_start, end_date: experiment_end).shuffle!
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
       eligible_ids = eligible_ids.pop(experiment_patient_count)
