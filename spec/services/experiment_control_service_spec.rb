@@ -219,7 +219,7 @@ describe ExperimentControlService, type: :model do
       expect(experiment.patients.include?(patient3)).to be_truthy
     end
 
-    it "adds patients to treatment groups predictably based on patient id" do
+    it "adds patients to treatment groups" do
       patient = create(:patient, age: 80)
       create(:blood_pressure, patient: patient, device_created_at: 100.days.ago)
       experiment = create(:experiment, :with_treatment_group, experiment_type: "stale_patients")
