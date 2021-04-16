@@ -41,8 +41,7 @@ class Region < ApplicationRecord
   end
 
   def reportable_region?
-    return true if CountryConfig.current[:extended_region_reports]
-    region_type.in?(["district", "facility"])
+    region_type.in?(CountryConfig.current[:reportable_regions])
   end
 
   def reportable_children

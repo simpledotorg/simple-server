@@ -46,15 +46,55 @@ RSpec.describe Region, type: :model do
       expect(district.child_region_type).to be_nil
     end
   end
+  
+  describe "reportable_region" do
+    it "is everything but root and org for India" do
+      expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
+
+      root = Region.root
+      org = Seed.seed_org.region
+      state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      fg = FactoryBot.create(:facility_group, region: district)
+      facility = FactoryBot.create(:facility, facility_group: fg)
+      facility_region = facility.region
+      block = facility_region.block_region
+      expect(root).to_not be_reportable_region
+      expect(org).to_not be_reportable_region
+      expect(state).to be_reportable_region
+      expect(district).to be_reportable_region
+      expect(block).to be_reportable_region
+      expect(facility_region).to be_reportable_region
+    end
+
+    it "is just district and facility in Bangladesh" do
+      expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD)).at_least(:once)
+
+      root = Region.root
+      org = Seed.seed_org.region
+      state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
+      district = FactoryBot.create(:region, :district, reparent_to: state)
+      fg = FactoryBot.create(:facility_group, region: district)
+      facility = FactoryBot.create(:facility, facility_group: fg)
+      facility_region = facility.region
+      block = facility_region.block_region
+      [root, org, state, block].each do |non_reportable|
+        expect(non_reportable).to_not be_reportable_region
+      end
+      expect(district).to be_reportable_region
+      expect(facility_region).to be_reportable_region
+    end
+  end
 
   describe "reportable_children" do
-    it "is everything for India" do
+    it "is everything except the Org for India" do
       expect(CountryConfig).to receive(:current).and_return(CountryConfig.for(:IN)).at_least(:once)
 
       state = FactoryBot.create(:region, :state, reparent_to: Seed.seed_org.region)
       district = FactoryBot.create(:region, :district, reparent_to: state)
       fg = FactoryBot.create(:facility_group, region: district)
       facility = FactoryBot.create(:facility, facility_group: fg)
+      expect(Region.root.reportable_children).to match_array(["foo"])
       expect(district.reportable_children).to match_array(district.block_regions)
       expect(district.block_regions.first.reportable_children).to match_array([facility.region])
     end
