@@ -39,7 +39,7 @@ class DistrictAnalyticsQuery
   def total_assigned_patients
     @total_assigned_patients ||=
       Patient
-        .with_hypertension
+        .for_reports
         .where(assigned_facility: facilities)
         .group(:assigned_facility_id)
         .count
@@ -54,7 +54,7 @@ class DistrictAnalyticsQuery
   def total_registered_patients
     @total_registered_patients ||=
       Patient
-        .with_hypertension
+        .for_reports
         .joins(:registration_facility)
         .where(facilities: {id: facilities})
         .group("facilities.id")

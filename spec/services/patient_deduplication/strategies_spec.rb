@@ -93,5 +93,15 @@ RSpec.describe PatientDeduplication::Strategies do
       expect(described_class.identifier_excluding_full_name_match_for_facilities(facilities: [patient_dup.registration_facility]).count).to eq 1
       expect(described_class.identifier_excluding_full_name_match_for_facilities(facilities: [other_facility]).count).to eq 0
     end
+
+    it "does not return patients with same identifiers but different types" do
+      patient_1 = create(:patient, full_name: "Patient 1")
+      passport_id = patient_1.business_identifiers.first.identifier
+
+      patient_2 = create(:patient, full_name: "Patient 2")
+      patient_2.business_identifiers.first.update(identifier: passport_id, identifier_type: "bangladesh_national_id")
+
+      expect(described_class.identifier_excluding_full_name_match).to be_empty
+    end
   end
 end
