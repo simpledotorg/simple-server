@@ -4,15 +4,6 @@ class ExperimentControlService
   BATCH_SIZE = 100
 
   class << self
-    def current_patient_candidates(start_date, end_date)
-      Experimentation::Experiment.candidate_patients
-        .joins(:appointments)
-        .merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
-        .distinct
-        .pluck(:id)
-    end
-
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients")
       experiment_start = days_til_start.days.from_now.beginning_of_day
@@ -20,7 +11,7 @@ class ExperimentControlService
 
       experiment.update!(state: "selecting", start_date: experiment_start.to_date, end_date: experiment_end.to_date)
 
-      eligible_ids = current_patient_candidates(experiment_start, experiment_end).shuffle!
+      eligible_ids = Experimentation::CurrentPatientSelection.call(start_date: experiment_start, end_date: experiment_end).shuffle
 
       experiment_patient_count = (0.01 * percentage_of_patients * eligible_ids.length).round
       eligible_ids = eligible_ids.pop(experiment_patient_count)
