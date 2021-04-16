@@ -126,7 +126,7 @@ class Facility < ApplicationRecord
     )
   end
 
-  def update_region
+  private def update_region
     region.reparent_to = block_region
     region.name = name
     region.save!
@@ -140,9 +140,6 @@ class Facility < ApplicationRecord
   def source
     self
   end
-
-  private :update_region
-  # ----------------
 
   def hypertension_follow_ups_by_period(*args)
     patients
@@ -233,5 +230,31 @@ class Facility < ApplicationRecord
   def localized_facility_size
     return unless facility_size
     I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
+  end
+
+  LOCALE_MAP = {
+    "Bangladesh" => {default: "bn_BD"},
+    "Ethiopia" => {
+      "default" => "am_ET",
+      "Addis Ababa" => "am_ET",
+      "Amhara" => "am_ET",
+      "Dire Dawa" => "am_ET",
+      "Oromia" => "or_ET",
+      "Somali" => "so_ET",
+      "Tigray" => "ti_ET"
+    },
+    "India" => {
+      "default" => "hi_IN",
+      "Andhra Pradesh" => "te_IN",
+      "Karnataka" => "kn_IN",
+      "Maharashtra" => "mr_IN",
+      "Punjab" => "pa_Guru_IN",
+      "Tamil Nadu" => "ta_IN",
+      "Telangana" => "te_IN",
+      "West Bengal" => "bn_IN"
+    }
+  }.freeze
+  def locale
+    LOCALE_MAP[country][state] || LOCALE_MAP[country]["default"]
   end
 end
