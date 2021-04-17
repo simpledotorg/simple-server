@@ -28,6 +28,7 @@ RSpec.describe Seed::PatientSeeder do
     end
     expect(facility.assigned_patients.count).to eq(4)
     expect(facility.assigned_patients.with_hypertension.count).to eq(4)
-    expect(facility.assigned_patients.with_hypertension.where(status: "active").count).to be >= 3
+    # This is a loose expectation because we introduce randomness into our patient statuses
+    expect(facility.assigned_patients.with_hypertension.where(status: "active").count).to be >= 2
   end
 end

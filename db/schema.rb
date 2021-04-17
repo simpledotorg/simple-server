@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_10_122746) do
+ActiveRecord::Schema.define(version: 2021_04_12_122537) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -45,6 +45,23 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
     t.index ["zone"], name: "index_addresses_on_zone"
+  end
+
+  create_table "appointment_reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "remind_on", null: false
+    t.string "status", null: false
+    t.string "message", null: false
+    t.uuid "experiment_id"
+    t.uuid "reminder_template_id"
+    t.uuid "patient_id", null: false
+    t.uuid "appointment_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_appointment_reminders_on_appointment_id"
+    t.index ["experiment_id"], name: "index_appointment_reminders_on_experiment_id"
+    t.index ["patient_id"], name: "index_appointment_reminders_on_patient_id"
+    t.index ["reminder_template_id"], name: "index_appointment_reminders_on_reminder_template_id"
   end
 
   create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -151,6 +168,18 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.index ["version"], name: "unique_data_migrations", unique: true
   end
 
+  create_table "deduplication_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id"
+    t.string "record_type", null: false
+    t.string "deleted_record_id", null: false
+    t.string "deduped_record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["record_type", "deleted_record_id"], name: "idx_deduplication_logs_lookup_deleted_record", unique: true
+    t.index ["user_id"], name: "index_deduplication_logs_on_user_id"
+  end
+
   create_table "drug_stocks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "facility_id", null: false
     t.uuid "user_id", null: false
@@ -232,6 +261,17 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.index ["patient_phone_number_id"], name: "index_exotel_phone_number_details_on_patient_phone_number_id"
     t.index ["patient_phone_number_id"], name: "index_unique_exotel_phone_number_details_on_phone_number_id", unique: true
     t.index ["whitelist_status"], name: "index_exotel_phone_number_details_on_whitelist_status"
+  end
+
+  create_table "experiments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "state", default: "new", null: false
+    t.string "experiment_type", null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_experiments_on_name", unique: true
   end
 
   create_table "facilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -417,8 +457,6 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.uuid "deleted_by_user_id"
     t.string "deleted_reason"
     t.uuid "assigned_facility_id"
-    t.uuid "merged_into_patient_id"
-    t.uuid "merged_by_user_id"
     t.index ["address_id"], name: "index_patients_on_address_id"
     t.index ["assigned_facility_id"], name: "index_patients_on_assigned_facility_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
@@ -513,6 +551,15 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.index ["source_type", "source_id"], name: "index_regions_on_source_type_and_source_id"
   end
 
+  create_table "reminder_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "message", null: false
+    t.integer "remind_on_in_days", null: false
+    t.uuid "treatment_group_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["treatment_group_id"], name: "index_reminder_templates_on_treatment_group_id"
+  end
+
   create_table "teleconsultations", id: :uuid, default: nil, force: :cascade do |t|
     t.uuid "patient_id", null: false
     t.uuid "medical_officer_id", null: false
@@ -536,6 +583,24 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
     t.index ["patient_id"], name: "index_teleconsultations_on_patient_id"
     t.index ["requested_medical_officer_id"], name: "index_teleconsultations_on_requested_medical_officer_id"
     t.index ["requester_id"], name: "index_teleconsultations_on_requester_id"
+  end
+
+  create_table "treatment_group_memberships", force: :cascade do |t|
+    t.uuid "treatment_group_id", null: false
+    t.uuid "patient_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id"], name: "index_treatment_group_memberships_on_patient_id"
+    t.index ["treatment_group_id"], name: "index_treatment_group_memberships_on_treatment_group_id"
+  end
+
+  create_table "treatment_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "index", null: false
+    t.string "description", null: false
+    t.uuid "experiment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["experiment_id"], name: "index_treatment_groups_on_experiment_id"
   end
 
   create_table "twilio_sms_delivery_details", force: :cascade do |t|
@@ -584,6 +649,10 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
   end
 
   add_foreign_key "accesses", "users"
+  add_foreign_key "appointment_reminders", "appointments"
+  add_foreign_key "appointment_reminders", "experiments"
+  add_foreign_key "appointment_reminders", "patients"
+  add_foreign_key "appointment_reminders", "reminder_templates"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
@@ -600,13 +669,15 @@ ActiveRecord::Schema.define(version: 2021_03_10_122746) do
   add_foreign_key "patients", "addresses"
   add_foreign_key "patients", "facilities", column: "assigned_facility_id"
   add_foreign_key "patients", "facilities", column: "registration_facility_id"
-  add_foreign_key "patients", "patients", column: "merged_into_patient_id"
-  add_foreign_key "patients", "users", column: "merged_by_user_id"
   add_foreign_key "protocol_drugs", "protocols"
+  add_foreign_key "reminder_templates", "treatment_groups"
   add_foreign_key "teleconsultations", "facilities"
   add_foreign_key "teleconsultations", "users", column: "medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requested_medical_officer_id"
   add_foreign_key "teleconsultations", "users", column: "requester_id"
+  add_foreign_key "treatment_group_memberships", "patients"
+  add_foreign_key "treatment_group_memberships", "treatment_groups"
+  add_foreign_key "treatment_groups", "experiments"
 
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (

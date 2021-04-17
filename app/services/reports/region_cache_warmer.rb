@@ -17,8 +17,14 @@ module Reports
         return
       end
 
-      Region.where.not(region_type: ["root", "organization"]).pluck(:id).each do |region_id|
+      Region.where.not(region_type: ["organization", "root"]).pluck(:id).each do |region_id|
         RegionCacheWarmerJob.perform_async(region_id, period.attributes)
+      end
+
+      if Flipper.feature(:organization_reports).state.in?([:on, :conditional])
+        Region.where(region_type: "organization").pluck(:id).each do |region_id|
+          RegionCacheWarmerJob.perform_async(region_id, period.attributes)
+        end
       end
 
       notify "queued region reports cache warming"

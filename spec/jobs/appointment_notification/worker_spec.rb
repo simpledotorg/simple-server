@@ -13,7 +13,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
   let(:appointment_phone_number) { appointment.patient.latest_mobile_number }
   let(:communication_type) { "missed_visit_sms_reminder" }
   let(:locale) { "en" }
-  let(:expected_message) { "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA." }
+  let(:expected_message) { "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre." }
   let(:callback_url) { "https://localhost/api/v3/twilio_sms_delivery" }
 
   before do
@@ -118,7 +118,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         it "defaults to English if address is missing" do
           appointment.patient.update!(address: nil)
 
-          expected_message = "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA."
+          expected_message = "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
 
           expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 
@@ -129,7 +129,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         it "defaults to English if address state is unrecognized" do
           appointment.patient.address.update!(state: "Unknown State")
 
-          expected_message = "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre. Contact your ANM or ASHA."
+          expected_message = "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
 
           expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
 

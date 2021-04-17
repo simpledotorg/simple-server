@@ -25,7 +25,6 @@ RSpec.describe RegionCacheWarmerJob, type: :job do
     period = Period.month(Time.current.beginning_of_month)
 
     expect(Reports::RegionService).to receive(:call).with(region: facility.region, period: period)
-    expect(Reports::RegionService).to receive(:call).with(region: facility.region, period: period, with_exclusions: true)
 
     described_class.perform_async(facility.region.id, period.attributes)
     described_class.drain
