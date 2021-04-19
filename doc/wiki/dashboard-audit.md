@@ -24,7 +24,7 @@ Reviewing the following Dashboard queries to ensure we're displaying and describ
 Hypertension patients registered during a month in `region_name`
 
 **How it's calculated**
-The number of patients registered at a facility that have at least one BP in the following 2 months after their registration month and where the patient:
+The number of patients registered at a facility registered at a facility during a month where the patient:
 + Is not deleted
 + Is hypertensive
 
