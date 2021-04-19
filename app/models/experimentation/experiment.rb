@@ -30,7 +30,7 @@ module Experimentation
     end
 
     def random_treatment_group
-      treatment_groups[rand(0..treatment_groups.count - 1)]
+      treatment_groups.sample
     end
 
     private
