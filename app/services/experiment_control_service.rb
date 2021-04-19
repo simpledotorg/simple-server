@@ -33,7 +33,7 @@ class ExperimentControlService
           .where(appointments: {scheduled_date: experiment_start..experiment_end})
 
         patients.each do |patient|
-          group = experiment.group_for(patient.id)
+          group = experiment.random_treatment_group
           patient.appointments.each do |appointment|
             schedule_reminders(patient, appointment, group, appointment.scheduled_date)
           end
@@ -60,7 +60,7 @@ class ExperimentControlService
         break if daily_ids.empty?
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
-          group = experiment.group_for(patient.id)
+          group = experiment.random_treatment_group
           schedule_reminders(patient, patient.appointments.last, group, schedule_date)
           group.patients << patient
         end

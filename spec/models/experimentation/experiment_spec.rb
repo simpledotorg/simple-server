@@ -36,4 +36,14 @@ RSpec.describe Experimentation::Experiment, type: :model do
       expect(experiment).to be_valid
     end
   end
+
+  describe "#random_treatment_group" do
+    it "returns a treatment group from the experiment" do
+      experiment1 = create(:experiment, :with_treatment_group)
+      experiment2 = create(:experiment, :with_treatment_group)
+
+      expect(experiment1.random_treatment_group).to eq(experiment1.treatment_groups.first)
+      expect(experiment2.random_treatment_group).to eq(experiment2.treatment_groups.first)
+    end
+  end
 end

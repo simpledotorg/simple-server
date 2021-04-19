@@ -31,7 +31,7 @@ module Reports
       result.calculate_percentages(:visited_without_bp_taken)
       result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
 
-      start_period = [result.earliest_registration_period, range.begin].compact.max
+      start_period = [repository.earliest_patient_recorded_at_period[region.slug], range.begin].compact.max
       calc_range = (start_period..range.end)
       result.calculate_missed_visits(calc_range)
       result.calculate_missed_visits(calc_range, with_ltfu: true)
