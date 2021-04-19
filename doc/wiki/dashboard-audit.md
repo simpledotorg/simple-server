@@ -325,7 +325,7 @@ The number of patients assigned to a facility where the patient:
 + Is not dead
 + Is not deleted
 
-*Sample SQL query*
+### Lost to follow-up SQL query
 ```sql
 SELECT DISTINCT "patients".*
 FROM "patients"
@@ -372,7 +372,7 @@ The number of patients assigned to a facility during a month where the patient:
 + Is not deleted
 + Was not registered during that month
 
-*Sample SQL query*
+### Follow-up patients SQL query
 ```sql
 SELECT COUNT (DISTINCT "patients"."id") AS count_id,
              DATE_TRUNC('month', blood_pressures.recorded_at::timestamptz AT TIME ZONE 'ASIA/KOLKATA') AT TIME ZONE 'ASIA/KOLKATA' AS date_trunc_month_blood_pressures_recorded_at_timestamptz_at_tim,
@@ -418,7 +418,7 @@ First we calculate total active facilities (Facilities where >10 patients had an
 
 To calculate inactive facilities, the query grabs all the other facilities the admin has access to (inactive = total facilities - active facilities)
 
-*Sample SQL query*
+### Inactive facilities SQL query
 ```sql
 SELECT "blood_pressures_per_facility_per_days"."facility_id"
 FROM "blood_pressures_per_facility_per_days"
@@ -492,7 +492,7 @@ Counts all blood pressures recorded by each user at a facility where the patient
 + Is hypertensive
 + Is not deleted 
 
-*Sample SQL query*
+### BP measure taken SQL query
 ```sql
 SELECT Count(DISTINCT "blood_pressures"."id") AS count_id,
        Date_trunc('month', "blood_pressures"."recorded_at"),
@@ -589,7 +589,7 @@ The result for all assigned hypertensive patients registered in a month at their
   + Is not deleted
   + Is not dead
 
-*Sample SQL denominator query*
+### Monthly cohort reports SQL denominator query
 ```sql
 SELECT COUNT(DISTINCT "patients"."id")
 FROM "patients"
@@ -614,7 +614,7 @@ WHERE "patients"."deleted_at" IS NULL
                                                          ["id", "acc3da36-c5d2-42e1-a1fe-29d6a40b0580"]]
 ```
 
-*Sample SQL BP controlled numerator*
+### Monthly cohort reports SQL BP controlled numerator
 ```sql
 SELECT COUNT(*)
 FROM
@@ -654,7 +654,7 @@ WHERE "latest_blood_pressures_per_patient_per_months"."deleted_at" IS NULL
                             ["id", "acc3da36-c5d2-42e1-a1fe-29d6a40b0580"]]
 ```
 
-*Sample SQL BP not controlled query*
+### Monthly cohort reports SQL BP not controlled query
 ```sql
 SELECT COUNT(*)
 FROM
@@ -694,7 +694,7 @@ WHERE "latest_blood_pressures_per_patient_per_months"."deleted_at" IS NULL
                             ["id", "acc3da36-c5d2-42e1-a1fe-29d6a40b0580"]]
 ```
 
-*Sample SQL missed visits numerator*
+### Monthly cohort reports SQL missed visits numerator
 ```sql
 SELECT COUNT(*)
 FROM
@@ -737,5 +737,5 @@ WHERE "latest_blood_pressures_per_patient_per_months"."deleted_at" IS NULL
 
 **Things we should fix**
 
-+ [ ] Check with Dr. Reena if "Visit but no BP taken" should be added to Cohort reports
++ [X] Check with Dr. Reena if "Visit but no BP taken" should be added to Cohort reports
 + [X] Rename `BloodPressureControlQuery` so that it includes 'cohort' in the name (i.e. `BloodPressureControlCohortQuery`)
