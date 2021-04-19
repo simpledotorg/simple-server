@@ -55,7 +55,7 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
       described_class.new(period: period).warm_region_cache(facility.region)
       initial_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
 
-      create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
+      create(:patient, registration_facility: facility, recorded_at: 1.month.ago)
       described_class.new(period: period).warm_region_cache(facility.region)
 
       final_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
