@@ -32,7 +32,6 @@ describe PatientDeduplication::Deduplicator do
       expect(new_patient.assigned_facility).to eq(patient_red.assigned_facility)
       expect(new_patient.device_created_at.to_i).to eq(patient_blue.device_created_at.to_i)
       expect(new_patient.device_updated_at.to_i).to eq(patient_blue.device_updated_at.to_i)
-      expect(new_patient.merged_by_user_id).to eq(patient_blue.registration_user.id)
       expect(duplicate_records(new_patient.id)).to match_array([patient_blue, patient_red])
     end
 
@@ -241,24 +240,6 @@ describe PatientDeduplication::Deduplicator do
         described_class.new(patients).merge
 
         expect(patients.map(&:discarded?)).to all be true
-      end
-
-      it "sets the merged_into_patient_id, and merged_by_user_id on the merged patients to the new patient" do
-        patients = create_duplicate_patients.values
-
-        new_patient = described_class.new(patients, user: patients.first.registration_user).merge
-
-        expect(patients.map(&:merged_into_patient_id)).to all eq new_patient.id
-        expect(patients.map(&:merged_by_user_id)).to all eq patients.first.registration_user.id
-      end
-
-      it "does not set merged_by_user_id if not passed in" do
-        patients = create_duplicate_patients.values
-
-        new_patient = described_class.new(patients).merge
-
-        expect(patients.map(&:merged_by_user_id)).to all be_nil
-        expect(new_patient.merged_by_user_id).to be_nil
       end
     end
 
