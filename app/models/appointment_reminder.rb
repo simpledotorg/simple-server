@@ -14,4 +14,6 @@ class AppointmentReminder < ApplicationRecord
     sent: "sent",
     cancelled: "cancelled"
   }, _prefix: true
+
+  scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 end
