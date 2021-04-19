@@ -13,7 +13,7 @@ Reviewing the following Dashboard queries to ensure we're displaying and describ
 10. [Inactive facilities](#inactive-facilities)
 11. [BP measure taken](#bp-measure-taken)
 12. [BP log](#bp-log)
-13. [Cohort reports](#cohort-reports)
+13. [Monthly cohort reports](#monthly-cohort-reports)
 
 ---
 
@@ -24,12 +24,11 @@ Reviewing the following Dashboard queries to ensure we're displaying and describ
 Hypertension patients registered during a month in `region_name`
 
 **How it's calculated**
-
-The number of patients registered at a facility during a month where the patient:
+The number of patients registered at a facility that have at least one BP in the following 2 months after their registration month and where the patient:
 + Is not deleted
-+ The patient is hypertensive
++ Is hypertensive
 
-*Sample SQL query*
+### Monthly registered patients SQL query
 ```sql
 SELECT Count(DISTINCT "patients"."id") AS count_id,
        Date_trunc('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 'ETC/UTC') AT TIME ZONE 'ETC/UTC' AS date_trunc_month_patients_recorded_at_timestamptz_at_time_zone_
@@ -52,7 +51,7 @@ GROUP BY date_trunc('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 
 
 **Things we should fix**
 
-N/A
+*Nothing to fix*
 
 ---
 
@@ -74,7 +73,7 @@ The sum of all monthly registrations at a facility
 
 **Things we should fix**
 
-N/A
+*Nothing to fix*
 
 ---
 
@@ -91,7 +90,7 @@ The number of patients assigned to a facility where the patient:
 + Is hypertensive
 + Is not dead
 
-*Sample SQL query*
+### Total assigned patients SQL query
 ```sql
 SELECT COUNT(DISTINCT "patients"."id") AS count_id,
        DATE_TRUNC('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 'ASIA/KOLKATA') AT TIME ZONE 'ASIA/KOLKATA' AS date_trunc_month_patients_recorded_at_timestamptz_at_time_zone_
@@ -132,12 +131,13 @@ GROUP BY DATE_TRUNC('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 
 **How it's calculated**
 
 The number of patients assigned to a facility registered before the last 3 months where the patient:
++ Is not deleted
 + Is hypertensive
 + Is not dead
 + Has a BP measure taken within the last 3 months
 + Last BP measure taken is <140/90
 
-*Sample SQL query*
+### BP controlled numerator SQL query
 ```sql
 SELECT COUNT(*)
 FROM
@@ -154,6 +154,8 @@ FROM
 WHERE (systolic < 140
        AND diastolic < 90) [["patient_status", "dead"],["assigned_facility_id", "399c52a8-4b49-41d4-8704-cc3985ac26e6"]]
 ```
+
+The BP controlled denominator uses the same query as [Total assigned patients](#total-assigned-patients-sql-query)
 
 **Where it's shown in the Dashboard**
 
@@ -177,12 +179,13 @@ WHERE (systolic < 140
 **How it's calculated**
 
 The number of patients assigned to a facility, registered before the last 3 months where the patient:
++ Is not deleted
 + Is hypertensive
 + Is not dead
 + Has a BP measure taken within the last 3 months
 + Last BP measure taken is >=140/90
 
-*Sample SQL query*
+### BP not controlled SQL query
 ```sql
 SELECT COUNT(*)
 FROM
@@ -199,6 +202,8 @@ FROM
 WHERE (systolic >= 140
        OR diastolic >= 90) [["patient_status", "dead"],["assigned_facility_id", "399c52a8-4b49-41d4-8704-cc3985ac26e6"]]
 ```
+
+The BP not controlled denominator uses the same query as [Total assigned patients](#total-assigned-patients-sql-query)
 
 **Where it's shown in the Dashboard**
 
@@ -219,15 +224,14 @@ WHERE (systolic >= 140
 + Denominator: Hypertension patients assigned to `region_name`, registered before the last 3 months. Dead and lost to follow-up patients are exclued.
 
 **How it's calculated**
-
-The number of patients assigned to a facility, registered before the last 3 moths where the patient:
+The number of patients assigned to a facility, registered before the last 3 months where the patient:
 + Is not deleted
 + Is hypertensive
 + Is not dead
 + Has at least one of the following in the last 3 months: An appointment created, A drug refilled, A blood sugar taken
-+ Doesn't have a BP recorded within the last 3 months
++ Doesn’t have any BPs recorded within the last 3 months
 
-*Sample SQL query*
+### Visited but no BP taken SQL query
 ```sql
 SELECT COUNT(DISTINCT "patients"."id")
 FROM "patients"
@@ -264,6 +268,8 @@ WHERE "patients"."deleted_at" IS NULL
                                                                    ["status", "dead"],
                                                                    ["assigned_facility_id", "3a7e86d2-c272-4303-8ffa-d6d1b54874b3"]]
 ```
+
+The Visited but no BP taken denominator uses the same query as [Total assigned patients](#total-assigned-patients-sql-query)
 
 **Where it's shown in the Dashboard**
 
@@ -405,7 +411,7 @@ Facilities where <10 patients had any BPs recorded in the last 7 days
 
 **How it's calculated**
 
-First we calculate total active facilities (Facilities where <10 patients had any BPs recorded in the last 7 days). Then we:
+First we calculate total active facilities (Facilities where >10 patients had any BPs recorded in the last 7 days). Then we:
 + Grab all facilties the admin has access to
 + Count the total number of patients with a BP taken in a day for the last 7 days at each facility
 + Returns the number of facilities where the facility has had more than 10 patients with a BP taken in the last week
@@ -557,7 +563,7 @@ OFFSET $4 [["facility_id", "acc3da36-c5d2-42e1-a1fe-29d6a40b0580"],
 
 ---
 
-## Cohort reports
+## Monthly cohort reports
 
 **Copy used in the Dashboard**
 
