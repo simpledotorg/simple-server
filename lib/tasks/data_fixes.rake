@@ -1,22 +1,26 @@
-require "tasks/scripts/move_user_recorded_data_to_registration_facility"
+require "tasks/scripts/move_facility_data"
 require "tasks/scripts/discard_invalid_appointments"
 
 namespace :data_fixes do
+  desc "Move all data from a source facility to a destination facility"
+  task :move_data_from_source_to_destination_facility, [:source_facility_id, :destination_facility_id] => :environment do |_t, args|
+    source_facility = Facility.find(args.source_facility_id)
+    destination_facility = Facility.find(args.destination_facility_id)
+    results = MoveFacilityData.new(source_facility, destination_facility).move_data
+    puts "[DATA FIXED]"\
+         "source: #{source_facility.name}, destination: #{destination_facility.name}, "\
+         "#{results}"
+  end
+
   desc "Move all data recorded by a user from a source facility to a destination facility"
   task :move_user_data_from_source_to_destination_facility, [:user_id, :source_facility_id, :destination_facility_id] => :environment do |_t, args|
     user = User.find(args.user_id)
     source_facility = Facility.find(args.source_facility_id)
     destination_facility = Facility.find(args.destination_facility_id)
-    service = MoveUserRecordedDataToRegistrationFacility.new(user, source_facility, destination_facility)
-    patient_count = service.fix_patient_data
-    bp_count = service.fix_blood_pressure_data
-    bs_count = service.fix_blood_sugar_data
-    appointment_count = service.fix_appointment_data
-    prescription_drug_count = service.fix_prescription_drug_data
+    results = MoveFacilityData.new(source_facility, destination_facility, user: user).move_data
     puts "[DATA FIXED]"\
          "user: #{user.full_name}, source: #{source_facility.name}, destination: #{destination_facility.name}, "\
-         "patients: #{patient_count}, BPs: #{bp_count}, blood sugars: #{bs_count}, "\
-         "appointments: #{appointment_count}, prescriptions: #{prescription_drug_count}"
+         "#{results}"
   end
 
   desc "Clean up invalid scheduled appointments (multiple scheduled appointments for a patient)"
