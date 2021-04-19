@@ -233,7 +233,7 @@ class Facility < ApplicationRecord
   end
 
   LOCALE_MAP = {
-    "Bangladesh" => {default: "bn_BD"},
+    "Bangladesh" => { "default" => "bn_BD" },
     "Ethiopia" => {
       "default" => "am_ET",
       "Addis Ababa" => "am_ET",
@@ -246,11 +246,18 @@ class Facility < ApplicationRecord
     "India" => {
       "default" => "hi_IN",
       "Andhra Pradesh" => "te_IN",
+      "Bihar" => "hi_IN",
+      "Jharkhand" => "hi_IN",
       "Karnataka" => "kn_IN",
       "Maharashtra" => "mr_IN",
+      "Nagaland" => "en",
+      "Puducherry" => "ta_IN",
       "Punjab" => "pa_Guru_IN",
+      "Rajasthan" => "hi_IN",
+      "Sikkim" => "hi_IN",
       "Tamil Nadu" => "ta_IN",
       "Telangana" => "te_IN",
+      "Uttar Pradesh" => "hi_IN",
       "West Bengal" => "bn_IN"
     }
   }.freeze
