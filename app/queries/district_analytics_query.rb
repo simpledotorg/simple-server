@@ -16,6 +16,8 @@ class DistrictAnalyticsQuery
     @district_name = @region.name
     @from_time = from_time
     @include_current_period = include_current_period
+    @current_period = Period.month(Date.current)
+    @range = Range.new(@current_period.advance(months: -prev_periods), @current_period)
   end
 
   def call
@@ -51,20 +53,16 @@ class DistrictAnalyticsQuery
       .to_h
   end
 
+  def repository
+    @repository ||= Reports::Repository.new(facilities, periods: @range)
+  end
+
   def total_registered_patients
-    @total_registered_patients ||=
-      Patient
-        .for_reports
-        .joins(:registration_facility)
-        .where(facilities: {id: facilities})
-        .group("facilities.id")
-        .count
-
-    return if @total_registered_patients.blank?
-
-    @total_registered_patients
-      .map { |facility_id, count| [facility_id, {total_registered_patients: count}] }
-      .to_h
+    @total_reigstered_patients ||= @facilities.each_with_object({}) { |facility, result|
+      result[facility.id] = {
+        total_registered_patients: repository.cumulative_registrations.dig(facility.region.slug, @current_period) || 0
+      }
+    }
   end
 
   def registered_patients_by_period

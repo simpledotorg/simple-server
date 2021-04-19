@@ -22,8 +22,8 @@ module Reports
     attr_reader :control_rate_query
     attr_reader :earliest_patient_data_query
     attr_reader :no_bp_measure_query
-    attr_reader :periods
     attr_reader :period_type
+    attr_reader :periods
     attr_reader :regions
 
     delegate :cache, :logger, to: Rails
