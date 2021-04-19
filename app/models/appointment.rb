@@ -58,13 +58,14 @@ class Appointment < ApplicationRecord
   end
 
   def self.overdue_by(number_of_days)
-    overdue.where("scheduled_date <= ?", Date.current - number_of_days.days)
+    overdue.where("scheduled_date = ?", Date.current - number_of_days.days)
   end
 
   def self.eligible_for_reminders(days_overdue: 3)
     overdue_by(days_overdue)
       .joins(:patient)
       .merge(Patient.contactable)
+      .includes(:appointment_reminders).where(appointment_reminders: { id: nil })
   end
 
   def days_overdue
