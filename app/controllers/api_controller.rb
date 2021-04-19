@@ -45,7 +45,7 @@ class APIController < ApplicationController
 
   def block_level_sync?
     return false unless current_user
-    current_user.can_teleconsult? && requested_sync_region_id == current_block.id
+    !current_user.can_teleconsult? && requested_sync_region_id == current_block.id
   end
 
   def current_block
