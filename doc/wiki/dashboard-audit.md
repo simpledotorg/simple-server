@@ -52,8 +52,7 @@ GROUP BY date_trunc('month', "patients"."recorded_at"::timestamptz AT TIME ZONE 
 
 **Things we should fix**
 
-+ [ ] Rename query name from "Monthly registered patients" to "New registered patients"
-+ [ ] Make copy more specific and more closely match how the query is calculated
+N/A
 
 ---
 
@@ -75,8 +74,7 @@ The sum of all monthly registrations at a facility
 
 **Things we should fix**
 
-+ [ ] Make copy definition more specific and more closely match how the query is calculated
-+ [ ] Resolve query duplication where needed and ensure all queries return the right data
+N/A
 
 ---
 
