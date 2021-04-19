@@ -298,7 +298,7 @@ describe Appointment, type: :model do
   end
 
   describe "appointment reminder cancellation" do
-    it "does not cancel reminders when appointment status is 'scheduled'" do
+    it "does not cancel reminders when appointment status is changed to 'scheduled'" do
       appointment.update!(status: nil)
       reminder = create(:appointment_reminder, appointment: appointment, status: "pending")
 
