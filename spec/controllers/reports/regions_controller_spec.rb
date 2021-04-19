@@ -209,7 +209,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "renders successfully for an organization" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
-      other_fg.facilities << build(:facility, name: "other facility")
+      create(:facility, name: "other facility", facility_group: other_fg)
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
@@ -218,7 +218,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "renders successfully if report viewer has access to region" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
-      other_fg.facilities << build(:facility, name: "other facility")
+      create(:facility, name: "other facility", facility_group: other_fg)
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)

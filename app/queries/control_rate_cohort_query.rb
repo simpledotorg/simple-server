@@ -15,13 +15,12 @@ class ControlRateCohortQuery
   # - :cohort_period (:quarter/:month),
   # - :registration_quarter/:registration_month
   # - :registration_year
-  def initialize(facilities: Facility.all, cohort_period: {}, with_exclusions: false)
+  def initialize(facilities: Facility.all, cohort_period: {})
     @cohort_period = cohort_period[:cohort_period]
     @registration_quarter = cohort_period[:registration_quarter]
     @registration_month = cohort_period[:registration_month]
     @registration_year = cohort_period[:registration_year]
     @facilities = Facility.where(id: facilities)
-    @with_exclusions = with_exclusions
   end
 
   def cohort_patients_per_facility
@@ -81,10 +80,7 @@ class ControlRateCohortQuery
   def overall_patients
     @overall_patients ||=
       Patient
-        .for_reports(
-          with_exclusions: @with_exclusions,
-          exclude_ltfu_as_of: Date.today.end_of_month
-        )
+        .for_reports(exclude_ltfu_as_of: Date.today.end_of_month)
         .where(assigned_facility: facilities)
         .where("recorded_at < ?", Time.current.beginning_of_day - REGISTRATION_BUFFER)
   end
@@ -104,7 +100,7 @@ class ControlRateCohortQuery
   def quarterly_patients
     @quarterly_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_quarter_start(@registration_year, @registration_quarter),
@@ -130,7 +126,7 @@ class ControlRateCohortQuery
   def monthly_patients
     @monthly_patients ||=
       Patient
-        .for_reports(with_exclusions: @with_exclusions)
+        .for_reports
         .where(assigned_facility: facilities)
         .where("recorded_at >= ? AND recorded_at <= ?",
           local_month_start(@registration_year, @registration_month),

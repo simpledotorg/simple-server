@@ -131,18 +131,15 @@ RSpec.describe ControlRateCohortQuery do
                                                                 patients_with_missed_visit)
           end
 
-          context "when with_exclusions is true" do
-            it "excludes dead patients" do
-              patients_with_controlled_bp.first.update(status: :dead)
+          it "excludes dead patients" do
+            patients_with_controlled_bp.first.update(status: :dead)
 
-              query = described_class.new(facilities: assigned_facility,
-                                          cohort_period: {cohort_period: :quarter,
-                                                          registration_quarter: registration_quarter,
-                                                          registration_year: registration_quarter_year},
-                                          with_exclusions: true)
+            query = described_class.new(facilities: assigned_facility,
+                                        cohort_period: {cohort_period: :quarter,
+                                                        registration_quarter: registration_quarter,
+                                                        registration_year: registration_quarter_year})
 
-              expect(query.cohort_patients).not_to include(patients_with_controlled_bp.first)
-            end
+            expect(query.cohort_patients).not_to include(patients_with_controlled_bp.first)
           end
         end
 
@@ -151,18 +148,15 @@ RSpec.describe ControlRateCohortQuery do
             expect(query.cohort_controlled_bps.pluck(:bp_id)).to match_array(controlled_blood_pressures.pluck(:id))
           end
 
-          context "when with_exclusions is true" do
-            it "excludes dead patients" do
-              controlled_blood_pressures.first.patient.update(status: :dead)
+          it "excludes dead patients" do
+            controlled_blood_pressures.first.patient.update(status: :dead)
 
-              query = described_class.new(facilities: assigned_facility,
-                                          cohort_period: {cohort_period: :quarter,
-                                                          registration_quarter: registration_quarter,
-                                                          registration_year: registration_quarter_year},
-                                          with_exclusions: true)
+            query = described_class.new(facilities: assigned_facility,
+                                        cohort_period: {cohort_period: :quarter,
+                                                        registration_quarter: registration_quarter,
+                                                        registration_year: registration_quarter_year})
 
-              expect(query.cohort_controlled_bps.pluck(:bp_id)).not_to include(controlled_blood_pressures.first.id)
-            end
+            expect(query.cohort_controlled_bps.pluck(:bp_id)).not_to include(controlled_blood_pressures.first.id)
           end
         end
 
@@ -171,19 +165,16 @@ RSpec.describe ControlRateCohortQuery do
             expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).to match_array(uncontrolled_blood_pressures.pluck(:id))
           end
 
-          context "when with_exclusions is true" do
-            it "excludes dead patients" do
-              uncontrolled_blood_pressures.first.patient.update(status: :dead)
-              uncontrolled_blood_pressures.second.patient.update(status: :migrated)
+          it "excludes dead patients" do
+            uncontrolled_blood_pressures.first.patient.update(status: :dead)
+            uncontrolled_blood_pressures.second.patient.update(status: :migrated)
 
-              query = described_class.new(facilities: assigned_facility,
-                                          cohort_period: {cohort_period: :quarter,
-                                                          registration_quarter: registration_quarter,
-                                                          registration_year: registration_quarter_year},
-                                          with_exclusions: true)
+            query = described_class.new(facilities: assigned_facility,
+                                        cohort_period: {cohort_period: :quarter,
+                                                        registration_quarter: registration_quarter,
+                                                        registration_year: registration_quarter_year})
 
-              expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).not_to include(uncontrolled_blood_pressures.first.id)
-            end
+            expect(query.cohort_uncontrolled_bps.pluck(:bp_id)).not_to include(uncontrolled_blood_pressures.first.id)
           end
         end
 
@@ -499,21 +490,17 @@ RSpec.describe ControlRateCohortQuery do
               patient_without_recent_bp,
               patients_with_uncontrolled_bp,
               patients_with_missed_visit,
-              old_patient,
-              ltfu_patient)
+              old_patient)
           end
 
-          context "when with_exclusions is true" do
-            it "excludes dead patients" do
-              patient_with_recent_bp.update(status: :dead)
+          it "excludes dead patients" do
+            patient_with_recent_bp.update(status: :dead)
 
-              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(patient_with_recent_bp)
-            end
+            expect(described_class.new.overall_patients).not_to include(patient_with_recent_bp)
+          end
 
-            it "excludes LTFU patients" do
-              expect(described_class.new(with_exclusions: false).overall_patients).to include(ltfu_patient)
-              expect(described_class.new(with_exclusions: true).overall_patients).not_to include(ltfu_patient)
-            end
+          it "excludes LTFU patients" do
+            expect(described_class.new.overall_patients).not_to include(ltfu_patient)
           end
         end
 
@@ -530,8 +517,7 @@ RSpec.describe ControlRateCohortQuery do
                 patient_without_recent_bp,
                 patients_with_uncontrolled_bp,
                 patients_with_missed_visit,
-                old_patient,
-                ltfu_patient].length)
+                old_patient].length)
             end
           end
 
