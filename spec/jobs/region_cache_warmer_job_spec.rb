@@ -38,7 +38,7 @@ RSpec.describe RegionCacheWarmerJob, type: :job do
     described_class.drain
     initial_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
 
-    create(:patient, assigned_facility: facility, recorded_at: 1.month.ago)
+    create(:patient, assigned_facility: facility, registration_facility: facility, recorded_at: 1.month.ago)
     described_class.perform_async(facility.region.id, period.attributes)
     described_class.drain
     final_registrations = Reports::RegionService.new(region: facility.region, period: period).call[:cumulative_registrations]
