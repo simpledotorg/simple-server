@@ -27,7 +27,7 @@ class AppointmentNotificationService
 
       appointment_reminder = create_appointment_reminder(appointment)
 
-      AppointmentNotification::Worker.perform_at(next_messaging_time, appointment_reminder.id, communication_type)
+      AppointmentNotification::Worker.perform_at(next_messaging_time, appointment_reminder.id)
     end
   end
 

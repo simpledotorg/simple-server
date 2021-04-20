@@ -6,9 +6,11 @@ class AppointmentNotification::Worker
 
   DEFAULT_LOCALE = :en
 
-  def perform(appointment_reminder_id, communication_type)
+  def perform(appointment_reminder_id)
     reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
-    return if reminder.appointment.previously_communicated_via?(communication_type)
+    communication_type = reminder.next_communication_type
+    return unless communication_type
+
     if reminder.status != "scheduled"
       report_error("scheduled appointment reminder has invalid status")
       return

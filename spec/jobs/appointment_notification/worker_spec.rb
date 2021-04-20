@@ -12,21 +12,23 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(notification_service).to receive(:sid).and_return("12345")
     end
 
-    it "sends a whatsapp message when communication_type is whatsapp" do
+    it "sends a whatsapp message when reminder's next_communication_type is whatsapp" do
       mock_successful_delivery
 
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
-      described_class.perform_async(reminder.id, communication_type)
+      described_class.perform_async(reminder.id)
       described_class.drain
     end
 
-    it "sends sms when communication_type is sms" do
+    it "sends sms when reminder's next_communication_type is sms" do
+      create(:communication, appointment_reminder: reminder, communication_type: "missed_visit_whatsapp_reminder")
+
       allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_service)
       allow(notification_service).to receive(:status).and_return("sent")
       allow(notification_service).to receive(:sid).and_return("12345")
 
       expect_any_instance_of(NotificationService).to receive(:send_sms)
-      described_class.perform_async(reminder.id, "missed_visit_sms_reminder")
+      described_class.perform_async(reminder.id)
       described_class.drain
     end
 
@@ -41,42 +43,40 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         communication_type: communication_type
       ).and_call_original
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(reminder.id)
         described_class.drain
       }.to change { Communication.count }.by(1)
     end
 
-    it "does not create a NotificationService or Communication if appointment has previously been successfully communicated" do
-      mock_successful_delivery
-
-      previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
-      twilio = create(:twilio_sms_delivery_detail, :sent, communication: previous_communication)
+    it "does not create a NotificationService or Communication if reminder has been previously attempted by all available methods" do
+      create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
+      create(:communication, :missed_visit_sms_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
 
       expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(reminder.id)
         described_class.drain
       }.not_to change { Communication.count }
     end
 
-    it "creates a NotificationService and Communication if attempt has previously been made and failed" do
-      mock_successful_delivery
+    it "does not attempt to resend the same communication type even if previous attempt failed" do
+      allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_service)
+      allow(notification_service).to receive(:status).and_return("sent")
+      allow(notification_service).to receive(:sid).and_return("12345")
 
-      previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
-      twilio = create(:twilio_sms_delivery_detail, :failed, communication: previous_communication)
+      previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
+      twilio = create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
-      expect {
-        described_class.perform_async(reminder.id, communication_type)
-        described_class.drain
-      }.to change { Communication.count }.by(1)
+      expect_any_instance_of(NotificationService).to receive(:send_sms)
+      described_class.perform_async(reminder.id)
+      described_class.drain
     end
 
     it "updates the appointment reminder status to 'sent'" do
       mock_successful_delivery
 
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(reminder.id)
         described_class.drain
       }.to change { reminder.reload.status }.from("scheduled").to("sent")
     end
@@ -97,7 +97,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         localized_message,
         "https://localhost/api/v3/twilio_sms_delivery"
       )
-      described_class.perform_async(reminder.id, communication_type)
+      described_class.perform_async(reminder.id)
       described_class.drain
     end
 
@@ -118,7 +118,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         localized_message,
         "https://localhost/api/v3/twilio_sms_delivery"
       )
-      described_class.perform_async(reminder.id, communication_type)
+      described_class.perform_async(reminder.id)
       described_class.drain
     end
 
@@ -139,7 +139,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         localized_message,
         "https://localhost/api/v3/twilio_sms_delivery"
       )
-      described_class.perform_async(reminder.id, communication_type)
+      described_class.perform_async(reminder.id)
       described_class.drain
     end
 
@@ -147,7 +147,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       appointment_reminder = create(:appointment_reminder, status: "pending")
       expect(Sentry).to receive(:capture_message)
       expect {
-        described_class.perform_async(appointment_reminder.id, communication_type)
+        described_class.perform_async(appointment_reminder.id)
         described_class.drain
       }.not_to change { Communication.count }
       expect(appointment_reminder.reload.status).to eq("pending")
@@ -156,7 +156,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "reports an error and does not create a communication if an error is received from twilio" do
       expect(Sentry).to receive(:capture_message)
       expect {
-        described_class.perform_async(reminder.id, communication_type)
+        described_class.perform_async(reminder.id)
         described_class.drain
       }.not_to change { Communication.count }
       expect(reminder.reload.status).to eq("scheduled")
@@ -164,7 +164,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "raises an error if appointment reminder is not found" do
       expect {
-        described_class.perform_async("does-not-exist", communication_type)
+        described_class.perform_async("does-not-exist")
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
     end

@@ -24,7 +24,7 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
 
       Timecop.freeze do
         next_messaging_time = Communication.next_messaging_time
-        expect(AppointmentNotification::Worker).to receive(:perform_at).with(next_messaging_time, today_reminder.id, "missed_visit_whatsapp_reminder").exactly(1).times
+        expect(AppointmentNotification::Worker).to receive(:perform_at).with(next_messaging_time, today_reminder.id).exactly(1).times
         described_class.perform_now
       end
     end
