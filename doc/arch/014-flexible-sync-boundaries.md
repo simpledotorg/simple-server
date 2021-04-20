@@ -10,7 +10,7 @@ The slowdown was correlated to the volume of patient data synced to the user’s
 
 Currently we sync the entire district's records to a user's phone. Some of the large districts have upto 50,000 patients, which can amount to 400-500 MB of data.
 
-From trends in IHCI, we found that patients rarely move between facilities across blocks. Patients that have a BP taken in more than 1 block is around 2% or under, with the exceptions of: Sindhudurg (9.8%), Hoshiarpur (5.3%), Bathinda (3.1%).
+A district typically has between 1-20 blocks. From trends in IHCI, we found that patients rarely move between facilities across blocks. Patients that have a BP taken in more than 1 block is around 2% or under, with the exceptions of: Sindhudurg (9.8%), Hoshiarpur (5.3%), Bathinda (3.1%).
 This means that we can sync only a block's data to the user's phone and be reasonably confident about finding patients on the app.
 
 ## Decision
