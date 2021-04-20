@@ -7,7 +7,7 @@ A sync region is any region in the `Region` hierarchy (state, district, block).
 This is a guide on how region level sync works and how to transition from one using one sync region to another sync region.
 
 ### At the heart of it
-- The server sets the `sync_region_id` for each facility.
+- The server sets the `sync_region_id` for each facility in the facility payload.
 - The app picks the current facility's `sync_region_id` as the sync region.
 - The app requests for the sync region's records to be synced by sending the `sync_region_id` in the `X-SYNC-REGION-ID` header.
 - The server returns data for the requested sync region's `syncable_patients`.
