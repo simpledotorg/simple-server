@@ -2,6 +2,7 @@
 
 ## Status
 
+Accepted on 2020-04-20
 Proposed on 2020-04-12
 
 ## Context
@@ -97,8 +98,11 @@ App](https://api.simple.org/api-docs#tag/Patient/paths/~1patient/get):
 }
 ````
 
-_Alternatively_: We could use a v5 prefix to disambiguate with the
-Passport app lookup API more clearly.
+This API will have a 5s timeout from the android app to prevent delay
+in patient care.
+
+~~_Alternatively_: We could use a v5 prefix to disambiguate with the
+Passport app lookup API more clearly.~~
 
 ### Access restrictions
 Access for this API will be restricted to the state that the user is
@@ -132,10 +136,15 @@ this, while capturing all the information.~~
 ### Rate limiting
 We currently rate limit our authentication endpoints using
 [rack-attack](https://github.com/rack/rack-attack). We will do the
-same for this API. See the []relevant section in the PRD](https://docs.google.com/document/d/1q6cppByQULfh3_mMXC4BJpiNN9Uc_awA6rreeEtUBaM/edit#) for the rationale and the chosen rate limiting configuration.
+same for this API. See the [relevant section in the
+PRD](https://docs.google.com/document/d/1q6cppByQULfh3_mMXC4BJpiNN9Uc_awA6rreeEtUBaM/edit#)
+for the rationale and the chosen rate limiting configuration.
 
 ## Consequences
+- There will be synchronous requests to the server during the patient
+  care hours. So, the server going down for a few minutes will have
+  consequences on the number of duplicate registrations.
 - We could potentially reduce the memory footprint of the app further
-by using the retention periods for other non-lookup use-cases.
-- Online prod support?
-- Access restricted by time
+  by using the retention periods for other non-lookup use-cases.
+- We could repurpose temporary retention in the app to implement
+  access restricted by time in the future, if needed.
