@@ -1,13 +1,13 @@
 class ControlRateService
   include BustCache
-  CACHE_VERSION = 12
+  CACHE_VERSION = 13
 
   # Can be initialized with _either_ a Period range or a single Period to calculate
   # control rates. We need to handle a single period for calculating point in time benchmarks.
   #
   # Note that for the range the returned values will be for each Period going back
   # to the beginning of registrations for the region.
-  def initialize(region, periods:, with_exclusions: false)
+  def initialize(region, periods:)
     @region = region
     @facilities = region.facilities
     @periods = periods
@@ -15,18 +15,18 @@ class ControlRateService
     @period_type = @report_range.begin.type
     @quarterly_report = @report_range.begin.quarter?
     @results = Reports::Result.new(region: @region, period_type: @report_range.begin.type)
-    @with_exclusions = with_exclusions
     logger.info class: self.class.name, msg: "created", region: region.id, region_name: region.name,
                 report_range: report_range.inspect, facilities: facilities.map(&:id), cache_key: cache_key
   end
 
   delegate :logger, to: Rails
+  delegate :slug, to: :region
+
   attr_reader :facilities
   attr_reader :region
   attr_reader :period_type
   attr_reader :report_range
   attr_reader :results
-  attr_reader :with_exclusions
 
   # We cache all the data for a region to improve performance and cache hits, but then return
   # just the data the client requested
@@ -43,58 +43,36 @@ class ControlRateService
   end
 
   def repository
-    @repository ||= Reports::Repository.new(region, periods: results.full_data_range, with_exclusions: with_exclusions)
+    @repository ||= Reports::Repository.new(region, periods: report_range)
   end
 
   def fetch_all_data
-    results.registrations = registration_counts
-    results.assigned_patients = assigned_patients_counts
-    results.earliest_registration_period = [registration_counts.keys.first, assigned_patients_counts.keys.first].compact.min
+    results.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
+    results.registrations = repository.registration_counts[slug]
+    results.assigned_patients = repository.assigned_patients_count[slug]
+    results.cumulative_registrations = repository.cumulative_registrations[slug]
+    results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
+    results.adjusted_patient_counts_with_ltfu = repository.adjusted_patient_counts_with_ltfu[slug]
+    results.adjusted_patient_counts = repository.adjusted_patient_counts_without_ltfu[slug]
+
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period)
-    end
-    results.fill_in_nil_registrations
-    results.count_cumulative_registrations
-    results.count_cumulative_assigned_patients
-    results.count_adjusted_patient_counts_with_ltfu
-
-    if with_exclusions
-      results.count_adjusted_patient_counts
-    else
-      results.adjusted_patient_counts = results.adjusted_patient_counts_with_ltfu
     end
 
     results.controlled_patients = repository.controlled_patients_count[region.slug]
     results.uncontrolled_patients = repository.uncontrolled_patients_count[region.slug]
 
-    results.calculate_percentages(:controlled_patients)
+    results.controlled_patients_rate = repository.controlled_patients_rate[slug]
+    results.uncontrolled_patients_rate = repository.uncontrolled_patients_rate[slug]
+
     results.calculate_percentages(:controlled_patients, with_ltfu: true)
-    results.calculate_percentages(:uncontrolled_patients)
     results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
     results.calculate_percentages(:ltfu_patients)
     results
   end
 
-  def registration_counts
-    return @registration_counts if defined? @registration_counts
-
-    @registration_counts = RegisteredPatientsQuery.new.count(region, period_type)
-  end
-
-  def assigned_patients_counts
-    return @assigned_patients_counts if defined? @assigned_patients_counts
-
-    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type, with_exclusions: with_exclusions)
-  end
-
   def ltfu_patients(period)
-    return 0 unless with_exclusions
-
-    Patient
-      .for_reports(with_exclusions: with_exclusions)
-      .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.end)
-      .count
+    Patient.for_reports.where(assigned_facility: facilities.pluck(:id)).ltfu_as_of(period.end).count
   end
 
   def quarterly_report?
@@ -102,11 +80,7 @@ class ControlRateService
   end
 
   def cache_key
-    if with_exclusions
-      "#{self.class}/#{region.cache_key}/#{period_type}/with_exclusions"
-    else
-      "#{self.class}/#{region.cache_key}/#{period_type}"
-    end
+    "#{self.class}/#{region.cache_key}/#{period_type}"
   end
 
   def cache_version

@@ -48,48 +48,46 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
   end
 
   describe "Materialized view query" do
-    Timecop.travel("1 Oct 2019") do
-      let!(:facilities) { create_list(:facility, 2) }
-      let!(:months) do
-        [1, 2, 3].map { |n| n.months.ago }
-      end
-      let!(:patients) do
-        facilities.map do |facility|
-          create(:patient, registration_facility: facility)
-        end
-      end
+    let(:months) { [1, 2, 3].map { |n| n.months.ago } }
+    let(:facilities) { create_list(:facility, 2) }
+    let(:patients) { facilities.map { |facility| create(:patient, registration_facility: facility) } }
 
-      let!(:blood_pressures) do
-        facilities.map { |facility|
-          months.map do |month|
-            patients.map do |patient|
-              create_list(:blood_pressure, 2, facility: facility, recorded_at: month, patient: patient)
-            end
+    def create_blood_pressures
+      facilities.map { |facility|
+        months.map do |month|
+          patients.map do |patient|
+            create_list(:blood_pressure, 2, facility: facility, recorded_at: month, patient: patient)
           end
-        }.flatten
-      end
-
-      let!(:query_results) do
-        LatestBloodPressuresPerPatientPerMonth.refresh
-        LatestBloodPressuresPerPatientPerMonth.all
-      end
+        end
+      }.flatten
     end
 
     it "returns a row per patient per month" do
-      expect(query_results.count).to eq(6)
+      Timecop.travel("1 Oct 2019") do
+        create_blood_pressures
+        LatestBloodPressuresPerPatientPerMonth.refresh
+      end
+      expect(LatestBloodPressuresPerPatientPerMonth.all.count).to eq(6)
     end
+
     it "returns at least one row per patient" do
-      expect(query_results.pluck(:patient_id).uniq).to match_array(patients.map(&:id))
+      Timecop.travel("1 Oct 2019") do
+        create_blood_pressures
+        LatestBloodPressuresPerPatientPerMonth.refresh
+      end
+
+      expect(LatestBloodPressuresPerPatientPerMonth.all.pluck(:patient_id).uniq).to match_array(patients.map(&:id))
     end
   end
 
   describe "assigned facility" do
-    let!(:facility) { create(:facility) }
-    let!(:patient) { create(:patient, assigned_facility: facility) }
-    let!(:blood_pressure) { create(:blood_pressure, patient: patient) }
-    before { described_class.refresh }
-
     it "stores the assigned facility" do
+      facility = create(:facility)
+      patient = create(:patient, assigned_facility: facility)
+      blood_pressure = create(:blood_pressure, patient: patient)
+
+      described_class.refresh
+
       expect(described_class.find_by_bp_id(blood_pressure.id).assigned_facility_id).to eq facility.id
     end
   end

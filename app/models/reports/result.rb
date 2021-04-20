@@ -79,15 +79,6 @@ module Reports
       end
     end
 
-    def fill_in_nil_registrations
-      registrations.default = 0
-      assigned_patients.default = 0
-      full_data_range.each do |period|
-        registrations[period] ||= 0
-        assigned_patients[period] ||= 0
-      end
-    end
-
     def to_s
       "#{self.class} #{object_id} region=#{@region.name} period_type=#{period_type}"
     end
@@ -135,36 +126,11 @@ module Reports
       end
     end
 
-    # Adjusted patient counts are the cumulative patient counts (with exclusions) as of three months ago.
-    # We use these for all the percentage calculations to exclude recently registered patients.
-    def count_adjusted_patient_counts_with_ltfu
-      adjusted_counts = full_data_range.each_with_object(Hash.new(0)) { |period, counts|
-        adjusted_period = period.advance(months: -3)
-        counts[period] = assigned_patients[adjusted_period]
-      }
-
-      self.adjusted_patient_counts_with_ltfu = running_totals(adjusted_counts)
-    end
-
-    def count_adjusted_patient_counts
-      self.adjusted_patient_counts = full_data_range.each_with_object(Hash.new(0)) do |period, running_totals|
-        running_totals[period] = adjusted_patient_counts_with_ltfu[period] - ltfu_patients[period]
-      end
-    end
-
-    def count_cumulative_assigned_patients
-      self.cumulative_assigned_patients = running_totals(assigned_patients)
-    end
-
-    def count_cumulative_registrations
-      self.cumulative_registrations = running_totals(registrations)
-    end
-
     # "Missed visits" is the remaining patients when we subtract out the other three groups.
     def calculate_missed_visits(range, with_ltfu: false)
       if with_ltfu
-        self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-          patient_count = adjusted_patient_counts_for(period)
+        self.missed_visits_with_ltfu = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
+          patient_count = adjusted_patient_counts_with_ltfu_for(period)
           controlled = controlled_patients_for(period)
           uncontrolled = uncontrolled_patients_for(period)
           visited_without_bp_taken = visited_without_bp_taken_for(period)
@@ -172,8 +138,8 @@ module Reports
           hsh[period] = missed_visits.try(:floor) || 0
         }
       else
-        self.missed_visits_with_ltfu = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
-          patient_count = adjusted_patient_counts_with_ltfu_for(period)
+        self.missed_visits = range.each_with_object(Hash.new(0)) { |(period, visit_count), hsh|
+          patient_count = adjusted_patient_counts_for(period)
           controlled = controlled_patients_for(period)
           uncontrolled = uncontrolled_patients_for(period)
           visited_without_bp_taken = visited_without_bp_taken_for(period)
@@ -279,15 +245,6 @@ module Reports
     def percentage(numerator, denominator)
       return 0 if denominator == 0 || numerator == 0
       ((numerator.to_f / denominator) * 100).round(PERCENTAGE_PRECISION)
-    end
-
-    def running_totals(periodwise_counts)
-      full_data_range.each_with_object(Hash.new(0)) { |period, running_totals|
-        previous_total = running_totals[period.previous]
-        current_count = periodwise_counts[period]
-        total = previous_total + current_count
-        running_totals[period] = total
-      }
     end
 
     def quarterly_report?

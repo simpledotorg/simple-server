@@ -17,7 +17,6 @@ RSpec.describe ControlRateService, type: :model do
   def refresh_views
     ActiveRecord::Base.transaction do
       LatestBloodPressuresPerPatientPerMonth.refresh
-      LatestBloodPressuresPerPatientPerQuarter.refresh
       PatientRegistrationsPerDayPerFacility.refresh
     end
   end
@@ -144,9 +143,11 @@ RSpec.describe ControlRateService, type: :model do
 
     expect(result[:cumulative_registrations][Period.month(jan_2020)]).to eq(5)
     expect(result[:cumulative_assigned_patients][Period.month(jan_2020)]).to eq(5)
-    expect(result[:adjusted_patient_counts][Period.month(jan_2020)]).to eq(5)
+    expect(result[:adjusted_patient_counts][Period.month(jan_2020)]).to eq(4)
+    expect(result[:adjusted_patient_counts_with_ltfu][Period.month(jan_2020)]).to eq(5)
     expect(result[:controlled_patients][Period.month(jan_2020)]).to eq(controlled_in_jan_and_june.size)
-    expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(40.0)
+    expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(50.0)
+    expect(result[:controlled_patients_with_ltfu_rate][Period.month(jan_2020)]).to eq(40.0)
 
     # 3 controlled patients in june and 10 cumulative registered patients
     expect(result[:cumulative_registrations][Period.month(june_1_2020)]).to eq(10)
@@ -181,94 +182,38 @@ RSpec.describe ControlRateService, type: :model do
     expect(result[:controlled_patients_rate][Period.month(jan_2020)]).to eq(0.0)
   end
 
-  context "when with_exclusions is true" do
-    it "excludes patients who are dead or LTFU" do
-      facility = FactoryBot.create(:facility, facility_group: facility_group_1)
-      patients = [
-        create(:patient, recorded_at: jan_2019, registration_facility: facility, registration_user: user),
-        create(:patient, status: :dead, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
-      ]
+  it "excludes patients who are dead or LTFU" do
+    facility = FactoryBot.create(:facility, facility_group: facility_group_1)
+    patients = [
+      create(:patient, recorded_at: jan_2019, registration_facility: facility, registration_user: user),
+      create(:patient, status: :dead, recorded_at: jan_2019, registration_facility: facility, registration_user: user)
+    ]
 
-      Timecop.freeze(june_1_2020) do
-        patients.each do |patient|
-          create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
-        end
+    Timecop.freeze(june_1_2020) do
+      patients.each do |patient|
+        create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: 2.days.ago, user: user)
       end
-
-      refresh_views
-
-      report_start = july_2020.advance(months: -24)
-      report_range = (Period.month(report_start)..Period.month(july_2020))
-      report_month = Period.month(june_1_2020)
-
-      result =
-        ControlRateService.new(facility_group_1, periods: report_range).call
-
-      expect(result[:cumulative_registrations][report_month]).to eq(2)
-      expect(result[:cumulative_assigned_patients][report_month]).to eq(2)
-      expect(result[:adjusted_patient_counts][report_month]).to eq(2)
-      expect(result[:controlled_patients][report_month]).to eq(2)
-      expect(result[:controlled_patients_rate][report_month]).to eq(100.0)
-      expect(result[:uncontrolled_patients][report_month]).to eq(0)
-      expect(result[:uncontrolled_patients_rate][report_month]).to eq(0)
-
-      result_with_exclusions =
-        ControlRateService.new(facility_group_1, periods: report_range, with_exclusions: true).call
-
-      expect(result_with_exclusions[:cumulative_registrations][report_month]).to eq(2)
-      expect(result_with_exclusions[:cumulative_assigned_patients][report_month]).to eq(1)
-      expect(result_with_exclusions[:adjusted_patient_counts_with_ltfu][report_month]).to eq(1)
-      expect(result_with_exclusions[:adjusted_patient_counts][report_month]).to eq(1)
-      expect(result_with_exclusions[:controlled_patients][report_month]).to eq(1)
-      expect(result_with_exclusions[:controlled_patients_rate][report_month]).to eq(100.0)
-      expect(result_with_exclusions[:controlled_patients_with_ltfu_rate][report_month]).to eq(100.0)
-      expect(result_with_exclusions[:uncontrolled_patients][report_month]).to eq(0)
-      expect(result_with_exclusions[:uncontrolled_patients_rate][report_month]).to eq(0)
-      expect(result_with_exclusions[:uncontrolled_patients_with_ltfu_rate][report_month]).to eq(0)
-    end
-  end
-
-  it "quarterly control rate looks only at patients registered in the previous quarter" do
-    facilities = FactoryBot.create_list(:facility, 5, facility_group: facility_group_1)
-    facility = facilities.first
-    facility_2 = create(:facility)
-
-    controlled_in_q1 = create_list(:patient, 3, recorded_at: jan_2020, assigned_facility: facility, registration_user: user)
-    controlled_in_q1.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    controlled_in_q3 = create_list(:patient, 3, recorded_at: june_1_2020, assigned_facility: facility, registration_user: user)
-    controlled_in_q3.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    controlled_in_q3_other_facility = create_list(:patient, 3, recorded_at: june_1_2020, assigned_facility: facility_2, registration_user: user)
-    controlled_in_q3_other_facility.each do |patient|
-      create(:blood_pressure, :under_control, facility: facility_2, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
-    end
-
-    uncontrolled_in_q3 = create_list(:patient, 7, recorded_at: june_1_2020, assigned_facility: facility, registration_user: user)
-    uncontrolled_in_q3.each do |patient|
-      create(:blood_pressure, :hypertensive, facility: facility, patient: patient, recorded_at: Time.parse("September 1 2020"), user: user)
     end
 
     refresh_views
 
-    periods = Period.quarter(july_2018)..Period.quarter(july_2020)
-    service = ControlRateService.new(facility_group_1, periods: periods)
-    result = service.call
+    report_start = july_2020.advance(months: -24)
+    report_range = (Period.month(report_start)..Period.month(july_2020))
+    report_month = Period.month(june_1_2020)
 
-    # expect(result[:registrations].keys.size).to eq(3) # 3 quarters of data
-    # expect(result[:registrations].keys.first.to_s).to eq("Q1-2020")
-    # expect(result[:registrations].keys.last.to_s).to eq("Q3-2020")
+    result =
+      ControlRateService.new(facility_group_1, periods: report_range).call
 
-    q3_2020 = Period.quarter("Q3-2020")
-    # expect(result[:registrations][q3_2020]).to eq(10)
-    expect(result[:controlled_patients][q3_2020]).to eq(3)
-    expect(result[:controlled_patients_rate][q3_2020]).to eq(30.0)
-    expect(result[:uncontrolled_patients][q3_2020]).to eq(7)
-    expect(result[:uncontrolled_patients_rate][q3_2020]).to eq(70.0)
+    expect(result[:cumulative_registrations][report_month]).to eq(2)
+    expect(result[:cumulative_assigned_patients][report_month]).to eq(1)
+    expect(result[:adjusted_patient_counts_with_ltfu][report_month]).to eq(1)
+    expect(result[:adjusted_patient_counts][report_month]).to eq(1)
+    expect(result[:controlled_patients][report_month]).to eq(1)
+    expect(result[:controlled_patients_rate][report_month]).to eq(100.0)
+    expect(result[:controlled_patients_with_ltfu_rate][report_month]).to eq(100.0)
+    expect(result[:uncontrolled_patients][report_month]).to eq(0)
+    expect(result[:uncontrolled_patients_rate][report_month]).to eq(0)
+    expect(result[:uncontrolled_patients_with_ltfu_rate][report_month]).to eq(0)
   end
 
   it "returns control rate for a single facility" do

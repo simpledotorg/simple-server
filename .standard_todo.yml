@@ -2,7 +2,5 @@
 # Remove from this list as you refactor files.
 ---
 ignore:
-  - lib/tasks/hard_delete.rake:
-      - Lint/UnreachableCode
   - config/application.rb:
       - Lint/Debugger

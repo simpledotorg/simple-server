@@ -13,6 +13,10 @@ class FacilityDistrict
     scope.where(district: name)
   end
 
+  def facility_ids
+    facilities.pluck("facilities.id")
+  end
+
   def child_region_type
     "facility"
   end
