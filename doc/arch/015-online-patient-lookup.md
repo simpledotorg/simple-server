@@ -36,15 +36,17 @@ other factors. See the API contract below for more details.
 
 We will implement temporary retention in the app with this
 feature. With every patient retrieved via the lookup API, we will
-store the:
-- retention type and duration
-- sync time
+store the time until which the record needs to be retained if the
+retention type is temporary.
+
+```
+retain_until = sync_time (now) + retention duration
+```
 
 After a sync (that happens every 15 minutes), we will delete the
 records that:
 - should be retained temporarily
-- and have passed their retention time period: `now > sync_time +
-  retention_period`
+- and have passed their retention time period: `now > retain_until`
 
 We will treat manual and automatic syncs in the same way, and
 configure the retention period to suit the needs of showing patients
