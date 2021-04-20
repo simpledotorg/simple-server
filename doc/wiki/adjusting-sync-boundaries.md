@@ -2,7 +2,7 @@
 
 Mobile devices have limited storage and there's a limit to how much data the android app can reasonably operate with.
 Simple provides a way to adjust the number of records that are synced to the app by picking a "sync region". 
-A sync region is any region in the `Region` hierarchy (state, district, block).
+A sync region can be any region in the `Region` hierarchy (state, district, block).
 
 This is a guide on how region level sync works and how to transition from one using one sync region to another sync region.
 
@@ -23,7 +23,7 @@ a region level sync compatible version.
 To start using a different region as the sync region, setting the right `sync_region_id` in the facility payload will suffice.
 
 - When the sync region is changed, it requires a resync so that all records from the other sync region can be synced to the app.
-- The server detects if an app needs to resync by checking if there is a mismatch in what the app's sync region earlier earlier (`sync_region_id` from the process token)
+- The server detects if an app needs to resync by checking if there is a mismatch in the app's sync region in the last request (`sync_region_id` from the process token)
   and the region the app has requested (in the header).
 - When the app detects a change in sync region, it triggers a task to purge stuff outside the new sync region.
 - It is important to keep in mind that changing the sync region causes apps to resync.
