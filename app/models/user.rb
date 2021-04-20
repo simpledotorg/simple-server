@@ -246,6 +246,10 @@ class User < ApplicationRecord
     power_user_access? && email_authentication.present?
   end
 
+  def block_level_sync?
+    !can_teleconsult?
+  end
+
   def flipper_id
     "User;#{id}"
   end

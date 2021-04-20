@@ -337,4 +337,12 @@ RSpec.describe User, type: :model do
       expect(UserAuthentication.exists?(id: user_authentication_ids)).to eq(false)
     end
   end
+
+  describe "#block_level_sync?" do
+    let(:mo) { create(:teleconsultation_medical_officer) }
+
+    it "is false when the user is enabled for teleconsulation" do
+      expect(mo.block_level_sync?).to eq false
+    end
+  end
 end
