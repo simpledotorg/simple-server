@@ -1,6 +1,6 @@
 # Moving patient data from one facility to another
 
-There are some circumstances where a facility's data might need to be transferred to another facility:
+Users of Simple might need a facility's data to be transferred to another facility in some circumstances:
 - Patients were accidentally created in the wrong facility
 - A facility needs to be deleted and merged with another facility
 
