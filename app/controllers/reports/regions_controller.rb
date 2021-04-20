@@ -58,6 +58,10 @@ class Reports::RegionsController < AdminController
 
     @show_current_period = true
     @period = Period.month(Time.current)
+    @period_range = Range.new(@period.advance(months: -5), @period)
+    regions = [@region, @region.reportable_children].flatten
+    @repository = Reports::Repository.new(regions, periods: @period_range)
+
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,
                                                        prev_periods: 6,
                                                        include_current_period: true)

@@ -267,9 +267,11 @@
             <td class="row-total ta-center">
               <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 })) %>
             </td>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, date))) %>
+                <%= count = @repository.registration_counts[@region.slug][period]
+                    number_with_delimiter(dash_if_zero(count))
+                %>
               </td>
             <% end %>
             <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
@@ -290,9 +292,11 @@
                 <td class="ta-center">
                   <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
                 </td>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
+                    <%= count = @repository.registration_counts[resource.region.slug][period]
+                        number_with_delimiter(dash_if_zero(count))
+                    %>
                   </td>
                 <% end %>
                 <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>

@@ -88,7 +88,7 @@ RSpec.describe DistrictAnalyticsQuery do
     end
 
     describe "#call" do
-      it "returns aggregated data for all facilities in the district" do
+      fit "returns aggregated data for all facilities in the district" do
         expected_result = {
           facility_1.id => {
             total_registered_patients: 6,
