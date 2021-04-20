@@ -28,7 +28,7 @@ This means that we can sync only a block's data to the user's phone and be reaso
 ### On the app
 - Users can continue selecting any facility in their district when switching facilities.
 - Users can continue selecting any facility in their district when scheduling a patient’s next visit or preferred facility. 
-- It is possible that a patient will visit a facility outside their block and their patient record will not be found on the user’s device. In this case the user should 
+- It is possible that a patient will visit a facility outside their block and their record will not be found on the user’s device. In this case the user should 
     - Scan the patient’s BP passport if they have one.
     - Register the patient again, as if they were new. Make sure to attach their existing BP passport to the registration.
     - The duplicate patient records will be merged by the Simple team later.
