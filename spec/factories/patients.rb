@@ -5,7 +5,7 @@ FactoryBot.define do
                     transgender: %w[Bharathi Madhu Bharathi Manabi Anjum Vani Riya Shreya Kiran Amit]}
 
     transient do
-      has_date_of_birth? { false }
+      has_date_of_birth? { true }
     end
 
     id { SecureRandom.uuid }
