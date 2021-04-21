@@ -7,7 +7,7 @@ class AppointmentNotification::Worker
   DEFAULT_LOCALE = :en
 
   def metrics
-    @metrics ||= Metrics.new(self)
+    @metrics ||= Metrics.with_object(self)
   end
 
   def perform(appointment_id, communication_type, locale = nil)
