@@ -37,6 +37,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     context "when communication_type is WhatsApp" do
       it "sends a reminder WhatsApp" do
         expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
+        expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
 
         described_class.perform_async(appointment.id, "missed_visit_whatsapp_reminder", locale)
         described_class.drain
@@ -44,6 +45,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "records a Communication log if successful" do
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
       expect {
         described_class.perform_async(appointment.id, communication_type, locale)
         described_class.drain
@@ -58,7 +60,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "does not send if Communication already sent" do
-      allow_any_instance_of(Appointment).to receive(:previously_communicated_via?).and_return(true)
+      expect_any_instance_of(Appointment).to receive(:previously_communicated_via?).and_return(true)
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.previously_communicated")
 
       expect {
         described_class.perform_async(appointment.id, communication_type, locale)
@@ -69,6 +72,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "does not record a Communication log if any errors occur" do
       allow_any_instance_of(NotificationService).to receive(:send_sms).and_raise(Twilio::REST::TwilioError)
       allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_raise(Twilio::REST::TwilioError)
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.error")
 
       expect {
         described_class.perform_async(appointment.id, communication_type, locale)
