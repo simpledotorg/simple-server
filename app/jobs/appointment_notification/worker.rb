@@ -11,10 +11,7 @@ class AppointmentNotification::Worker
     communication_type = reminder.next_communication_type
     return unless communication_type
 
-    if reminder.status != "scheduled"
-      report_error("scheduled appointment reminder has invalid status")
-      return
-    end
+    return if reminder.status != "scheduled"
     send_message(reminder, communication_type)
   end
 
@@ -23,26 +20,25 @@ class AppointmentNotification::Worker
   def send_message(reminder, communication_type)
     notification_service = NotificationService.new
 
-    begin
-      response = if communication_type == "missed_visit_whatsapp_reminder"
-        notification_service.send_whatsapp(
-          reminder.patient.latest_mobile_number,
-          appointment_message(reminder),
-          callback_url
-        )
-      else
-        notification_service.send_sms(
-          reminder.patient.latest_mobile_number,
-          appointment_message(reminder),
-          callback_url
-        )
-      end
-      ActiveRecord::Base.transaction do
-        create_communication(reminder, communication_type, response)
-        reminder.status_sent!
-      end
-    rescue Twilio::REST::TwilioError => e
-      report_error(e)
+    if communication_type == "missed_visit_whatsapp_reminder"
+      notification_service.send_whatsapp(
+        reminder.patient.latest_mobile_number,
+        appointment_message(reminder),
+        callback_url
+      )
+    else
+      notification_service.send_sms(
+        reminder.patient.latest_mobile_number,
+        appointment_message(reminder),
+        callback_url
+      )
+    end
+
+    return if notification_service.failed?
+
+    ActiveRecord::Base.transaction do
+      create_communication(reminder, communication_type, notification_service.response)
+      reminder.status_sent!
     end
   end
 
@@ -72,18 +68,6 @@ class AppointmentNotification::Worker
     api_v3_twilio_sms_delivery_url(
       host: ENV.fetch("SIMPLE_SERVER_HOST"),
       protocol: ENV.fetch("SIMPLE_SERVER_HOST_PROTOCOL")
-    )
-  end
-
-  def report_error(e)
-    Sentry.capture_message(
-      "Error while processing appointment notifications",
-      extra: {
-        exception: e.to_s
-      },
-      tags: {
-        type: "appointment-notification-job"
-      }
     )
   end
 end
