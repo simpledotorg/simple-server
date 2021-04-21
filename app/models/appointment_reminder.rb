@@ -18,6 +18,17 @@ class AppointmentReminder < ApplicationRecord
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
+  # may need to change the existing notifications
+  def localized_message
+    I18n.t(
+      message,
+      assigned_facility_name: appointment.facility.name,
+      patient_name: patient.full_name,
+      appointment_date: appointment.scheduled_date,
+      locale: patient_locale(patient)
+    )
+  end
+
   def next_communication_type
     if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)
       return preferred_communication_method
@@ -40,5 +51,10 @@ class AppointmentReminder < ApplicationRecord
 
   def backup_communication_method
     "missed_visit_sms_reminder"
+  end
+
+  # this is temporary. will be replaced by facility address localization
+  def patient_locale(patient)
+    patient.address&.locale || :en
   end
 end

@@ -4,8 +4,6 @@ class AppointmentNotification::Worker
 
   sidekiq_options queue: :high
 
-  DEFAULT_LOCALE = :en
-
   def perform(appointment_reminder_id)
     reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
     communication_type = reminder.next_communication_type
@@ -23,13 +21,13 @@ class AppointmentNotification::Worker
     if communication_type == "missed_visit_whatsapp_reminder"
       notification_service.send_whatsapp(
         reminder.patient.latest_mobile_number,
-        appointment_message(reminder),
+        reminder.localized_message,
         callback_url
       )
     else
       notification_service.send_sms(
         reminder.patient.latest_mobile_number,
-        appointment_message(reminder),
+        reminder.localized_message,
         callback_url
       )
     end
@@ -50,18 +48,6 @@ class AppointmentNotification::Worker
       twilio_msg_status: response.status,
       communication_type: communication_type
     )
-  end
-
-  def appointment_message(reminder)
-    I18n.t(
-      reminder.message,
-      facility_name: reminder.appointment.facility.name,
-      locale: patient_locale(reminder.patient)
-    )
-  end
-
-  def patient_locale(patient)
-    patient.address&.locale || DEFAULT_LOCALE
   end
 
   def callback_url

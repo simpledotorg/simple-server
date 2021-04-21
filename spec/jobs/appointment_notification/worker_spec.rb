@@ -80,6 +80,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { reminder.reload.status }.from("scheduled").to("sent")
     end
 
+    # these tests are duplicative and should be simplified
+
     it "selects the message language based on patient address" do
       mock_successful_delivery
       reminder.patient.address.update(state: "punjab")
