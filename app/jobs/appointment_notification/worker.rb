@@ -6,17 +6,6 @@ class AppointmentNotification::Worker
 
   DEFAULT_LOCALE = :en
 
-  class Metrics
-    def initialize(object)
-      @prefix = object.class.name.underscore.tr("/", ".")
-    end
-
-    def increment(event)
-      name = "#{@prefix}.#{event}"
-      Statsd.instance.increment(name)
-    end
-  end
-
   def metrics
     @metrics ||= Metrics.new(self)
   end
@@ -77,8 +66,7 @@ class AppointmentNotification::Worker
   end
 
   def report_error(e)
-    Sentry.capture_message(
-      "Error while processing appointment notifications",
+    Sentry.capture_message("Error while processing appointment notifications",
       extra: {
         exception: e.to_s
       },
