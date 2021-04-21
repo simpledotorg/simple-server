@@ -62,10 +62,6 @@ class AppointmentNotification::Worker
     end
   end
 
-  def metrics_prefix
-    self.class.name.underscore.tr("/", ".")
-  end
-
   private
 
   def appointment_message(appointment, communication_type, locale)
