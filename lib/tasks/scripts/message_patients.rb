@@ -50,7 +50,7 @@ class MessagePatients
       if notification_service.failed?
         update_report(:exception, patient: patient)
       else
-        update_report(:responses, response: response, patient: patient)
+        update_report(:responses, response: notification_service.response, patient: patient)
       end
     end
   end
