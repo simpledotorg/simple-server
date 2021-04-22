@@ -5,7 +5,7 @@
     <span class='math'>
       <%= '+' unless i == 0 %>
       <%= drug[:consumed] %>
-      <% if drug[:coefficient] && drug[:coefficient] != 1 %>
+      <% unless drug[:coefficient] == 1 %>
         *<%= drug[:coefficient] %>
       <% end %>
     </span>
