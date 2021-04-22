@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe "Rachet down usage of let!" do
-  expected_usages = 597
+  expected_usages = 564
 
   it "prevents new usages" do
     command = %{grep -rn "\slet\!(:" spec}

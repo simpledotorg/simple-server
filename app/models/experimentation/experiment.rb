@@ -22,16 +22,15 @@ module Experimentation
     }, _prefix: true
 
     def self.candidate_patients
-      Patient.from(Patient.with_hypertension, :patients)
+      Patient.with_hypertension
         .contactable
         .where("age >= ?", 18)
         .includes(treatment_group_memberships: [treatment_group: [:experiment]])
         .where(["experiments.end_date < ? OR experiments.id IS NULL", ExperimentControlService::LAST_EXPERIMENT_BUFFER.ago]).references(:experiment)
     end
 
-    def group_for(uuid)
-      hash = Zlib.crc32(uuid) % treatment_groups.length
-      treatment_groups.find_by(index: hash)
+    def random_treatment_group
+      treatment_groups.sample
     end
 
     private
