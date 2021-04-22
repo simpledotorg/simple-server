@@ -72,8 +72,7 @@ class AppointmentNotification::Worker
       },
       tags: {
         type: "appointment-notification-job"
-      }
-    )
+      })
   end
 
   def callback_url
