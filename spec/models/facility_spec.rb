@@ -53,20 +53,15 @@ RSpec.describe Facility, type: :model do
     it { should delegate_method(:follow_ups_by_period).to(:patients).with_prefix(:patient) }
 
     describe ".assigned_hypertension_patients" do
-      let!(:assigned_facility) { create(:facility) }
-      let!(:registration_facility) { create(:facility) }
-      let!(:assigned_patients) do
-        [create(:patient,
-          assigned_facility: assigned_facility,
-          registration_facility: registration_facility),
-          create(:patient,
-            :without_hypertension,
-            assigned_facility: assigned_facility,
-            registration_facility: registration_facility)]
+      let(:assigned_facility) { create(:facility) }
+      let(:registration_facility) { create(:facility) }
+      before do
+        @assigned_patients = [create(:patient, assigned_facility: assigned_facility, registration_facility: registration_facility),
+          create(:patient, :without_hypertension, assigned_facility: assigned_facility, registration_facility: registration_facility)]
       end
 
       it "returns assigned hypertensive patients for facilities" do
-        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly assigned_patients.first
+        expect(assigned_facility.assigned_hypertension_patients).to contain_exactly(@assigned_patients.first)
       end
 
       it "ignores registration patients" do
@@ -75,10 +70,9 @@ RSpec.describe Facility, type: :model do
     end
 
     describe "#teleconsultation_medical_officers" do
-      let!(:facility) { create(:facility) }
-      let!(:medical_officer) { create(:user, teleconsultation_facilities: [facility]) }
-
       specify do
+        facility = create(:facility)
+        medical_officer = create(:user, teleconsultation_facilities: [facility])
         expect(facility.teleconsultation_medical_officers).to contain_exactly medical_officer
       end
     end

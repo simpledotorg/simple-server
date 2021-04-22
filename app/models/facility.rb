@@ -49,7 +49,7 @@ class Facility < ApplicationRecord
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
 
-  pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true, any_word: true}}
+  pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
     joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
       .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
@@ -159,6 +159,10 @@ class Facility < ApplicationRecord
   # For compatibility w/ parent FacilityGroups
   def facilities
     [self]
+  end
+
+  def facility_ids
+    [id]
   end
 
   def child_region_type

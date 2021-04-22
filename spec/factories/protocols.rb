@@ -4,6 +4,18 @@ FactoryBot.define do
     name { Faker::Address.state + " Protocol" }
     follow_up_days { rand(1..60) }
 
+    trait :with_minimal_drugs do
+      protocol_drugs {
+        [build(:protocol_drug,
+          name: "Amlodipine",
+          dosage: "5 mg",
+          rxnorm_code: "329528",
+          stock_tracked: true,
+          drug_category: "hypertension_ccb",
+          protocol_id: id)]
+      }
+    end
+
     trait :with_tracked_drugs do
       protocol_drugs {
         [

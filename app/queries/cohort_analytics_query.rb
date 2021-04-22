@@ -10,7 +10,7 @@ class CohortAnalyticsQuery
 
   def initialize(region, period: :month, prev_periods: nil, from_time: Time.current.beginning_of_month)
     @facilities = region.facilities
-    @patients = Patient.joins(:assigned_facility).where(facilities: {id: @facilities}).with_hypertension
+    @patients = Patient.for_reports.joins(:assigned_facility).where(facilities: {id: @facilities})
     @from_time = from_time
     @period = period
 

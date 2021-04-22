@@ -69,10 +69,6 @@ class Patient < ApplicationRecord
 
   belongs_to :deleted_by_user, class_name: "User", optional: true
 
-  has_many :merged_from_patients, -> { with_discarded }, class_name: "Patient", foreign_key: :merged_into_patient_id
-  belongs_to :merged_into_patient, class_name: "Patient", foreign_key: :merged_into_patient_id, optional: true
-  belongs_to :merged_by_user, class_name: "User", optional: true
-
   attribute :call_result, :string
 
   scope :with_nested_sync_resources, -> { includes(:address, :phone_numbers, :business_identifiers) }
@@ -93,10 +89,11 @@ class Patient < ApplicationRecord
   }
 
   scope :contactable, -> {
+    # We don't want to add the device_created_at ORDER BY default scope from PatientPhoneNumber just for grabbing contactable records, so we do unscoped here
     where(reminder_consent: "granted")
       .where.not(status: "dead")
       .joins(:phone_numbers)
-      .merge(PatientPhoneNumber.phone_type_mobile)
+      .merge(PatientPhoneNumber.unscoped.phone_type_mobile)
   }
 
   validate :past_date_of_birth
@@ -187,7 +184,7 @@ class Patient < ApplicationRecord
 
   def current_age
     if date_of_birth.present?
-      Date.current.year - date_of_birth.year
+      ((Time.zone.now - date_of_birth.to_time) / 1.year).floor
     elsif age.present?
       return 0 if age == 0
 
