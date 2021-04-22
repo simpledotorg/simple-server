@@ -338,11 +338,15 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#block_level_sync?" do
-    let(:mo) { create(:teleconsultation_medical_officer) }
+  describe "#district_level_sync?" do
+    it "is true when the user is enabled for teleconsultation" do
+      mo = create(:teleconsultation_medical_officer)
+      expect(mo.district_level_sync?).to eq true
+    end
 
-    it "is false when the user is enabled for teleconsulation" do
-      expect(mo.block_level_sync?).to eq false
+    it "is false when the user cannot teleconsult" do
+      nurse = create(:user)
+      expect(nurse.district_level_sync?).to eq false
     end
   end
 end
