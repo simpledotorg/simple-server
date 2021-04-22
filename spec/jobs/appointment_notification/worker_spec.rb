@@ -61,7 +61,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "does not send if Communication already sent" do
       expect_any_instance_of(Appointment).to receive(:previously_communicated_via?).and_return(true)
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.previously_communicated")
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
 
       expect {
         described_class.perform_async(appointment.id, communication_type, locale)

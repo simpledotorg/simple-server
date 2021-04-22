@@ -13,13 +13,13 @@ class AppointmentNotification::Worker
   def perform(appointment_id, communication_type, locale = nil)
     appointment = Appointment.find_by(id: appointment_id)
     unless appointment
-      metrics.increment(:skipped)
+      metrics.increment("skipped.missed_appointment")
       logger.warn "Appointment #{appointment_id} not found, skipping notification"
       return
     end
 
     if appointment.previously_communicated_via?(communication_type)
-      metrics.increment(:previously_communicated)
+      metrics.increment("skipped.previously_communicated")
       return
     end
 
