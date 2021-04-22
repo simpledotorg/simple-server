@@ -43,7 +43,7 @@
       <% @drugs_by_category.map do |drug_category, drugs| %>
         <% patient_days = @report.dig(:all, drug_category, :patient_days) %>
         <% drugs.map do |drug| %>
-          <% drug_stock = @report.dig(:all, drug_category, :drug_stocks, drug.id) %>
+          <% drug_stock = @report.dig(:all, drug_category, :drug_stocks, drug.rxnorm_code, :in_stock) %>
           <% if drug_stock.present? %>
             <td class="type-number text-center" data-sort-column-key=<%= drug.id %>>
               <%= drug_stock %>
@@ -54,7 +54,10 @@
         <% end %>
         <% %>
         <% if patient_days.present? %>
-          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:all, drug_category) %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+          <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              data-template="<%= render "wide_tooltip_template" %>"
+              data-original-title="<%= render "drug_stocks_tooltip", report: @report.dig(:all, drug_category) %>"
+              data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
             <em class="<%= patient_days_css_class(patient_days) %>">
               <%= patient_days %>
             </em>
@@ -68,7 +71,7 @@
     <% @report[:facilities].each do |(_facility_id, facility_report)| %>
       <tr>
         <% facility = facility_report[:facility] %>
-        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title=""
+        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
             data-original-title='<%= "#{facility.name}: #{facility_report[:patient_count]} patients" %>'>
           <%= link_to(reports_region_path(facility, report_scope: "facility")) do %>
             <%= facility.name %>
@@ -92,7 +95,10 @@
             <% end %>
           <% end %>
           <% if patient_days.present? %>
-            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="<%= render "drug_stocks_tooltip", report: facility_report[drug_category] %>" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
+            <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                data-template="<%= render "wide_tooltip_template" %>"
+                data-original-title="<%= render "drug_stocks_tooltip", report: facility_report[drug_category] %>"
+                data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
               <em class="<%= patient_days_css_class(patient_days) %>">
                 <%= patient_days %>
               </em>
