@@ -29,11 +29,12 @@ module PatientImport
       business_identifier_id = SecureRandom.uuid
       phone_number_id = SecureRandom.uuid
       address_id = SecureRandom.uuid
+      medical_history_id = SecureRandom.uuid
 
       {
         patient: {
           id: patient_id,
-          registration_facility_id: registration_facility_id(row),
+          registration_facility_id: registration_facility_id,
           recorded_at: timestamp(row[:registration_date]),
           full_name: row[:full_name],
           age: row[:age].to_i,
@@ -72,52 +73,68 @@ module PatientImport
           }
         },
         medical_history: {
+          id: medical_history_id,
+          patient_id: patient_id,
           hypertension: row[:medical_history_hypertension],
           diabetes: row[:medical_history_diabetes],
           prior_heart_attack: row[:medical_history_heart_attack],
           prior_stroke: row[:medical_history_stroke],
-          chronic_kidney_disease: row[:medical_history_kidney_disease]
+          chronic_kidney_disease: row[:medical_history_kidney_disease],
+          diagnosed_with_hypertension: row[:medical_history_hypertension],
+          receiving_treatment_for_hypertension: "yes",
+          created_at: timestamp(row[:registration_date]),
+          updated_at: timestamp(row[:registration_date])
         },
         blood_pressures: [
-          first_blood_pressure(row),
-          last_blood_pressure(row)
+          first_blood_pressure(row, patient_id: patient_id),
+          last_blood_pressure(row, patient_id: patient_id)
         ].compact,
         prescription_drugs: [
-          *first_prescription_drugs(row),
-          *last_prescription_drugs(row)
+          *first_prescription_drugs(row, patient_id: patient_id),
+          *last_prescription_drugs(row, patient_id: patient_id)
         ]
       }
     end
 
-    def registration_facility_id(row)
-      Facility.find_by(name: row[:registration_facility])&.id
+    def registration_facility_id
+      facility.id
     end
 
     def patient_status(row)
       row[:died] == "yes" ? :dead : :active
     end
 
-    def first_blood_pressure(row)
+    def first_blood_pressure(row, patient_id:)
       return nil unless row[:first_visit_date].present?
 
       {
-        systolic: row[:first_visit_bp_systolic],
-        diastolic: row[:first_visit_bp_diastolic],
-        recorded_at: row[:first_visit_date]
+        id: SecureRandom.uuid,
+        patient_id: patient_id,
+        facility_id: registration_facility_id,
+        systolic: row[:first_visit_bp_systolic].to_i,
+        diastolic: row[:first_visit_bp_diastolic].to_i,
+        recorded_at: timestamp(row[:first_visit_date]),
+        created_at: timestamp(row[:first_visit_date]),
+        updated_at: timestamp(row[:first_visit_date])
       }
     end
 
-    def last_blood_pressure(row)
+    def last_blood_pressure(row, patient_id:)
       return nil unless row[:last_visit_date].present?
 
       {
-        systolic: row[:last_visit_bp_systolic],
-        diastolic: row[:last_visit_bp_diastolic],
-        recorded_at: row[:last_visit_date]
+        id: SecureRandom.uuid,
+        patient_id: patient_id,
+        facility_id: registration_facility_id,
+        systolic: row[:last_visit_bp_systolic].to_i,
+        diastolic: row[:last_visit_bp_diastolic].to_i,
+        recorded_at: timestamp(row[:last_visit_date]),
+        created_at: timestamp(row[:last_visit_date]),
+        updated_at: timestamp(row[:last_visit_date])
       }
     end
 
-    def first_prescription_drugs(row)
+    def first_prescription_drugs(row, patient_id:)
       drug_names = [
         row[:first_visit_medication_1],
         row[:first_visit_medication_2],
@@ -127,15 +144,20 @@ module PatientImport
       ]
 
       drugs = drug_names.map do |name|
-        medication(name: name, created_at: row[:first_visit_date])
+        medication(
+          name: name,
+          patient_id: patient_id,
+          created_at: row[:first_visit_date]
+        )
       end.compact
 
       # Delete the first drugs if last drugs are available
-      if last_prescription_drugs(row).any?
+      if last_prescription_drugs(row, patient_id: patient_id).any?
         drugs.each do |drug|
           drug.merge!(
             is_deleted: true,
-            deleted_at: row[:last_visit_date]
+            updated_at: timestamp(row[:last_visit_date]),
+            deleted_at: timestamp(row[:last_visit_date])
           )
         end
       end
@@ -143,7 +165,7 @@ module PatientImport
       drugs
     end
 
-    def last_prescription_drugs(row)
+    def last_prescription_drugs(row, patient_id:)
       drug_names = [
         row[:last_visit_medication_1],
         row[:last_visit_medication_2],
@@ -153,21 +175,30 @@ module PatientImport
       ]
 
       drug_names.map do |name|
-        medication(name: name, created_at: row[:last_visit_date])
+        medication(
+          name: name,
+          patient_id: patient_id,
+          created_at: row[:last_visit_date]
+        )
       end.compact
     end
 
-    def medication(name:, created_at:)
+    def medication(name:, patient_id:, created_at:)
       medication_record = medication_by_name_dosage_and_frequency(name) || medication_by_name_and_dosage(name)
 
       return nil unless medication_record.present?
 
       {
+        id: SecureRandom.uuid,
+        patient_id: patient_id,
+        facility_id: registration_facility_id,
         name: medication_record.name,
         rxnorm_code: medication_record.rxnorm_code,
         dosage: medication_record.dosage,
         is_protocol_drug: protocol_drug?(medication_record),
-        created_at: created_at
+        created_at: timestamp(created_at),
+        updated_at: timestamp(created_at),
+        is_deleted: false
       }
     end
 
