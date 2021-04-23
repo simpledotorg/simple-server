@@ -17,7 +17,7 @@ module Api::V3::SyncToUser
         other_facilities_limit = limit - current_facility_records.size
         @other_facility_records ||=
           model_sync_scope
-            .where("patient_id = ANY (array(?))",
+            .where("patient_id IN (?)",
               current_sync_region
                 .syncable_patients
                 .where.not(registration_facility: current_facility)
