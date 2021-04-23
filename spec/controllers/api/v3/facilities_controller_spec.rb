@@ -87,38 +87,25 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
       context "region-level sync" do
         context "sync_region_id" do
-          it "sets the sync_region_id to the facility group id when region level sync is disabled" do
+          it "sets the sync_region_id to the block id when user is available" do
+            request.env["HTTP_X_USER_ID"] = request_user.id
+            request.env["HTTP_X_FACILITY_ID"] = request_user.facility.id
+            request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
+
             get :sync_to_user
 
             response_records = JSON(response.body)["facilities"]
             response_records.each do |record|
-              expect(record["sync_region_id"]).to eq record["facility_group_id"]
+              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
             end
           end
 
-          context "when region level sync is enabled" do
-            it "sets the sync_region_id to the facility group id when user is not available" do
-              enable_flag(:block_level_sync, request_user)
-              get :sync_to_user
+          it "sets the sync_region_id to the block id when user is not available" do
+            get :sync_to_user
 
-              response_records = JSON(response.body)["facilities"]
-              response_records.each do |record|
-                expect(record["sync_region_id"]).to eq record["facility_group_id"]
-              end
-            end
-
-            it "sets the sync_region_id to the block id when user is available" do
-              request.env["HTTP_X_USER_ID"] = request_user.id
-              request.env["HTTP_X_FACILITY_ID"] = request_user.facility.id
-              request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-
-              enable_flag(:block_level_sync, request_user)
-              get :sync_to_user
-
-              response_records = JSON(response.body)["facilities"]
-              response_records.each do |record|
-                expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
-              end
+            response_records = JSON(response.body)["facilities"]
+            response_records.each do |record|
+              expect(record["sync_region_id"]).to eq Facility.find(record["id"]).region.block_region.id
             end
           end
         end
