@@ -17,7 +17,7 @@ class Admin::PatientImportsController < AdminController
     errors = []
 
     params.each do |patient_params|
-      patient_validator = Api::V3::PatientPayloadValidator.new(patient_params[:patient]).tap(&:valid?)
+      patient_validator = Api::V3::PatientPayloadValidator.new(**patient_params[:patient], skip_facility_authorization: true).tap(&:valid?)
       medical_history_validator = Api::V3::MedicalHistoryPayloadValidator.new(patient_params[:medical_history]).tap(&:valid?)
       blood_pressure_validators = patient_params[:blood_pressures].map { |bp| Api::V3::BloodPressurePayloadValidator.new(bp).tap(&:valid?) }
       prescription_drug_validators = patient_params[:prescription_drugs].map { |drug| Api::V3::PrescriptionDrugPayloadValidator.new(drug).tap(&:valid?) }

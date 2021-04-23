@@ -1,5 +1,7 @@
 module PatientImport
   class SpreadsheetTransformer
+    IMPORT_USER_PHONE_NUMBER = "0000000001"
+
     attr_reader :data, :facility
 
     def self.transform(*args)
@@ -100,6 +102,42 @@ module PatientImport
       facility.id
     end
 
+    def import_user
+      return @import_user if defined?(@import_user)
+
+      phone_number_authentication = PhoneNumberAuthentication.find_by(phone_number: IMPORT_USER_PHONE_NUMBER)
+
+      if phone_number_authentication
+        @import_user = phone_number_authentication.user
+      else
+        @import_user = create_import_user
+      end
+    end
+
+    def create_import_user
+      user = User.new(
+        full_name: "import-user",
+        organization_id: Organization.take,
+        device_created_at: Time.current,
+        device_updated_at: Time.current
+      )
+      phone_number_authentication = PhoneNumberAuthentication.new(
+        phone_number: IMPORT_USER_PHONE_NUMBER,
+        password: "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
+        registration_facility_id: facility.id
+      ).tap do |pna|
+        pna.set_otp
+        pna.invalidate_otp
+        pna.set_access_token
+      end
+
+      user.phone_number_authentications = [phone_number_authentication]
+      user.sync_approval_denied("bot user for import")
+      user.save!
+
+      user
+    end
+
     def patient_status(row)
       row[:died] == "yes" ? :dead : :active
     end
@@ -111,6 +149,7 @@ module PatientImport
         id: SecureRandom.uuid,
         patient_id: patient_id,
         facility_id: registration_facility_id,
+        user_id: import_user.id,
         systolic: row[:first_visit_bp_systolic].to_i,
         diastolic: row[:first_visit_bp_diastolic].to_i,
         recorded_at: timestamp(row[:first_visit_date]),
@@ -126,6 +165,7 @@ module PatientImport
         id: SecureRandom.uuid,
         patient_id: patient_id,
         facility_id: registration_facility_id,
+        user_id: import_user.id,
         systolic: row[:last_visit_bp_systolic].to_i,
         diastolic: row[:last_visit_bp_diastolic].to_i,
         recorded_at: timestamp(row[:last_visit_date]),
