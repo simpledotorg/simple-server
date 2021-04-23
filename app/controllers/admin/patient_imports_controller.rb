@@ -12,6 +12,24 @@ class Admin::PatientImportsController < AdminController
 
     data = read_xlsx_or_csv_file(params[:patient_import_file])
     params = PatientImport::SpreadsheetTransformer.transform(data, facility: facility)
-    render json: params.to_json
+
+    patient = params[0]
+    errors = []
+
+    params.each do |patient_params|
+      patient_validator = Api::V3::PatientPayloadValidator.new(patient_params[:patient]).tap(&:valid?)
+      medical_history_validator = Api::V3::MedicalHistoryPayloadValidator.new(patient_params[:medical_history]).tap(&:valid?)
+      blood_pressure_validators = patient_params[:blood_pressures].map { |bp| Api::V3::BloodPressurePayloadValidator.new(bp).tap(&:valid?) }
+      prescription_drug_validators = patient_params[:prescription_drugs].map { |drug| Api::V3::PrescriptionDrugPayloadValidator.new(drug).tap(&:valid?) }
+
+      errors = [
+        patient_validator.errors.full_messages,
+        medical_history_validator.errors.full_messages,
+        blood_pressure_validators.flat_map { |validator| validator.errors.full_messages },
+        prescription_drug_validators.flat_map { |validator| validator.errors.full_messages }
+      ]
+    end
+
+    render json: errors
   end
 end

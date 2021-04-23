@@ -25,30 +25,51 @@ module PatientImport
     end
 
     def params_for(row)
+      patient_id = SecureRandom.uuid
+      business_identifier_id = SecureRandom.uuid
+      phone_number_id = SecureRandom.uuid
+      address_id = SecureRandom.uuid
+
       {
         patient: {
+          id: patient_id,
           registration_facility_id: registration_facility_id(row),
-          recorded_at: row[:registration_date],
+          recorded_at: timestamp(row[:registration_date]),
           full_name: row[:full_name],
-          age: row[:age],
-          gender: row[:gender],
-          status: patient_status(row)
-        },
-        business_identifier: {
-          identifier_type: row[:identifier_type],
-          identifier: row[:identifier]
-        },
-        phone_number: {
-          number: row[:phone],
-          phone_type: :mobile,
-          active: true
-        },
-        address: {
-          street_address: row[:address],
-          village_or_colony: row[:village],
-          zone: row[:zone],
-          state: row[:state],
-          country: CountryConfig.current[:name]
+          age: row[:age].to_i,
+          age_updated_at: timestamp(row[:registration_date]),
+          gender: row[:gender].downcase,
+          status: patient_status(row),
+          created_at: timestamp(row[:registration_date]),
+          updated_at: timestamp(row[:registration_date]),
+
+          business_identifiers: [{
+            id: business_identifier_id,
+            identifier_type: row[:identifier_type],
+            identifier: row[:identifier],
+            created_at: timestamp(row[:registration_date]),
+            updated_at: timestamp(row[:registration_date]),
+          }],
+
+          phone_numbers: [{
+            id: phone_number_id,
+            number: row[:phone],
+            phone_type: :mobile,
+            active: true,
+            created_at: timestamp(row[:registration_date]),
+            updated_at: timestamp(row[:registration_date])
+          }],
+
+          address: {
+            id: address_id,
+            street_address: row[:address],
+            village_or_colony: row[:village],
+            zone: row[:zone],
+            state: row[:state],
+            country: CountryConfig.current[:name],
+            created_at: timestamp(row[:registration_date]),
+            updated_at: timestamp(row[:registration_date])
+          }
         },
         medical_history: {
           hypertension: row[:medical_history_hypertension],
@@ -169,6 +190,12 @@ module PatientImport
       Medication.all.to_a.find do |medication|
         name.gsub(/\s+/, "") == "#{medication.name}#{medication.dosage}#{localized_frequency(medication)}".gsub(/\s+/, "")
       end
+    end
+
+    def timestamp(time)
+      Time.parse(time)
+    rescue ArgumentError
+      nil
     end
   end
 end
