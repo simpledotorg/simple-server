@@ -13,17 +13,17 @@
   </div>
   <nav class="page-nav">
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-primary", id: "Edit protocol" %>
-      <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-primary", id: "New protocol drug" %>
+      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-outline-primary", id: "Edit protocol" %>
+      <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success", id: "New protocol drug" %>
     <% end %>
   </nav>
 </div>
 
-<% @protocol_drugs.each do |protocol_drug| %>
+<% @protocol_drugs.sort_by(&:name).each do |protocol_drug| %>
   <div class="card" name="<%= protocol_drug.name %>">
     <div class="row">
       <div class="col-md-4">
-        <h5 class="mb-1"><%= protocol_drug.dosage %> <%= protocol_drug.name %></h5>
+        <h5 class="mb-1"><%= protocol_drug.name %> <%= protocol_drug.dosage %></h5>
       </div>
       <div class="col-md-3 mb-2"><i class="fas fa-pills light mr-1"></i>
         <span class="text-secondary">RXnorm Code:</span>
