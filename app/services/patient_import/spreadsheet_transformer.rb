@@ -1,7 +1,5 @@
 module PatientImport
   class SpreadsheetTransformer
-    IMPORT_USER_PHONE_NUMBER = "0000000001"
-
     attr_reader :data, :facility
 
     def self.transform(*args)
@@ -95,7 +93,7 @@ module PatientImport
           *first_prescription_drugs(row, patient_id: patient_id),
           *last_prescription_drugs(row, patient_id: patient_id)
         ]
-      }
+      }.with_indifferent_access
     end
 
     def registration_facility_id
@@ -103,15 +101,7 @@ module PatientImport
     end
 
     def import_user
-      return @import_user if defined?(@import_user)
-
-      phone_number_authentication = PhoneNumberAuthentication.find_by(phone_number: IMPORT_USER_PHONE_NUMBER)
-
-      if phone_number_authentication
-        @import_user = phone_number_authentication.user
-      else
-        @import_user = create_import_user
-      end
+      @import_user = PatientImport::ImportUser.find_or_create
     end
 
     def create_import_user
