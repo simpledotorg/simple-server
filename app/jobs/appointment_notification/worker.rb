@@ -11,6 +11,7 @@ class AppointmentNotification::Worker
   end
 
   def perform(appointment_id, communication_type, locale = nil)
+    metrics.increment("attempts")
     appointment = Appointment.find_by(id: appointment_id)
     unless appointment
       metrics.increment("skipped.missed_appointment")
