@@ -2,8 +2,8 @@ module PatientImport
   class SpreadsheetTransformer
     attr_reader :data, :facility
 
-    def self.transform(*args)
-      new(*args).transform
+    def self.call(*args)
+      new(*args).call
     end
 
     def initialize(data, facility:)
@@ -11,7 +11,7 @@ module PatientImport
       @facility = facility
     end
 
-    def transform
+    def call
       rows.map do |row|
         params_for(row)
       end
