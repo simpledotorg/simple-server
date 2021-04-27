@@ -66,15 +66,11 @@ class DistrictAnalyticsQuery
   end
 
   def registered_patients_by_period
-    results = repository.registration_counts
-    return @facilities.each_with_object({}) { |facility, result|
+    @facilities.each_with_object({}) { |facility, result|
       result[facility.id] = {
         registered_patients_by_period: repository.registration_counts[facility.region.slug] || 0
       }
     }
-    result = ActivityService.new(region, group: [:registration_facility_id]).registrations
-
-    group_by_date_and_facility(result, :registered_patients_by_period)
   end
 
   def follow_up_patients_by_period
