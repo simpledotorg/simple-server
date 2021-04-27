@@ -31,6 +31,7 @@
             <col>
         </colgroup>
         <thead>
+        <!-- Patient registration and follow ups headers -->
           <tr>
             <th></th>
             <th></th>
@@ -49,14 +50,14 @@
                 Total registered<br>
                 patients
             </th>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= format_period(@period.type, date) %>
+                <%= period %>
               </th>
             <% end %>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= format_period(@period.type, date) %>
+                <%= period %>
               </th>
             <% end %>
           </tr>
@@ -74,9 +75,9 @@
                 <%= number_or_dash_with_delimiter(@repository.registration_counts[@region.region.slug][period]) %>
               </td>
             <% end %>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date))) %>
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period.value))) %>
               </td>
             <% end %>
           </tr>
@@ -89,14 +90,14 @@
                 <td class="ta-center">
                   <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
                 </td>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date)) %>
+                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, period.value)) %>
                   </td>
                 <% end %>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period.value)) %>
                   </td>
                 <% end %>
               </tr>
@@ -106,6 +107,7 @@
       </table>
     </div>
   </div>
+
   <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
     <div class="d-flex flex-1 mb-8px">
       <h3 class="mb-0px mr-8px">
@@ -134,6 +136,7 @@
             <col>
         </colgroup>
         <thead>
+        <!-- Healthcare worker activity headers -->
           <tr>
             <th></th>
             <th></th>
@@ -152,14 +155,14 @@
               Total registered<br>
               patients
             </th>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                PERIOD <%= format_period(@period.type, date) %>
+                <%= period %>
               </th>
             <% end %>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= format_period(@period.type, date) %>
+                <%= period %>
               </th>
             <% end %>
           </tr>
@@ -174,14 +177,14 @@
                 <td class="ta-center">
                   <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :total_registered_patients))) %>
                 </td>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, date))) %>
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, period.value))) %>
                   </td>
                 <% end %>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, date))) %>
+                    <%= number_with_delimiter(dash_if_zero(@dashboard_analytics.dig(resource.id, :bp_measures_by_period, period.value))) %>
                   </td>
                 <% end %>
               </tr>
@@ -194,6 +197,8 @@
   <%= render "shared/recent_bp_log",
              blood_pressures: @recent_blood_pressures,
              display_model: :facility %>
+
+ <!-- non Facility Regions -->
 <% else %>
   <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
     <div class="d-flex flex-1 mb-8px">
@@ -244,14 +249,14 @@
             <th class="row-label sort-label sort-label-small ta-center" data-sort-method="number">
               Total registered patients
             </th>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= multiline_format_period(@period.type, date) %>
+                <%= period.to_s(:mon_year_multiline) %>
               </th>
             <% end %>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <th class="row-label sort-label sort-label-small" data-sort-method="number">
-                <%= multiline_format_period(@period.type, date) %>
+                <%= period.to_s(:mon_year_multiline) %>
               </th>
             <% end %>
           </tr>
@@ -272,9 +277,9 @@
                 <%= number_or_dash_with_delimiter(@repository.registration_counts[@region.slug][period]) %>
               </td>
             <% end %>
-            <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+            <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_or_dash_with_delimiter(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, date)) %>
+                <%= number_or_dash_with_delimiter(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period.value)) %>
               </td>
             <% end %>
           </tr>
@@ -297,9 +302,9 @@
                     %>
                   </td>
                 <% end %>
-                <% dates_for_periods(@period.type, 6, include_current_period: @show_current_period).each do |date| %>
+                <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, date)) %>
+                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period.value)) %>
                   </td>
                 <% end %>
               </tr>

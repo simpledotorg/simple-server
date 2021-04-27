@@ -93,6 +93,14 @@ RSpec.describe Period, type: :model do
     expect(q1_2019_period.to_s).to eq("Q1-2019")
   end
 
+  it "month periods take an optional arg for to_s formatting" do
+    expect(jan_1_2019_month_period.to_s(:mon_year_multiline)).to eq("Jan\n2019")
+  end
+
+  it "quarter periods ignore extra formatting" do
+    expect(q1_2019_period.to_s(:mon_year_multiline)).to eq("Q1-2019")
+  end
+
   it "period months can be compared" do
     expect(jan_1_2020_month_period).to be > jan_1_2019_month_period
     expect(jan_1_2019_month_period).to be < jan_1_2020_month_period

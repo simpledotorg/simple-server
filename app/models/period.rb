@@ -154,11 +154,11 @@ class Period
     "<Period type:#{type} value=#{value}>"
   end
 
-  def to_s
+  def to_s(format = :mon_year)
     if quarter?
       value.to_s
     else
-      value.to_s(:mon_year)
+      value.to_s(format)
     end
   end
 
