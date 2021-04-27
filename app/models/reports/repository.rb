@@ -162,6 +162,12 @@ module Reports
       end
     end
 
+    def hypertension_follow_ups
+      regions.each_with_object({}) do |region, hsh|
+        hsh[region.slug] = FollowUpsQuery.new(region, period_type).hypertension
+      end
+    end
+
     # This method currently always returns the "excluding LTFU denominator".
     # Repository only returns "excluding LTFU" rates.
     # This only powers queries for children regions which do not require both variants of control rates, unlike Result.

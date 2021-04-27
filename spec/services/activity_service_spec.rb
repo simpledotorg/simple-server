@@ -81,6 +81,7 @@ RSpec.describe ActivityService do
       end
     end
 
+    # TODO can we add dual path specs here for the Follow ups query?
     it "can be grouped further" do
       [
         june_1, june_2, june_3,
