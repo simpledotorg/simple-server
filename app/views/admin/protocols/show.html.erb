@@ -14,7 +14,9 @@
   <nav class="page-nav">
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
       <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-outline-primary", id: "Edit protocol" %>
-      <%= link_to 'New protocol drug', new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success", id: "New protocol drug" %>
+      <%= link_to new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success" do %>
+        <i class="fas fa-plus mr-1"></i> Add protocol drug
+      <% end %>
     <% end %>
   </nav>
 </div>
