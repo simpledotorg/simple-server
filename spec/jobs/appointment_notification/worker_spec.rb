@@ -22,6 +22,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_response)
     allow(notification_response).to receive(:sid).and_return(SecureRandom.uuid)
     allow(notification_response).to receive(:status).and_return("queued")
+    allow(Statsd.instance).to receive(:increment).with(anything)
   end
 
   describe "#perform" do
