@@ -8,7 +8,7 @@ module Seed
     include ActiveSupport::Benchmarkable
     include ConsoleLogger
     SIZES = Facility.facility_sizes
-    FEATURE_FLAGS_IN_DEVELOPMENT = %i[drug_stocks drug_stocks_mobile]
+    FEATURE_FLAGS_ENABLED_BY_DEFAULT = %i[drug_stocks drug_stocks_mobile appointment_reminders]
 
     attr_reader :config
     attr_reader :logger
@@ -55,7 +55,7 @@ module Seed
     end
 
     def seed_feature_flags
-      FEATURE_FLAGS_IN_DEVELOPMENT.each { |flag| Flipper.enable(flag) }
+      FEATURE_FLAGS_ENABLED_BY_DEFAULT.each { |flag| Flipper.enable(flag) }
     end
 
     def seed_patients(progress)
