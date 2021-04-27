@@ -284,22 +284,21 @@
             <% end %>
           </tr>
           <% current_admin.accessible_facilities(:view_reports).order(:name).each do |resource| %>
+            <% slug = resource.region.slug %>
             <% if @dashboard_analytics[resource.id].present? %>
               <tr>
                 <td class="row-title">
-                  <%= link_to resource.send(:name), send(:reports_region_facility_details_path, resource) %>
+                  <%= link_to resource.name, reports_region_facility_details_path(resource.region) %>
                 </td>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :total_assigned_patients)) %>
+                  <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients_count[slug][@period]) %>
                 </td>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+                  <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[slug][@period]) %>
                 </td>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= counts = @repository.registration_counts.fetch(resource.region.slug) { |key| raise "No facility found for slug #{key}" }
-                        number_or_dash_with_delimiter(counts[period])
-                    %>
+                    <%= number_or_dash_with_delimiter @repository.registration_counts[slug][period] %>
                   </td>
                 <% end %>
                 <% @period_range.each do |period| %>
@@ -315,5 +314,6 @@
     </div>
   </div>
 <% end %>
+<!-- end non Facility Regions -->
 
 <%= render "details_footnotes" %>
