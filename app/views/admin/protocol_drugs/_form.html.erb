@@ -1,4 +1,4 @@
-<div class="col">
+<div class="col pl-0">
   <%= bootstrap_form_with(model: [:admin, @protocol, @protocol_drug], local: true, label_errors: true) do |form| %>
 
     <div class="row">
@@ -29,7 +29,7 @@
         <%= form.select :stock_tracked,
                         [["Yes", true], ["No", false]],
                         required: true %>
-        <%= form.primary %>
+        <%= form.primary("Save drug") %>
       </div>
     </div>
   <% end %>
