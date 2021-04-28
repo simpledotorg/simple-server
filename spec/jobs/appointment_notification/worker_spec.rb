@@ -17,6 +17,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
   let(:callback_url) { "https://localhost/api/v3/twilio_sms_delivery" }
 
   before do
+    Flipper.enable(:appointment_reminders)
     notification_response = double("NotificationServiceResponse")
     allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_response)
     allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_response)

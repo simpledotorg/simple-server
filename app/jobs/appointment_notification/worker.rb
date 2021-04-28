@@ -12,6 +12,11 @@ class AppointmentNotification::Worker
 
   def perform(appointment_id, communication_type, locale = nil)
     metrics.increment("attempts")
+    unless Flipper.enabled?(:appointment_reminders)
+      metrics.increment("skipped.feature_disabled")
+      return
+    end
+
     appointment = Appointment.find_by(id: appointment_id)
     unless appointment
       metrics.increment("skipped.missed_appointment")
