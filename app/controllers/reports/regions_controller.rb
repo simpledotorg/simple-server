@@ -91,7 +91,12 @@ class Reports::RegionsController < AdminController
 
     respond_to do |format|
       format.csv do
-        if @region.district_region?
+        if params[:type] == "who_report"
+          # dates are all set to first of month and the final date is just a delimiter
+          @months = @cohort_analytics.keys.flatten.uniq.sort[0..5]
+          #change filename
+          send_data render_to_string("who_report.csv.erb"), filename: download_filename
+        elsif @region.district_region?
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
@@ -146,8 +151,6 @@ class Reports::RegionsController < AdminController
         type: facility.facility_type
       }.with_indifferent_access
     }
-
-    @facility_keys = [district, *facilities]
   end
 
   def set_period

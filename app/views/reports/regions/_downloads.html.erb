@@ -19,6 +19,13 @@
       Monthly cohort report
     <% end %>
 
+    <% if @region.district_region? && CountryConfig.currently_in?("India") %>
+      <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :month, type: :who_report, format: :csv), class: "dropdown-item") do %>
+        <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
+        WHO report
+      <% end %>
+    <% end %>
+
     <% if @region.region_type.in?(["district", "facility"]) %>
       <% if @region.facilities.to_set.subset?(current_admin.accessible_facilities(:view_pii).to_set) %>
         <%= link_to(reports_patient_list_path(@region, report_scope: params[:report_scope]), class: "dropdown-item") do %>

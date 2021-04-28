@@ -1,0 +1,104 @@
+<% csv = CSV.generate(headers: true) do |csv|
+  csv << ["Facility Report #{@period.to_date.strftime("%B %Y")}"]
+  # need variable width header here
+  month_labels = @months.map { |month| month.strftime("%b-%Y") }
+
+  # HEADERS
+  csv << [
+    "Sr. No",
+    "Name of the District",
+    "Name of the Facility",
+    "Type of Facility",
+    "Name of the Block",
+    "Active/Inactive (Inactive facilities have 0 BP measures taken)",
+    "Est. HTN Population",
+    "Total Reg",
+    "Total Assigned Patients", # Total assigned patients are ALL patients assigned to a facility that aren't dead
+    "Total LTFU", # only on original excel
+    "Died", # only on original excel
+    "Total Patients under Care", #Total patients under care are all patients assigned to a region that aren't dead, that have a BP taken within the last 12 months (the inverse of LTFU)
+    month_labels,
+    month_labels,
+    "BP Controlled",
+    "BP not Controlled",
+    "Missed Visit",
+    "Visited but BP not taken",
+    "Amlodipine",
+    "ARBs/ACE Inhibitors",
+    "Diuretic"
+  ].flatten
+
+  # DISTRICT ROW
+  csv << [
+    "All",
+    @region.name,
+    nil,
+    nil,
+    nil,
+    nil,
+    nil,
+    "Total registered rollup",
+    "Total assigned rollup",
+    "Total under care rollup",
+    nil,
+    nil,
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "monthly rollup",
+    "BP controlled",
+    "BP not controlled",
+    "Missed Visit",
+    "Visited but BP not taken",
+    nil,
+    nil,
+    nil
+  ]
+
+  # FACILITY ROWS
+  @region.facilities.each_with_index do |facility, index|
+    analytics_data = @dashboard_analytics[facility.id]
+    dead = facility.registered_patients.where(status: "dead").count
+    registration_numbers = []
+    follow_up_numbers = []
+    @months.each do |month|
+      # this is kinda gross. try to improve
+      match = @cohort_analytics.find { |monthly_data| month = monthly_data.first.first }
+      values = match.second
+      registration_numbers << values.dig("cohort_patients", "total")
+      follow_up_numbers << values.dig("followed_up", "total")
+    end
+    csv << [
+      index + 1,
+      @region.name,
+      facility.name,
+      facility.facility_type,
+      facility.block,
+      facility.blood_pressures.any?,
+      nil,
+      @dashboard_analytics[:total_registered_patients],
+      @dashboard_analytics[:total_assigned_patients],
+      "ltfu",
+      dead,
+      @dashboard_analytics[:total_assigned_patients],
+      *registration_numbers,
+      *follow_up_numbers,
+      "BP controlled",
+      "BP not Controlled",
+      "Missed Visit",
+      "Visited but BP not taken",
+      nil,
+      nil,
+      nil
+    ]
+  end
+end.html_safe %>
+<%= csv %>

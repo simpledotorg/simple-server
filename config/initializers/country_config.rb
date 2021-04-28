@@ -73,6 +73,10 @@ class CountryConfig
   def self.country_environment_file
     ".env.#{current[:abbreviation]}"
   end
+
+  def self.currently_in?(country)
+    CountryConfig.current[:name] == country
+  end
 end
 
 Rails.application.config.country = CountryConfig.for(ENV.fetch("DEFAULT_COUNTRY"))
