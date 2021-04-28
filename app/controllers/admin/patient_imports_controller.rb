@@ -11,7 +11,7 @@ class Admin::PatientImportsController < AdminController
     facility = Facility.find(params[:facility_id])
 
     data = read_xlsx_or_csv_file(params[:patient_import_file])
-    params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+    params = PatientImport::SpreadsheetTransformer.call(data, facility: facility, admin: current_admin)
     errors = PatientImport::Validator.new(params).errors
 
     if errors.values.flatten.any?

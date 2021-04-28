@@ -2,15 +2,16 @@ class PatientImport::Importer
   include Api::V3::SyncEncounterObservation
   include Api::V3::RetroactiveDataEntry
 
-  attr_reader :params, :facility, :results
+  attr_reader :params, :facility, :admin, :results
 
   def self.call(*args)
     new(*args).call
   end
 
-  def initialize(params:, facility:)
+  def initialize(params:, facility:, admin:)
     @params = params
     @facility = facility
+    @admin = admin
     @results = []
   end
 
@@ -22,17 +23,10 @@ class PatientImport::Importer
         blood_pressures_params = patient_record_params[:blood_pressures].map { |bp| Api::V3::BloodPressureTransformer.from_request(bp) }
         prescription_drugs_params = patient_record_params[:prescription_drugs].map { |drug| Api::V3::PrescriptionDrugTransformer.from_request(drug) }
 
-        MergePatientService.new(patient_params, request_metadata: {
-          request_facility_id: facility.id,
-          request_user_id: PatientImport::ImportUser.find_or_create.id
-        }).merge
-
-        blood_pressures_params.each {|bp_params| merge_encounter_observation(:blood_pressures, bp_params)}
-
-        MedicalHistory.merge(medical_history_params)
-
-        prescription_drugs_params.each {|pd_params| PrescriptionDrug.merge(pd_params) }
-
+        import_patient(patient_params)
+        import_blood_pressures(blood_pressures_params)
+        import_medical_history(medical_history_params)
+        import_prescription_drugs(prescription_drugs_params)
 
         results.push(
           patient: patient_params,
@@ -44,6 +38,34 @@ class PatientImport::Importer
     end
 
     results
+  end
+
+  def import_patient(params)
+    patient = MergePatientService.new(params, request_metadata: {
+      request_facility_id: facility.id,
+      request_user_id: PatientImport::ImportUser.find_or_create.id
+    }).merge
+
+    PatientImportLog.create!(user: admin, record: patient)
+  end
+
+  def import_blood_pressures(params)
+    params.each do |bp_params|
+      blood_pressure = merge_encounter_observation(:blood_pressures, bp_params)
+      PatientImportLog.create!(user: admin, record: blood_pressure)
+    }
+  end
+
+  def import_medical_history(params)
+    medical_history = MedicalHistory.merge(medical_history_params)
+    PatientImportLog.create!(user: admin, record: medical_history)
+  end
+
+  def import_prescription_drugs(params)
+    params.each do |pd_params|
+      prescription_drug = PrescriptionDrug.merge(pd_params)
+      PatientImportLog.create!(user: admin, record: prescription_drug)
+    }
   end
 
   # SyncEncounterObservation compability
