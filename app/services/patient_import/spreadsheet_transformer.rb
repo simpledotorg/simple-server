@@ -255,7 +255,7 @@ module PatientImport
 
     def timestamp(time)
       Time.parse(time)
-    rescue ArgumentError
+    rescue ArgumentError, TypeError
       nil
     end
   end

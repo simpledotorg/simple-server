@@ -2,6 +2,19 @@
 
 <a href="#">Patient Import Template</a>
 
+<% if @errors.present? %>
+  <div class="alert alert-warning">
+    <p>Please fix the errors below and try again:</p>
+    <% @errors.each do |row, errors| %>
+      <% next unless errors.any? %>
+      Row <%= row %>
+      <% errors.each do |error| %>
+        <li><%= error %></li>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
 <%= bootstrap_form_tag(url: admin_patient_imports_url, multipart: true) do |f| %>
   <%= f.collection_select :facility_id, current_admin.accessible_facilities(:manage), :id, :name %>
   <%= f.file_field :patient_import_file, required: true, accept: '.csv, .xlsx', label: 'Upload your filled in patient import file' %>
