@@ -29,6 +29,12 @@
   ].flatten
 
   # DISTRICT ROW
+  registered_by_month = @months.map do |month|
+    @dashboard_analytics.sum { |_, data| data.dig(:registered_patients_by_period, month) || 0 }
+  end
+  follow_up_by_month = @months.map do |month|
+    @dashboard_analytics.sum { |_, data| data.dig(:follow_up_patients_by_period, month) || 0 }
+  end
   csv << [
     "All",
     @region.name,
@@ -37,27 +43,17 @@
     nil,
     nil,
     nil,
-    "Total registered rollup",
-    "Total assigned rollup",
-    "Total under care rollup",
+    @dashboard_analytics.sum { |_, facility| facility.dig(:total_registered_patients) },
+    @dashboard_analytics.sum { |_, facility| facility.dig(:total_assigned_patients) },
+    "Total under care rollup", # sum parts
     nil,
     nil,
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "monthly rollup",
-    "BP controlled",
-    "BP not controlled",
-    "Missed Visit",
-    "Visited but BP not taken",
+    *registered_by_month,
+    *follow_up_by_month,
+    "BP controlled", # sum
+    "BP not controlled", # sum
+    "Missed Visit", # is this defaulted?
+    "Visited but BP not taken", # not sure where to get this
     nil,
     nil,
     nil
@@ -69,13 +65,12 @@
     dead = facility.registered_patients.where(status: "dead").count
     registration_numbers = []
     follow_up_numbers = []
+
     @months.each do |month|
-      # this is kinda gross. try to improve
-      match = @cohort_analytics.find { |monthly_data| month = monthly_data.first.first }
-      values = match.second
-      registration_numbers << values.dig("cohort_patients", "total")
-      follow_up_numbers << values.dig("followed_up", "total")
+      registration_numbers << (@dashboard_analytics.dig(facility.id, :registered_patients_by_period, month) || 0)
+      follow_up_numbers << (@dashboard_analytics.dig(facility.id, :follow_up_patients_by_period, month) || 0)
     end
+
     csv << [
       index + 1,
       @region.name,
@@ -84,11 +79,11 @@
       facility.block,
       facility.blood_pressures.any?,
       nil,
-      @dashboard_analytics[:total_registered_patients],
-      @dashboard_analytics[:total_assigned_patients],
+      @dashboard_analytics.dig(facility.id, :total_registered_patients),
+      @dashboard_analytics.dig(facility.id, :total_assigned_patients),
       "ltfu",
       dead,
-      @dashboard_analytics[:total_assigned_patients],
+      @dashboard_analytics.dig(facility.id, :total_assigned_patients),
       *registration_numbers,
       *follow_up_numbers,
       "BP controlled",
