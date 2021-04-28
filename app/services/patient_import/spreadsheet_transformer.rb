@@ -19,9 +19,9 @@ module PatientImport
 
     def rows
       # Skip first row, it is also headers
-      @rows ||= CSV.parse(data, headers: true)[1..-1].map do |row|
+      @rows ||= CSV.parse(data, headers: true)[1..-1].map { |row|
         row.to_h.with_indifferent_access
-      end
+      }
     end
 
     def params_for(row)
@@ -49,7 +49,7 @@ module PatientImport
             identifier_type: row[:identifier_type],
             identifier: row[:identifier],
             created_at: timestamp(row[:registration_date]),
-            updated_at: timestamp(row[:registration_date]),
+            updated_at: timestamp(row[:registration_date])
           }],
 
           phone_numbers: [{
@@ -180,13 +180,13 @@ module PatientImport
         row[:first_visit_medication_5]
       ]
 
-      drugs = drug_names.map do |name|
+      drugs = drug_names.map { |name|
         medication(
           name: name,
           patient_id: patient_id,
           created_at: row[:first_visit_date]
         )
-      end.compact
+      }.compact
 
       # Delete the first drugs if last drugs are available
       if last_prescription_drugs(row, patient_id: patient_id).any?
@@ -211,13 +211,13 @@ module PatientImport
         row[:last_visit_medication_5]
       ]
 
-      drug_names.map do |name|
+      drug_names.map { |name|
         medication(
           name: name,
           patient_id: patient_id,
           created_at: row[:last_visit_date]
         )
-      end.compact
+      }.compact
     end
 
     def medication(name:, patient_id:, created_at:)

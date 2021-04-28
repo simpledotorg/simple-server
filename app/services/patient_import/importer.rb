@@ -32,7 +32,7 @@ class PatientImport::Importer
           patient: patient_params,
           medical_history: medical_history_params,
           blood_pressures: blood_pressures_params,
-          prescription_drugs: prescription_drugs_params,
+          prescription_drugs: prescription_drugs_params
         )
       end
     end
@@ -53,7 +53,7 @@ class PatientImport::Importer
     params.each do |bp_params|
       blood_pressure = merge_encounter_observation(:blood_pressures, bp_params)
       PatientImportLog.create!(user: admin, record: blood_pressure)
-    }
+    end
   end
 
   def import_medical_history(params)
@@ -65,7 +65,7 @@ class PatientImport::Importer
     params.each do |pd_params|
       prescription_drug = PrescriptionDrug.merge(pd_params)
       PatientImportLog.create!(user: admin, record: prescription_drug)
-    }
+    end
   end
 
   # SyncEncounterObservation compability

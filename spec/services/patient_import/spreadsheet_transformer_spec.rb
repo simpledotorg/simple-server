@@ -8,7 +8,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
   it "parses patient data" do
     params = PatientImport::SpreadsheetTransformer.transform(data, facility: facility)
 
-    patient = params.find {|p| p[:patient][:full_name] == "Basic Patient 1" }
+    patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 1" }
 
     expect(patient[:patient]).to eq(
       age: "45",
@@ -47,67 +47,67 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
     )
 
     expect(patient[:blood_pressures]).to contain_exactly(
-      {:systolic=>"160", :diastolic=>"90", :recorded_at=>"2020-01-29"},
-      {:systolic=>"145", :diastolic=>"89", :recorded_at=>"2021-02-24"}
+      {systolic: "160", diastolic: "90", recorded_at: "2020-01-29"},
+      {systolic: "145", diastolic: "89", recorded_at: "2021-02-24"}
     )
 
     expect(patient[:prescription_drugs]).to contain_exactly(
       # first visit drugs deleted
       {
-        :name=>"Amlodipine",
-        :dosage=>"5 mg",
-        :rxnorm_code=>"329528",
-        :is_deleted=>true,
-        :is_protocol_drug=>true,
-        :created_at=>"2020-01-29",
-        :deleted_at=>"2021-02-24"
+        name: "Amlodipine",
+        dosage: "5 mg",
+        rxnorm_code: "329528",
+        is_deleted: true,
+        is_protocol_drug: true,
+        created_at: "2020-01-29",
+        deleted_at: "2021-02-24"
       },
       {
-        :name=>"Enalapril",
-        :dosage=>"5 mg",
-        :rxnorm_code=>"833236",
-        :is_deleted=>true,
-        :is_protocol_drug=>false,
-        :created_at=>"2020-01-29",
-        :deleted_at=>"2021-02-24"
+        name: "Enalapril",
+        dosage: "5 mg",
+        rxnorm_code: "833236",
+        is_deleted: true,
+        is_protocol_drug: false,
+        created_at: "2020-01-29",
+        deleted_at: "2021-02-24"
 
       },
       {
-        :name=>"Aspirin",
-        :dosage=>"75 mg",
-        :rxnorm_code=>"315429",
-        :is_deleted=>true,
-        :is_protocol_drug=>false,
-        :created_at=>"2020-01-29",
-        :deleted_at=>"2021-02-24"
+        name: "Aspirin",
+        dosage: "75 mg",
+        rxnorm_code: "315429",
+        is_deleted: true,
+        is_protocol_drug: false,
+        created_at: "2020-01-29",
+        deleted_at: "2021-02-24"
 
       },
       {
-        :name=>"Hydrochlorothiazide",
-        :dosage=>"12.5 mg",
-        :rxnorm_code=>"316047",
-        :is_deleted=>true,
-        :is_protocol_drug=>false,
-        :created_at=>"2020-01-29",
-        :deleted_at=>"2021-02-24"
+        name: "Hydrochlorothiazide",
+        dosage: "12.5 mg",
+        rxnorm_code: "316047",
+        is_deleted: true,
+        is_protocol_drug: false,
+        created_at: "2020-01-29",
+        deleted_at: "2021-02-24"
 
       },
       {
-        :name=>"Lisinopril",
-        :dosage=>"5 mg",
-        :rxnorm_code=>"316156",
-        :is_deleted=>true,
-        :is_protocol_drug=>false,
-        :created_at=>"2020-01-29",
-        :deleted_at=>"2021-02-24"
+        name: "Lisinopril",
+        dosage: "5 mg",
+        rxnorm_code: "316156",
+        is_deleted: true,
+        is_protocol_drug: false,
+        created_at: "2020-01-29",
+        deleted_at: "2021-02-24"
       },
       # second visit drugs not deleted
       {
-        :name=>"Amlodipine",
-        :dosage=>"10 mg",
-        :rxnorm_code=>"329526",
-        :is_protocol_drug=>false,
-        :created_at=>"2021-02-24"
+        name: "Amlodipine",
+        dosage: "10 mg",
+        rxnorm_code: "329526",
+        is_protocol_drug: false,
+        created_at: "2021-02-24"
       }
     )
   end
@@ -115,7 +115,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
   it "captures other patient attributes" do
     params = PatientImport::SpreadsheetTransformer.transform(data, facility: facility)
 
-    patient = params.find {|p| p[:patient][:full_name] == "Basic Patient 2" }
+    patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 2" }
 
     expect(patient[:patient][:gender]).to eq("Female")
     expect(patient[:patient][:status]).to eq(:dead)
@@ -124,31 +124,31 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
   context "when last visit is absent" do
     it "retains BP from first visit" do
       params = PatientImport::SpreadsheetTransformer.transform(data, facility: facility)
-      patient = params.find {|p| p[:patient][:full_name] == "No Last Visit" }
+      patient = params.find { |p| p[:patient][:full_name] == "No Last Visit" }
 
       expect(patient[:blood_pressures]).to contain_exactly(
-        :systolic=>"160", :diastolic=>"90", :recorded_at=>"2020-01-29"
+        systolic: "160", diastolic: "90", recorded_at: "2020-01-29"
       )
     end
 
     it "does not delete prescription drugs from first visit" do
       params = PatientImport::SpreadsheetTransformer.transform(data, facility: facility)
-      patient = params.find {|p| p[:patient][:full_name] == "No Last Visit" }
+      patient = params.find { |p| p[:patient][:full_name] == "No Last Visit" }
 
       expect(patient[:prescription_drugs]).to eq([
         {
-          :name=>"Amlodipine",
-          :dosage=>"5 mg",
-          :rxnorm_code=>"329528",
-          :is_protocol_drug=>true,
-          :created_at=>"2020-01-29"
+          name: "Amlodipine",
+          dosage: "5 mg",
+          rxnorm_code: "329528",
+          is_protocol_drug: true,
+          created_at: "2020-01-29"
         },
         {
-          :name=>"Enalapril",
-          :dosage=>"5 mg",
-          :rxnorm_code=>"833236",
-          :is_protocol_drug=>false,
-          :created_at=>"2020-01-29"
+          name: "Enalapril",
+          dosage: "5 mg",
+          rxnorm_code: "833236",
+          is_protocol_drug: false,
+          created_at: "2020-01-29"
         }
       ])
     end

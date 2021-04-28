@@ -16,8 +16,8 @@ class PatientImport::Validator
       prescription_drug_validators = patient_params[:prescription_drugs].map { |drug| Api::V3::PrescriptionDrugPayloadValidator.new(drug).tap(&:valid?) }
 
       errors[index] = [
-        *(patient_validator.errors.full_messages),
-        *(medical_history_validator.errors.full_messages),
+        *patient_validator.errors.full_messages,
+        *medical_history_validator.errors.full_messages,
         *(blood_pressure_validators.flat_map { |validator| validator.errors.full_messages }),
         *(prescription_drug_validators.flat_map { |validator| validator.errors.full_messages })
       ]
