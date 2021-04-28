@@ -11,7 +11,6 @@ module Mergeable
       existing_record = with_discarded.find_by(id: attributes["id"])
 
       if new_record.invalid?
-        binding.pry
         :invalid
       elsif existing_record.nil?
         :new
