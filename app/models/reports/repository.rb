@@ -162,9 +162,15 @@ module Reports
       end
     end
 
-    def hypertension_follow_ups
+    def encounters
       regions.each_with_object({}) do |region, hsh|
-        hsh[region.slug] = FollowUpsQuery.new(region, period_type).hypertension
+        hsh[region.slug] = FollowUpsQuery.new(region, period_type).encounters
+      end
+    end
+
+    memoize def hypertension_follow_ups(group: nil)
+      regions.each_with_object({}) do |region, hsh|
+        hsh[region.slug] = FollowUpsQuery.new(region, period_type, group: group).hypertension
       end
     end
 

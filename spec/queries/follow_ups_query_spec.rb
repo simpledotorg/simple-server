@@ -27,11 +27,7 @@ RSpec.describe FollowUpsQuery do
       periods = Range.new(registration_date.to_period, second_follow_up_date.to_period)
       repository = Reports::Repository.new(region, periods: periods)
 
-      logger.info "legacy"
       expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
-      result = repository.hypertension_follow_ups
-
-      logger.info "new"
       expect(repository.hypertension_follow_ups[facility.region.slug]).to eq(expected_repo_output)
     end
 
@@ -142,21 +138,12 @@ RSpec.describe FollowUpsQuery do
       end
 
       context "by month" do
-        it "groups follow ups by month" do
-          expect(Patient
-                   .follow_ups_by_period(:month)
-                   .count).to eq({first_follow_up_date => 2})
-        end
-
-        it "can be grouped by facility and day" do
-          expect(Patient
-                   .follow_ups_by_period(:month)
-                   .group("encounters.facility_id")
-                   .count).to eq({[first_follow_up_date, current_facility.id] => 2,
-                                  [first_follow_up_date, follow_up_facility.id] => 1})
-        end
-
         it "can be filtered by facility" do
+          query = FollowUpsQuery.new(current_facility, :month)
+          expected = {
+            first_follow_up_date.to_period => 2
+          }
+          expect(query.encounters).to eq(expected)
           expect(Patient
                    .follow_ups_by_period(:month, at_region: current_facility)
                    .group("encounters.facility_id")

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Time ana Date formats" do
+RSpec.describe "Time and Date formats" do
   let(:jan_1_date) { Date.parse("January 1st 2020") }
   let(:jan_1_time) { Time.parse("January 1st 2020 00:00:00") }
 
