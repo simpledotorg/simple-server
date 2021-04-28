@@ -151,6 +151,8 @@ class Reports::RegionsController < AdminController
         type: facility.facility_type
       }.with_indifferent_access
     }
+
+    @facility_keys = [district, *facilities]
   end
 
   def set_period
