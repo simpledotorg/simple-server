@@ -25,7 +25,7 @@ module PatientImport
     end
 
     def params_for(row)
-      patient_id = SecureRandom.uuid
+      patient_id = patient_id(row)
       business_identifier_id = SecureRandom.uuid
       phone_number_id = SecureRandom.uuid
       address_id = SecureRandom.uuid
@@ -94,6 +94,13 @@ module PatientImport
           *last_prescription_drugs(row, patient_id: patient_id)
         ]
       }.with_indifferent_access
+    end
+
+    def patient_id(row)
+      PatientBusinessIdentifier.find_by(
+        identifier_type: row[:identifier_type],
+        identifier: row[:identifier]
+      )&.patient_id || SecureRandom.uuid
     end
 
     def registration_facility_id
