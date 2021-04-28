@@ -1,5 +1,4 @@
 class FollowUpsQuery
-
   def initialize(region, period_type, group: nil)
     @region = region
     @period_type = period_type
