@@ -227,8 +227,8 @@ class Reports::RegionsController < AdminController
     @region_data[:ltfu_counts] = repo.ltfu_counts[slug]
     @region_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
 
-    repo = Reports::Repository.new(@region.facilities, periods: @period)
-    @facilities_data = @region.facilities.map do |facility|
+    repo = Reports::Repository.new(@region.facility_regions, periods: @period)
+    @facilities_data = @region.facility_regions.map do |facility|
       slug = facility.slug
       facility_data = Hash.new(0)
       facility_data[:region] = facility
