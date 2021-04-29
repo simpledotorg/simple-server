@@ -55,18 +55,13 @@ RSpec.describe FollowUpsQuery do
 
   context "follow ups" do
     let(:reg_date) { Date.new(2018, 1, 1) }
+    let(:first_follow_up_date) { reg_date + 1.month }
+    let(:second_follow_up_date) { first_follow_up_date + 1.day }
     let(:current_user) { create(:user) }
     let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
     let(:follow_up_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
     let(:hypertensive_patient) { create(:patient, registration_facility: current_facility, recorded_at: reg_date) }
-    let(:diabetic_patient) {
-      create(:patient,
-        :diabetes,
-        registration_facility: current_facility,
-        recorded_at: reg_date)
-    }
-    let(:first_follow_up_date) { reg_date + 1.month }
-    let(:second_follow_up_date) { first_follow_up_date + 1.day }
+    let(:diabetic_patient) { create(:patient, :diabetes, registration_facility: current_facility, recorded_at: reg_date) }
 
     before do
       2.times do
