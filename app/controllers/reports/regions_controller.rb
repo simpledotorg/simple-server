@@ -86,20 +86,20 @@ class Reports::RegionsController < AdminController
       raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
     end
 
-    @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
     respond_to do |format|
       format.csv do
         if params[:type] == "who_report"
-          # dates are all set to first of month and the final date is just a delimiter
-          @months = @cohort_analytics.keys.flatten.uniq.sort[0..5]
+          @months = @period.downto(5).reverse
           #change filename
           send_data render_to_string("who_report.csv.erb"), filename: download_filename
         elsif @region.district_region?
+          @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
+          @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
           send_data render_to_string("cohort.csv.erb"), filename: download_filename
         end
       end
