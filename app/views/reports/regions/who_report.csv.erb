@@ -1,4 +1,16 @@
-<% csv = CSV.generate(headers: true) do |csv|
+<%
+  # helper?
+  def sum_from_cohort(facility_id, attribute)
+    sum = 0
+    @months.each do |month|
+      match = @cohort_analytics.find { |(start_date, _end_date), _| month == start_date }
+      month_data = match[1]
+      sum += month_data.dig(attribute, facility_id) || 0
+    end
+    sum
+  end
+
+  csv = CSV.generate(headers: true) do |csv|
   csv << ["Facility Report #{@period.to_date.strftime("%B %Y")}"]
   # need variable width header here
   month_labels = @months.map { |month| month.strftime("%b-%Y") }
@@ -86,8 +98,8 @@
       @dashboard_analytics.dig(facility.id, :total_assigned_patients),
       *registration_numbers,
       *follow_up_numbers,
-      "BP controlled",
-      "BP not Controlled",
+      sum_from_cohort(facility.id, :controlled),
+      sum_from_cohort(facility.id, :uncontrolled),
       "Missed Visit",
       "Visited but BP not taken",
       nil,
