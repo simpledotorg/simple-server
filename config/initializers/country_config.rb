@@ -74,7 +74,7 @@ class CountryConfig
     ".env.#{current[:abbreviation]}"
   end
 
-  def self.currently_in?(country)
+  def self.current_country?(country)
     CountryConfig.current[:name] == country
   end
 end

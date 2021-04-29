@@ -92,15 +92,14 @@ class Reports::RegionsController < AdminController
       format.csv do
         if params[:type] == "who_report"
           set_data_for_who_report
-          #change filename
-          send_data render_to_string("who_report.csv.erb"), filename: download_filename
+          send_data render_to_string("who_report.csv.erb"), filename: download_filename("who")
         elsif @region.district_region?
           @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
           set_facility_keys
-          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
+          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename("cohort")
         else
           @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
-          send_data render_to_string("cohort.csv.erb"), filename: download_filename
+          send_data render_to_string("cohort.csv.erb"), filename: download_filename("cohort")
         end
       end
     end
@@ -132,10 +131,10 @@ class Reports::RegionsController < AdminController
 
   helper_method :accessible_region?
 
-  def download_filename
+  def download_filename(report_type)
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
-    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-#{report_type}-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
