@@ -91,7 +91,7 @@ class Reports::RegionsController < AdminController
     respond_to do |format|
       format.csv do
         if params[:type] == "who_report"
-          @months = @period.downto(5).reverse
+          set_data_for_who_report
           #change filename
           send_data render_to_string("who_report.csv.erb"), filename: download_filename
         elsif @region.district_region?
@@ -210,5 +210,37 @@ class Reports::RegionsController < AdminController
   def percentage(numerator, denominator)
     return 0 if denominator == 0 || numerator == 0
     ((numerator.to_f / denominator) * 100).round(2)
+  end
+
+  def set_data_for_who_report
+    @months = @period.downto(5).reverse
+    repo = Reports::Repository.new(@region, periods: @period)
+    slug = @region.slug
+    @region_data = Hash.new(0)
+    @region_data[:region] = @region
+    @region_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
+    @region_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
+    @region_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
+    @region_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
+    @region_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
+    @region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
+    @region_data[:ltfu_counts] = repo.ltfu_counts[slug]
+    @region_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
+
+    repo = Reports::Repository.new(@region.facilities, periods: @period)
+    @facilities_data = @region.facilities.map do |facility|
+      slug = facility.slug
+      facility_data = Hash.new(0)
+      facility_data[:region] = facility
+      facility_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
+      facility_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
+      facility_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
+      facility_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
+      facility_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
+      facility_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
+      facility_data[:ltfu_counts] = repo.ltfu_counts[slug]
+      facility_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
+      facility_data
+    end
   end
 end

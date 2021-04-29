@@ -4,7 +4,6 @@
   # need variable width header here
 
   # HEADERS
-binding.pry
   month_labels = @months.map { |month| month.value.strftime("%b-%Y") }
   csv << [
     "Sr. No",
@@ -16,8 +15,8 @@ binding.pry
     "Est. HTN Population",
     "Total Reg",
     "Total Assigned Patients", # Total assigned patients are ALL patients assigned to a facility that aren't dead
-    "Total LTFU", # only on original excel
-    "Died", # only on original excel
+    "Total LTFU",
+    "Died",
     "Total Patients under Care", #Total patients under care are all patients assigned to a region that aren't dead, that have a BP taken within the last 12 months (the inverse of LTFU)
     month_labels,
     month_labels,
@@ -45,17 +44,17 @@ binding.pry
     nil,
     nil,
     nil,
-    @dashboard_analytics.sum { |_, facility| facility.dig(:total_registered_patients) },
-    @dashboard_analytics.sum { |_, facility| facility.dig(:total_assigned_patients) },
-    nil, # ltfu
-    nil, # dead
-    "Total under care rollup", # sum parts
+    @region_data.dig(:cumulative_registrations, @period),
+    @region_data.dig(:cumulative_patients, @period),
+    @region_data.dig(:ltfu_counts, @period),
+    "dead", # ?
+    @region_data.dig(:adjusted_patient_counts, @period),
     *registered_by_month,
     *follow_up_by_month,
-    "sum_from_cohort(total, :controlled)",
-    "sum_from_cohort(total, :uncontrolled)",
-    "Missed Visit", # is this defaulted?
-    "Visited but BP not taken", # not sure where to get this
+    @region_data.dig(:controlled_patients_rate, @period),
+    @region_data.dig(:uncontrolled_patients_rate, @period),
+    @region_data.dig(:missed_visits_rate, @period),
+    @region_data.dig(:visited_without_bp_taken_rate, @period),
     nil,
     nil,
     nil
@@ -73,6 +72,7 @@ binding.pry
       follow_up_numbers << (@dashboard_analytics.dig(facility.id, :follow_up_patients_by_period, month.value) || 0)
     end
 
+    matching_facility = @facilities_data.find{|fac| fac[:region] == facility}
     csv << [
       index + 1,
       @region.name,
@@ -81,17 +81,17 @@ binding.pry
       facility.block,
       facility.blood_pressures.any?,
       nil,
-      @dashboard_analytics.dig(facility.id, :total_registered_patients),
-      @dashboard_analytics.dig(facility.id, :total_assigned_patients),
-      "ltfu",
+      matching_facility.dig(:cumulative_registrations, @period),
+      matching_facility.dig(:cumulative_patients, @period),
+      matching_facility.dig(:ltfu_counts, @period),
       dead,
-      @dashboard_analytics.dig(facility.id, :total_assigned_patients),
+      matching_facility.dig(:ltfu_counts, @period),
       *registration_numbers,
       *follow_up_numbers,
-      "sum_from_cohort(facility.id, :controlled)",
-      "sum_from_cohort(facility.id, :uncontrolled)",
-      "Missed Visit",
-      "Visited but BP not taken",
+      matching_facility.dig(:controlled_patients_rate, @period),
+      matching_facility.dig(:uncontrolled_patients_rate, @period),
+      matching_facility.dig(:missed_visits_rate, @period),
+      matching_facility.dig(:visited_without_bp_taken_rate, @period),
       nil,
       nil,
       nil
