@@ -17,19 +17,19 @@ RSpec.describe PatientImport::ImportUser do
     it "finds existing import user by phone number" do
       import_user = create(:user, phone_number: PatientImport::ImportUser::IMPORT_USER_PHONE_NUMBER)
 
-      expect{ PatientImport::ImportUser.find_or_create }.not_to change { User.count }
+      expect { PatientImport::ImportUser.find_or_create }.not_to change { User.count }
       expect(PatientImport::ImportUser.find_or_create).to eq(import_user)
     end
 
     it "creates a new user if not found" do
-      facility = create(:facility)
+      _facility = create(:facility)
       import_user = PatientImport::ImportUser.find_or_create
       expect(import_user).to be_persisted
       expect(import_user.phone_number).to eq(PatientImport::ImportUser::IMPORT_USER_PHONE_NUMBER)
     end
 
     it "ensures the new user cannot sync data" do
-      facility = create(:facility)
+      _facility = create(:facility)
       import_user = PatientImport::ImportUser.find_or_create
 
       expect(import_user.otp_valid?).to eq(false)

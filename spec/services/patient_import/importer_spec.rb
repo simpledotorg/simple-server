@@ -9,7 +9,7 @@ RSpec.describe PatientImport::Importer do
         patient: {property: "patient property"},
         medical_history: {property: "medical history property"},
         blood_pressures: [{property: "bp1 property"}, {property: "bp2 property"}],
-        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}],
+        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}]
       }]
 
       new_patient = create(:patient)
@@ -52,7 +52,7 @@ RSpec.describe PatientImport::Importer do
         patient: {property: "patient property"},
         medical_history: {property: "medical history property"},
         blood_pressures: [{property: "bp1 property"}, {property: "bp2 property"}],
-        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}],
+        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}]
       }]
 
       new_patient = create(:patient)

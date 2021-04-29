@@ -72,16 +72,16 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         )
 
         # Patient 1 BPs
-        basic_patient_1_bps = basic_patient_1.blood_pressures.map do |bp|
+        basic_patient_1_bps = basic_patient_1.blood_pressures.map { |bp|
           "#{bp.systolic}/#{bp.diastolic}"
-        end.join(", ")
+        }.join(", ")
 
         expect(basic_patient_1_bps).to eq("160/90, 145/89")
 
         # Patient 1 prescription drugs
-        basic_patient_1_prescription_drugs = basic_patient_1.prescription_drugs.map do |pd|
+        basic_patient_1_prescription_drugs = basic_patient_1.prescription_drugs.map { |pd|
           "#{pd.name} #{pd.dosage}"
-        end.join(", ")
+        }.join(", ")
 
         expect(basic_patient_1_prescription_drugs).to eq("Amlodipine 10 mg")
       end
@@ -108,7 +108,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         patient_import_file = fixture_file_upload("files/patient_import_invalid_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
-        expect{ post :create, params: params }.not_to change { Patient.count }
+        expect { post :create, params: params }.not_to change { Patient.count }
       end
     end
 
@@ -121,7 +121,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         patient_import_file = fixture_file_upload("files/patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
-        expect{ post :create, params: params }.not_to change { Patient.count }
+        expect { post :create, params: params }.not_to change { Patient.count }
       end
     end
   end

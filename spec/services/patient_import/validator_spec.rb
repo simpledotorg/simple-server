@@ -7,7 +7,7 @@ RSpec.describe PatientImport::Validator do
         patient: {property: "patient property"},
         medical_history: {property: "medical history property"},
         blood_pressures: [{property: "bp1 property"}, {property: "bp2 property"}],
-        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}],
+        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}]
       }]
 
       patient_payload_validator = double(valid?: true, errors: OpenStruct.new(full_messages: []))
@@ -27,7 +27,7 @@ RSpec.describe PatientImport::Validator do
       expect(Api::V3::PrescriptionDrugPayloadValidator).to receive(:new).with(property: "pd1 property")
       expect(Api::V3::PrescriptionDrugPayloadValidator).to receive(:new).with(property: "pd2 property")
 
-      validator = PatientImport::Validator.new(params)
+      PatientImport::Validator.new(params)
     end
   end
 
@@ -37,7 +37,7 @@ RSpec.describe PatientImport::Validator do
         patient: {property: "patient property"},
         medical_history: {property: "medical history property"},
         blood_pressures: [{property: "bp1 property"}, {property: "bp2 property"}],
-        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}],
+        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}]
       }]
 
       patient_payload_validator = double(valid?: false, errors: OpenStruct.new(full_messages: ["invalid patient"]))

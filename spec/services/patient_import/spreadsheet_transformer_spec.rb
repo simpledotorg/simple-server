@@ -102,7 +102,6 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         created_at: first_visit_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
-
       ),
       hash_including(
         name: "Aspirin",
@@ -113,7 +112,6 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         created_at: first_visit_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
-
       ),
       hash_including(
         name: "Hydrochlorothiazide",
@@ -124,7 +122,6 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         created_at: first_visit_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
-
       ),
       hash_including(
         name: "Lisinopril",
