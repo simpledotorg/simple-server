@@ -139,11 +139,6 @@ RSpec.describe FollowUpsQuery do
 
       context "by month" do
         it "can be filtered by facility" do
-          query = FollowUpsQuery.new(current_facility, :month)
-          expected = {
-            first_follow_up_date.to_period => 2
-          }
-          expect(query.encounters).to eq(expected)
           expect(Patient
                    .follow_ups_by_period(:month, at_region: current_facility)
                    .group("encounters.facility_id")
