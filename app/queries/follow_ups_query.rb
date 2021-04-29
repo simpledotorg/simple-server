@@ -26,4 +26,23 @@ class FollowUpsQuery
     query = query.group(@group) if @group.present?
     query.count
   end
+
+  def self.with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
+    raise ArgumentError, "Only day, month and quarter allowed" unless period.in?([:day, :month, :quarter])
+
+    table_name = model_name.table_name.to_sym
+    time_column_with_table_name = "#{table_name}.#{time_column}"
+
+    relation = Patient.joins(table_name)
+      .where("patients.recorded_at < #{model_name.date_to_period_sql(time_column_with_table_name, period)}")
+      .group_by_period(period, time_column_with_table_name, current: current, last: last)
+      .distinct
+
+    if at_region.present?
+      facility_ids = at_region.facilities.map(&:id)
+      relation = relation.where(table_name => {facility_id: facility_ids})
+    end
+
+    relation
+  end
 end
