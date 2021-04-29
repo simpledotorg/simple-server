@@ -57,7 +57,7 @@ class PatientImport::Importer
   end
 
   def import_medical_history(params)
-    medical_history = MedicalHistory.merge(medical_history_params)
+    medical_history = MedicalHistory.merge(params)
     PatientImportLog.create!(user: admin, record: medical_history)
   end
 
