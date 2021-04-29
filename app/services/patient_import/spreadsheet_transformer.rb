@@ -19,7 +19,7 @@ module PatientImport
 
     def rows
       # Skip first row, it is also headers
-      @rows ||= CSV.parse(data, headers: true)[1..-1].map { |row|
+      @rows ||= CSV.parse(data, headers: true)[1..].map { |row|
         row.to_h.with_indifferent_access
       }
     end
