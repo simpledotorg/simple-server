@@ -2,7 +2,18 @@
   csv = CSV.generate(headers: true) do |csv|
   csv << ["Facility Report #{@period.to_date.strftime("%B %Y")}"]
 
-  # need variable width header here
+  section_labels = [
+    *Array.new(12, nil),
+    "New Registrations",
+    *Array.new(5, nil),
+    "Follow Up",
+    *Array.new(5, nil),
+    "Cumulative treatment outcome among patient under care",
+    *Array.new(3, nil),
+    "Drug availability",
+    *Array.new(2, nil)
+  ]
+  csv << section_labels
 
   # HEADERS
   month_labels = @months.map { |month| month.value.strftime("%b-%Y") }
@@ -81,7 +92,7 @@
       facility.name,
       facility.source.facility_type,
       facility.source.block,
-      facility.source.blood_pressures.any?,
+      facility.source.blood_pressures.any? ? "Active" : "Inactive",
       nil,
       matching_facility.dig(:cumulative_registrations, @period),
       matching_facility.dig(:cumulative_patients, @period),

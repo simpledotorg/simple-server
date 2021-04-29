@@ -20,7 +20,7 @@
     <% end %>
 
     <% if @region.district_region? && CountryConfig.current_country?("India") %>
-      <%= link_to(reports_region_download_path(@region, report_scope: params[:report_scope], period: :month, type: :who_report, format: :csv), class: "dropdown-item") do %>
+      <%= link_to(reports_region_who_report_path(@region, report_scope: params[:report_scope], period: :month, format: :csv), class: "dropdown-item") do %>
         <i class="far fa-file w-16px ta-center mr-4px c-grey-medium"></i>
         WHO report
       <% end %>

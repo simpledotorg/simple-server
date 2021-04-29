@@ -86,21 +86,42 @@ class Reports::RegionsController < AdminController
       raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
     end
 
+    @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
 
     respond_to do |format|
       format.csv do
-        if params[:type] == "who_report"
-          set_data_for_who_report
-          send_data render_to_string("who_report.csv.erb"), filename: download_filename("who")
-        elsif @region.district_region?
-          @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
+        if @region.district_region?
           set_facility_keys
           send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename("cohort")
         else
-          @cohort_analytics = @region.cohort_analytics(period: @period.type, prev_periods: 6)
           send_data render_to_string("cohort.csv.erb"), filename: download_filename("cohort")
         end
+      end
+    end
+  end
+
+  def who_report
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
+    # move to before action or to another controller
+    @period = Period.new(type: params[:period], value: Date.current)
+    unless @period.valid?
+      raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
+    end
+
+    @months = @period.downto(5).reverse
+    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
+    regions = @region.facility_regions.to_a << @region
+    repo = Reports::Repository.new(regions, periods: @period)
+    @region_data = populate_region_data(@region, repo)
+
+    @facilities_data = @region.facility_regions.map do |facility|
+      populate_region_data(facility, repo)
+    end
+
+    respond_to do |format|
+      format.csv do
+        send_data render_to_string("who_report.csv.erb"), filename: download_filename("who")
       end
     end
   end
@@ -211,35 +232,18 @@ class Reports::RegionsController < AdminController
     ((numerator.to_f / denominator) * 100).round(2)
   end
 
-  def set_data_for_who_report
-    @months = @period.downto(5).reverse
-    repo = Reports::Repository.new(@region, periods: @period)
-    slug = @region.slug
-    @region_data = Hash.new(0)
-    @region_data[:region] = @region
-    @region_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
-    @region_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
-    @region_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
-    @region_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
-    @region_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
-    @region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
-    @region_data[:ltfu_counts] = repo.ltfu_counts[slug]
-    @region_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
-
-    repo = Reports::Repository.new(@region.facility_regions, periods: @period)
-    @facilities_data = @region.facility_regions.map do |facility|
-      slug = facility.slug
-      facility_data = Hash.new(0)
-      facility_data[:region] = facility
-      facility_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
-      facility_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
-      facility_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
-      facility_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
-      facility_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
-      facility_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
-      facility_data[:ltfu_counts] = repo.ltfu_counts[slug]
-      facility_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
-      facility_data
-    end
-  end
+  def populate_region_data(region, repo)
+    slug = region.slug
+    region_data= Hash.new(0)
+    region_data[:region] = region
+    region_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
+    region_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
+    region_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
+    region_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
+    region_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
+    region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
+    region_data[:ltfu_counts] = repo.ltfu_counts[slug]
+    region_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
+    region_data
+end
 end
