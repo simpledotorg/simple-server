@@ -136,7 +136,7 @@ RSpec.describe Facility, type: :model do
       end
     end
 
-    fcontext "#hypertension_follow_ups_by_period" do
+    context "#hypertension_follow_ups_by_period" do
       it "counts follow_ups only for hypertensive patients" do
         registration_date = Time.new(2018, 4, 8)
         first_follow_up_date = registration_date + 1.month
@@ -162,11 +162,9 @@ RSpec.describe Facility, type: :model do
         periods = Range.new(registration_date.to_period, second_follow_up_date.to_period)
         repository = Reports::Repository.new(region, periods: periods)
 
-        logger.info "legacy"
         expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
         result = repository.hypertension_follow_ups
 
-        logger.info "new"
         expect(repository.hypertension_follow_ups[facility.region.slug]).to eq(expected_repo_output)
       end
 
@@ -182,7 +180,6 @@ RSpec.describe Facility, type: :model do
 
         repo = Reports::Repository.new(regions, periods: periods)
         repo_result = repo.hypertension_follow_ups
-        pp repo_result
 
         expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
         expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
