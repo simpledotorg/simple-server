@@ -46,18 +46,18 @@ class WhoReportService
       "Facility type",
       "Block",
       "Active/Inactive (Inactive facilities have 0 BP measures taken)",
-      "Estimated hypertension opulation",
+      "Estimated hypertension population",
       "Total registrations",
       "Total assigned patients",
-      "Total lost to follow-up",
+      "Patients lost to follow-up",
       "Died",
-      "Total patients under care",
+      "Patients under care",
       month_labels,
       month_labels,
-      "BP controlled %",
-      "BP not controlled %",
-      "Missed visits %",
-      "Visit but no BP taken %",
+      "Patients with BP controlled",
+      "Patients with BP not controlled",
+      "Patients with a missed visits",
+      "Patients with a visit but no BP taken",
       "Amlodipine",
       "ARBs/ACE Inhibitors",
       "Diuretic"
@@ -65,7 +65,6 @@ class WhoReportService
   end
 
   def district_row
-    region_data = populate_region_data(region)
     registered_by_month = months.map { |month|
       dashboard_analytics.sum { |_, data| data.dig(:registered_patients_by_period, month.value) || 0 }
     }
@@ -78,37 +77,33 @@ class WhoReportService
       "All",
       region.name,
       Array.new(5, nil),
-      region_data.dig(:cumulative_registrations, period),
+      repo.cumulative_registrations.dig(region.slug, period) || 0,
       patients.excluding_dead.count,
-      region_data.dig(:ltfu_counts, period),
+      repo.ltfu_counts.dig(region.slug, period) || 0,
       patients.status_dead.count,
       patients.excluding_dead.not_ltfu_as_of(period.end).count,
       registered_by_month,
       follow_up_by_month,
-      region_data.dig(:controlled_patients, period),
-      region_data.dig(:uncontrolled_patients, period),
-      region_data.dig(:missed_visits, period),
-      region_data.dig(:visited_without_bp_taken, period),
+      repo.controlled_patients_count.dig(region.slug, period) || 0,
+      repo.uncontrolled_patients_count.dig(region.slug, period) || 0,
+      repo.missed_visits.dig(region.slug, period) || 0,
+      repo.visited_without_bp_taken.dig(region.slug, period) || 0,
       Array.new(3, nil)
     ].flatten
   end
 
   def facility_rows
-    facilities_data = region.facility_regions.map { |facility|
-      populate_region_data(facility)
-    }
     region.facility_regions.map.with_index do |facility, index|
       analytics_data = dashboard_analytics[facility.id]
       registration_numbers = []
       follow_up_numbers = []
 
       months.each do |month|
-        registration_numbers << (dashboard_analytics.dig(facility.id, :registered_patients_by_period, month.value) || 0)
-        follow_up_numbers << (dashboard_analytics.dig(facility.id, :follow_up_patients_by_period, month.value) || 0)
+        registration_numbers << (dashboard_analytics.dig(facility.source.id, :registered_patients_by_period, month.value) || 0)
+        follow_up_numbers << (dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0)
       end
       patients = Patient.with_hypertension.where(assigned_facility: facility.source)
 
-      matching_facility = facilities_data.find { |fac| fac[:region] == facility }
       [
         index + 1,
         region.name,
@@ -117,32 +112,19 @@ class WhoReportService
         facility.source.block,
         facility.source.blood_pressures.any? ? "Active" : "Inactive",
         nil,
-        matching_facility.dig(:cumulative_registrations, period),
+        repo.cumulative_registrations.dig(facility.slug, period) || 0,
         patients.excluding_dead.count,
-        matching_facility.dig(:ltfu_counts, period),
+        repo.ltfu_counts.dig(facility.slug, period) || 0,
         patients.status_dead.count,
         patients.excluding_dead.not_ltfu_as_of(period.end).count,
         registration_numbers,
         follow_up_numbers,
-        matching_facility.dig(:controlled_patients, period),
-        matching_facility.dig(:uncontrolled_patients, period),
-        matching_facility.dig(:missed_visits, period),
-        matching_facility.dig(:visited_without_bp_taken, period),
+        repo.controlled_patients_count.dig(facility.slug, period) || 0,
+        repo.uncontrolled_patients_count.dig(facility.slug, period) || 0,
+        repo.missed_visits.dig(facility.slug, period) || 0,
+        repo.visited_without_bp_taken.dig(facility.slug, period) || 0,
         Array.new(3, nil)
       ].flatten
     end
-  end
-
-  def populate_region_data(region)
-    slug = region.slug
-    region_data = Hash.new(0)
-    region_data[:region] = region
-    region_data[:controlled_patients] = repo.controlled_patients_count[slug]
-    region_data[:uncontrolled_patients] = repo.uncontrolled_patients_count[slug]
-    region_data[:missed_visits] = repo.missed_visits[slug]
-    region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
-    region_data[:ltfu_counts] = repo.ltfu_counts[slug]
-    region_data[:visited_without_bp_taken] = repo.visited_without_bp_taken[slug]
-    region_data
   end
 end
