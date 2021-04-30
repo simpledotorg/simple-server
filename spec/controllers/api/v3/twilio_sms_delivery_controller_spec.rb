@@ -66,6 +66,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         end
 
         it "updates the result and delivered_on" do
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.delivered")
           session_id = SecureRandom.uuid
           create(:twilio_sms_delivery_detail,
             session_id: session_id,
@@ -98,6 +99,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         end
 
         it "schedules a fallback SMS if a whatsapp message failed" do
+          expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
           session_id = SecureRandom.uuid
           fallback_time = 5.minutes.from_now
           communication = create(:communication, :missed_visit_whatsapp_reminder)
