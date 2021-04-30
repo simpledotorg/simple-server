@@ -109,19 +109,12 @@ class Reports::RegionsController < AdminController
       raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
     end
 
-    @months = @period.downto(5).reverse
-    @dashboard_analytics = @region.dashboard_analytics(period: @period.type, prev_periods: 6)
-    regions = @region.facility_regions.to_a << @region
-    repo = Reports::Repository.new(regions, periods: @period)
-    @region_data = populate_region_data(@region, repo)
-
-    @facilities_data = @region.facility_regions.map do |facility|
-      populate_region_data(facility, repo)
-    end
+    csv = WhoReportService.new(@region, @period).report
+    santitized = csv.html_safe
 
     respond_to do |format|
       format.csv do
-        send_data render_to_string("who_report.csv.erb"), filename: download_filename("who")
+        send_data santitized, filename: download_filename("who")
       end
     end
   end
@@ -231,19 +224,4 @@ class Reports::RegionsController < AdminController
     return 0 if denominator == 0 || numerator == 0
     ((numerator.to_f / denominator) * 100).round(2)
   end
-
-  def populate_region_data(region, repo)
-    slug = region.slug
-    region_data= Hash.new(0)
-    region_data[:region] = region
-    region_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
-    region_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
-    region_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
-    region_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
-    region_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
-    region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
-    region_data[:ltfu_counts] = repo.ltfu_counts[slug]
-    region_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
-    region_data
-end
 end
