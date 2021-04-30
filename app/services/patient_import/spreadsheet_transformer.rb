@@ -84,48 +84,7 @@ module PatientImport
       }.with_indifferent_access
     end
 
-    def patient_id(row)
-      PatientBusinessIdentifier.find_by(
-        identifier_type: row[:identifier_type],
-        identifier: row[:identifier]
-      )&.patient_id || SecureRandom.uuid
-    end
-
-    def registration_facility_id
-      facility.id
-    end
-
-    def import_user
-      @import_user = PatientImport::ImportUser.find_or_create
-    end
-
-    def create_import_user
-      user = User.new(
-        full_name: "import-user",
-        organization_id: Organization.take,
-        device_created_at: Time.current,
-        device_updated_at: Time.current
-      )
-      phone_number_authentication = PhoneNumberAuthentication.new(
-        phone_number: IMPORT_USER_PHONE_NUMBER,
-        password: "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
-        registration_facility_id: facility.id
-      ).tap do |pna|
-        pna.set_otp
-        pna.invalidate_otp
-        pna.set_access_token
-      end
-
-      user.phone_number_authentications = [phone_number_authentication]
-      user.sync_approval_denied("bot user for import")
-      user.save!
-
-      user
-    end
-
-    def patient_status(row)
-      row[:died] == "yes" ? :dead : :active
-    end
+    private
 
     def business_identifiers(row)
       return [] unless row[:identifier].present?
@@ -138,7 +97,7 @@ module PatientImport
           assigning_user_id: import_user.id,
           assigning_facility_id: facility.id
         }.to_json,
-        metadata_version: "org.simple.ethiopia_medical_record.meta.v1",
+        metadata_version: business_identifier_metadata_version(row),
         created_at: timestamp(row[:registration_date]),
         updated_at: timestamp(row[:registration_date])
       }]
@@ -237,6 +196,60 @@ module PatientImport
         )
       }.compact
     end
+
+    def patient_id(row)
+      PatientBusinessIdentifier.find_by(
+        identifier_type: row[:identifier_type],
+        identifier: row[:identifier]
+      )&.patient_id || SecureRandom.uuid
+    end
+
+    def business_identifier_metadata_version(row)
+      case row[:identifier_type]
+      when "simple_bp_passport"
+        "org.simple.bppassport.meta.v1"
+      else
+        "org.simple.#{row[:identifier_type]}.meta.v1"
+      end
+    end
+
+    def registration_facility_id
+      facility.id
+    end
+
+    def import_user
+      @import_user = PatientImport::ImportUser.find_or_create
+    end
+
+    def create_import_user
+      user = User.new(
+        full_name: "import-user",
+        organization_id: Organization.take,
+        device_created_at: Time.current,
+        device_updated_at: Time.current
+      )
+      phone_number_authentication = PhoneNumberAuthentication.new(
+        phone_number: IMPORT_USER_PHONE_NUMBER,
+        password: "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
+        registration_facility_id: facility.id
+      ).tap do |pna|
+        pna.set_otp
+        pna.invalidate_otp
+        pna.set_access_token
+      end
+
+      user.phone_number_authentications = [phone_number_authentication]
+      user.sync_approval_denied("bot user for import")
+      user.save!
+
+      user
+    end
+
+    def patient_status(row)
+      row[:died] == "yes" ? :dead : :active
+    end
+
+
 
     def medication(name:, patient_id:, created_at:)
       medication_record = medication_by_name_dosage_and_frequency(name) || medication_by_name_and_dosage(name)
