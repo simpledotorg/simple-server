@@ -120,13 +120,13 @@ class WhoReportService
         matching_facility.dig(:cumulative_patients, period),
         matching_facility.dig(:ltfu_counts, period),
         dead,
-        matching_facility.dig(:ltfu_counts, period),
+        matching_facility.dig(:adjusted_patient_counts, period),
         registration_numbers,
         follow_up_numbers,
-        matching_facility.dig(:controlled_patients_rate, period),
-        matching_facility.dig(:uncontrolled_patients_rate, period),
-        matching_facility.dig(:missed_visits_rate, period),
-        matching_facility.dig(:visited_without_bp_taken_rate, period),
+        matching_facility.dig(:controlled_patients, period),
+        matching_facility.dig(:uncontrolled_patients, period),
+        matching_facility.dig(:missed_visits, period),
+        matching_facility.dig(:visited_without_bp_taken, period),
         Array.new(3, nil)
       ].flatten
     end
@@ -137,13 +137,13 @@ class WhoReportService
     region_data = Hash.new(0)
     region_data[:region] = region
     region_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
-    region_data[:controlled_patients_rate] = repo.controlled_patients_rate[slug]
-    region_data[:uncontrolled_patients_rate] = repo.uncontrolled_patients_rate[slug]
-    region_data[:missed_visits_rate] = repo.missed_visits_rate[slug]
+    region_data[:controlled_patients] = repo.controlled_patients[slug]
+    region_data[:uncontrolled_patients] = repo.uncontrolled_patients[slug]
+    region_data[:missed_visits] = repo.missed_visits[slug]
     region_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
     region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
     region_data[:ltfu_counts] = repo.ltfu_counts[slug]
-    region_data[:visited_without_bp_taken_rate] = repo.visited_without_bp_taken_rate[slug]
+    region_data[:visited_without_bp_taken] = repo.visited_without_bp_taken[slug]
     region_data
   end
 end
