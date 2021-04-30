@@ -44,22 +44,9 @@ module PatientImport
           created_at: timestamp(row[:registration_date]),
           updated_at: timestamp(row[:registration_date]),
 
-          business_identifiers: [{
-            id: business_identifier_id,
-            identifier_type: row[:identifier_type],
-            identifier: row[:identifier],
-            created_at: timestamp(row[:registration_date]),
-            updated_at: timestamp(row[:registration_date])
-          }],
+          business_identifiers: business_identifiers(row),
 
-          phone_numbers: [{
-            id: phone_number_id,
-            number: row[:phone],
-            phone_type: :mobile,
-            active: true,
-            created_at: timestamp(row[:registration_date]),
-            updated_at: timestamp(row[:registration_date])
-          }],
+          phone_numbers: phone_numbers(row),
 
           address: {
             id: address_id,
@@ -75,12 +62,12 @@ module PatientImport
         medical_history: {
           id: medical_history_id,
           patient_id: patient_id,
-          hypertension: row[:medical_history_hypertension],
-          diabetes: row[:medical_history_diabetes],
-          prior_heart_attack: row[:medical_history_heart_attack],
-          prior_stroke: row[:medical_history_stroke],
-          chronic_kidney_disease: row[:medical_history_kidney_disease],
-          diagnosed_with_hypertension: row[:medical_history_hypertension],
+          hypertension: row[:medical_history_hypertension].downcase,
+          diabetes: row[:medical_history_diabetes].downcase,
+          prior_heart_attack: row[:medical_history_heart_attack].downcase,
+          prior_stroke: row[:medical_history_stroke].downcase,
+          chronic_kidney_disease: row[:medical_history_kidney_disease].downcase,
+          diagnosed_with_hypertension: row[:medical_history_hypertension].downcase,
           receiving_treatment_for_hypertension: "yes",
           created_at: timestamp(row[:registration_date]),
           updated_at: timestamp(row[:registration_date])
@@ -137,6 +124,31 @@ module PatientImport
 
     def patient_status(row)
       row[:died] == "yes" ? :dead : :active
+    end
+
+    def business_identifiers(row)
+      return [] unless row[:identifier].present?
+
+      [{
+        id: SecureRandom.uuid,
+        identifier_type: row[:identifier_type],
+        identifier: row[:identifier],
+        created_at: timestamp(row[:registration_date]),
+        updated_at: timestamp(row[:registration_date])
+      }]
+    end
+
+    def phone_numbers(row)
+      return [] unless row[:phone].present?
+
+      [{
+        id: SecureRandom.uuid,
+        number: row[:phone],
+        phone_type: :mobile,
+        active: true,
+        created_at: timestamp(row[:registration_date]),
+        updated_at: timestamp(row[:registration_date])
+      }]
     end
 
     def first_blood_pressure(row, patient_id:)
@@ -249,12 +261,16 @@ module PatientImport
     end
 
     def medication_by_name_and_dosage(name)
+      return unless name.present?
+
       Medication.all.to_a.find do |medication|
         name.gsub(/\s+/, "") == "#{medication.name}#{medication.dosage}".gsub(/\s+/, "")
       end
     end
 
     def medication_by_name_dosage_and_frequency(name)
+      return unless name.present?
+
       Medication.all.to_a.find do |medication|
         name.gsub(/\s+/, "") == "#{medication.name}#{medication.dosage}#{localized_frequency(medication)}".gsub(/\s+/, "")
       end
