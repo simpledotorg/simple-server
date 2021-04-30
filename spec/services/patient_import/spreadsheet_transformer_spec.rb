@@ -8,6 +8,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
   it "parses patient data" do
     params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
 
+    import_user = PatientImport::ImportUser.find_or_create
     patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 1" }.deep_symbolize_keys
     patient_id = patient[:patient][:id]
     registration_time = Time.parse("2020-10-16")
@@ -40,6 +41,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       street_address: "45 Main Street",
       village_or_colony: "Berrytown",
       zone: "Fruit County",
+      district: "Vegetable District",
       created_at: registration_time,
       updated_at: registration_time
     )
@@ -48,6 +50,11 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       hash_including(
         identifier: "0000001",
         identifier_type: "ethiopia_medical_record",
+        metadata: {
+          assigning_user_id: import_user.id,
+          assigning_facility_id: facility.id
+        }.to_json,
+        metadata_version: "org.simple.ethiopia_medical_record.meta.v1",
         created_at: registration_time,
         updated_at: registration_time
       )
