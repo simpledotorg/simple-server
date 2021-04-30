@@ -138,6 +138,10 @@ Rails.application.routes.draw do
       scope :medications do
         get "sync", to: "medications#sync_to_user"
       end
+
+      scope :patients do
+        get "/:identifier", to: "patients#lookup"
+      end
     end
   end
 

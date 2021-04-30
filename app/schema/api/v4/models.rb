@@ -90,6 +90,15 @@ class Api::V4::Models
       }
     end
 
+    def lookup_patient
+      patient.deep_merge(
+        properties: {
+          business_identifiers: {"$ref" => "#/definitions/patient_business_identifiers"}
+        },
+        description: "Patient with all PHI and business identifiers included."
+      )
+    end
+
     def patient_phone_number
       {
         type: :object,
@@ -331,6 +340,8 @@ class Api::V4::Models
        blood_sugars: array_of("blood_sugar"),
        login_patient: login_patient,
        patient: patient,
+       lookup_patient: lookup_patient,
+       lookup_patients: array_of("lookup_patient"),
        user: user,
        find_user: find_user,
        activate_user: activate_user,
