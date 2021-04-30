@@ -110,11 +110,10 @@ class Reports::RegionsController < AdminController
     end
 
     csv = WhoReportService.new(@region, @period).report
-    santitized = csv.html_safe
 
     respond_to do |format|
       format.csv do
-        send_data santitized, filename: download_filename("who")
+        send_data csv, filename: download_filename("who")
       end
     end
   end
