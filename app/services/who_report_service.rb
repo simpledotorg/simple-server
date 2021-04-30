@@ -84,10 +84,10 @@ class WhoReportService
       region_data.dig(:adjusted_patient_counts, period),
       registered_by_month,
       follow_up_by_month,
-      region_data.dig(:controlled_patients_rate, period),
-      region_data.dig(:uncontrolled_patients_rate, period),
-      region_data.dig(:missed_visits_rate, period),
-      region_data.dig(:visited_without_bp_taken_rate, period),
+      region_data.dig(:controlled_patients, period),
+      region_data.dig(:uncontrolled_patients, period),
+      region_data.dig(:missed_visits, period),
+      region_data.dig(:visited_without_bp_taken, period),
       Array.new(3, nil)
     ].flatten
   end
@@ -98,7 +98,7 @@ class WhoReportService
     }
     region.facility_regions.map.with_index do |facility, index|
       analytics_data = dashboard_analytics[facility.id]
-      dead = Patient.where(assigned_facility_id: facility.id, status: "dead").count
+      dead = Patient.where(assigned_facility_id: facility.source.id, status: "dead").count
       registration_numbers = []
       follow_up_numbers = []
 
@@ -137,8 +137,8 @@ class WhoReportService
     region_data = Hash.new(0)
     region_data[:region] = region
     region_data[:adjusted_patient_counts] = repo.adjusted_patient_counts[slug]
-    region_data[:controlled_patients] = repo.controlled_patients[slug]
-    region_data[:uncontrolled_patients] = repo.uncontrolled_patients[slug]
+    region_data[:controlled_patients] = repo.controlled_patients_count[slug]
+    region_data[:uncontrolled_patients] = repo.uncontrolled_patients_count[slug]
     region_data[:missed_visits] = repo.missed_visits[slug]
     region_data[:cumulative_patients] = repo.cumulative_assigned_patients_count[slug]
     region_data[:cumulative_registrations] = repo.cumulative_registrations[slug]
