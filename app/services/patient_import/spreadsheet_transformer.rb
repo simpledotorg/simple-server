@@ -53,6 +53,7 @@ module PatientImport
             street_address: row[:address],
             village_or_colony: row[:village],
             zone: row[:zone],
+            district: row[:district],
             state: row[:state],
             country: CountryConfig.current[:name],
             created_at: timestamp(row[:registration_date]),
@@ -133,6 +134,11 @@ module PatientImport
         id: SecureRandom.uuid,
         identifier_type: row[:identifier_type],
         identifier: row[:identifier],
+        metadata: {
+          assigning_user_id: import_user.id,
+          assigning_facility_id: facility.id
+        }.to_json,
+        metadata_version: "org.simple.ethiopia_medical_record.meta.v1",
         created_at: timestamp(row[:registration_date]),
         updated_at: timestamp(row[:registration_date])
       }]
