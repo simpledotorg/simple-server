@@ -12,11 +12,15 @@ Accepted. This feature was released to all users by Feb 2020.
 [PRD](https://docs.google.com/document/d/1Cflct0Y-44IRUVw_5-NptcnNSX1UgAPBiXqoXHq22io/edit)
 
 Users in large districts reported that the Simple app was running very slow, making the app near-unusable.
-The slowdown was caused by the volume of patient data synced to the user’s phone. We realised that the amount of data being stored on the device had to be reduced for better long-term performance.
+The slowdown was caused by the volume of patient data synced to the user’s phone. We realised that the amount of data
+being stored on the device had to be reduced for better long-term performance.
 
-Currently we sync the entire district's records to a user's phone. Some of the large districts have upto 50,000 patients, which can amount to 400-500 MB of data.
+Currently we sync the entire district's records to a user's phone. Some of the large districts have upto 50,000 patients,
+which can amount to 400-500 MB of data. On lower-end phones we noticed the app started slowing down when the DB size grew beyond 250 MB.
 
-A district typically has between 1-20 blocks. From trends in IHCI, we found that patients rarely move between facilities across blocks. Patients that have a BP taken in more than 1 block is around 2% or under, with the exceptions of: Sindhudurg (9.8%), Hoshiarpur (5.3%), Bathinda (3.1%).
+A district typically has between 1-20 blocks. From trends in IHCI, we found it's uncommon for patients to visit facilities across blocks.
+Patients that have a BP taken in more than 1 block is around 2% or under, with the exceptions of:
+Sindhudurg (9.8%), Hoshiarpur (5.3%), Bathinda (3.1%).
 This means that we can sync only a block's data to the user's phone and be reasonably confident about finding patients on the app.
 
 ## Decision

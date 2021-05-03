@@ -26,6 +26,7 @@ To start using a different region as the sync region, setting the right `sync_re
 - When the sync region is changed, it requires a resync so that all records from the other sync region can be synced to the app.
 - The server detects if an app needs to resync by checking if there is a mismatch in the app's sync region in the last request (`sync_region_id` from the process token)
   and the region the app has requested (in the header).
-- When the app detects a change in sync region, it triggers a task to purge stuff outside the new sync region. Details of the purge mechanism on the app [here](https://app.clubhouse.io/simpledotorg/story/1413/regularly-purge-data-outside-the-current-sync-group).
+- When the app detects a change in sync region, it triggers a task to purge stuff outside the new sync region. 
+  Details of the purge mechanism on the app are [here](https://app.clubhouse.io/simpledotorg/story/1413/regularly-purge-data-outside-the-current-sync-group).
 - It is important to keep in mind that changing the sync region causes apps to resync.
   Releasing such a change will cause a spike in sync traffic. Ideally it should be rolled out slowly under a feature flag.
