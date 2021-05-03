@@ -4,11 +4,9 @@ September 2020
 _This ADR has been added retroactively in Apr 2021 to capture our switch to block-level syncing._
 
 ## Status
-
 Accepted. This feature was released to all users by Feb 2020.
 
 ## Context
-
 [PRD](https://docs.google.com/document/d/1Cflct0Y-44IRUVw_5-NptcnNSX1UgAPBiXqoXHq22io/edit)
 
 Users in large districts reported that the Simple app was running very slow, making the app near-unusable.
@@ -24,7 +22,6 @@ Sindhudurg (9.8%), Hoshiarpur (5.3%), Bathinda (3.1%).
 This means that we can sync only a block's data to the user's phone and be reasonably confident about finding patients on the app.
 
 ## Decision
-
 - The server will sync records from the user's block instead of the entire district.
   Specifically the following patients will be synced:
   - patients that registered at a facility in the same block,
@@ -43,10 +40,7 @@ This means that we can sync only a block's data to the user's phone and be reaso
     - Register the patient again, as if they were new. Make sure to attach their existing BP passport to the registration.
     - The duplicate patient records will be merged by the Simple team later.
 
-
-
 ## Consequences
-
 - The Simple app will not be able to find patients who moved from one block to another.
 - Block is currently a freeform text field on the `Facility` model.
   It needs to be a first-class entity to make block-level syncing possible.
