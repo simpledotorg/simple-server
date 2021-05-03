@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe WhoReportService do
+RSpec.describe MonthlyDistrictDataService do
   let(:organization) { FactoryBot.create(:organization) }
   let(:facility_group) { create(:facility_group, organization: organization) }
   let(:facility) { create(:facility, facility_group: facility_group) }

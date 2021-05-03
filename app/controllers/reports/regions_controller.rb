@@ -101,7 +101,7 @@ class Reports::RegionsController < AdminController
     end
   end
 
-  def who_report
+  def monthly_district_data_report
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @period = Period.new(type: params[:period], value: Date.current)
@@ -112,9 +112,9 @@ class Reports::RegionsController < AdminController
       raise ArgumentError, "Period must be month"
     end
 
-    csv = WhoReportService.new(@region, @period).report
-    report_date = @period.to_s(:month_year).downcase
-    filename = "monthly-district-report-#{@region.slug}-#{report_date}.csv"
+    csv = MonthlyDistrictDataService.new(@region, @period).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do

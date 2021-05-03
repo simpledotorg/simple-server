@@ -1,4 +1,4 @@
-class WhoReportService
+class MonthlyDistrictDataService
   attr_reader :region, :period, :months, :repo, :dashboard_analytics
   def initialize(region, period)
     @region = region
