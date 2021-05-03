@@ -4,7 +4,6 @@ class WhoReportService
     @region = region
     @period = period
     @months = period.downto(5).reverse
-binding.pry
     regions = region.facility_regions.to_a << region
     @repo = Reports::Repository.new(regions, periods: period)
     @dashboard_analytics = region.dashboard_analytics(period: period.type, prev_periods: 6)
