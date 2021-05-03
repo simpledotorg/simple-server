@@ -106,6 +106,13 @@ module Reports
       end
     end
 
+    memoize def registration_counts_by_user
+      region_entries = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+      region_entries.each_with_object({}) do |region_entry, sum|
+        sum[region_entry.slug] = RegisteredPatientsQuery.new.count(region_entry.region, period_type, group_by: :registration_user_id)
+      end
+    end
+
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_registration_counts
