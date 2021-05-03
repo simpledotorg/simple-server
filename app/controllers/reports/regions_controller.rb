@@ -93,9 +93,9 @@ class Reports::RegionsController < AdminController
       format.csv do
         if @region.district_region?
           set_facility_keys
-          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename("cohort")
+          send_data render_to_string("facility_group_cohort.csv.erb"), filename: download_filename
         else
-          send_data render_to_string("cohort.csv.erb"), filename: download_filename("cohort")
+          send_data render_to_string("cohort.csv.erb"), filename: download_filename
         end
       end
     end
@@ -116,10 +116,12 @@ class Reports::RegionsController < AdminController
       raise ArgumentError, "Region must be district"
     end
     csv = WhoReportService.new(@region, @period).report
+    report_date = @period.to_date.strftime("%B-%Y").downcase
+    filename = "who-monthly-facility-report-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
-        send_data csv, filename: download_filename("who")
+        send_data csv, filename: filename
       end
     end
   end
@@ -150,10 +152,10 @@ class Reports::RegionsController < AdminController
 
   helper_method :accessible_region?
 
-  def download_filename(report_type)
+  def download_filename
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-") # why not use slug?
-    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-#{report_type}-report_#{region_name}_#{time}.csv"
+    "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 
   def set_facility_keys
