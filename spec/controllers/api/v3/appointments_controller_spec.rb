@@ -134,9 +134,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
       before { set_authentication_headers }
 
-      context "region-level sync is turned on" do
-        before { enable_flag(:block_level_sync, request_user) }
-
+      context "region-level sync" do
         context "when X_SYNC_REGION_ID is blank (support for old apps)" do
           it "sends facility group records irrespective of process_token's sync_region_id" do
             facility_group_records = [
@@ -286,34 +284,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
               expect(response_record_ids).to match_array block_records.map(&:id)
               expect(non_block_records).not_to include(*response_record_ids)
-            end
-          end
-        end
-      end
-
-      context "when region-level sync is turned off" do
-        it "sends facility group records irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-          facility_group_records = [
-            *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
-            *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block)
-          ]
-
-          other_facility_group_records = create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
-
-          requested_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id, "invalid_id"]
-          process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
-
-          requested_sync_region_ids.each do |requested_sync_region_id|
-            process_token_sync_region_ids.each do |process_token_sync_region_id|
-              request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
-              process_token = make_process_token(sync_region_id: process_token_sync_region_id)
-
-              get :sync_to_user, params: {process_token: process_token}
-
-              response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-              expect(response_record_ids).to match_array facility_group_records.map(&:id)
-              expect(other_facility_group_records).not_to include(*response_record_ids)
             end
           end
         end
