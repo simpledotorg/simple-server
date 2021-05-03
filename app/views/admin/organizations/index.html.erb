@@ -3,7 +3,9 @@
 
   <nav class="page-nav">
     <% if current_admin.power_user? %>
-      <%= link_to 'Add organization', new_admin_organization_path, class: "btn btn-sm btn-success" %>
+      <%= link_to new_admin_organization_path, class: "btn btn-sm btn-success" do %>
+        <i class="fas fa-plus mr-1"></i> Organization
+      <% end %>
     <% end %>
   </nav>
 </div>

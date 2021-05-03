@@ -15,3 +15,4 @@ Datadog.configure do |c|
 end
 
 require "statsd"
+require "metrics"
