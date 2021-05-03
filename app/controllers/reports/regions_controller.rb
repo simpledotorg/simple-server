@@ -5,7 +5,7 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: [:index, :who_report]
+  before_action :find_region, except: [:index]
   around_action :set_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -103,6 +103,7 @@ class Reports::RegionsController < AdminController
 
   def who_report
     authorize { current_admin.accessible_facilities(:view_reports).any? }
+
     # move to before action or to another controller
     @period = Period.new(type: params[:period], value: Date.current)
     unless @period.valid?
@@ -111,13 +112,10 @@ class Reports::RegionsController < AdminController
     unless @period.month?
       raise ArgumentError, "Period must be month"
     end
-    @region = Region.find_by!(slug: params[:id])
-    unless @region.district_region?
-      raise ArgumentError, "Region must be district"
-    end
+
     csv = WhoReportService.new(@region, @period).report
     report_date = @period.to_date.strftime("%B-%Y").downcase
-    filename = "who-monthly-facility-report-#{@region.slug}-#{report_date}.csv"
+    filename = "monthly-district-report-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
       format.csv do
@@ -154,7 +152,7 @@ class Reports::RegionsController < AdminController
 
   def download_filename
     time = Time.current.to_s(:number)
-    region_name = @region.name.tr(" ", "-") # why not use slug?
+    region_name = @region.name.tr(" ", "-")
     "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
   end
 

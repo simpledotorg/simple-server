@@ -470,13 +470,14 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   describe "#who_report" do
     let(:facility_group) { create(:facility_group, organization: organization) }
-    let(:region) { create(:region, :district, reparent_to: facility_group.region) }
+    # let(:region) { create(:region, :district, reparent_to: facility_group.region) }
     let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:region) { facility.region.district_region }
 
-    it "authorizes" do
+    it "returns 401 when user is not authorized" do
       facility
 
-      get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      get :who_report, params: { id: region.slug, report_scope: "district", period: "month", format: "csv" }
       expect(response.status).to eq(401)
     end
 
@@ -485,39 +486,45 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       expect {
-        get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "quarter", format: "csv" }
+        get :who_report, params: { id: region.slug, report_scope: "district", period: "quarter", format: "csv" }
       }.to raise_error(ArgumentError, "Period must be month")
     end
 
-    it "raises not found with invalid region" do
+    it "returns 302 found with invalid region" do
       facility
       sign_in(cvho.email_authentication)
 
-      expect {
-        get :who_report, params: { id: "not-found", report_scope: "facility_district", period: "month", format: "csv" }
-      }.to raise_error(ActiveRecord::RecordNotFound, "Couldn't find Region")
+      get :who_report, params: { id: "not-found", report_scope: "district", period: "month", format: "csv" }
+      expect(response.status).to eq(302)
     end
 
-    it "raises error if region is not district" do
+    it "returns 302 if region is not district" do
       facility
       sign_in(cvho.email_authentication)
 
-      expect {
-        get :who_report, params: { id: facility.slug, report_scope: "facility_district", period: "month", format: "csv" }
-      }.to raise_error(ArgumentError, "Region must be district")
+      get :who_report, params: { id: facility.slug, report_scope: "district", period: "month", format: "csv" }
+      expect(response.status).to eq(302)
     end
 
-    it "calls csv service" do
+    it "calls csv service and returns 200 with csv data" do
       facility
       sign_in(cvho.email_authentication)
 
       expect_any_instance_of(WhoReportService).to receive(:report).and_call_original
-      get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      get :who_report, params: { id: region.slug, report_scope: "district", period: "month", format: "csv" }
       expect(response.status).to eq(200)
       expect(response.body).to include("Facility Report #{Date.current.strftime("%B %Y")}")
       report_date = Date.current.strftime("%B-%Y").downcase
-      expected_filename = "who-monthly-facility-report-#{region.slug}-#{report_date}.csv"
-      expect(response.headers["Content-Disposition"]).to include("filename=\"#{expected_filename}")
+      expected_filename = "monthly-district-report-#{region.slug}-#{report_date}.csv"
+      expect(response.headers["Content-Disposition"]).to include(%Q(filename="#{expected_filename}"))
+    end
+
+    it "works for facility districts" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      expect(response.status).to eq(200)
     end
   end
 end
