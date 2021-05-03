@@ -1,5 +1,5 @@
 <nav class="breadcrumb">
-    <%= link_to @protocol.name, [:admin, @protocol] %> <i class="fas fa-chevron-right"></i> New protocol drug
+    <%= link_to "Protocols", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %> <i class="fas fa-chevron-right"></i> <%= link_to @protocol.name, [:admin, @protocol] %> <i class="fas fa-chevron-right"></i> New protocol drug
 </nav>
 
 <h1>New protocol drug</h1>

@@ -35,16 +35,16 @@ class APIController < ApplicationController
     # This method selectively permits only FacilityGroup sync (via facility group ID)
     # and block-level sync (via regions) and offers facility group as a safe fallback.
     # Over time, the facility group ID support can be dropped and this method can
-    # allow other region types as well
+    # allow other region types as well.
+    #
+    # The order of these guard clauses is important.
+    return current_facility_group unless current_user
+    return current_facility_group if current_user.district_level_sync?
     return current_facility_group if requested_sync_region_id.blank?
     return current_facility_group if requested_sync_region_id == current_facility_group.id
-    return current_block if block_level_sync?
+    return current_block if requested_sync_region_id == current_block.id
 
     current_facility_group
-  end
-
-  def block_level_sync?
-    current_user.block_level_sync? && requested_sync_region_id == current_block.id
   end
 
   def current_block

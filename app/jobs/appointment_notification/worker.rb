@@ -6,14 +6,28 @@ class AppointmentNotification::Worker
 
   DEFAULT_LOCALE = :en
 
+  def metrics
+    @metrics ||= Metrics.with_object(self)
+  end
+
   def perform(appointment_id, communication_type, locale = nil)
+    metrics.increment("attempts")
+    unless Flipper.enabled?(:appointment_reminders)
+      metrics.increment("skipped.feature_disabled")
+      return
+    end
+
     appointment = Appointment.find_by(id: appointment_id)
     unless appointment
+      metrics.increment("skipped.missed_appointment")
       logger.warn "Appointment #{appointment_id} not found, skipping notification"
       return
     end
 
-    return if appointment.previously_communicated_via?(communication_type)
+    if appointment.previously_communicated_via?(communication_type)
+      metrics.increment("skipped.previously_communicated")
+      return
+    end
 
     patient_phone_number = appointment.patient.latest_mobile_number
     message = appointment_message(appointment, communication_type, locale)
@@ -22,9 +36,13 @@ class AppointmentNotification::Worker
       notification_service = NotificationService.new
 
       response = if communication_type == "missed_visit_whatsapp_reminder"
-        notification_service.send_whatsapp(patient_phone_number, message, callback_url)
+        notification_service.send_whatsapp(patient_phone_number, message, callback_url).tap do |resp|
+          metrics.increment("sent.whatsapp")
+        end
       else
-        notification_service.send_sms(patient_phone_number, message, callback_url)
+        notification_service.send_sms(patient_phone_number, message, callback_url).tap do |response|
+          metrics.increment("sent.sms")
+        end
       end
 
       Communication.create_with_twilio_details!(
@@ -34,6 +52,7 @@ class AppointmentNotification::Worker
         communication_type: communication_type
       )
     rescue Twilio::REST::TwilioError => e
+      metrics.increment(:error)
       report_error(e)
     end
   end
@@ -53,15 +72,13 @@ class AppointmentNotification::Worker
   end
 
   def report_error(e)
-    Sentry.capture_message(
-      "Error while processing appointment notifications",
+    Sentry.capture_message("Error while processing appointment notifications",
       extra: {
         exception: e.to_s
       },
       tags: {
         type: "appointment-notification-job"
-      }
-    )
+      })
   end
 
   def callback_url
