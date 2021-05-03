@@ -1,4 +1,7 @@
-<h1><%= link_to @protocol.name, [:admin, @protocol] %></h1>
-<h3>Edit protocol drug</h3>
+<nav class="breadcrumb">
+	<%= link_to "Protocols", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %> <i class="fas fa-chevron-right"></i> <%= link_to @protocol.name, [:admin, @protocol] %> <i class="fas fa-chevron-right"></i> New protocol drug
+</nav>
+
+<h1>Edit protocol drug</h1>
 
 <%= render 'form', protocol_drug: @protocol_drug %>
