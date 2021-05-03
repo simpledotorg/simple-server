@@ -5,7 +5,7 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: [:index]
+  before_action :find_region, except: [:index, :who_report]
   around_action :set_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -108,7 +108,13 @@ class Reports::RegionsController < AdminController
     unless @period.valid?
       raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
     end
-
+    unless @period.month?
+      raise ArgumentError, "Period must be month"
+    end
+    @region = Region.find_by!(slug: params[:id])
+    unless @region.district_region?
+      raise ArgumentError, "Region must be district"
+    end
     csv = WhoReportService.new(@region, @period).report
 
     respond_to do |format|
@@ -146,7 +152,7 @@ class Reports::RegionsController < AdminController
 
   def download_filename(report_type)
     time = Time.current.to_s(:number)
-    region_name = @region.name.tr(" ", "-")
+    region_name = @region.name.tr(" ", "-") # why not use slug?
     "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-#{report_type}-report_#{region_name}_#{time}.csv"
   end
 

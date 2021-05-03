@@ -467,4 +467,58 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
   end
+
+  describe "#who_report" do
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:region) { create(:region, :district, reparent_to: facility_group.region) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+
+    it "authorizes" do
+      facility
+
+      @period = Period.quarter(Date.today)
+      get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      expect(response.status).to eq(401)
+    end
+
+    it "returns error with invalid period" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      @period = Period.quarter(Date.today)
+      expect {
+        get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "quarter", format: "csv" }
+      }.to raise_error(ArgumentError, "Period must be month")
+    end
+
+    it "raises not found with invalid region" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      expect {
+        get :who_report, params: { id: "not-found", report_scope: "facility_district", period: "month", format: "csv" }
+      }.to raise_error(ActiveRecord::RecordNotFound, "Couldn't find Region")
+    end
+
+    it "raises error if region is not district" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      expect {
+        get :who_report, params: { id: facility.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      }.to raise_error(ArgumentError, "Region must be district")
+    end
+
+    it "calls csv service" do
+      facility
+      sign_in(cvho.email_authentication)
+      expect_any_instance_of(WhoReportService).to receive(:report).and_call_original
+      get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      expect(response.status).to eq(200)
+      expect(response.body).to include("Facility Report #{Date.current.strftime("%B %Y")}")
+      region_name = region.name.tr(" ", "-")
+      expected_filename = "district-monthly-who-report_#{region_name}_"
+      expect(response.headers["Content-Disposition"]).to include("filename=\"#{expected_filename}")
+    end
+  end
 end
