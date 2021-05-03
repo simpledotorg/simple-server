@@ -470,7 +470,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
   describe "#who_report" do
     let(:facility_group) { create(:facility_group, organization: organization) }
-    # let(:region) { create(:region, :district, reparent_to: facility_group.region) }
     let(:facility) { create(:facility, facility_group: facility_group) }
     let(:region) { facility.region.district_region }
 

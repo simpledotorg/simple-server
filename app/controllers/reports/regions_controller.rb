@@ -104,7 +104,6 @@ class Reports::RegionsController < AdminController
   def who_report
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    # move to before action or to another controller
     @period = Period.new(type: params[:period], value: Date.current)
     unless @period.valid?
       raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
@@ -114,7 +113,7 @@ class Reports::RegionsController < AdminController
     end
 
     csv = WhoReportService.new(@region, @period).report
-    report_date = @period.to_date.strftime("%B-%Y").downcase
+    report_date = @period.to_s(:month_year).downcase
     filename = "monthly-district-report-#{@region.slug}-#{report_date}.csv"
 
     respond_to do |format|
