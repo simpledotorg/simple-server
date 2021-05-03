@@ -17,6 +17,10 @@ class FacilityDistrict
     facilities.pluck("facilities.id")
   end
 
+  def facility_regions
+    Region.facility_regions.where(source_id: facility_ids)
+  end
+
   def child_region_type
     "facility"
   end

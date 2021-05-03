@@ -70,7 +70,7 @@ class MonthlyDistrictDataService
     follow_up_by_month = months.map { |month|
       dashboard_analytics.sum { |_, data| data.dig(:follow_up_patients_by_period, month.value) || 0 }
     }
-    patients = Patient.with_hypertension.where(assigned_facility: region.facilities.pluck(:id))
+    patients = region.assigned_patients.joins(:medical_history).merge(MedicalHistory.hypertension_yes).distinct
 
     [
       "All",
