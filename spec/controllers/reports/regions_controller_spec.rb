@@ -476,7 +476,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "returns 401 when user is not authorized" do
       facility
 
-      get :who_report, params: { id: region.slug, report_scope: "district", period: "month", format: "csv" }
+      get :who_report, params: {id: region.slug, report_scope: "district", period: "month", format: "csv"}
       expect(response.status).to eq(401)
     end
 
@@ -485,7 +485,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       expect {
-        get :who_report, params: { id: region.slug, report_scope: "district", period: "quarter", format: "csv" }
+        get :who_report, params: {id: region.slug, report_scope: "district", period: "quarter", format: "csv"}
       }.to raise_error(ArgumentError, "Period must be month")
     end
 
@@ -493,7 +493,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :who_report, params: { id: "not-found", report_scope: "district", period: "month", format: "csv" }
+      get :who_report, params: {id: "not-found", report_scope: "district", period: "month", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -501,7 +501,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :who_report, params: { id: facility.slug, report_scope: "district", period: "month", format: "csv" }
+      get :who_report, params: {id: facility.slug, report_scope: "district", period: "month", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -510,19 +510,19 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       expect_any_instance_of(WhoReportService).to receive(:report).and_call_original
-      get :who_report, params: { id: region.slug, report_scope: "district", period: "month", format: "csv" }
+      get :who_report, params: {id: region.slug, report_scope: "district", period: "month", format: "csv"}
       expect(response.status).to eq(200)
       expect(response.body).to include("Facility Report #{Date.current.strftime("%B %Y")}")
       report_date = Date.current.strftime("%B-%Y").downcase
       expected_filename = "monthly-district-report-#{region.slug}-#{report_date}.csv"
-      expect(response.headers["Content-Disposition"]).to include(%Q(filename="#{expected_filename}"))
+      expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
     end
 
     it "works for facility districts" do
       facility
       sign_in(cvho.email_authentication)
 
-      get :who_report, params: { id: region.slug, report_scope: "facility_district", period: "month", format: "csv" }
+      get :who_report, params: {id: region.slug, report_scope: "facility_district", period: "month", format: "csv"}
       expect(response.status).to eq(200)
     end
   end
