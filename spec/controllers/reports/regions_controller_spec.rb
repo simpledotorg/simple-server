@@ -512,7 +512,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
       get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", period: "month", format: "csv"}
       expect(response.status).to eq(200)
-      expect(response.body).to include("Facility Report #{Date.current.strftime("%B %Y")}")
+      expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
       report_date = Date.current.strftime("%B-%Y").downcase
       expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
       expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
