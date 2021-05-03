@@ -7,7 +7,8 @@ A sync region can be any region in the `Region` hierarchy (state, district, bloc
 This is a guide on how region level sync works and how to transition from one using one sync region to another sync region.
 
 ### At the heart of it
-- The server sets the `sync_region_id` for each facility in the facility payload.
+- The server sets the sync region for each facility by setting a `sync_region_id` in the facility payload.
+  For block sync this is the the region ID of the facility's block.
 - The app picks the current facility's `sync_region_id` as the sync region.
 - The app requests for the sync region's records to be synced by sending the `sync_region_id` in the `X-SYNC-REGION-ID` header.
 - The server returns data for the requested sync region's `syncable_patients`.
@@ -25,6 +26,6 @@ To start using a different region as the sync region, setting the right `sync_re
 - When the sync region is changed, it requires a resync so that all records from the other sync region can be synced to the app.
 - The server detects if an app needs to resync by checking if there is a mismatch in the app's sync region in the last request (`sync_region_id` from the process token)
   and the region the app has requested (in the header).
-- When the app detects a change in sync region, it triggers a task to purge stuff outside the new sync region.
+- When the app detects a change in sync region, it triggers a task to purge stuff outside the new sync region. Details of the purge mechanism on the app [here](https://app.clubhouse.io/simpledotorg/story/1413/regularly-purge-data-outside-the-current-sync-group).
 - It is important to keep in mind that changing the sync region causes apps to resync.
   Releasing such a change will cause a spike in sync traffic. Ideally it should be rolled out slowly under a feature flag.

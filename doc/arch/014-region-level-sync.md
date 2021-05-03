@@ -1,12 +1,18 @@
 # Region level sync
-September 2020 (accepted)
+September 2020
 
 _This ADR has been added retroactively in Apr 2021 to capture our switch to block-level syncing._
 
+## Status
+
+Accepted. This feature was released to all users by Feb 2020.
+
 ## Context
 
+[PRD](https://docs.google.com/document/d/1Cflct0Y-44IRUVw_5-NptcnNSX1UgAPBiXqoXHq22io/edit)
+
 Users in large districts reported that the Simple app was running very slow, making the app near-unusable.
-The slowdown was correlated to the volume of patient data synced to the user’s phone. We realised that the amount of data being stored on the device had to be reduced for better long-term performance.
+The slowdown was caused by the volume of patient data synced to the user’s phone. We realised that the amount of data being stored on the device had to be reduced for better long-term performance.
 
 Currently we sync the entire district's records to a user's phone. Some of the large districts have upto 50,000 patients, which can amount to 400-500 MB of data.
 
@@ -33,15 +39,15 @@ This means that we can sync only a block's data to the user's phone and be reaso
     - Register the patient again, as if they were new. Make sure to attach their existing BP passport to the registration.
     - The duplicate patient records will be merged by the Simple team later.
 
-## Status
 
-Accepted. This feature was released to all users by Feb 2020.
 
 ## Consequences
 
-- The Simple app might not be able to find patients who moved from one block to another.
+- The Simple app will not be able to find patients who moved from one block to another.
 - Block is currently a freeform text field on the `Facility` model.
   It needs to be a first-class entity to make block-level syncing possible.
+  This is introduced through the `Region` model.- Block is currently a freeform text field on the `Facility` model.
+  It needs to be a first-class entity to make block-level syncing possible.
   This is introduced through the `Region` model.
-- When a patient gets registered across blocks as a duplicate, we will need to identify them and merge their data.
-
+- When a patient gets registered across blocks as a duplicate, we will need to identify them and merge their data. 
+  We plan to implement online patient lookup for the case where a patient is not found locally.
