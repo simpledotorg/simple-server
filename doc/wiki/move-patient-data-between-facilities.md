@@ -6,13 +6,16 @@ Users of Simple might need a facility's data to be transferred to another facili
 
 This script can assist with transferring patient data in such cases.
 ```bash
-bundle exec cap india:production deploy:rake task=data_fixes:move_data_from_source_to_destination_facility[<source-facility-id>,<destination-facility-id>]
+bundle exec cap <env> deploy:rake task=data_fixes:move_data_from_source_to_destination_facility[<source-facility-id>,<destination-facility-id>]
 ```
 
-### Caveats
+### Workflow
 
-- This does not transfer users from the source facility. In case users also need to be moved to the destination
-facility, it can be done manually via the `Edit User` UI or from console.
-- In case the source facility needs to be deleted, make sure the users also switch their facility in the app.
-If there is a delay between the transfer and the soft deletion, its possible that a user creates more data in between which will hamper the deletion.
-Ideally the transfer and deletion should be atomic.
+When the source facility needs to be merged and deleted:
+- Move all users to the destination facility. It can be done manually via the `Edit User` UI or from console.
+- Make sure the users also switch to the destination facility in the app.
+  This is done by selecting their current facility in the top menu on the app's home screen.
+- Run the script to transfer the data.
+- Login to dashboard and delete the facility from the `Edit Facility` page. If there is a delay between the transfer and the soft deletion, 
+  its possible that a user creates more data in between which will hamper the deletion. Ideally the transfer and deletion should be atomic.
+
