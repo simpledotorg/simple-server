@@ -22,20 +22,19 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(JSON::Validator.validate(expected_schema, response_data)).to eq(true)
     end
 
-    xit "returns all information about a patient" do
-      # TODO: confirm the response schema, and write the rest of the assertions here
+    it "returns all information about a patient" do
       patient = create(:patient)
       add_visits(2, patient: patient, facility: patient.registration_facility, user: patient.registration_user)
       set_headers(patient.registration_user, patient.registration_facility)
 
       get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
       response_patient = JSON.parse(response.body).with_indifferent_access[:patients][0]
+      expected_attrs = [:address, :appointments, :blood_pressures, :blood_sugars, :business_identifiers,
+        :medical_history, :phone_numbers, :prescription_drugs]
+      expect(response_patient.values_at(*expected_attrs)).to all be_present
       expect(response_patient[:blood_pressures].count).to eq 2
       expect(response_patient[:blood_sugars].count).to eq 2
       expect(response_patient[:appointments].count).to eq 2
-    end
-
-    xit "returns the list of business identifiers" do
     end
 
     it "returns multiple patients with the same identifier, irrespective of identifier type" do
