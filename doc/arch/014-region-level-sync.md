@@ -30,7 +30,7 @@ This means that we can sync only a block's data to the user's phone and be reaso
 - All other sync resources will return records belonging to these patients only.
 - The sync mechanism should support the ability to adjust the sync radius to any sync region.
   This is important in case we need to change the kind of records that are synced to the app in the future.
-  See [Block level sync manual](../wiki/adjusting-sync-boundaries.md) for how it works.
+  See the [wiki entry on Region level sync](../wiki/adjusting-sync-boundaries.md) for how it works.
 
 ### On the app
 - Users can continue selecting any facility in their district when switching facilities.
