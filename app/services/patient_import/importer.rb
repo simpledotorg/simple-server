@@ -4,8 +4,10 @@ class PatientImport::Importer
 
   attr_reader :params, :facility, :admin, :results
 
-  def self.call(*args)
-    new(*args).call
+  def self.import_patients(patients_params:, facility:, admin:)
+    patients_params.each do |params|
+      new(params: params, facility: facility, admin: admin).import
+    end
   end
 
   def initialize(params:, facility:, admin:)
@@ -15,17 +17,7 @@ class PatientImport::Importer
     @results = []
   end
 
-  def call
-    ActiveRecord::Base.transaction do
-      params.each_with_index do |patient_record_params, index|
-        results.push(import_patient_record(patient_record_params))
-      end
-    end
-
-    results
-  end
-
-  def import_patient_record(params)
+  def import
     ActiveRecord::Base.transaction do
       patient_params = Api::V3::PatientTransformer.from_nested_request(params[:patient])
       medical_history_params = Api::V3::MedicalHistoryTransformer.from_request(params[:medical_history])
@@ -45,7 +37,7 @@ class PatientImport::Importer
       ]
 
       if records.all?(&:persisted?)
-        AuditLog.create_logs_async(records, "import", Time.current)
+        AuditLog.create_logs_async(PatientImport::ImportUser.find_or_create, records, "import", Time.current)
       else
         raise "Patient import failed"
       end

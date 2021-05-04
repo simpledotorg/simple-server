@@ -15,7 +15,7 @@ class Admin::PatientImportsController < AdminController
     validator = PatientImport::Validator.new(params)
 
     if validator.valid?
-      results = PatientImport::Importer.call(params: params, facility: facility, admin: current_admin)
+      results = PatientImport::Importer.import_patients(patients_params: params, facility: facility, admin: current_admin)
       redirect_to new_admin_patient_import_url, notice: "Successfully imported #{results.count} patients to #{facility.name}"
     else
       @errors = validator.errors

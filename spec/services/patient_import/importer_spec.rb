@@ -5,12 +5,12 @@ RSpec.describe PatientImport::Importer do
     it "imports patient information" do
       facility = create(:facility)
       admin = create(:admin)
-      params = [{
+      params = {
         patient: {property: "patient property"},
         medical_history: {property: "medical history property"},
         blood_pressures: [{property: "bp1 property"}, {property: "bp2 property"}],
         prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}]
-      }]
+      }
 
       new_patient = create(:patient)
       new_bp = create(:blood_pressure)
@@ -42,7 +42,7 @@ RSpec.describe PatientImport::Importer do
       expect(PrescriptionDrug).to receive(:merge).with(hash_including(property: "pd1 property"))
       expect(PrescriptionDrug).to receive(:merge).with(hash_including(property: "pd2 property"))
 
-      importer.call
+      importer.import
     end
   end
 end
