@@ -3,12 +3,12 @@
     <%= bootstrap_form_with(model: [:admin, facility_group], local: true, autocomplete: "off", label_errors: true, html: {id: "facility-group-form"}) do |form| %>
       <% if @facility_group.errors.any? %>
         <div id="errors">
-          <%= form.label "Saving the Facility Group failed, please fix the following errors: #{@facility_group.errors.full_messages.to_sentence}", class: "text-danger" %>
+          <%= form.label "Saving the #{t("facility_group")} failed, please fix the following errors: #{@facility_group.errors.full_messages.to_sentence}", class: "text-danger" %>
         </div>
       <% end %>
       <% if @facility_group.facilities.map(&:invalid?).any? %>
         <div class="alert alert-warning pt-4">
-          <p>Some facilities in this Facility Group have errors. Please fix them before updating this Facility
+          <p>Some facilities in this <%= t("facility_group") %> have errors. Please fix them before updating this Facility
             Group:</p>
           <ul>
             <% @facility_group.facilities.each do |f| %>
@@ -56,7 +56,7 @@
                     <i class="fas fa-trash-alt text-grey"
                        data-toggle="tooltip"
                        data-placement="right"
-                       title="Contains <%= block.facility_regions.count %> facility(s)"></i>
+                       title="Contains <%= pluralize(block.facility_regions.count, 'facility') %>"></i>
                   <% else %>
                     <i class="fas fa-trash-alt remove-block text-danger cursor-pointer"
                        data-block-identifier="<%= block.id %>"></i>
@@ -74,9 +74,9 @@
           <% is_diabetes_enabled = facility_group.diabetes_enabled? %>
 
           <% if is_diabetes_enabled && facility_group.facilities.present? %>
-            Diabetes management is already enabled for all facilities in this group.
+            Diabetes management is already enabled for all facilities in this <%= t("facility_group") %>.
           <% else %>
-            This will enable diabetes management for all associated facilities in this group.
+            This will enable diabetes management for all associated facilities in this <%= t("facility_group") %>.
           <% end %>
         </small>
 
@@ -88,7 +88,7 @@
             false %>
       </div>
 
-      <%= form.primary("Save facility group") %>
+      <%= form.primary("Save") %>
     <% end %>
   </div>
 </div>

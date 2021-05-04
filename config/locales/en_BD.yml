@@ -1,4 +1,5 @@
 en_BD:
+  facilty_group: "Upazila"
   helpers:
     label:
       facility:

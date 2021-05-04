@@ -8,7 +8,7 @@
 
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
       <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
-        <i class="fas fa-plus mr-1"></i> Facility group
+        <i class="fas fa-plus mr-1"></i> <%= t("facility_group") %>
       <% end %>
     <% end %>
   </div>
@@ -28,12 +28,12 @@
       <div class="card">
         <div class="row">
           <div class="col-8">
-            <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
+            <h3><span class="heading-label"><%= t("facility_group") %></span><%= facility_group.name %></h3>
           </div>
 
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
             <div class="col-4 text-right">
-              <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
             </div>
           <% end %>
         </div>
