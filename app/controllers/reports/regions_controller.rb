@@ -104,14 +104,7 @@ class Reports::RegionsController < AdminController
   def monthly_district_data_report
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    @period = Period.new(type: params[:period], value: Date.current)
-    unless @period.valid?
-      raise ArgumentError, "Invalid Period #{@period} #{@period.inspect}"
-    end
-    unless @period.month?
-      raise ArgumentError, "Period must be month"
-    end
-
+    @period = Period.month(Date.current)
     csv = MonthlyDistrictDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
     filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"

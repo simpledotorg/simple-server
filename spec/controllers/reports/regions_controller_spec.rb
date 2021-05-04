@@ -476,24 +476,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "returns 401 when user is not authorized" do
       facility
 
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", period: "month", format: "csv"}
+      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(401)
-    end
-
-    it "returns error with invalid period" do
-      facility
-      sign_in(cvho.email_authentication)
-
-      expect {
-        get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", period: "quarter", format: "csv"}
-      }.to raise_error(ArgumentError, "Period must be month")
     end
 
     it "returns 302 found with invalid region" do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: "not-found", report_scope: "district", period: "month", format: "csv"}
+      get :monthly_district_data_report, params: {id: "not-found", report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -501,7 +492,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: facility.slug, report_scope: "district", period: "month", format: "csv"}
+      get :monthly_district_data_report, params: {id: facility.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(302)
     end
 
@@ -510,7 +501,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(cvho.email_authentication)
 
       expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", period: "month", format: "csv"}
+      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
       expect(response.status).to eq(200)
       expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
       report_date = Date.current.strftime("%B-%Y").downcase
@@ -522,7 +513,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       facility
       sign_in(cvho.email_authentication)
 
-      get :monthly_district_data_report, params: {id: region.slug, report_scope: "facility_district", period: "month", format: "csv"}
+      get :monthly_district_data_report, params: {id: region.slug, report_scope: "facility_district", format: "csv"}
       expect(response.status).to eq(200)
     end
   end
