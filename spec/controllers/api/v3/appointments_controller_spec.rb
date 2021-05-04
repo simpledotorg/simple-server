@@ -44,7 +44,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
       describe "stores appointment_type correctly" do
         let(:request_key) { model.to_s.underscore.pluralize }
         let(:new_records) { (1..3).map { build_payload.call } }
-        let(:new_records_payload) { Hash[request_key, new_records] }
+        let(:new_records_payload) { {request_key => new_records} }
 
         it "creates new records with appointment_type" do
           post(:sync_from_user, params: new_records_payload, as: :json)
@@ -62,7 +62,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
         it "returns an error for new records without appointment_type" do
           records_with_no_appointment_type = (1..3).map { build_payload.call.except(:appointment_type) }
-          records_payload_with_no_appointment_type = Hash[request_key, records_with_no_appointment_type]
+          records_payload_with_no_appointment_type = {request_key => records_with_no_appointment_type}
 
           post(:sync_from_user, params: records_payload_with_no_appointment_type, as: :json)
 
@@ -75,7 +75,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
         it "defaults the creation_facility to the facility_id if creation_facility is not a part of the payload" do
           records_with_no_creation_facility = (1..3).map { build_payload.call.except(:creation_facility_id) }
-          records_payload_with_no_creation_facility = Hash[request_key, records_with_no_creation_facility]
+          records_payload_with_no_creation_facility = {request_key => records_with_no_creation_facility}
 
           post(:sync_from_user, params: records_payload_with_no_creation_facility, as: :json)
           expect(response).to have_http_status(200)
@@ -91,7 +91,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
             record[:appointment_type] = %w[manuall automat foo].sample
           end
 
-          records_payload_with_bad_appointment_type = Hash[request_key, records_with_invalid_appointment_type]
+          records_payload_with_bad_appointment_type = {request_key => records_with_invalid_appointment_type}
 
           post(:sync_from_user, params: records_payload_with_bad_appointment_type, as: :json)
 
