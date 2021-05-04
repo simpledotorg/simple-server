@@ -65,10 +65,9 @@ class MonthlyDistrictDataService
   end
 
   def district_row
-    follow_ups_by_month = months.inject({}) { |hsh, month|
+    follow_ups_by_month = months.each_with_object({}) { |month, hsh|
       monthly_count = dashboard_analytics.sum { |_, data| data.dig(:follow_up_patients_by_period, month.value) || 0 }
-      hsh["follow_ups_#{month.value.to_s}".to_sym] = monthly_count
-      hsh
+      hsh["follow_ups_#{month.value}".to_sym] = monthly_count
     }
     region_data = {
       serial_number: "All",
@@ -76,17 +75,16 @@ class MonthlyDistrictDataService
       facility_name: nil,
       facility_type: nil,
       block_name: nil,
-      active: nil,
+      active: nil
     }.merge(common_attributes(region, follow_ups_by_month))
     region_data.values
   end
 
   def facility_rows
     region.facility_regions.map.with_index do |facility, index|
-      follow_ups_by_month = months.inject({}) { |hsh, month|
+      follow_ups_by_month = months.each_with_object({}) { |month, hsh|
         monthly_count = dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
-        hsh["follow_ups_#{month.value.to_s}".to_sym] = monthly_count
-        hsh
+        hsh["follow_ups_#{month.value}".to_sym] = monthly_count
       }
       facility_data = {
         serial_number: index + 1,
@@ -94,7 +92,7 @@ class MonthlyDistrictDataService
         facility_name: facility.name,
         facility_type: facility.source.facility_type,
         block_name: facility.source.block,
-        active: facility.source.blood_pressures.any? ? "Active" : "Inactive",
+        active: facility.source.blood_pressures.any? ? "Active" : "Inactive"
       }.merge(common_attributes(facility, follow_ups_by_month))
       facility_data.values
     end
@@ -102,15 +100,14 @@ class MonthlyDistrictDataService
 
   def common_attributes(region, follow_ups_by_month)
     complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == region.slug }.last
-    registered_by_month = months.inject({}) { |hsh, month|
-      hsh["registrations_#{month.value.to_s}".to_sym] = (complete_registration_counts[month] || 0)
-      hsh
+    registered_by_month = months.each_with_object({}) { |month, hsh|
+      hsh["registrations_#{month.value}".to_sym] = (complete_registration_counts[month] || 0)
     }
 
     dead_count = region.assigned_patients.with_hypertension.status_dead.count
     assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
     ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
-    patients_under_care_count =  assigned_patients_count - ltfu_count
+    patients_under_care_count = assigned_patients_count - ltfu_count
 
     {
       estimated_hypertension_population: nil,
