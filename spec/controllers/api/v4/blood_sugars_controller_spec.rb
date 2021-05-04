@@ -39,7 +39,7 @@ RSpec.describe Api::V4::BloodSugarsController, type: :controller do
       let(:request_key) { model.to_s.underscore.pluralize }
       let(:existing_records) { create_record_list(10) }
       let(:updated_records) { existing_records.map(&update_payload) }
-      let(:updated_payload) { Hash[request_key, updated_records] }
+      let(:updated_payload) { {request_key => updated_records} }
 
       before :each do
         set_authentication_headers

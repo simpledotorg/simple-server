@@ -59,7 +59,7 @@ class Api::V3::EncountersController < Api::V3::SyncController
         :deleted_at,
         :notes,
         :encountered_on,
-        observations: ["blood_pressures": [permitted_bp_params]]
+        observations: [blood_pressures: [permitted_bp_params]]
       )
     end
   end
