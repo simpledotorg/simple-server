@@ -94,8 +94,8 @@ class MonthlyDistrictDataService
   def facility_rows
     region.facility_regions.map.with_index do |facility, index|
       complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == facility.slug }.last
-      registration_numbers = months.map { |month| complete_registration_counts[month] || 0 }
-      follow_up_numbers = months.map { |month|
+      registration_count = months.map { |month| complete_registration_counts[month] || 0 }
+      follow_up_count = months.map { |month|
         dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
       }
       patients = Patient.with_hypertension.where(assigned_facility: facility.source)
@@ -113,8 +113,8 @@ class MonthlyDistrictDataService
         repo.ltfu_counts.dig(facility.slug, period) || 0,
         patients.status_dead.count,
         patients.excluding_dead.not_ltfu_as_of(period.end).count,
-        registration_numbers,
-        follow_up_numbers,
+        registration_count,
+        follow_up_count,
         repo.controlled_patients_count.dig(facility.slug, period) || 0,
         repo.uncontrolled_patients_count.dig(facility.slug, period) || 0,
         repo.missed_visits.dig(facility.slug, period) || 0,
