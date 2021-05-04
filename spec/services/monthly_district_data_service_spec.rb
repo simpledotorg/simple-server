@@ -68,5 +68,14 @@ RSpec.describe MonthlyDistrictDataService do
       expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("0")
       expect(csv[facility_row_index][30..31].uniq).to eq([nil])
     end
+
+    it "scopes the report to the provided period" do
+      old_period = Period.month("July 2018")
+      result = described_class.new(region, old_period).report
+      csv = CSV.parse(result)
+      column_headers = csv[2]
+      expect(column_headers[12]).to eq("Feb-2018")
+      expect(column_headers[17]).to eq("Jul-2018")
+    end
   end
 end
