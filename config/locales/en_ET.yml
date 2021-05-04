@@ -1,4 +1,5 @@
 en_ET:
+  facility_group: "zone"
   helpers:
     label:
       facility:

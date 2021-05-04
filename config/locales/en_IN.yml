@@ -1,4 +1,5 @@
 en_IN:
+  facility_group: "district"
   helpers:
     label:
       facility:

@@ -15,7 +15,6 @@ en:
       not_saved:
         one: "1 error prohibited this %{resource} from being saved:"
         other: "%{count} errors prohibited this %{resource} from being saved:"
-  facility_group: "District"
   name: "Name"
   phone_number: "Phone Number"
   registration_approval_email:
