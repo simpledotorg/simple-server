@@ -20,8 +20,6 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
   end
 
   describe "POST #create" do
-    let!(:facility) { create(:facility) }
-
     context "with valid data in file" do
       it "imports the patients" do
         admin = create(:admin, :power_user)
