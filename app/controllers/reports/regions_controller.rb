@@ -117,7 +117,8 @@ class Reports::RegionsController < AdminController
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
       end
     }
-    @period = Period.month(Date.current)
+    period_end = params[:period_end] || Date.current
+    @period = Period.month(period_end)
     csv = MonthlyDistrictDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
     filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"

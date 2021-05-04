@@ -70,17 +70,20 @@ class MonthlyDistrictDataService
     follow_up_by_month = months.map { |month|
       dashboard_analytics.sum { |_, data| data.dig(:follow_up_patients_by_period, month.value) || 0 }
     }
-    patients = region.assigned_patients.with_hypertension
+    dead_count = region.assigned_patients.with_hypertension.status_dead.count
+    assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
+    ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
+    patients_under_care_count =  assigned_patients_count - ltfu_count
 
     [
       "All",
       region.name,
       Array.new(5, nil),
       repo.cumulative_registrations.dig(region.slug, period) || 0,
-      patients.excluding_dead.count,
-      repo.ltfu_counts.dig(region.slug, period) || 0,
-      patients.status_dead.count,
-      patients.excluding_dead.not_ltfu_as_of(period.end).count,
+      assigned_patients_count,
+      ltfu_count,
+      dead_count,
+      patients_under_care_count,
       registered_by_month,
       follow_up_by_month,
       repo.controlled_patients_count.dig(region.slug, period) || 0,
@@ -94,11 +97,14 @@ class MonthlyDistrictDataService
   def facility_rows
     region.facility_regions.map.with_index do |facility, index|
       complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == facility.slug }.last
-      registration_count = months.map { |month| complete_registration_counts[month] || 0 }
-      follow_up_count = months.map { |month|
+      registered_by_month = months.map { |month| complete_registration_counts[month] || 0 }
+      follow_up_by_month = months.map { |month|
         dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
       }
-      patients = Patient.with_hypertension.where(assigned_facility: facility.source)
+      dead_count = facility.assigned_patients.with_hypertension.status_dead.count
+      assigned_patients_count = repo.cumulative_assigned_patients_count.dig(facility.slug, period) || 0
+      ltfu_count = repo.ltfu_counts.dig(facility.slug, period) || 0
+      patients_under_care_count =  assigned_patients_count - ltfu_count
 
       [
         index + 1,
@@ -109,12 +115,12 @@ class MonthlyDistrictDataService
         facility.source.blood_pressures.any? ? "Active" : "Inactive",
         nil,
         repo.cumulative_registrations.dig(facility.slug, period) || 0,
-        patients.excluding_dead.count,
-        repo.ltfu_counts.dig(facility.slug, period) || 0,
-        patients.status_dead.count,
-        patients.excluding_dead.not_ltfu_as_of(period.end).count,
-        registration_count,
-        follow_up_count,
+        assigned_patients_count,
+        ltfu_count,
+        dead_count,
+        patients_under_care_count,
+        registered_by_month,
+        follow_up_by_month,
         repo.controlled_patients_count.dig(facility.slug, period) || 0,
         repo.uncontrolled_patients_count.dig(facility.slug, period) || 0,
         repo.missed_visits.dig(facility.slug, period) || 0,
