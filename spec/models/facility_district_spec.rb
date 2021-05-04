@@ -73,4 +73,14 @@ RSpec.describe FacilityDistrict, type: :model do
       expect(facility_district.updated_at).to eq(expected_timestamp)
     end
   end
+
+  describe "#facility_regions" do
+    it "returns facilities that belong to the backing region" do
+      facility = create(:facility)
+      region = facility.region.district_region
+      facility_district = FacilityDistrict.new(name: region.name)
+      facility_regions = facility_district.facility_regions
+      expect(facility_regions.map(&:source_id)).to eq([facility.id])
+    end
+  end
 end
