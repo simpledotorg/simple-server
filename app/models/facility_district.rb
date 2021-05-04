@@ -29,7 +29,11 @@ class FacilityDistrict
   end
 
   def facility_regions
-    Region.facility_regions.where(source_id: facility_ids)
+    # this should really be Region.facility_regions.where(source_id: facility_ids)
+    # change while fixing https://app.clubhouse.io/simpledotorg/story/3380/facilitydistrict-should-be-initialized-with-name-not-slug
+    region = Region.find_by!(slug: name)
+    fac_ids = scope.where(district: region.name)
+    Region.facility_regions.where(source_id: fac_ids)
   end
 
   def organization

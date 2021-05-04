@@ -78,9 +78,10 @@ RSpec.describe FacilityDistrict, type: :model do
     it "returns facilities that belong to the backing region" do
       facility = create(:facility)
       region = facility.region.district_region
+      # this should not be initialized with a slug.
       facility_district = FacilityDistrict.new(name: region.slug)
-
-      expect(facility_district.facility_regions).to eq [facility]
+      facility_regions = facility_district.facility_regions
+      expect(facility_regions.map(&:source_id)).to eq([facility.id])
     end
   end
 end
