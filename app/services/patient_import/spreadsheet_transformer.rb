@@ -108,7 +108,7 @@ module PatientImport
       [{
         id: SecureRandom.uuid,
         number: row[:phone],
-        phone_type: :mobile,
+        phone_type: "mobile",
         active: true,
         created_at: timestamp(row[:registration_date]),
         updated_at: timestamp(row[:registration_date])
@@ -221,7 +221,7 @@ module PatientImport
     end
 
     def patient_status(row)
-      row[:died] == "yes" ? :dead : :active
+      row[:died] == "yes" ? Patient.statuses["dead"] : Patient.statuses["active"]
     end
 
     def medication(name:, patient_id:, created_at:)
@@ -269,7 +269,7 @@ module PatientImport
     end
 
     def timestamp(time)
-      Time.parse(time)
+      Time.parse(time).rfc3339
     rescue ArgumentError, TypeError
       nil
     end

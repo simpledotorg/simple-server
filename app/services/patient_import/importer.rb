@@ -6,7 +6,7 @@ class PatientImport::Importer
 
   def self.import_patients(patients_params:, facility:, admin:)
     patients_params.each do |params|
-      new(params: params, facility: facility, admin: admin).import
+      PatientImportJob.perform_later(params: params, facility: facility, admin: admin)
     end
   end
 
