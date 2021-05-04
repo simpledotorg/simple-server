@@ -18,38 +18,40 @@ class PatientImport::Importer
   def call
     ActiveRecord::Base.transaction do
       params.each_with_index do |patient_record_params, index|
-        patient_params = Api::V3::PatientTransformer.from_nested_request(patient_record_params[:patient])
-        medical_history_params = Api::V3::MedicalHistoryTransformer.from_request(patient_record_params[:medical_history])
-        blood_pressures_params = patient_record_params[:blood_pressures].map { |bp| Api::V3::BloodPressureTransformer.from_request(bp) }
-        prescription_drugs_params = patient_record_params[:prescription_drugs].map { |drug| Api::V3::PrescriptionDrugTransformer.from_request(drug) }
-
-        patient = import_patient(patient_params)
-        medical_history = import_medical_history(medical_history_params)
-        blood_pressures = import_blood_pressures(blood_pressures_params)
-        prescription_drugs = import_prescription_drugs(prescription_drugs_params)
-
-        AuditLog.create_logs_async(
-          PatientImport::ImportUser.find_or_create,
-          [
-            patient,
-            medical_history,
-            *blood_pressures,
-            *prescription_drugs
-          ],
-          "import",
-          Time.current
-        )
-
-        results.push(
-          patient: patient_params,
-          medical_history: medical_history_params,
-          blood_pressures: blood_pressures_params,
-          prescription_drugs: prescription_drugs_params
-        )
+        results.push(import_patient_record(patient_record_params))
       end
     end
 
     results
+  end
+
+  def import_patient_record(params)
+    ActiveRecord::Base.transaction do
+      patient_params = Api::V3::PatientTransformer.from_nested_request(params[:patient])
+      medical_history_params = Api::V3::MedicalHistoryTransformer.from_request(params[:medical_history])
+      blood_pressures_params = params[:blood_pressures].map { |bp| Api::V3::BloodPressureTransformer.from_request(bp) }
+      prescription_drugs_params = params[:prescription_drugs].map { |drug| Api::V3::PrescriptionDrugTransformer.from_request(drug) }
+
+      patient = import_patient(patient_params)
+      medical_history = import_medical_history(medical_history_params)
+      blood_pressures = import_blood_pressures(blood_pressures_params)
+      prescription_drugs = import_prescription_drugs(prescription_drugs_params)
+
+      records = [
+        patient,
+        medical_history,
+        *blood_pressures,
+        *prescription_drugs
+      ]
+
+      if records.all?(&:persisted?)
+        AuditLog.create_logs_async(records, "import", Time.current)
+      else
+        raise "Patient import failed"
+      end
+    end
+
+    params
   end
 
   def import_patient(params)
