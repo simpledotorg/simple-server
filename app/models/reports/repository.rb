@@ -8,25 +8,38 @@ module Reports
       @regions = Array(regions)
       @no_bp_measure_query = NoBPMeasureQuery.new
       @control_rate_query = ControlRateQuery.new
+      @earliest_patient_data_query = EarliestPatientDataQuery.new
 
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
       else
         periods
       end
+      @period_type = @periods.first.type
+      raise ArgumentError, "Quarter periods not supported" if @period_type != :month
     end
 
     attr_reader :control_rate_query
+    attr_reader :earliest_patient_data_query
     attr_reader :no_bp_measure_query
     attr_reader :periods
+    attr_reader :period_type
     attr_reader :regions
 
     delegate :cache, :logger, to: Rails
 
-    # Uses Memery to memoize a method, but takes into account our bust_cache setting. If bust_cache is true,
-    # a caller is asking for all values to be retrieved fresh from the database, so we want to skip memoization and caching.
-    def self.smart_memoize(method)
-      memoize(method)
+    # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
+    # the periods that are passed in for the Repository - this is the true 'earliest report date' for a Region.
+    memoize def earliest_patient_recorded_at
+      region_entries = regions.map { |region| RegionEntry.new(region, __method__) }
+      cached_results = cache.fetch_multi(*region_entries, force: bust_cache?) { |region_entry|
+        earliest_patient_data_query.call(region_entry.region)
+      }
+      cached_results.each_with_object({}) { |(region_entry, time), results| results[region_entry.slug] = time }
+    end
+
+    memoize def earliest_patient_recorded_at_period
+      earliest_patient_recorded_at.each_with_object({}) { |(slug, time), hsh| hsh[slug] = Period.new(value: time, type: @period_type) if time }
     end
 
     # Returns assigned patients for a Region. NOTE: We grab and cache ALL the counts for a particular region with one SQL query
@@ -38,14 +51,14 @@ module Reports
     #    region_slug: { period: value, period: value },
     #    region_slug: { period: value, period: value }
     # }
-    smart_memoize def assigned_patients_count
+    memoize def assigned_patients_count
       complete_assigned_patients_counts.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] if result[period] }
+        values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
     end
 
-    smart_memoize def adjusted_patient_counts_with_ltfu
+    memoize def adjusted_patient_counts_with_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period]
@@ -54,7 +67,7 @@ module Reports
       end
     end
 
-    smart_memoize def adjusted_patient_counts
+    memoize def adjusted_patient_counts
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period] - ltfu_counts[entry][period]
@@ -63,42 +76,46 @@ module Reports
       end
     end
 
+    alias_method :adjusted_patient_counts_without_ltfu, :adjusted_patient_counts
+
     # Returns the full range of assigned patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
-    smart_memoize def complete_assigned_patients_counts
-      items = regions.map { |region| RegionEntry.new(region, :cumulative_assigned_patients_count) }
-      cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        AssignedPatientsQuery.new.count(entry.region, :month)
+    memoize def complete_assigned_patients_counts
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+      cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
+        AssignedPatientsQuery.new.count(region_entry.region, period_type)
       }
     end
 
     # Return the running total of cumulative assigned patient counts.
-    smart_memoize def cumulative_assigned_patients_count
+    memoize def cumulative_assigned_patients_count
       complete_assigned_patients_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
-        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
-        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+        slug = region_entry.slug
+        next totals[slug] = Hash.new(0) if earliest_patient_recorded_at[slug].nil?
+        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
+        totals[slug] = range.each_with_object(Hash.new(0)) { |period, sum|
           sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
         }
       end
     end
 
-    smart_memoize def registration_counts
+    memoize def registration_counts
       complete_registration_counts.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object({}) { |period, region_result| region_result[period] = result[period] if result[period] }
+        values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
         results[entry.region.slug] = values
       end
     end
 
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
-    smart_memoize def complete_registration_counts
-      items = regions.map { |region| RegionEntry.new(region, :complete_registration_counts) }
+    memoize def complete_registration_counts
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        RegisteredPatientsQuery.new.count(entry.region, :month)
+        RegisteredPatientsQuery.new.count(entry.region, period_type)
       }
     end
 
-    smart_memoize def cumulative_registrations
+    memoize def cumulative_registrations
       complete_registration_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
         range = Range.new(patient_counts.keys.first || periods.first, periods.end)
         totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
@@ -107,26 +124,26 @@ module Reports
       end
     end
 
-    smart_memoize def ltfu_counts
+    memoize def ltfu_counts
       cached_query(__method__) do |entry|
-        facility_ids = entry.region.facilities.pluck(:id)
+        facility_ids = entry.region.facility_ids
         Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
       end
     end
 
-    smart_memoize def controlled_patients_count
+    memoize def controlled_patients_count
       cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
-    smart_memoize def uncontrolled_patients_count
+    memoize def uncontrolled_patients_count
       cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period).count
       end
     end
 
-    smart_memoize def missed_visits
+    memoize def missed_visits
       cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period)
@@ -137,10 +154,10 @@ module Reports
       end
     end
 
-    smart_memoize def missed_visits_rate
+    memoize def missed_visits_rate
       cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        remaining_percentages = controlled_patient_rates[slug][period] + uncontrolled_patient_rates[slug][period] + visited_without_bp_taken_rate[slug][period]
+        remaining_percentages = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
         100 - remaining_percentages
       end
     end
@@ -153,7 +170,7 @@ module Reports
       cumulative_assigned_patients_count[region.slug][period.adjusted_period] - ltfu_counts[region.slug][period]
     end
 
-    smart_memoize def controlled_patient_rates
+    memoize def controlled_patients_rate
       cached_query(__method__) do |entry|
         controlled = controlled_patients_count[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period)
@@ -161,7 +178,7 @@ module Reports
       end
     end
 
-    smart_memoize def uncontrolled_patient_rates
+    memoize def uncontrolled_patients_rate
       cached_query(__method__) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period)
@@ -169,13 +186,13 @@ module Reports
       end
     end
 
-    smart_memoize def visited_without_bp_taken
+    memoize def visited_without_bp_taken
       cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period)
       end
     end
 
-    smart_memoize def visited_without_bp_taken_rate
+    memoize def visited_without_bp_taken_rate
       cached_query(__method__) do |entry|
         controlled = visited_without_bp_taken[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period)
@@ -197,6 +214,8 @@ module Reports
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
         results[entry.region.slug] ||= Hash.new(0)
+        next if earliest_patient_recorded_at_period[entry.slug].nil?
+        next if entry.period < earliest_patient_recorded_at_period[entry.slug]
         results[entry.region.slug][entry.period] = count
       end
     end

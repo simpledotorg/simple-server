@@ -20,6 +20,8 @@ class ControlRateService
   end
 
   delegate :logger, to: Rails
+  delegate :slug, to: :region
+
   attr_reader :facilities
   attr_reader :region
   attr_reader :period_type
@@ -41,51 +43,36 @@ class ControlRateService
   end
 
   def repository
-    @repository ||= Reports::Repository.new(region, periods: results.full_data_range)
+    @repository ||= Reports::Repository.new(region, periods: report_range)
   end
 
   def fetch_all_data
-    results.registrations = registration_counts
-    results.assigned_patients = assigned_patients_counts
-    results.earliest_registration_period = [registration_counts.keys.first, assigned_patients_counts.keys.first].compact.min
+    results.earliest_registration_period = repository.earliest_patient_recorded_at_period[slug]
+    results.registrations = repository.registration_counts[slug]
+    results.assigned_patients = repository.assigned_patients_count[slug]
+    results.cumulative_registrations = repository.cumulative_registrations[slug]
+    results.cumulative_assigned_patients = repository.cumulative_assigned_patients_count[slug]
+    results.adjusted_patient_counts_with_ltfu = repository.adjusted_patient_counts_with_ltfu[slug]
+    results.adjusted_patient_counts = repository.adjusted_patient_counts_without_ltfu[slug]
+
     results.full_data_range.each do |(period, count)|
       results.ltfu_patients[period] = ltfu_patients(period)
     end
-    results.fill_in_nil_registrations
-    results.count_cumulative_registrations
-    results.count_cumulative_assigned_patients
-    results.count_adjusted_patient_counts_with_ltfu
-    results.count_adjusted_patient_counts
 
     results.controlled_patients = repository.controlled_patients_count[region.slug]
     results.uncontrolled_patients = repository.uncontrolled_patients_count[region.slug]
 
-    results.calculate_percentages(:controlled_patients)
+    results.controlled_patients_rate = repository.controlled_patients_rate[slug]
+    results.uncontrolled_patients_rate = repository.uncontrolled_patients_rate[slug]
+
     results.calculate_percentages(:controlled_patients, with_ltfu: true)
-    results.calculate_percentages(:uncontrolled_patients)
     results.calculate_percentages(:uncontrolled_patients, with_ltfu: true)
     results.calculate_percentages(:ltfu_patients)
     results
   end
 
-  def registration_counts
-    return @registration_counts if defined? @registration_counts
-
-    @registration_counts = RegisteredPatientsQuery.new.count(region, period_type)
-  end
-
-  def assigned_patients_counts
-    return @assigned_patients_counts if defined? @assigned_patients_counts
-
-    @assigned_patients_counts = AssignedPatientsQuery.new.count(region, period_type)
-  end
-
   def ltfu_patients(period)
-    Patient
-      .for_reports
-      .where(assigned_facility: facilities.pluck(:id))
-      .ltfu_as_of(period.end)
-      .count
+    Patient.for_reports.where(assigned_facility: facilities.pluck(:id)).ltfu_as_of(period.end).count
   end
 
   def quarterly_report?

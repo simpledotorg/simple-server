@@ -31,8 +31,7 @@ RSpec.describe AppointmentNotificationService do
     end
 
     it "schedules a whatsapp reminder for the correct time when whatsapp is enabled" do
-      whatsapp_appointment_reminders = ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"]
-      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = "true"
+      Flipper.enable(:whatsapp_appointment_reminders)
 
       message_time = DateTime.now
       allow(Communication).to receive(:next_messaging_time).and_return(message_time)
@@ -47,13 +46,10 @@ RSpec.describe AppointmentNotificationService do
       )
 
       AppointmentNotificationService.send_after_missed_visit(appointments: appointments)
-
-      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = whatsapp_appointment_reminders
     end
 
     it "schedules an SMS reminder for the correct time when whatsapp is enabled" do
-      whatsapp_appointment_reminders = ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"]
-      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = "false"
+      Flipper.disable(:whatsapp_appointment_reminders)
 
       message_time = DateTime.now
       allow(Communication).to receive(:next_messaging_time).and_return(message_time)
@@ -68,13 +64,11 @@ RSpec.describe AppointmentNotificationService do
       )
 
       AppointmentNotificationService.send_after_missed_visit(appointments: appointments)
-
-      ENV["ENABLE_WHATSAPP_APPOINTMENT_REMINDERS"] = whatsapp_appointment_reminders
     end
 
-    context "if WHATSAPP_APPOINTMENT_REMINDERS feature is disabled" do
+    context "if whatsapp_appointment_reminders feature is disabled" do
       it "should skip sending reminders for appointments for which SMS reminders are already sent" do
-        expect(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(false)
+        Flipper.disable(:whatsapp_appointment_reminders)
 
         overdue_appointments.each do |appointment|
           communication = FactoryBot.create(:communication, communication_type: "missed_visit_sms_reminder",
@@ -88,9 +82,9 @@ RSpec.describe AppointmentNotificationService do
       end
     end
 
-    context "if WHATSAPP_APPOINTMENT_REMINDERS feature is enabled" do
+    context "if whatsapp_appointment_reminders feature is enabled" do
       it "should skip sending reminders for appointments for which WhatsApp reminders are already sent" do
-        expect(FeatureToggle).to receive(:enabled?).with("WHATSAPP_APPOINTMENT_REMINDERS").and_return(true)
+        Flipper.enable(:whatsapp_appointment_reminders)
 
         overdue_appointments.each do |appointment|
           communication = FactoryBot.create(:communication, communication_type: "missed_visit_whatsapp_reminder",

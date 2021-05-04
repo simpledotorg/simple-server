@@ -362,3 +362,7 @@ Subsequent deployments will be much faster.
 ### Deployment Resources
 
 The infrastructure setup including the ansible and terraform scripts are documented in the [deployment repository](https://github.com/simpledotorg/deployment).
+
+## Contributing
+
+If you're working on a project that will affect any of the indicators listed in [this document](https://docs.simple.org/), please contact the product / design team.
