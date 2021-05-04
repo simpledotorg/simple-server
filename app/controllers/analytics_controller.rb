@@ -6,7 +6,7 @@ class AnalyticsController < AdminController
   CACHE_VERSION = 1
 
   def set_time_zone
-    time_zone = CountryConfig.current[:time_zone] || Period::DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Period::ANALYTICS_TIME_ZONE
 
     Groupdate.time_zone = time_zone
 

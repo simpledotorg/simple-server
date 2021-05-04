@@ -59,9 +59,7 @@ class MyFacilitiesController < AdminController
   end
 
   def set_time_zone
-    time_zone = CountryConfig.current[:time_zone] || Period::DEFAULT_ANALYTICS_TIME_ZONE
-
-    Time.use_zone(time_zone) { yield }
+    Time.use_zone(Period::ANALYTICS_TIME_ZONE) { yield }
   end
 
   def authorize_my_facilities
