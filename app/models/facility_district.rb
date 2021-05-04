@@ -28,6 +28,10 @@ class FacilityDistrict
     children
   end
 
+  def facility_regions
+    Region.facility_regions.where(source_id: facility_ids)
+  end
+
   def organization
     facility_group_ids = facilities.pluck(:facility_group_id).uniq
     organization_ids = FacilityGroup.where(id: facility_group_ids).pluck(:organization_id).uniq
