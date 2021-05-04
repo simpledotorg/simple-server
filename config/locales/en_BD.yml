@@ -12,6 +12,8 @@ en_BD:
         district: "Upazila *"
         state: "District *"
         country: "Country *"
+      facility_group:
+        state: "District"
       drug:
         frequency:
           one_per_day: "OD"

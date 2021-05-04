@@ -13,6 +13,8 @@ en_ET:
         state: "Region *"
         country: "Country *"
         pin: "Postal Code"
+      facility_group:
+        state: "Region"
       address:
         street_address: "House and street number"
         village_or_colony: "Kebele"

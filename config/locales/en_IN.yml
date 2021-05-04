@@ -12,6 +12,8 @@ en_IN:
         district: "District *"
         state: "State *"
         country: "Country *"
+      facility_group:
+        state: "State"
       drug:
         frequency:
           one_per_day: "OD"
