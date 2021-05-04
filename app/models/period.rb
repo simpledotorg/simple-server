@@ -1,12 +1,13 @@
 class Period
+  REGISTRATION_BUFFER_MONTHS = 3
+  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
+
   include Comparable
   include ActiveModel::Model
   validates :type, presence: true, inclusion: {in: [:month, :quarter], message: "must be month or quarter"}
   validates :value, presence: true
 
   attr_accessor :type, :value
-
-  REGISTRATION_BUFFER_MONTHS = 3
 
   def self.month(date)
     new(type: :month, value: date.to_date)

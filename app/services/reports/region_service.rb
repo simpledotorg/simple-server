@@ -4,7 +4,9 @@ module Reports
 
     # The default period we report on is the current month.
     def self.default_period
-      Period.month(Date.current.beginning_of_month)
+      time_zone = CountryConfig.current[:time_zone] || Period::DEFAULT_ANALYTICS_TIME_ZONE
+
+      Period.month(Date.current.in_time_zone(time_zone).beginning_of_month)
     end
 
     def self.call(*args)
