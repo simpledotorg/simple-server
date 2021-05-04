@@ -10,17 +10,19 @@ class PatientImport::ImportUser
   end
 
   def self.create
+    facility = Facility.first
+
     user = User.new(
       full_name: "import-user",
-      organization_id: Organization.take,
+      organization_id: facility.organization.id,
       device_created_at: Time.current,
       device_updated_at: Time.current
     )
 
     phone_number_authentication = PhoneNumberAuthentication.new(
       phone_number: IMPORT_USER_PHONE_NUMBER,
-      password: "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
-      registration_facility_id: Facility.take.id
+      password: generate_pin,
+      registration_facility_id: facility.id
     ).tap do |pna|
       pna.set_otp
       pna.invalidate_otp
@@ -32,5 +34,9 @@ class PatientImport::ImportUser
     user.save!
 
     user
+  end
+
+  def self.generate_pin
+    "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}"
   end
 end

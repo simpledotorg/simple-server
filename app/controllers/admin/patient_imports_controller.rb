@@ -12,14 +12,14 @@ class Admin::PatientImportsController < AdminController
 
     data = read_xlsx_or_csv_file(params[:patient_import_file])
     params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
-    errors = PatientImport::Validator.new(params).errors
+    validator = PatientImport::Validator.new(params)
 
-    if errors.values.flatten.any?
-      @errors = errors
-      render :new
-    else
+    if validator.valid?
       results = PatientImport::Importer.call(params: params, facility: facility, admin: current_admin)
       redirect_to new_admin_patient_import_url, notice: "Successfully imported #{results.count} patients to #{facility.name}"
+    else
+      @errors = validator.errors
+      render :new
     end
   end
 end

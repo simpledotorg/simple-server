@@ -53,7 +53,7 @@ class PatientImport::Importer
   end
 
   def import_patient(params)
-    patient = MergePatientService.new(params, request_metadata: {
+    MergePatientService.new(params, request_metadata: {
       request_facility_id: facility.id,
       request_user_id: PatientImport::ImportUser.find_or_create.id
     }).merge
@@ -66,7 +66,7 @@ class PatientImport::Importer
   end
 
   def import_medical_history(params)
-    medical_history = MedicalHistory.merge(params)
+    MedicalHistory.merge(params)
   end
 
   def import_prescription_drugs(params)

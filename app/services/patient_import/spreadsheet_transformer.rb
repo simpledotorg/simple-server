@@ -26,8 +26,6 @@ module PatientImport
 
     def params_for(row)
       patient_id = patient_id(row)
-      business_identifier_id = SecureRandom.uuid
-      phone_number_id = SecureRandom.uuid
       address_id = SecureRandom.uuid
       medical_history_id = SecureRandom.uuid
 
@@ -35,6 +33,7 @@ module PatientImport
         patient: {
           id: patient_id,
           registration_facility_id: registration_facility_id,
+          assigned_facility_id: registration_facility_id,
           recorded_at: timestamp(row[:registration_date]),
           full_name: row[:full_name],
           age: row[:age].to_i,
@@ -221,35 +220,9 @@ module PatientImport
       @import_user = PatientImport::ImportUser.find_or_create
     end
 
-    def create_import_user
-      user = User.new(
-        full_name: "import-user",
-        organization_id: Organization.take,
-        device_created_at: Time.current,
-        device_updated_at: Time.current
-      )
-      phone_number_authentication = PhoneNumberAuthentication.new(
-        phone_number: IMPORT_USER_PHONE_NUMBER,
-        password: "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}",
-        registration_facility_id: facility.id
-      ).tap do |pna|
-        pna.set_otp
-        pna.invalidate_otp
-        pna.set_access_token
-      end
-
-      user.phone_number_authentications = [phone_number_authentication]
-      user.sync_approval_denied("bot user for import")
-      user.save!
-
-      user
-    end
-
     def patient_status(row)
       row[:died] == "yes" ? :dead : :active
     end
-
-
 
     def medication(name:, patient_id:, created_at:)
       medication_record = medication_by_name_dosage_and_frequency(name) || medication_by_name_and_dosage(name)

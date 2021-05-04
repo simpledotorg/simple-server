@@ -4,8 +4,6 @@ class PatientImport::Validator
   def initialize(params)
     @params = params
     @errors = {}
-
-    validate
   end
 
   def validate
@@ -22,5 +20,11 @@ class PatientImport::Validator
         *(prescription_drug_validators.flat_map { |validator| validator.errors.full_messages })
       ]
     end
+  end
+
+  def valid?
+    validate
+
+    !errors.values.flatten.any?
   end
 end

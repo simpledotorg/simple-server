@@ -22,6 +22,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       gender: "male",
       recorded_at: registration_time,
       registration_facility_id: facility.id,
+      assigned_facility_id: facility.id,
       status: :active
     )
 
