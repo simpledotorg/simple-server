@@ -6,7 +6,6 @@ class MyFacilities::FacilityPerformanceController < AdminController
 
   layout "my_facilities"
 
-  DEFAULT_ANALYTICS_TIME_ZONE = "Asia/Kolkata"
   PERIODS_TO_DISPLAY = {quarter: 3, month: 3, day: 14}.freeze
 
   after_action :verify_authorization_attempted
@@ -53,7 +52,7 @@ class MyFacilities::FacilityPerformanceController < AdminController
   end
 
   def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = CountryConfig.current[:time_zone] || Period::DEFAULT_ANALYTICS_TIME_ZONE
 
     Time.use_zone(time_zone) { yield }
   end
