@@ -18,7 +18,7 @@
           required: true %>
       <small class="form-text text-muted mb-3">
         If you don't see a block in the list,
-        <%= link_to "add it to the #{t("facility_group)}", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
+        <%= link_to "add it to the #{t("facility_group")}", edit_admin_facility_group_path(@facility_group, anchor: "block-list"), target: :_blank %>
         and refresh this page.
       </small>
       <%= form.text_field :district, id: :facility_district, required: true %>
