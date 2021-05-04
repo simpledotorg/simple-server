@@ -1,5 +1,6 @@
 en_BD:
   facility_group: "upazila"
+  facility_group_zone: "union"
   helpers:
     label:
       facility:
