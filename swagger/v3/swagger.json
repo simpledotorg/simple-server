@@ -2503,7 +2503,8 @@
           "enum": [
             "simple_bp_passport",
             "bangladesh_national_id",
-            "ethiopia_medical_record"
+            "ethiopia_medical_record",
+            "india_national_health_id"
           ]
         },
         "metadata_version": {
