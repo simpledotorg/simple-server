@@ -29,7 +29,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
 
   describe "user api authentication" do
     let(:request_key) { model.to_s.underscore.pluralize }
-    let(:empty_payload) { Hash[request_key, []] }
+    let(:empty_payload) { {request_key => []} }
 
     before :each do
       _request_user = create(:user)
@@ -61,7 +61,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
     let(:model_class_sym) { model.to_s.underscore.to_sym }
 
     let(:record) { build_payload.call }
-    let(:payload) { Hash[request_key, [record]] }
+    let(:payload) { {request_key => [record]} }
 
     it "creates an audit log for new data created by the user" do
       Timecop.freeze do
@@ -117,7 +117,7 @@ RSpec.describe Api::V4::TeleconsultationsController, type: :controller do
       let(:request_key) { model.to_s.underscore.pluralize }
       let(:existing_records) { create_record_list(10) }
       let(:updated_records) { existing_records.map(&update_payload) }
-      let(:updated_payload) { Hash[request_key, updated_records] }
+      let(:updated_payload) { {request_key => updated_records} }
 
       before :each do
         set_authentication_headers
