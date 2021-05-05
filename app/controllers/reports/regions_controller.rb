@@ -5,7 +5,7 @@ class Reports::RegionsController < AdminController
   before_action :set_period, only: [:show, :cohort]
   before_action :set_page, only: [:details]
   before_action :set_per_page, only: [:details]
-  before_action :find_region, except: [:index]
+  before_action :find_region, except: [:index, :monthly_district_data_report]
   around_action :set_time_zone
   after_action :log_cache_metrics
   delegate :cache, to: Rails
@@ -17,7 +17,7 @@ class Reports::RegionsController < AdminController
     cache_version = "#{accessible_facility_regions.cache_key} / v2"
     @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
+        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
         org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
         result[org] ||= {}
         result[org][state] ||= {}
@@ -97,6 +97,34 @@ class Reports::RegionsController < AdminController
         else
           send_data render_to_string("cohort.csv.erb"), filename: download_filename
         end
+      end
+    end
+  end
+
+  def monthly_district_data_report
+    # re-implementing part of the find_region method with a modification as a temporary workaround for this bug:
+    # https://app.clubhouse.io/simpledotorg/story/3380/facilitydistrict-should-be-initialized-with-name-not-slug
+    report_scope = report_params[:report_scope]
+    @region ||= authorize {
+      case report_scope
+      when "facility_district"
+        scope = current_admin.accessible_facilities(:view_reports)
+        region = current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
+        FacilityDistrict.new(name: region.name, scope: scope)
+      when "district"
+        current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
+      else
+        raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
+      end
+    }
+    @period = Period.month(Date.current)
+    csv = MonthlyDistrictDataService.new(@region, @period).report
+    report_date = @period.to_s.downcase
+    filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
+
+    respond_to do |format|
+      format.csv do
+        send_data csv, filename: filename
       end
     end
   end

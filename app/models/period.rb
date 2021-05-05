@@ -78,6 +78,10 @@ class Period
     bp_control_range.end.to_s(:day_mon_year)
   end
 
+  def month?
+    type == :month
+  end
+
   def quarter?
     type == :quarter
   end
