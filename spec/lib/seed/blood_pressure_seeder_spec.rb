@@ -12,8 +12,8 @@ RSpec.describe Seed::BloodPressureSeeder do
     expect {
       Seed::BloodPressureSeeder.call(facility: facility, user_ids: facility.user_ids, config: config)
     }.to change { BloodPressure.count }.by(expected_count)
-    .and change { Encounter.count }.by(expected_count)
-    .and change { Observation.count }.by(expected_count)
+      .and change { Encounter.count }.by(expected_count)
+      .and change { Observation.count }.by(expected_count)
     patients.each do |patient|
       patient.blood_pressures.each do |bp|
         expect(bp).to be_valid
@@ -22,7 +22,5 @@ RSpec.describe Seed::BloodPressureSeeder do
         expect(bp.user).to eq(bp.observation.user)
       end
     end
-
   end
-
 end
