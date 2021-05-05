@@ -63,13 +63,13 @@ module Seed
       Facility.find_in_batches(batch_size: 100) do |facilities|
         options = parallel_options(progress)
         batch_result = Parallel.map(facilities, options) { |facility|
-          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
-          result, patient_info = PatientSeeder.call(facility, user, config: config, logger: logger)
+          registration_user_ids = facility.users.pluck(:id)
+          result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
 
-          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
+          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
           result.merge! bp_result
 
-          appt_result = create_appts(patient_info, user)
+          appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
           result[:appointment] = appt_result.ids.size
           result
         }
@@ -111,13 +111,13 @@ module Seed
       )
     end
 
-    def create_appts(patient_info, user)
-      facility = user.facility
+    def create_appts(patient_info, facility:, user_ids:)
       attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), attrs|
         number_appointments = config.rand_or_max(0..1) # some patients dont get appointments
         next if number_appointments == 0
         scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
-        created_at = Faker::Time.between(from: user.created_at, to: 1.day.ago)
+        created_at = Faker::Time.between(from: 4.months.ago, to: 1.day.ago)
+        user_id = user_ids.sample
         hsh = {
           creation_facility_id: facility.id,
           facility_id: facility.id,
@@ -125,7 +125,7 @@ module Seed
           scheduled_date: scheduled_date,
           created_at: created_at,
           updated_at: created_at,
-          user_id: user.id
+          user_id: user_id
         }
         attrs << FactoryBot.attributes_for(:appointment, hsh)
       }
