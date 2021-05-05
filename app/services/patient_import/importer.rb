@@ -31,6 +31,7 @@ class PatientImport::Importer
 
       records = [
         patient,
+        patient.address,
         medical_history,
         *blood_pressures,
         *prescription_drugs

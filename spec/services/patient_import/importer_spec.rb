@@ -1,48 +1,61 @@
 require "rails_helper"
 
 RSpec.describe PatientImport::Importer do
-  describe "#call" do
-    it "imports patient information" do
+  describe "#import" do
+    it "imports valid patient information" do
       facility = create(:facility)
       admin = create(:admin)
-      params = {
-        patient: {property: "patient property"},
-        medical_history: {property: "medical history property"},
-        blood_pressures: [{property: "bp1 property"}, {property: "bp2 property"}],
-        prescription_drugs: [{property: "pd1 property"}, {property: "pd2 property"}]
-      }
+      timezone = CountryConfig.current[:time_zone]
+      data = file_fixture("patient_import_test.csv").read
 
-      new_patient = create(:patient)
-      new_bp = create(:blood_pressure)
-      new_medical_history = create(:medical_history)
-      new_prescription_drug = create(:prescription_drug)
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+      params.each do |patient_params|
+        PatientImport::Importer.new(params: patient_params, facility: facility, admin: admin).import
+      end
 
-      importer = PatientImport::Importer.new(params: params, facility: facility, admin: admin)
+      basic_patient_1 = Patient.find_by(full_name: "Basic Patient 1")
+      basic_patient_2 = Patient.find_by(full_name: "Basic Patient 2")
 
-      allow(Api::V3::PatientTransformer).to receive(:from_nested_request).and_call_original
-      allow(Api::V3::MedicalHistoryTransformer).to receive(:from_request).and_call_original
-      allow(Api::V3::BloodPressureTransformer).to receive(:from_request).and_call_original
-      allow(Api::V3::PrescriptionDrugTransformer).to receive(:from_request).and_call_original
+      # Dig into patient 1's details extensively
+      # Patient 1 attributes
+      expect(basic_patient_1.attributes).to include(
+        "age" => 45,
+        "gender" => "male",
+        "status" => "active"
+      )
+      expect(basic_patient_1.recorded_at.in_time_zone(timezone).to_date).to eq(Date.parse("2020-10-16"))
 
-      allow_any_instance_of(MergePatientService).to receive(:merge).and_return(new_patient)
-      allow(importer).to receive(:merge_encounter_observation).and_return(new_bp)
-      allow(MedicalHistory).to receive(:merge).and_return(new_medical_history)
-      allow(PrescriptionDrug).to receive(:merge).and_return(new_prescription_drug)
+      # Patient 1 address
+      expect(basic_patient_1.address.attributes).to include(
+        "street_address" => "45 Main Street",
+        "village_or_colony" => "Berrytown",
+        "zone" => "Fruit County",
+        "state" => "Addis Ababa",
+        "country" => CountryConfig.current[:name]
+      )
 
-      expect(MergePatientService).to receive(:new).with(
-        hash_including(property: "patient property"),
-        request_metadata: {
-          request_facility_id: facility.id,
-          request_user_id: PatientImport::ImportUser.find_or_create.id
-        }
-      ).and_call_original
-      expect(importer).to receive(:merge_encounter_observation).with(:blood_pressures, hash_including(property: "bp1 property"))
-      expect(importer).to receive(:merge_encounter_observation).with(:blood_pressures, hash_including(property: "bp2 property"))
-      expect(MedicalHistory).to receive(:merge).with(hash_including(property: "medical history property"))
-      expect(PrescriptionDrug).to receive(:merge).with(hash_including(property: "pd1 property"))
-      expect(PrescriptionDrug).to receive(:merge).with(hash_including(property: "pd2 property"))
+      # Patient 1 phone number
+      expect(basic_patient_1.latest_phone_number).to eq("936528787")
 
-      importer.import
+      # Patient 1 business identifier
+      expect(basic_patient_1.business_identifiers.last.attributes).to include(
+        "identifier" => "0000001",
+        "identifier_type" => "ethiopia_medical_record"
+      )
+
+      # Patient 1 BPs
+      basic_patient_1_bps = basic_patient_1.blood_pressures.map { |bp|
+        "#{bp.systolic}/#{bp.diastolic}"
+      }.join(", ")
+
+      expect(basic_patient_1_bps).to eq("160/90, 145/89")
+
+      # Patient 1 prescription drugs
+      basic_patient_1_prescription_drugs = basic_patient_1.prescription_drugs.map { |pd|
+        "#{pd.name} #{pd.dosage}"
+      }.join(", ")
+
+      expect(basic_patient_1_prescription_drugs).to eq("Amlodipine 10 mg")
     end
   end
 end

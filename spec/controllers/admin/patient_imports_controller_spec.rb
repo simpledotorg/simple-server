@@ -46,47 +46,6 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         expect(basic_patient_2).to be_present
         expect(no_last_visit_patient).to be_present
         expect(no_meds_in_last_visit_patient).to be_present
-
-        # Dig into patient 1's details extensively
-        # Patient 1 attributes
-        expect(basic_patient_1.attributes).to include(
-          "age" => 45,
-          "gender" => "male",
-          "status" => "active"
-        )
-        expect(basic_patient_1.recorded_at.in_time_zone(timezone).to_date).to eq(Date.parse("2020-10-16"))
-
-        # Patient 1 address
-        expect(basic_patient_1.address.attributes).to include(
-          "street_address" => "45 Main Street",
-          "village_or_colony" => "Berrytown",
-          "zone" => "Fruit County",
-          "state" => "Addis Ababa",
-          "country" => CountryConfig.current[:name]
-        )
-
-        # Patient 1 phone number
-        expect(basic_patient_1.latest_phone_number).to eq("936528787")
-
-        # Patient 1 business identifier
-        expect(basic_patient_1.business_identifiers.last.attributes).to include(
-          "identifier" => "0000001",
-          "identifier_type" => "ethiopia_medical_record"
-        )
-
-        # Patient 1 BPs
-        basic_patient_1_bps = basic_patient_1.blood_pressures.map { |bp|
-          "#{bp.systolic}/#{bp.diastolic}"
-        }.join(", ")
-
-        expect(basic_patient_1_bps).to eq("160/90, 145/89")
-
-        # Patient 1 prescription drugs
-        basic_patient_1_prescription_drugs = basic_patient_1.prescription_drugs.map { |pd|
-          "#{pd.name} #{pd.dosage}"
-        }.join(", ")
-
-        expect(basic_patient_1_prescription_drugs).to eq("Amlodipine 10 mg")
       end
 
       it "displays a success message" do
