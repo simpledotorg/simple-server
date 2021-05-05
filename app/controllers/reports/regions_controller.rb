@@ -17,7 +17,7 @@ class Reports::RegionsController < AdminController
     cache_version = "#{accessible_facility_regions.cache_key} / v2"
     @accessible_regions = cache.fetch(cache_key, version: cache_version, expires_in: 7.days) {
       accessible_facility_regions.each_with_object({}) { |facility, result|
-        ancestors = Hash[facility.cached_ancestors.map { |facility| [facility.region_type, facility] }]
+        ancestors = facility.cached_ancestors.map { |facility| [facility.region_type, facility] }.to_h
         org, state, district, block = ancestors.values_at("organization", "state", "district", "block")
         result[org] ||= {}
         result[org][state] ||= {}
@@ -213,7 +213,7 @@ class Reports::RegionsController < AdminController
   end
 
   def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Period::ANALYTICS_TIME_ZONE
 
     Groupdate.time_zone = time_zone
 
