@@ -58,6 +58,8 @@ module Reports
       end
     end
 
+    # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
+    # are the basis for control rates. These counts DO include lost to follow up.
     memoize def adjusted_patient_counts_with_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
@@ -67,6 +69,8 @@ module Reports
       end
     end
 
+    # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
+    # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patient_counts
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
@@ -190,6 +194,7 @@ module Reports
       end
     end
 
+    # We determine this rate via subtraction from 100 instead of via division to avoid confusing rounding errors.
     memoize def missed_visits_rate
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
