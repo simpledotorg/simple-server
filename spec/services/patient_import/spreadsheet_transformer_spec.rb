@@ -183,4 +183,29 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       end
     end
   end
+
+  context "when address fields are missing" do
+    let(:fixture_path) { File.join(Rails.root, "spec", "fixtures", "files", "patient_import_without_address_test.xlsx") }
+
+    it "defaults to the facility's address" do
+      params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
+
+      import_user = PatientImport::ImportUser.find_or_create
+      patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 1" }.deep_symbolize_keys
+      patient_id = patient[:patient][:id]
+      registration_time = Time.parse("2020-10-16").rfc3339
+      last_visit_time = Time.parse("2021-02-24").rfc3339
+
+      expect(patient[:patient][:address]).to include(
+        country: "India",
+        state: facility.state,
+        street_address: "45 Main Street",
+        village_or_colony: "Berrytown",
+        zone: facility.zone,
+        district: facility.district,
+        created_at: registration_time,
+        updated_at: registration_time
+      )
+    end
+  end
 end

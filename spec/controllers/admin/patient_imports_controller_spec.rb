@@ -85,7 +85,7 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         expect { post :create, params: params }.not_to change { Patient.count }
-        expect(assigns(:errors)["Headers"]).to include(/age/, /district/)
+        expect(assigns(:errors)["Headers"]).to include(/age/)
       end
     end
 

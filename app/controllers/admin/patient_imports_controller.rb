@@ -47,9 +47,6 @@ class Admin::PatientImportsController < AdminController
       age
       gender
       village
-      zone
-      district
-      state
       medical_history_hypertension
       medical_history_diabetes
       medical_history_heart_attack

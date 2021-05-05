@@ -51,9 +51,9 @@ module PatientImport
             id: address_id,
             street_address: row[:address],
             village_or_colony: row[:village],
-            zone: row[:zone],
-            district: row[:district],
-            state: row[:state],
+            zone: row[:zone] || facility.zone,
+            district: row[:district] || facility.district,
+            state: row[:state] || facility.state,
             country: CountryConfig.current[:name],
             created_at: timestamp(row[:registration_date]),
             updated_at: timestamp(row[:registration_date])
