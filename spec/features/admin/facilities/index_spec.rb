@@ -33,7 +33,7 @@ RSpec.feature "Facility page functionality", type: :feature do
           create(:facility_group, organization: ihmi, state: "Punjab", name: "Bathinda")
           facility_page.click_add_facility_group_button
 
-          expect(page).to have_content("District")
+          expect(page).to have_content("New district")
           facility_group.add_new_facility_group_without_assigning_facility(
             org_name: "IHMI2",
             name: "testfacilitygroup",
