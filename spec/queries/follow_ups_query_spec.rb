@@ -43,13 +43,35 @@ RSpec.describe FollowUpsQuery do
 
       repo = Reports::Repository.new(regions, periods: periods)
       repo_result = repo.hypertension_follow_ups
-      pp repo_result
 
       expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
       expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
 
       expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
       expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
+    end
+
+    it "can add additional grouping criteria" do
+      facility_1, facility_2 = create_list(:facility, 2)
+      user_1, user_2 = *create_list(:user, 2)
+
+      patient = create(:patient, :hypertension, recorded_at: 10.months.ago)
+      patient_2 = create(:patient, :hypertension, recorded_at: 10.months.ago)
+
+      Timecop.freeze("May 1st 2021") do
+        create(:blood_pressure, recorded_at: "February 10th 2021", facility: facility_1, patient: patient, user: user_1)
+        create(:blood_pressure, recorded_at: "March 5th 2021", facility: facility_1, patient: patient, user: user_1)
+        create(:blood_pressure, recorded_at: "March 5th 2021", facility: facility_1, patient: patient_2, user: user_1)
+        create(:blood_pressure, recorded_at: "March 20th 2021", facility: facility_1, patient: patient, user: user_2)
+        create(:blood_pressure, recorded_at: 1.month.ago, facility: facility_2, patient: patient)
+
+        query = described_class.new(facility_1, :month, group: "blood_pressures.user_id")
+        expected = {
+          Period.month("Feb 1st 2021") => {user_1.id => 1, user_2.id => 0},
+          Period.month("March 1st 2021") => {user_1.id => 2, user_2.id => 1}
+        }
+        expect(query.hypertension).to eq(expected)
+      end
     end
   end
 

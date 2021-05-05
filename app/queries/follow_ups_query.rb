@@ -16,15 +16,18 @@ class FollowUpsQuery
   end
 
   def hypertension
-    Rails.logger.info "RJS getting hypertension followups with group: #{@group}"
     query = Patient.joins(:blood_pressures)
       .where("patients.recorded_at < #{BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period_type)}")
       .group_by_period(@period_type, "blood_pressures.recorded_at", format: @formatter)
       .distinct
       .where(blood_pressures: {facility_id: @region.facility_ids})
       .with_hypertension
-    query = query.group(@group) if @group.present?
-    query.count
+    if group.present?
+      results = query.group(group).count
+      sum_groups_per_period(results)
+    else
+      query.count
+    end
   end
 
   def self.with(model_name, period, time_column: "recorded_at", at_region: nil, current: true, last: nil)
@@ -44,5 +47,17 @@ class FollowUpsQuery
     end
 
     relation
+  end
+
+  private
+
+  attr_reader :group
+
+  def sum_groups_per_period(result)
+    result.each_with_object({}) { |(key, count), hsh|
+      period, field_id = *key
+      hsh[period] ||= {}
+      hsh[period][field_id] = count
+    }
   end
 end
