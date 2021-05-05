@@ -121,7 +121,6 @@ RSpec.describe DistrictAnalyticsQuery do
           }
         }
 
-        result = analytics.call
         expect(analytics.call).to eq(expected_result)
       end
     end

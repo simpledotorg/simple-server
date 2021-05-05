@@ -163,8 +163,6 @@ RSpec.describe Facility, type: :model do
         repository = Reports::Repository.new(region, periods: periods)
 
         expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
-        result = repository.hypertension_follow_ups
-
         expect(repository.hypertension_follow_ups[facility.region.slug]).to eq(expected_repo_output)
       end
 
@@ -177,9 +175,6 @@ RSpec.describe Facility, type: :model do
 
         create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient)
         create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient)
-
-        repo = Reports::Repository.new(regions, periods: periods)
-        repo_result = repo.hypertension_follow_ups
 
         expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
         expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
