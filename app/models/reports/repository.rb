@@ -123,7 +123,7 @@ module Reports
     # .  }
     # }
     #
-    def cumulative_registration_counts_by_user
+    memoize def cumulative_registration_counts_by_user
       registration_counts_by_user.each_with_object({}) do |(slug, period_counts), totals|
         totals[slug] = {}
         # collect all the user ids in a region that we need to count for
