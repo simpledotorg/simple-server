@@ -1,0 +1,5 @@
+# Ensure Claudio gets requested review for reporting queries
+/app/queries/ @@claudiovallejo
+
+# See docs and examples for this file at 
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
