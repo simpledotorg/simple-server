@@ -49,7 +49,8 @@ end
 puts "CHANGELOG for #{release_tag}"
 puts "---------"
 puts changelog
-puts "SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK is not present, notification will be skipped." unless ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
+puts
+puts "SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK is missing, please publish the changelog in slack manually." unless ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
 
 # ------------------
 # Push release tag
@@ -76,7 +77,6 @@ notify_slack(notification)
 puts
 puts "Successfully created release #{release_tag}."
 puts "Visit https://simple.semaphoreci.com/projects/simple-server to monitor the release."
-puts "Publish the changelog to the #releases channel."
 
 def notify_slack(message)
   unless ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"]
