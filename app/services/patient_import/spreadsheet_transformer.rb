@@ -116,8 +116,6 @@ module PatientImport
     end
 
     def first_blood_pressure(row, patient_id:)
-      return nil unless row[:first_visit_date].present?
-
       {
         id: SecureRandom.uuid,
         patient_id: patient_id,
@@ -125,9 +123,9 @@ module PatientImport
         user_id: import_user.id,
         systolic: row[:first_visit_bp_systolic].to_i,
         diastolic: row[:first_visit_bp_diastolic].to_i,
-        recorded_at: timestamp(row[:first_visit_date]),
-        created_at: timestamp(row[:first_visit_date]),
-        updated_at: timestamp(row[:first_visit_date])
+        recorded_at: timestamp(row[:registration_date]),
+        created_at: timestamp(row[:registration_date]),
+        updated_at: timestamp(row[:registration_date])
       }
     end
 
@@ -160,7 +158,7 @@ module PatientImport
         medication(
           name: name,
           patient_id: patient_id,
-          created_at: row[:first_visit_date]
+          created_at: row[:registration_date]
         )
       }.compact
 

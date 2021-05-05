@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Admin::PatientImportsController, type: :controller do
+  include ActiveJob::TestHelper
+
   describe "GET #new" do
     it "returns a success response for power users" do
       admin = create(:admin, :power_user)
@@ -30,7 +32,10 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         patient_import_file = fixture_file_upload("files/patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
-        post :create, params: params
+        perform_enqueued_jobs do
+          post :create, params: params
+        end
+
         basic_patient_1 = Patient.find_by(full_name: "Basic Patient 1")
         basic_patient_2 = Patient.find_by(full_name: "Basic Patient 2")
         no_last_visit_patient = Patient.find_by(full_name: "No Last Visit")
@@ -103,10 +108,11 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         sign_in(admin.email_authentication)
 
         facility = create(:facility)
-        patient_import_file = fixture_file_upload("files/patient_import_invalid_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        patient_import_file = fixture_file_upload("files/patient_import_invalid_data_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}
 
         expect { post :create, params: params }.not_to change { Patient.count }
+        expect(assigns(:errors)[3]).to include(/full_name/)
       end
     end
 

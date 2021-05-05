@@ -11,9 +11,8 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
     import_user = PatientImport::ImportUser.find_or_create
     patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 1" }.deep_symbolize_keys
     patient_id = patient[:patient][:id]
-    registration_time = Time.parse("2020-10-16")
-    first_visit_time = Time.parse("2021-01-29")
-    last_visit_time = Time.parse("2021-02-24")
+    registration_time = Time.parse("2020-10-16").rfc3339
+    last_visit_time = Time.parse("2021-02-24").rfc3339
 
     expect(patient[:patient]).to include(
       age: 45,
@@ -23,13 +22,13 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
       recorded_at: registration_time,
       registration_facility_id: facility.id,
       assigned_facility_id: facility.id,
-      status: :active
+      status: "active"
     )
 
     expect(patient[:patient][:phone_numbers]).to contain_exactly(
       hash_including(
         number: "936528787",
-        phone_type: :mobile,
+        phone_type: "mobile",
         active: true,
         created_at: registration_time,
         updated_at: registration_time
@@ -75,9 +74,9 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         patient_id: patient_id,
         systolic: 160,
         diastolic: 90,
-        recorded_at: first_visit_time,
-        created_at: first_visit_time,
-        updated_at: first_visit_time
+        recorded_at: registration_time,
+        created_at: registration_time,
+        updated_at: registration_time
       ),
       hash_including(
         patient_id: patient_id,
@@ -97,7 +96,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         rxnorm_code: "329528",
         is_deleted: true,
         is_protocol_drug: true,
-        created_at: first_visit_time,
+        created_at: registration_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
       ),
@@ -107,7 +106,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         rxnorm_code: "833236",
         is_deleted: true,
         is_protocol_drug: false,
-        created_at: first_visit_time,
+        created_at: registration_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
       ),
@@ -117,7 +116,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         rxnorm_code: "315429",
         is_deleted: true,
         is_protocol_drug: false,
-        created_at: first_visit_time,
+        created_at: registration_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
       ),
@@ -127,7 +126,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         rxnorm_code: "316047",
         is_deleted: true,
         is_protocol_drug: false,
-        created_at: first_visit_time,
+        created_at: registration_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
       ),
@@ -137,7 +136,7 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
         rxnorm_code: "316156",
         is_deleted: true,
         is_protocol_drug: false,
-        created_at: first_visit_time,
+        created_at: registration_time,
         updated_at: last_visit_time,
         deleted_at: last_visit_time
       ),
@@ -160,17 +159,17 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
     patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 2" }
 
     expect(patient[:patient][:gender]).to eq("female")
-    expect(patient[:patient][:status]).to eq(:dead)
+    expect(patient[:patient][:status]).to eq("dead")
   end
 
   context "when last visit is absent" do
     it "retains BP from first visit" do
       params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
       patient = params.find { |p| p[:patient][:full_name] == "No Last Visit" }
-      first_visit_time = Time.parse("2021-01-29")
+      registration_time = Time.parse("2020-10-16").rfc3339
 
       expect(patient[:blood_pressures]).to contain_exactly(
-        hash_including(systolic: 160, diastolic: 90, recorded_at: first_visit_time)
+        hash_including(systolic: 160, diastolic: 90, recorded_at: registration_time)
       )
     end
 

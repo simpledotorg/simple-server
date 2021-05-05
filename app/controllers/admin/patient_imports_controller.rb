@@ -9,8 +9,18 @@ class Admin::PatientImportsController < AdminController
     authorize { current_admin.power_user? }
 
     facility = Facility.find(params[:facility_id])
-
     data = read_xlsx_or_csv_file(params[:patient_import_file])
+
+    missing_fields = required_import_fields - import_headers(data)
+    if missing_fields.any?
+      missing_field_errors = mising_fields.map { |missing_header|
+        "#{missing_header} is missing from the import file. Please ensure you're using the correct patient import template."
+      }
+
+      @errors = {"Headers" => missing_field_errors}
+      render :new and return
+    end
+
     params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
     validator = PatientImport::Validator.new(params)
 
@@ -21,5 +31,30 @@ class Admin::PatientImportsController < AdminController
       @errors = validator.errors
       render :new
     end
+  end
+
+  private
+
+  def import_headers(data)
+    rows = CSV.parse(data, headers: true)
+    rows.first.to_h.keys
+  end
+
+  def required_import_fields
+    %w[
+      registration_date
+      full_name
+      age
+      gender
+      village
+      zone
+      district
+      state
+      medical_history_hypertension
+      medical_history_diabetes
+      medical_history_heart_attack
+      medical_history_stroke
+      medical_history_kidney_disease
+    ]
   end
 end
