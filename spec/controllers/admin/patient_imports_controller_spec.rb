@@ -102,8 +102,8 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
       end
     end
 
-    context "with invalid file" do
-      it "raises validation errors" do
+    context "with invalid data" do
+      it "raises validation errors for the bad rows" do
         admin = create(:admin, :power_user)
         sign_in(admin.email_authentication)
 
@@ -113,6 +113,20 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
 
         expect { post :create, params: params }.not_to change { Patient.count }
         expect(assigns(:errors)[3]).to include(/full_name/)
+      end
+    end
+
+    context "with invalid file format" do
+      it "raises validation errors for the missing headers" do
+        admin = create(:admin, :power_user)
+        sign_in(admin.email_authentication)
+
+        facility = create(:facility)
+        patient_import_file = fixture_file_upload("files/patient_import_missing_headers_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        params = {patient_import_file: patient_import_file, facility_id: facility.id}
+
+        expect { post :create, params: params }.not_to change { Patient.count }
+        expect(assigns(:errors)["Headers"]).to include(/age/, /district/)
       end
     end
 

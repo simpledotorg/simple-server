@@ -13,7 +13,7 @@ class Admin::PatientImportsController < AdminController
 
     missing_fields = required_import_fields - import_headers(data)
     if missing_fields.any?
-      missing_field_errors = mising_fields.map { |missing_header|
+      missing_field_errors = missing_fields.map { |missing_header|
         "#{missing_header} is missing from the import file. Please ensure you're using the correct patient import template."
       }
 
