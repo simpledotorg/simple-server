@@ -50,7 +50,7 @@ class MonthlyDistrictDataService
       "Total registrations",
       "Total assigned patients",
       "Lost to follow-up patients",
-      "Died all-time",
+      "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
       "Patients under care",
       month_labels,
       month_labels,

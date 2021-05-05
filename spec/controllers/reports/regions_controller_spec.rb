@@ -517,7 +517,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "passes the provided period_end to the csv service" do
+    it "passes the provided period to the csv service" do
       facility
       sign_in(cvho.email_authentication)
 
