@@ -9,8 +9,7 @@ class Api::V3::FacilityTransformer
           "teleconsultation_isd_code",
           "teleconsultation_phone_numbers",
           "organization_name",
-          "facility_group_name",
-          "state")
+          "facility_group_name")
         .merge(config: {enable_diabetes_management: facility.enable_diabetes_management,
                         enable_teleconsultation: facility.enable_teleconsultation},
                protocol_id: facility.protocol.try(:id))
