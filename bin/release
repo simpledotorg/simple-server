@@ -63,7 +63,7 @@ system("git push origin refs/tags/#{release_tag}") || abort("Error pushing git t
 
 notification =
   <<~NOTIFICATION
-    :rocket: Releasing #{release_tag} to demo/prod
+    :rocket: Releasing `#{release_tag}` to demo/prod
     ```
     #{changelog}
     ```
