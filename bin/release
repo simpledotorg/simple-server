@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 require "shellwords"
+require "net/http"
+require "json"
 
 MAIN_BRANCH = "master"
 
@@ -47,6 +49,7 @@ end
 puts "CHANGELOG for #{release_tag}"
 puts "---------"
 puts changelog
+puts "SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK is not present, notification will be skipped." unless ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK']
 
 # ------------------
 # Push release tag
@@ -57,6 +60,16 @@ exit unless gets.chomp.downcase == "y"
 system(%Q{git tag -a #{release_tag} -m "#{changelog.shellescape}"}) || abort("Error creating git tag #{release_tag}")
 system("git push origin refs/tags/#{release_tag}") || abort("Error pushing git tags to origin")
 
+notification =
+  <<~NOTIFICATION
+    :rocket: Releasing #{release_tag} to demo/prod
+    ```
+    #{changelog}
+    ```
+  NOTIFICATION
+
+notify_slack(notification)
+
 # ------------------
 # Conclusion
 # ------------------
@@ -64,3 +77,23 @@ puts
 puts "Successfully created release #{release_tag}."
 puts "Visit https://simple.semaphoreci.com/projects/simple-server to monitor the release."
 puts "Publish the changelog to the #releases channel."
+
+def notify_slack(message)
+  unless ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"]
+    puts "SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK missing. Skipping notification."
+    return
+  end
+
+  webhook = URI(ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK'])
+  http = Net::HTTP.new(webhook.host, webhook.port)
+  http.use_ssl = true
+  request = Net::HTTP::Post.new(webhook.path, 'Content-Type' => 'application/json')
+  request.body = { text: message }.to_json
+  response = http.request(request)
+
+  if response.is_a?(Net::HTTPSuccess)
+    puts "Notified slack."
+  else
+    puts "Notification to slack failed."
+  end
+end
