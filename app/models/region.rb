@@ -111,6 +111,10 @@ class Region < ApplicationRecord
     end
   end
 
+  def facility_ids
+    facilities.pluck(:id)
+  end
+
   def cohort_analytics(period:, prev_periods:)
     CohortAnalyticsQuery.new(self, period: period, prev_periods: prev_periods).call
   end

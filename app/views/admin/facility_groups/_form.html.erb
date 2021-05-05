@@ -3,13 +3,12 @@
     <%= bootstrap_form_with(model: [:admin, facility_group], local: true, autocomplete: "off", label_errors: true, html: {id: "facility-group-form"}) do |form| %>
       <% if @facility_group.errors.any? %>
         <div id="errors">
-          <%= form.label "Saving the Facility Group failed, please fix the following errors: #{@facility_group.errors.full_messages.to_sentence}", class: "text-danger" %>
+          <%= form.label "Saving the #{t("facility_group").capitalize} failed, please fix the following errors: #{@facility_group.errors.full_messages.to_sentence}", class: "text-danger" %>
         </div>
       <% end %>
       <% if @facility_group.facilities.map(&:invalid?).any? %>
         <div class="alert alert-warning pt-4">
-          <p>Some facilities in this Facility Group have errors. Please fix them before updating this Facility
-            Group:</p>
+          <p>Some facilities in this <%= t("facility_group") %> have errors. Please fix them before updating this <%= t("facility_group") %>:</p>
           <ul>
             <% @facility_group.facilities.each do |f| %>
               <% if f.errors.present? %>
@@ -25,7 +24,7 @@
           organizations.pluck(:name, :id),
           {},
           {disabled: action_name == "edit"}) %>
-      <%= form.text_field :name, id: :facility_name, required: true, help: "Usually the name of a District", autocomplete: "off" %>
+      <%= form.text_field :name, id: :facility_name, required: true, autocomplete: "off" %>
       <%= form.form_group :state do %>
         <%= form.select :state,
             @available_states.zip(@available_states),
@@ -39,9 +38,9 @@
       <% end %>
 
       <div class="mt-3">
-        <label><%= I18n.t("helpers.label.facility.zone").tr("* ", "").pluralize %></label>
+        <label><%= I18n.t("facility_group_zone").tr("* ", "").pluralize.capitalize %></label>
         <div class="input-group mb-2">
-          <input type="text" class="form-control" id="new-block-name" placeholder="Add new <%= I18n.t("helpers.label.facility.zone").tr("* ", "") %>">
+          <input type="text" class="form-control" id="new-block-name" placeholder="Add new <%= I18n.t("facility_group_zone").downcase.tr("* ", "") %>">
           <div class="input-group-append">
             <a class="btn btn-primary text-white add-block">Add</a>
           </div>
@@ -56,7 +55,7 @@
                     <i class="fas fa-trash-alt text-grey"
                        data-toggle="tooltip"
                        data-placement="right"
-                       title="Contains <%= block.facility_regions.count %> facility(s)"></i>
+                       title="Cannot delete when child facilities exist"></i>
                   <% else %>
                     <i class="fas fa-trash-alt remove-block text-danger cursor-pointer"
                        data-block-identifier="<%= block.id %>"></i>
@@ -68,15 +67,15 @@
         </ul>
       </div>
 
-      <div class="form-group mt-4">
+      <div class="form-group mt-4 mb-5">
         <label class="mb-0">Diabetes enabled?</label>
         <small class="form-text text-muted mt-0 mb-1">
           <% is_diabetes_enabled = facility_group.diabetes_enabled? %>
 
           <% if is_diabetes_enabled && facility_group.facilities.present? %>
-            Diabetes management is already enabled for all facilities in this group.
+            Diabetes management is already enabled for all facilities in this <%= t("facility_group") %>.
           <% else %>
-            This will enable diabetes management for all associated facilities in this group.
+            This will enable diabetes management for all associated facilities in this <%= t("facility_group") %>.
           <% end %>
         </small>
 
@@ -88,7 +87,7 @@
             false %>
       </div>
 
-      <%= form.primary("Save facility group") %>
+      <%= form.primary("Save #{t("facility_group")}") %>
     <% end %>
   </div>
 </div>

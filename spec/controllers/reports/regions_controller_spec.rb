@@ -209,7 +209,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "renders successfully for an organization" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
-      other_fg.facilities << build(:facility, name: "other facility")
+      create(:facility, name: "other facility", facility_group: other_fg)
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
@@ -218,7 +218,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
     it "renders successfully if report viewer has access to region" do
       other_fg = create(:facility_group, name: "other facility group", organization: organization)
-      other_fg.facilities << build(:facility, name: "other facility")
+      create(:facility, name: "other facility", facility_group: other_fg)
       user = create(:admin, :viewer_reports_only, :with_access, resource: other_fg)
 
       sign_in(user.email_authentication)
@@ -465,6 +465,56 @@ RSpec.describe Reports::RegionsController, type: :controller do
         expect(response).to be_ok
         expect(response).to render_template("shared/graphics/image_template")
       end
+    end
+  end
+
+  describe "#monthly_district_data_report" do
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:region) { facility.region.district_region }
+
+    it "returns 401 when user is not authorized" do
+      facility
+
+      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+      expect(response.status).to eq(401)
+    end
+
+    it "returns 302 found with invalid region" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :monthly_district_data_report, params: {id: "not-found", report_scope: "district", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "returns 302 if region is not district" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :monthly_district_data_report, params: {id: facility.slug, report_scope: "district", format: "csv"}
+      expect(response.status).to eq(302)
+    end
+
+    it "calls csv service and returns 200 with csv data" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      expect_any_instance_of(MonthlyDistrictDataService).to receive(:report).and_call_original
+      get :monthly_district_data_report, params: {id: region.slug, report_scope: "district", format: "csv"}
+      expect(response.status).to eq(200)
+      expect(response.body).to include("Monthly District Data: #{region.name} #{Date.current.strftime("%B %Y")}")
+      report_date = Date.current.strftime("%B-%Y").downcase
+      expected_filename = "monthly-district-data-#{region.slug}-#{report_date}.csv"
+      expect(response.headers["Content-Disposition"]).to include(%(filename="#{expected_filename}"))
+    end
+
+    it "works for facility districts" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      get :monthly_district_data_report, params: {id: region.slug, report_scope: "facility_district", format: "csv"}
+      expect(response.status).to eq(200)
     end
   end
 end

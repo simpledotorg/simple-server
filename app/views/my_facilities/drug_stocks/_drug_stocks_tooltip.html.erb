@@ -1,7 +1,13 @@
 <div>
   <% return nil if report.nil? || report[:patient_days] == "error" %>
   <% report[:stocks_on_hand].each_with_index do |stock_on_hand, i| %>
-    <span class='math'><%= '+' unless i == 0 %><%= stock_on_hand[:in_stock] %>*<%= stock_on_hand[:coefficient] %></span>
+    <span class='math'>
+      <%= '+' unless i == 0 %>
+      <%= stock_on_hand[:in_stock] %>
+      <% if stock_on_hand[:coefficient] && stock_on_hand[:coefficient] != 1 %>
+        *<%= stock_on_hand[:coefficient] %>
+      <% end %>
+    </span>
     <%= stock_on_hand[:protocol_drug].name %> <%= stock_on_hand[:protocol_drug].dosage %>
     <br>
   <% end %>

@@ -13,6 +13,10 @@ class FacilityDistrict
     scope.where(district: name)
   end
 
+  def facility_ids
+    facilities.pluck("facilities.id")
+  end
+
   def child_region_type
     "facility"
   end
@@ -22,6 +26,10 @@ class FacilityDistrict
   # FacilityDistrict always returns child facilities for reports
   def reportable_children
     children
+  end
+
+  def facility_regions
+    Region.facility_regions.where(source_id: facility_ids)
   end
 
   def organization
