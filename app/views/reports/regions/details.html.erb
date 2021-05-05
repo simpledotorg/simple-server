@@ -74,6 +74,7 @@
             </td>
             <% @period_range.each do |period| %>
               <td class="row-total ta-center">
+                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, period.value))) %>
                 <%= number_or_dash_with_delimiter(@repository.registration_counts[@region.region.slug][period]) %>
               </td>
             <% end %>
@@ -94,6 +95,9 @@
                 </td>
                 <td class="ta-center">
                   <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
+                  ||
+                  WHERE?
+                  <%= @repository.cumulative_registration_counts_by_user[@region.slug][@period][resource.id] %> <!-- #.slice(*@period_range.to_a).values.inject(0) { |sum, hsh| sum += hsh[resource.id]; sum } %> -->
                 </td>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">

@@ -94,6 +94,8 @@ RSpec.describe Reports::Repository, type: :model do
       user_2 = create(:user)
 
       default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
+      jan_1_2018 = Period.month("January 1 2018")
+      _facility_1_registered_before_repository_range = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_1_2018.value))
       _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
       _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.parse("August 10th 2018")))
       _user_2_registered = create(:patient, full_name: "other user", recorded_at: jan_2019, registration_facility: facility_1, registration_user: user_2)
@@ -103,6 +105,8 @@ RSpec.describe Reports::Repository, type: :model do
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
       expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
       expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
+      expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2018.to_period][user.id]).to eq(2)
+      expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2020.to_period][user.id]).to eq(6)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2018.to_period][user_2.id]).to eq(0)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2020.to_period][user_2.id]).to eq(1)
