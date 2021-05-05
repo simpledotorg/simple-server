@@ -11,10 +11,10 @@ RSpec.shared_examples "v3 API sync requests" do
   end
 
   let(:response_key) { model.to_s.underscore.pluralize }
-  let(:empty_payload) { Hash[response_key.to_sym, []] }
-  let(:valid_payload) { Hash[response_key.to_sym, [build_payload.call]] }
+  let(:empty_payload) { {response_key.to_sym => []} }
+  let(:valid_payload) { {response_key.to_sym => [build_payload.call]} }
   let(:created_records) { (1..5).map { build_payload.call } }
-  let(:many_valid_records) { Hash[response_key.to_sym, created_records] }
+  let(:many_valid_records) { {response_key.to_sym => created_records} }
   let(:expected_response) do
     valid_payload[response_key.to_sym].map do |payload|
       response = payload
@@ -28,7 +28,7 @@ RSpec.shared_examples "v3 API sync requests" do
       .take(2)
       .map(&update_payload)
   end
-  let(:updated_payload) { Hash[response_key.to_sym, updated_records] }
+  let(:updated_payload) { {response_key.to_sym => updated_records} }
 
   def assert_sync_success(response, request_process_token)
     response_body = JSON(response.body)

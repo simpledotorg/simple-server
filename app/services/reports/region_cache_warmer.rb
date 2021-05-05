@@ -35,7 +35,7 @@ module Reports
       RequestStore.store[:bust_cache] = true
 
       notify "starting region caching for region #{region.id}"
-      Statsd.instance.time("region_cache_warmer.#{region.id}") do
+      Statsd.instance.time("region_cache_warmer.time") do
         Reports::RegionService.call(region: region, period: period)
         Statsd.instance.increment("region_cache_warmer.#{region.region_type}.cache")
 

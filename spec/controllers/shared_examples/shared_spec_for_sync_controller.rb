@@ -21,7 +21,7 @@ end
 RSpec.shared_examples "a sync controller that authenticates user requests" do
   describe "user api authentication" do
     let(:request_key) { model.to_s.underscore.pluralize }
-    let(:empty_payload) { Hash[request_key, []] }
+    let(:empty_payload) { {request_key => []} }
 
     before :each do
       _request_user = FactoryBot.create(:user)
@@ -84,16 +84,16 @@ end
 
 RSpec.shared_examples "a working sync controller creating records" do
   let(:request_key) { model.to_s.underscore.pluralize }
-  let(:empty_payload) { Hash[request_key, []] }
+  let(:empty_payload) { {request_key => []} }
 
   let(:new_records) { (1..10).map { build_payload.call } }
-  let(:new_records_payload) { Hash[request_key, new_records] }
+  let(:new_records_payload) { {request_key => new_records} }
 
-  let(:invalid_payload) { Hash[request_key, [invalid_record]] }
+  let(:invalid_payload) { {request_key => [invalid_record]} }
 
   let(:invalid_records_payload) { (1..5).map { build_invalid_payload.call } }
   let(:valid_records_payload) { (1..5).map { build_payload.call } }
-  let(:partially_valid_payload) { Hash[request_key, invalid_records_payload + valid_records_payload] }
+  let(:partially_valid_payload) { {request_key => invalid_records_payload + valid_records_payload} }
 
   before :each do
     set_authentication_headers
@@ -144,7 +144,7 @@ RSpec.shared_examples "a working sync controller updating records" do
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:existing_records) { create_record_list(10) }
   let(:updated_records) { existing_records.map(&update_payload) }
-  let(:updated_payload) { Hash[request_key, updated_records] }
+  let(:updated_payload) { {request_key => updated_records} }
 
   before :each do
     set_authentication_headers
@@ -495,7 +495,7 @@ RSpec.shared_examples "a sync controller that audits the data access" do
 
   describe "creates an audit log for data synced from user" do
     let(:record) { build_payload.call }
-    let(:payload) { Hash[request_key, [record]] }
+    let(:payload) { {request_key => [record]} }
 
     it "creates an audit log for new data created by the user" do
       Timecop.freeze do
