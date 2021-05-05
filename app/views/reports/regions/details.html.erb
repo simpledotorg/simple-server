@@ -68,21 +68,15 @@
               Total
             </td>
             <td class="row-total ta-center">
-            where
-              <%= number_or_dash_with_delimiter(@dashboard_analytics.sum { |_, row| row[:total_registered_patients] || 0 }) %>
-              || <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[@region.region.slug][@period]) %>
+              <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[@region.region.slug][@period]) %>
             </td>
             <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :registered_patients_by_period, period.value))) %>
                 <%= number_or_dash_with_delimiter(@repository.registration_counts[@region.region.slug][period]) %>
               </td>
             <% end %>
             <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_with_delimiter(dash_if_zero(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period.value))) %>
-                ||
-                <% pp "rjs", @repository.hypertension_follow_ups(group: "blood_pressures.user_id") %>
                 <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups(group: "blood_pressures.user_id")[@region.region.slug][period]) %>
               </td>
             <% end %>
@@ -94,22 +88,16 @@
                   <%= link_to resource.send(:full_name), send(:admin_user_path, resource, period: @period) %>
                 </td>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :total_registered_patients)) %>
-                  ||
-                  WHERE?
-                  <%= @repository.cumulative_registration_counts_by_user[@region.slug][@period][resource.id] %> <!-- #.slice(*@period_range.to_a).values.inject(0) { |sum, hsh| sum += hsh[resource.id]; sum } %> -->
+                  <%= @repository.cumulative_registration_counts_by_user[@region.slug][@period][resource.id] %>
                 </td>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :registered_patients_by_period, period.value)) %>
-                    ||
-                    <% pp @repository.registration_counts_by_user %>
                     <%= number_or_dash_with_delimiter(@repository.registration_counts_by_user.dig(@region.slug, period, resource.id)) %>
                   </td>
                 <% end %>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period.value)) %>
+                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period.value)) %> ||
                     <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups(group: "blood_pressures.user_id")[@region.slug][period]) %>
                   </td>
                 <% end %>
