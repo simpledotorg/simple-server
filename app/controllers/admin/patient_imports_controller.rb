@@ -18,7 +18,7 @@ class Admin::PatientImportsController < AdminController
       }
 
       @errors = {"Headers" => missing_field_errors}
-      render :new and return
+      render(:new) && return
     end
 
     params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
