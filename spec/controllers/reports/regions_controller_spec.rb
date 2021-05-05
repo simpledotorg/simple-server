@@ -516,5 +516,15 @@ RSpec.describe Reports::RegionsController, type: :controller do
       get :monthly_district_data_report, params: {id: region.slug, report_scope: "facility_district", format: "csv"}
       expect(response.status).to eq(200)
     end
+
+    it "passes the provided period to the csv service" do
+      facility
+      sign_in(cvho.email_authentication)
+
+      period = Period.month("July 2018")
+      expect(MonthlyDistrictDataService).to receive(:new).with(region, period).and_call_original
+      get :monthly_district_data_report,
+        params: {id: region.slug, report_scope: "district", format: "csv", period: period.value}
+    end
   end
 end

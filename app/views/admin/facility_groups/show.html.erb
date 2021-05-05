@@ -5,7 +5,7 @@
   </h1>
   <nav class="page-nav">
     <% if current_admin.accessible_facility_groups(:manage).find_by_id(@facility_group) %>
-      <%= link_to 'Edit facility group', edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
+      <%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(@facility_group), class: "btn btn-sm btn-primary" %>
     <% end %>
   </nav>
 </div>

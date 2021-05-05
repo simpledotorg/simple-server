@@ -117,7 +117,7 @@ class Reports::RegionsController < AdminController
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
       end
     }
-    @period = Period.month(Date.current)
+    @period = Period.month(params[:period] || Date.current)
     csv = MonthlyDistrictDataService.new(@region, @period).report
     report_date = @period.to_s.downcase
     filename = "monthly-district-data-#{@region.slug}-#{report_date}.csv"
@@ -212,7 +212,7 @@ class Reports::RegionsController < AdminController
   end
 
   def set_time_zone
-    time_zone = Rails.application.config.country[:time_zone] || DEFAULT_ANALYTICS_TIME_ZONE
+    time_zone = Period::ANALYTICS_TIME_ZONE
 
     Groupdate.time_zone = time_zone
 
