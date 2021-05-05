@@ -37,7 +37,7 @@ class PatientImport::Importer
       ]
 
       if records.all?(&:persisted?)
-        AuditLog.create_logs_async(PatientImport::ImportUser.find_or_create, records, "import", Time.current)
+        AuditLog.create_logs_async(admin, records, "import", Time.current)
       else
         raise "Patient import failed"
       end
