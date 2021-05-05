@@ -50,7 +50,7 @@ class MonthlyDistrictDataService
       "Total registrations",
       "Total assigned patients",
       "Lost to follow-up patients",
-      "Died all-time",
+      "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
       "Patients under care",
       month_labels,
       month_labels,
@@ -65,62 +65,66 @@ class MonthlyDistrictDataService
   end
 
   def district_row
-    complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == region.slug }.last
-    registered_by_month = months.map { |month| complete_registration_counts[month] || 0 }
-    follow_up_by_month = months.map { |month|
-      dashboard_analytics.sum { |_, data| data.dig(:follow_up_patients_by_period, month.value) || 0 }
+    follow_ups_by_month = months.each_with_object({}) { |month, hsh|
+      monthly_count = dashboard_analytics.sum { |_, data| data.dig(:follow_up_patients_by_period, month.value) || 0 }
+      hsh["follow_ups_#{month.value}".to_sym] = monthly_count
     }
-    patients = region.assigned_patients.with_hypertension
-
-    [
-      "All",
-      region.name,
-      Array.new(5, nil),
-      repo.cumulative_registrations.dig(region.slug, period) || 0,
-      patients.excluding_dead.count,
-      repo.ltfu_counts.dig(region.slug, period) || 0,
-      patients.status_dead.count,
-      patients.excluding_dead.not_ltfu_as_of(period.end).count,
-      registered_by_month,
-      follow_up_by_month,
-      repo.controlled_patients_count.dig(region.slug, period) || 0,
-      repo.uncontrolled_patients_count.dig(region.slug, period) || 0,
-      repo.missed_visits.dig(region.slug, period) || 0,
-      repo.visited_without_bp_taken.dig(region.slug, period) || 0,
-      Array.new(3, nil)
-    ].flatten
+    region_data = {
+      serial_number: "All",
+      district_name: region.name,
+      facility_name: nil,
+      facility_type: nil,
+      block_name: nil,
+      active: nil
+    }.merge(common_attributes(region, follow_ups_by_month))
+    region_data.values
   end
 
   def facility_rows
     region.facility_regions.map.with_index do |facility, index|
-      complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == facility.slug }.last
-      registration_count = months.map { |month| complete_registration_counts[month] || 0 }
-      follow_up_count = months.map { |month|
-        dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
+      follow_ups_by_month = months.each_with_object({}) { |month, hsh|
+        monthly_count = dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
+        hsh["follow_ups_#{month.value}".to_sym] = monthly_count
       }
-      patients = Patient.with_hypertension.where(assigned_facility: facility.source)
-
-      [
-        index + 1,
-        region.name,
-        facility.name,
-        facility.source.facility_type,
-        facility.source.block,
-        facility.source.blood_pressures.any? ? "Active" : "Inactive",
-        nil,
-        repo.cumulative_registrations.dig(facility.slug, period) || 0,
-        patients.excluding_dead.count,
-        repo.ltfu_counts.dig(facility.slug, period) || 0,
-        patients.status_dead.count,
-        patients.excluding_dead.not_ltfu_as_of(period.end).count,
-        registration_count,
-        follow_up_count,
-        repo.controlled_patients_count.dig(facility.slug, period) || 0,
-        repo.uncontrolled_patients_count.dig(facility.slug, period) || 0,
-        repo.missed_visits.dig(facility.slug, period) || 0,
-        repo.visited_without_bp_taken.dig(facility.slug, period) || 0,
-        Array.new(3, nil)
-      ].flatten
+      facility_data = {
+        serial_number: index + 1,
+        district_name: region.name,
+        facility_name: facility.name,
+        facility_type: facility.source.facility_type,
+        block_name: facility.source.block,
+        active: facility.source.blood_pressures.any? ? "Active" : "Inactive"
+      }.merge(common_attributes(facility, follow_ups_by_month))
+      facility_data.values
     end
+  end
+
+  def common_attributes(region, follow_ups_by_month)
+    complete_registration_counts = repo.complete_registration_counts.find { |k, _| k.slug == region.slug }.last
+    registered_by_month = months.each_with_object({}) { |month, hsh|
+      hsh["registrations_#{month.value}".to_sym] = (complete_registration_counts[month] || 0)
+    }
+
+    dead_count = region.assigned_patients.with_hypertension.status_dead.count
+    assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
+    ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
+    patients_under_care_count = assigned_patients_count - ltfu_count
+
+    {
+      estimated_hypertension_population: nil,
+      total_registrations: repo.cumulative_registrations.dig(region.slug, period) || 0,
+      total_assigned: assigned_patients_count,
+      ltfu: ltfu_count,
+      dead: dead_count,
+      under_care: patients_under_care_count,
+      **registered_by_month,
+      **follow_ups_by_month,
+      controlled_count: repo.controlled_patients_count.dig(region.slug, period) || 0,
+      uncontrolled_count: repo.uncontrolled_patients_count.dig(region.slug, period) || 0,
+      missed_visits: repo.missed_visits.dig(region.slug, period) || 0,
+      no_bp_taken: repo.visited_without_bp_taken.dig(region.slug, period) || 0,
+      amlodipine: nil,
+      arbs_and_ace_inhibitors: nil,
+      diurectic: nil
+    }
   end
 end
