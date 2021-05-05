@@ -106,8 +106,10 @@ RSpec.describe MonthlyDistrictDataService do
       result = described_class.new(region, old_period).report
       csv = CSV.parse(result)
       column_headers = csv[2]
-      expect(column_headers[12]).to eq("Feb-2018")
-      expect(column_headers[17]).to eq("Jul-2018")
+      first_month_index = 12
+      last_month_index = 17
+      expect(column_headers[first_month_index]).to eq("Feb-2018")
+      expect(column_headers[last_month_index]).to eq("Jul-2018")
     end
   end
 end
