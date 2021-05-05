@@ -161,26 +161,26 @@ module Reports
     end
 
     memoize def ltfu_counts
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         facility_ids = entry.region.facility_ids
         Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
       end
     end
 
     memoize def controlled_patients_count
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
     memoize def uncontrolled_patients_count
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period).count
       end
     end
 
     memoize def missed_visits
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period)
         controlled = controlled_patients_count[slug][entry.period]
@@ -191,7 +191,7 @@ module Reports
     end
 
     memoize def missed_visits_rate
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         remaining_percentages = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
         100 - remaining_percentages
@@ -213,15 +213,15 @@ module Reports
     end
 
     memoize def controlled_patients_rate
-      cached_query(__method__) do |entry|
-        controlled = controlled_patients_count[entry.region.slug][entry.period]
+      region_period_cached_query(__method__) do |entry|
+        controlled = controlled_patients_count[entry.slug][entry.period]
         total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
     end
 
     memoize def uncontrolled_patients_rate
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period)
         percentage(controlled, total)
@@ -229,14 +229,14 @@ module Reports
     end
 
     memoize def visited_without_bp_taken
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period)
       end
     end
 
     memoize def visited_without_bp_taken_rate
-      cached_query(__method__) do |entry|
-        controlled = visited_without_bp_taken[entry.region.slug][entry.period]
+      region_period_cached_query(__method__) do |entry|
+        controlled = visited_without_bp_taken[entry.slug][entry.period]
         total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
@@ -251,7 +251,7 @@ module Reports
     #     region_2_slug: { period_1: value, period_2: value }
     #   }
     #
-    def cached_query(calculation, &block)
+    def region_period_cached_query(calculation, &block)
       items = cache_entries(calculation)
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|

@@ -302,8 +302,8 @@ RSpec.describe Reports::Repository, type: :model do
 
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
 
-      allow(repo).to receive(:cached_query).and_call_original
-      expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(1).times.and_call_original
+      allow(repo).to receive(:region_period_cached_query).and_call_original
+      expect(repo).to receive(:region_period_cached_query).with(:controlled_patients_count).exactly(1).times.and_call_original
 
       3.times { _result = repo.controlled_patients_count }
       3.times { _result = repo.controlled_patients_rate }
@@ -320,7 +320,7 @@ RSpec.describe Reports::Repository, type: :model do
 
       RequestStore[:bust_cache] = true
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(1).times
+      expect(repo).to receive(:region_period_cached_query).with(:controlled_patients_count).exactly(1).times
 
       3.times { _result = repo.controlled_patients_count }
     end
