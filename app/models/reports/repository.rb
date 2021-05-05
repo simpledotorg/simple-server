@@ -113,6 +113,34 @@ module Reports
       end
     end
 
+    # Returns counts of the cumulative Registration counts done by Users within a Region.
+    # Returns a nested Hash structure in the following shape:
+    # {
+    #   slug => {
+    # .   period => {
+    # .     user_id_1 => cumulative_count,
+    # .     user_id_2 => cumulative_count,
+    # .  }
+    # }
+    #
+    def cumulative_registration_counts_by_user
+      registration_counts_by_user.each_with_object({}) do |(slug, period_counts), totals|
+        totals[slug] = {}
+        # collect all the user ids in a region that we need to count for
+        user_ids = period_counts.each_with_object(Set.new) { |(period, counts), sum| sum.merge(counts.keys) }
+        # now sum up the running totals of registration counts for all those users for all periods
+        periods.each do |period|
+          totals[slug][period] ||= Hash.new(0)
+          user_ids.each do |user_id|
+            current = period_counts.dig(period, user_id) || 0
+            previous = totals.dig(slug, period.previous, user_id) || 0
+            totals[slug][period][user_id] = current + previous
+          end
+        end
+        totals
+      end
+    end
+
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_registration_counts
