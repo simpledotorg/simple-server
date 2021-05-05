@@ -20,7 +20,7 @@
         <div class="desc"><%= organization.description %>.</div>
 
         <div class="text-secondary mt-2">
-          Facility groups: <%= organization.facility_groups.count %>
+          <%= t("facility_group").capitalize.pluralize %>: <%= organization.facility_groups.count %>
         </div>
         <div class="text-secondary mt-2">
           Facilities: <%= organization.facilities.count %>
