@@ -27,7 +27,6 @@ RSpec.describe Admin::PatientImportsController, type: :controller do
         admin = create(:admin, :power_user)
         sign_in(admin.email_authentication)
 
-        timezone = CountryConfig.current[:time_zone]
         facility = create(:facility)
         patient_import_file = fixture_file_upload("files/patient_import_test.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         params = {patient_import_file: patient_import_file, facility_id: facility.id}

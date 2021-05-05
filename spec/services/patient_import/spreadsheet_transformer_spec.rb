@@ -190,11 +190,8 @@ RSpec.describe PatientImport::SpreadsheetTransformer do
     it "defaults to the facility's address" do
       params = PatientImport::SpreadsheetTransformer.call(data, facility: facility)
 
-      import_user = PatientImport::ImportUser.find_or_create
       patient = params.find { |p| p[:patient][:full_name] == "Basic Patient 1" }.deep_symbolize_keys
-      patient_id = patient[:patient][:id]
       registration_time = Time.parse("2020-10-16").rfc3339
-      last_visit_time = Time.parse("2021-02-24").rfc3339
 
       expect(patient[:patient][:address]).to include(
         country: "India",

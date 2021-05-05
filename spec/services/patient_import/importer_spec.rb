@@ -16,6 +16,9 @@ RSpec.describe PatientImport::Importer do
       basic_patient_1 = Patient.find_by(full_name: "Basic Patient 1")
       basic_patient_2 = Patient.find_by(full_name: "Basic Patient 2")
 
+      expect(basic_patient_1).to be_present
+      expect(basic_patient_2).to be_present
+
       # Dig into patient 1's details extensively
       # Patient 1 attributes
       expect(basic_patient_1.attributes).to include(
