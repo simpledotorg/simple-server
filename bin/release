@@ -3,6 +3,26 @@ require "shellwords"
 require "net/http"
 require "json"
 
+def notify_slack(message)
+  unless ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"]
+    puts "SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK missing. Skipping notification."
+    return
+  end
+
+  webhook = URI(ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK'])
+  http = Net::HTTP.new(webhook.host, webhook.port)
+  http.use_ssl = true
+  request = Net::HTTP::Post.new(webhook.path, 'Content-Type' => 'application/json')
+  request.body = { text: message }.to_json
+  response = http.request(request)
+
+  if response.is_a?(Net::HTTPSuccess)
+    puts "Notified slack."
+  else
+    puts "Notification to slack failed."
+  end
+end
+
 MAIN_BRANCH = "master"
 
 current_branch = `git rev-parse --abbrev-ref HEAD`.chomp
@@ -77,23 +97,3 @@ notify_slack(notification)
 puts
 puts "Successfully created release #{release_tag}."
 puts "Visit https://simple.semaphoreci.com/projects/simple-server to monitor the release."
-
-def notify_slack(message)
-  unless ENV["SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK"]
-    puts "SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK missing. Skipping notification."
-    return
-  end
-
-  webhook = URI(ENV['SIMPLE_SERVER_DEPLOYMENT_NOTIFICATIONS_WEBHOOK'])
-  http = Net::HTTP.new(webhook.host, webhook.port)
-  http.use_ssl = true
-  request = Net::HTTP::Post.new(webhook.path, 'Content-Type' => 'application/json')
-  request.body = { text: message }.to_json
-  response = http.request(request)
-
-  if response.is_a?(Net::HTTPSuccess)
-    puts "Notified slack."
-  else
-    puts "Notification to slack failed."
-  end
-end
