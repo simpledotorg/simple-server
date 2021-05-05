@@ -1,4 +1,4 @@
-<h1>Upload Facilities</h1>
+<h1>Upload facilities</h1>
 <% if @errors.present? %>
   <div class="alert alert-warning">
     <p>Please fix the errors below and try again:</p>
@@ -11,30 +11,30 @@
   </div>
 <% end %>
 <h3>Instructions:</h3>
-<ol>
-  <li>
+<ol class="mb-5">
+  <li class="mt-3">
     Download and fill in
     <%= link_to 'this template', '/documents/upload_facilities.csv' %>
     to create multiple facilities via file upload.
   </li>
-  <li>Organizations for the facilities must already exist.
-    <% if current_admin.power_user? %>
-      Click here to create an organization:
-      <%= link_to '+ Organization', new_admin_organization_path, class: "btn btn-sm btn-outline-primary" %>
-    <% end %>
-  </li>
-  <li>Facility Groups for the facilities must already exist.
+  <li class="mt-3">The <%= t("facility_group").pluralize %> (i.e. Facility Groups) for the facilities must already exist.
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-      Click here to create a facility group:
-      <%= link_to '+ Facility group', new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" %>
+      Click here to create a <%= t("facility_group") %>:
+      
+      
+      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-outline-primary" do %>
+        <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
+      
+    <% end %>
+    
     <% end %>
   </li>
-  <li>Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly.</li>
-  <li class="mt-1">
+  <li class="mt-3">Ensure that the Organization (Column A) and Facility Group (Column B) are entered correctly. Remember, a Facility Group is a <%= t("facility_group") %>.</li>
+  <li class="mt-3">
     The enable_diabetes_management field will be treated as "not enabled" if blank.
   </li>
 </ol>
 <%= bootstrap_form_tag(url: upload_admin_facilities_url, multipart: true) do |f| %>
-  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label: 'Upload your filled in facilities file' %>
+  <%= f.file_field :upload_facilities_file, required: true, accept: '.csv, .xlsx', label: 'Upload your completed facilities CSV file' %>
   <%= f.primary 'Upload' %>
 <% end %>
