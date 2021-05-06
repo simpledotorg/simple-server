@@ -2,7 +2,7 @@ class DistrictAnalyticsQuery
   include BustCache
   include DashboardHelper
 
-  CACHE_VERSION = 3
+  CACHE_VERSION = 4
 
   attr_reader :region, :facilities
 
