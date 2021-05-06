@@ -26,7 +26,6 @@ class ActivityService
   end
 
   def follow_ups
-    Rails.logger.info "RJS getting follow ups the legacy"
     relation = follow_ups_relation
     relation = relation.group(group) if group.present?
     relation.count
