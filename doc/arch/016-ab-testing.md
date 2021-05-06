@@ -33,7 +33,25 @@ Stale patients will be selected for having last visited the clinic in the past 3
 ## Treatment Group Assignment (i.e., bucketing)
 
 
-## Test process
+## Test workflow
+
+Active patient experiment:
+- experiment will be started by running a script either manually or by scheduling it
+- that script will select patients appropriate to the experiment
+- it will then assign eligible patients to treatment groups at random
+- it will create all appointment reminders for experiment patients, based on the date of their next appointment and the information in their treatment group's reminder templates. These will be marked as "pending" and will not be sent at this time.
+- every day, a cron job will run and look for any pending appointment reminders that are scheduled to be sent on this day
+- that cron will schedule individual text messages to be sent out
+* this is where we should consider making some small changes
+- in India, text messages will first be sent as WhatsApp messages. If the WhatsApp message fails, we will resend the message as SMS.
+- in Bangladesh, text messages will first be sent as Imo messages. If the Imo message fails, we will resend the message as SMS.
+
+Stale patient experiment:
+- patients must be selected for stale patient experiments every day of the experiment. This is done to ensure that they do not become ineligible (by returning to care) between selection and the time their reminder is sent.
+- because of this, stale patient experiments must be scheduledd via cron
+- the scheduled script selects 10,000 patients per day to send reminders to, assigns them to a treatment group, and creates appointment reminders appropriate for that group
+- patients in the control group will receive no reminders while other groups may receive multiple reminders over a period of days
+
 
 ## Data modelling
 
@@ -49,3 +67,6 @@ The A/B framework introduces five new models.
 ## Supported languages
 
 ## Consequences
+
+## Ending an experiment early
+
