@@ -281,7 +281,6 @@
             <% end %>
             <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_or_dash_with_delimiter(analytics_totals(@dashboard_analytics, :follow_up_patients_by_period, period.value)) %> ||
                 <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups[@region.slug][period]) %>
               </td>
             <% end %>
@@ -306,8 +305,6 @@
                 <% end %>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@dashboard_analytics.dig(resource.id, :follow_up_patients_by_period, period.value)) %>
-                    ||
                     <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups[slug][period]) %>
                   </td>
                 <% end %>
