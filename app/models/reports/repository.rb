@@ -205,7 +205,7 @@ module Reports
 
     memoize def hypertension_follow_ups(group_by: nil)
       regions.each_with_object({}) do |region, hsh|
-        hsh[region.slug] = FollowUpsQuery.new(region, period_type, group_by: group).hypertension
+        hsh[region.slug] = FollowUpsQuery.new(region, period_type, group_by: group_by).hypertension
       end
     end
 
