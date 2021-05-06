@@ -6,7 +6,7 @@ class MonthlyDistrictDataService
     @months = period.downto(5).reverse
     regions = region.facility_regions.to_a << region
     @repo = Reports::Repository.new(regions, periods: period)
-    @dashboard_analytics = region.dashboard_analytics(period: period.type, prev_periods: 6)
+    @dashboard_analytics = DistrictAnalyticsQuery.new(region, :month, 6, period.value, include_current_period: true).call
   end
 
   def report
@@ -86,6 +86,7 @@ class MonthlyDistrictDataService
         monthly_count = dashboard_analytics.dig(facility.source.id, :follow_up_patients_by_period, month.value) || 0
         hsh["follow_ups_#{month.value}".to_sym] = monthly_count
       }
+
       facility_data = {
         serial_number: index + 1,
         district_name: region.name,
