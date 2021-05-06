@@ -35,7 +35,7 @@ CONCAT(date_part('year', latest_blood_sugar.recorded_at), ' Q', EXTRACT(QUARTER 
 latest_blood_sugar_facility.name AS latest_blood_sugar_facility_name,
 latest_blood_sugar_facility.facility_type AS latest_blood_sugar_facility_type,
 latest_blood_sugar_facility.district AS latest_blood_sugar_district,
-latest_blood_sugar_facility_state_region.state AS latest_blood_sugar_state,
+latest_blood_sugar_facility_state_region.name AS latest_blood_sugar_state,
 greatest(0, date_part('day', NOW() - next_appointment.scheduled_date)) AS days_overdue,
 next_appointment.id AS next_appointment_id,
 next_appointment.scheduled_date AS next_appointment_scheduled_date,
