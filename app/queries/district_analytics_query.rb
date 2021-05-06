@@ -60,16 +60,22 @@ class DistrictAnalyticsQuery
   def total_registered_patients
     @total_registered_patients ||= @facilities.each_with_object({}) { |facility, result|
       result[facility.id] = {
-        total_registered_patients: repository.cumulative_registrations.dig(facility.region.slug, @current_period) || 0
+        total_registered_patients: repository.cumulative_registrations.dig(facility.region.slug, @current_period)
       }
     }
   end
 
+  def period_to_dates(hsh)
+    return unless hsh
+    hsh.transform_keys { |k| k.to_date }
+  end
+
   def registered_patients_by_period
     @facilities.each_with_object({}) { |facility, result|
-      result[facility.id] = {
-        registered_patients_by_period: repository.registration_counts[facility.region.slug] || 0
-      }
+      counts = period_to_dates(repository.registration_counts[facility.region.slug])
+      next unless counts.any?
+
+      result[facility.id] = { registered_patients_by_period: counts }
     }
   end
 
