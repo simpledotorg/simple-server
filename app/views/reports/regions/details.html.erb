@@ -77,7 +77,8 @@
             <% end %>
             <% @period_range.each do |period| %>
               <td class="row-total ta-center">
-                <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups(group: "blood_pressures.user_id")[@region.slug][period].values.sum) %>
+                <% period_follow_ups = @repository.hypertension_follow_ups(group: "blood_pressures.user_id").dig(@region.slug, period) %>
+                <%= period_follow_ups ? period_follow_ups.values.sum : "-" %>
               </td>
             <% end %>
           </tr>
@@ -97,7 +98,8 @@
                 <% end %>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups(group: "blood_pressures.user_id")[@region.slug][period][resource.id]) %>
+                    <%= val = @repository.hypertension_follow_ups(group: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
+                      number_or_dash_with_delimiter(val) %>
                   </td>
                 <% end %>
               </tr>
