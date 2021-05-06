@@ -1,8 +1,8 @@
 class FollowUpsQuery
-  def initialize(region, period_type, group: nil)
+  def initialize(region, period_type, group_by: nil)
     @region = region
     @period_type = period_type
-    @group = group
+    @group_by = group_by
     @formatter = lambda { |v| @period_type == :quarter ? Period.quarter(v) : Period.month(v) }
   end
 
@@ -13,8 +13,8 @@ class FollowUpsQuery
       .distinct
       .where(blood_pressures: {facility_id: @region.facility_ids})
       .with_hypertension
-    if group.present?
-      results = query.group(group).count
+    if group_by.present?
+      results = query.group(group_by).count
       sum_groups_per_period(results)
     else
       query.count
@@ -42,7 +42,7 @@ class FollowUpsQuery
 
   private
 
-  attr_reader :group
+  attr_reader :group_by
 
   def sum_groups_per_period(result)
     result.each_with_object({}) { |(key, count), hsh|

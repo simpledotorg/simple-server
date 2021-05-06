@@ -5,20 +5,22 @@ class RegisteredPatientsQuery
       .with_hypertension
       .group_by_period(period_type, :recorded_at, {format: formatter})
 
-    if group_by
-      group_by(query, group_by)
+    if group_by.present?
+      results = query.group(group_by).count
+      sum_groups_per_period(results)
     else
       query.count
     end
   end
 
-  # Add the additonal grouping, and then collect the counts at the per period level
-  def group_by(query, group_by)
-    query = query.group(group_by)
-    query.count.each_with_object({}) { |(key, count), hsh|
-      period, user_id = *key
+  private
+
+  def sum_groups_per_period(result)
+    result.each_with_object({}) { |(key, count), hsh|
+      period, field_id = *key
       hsh[period] ||= {}
-      hsh[period][user_id] = count
+      hsh[period][field_id] = count
     }
   end
+
 end
