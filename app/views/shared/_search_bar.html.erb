@@ -3,6 +3,7 @@
       {
           hide_label: true,
           prepend: "<i class='fa fa-search'></i>".html_safe,
+          append: form.primary("Search").html_safe,
           placeholder: placeholder,
           value: search_query,
           autofocus: search_query.blank?,
@@ -11,6 +12,5 @@
       } %>
 </div>
 
-<div class="col-md-auto mb-2 d-none d-md-block">
-  <%= form.primary "Search", wrapper: false, tabindex: 3 %>
-</div>
+
+  
