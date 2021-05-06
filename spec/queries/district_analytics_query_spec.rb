@@ -205,7 +205,7 @@ RSpec.describe DistrictAnalyticsQuery do
 
   context "when there is no data available" do
     it "returns nil for all analytics queries" do
-      expect(analytics.total_registered_patients[facility_1.id]).to eq(:total_registered_patients => 0)
+      expect(analytics.total_registered_patients[facility_1.id]).to eq(total_registered_patients: 0)
     end
   end
 

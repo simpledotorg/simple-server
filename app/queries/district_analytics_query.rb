@@ -75,7 +75,7 @@ class DistrictAnalyticsQuery
       counts = period_to_dates(repository.registration_counts[facility.region.slug])
       next unless counts.any?
 
-      result[facility.id] = { registered_patients_by_period: counts }
+      result[facility.id] = {registered_patients_by_period: counts}
     }
   end
 
