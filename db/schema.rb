@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_12_122537) do
+ActiveRecord::Schema.define(version: 2021_05_06_095914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -679,6 +679,22 @@ ActiveRecord::Schema.define(version: 2021_04_12_122537) do
   add_foreign_key "treatment_group_memberships", "treatment_groups"
   add_foreign_key "treatment_groups", "experiments"
 
+  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
+      SELECT count(patients.id) AS registration_count,
+      patients.registration_facility_id AS facility_id,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
+      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
+      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
+      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
+     FROM ((patients
+       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
+       JOIN medical_histories ON (((patients.id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
+    WHERE (patients.deleted_at IS NULL)
+    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
+  SQL
+  add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
+
   create_view "blood_pressures_per_facility_per_days", materialized: true, sql_definition: <<-SQL
       WITH latest_bp_per_patient_per_day AS (
            SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
@@ -704,197 +720,6 @@ ActiveRecord::Schema.define(version: 2021_04_12_122537) do
     GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id;
   SQL
   add_index "blood_pressures_per_facility_per_days", ["facility_id", "day", "year"], name: "index_blood_pressures_per_facility_per_days", unique: true
-
-  create_view "bp_drugs_views", sql_definition: <<-SQL
-      SELECT bp.id AS bp_id,
-      bp.systolic,
-      bp.diastolic,
-      bp.created_at,
-      bp.updated_at,
-      bp.device_created_at AS visit_date,
-      bp.facility_id,
-      bp.user_id,
-      p.id AS patient_id,
-      p.full_name,
-      p.age,
-      p.gender,
-      p.date_of_birth,
-      p.status AS patient_status,
-      p.address_id,
-      p.device_created_at AS registration_date,
-      a.street_address,
-      a.village_or_colony,
-      a.district,
-      a.state,
-      a.country,
-      a.pin,
-      f.name AS facility_name,
-      f.facility_type,
-      f.latitude,
-      f.longitude,
-      u.full_name AS user_name,
-      pn.number AS phone_number,
-      pn.phone_type,
-      pd.id AS drug_id,
-      pd.name AS drug_name,
-      pd.rxnorm_code,
-      pd.dosage,
-      pd.is_protocol_drug,
-      pd.is_deleted
-     FROM ((((((patients p
-       JOIN blood_pressures bp ON ((p.id = bp.patient_id)))
-       JOIN facilities f ON ((f.id = bp.facility_id)))
-       JOIN addresses a ON ((p.address_id = a.id)))
-       JOIN users u ON ((u.id = bp.user_id)))
-       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)))
-       LEFT JOIN prescription_drugs pd ON (((bp.patient_id = pd.patient_id) AND (date_trunc('day'::text, bp.device_created_at) = date_trunc('day'::text, pd.device_created_at)))));
-  SQL
-  create_view "bp_views", sql_definition: <<-SQL
-      SELECT bp.id AS bp_id,
-      bp.systolic,
-      bp.diastolic,
-      bp.created_at,
-      bp.updated_at,
-      bp.device_created_at AS visit_date,
-      bp.facility_id,
-      bp.user_id,
-      p.id AS patient_id,
-      p.full_name,
-      p.age,
-      p.gender,
-      p.date_of_birth,
-      p.status AS patient_status,
-      p.address_id,
-      p.device_created_at AS registration_date,
-      a.street_address,
-      a.village_or_colony,
-      a.district,
-      a.state,
-      a.country,
-      a.pin,
-      f.name AS facility_name,
-      f.facility_type,
-      f.latitude,
-      f.longitude,
-      u.full_name AS user_name,
-      pn.number AS phone_number,
-      pn.phone_type
-     FROM (((((patients p
-       JOIN blood_pressures bp ON ((p.id = bp.patient_id)))
-       JOIN facilities f ON ((f.id = bp.facility_id)))
-       JOIN addresses a ON ((p.address_id = a.id)))
-       JOIN users u ON ((u.id = bp.user_id)))
-       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
-  SQL
-  create_view "follow_up_views", sql_definition: <<-SQL
-      SELECT ap.id,
-      ap.patient_id,
-      ap.facility_id,
-      ap.scheduled_date,
-      ap.status,
-      ap.cancel_reason,
-      ap.device_created_at,
-      ap.device_updated_at,
-      ap.created_at,
-      ap.updated_at,
-      ap.remind_on,
-      ap.agreed_to_visit,
-      date_part('day'::text, (lead(ap.device_created_at, 1) OVER (PARTITION BY ap.patient_id ORDER BY ap.scheduled_date) - (ap.scheduled_date)::timestamp without time zone)) AS follow_up_delta,
-      f.name AS facility_name,
-      f.facility_type,
-      f.latitude,
-      f.longitude
-     FROM (appointments ap
-       JOIN facilities f ON ((ap.facility_id = f.id)));
-  SQL
-  create_view "overdue_views", sql_definition: <<-SQL
-      SELECT ap.id AS appointment_id,
-      ap.facility_id,
-      ap.scheduled_date,
-      ap.status AS appointment_status,
-      ap.cancel_reason,
-      ap.device_created_at,
-      ap.device_updated_at,
-      ap.created_at,
-      ap.updated_at,
-      ap.remind_on,
-      ap.agreed_to_visit,
-      p.id AS patient_id,
-      p.full_name,
-      p.age,
-      p.gender,
-      p.date_of_birth,
-      p.status AS patient_status,
-      p.address_id,
-      p.device_created_at AS registration_date,
-      a.street_address,
-      a.village_or_colony,
-      a.district,
-      a.state,
-      a.country,
-      a.pin,
-      f.name AS facility_name,
-      f.facility_type,
-      f.latitude,
-      f.longitude
-     FROM ((((appointments ap
-       JOIN patients p ON ((p.id = ap.patient_id)))
-       JOIN facilities f ON ((f.id = ap.facility_id)))
-       JOIN addresses a ON ((p.address_id = a.id)))
-       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
-  SQL
-  create_view "patient_first_bp_views", sql_definition: <<-SQL
-      SELECT bp.id AS bp_id,
-      bp.systolic,
-      bp.diastolic,
-      bp.created_at,
-      bp.updated_at,
-      bp.device_created_at AS visit_date,
-      bp.facility_id,
-      bp.user_id,
-      p.id AS patient_id,
-      p.full_name,
-      p.age,
-      p.gender,
-      p.date_of_birth,
-      p.status AS patient_status,
-      p.address_id,
-      p.device_created_at AS registration_date,
-      a.street_address,
-      a.village_or_colony,
-      a.district,
-      a.state,
-      a.country,
-      a.pin,
-      f.name AS facility_name,
-      f.facility_type,
-      f.latitude,
-      f.longitude,
-      u.full_name AS user_name,
-      pn.number AS phone_number,
-      pn.phone_type
-     FROM (((((patients p
-       LEFT JOIN blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, p.device_created_at) = date_trunc('day'::text, bp.device_created_at)))))
-       JOIN facilities f ON ((f.id = bp.facility_id)))
-       JOIN addresses a ON ((p.address_id = a.id)))
-       JOIN users u ON ((u.id = bp.user_id)))
-       LEFT JOIN patient_phone_numbers pn ON ((pn.patient_id = p.id)));
-  SQL
-  create_view "patient_registrations_per_day_per_facilities", materialized: true, sql_definition: <<-SQL
-      SELECT count(patients.id) AS registration_count,
-      patients.registration_facility_id AS facility_id,
-      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
-      (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS day,
-      (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS month,
-      (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS quarter,
-      (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text AS year
-     FROM ((patients
-       JOIN facilities ON ((patients.registration_facility_id = facilities.id)))
-       JOIN medical_histories ON (((patients.id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
-    WHERE (patients.deleted_at IS NULL)
-    GROUP BY (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, patients.recorded_at))))::text, patients.registration_facility_id, facilities.deleted_at;
-  SQL
-  add_index "patient_registrations_per_day_per_facilities", ["facility_id", "day", "year"], name: "index_patient_registrations_per_day_per_facilities", unique: true
 
   create_view "patient_summaries", sql_definition: <<-SQL
       SELECT p.recorded_at,
@@ -1032,33 +857,6 @@ ActiveRecord::Schema.define(version: 2021_04_12_122537) do
              FROM appointments
             ORDER BY appointments.patient_id, appointments.scheduled_date DESC) next_appointment ON ((next_appointment.patient_id = p.id)))
        LEFT JOIN facilities next_appointment_facility ON ((next_appointment_facility.id = next_appointment.facility_id)));
-  SQL
-  create_view "patients_blood_pressures_facilities", sql_definition: <<-SQL
-      SELECT patients.id AS p_id,
-      patients.age AS p_age,
-      patients.gender AS p_gender,
-      blood_pressures.id,
-      blood_pressures.systolic,
-      blood_pressures.diastolic,
-      blood_pressures.patient_id,
-      blood_pressures.created_at,
-      blood_pressures.updated_at,
-      blood_pressures.device_created_at,
-      blood_pressures.device_updated_at,
-      blood_pressures.facility_id,
-      blood_pressures.user_id,
-      blood_pressures.deleted_at,
-      facilities.name,
-      facilities.district,
-      facilities.state,
-      facilities.facility_type,
-      users.full_name,
-      users.sync_approval_status
-     FROM patients,
-      blood_pressures,
-      facilities,
-      users
-    WHERE ((blood_pressures.patient_id = patients.id) AND (blood_pressures.facility_id = facilities.id) AND (blood_pressures.user_id = users.id));
   SQL
   create_view "materialized_patient_summaries", materialized: true, sql_definition: <<-SQL
       SELECT p.recorded_at,
