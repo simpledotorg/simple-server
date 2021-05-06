@@ -73,7 +73,7 @@ class DistrictAnalyticsQuery
   def registered_patients_by_period
     @facilities.each_with_object({}) { |facility, result|
       counts = period_to_dates(repository.registration_counts[facility.region.slug])
-      next unless counts.any?
+      next unless counts&.any?
 
       result[facility.id] = {registered_patients_by_period: counts}
     }
