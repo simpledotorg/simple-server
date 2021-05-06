@@ -109,8 +109,7 @@ class Reports::RegionsController < AdminController
       case report_scope
       when "facility_district"
         scope = current_admin.accessible_facilities(:view_reports)
-        region = current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
-        FacilityDistrict.new(name: region.name, scope: scope)
+        FacilityDistrict.new(name: report_params[:id], scope: scope)
       when "district"
         current_admin.accessible_district_regions(:view_reports).find_by!(slug: report_params[:id])
       else
