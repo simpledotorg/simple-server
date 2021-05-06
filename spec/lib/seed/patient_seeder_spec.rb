@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe Seed::PatientSeeder do
   it "creates patients and related objects" do
     facility = create(:facility)
+    _user = create(:user, registration_facility: facility)
     expect {
       Seed::PatientSeeder.call(facility, user_ids: facility.user_ids, config: Seed::Config.new, logger: logger)
     }.to change { Patient.count }.by(4)

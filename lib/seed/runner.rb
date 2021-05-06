@@ -64,6 +64,7 @@ module Seed
         options = parallel_options(progress)
         batch_result = Parallel.map(facilities, options) { |facility|
           registration_user_ids = facility.users.pluck(:id)
+          raise "No facility users found to use for registration" if registration_user_ids.blank?
           result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
 
           bp_result = BloodPressureSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
