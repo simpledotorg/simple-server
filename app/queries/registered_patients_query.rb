@@ -22,5 +22,4 @@ class RegisteredPatientsQuery
       hsh[period][field_id] = count
     }
   end
-
 end
