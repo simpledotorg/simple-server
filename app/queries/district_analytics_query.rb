@@ -58,7 +58,7 @@ class DistrictAnalyticsQuery
   end
 
   def total_registered_patients
-    @total_reigstered_patients ||= @facilities.each_with_object({}) { |facility, result|
+    @total_registered_patients ||= @facilities.each_with_object({}) { |facility, result|
       result[facility.id] = {
         total_registered_patients: repository.cumulative_registrations.dig(facility.region.slug, @current_period) || 0
       }
