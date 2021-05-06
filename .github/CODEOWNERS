@@ -1,5 +1,5 @@
 # Ensure Claudio gets requested review for reporting queries
-/app/queries/ @@claudiovallejo
+/app/queries/ @claudiovallejo
 
 # Ensure Hari gets requested review canonical medications
 /config/data/medications.yml @harimohanraj89
