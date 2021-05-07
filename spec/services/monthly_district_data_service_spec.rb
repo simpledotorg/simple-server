@@ -56,16 +56,16 @@ RSpec.describe MonthlyDistrictDataService do
       expect(find_in_csv(csv, region_row_index, "Lost to follow-up patients")).to eq("1")
       dead = find_in_csv(csv, region_row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
       expect(dead).to eq("0")
-      expect(find_in_csv(csv, region_row_index, "Patients under care")).to eq("2")
+      expect(find_in_csv(csv, region_row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("2")
       new_registrations = csv[region_row_index][12..17]
       expect(new_registrations).to eq(%w[0 0 2 0 0 0])
       follow_ups = csv[region_row_index][18..23]
       expect(follow_ups).to eq(%w[0 0 0 1 0 0])
       expect(find_in_csv(csv, region_row_index, "Patients with BP controlled")).to eq("0")
       expect(find_in_csv(csv, region_row_index, "Patients with BP not controlled")).to eq("0")
-      expect(find_in_csv(csv, region_row_index, "Patients with a missed visits")).to eq("1")
+      expect(find_in_csv(csv, region_row_index, "Patients with a missed visit")).to eq("1")
       expect(find_in_csv(csv, region_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(find_in_csv(csv, region_row_index, "Patients under care as of #{Date.current.strftime("%e-%b-%Y")}")).to eq("2")
+      expect(find_in_csv(csv, region_row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("2")
       expect(csv[region_row_index][29..31].uniq).to eq([nil])
     end
 
@@ -90,17 +90,17 @@ RSpec.describe MonthlyDistrictDataService do
       expect(find_in_csv(csv, facility_row_index, "Lost to follow-up patients")).to eq("1")
       dead = find_in_csv(csv, facility_row_index, "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})")
       expect(dead).to eq("0")
-      expect(find_in_csv(csv, facility_row_index, "Patients under care")).to eq("1")
+      expect(find_in_csv(csv, facility_row_index, "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}")).to eq("1")
       new_registrations = csv[facility_row_index][12..17]
       expect(new_registrations).to eq(%w[0 0 1 0 0 0])
       follow_ups = csv[facility_row_index][18..23]
       expect(follow_ups).to eq(%w[0 0 0 0 0 0])
       expect(find_in_csv(csv, facility_row_index, "Patients with BP controlled")).to eq("0")
       expect(find_in_csv(csv, facility_row_index, "Patients with BP not controlled")).to eq("0")
-      expect(find_in_csv(csv, facility_row_index, "Patients with a missed visits")).to eq("0")
+      expect(find_in_csv(csv, facility_row_index, "Patients with a missed visit")).to eq("0")
       expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("1")
       expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(find_in_csv(csv, facility_row_index, "Patients under care as of #{Date.current.strftime("%e-%b-%Y")}")).to eq("1")
+      expect(find_in_csv(csv, facility_row_index, "Patients under care as of #{period.end.strftime("%e-%b-%Y")}")).to eq("1")
       expect(csv[facility_row_index][29..31].uniq).to eq([nil])
     end
 
