@@ -1,11 +1,13 @@
 class MonthlyDistrictDataService
-  attr_reader :region, :period, :months, :repo, :dashboard_analytics
+  attr_reader :region, :period, :current_period, :months, :repo, :dashboard_analytics
   def initialize(region, period)
     @region = region
     @period = period
+    @current_period = Period.month(Time.current)
     @months = period.downto(5).reverse
     regions = region.facility_regions.to_a << region
-    @repo = Reports::Repository.new(regions, periods: period)
+    requested_periods = (period == current_period) ? period : Range.new(period, current_period)
+    @repo = Reports::Repository.new(regions, periods: requested_periods)
     @dashboard_analytics = DistrictAnalyticsQuery.new(region, :month, 6, period.value, include_current_period: true).call
   end
 
@@ -58,6 +60,7 @@ class MonthlyDistrictDataService
       "Patients with BP not controlled",
       "Patients with a missed visits",
       "Patients with a visit but no BP taken",
+      "Patients under care as of #{Date.current.strftime("%e-%b-%Y")}",
       "Amlodipine",
       "ARBs/ACE Inhibitors",
       "Diuretic"
@@ -108,7 +111,18 @@ class MonthlyDistrictDataService
     dead_count = region.assigned_patients.with_hypertension.status_dead.count
     assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
     ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
-    patients_under_care_count = assigned_patients_count - ltfu_count
+    controlled_count = repo.controlled_patients_count.dig(region.slug, period) || 0
+    uncontrolled_count = repo.uncontrolled_patients_count.dig(region.slug, period) || 0
+    missed_visits = repo.missed_visits.dig(region.slug, period) || 0
+    no_bp_taken = repo.visited_without_bp_taken.dig(region.slug, period) || 0
+    adjusted_patients_under_care = controlled_count + uncontrolled_count + missed_visits + no_bp_taken
+
+    # current_patients_under_care is calculated differently from adjusted_patient_under_care
+    # because the numbers we use to compose the adjusted_patients_under_care are all adjusted by 3 months
+    # and would not produce the current assigned patient number
+    current_assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, current_period) || 0
+    current_ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
+    current_patients_under_care = current_assigned_patients_count - current_ltfu_count
 
     {
       estimated_hypertension_population: nil,
@@ -116,13 +130,14 @@ class MonthlyDistrictDataService
       total_assigned: assigned_patients_count,
       ltfu: ltfu_count,
       dead: dead_count,
-      under_care: patients_under_care_count,
+      current_patients_under_care: current_patients_under_care,
       **registered_by_month,
       **follow_ups_by_month,
-      controlled_count: repo.controlled_patients_count.dig(region.slug, period) || 0,
-      uncontrolled_count: repo.uncontrolled_patients_count.dig(region.slug, period) || 0,
-      missed_visits: repo.missed_visits.dig(region.slug, period) || 0,
-      no_bp_taken: repo.visited_without_bp_taken.dig(region.slug, period) || 0,
+      controlled_count: controlled_count,
+      uncontrolled_count: uncontrolled_count,
+      missed_visits: missed_visits,
+      no_bp_taken: no_bp_taken,
+      adjusted_patients_under_care: adjusted_patients_under_care,
       amlodipine: nil,
       arbs_and_ace_inhibitors: nil,
       diurectic: nil

@@ -65,7 +65,8 @@ RSpec.describe MonthlyDistrictDataService do
       expect(find_in_csv(csv, region_row_index, "Patients with BP not controlled")).to eq("0")
       expect(find_in_csv(csv, region_row_index, "Patients with a missed visits")).to eq("1")
       expect(find_in_csv(csv, region_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(csv[region_row_index][30..31].uniq).to eq([nil])
+      expect(find_in_csv(csv, region_row_index, "Patients under care as of #{Date.current.strftime("%e-%b-%Y")}")).to eq("2")
+      expect(csv[region_row_index][29..31].uniq).to eq([nil])
     end
 
     it "provides accurate numbers for the facilities" do
@@ -98,7 +99,9 @@ RSpec.describe MonthlyDistrictDataService do
       expect(find_in_csv(csv, facility_row_index, "Patients with BP not controlled")).to eq("0")
       expect(find_in_csv(csv, facility_row_index, "Patients with a missed visits")).to eq("0")
       expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("1")
-      expect(csv[facility_row_index][30..31].uniq).to eq([nil])
+      expect(find_in_csv(csv, facility_row_index, "Patients with a visit but no BP taken")).to eq("1")
+      expect(find_in_csv(csv, facility_row_index, "Patients under care as of #{Date.current.strftime("%e-%b-%Y")}")).to eq("1")
+      expect(csv[facility_row_index][29..31].uniq).to eq([nil])
     end
 
     it "scopes the report to the provided period" do
