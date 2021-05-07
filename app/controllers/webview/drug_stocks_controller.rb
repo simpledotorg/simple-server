@@ -80,9 +80,12 @@ class Webview::DrugStocksController < ApplicationController
     @for_end_of_month ||= if params[:for_end_of_month]
       logger.info "parsing for_end_of_month from #{params[:for_end_of_month]}"
       Date.parse(params[:for_end_of_month]).end_of_month
-    else
+    elsif (Date.current.end_of_month - Date.current).to_i < 8
       logger.info "using current date for_end_of_month"
       Date.current.end_of_month
+    else
+      logger.info "using previous month for_end_of_month"
+      Date.current.prev_month.end_of_month
     end
   end
 
