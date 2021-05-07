@@ -52,14 +52,14 @@ class MonthlyDistrictDataService
       "Total assigned patients",
       "Lost to follow-up patients",
       "Dead patients (All-time as of #{Date.current.strftime("%e-%b-%Y")})",
-      "Patients under care as of #{Date.current.strftime("%e-%b-%Y")}",
+      "Patients under care as of #{period.end.strftime("%e-%b-%Y")}",
       month_labels,
       month_labels,
       "Patients with BP controlled",
       "Patients with BP not controlled",
       "Patients with a missed visit",
       "Patients with a visit but no BP taken",
-      "Patients under care",
+      "Patients under care as of #{period.adjusted_period.end.strftime("%e-%b-%Y")}",
       "Amlodipine",
       "ARBs/ACE Inhibitors",
       "Diuretic"
@@ -110,18 +110,12 @@ class MonthlyDistrictDataService
     dead_count = region.assigned_patients.with_hypertension.status_dead.count
     assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, period) || 0
     ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
+    patients_under_care = assigned_patients_count - ltfu_count
     controlled_count = repo.controlled_patients_count.dig(region.slug, period) || 0
     uncontrolled_count = repo.uncontrolled_patients_count.dig(region.slug, period) || 0
     missed_visits = repo.missed_visits.dig(region.slug, period) || 0
     no_bp_taken = repo.visited_without_bp_taken.dig(region.slug, period) || 0
     adjusted_patients_under_care = repo.adjusted_patient_counts.dig(region.slug, period) || 0
-
-    # current_patients_under_care is calculated differently from adjusted_patient_under_care
-    # because the numbers we use to compose the adjusted_patients_under_care are all adjusted by 3 months
-    # and would not produce the current assigned patient number
-    current_assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, current_period) || 0
-    current_ltfu_count = repo.ltfu_counts.dig(region.slug, current_period) || 0
-    current_patients_under_care = current_assigned_patients_count - current_ltfu_count
 
     {
       estimated_hypertension_population: nil,
@@ -129,7 +123,7 @@ class MonthlyDistrictDataService
       total_assigned: assigned_patients_count,
       ltfu: ltfu_count,
       dead: dead_count,
-      current_patients_under_care: current_patients_under_care,
+      patients_under_care: patients_under_care,
       **registered_by_month,
       **follow_ups_by_month,
       controlled_count: controlled_count,
