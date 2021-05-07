@@ -58,7 +58,7 @@ class MonthlyDistrictDataService
       month_labels,
       "Patients with BP controlled",
       "Patients with BP not controlled",
-      "Patients with a missed visits",
+      "Patients with a missed visit",
       "Patients with a visit but no BP taken",
       "Patients under care",
       "Amlodipine",
