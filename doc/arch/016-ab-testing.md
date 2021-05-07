@@ -2,7 +2,7 @@
 
 ## Context
 
-Our primary goal with simple is to reduce deaths from cardiovascular disease. To be able to do that, we need patients to return to the clinic for care. Currently, when a patient misses their follow-up appointment date by three days, we send them a polite text message through Whatsapp (in India) and SMS reminding them to continue taking their medicine and to return to their clinic to get more. That is our last attempt via text to convince a patient to return. We would like to know if a different message or sending the message at a different time relative to appointment date would result in a higher rate of patient return.
+Our primary goal at simple is to reduce deaths from cardiovascular disease. To be able to do that, we need patients to return to the clinic for care. Currently, when a patient misses their follow-up appointment date by three days, we send them a polite text message through Whatsapp (in India) and SMS reminding them to continue taking their medicine and to return to their clinic to get more. That is our last attempt via text to convince a patient to return. We would like to know if a different message or sending the message at a different time relative to their appointment date would result in a higher rate of patient return.
 
 Additionally, we would like patients who have recently stopped visiting their clinic to return to care, and we would like to know what type of message and frequency of message would be most effective for convincing these patients to return to care.
 
@@ -10,11 +10,17 @@ Additionally, we would like patients who have recently stopped visiting their cl
 
 We will develop a framework for testing different messages, message delivery dates, and message delivery cadences.
 
-That framework will be able to run tests for active patients. Active patients are defined as patients who have an appointment scheduled during the test dates. This experiment will select patients who
+That framework will be able to run experiments for both patients who have upcoming appointments as well as patients who do not because they have not visited their clinic recently.
 
-The framework will also be able to run tests for patients who have recently stopped visiting their clinic. We will sometimes refer to those patients as "stale", defined as patients who last visited a clinic more than 35 days but less than a year ago.
+Patients who have upcoming appointments will be referred to here as as "active patients".
 
-In both types of experiments, patients will be randomly placed into treatment groups. Test patients will not receive the usual text message sent three days after they miss an appointment.
+Patients who last visited the clinic 35-365 days ago will be referred to here as "stale patients". Those dates aren't arbitrary. Most appointments are scheduled monthly, so a patient who hasn't been into clinic in over 35 days is probably late, and patients who've not been into care in over 365 days are considered lost to follow-up.
+
+Those two types of experiments will require small process differences. When the patient has an upcoming appointment, the reminders must be sent relative to the appointment date.
+
+That doesn't make sense for patients who do not have upcoming appointments, so their reminders can be sent at any time. There are many patients who fall into this category, and we don't want to risk driving too many patients back to care at once and overwhelming clinics. To mitigate that possibility, we will add 10,000 patients per day to the experiment and schedule their reminders to be sent starting the same day. Because patients can receive no reminders, a single reminder, or a series of reminders, the actual number of reminders sent per day may exceed 10,000.
+
+In both types of experiments, patients will be randomly placed into treatment groups. Treatment groups will define the message texts, number of messages, and when to send the messages. Test patients will not receive the pre-existing text message sent three days after they miss an appointment.
 
 ## Patient Selection Criteria
 
@@ -26,9 +32,9 @@ All patients must meet the following criteria for selection:
 - has a phone capable of receiving text messages. We verify this via Exotel.
 - have not taken part in an experiment in the past 14 days. This will not matter for the first experiment but will for subsequent experiments.
 
-Active patients will also be selected for having an appointment scheduled during the experiment date range.
+Subjects for active patient experiments will be selected for having an appointment scheduled during the experiment date range.
 
-Stale patients will be selected for having last visited the clinic in the past 35-365 days. To ensure that the two experiment subject groups are entirely mutually exclusive, we also filter out any patients who have an appointment scheduled during the experiment.
+Subjects for stale patient experiments will be selected for having last visited the clinic in the past 35-365 days. To ensure that the two experiment subject groups are entirely mutually exclusive, we also filter out any patients who have an appointment scheduled during the experiment.
 
 ## Treatment Group Assignment (i.e., bucketing)
 
