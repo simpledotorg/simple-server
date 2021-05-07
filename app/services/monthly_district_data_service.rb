@@ -115,7 +115,7 @@ class MonthlyDistrictDataService
     uncontrolled_count = repo.uncontrolled_patients_count.dig(region.slug, period) || 0
     missed_visits = repo.missed_visits.dig(region.slug, period) || 0
     no_bp_taken = repo.visited_without_bp_taken.dig(region.slug, period) || 0
-    adjusted_patients_under_care = controlled_count + uncontrolled_count + missed_visits + no_bp_taken
+    adjusted_patients_under_care = repo.adjusted_patient_counts.dig(region.slug, period) || 0
 
     # current_patients_under_care is calculated differently from adjusted_patient_under_care
     # because the numbers we use to compose the adjusted_patients_under_care are all adjusted by 3 months
