@@ -121,7 +121,7 @@ class MonthlyDistrictDataService
     # because the numbers we use to compose the adjusted_patients_under_care are all adjusted by 3 months
     # and would not produce the current assigned patient number
     current_assigned_patients_count = repo.cumulative_assigned_patients_count.dig(region.slug, current_period) || 0
-    current_ltfu_count = repo.ltfu_counts.dig(region.slug, period) || 0
+    current_ltfu_count = repo.ltfu_counts.dig(region.slug, current_period) || 0
     current_patients_under_care = current_assigned_patients_count - current_ltfu_count
 
     {
