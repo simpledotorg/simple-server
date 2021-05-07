@@ -1,12 +1,11 @@
 class MonthlyDistrictDataService
-  attr_reader :region, :period, :current_period, :months, :repo, :dashboard_analytics
+  attr_reader :region, :period, :months, :repo, :dashboard_analytics
   def initialize(region, period)
     @region = region
     @period = period
-    @current_period = Period.month(Time.current)
     @months = period.downto(5).reverse
     regions = region.facility_regions.to_a << region
-    @repo = Reports::Repository.new(regions, periods: Range.new(period, current_period))
+    @repo = Reports::Repository.new(regions, periods: period)
     @dashboard_analytics = DistrictAnalyticsQuery.new(region, :month, 6, period.value, include_current_period: true).call
   end
 
