@@ -6,7 +6,7 @@ class MonthlyDistrictDataService
     @current_period = Period.month(Time.current)
     @months = period.downto(5).reverse
     regions = region.facility_regions.to_a << region
-    requested_periods = (period == current_period) ? period : Range.new(period, current_period)
+    requested_periods = period == current_period ? period : Range.new(period, current_period)
     @repo = Reports::Repository.new(regions, periods: requested_periods)
     @dashboard_analytics = DistrictAnalyticsQuery.new(region, :month, 6, period.value, include_current_period: true).call
   end
