@@ -33,7 +33,7 @@ class MonthlyDistrictDataService
       "Follow-up patients",
       Array.new(5, nil),
       "Treatment outcomes of patients under care",
-      Array.new(3, nil),
+      Array.new(4, nil),
       "Drug availability",
       Array.new(2, nil)
     ].flatten
