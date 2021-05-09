@@ -131,7 +131,7 @@ module Reports
       registration_counts_by_user.each_with_object({}) do |(slug, period_counts), totals|
         totals[slug] = {}
         # collect all the user ids in a region that we need to count for
-        user_ids = period_counts.each_with_object(Set.new) { |(period, counts), sum| sum.merge(counts.keys) }
+        user_ids = period_counts.each_with_object(Set.new) { |(period, user_counts), user_ids| user_ids.merge(user_counts.keys) }
         # now sum up the running totals of registration counts for all those users for all periods
         range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
         range.each do |period|
