@@ -20,7 +20,7 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
     it "edit protocol" do
       protocol.select_protocol(var_protocol.name)
 
-      protocol_show.click_edit_protocol_button
+      protocol_show.click_edit_medication_list_button
       protocol_update.update_protocol_followup_days("10")
 
       # assertion
@@ -32,7 +32,7 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
     it "should create new protocol drug " do
       protocol.select_protocol(var_protocol.name)
 
-      protocol_show.click_new_protocol_drug_button
+      protocol_show.click_new_medication_button
       new_drug.add_new_protocol_drug("test_drug", "10mg", "AXDSC")
 
       # assertion

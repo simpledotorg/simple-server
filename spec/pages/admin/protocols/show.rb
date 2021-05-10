@@ -4,14 +4,14 @@ module AdminPage
       SUCCESSFUL_MESSAGE = {css: "div.alert-primary"}.freeze
       MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
       FOLLOW_UP_DAYS = {id: "Follow up days"}.freeze
-      EDIT_PROTOCOL_BUTTON = {id: "Edit protocol"}.freeze
-      NEW_PROTOCOL_DRUG_BUTTON = {id: "Add protocol drug"}.freeze
+      EDIT_MEDICATION_LIST_BUTTON = {id: "Edit medication list"}.freeze
+      NEW_MEDICATION_BUTTON = {id: "Add medication"}.freeze
       PROTOCOL_DRUG_NAME = {id: "drug_name"}.freeze
 
       def verify_successful_message(message)
         verify_text(SUCCESSFUL_MESSAGE, message)
-        present?(EDIT_PROTOCOL_BUTTON)
-        present?(NEW_PROTOCOL_DRUG_BUTTON)
+        present?(EDIT_MEDICATION_LIST_BUTTON)
+        present?(NEW_MEDICATION_BUTTON)
         present?(FOLLOW_UP_DAYS)
       end
 
@@ -24,12 +24,12 @@ module AdminPage
         not_present?(SUCCESSFUL_MESSAGE)
       end
 
-      def click_edit_protocol_button
-        click(EDIT_PROTOCOL_BUTTON)
+      def click_edit_medication_list_button
+        click(EDIT_MEDICATION_LIST_BUTTON)
       end
 
-      def click_new_protocol_drug_button
-        click(NEW_PROTOCOL_DRUG_BUTTON)
+      def click_new_medication_button
+        click(NEW_MEDICATION_BUTTON)
       end
 
       def click_edit_protocol_drug_button(drug_name)
