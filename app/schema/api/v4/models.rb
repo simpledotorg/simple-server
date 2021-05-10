@@ -303,7 +303,7 @@ class Api::V4::Models
 
     def app_user_capabilities
       {type: :object,
-       properties: Hash[User::APP_USER_CAPABILITIES.product([app_user_capability_values])]}
+       properties: User::APP_USER_CAPABILITIES.product([app_user_capability_values]).to_h}
     end
 
     def activate_user
