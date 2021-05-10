@@ -63,6 +63,11 @@
                   <i class="fas fa-user-md main-menu-icon"></i> Mobile app users
                 <% end %>
               <% end %>
+              <% if current_admin.power_user?  %>
+                <%= link_to (new_admin_patient_import_path), class: "dropdown-item #{active_controller?("admin/patient_imports")}", id: "patient-import" do %>
+                  <i class="fas fa-upload main-menu-icon"></i> Patient import
+                <% end %>
+              <% end %>
               <% if current_admin.power_user? %>
                 <%= link_to ("/sidekiq"), class: "dropdown-item #{active_controller?("sidekiq")}" do %>
                   <i class="fas fa-running main-menu-icon"></i> Sidekiq
