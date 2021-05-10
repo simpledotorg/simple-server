@@ -105,7 +105,7 @@ RSpec.describe Reports::Repository, type: :model do
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
       expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
       expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
-      expect(repo.registration_counts_by_user[facility_1.slug][july_2020.to_period][user_2.id]).to eq(1)
+      expect(repo.registration_counts_by_user[facility_1.slug][july_2020.to_period]).to be_nil
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2018.to_period][user.id]).to eq(2)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2020.to_period][user.id]).to eq(6)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2018.to_period][user_2.id]).to eq(0)
