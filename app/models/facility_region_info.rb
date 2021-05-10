@@ -1,0 +1,2 @@
+class FacilityRegionInfo < ApplicationRecord
+end

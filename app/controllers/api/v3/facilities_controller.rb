@@ -43,7 +43,7 @@ class Api::V3::FacilitiesController < Api::V3::SyncController
   def records_to_sync
     time(__method__) do
       other_facility_records
-        .with_block_region_id
+        .with_region_info
         .includes(:facility_group)
         .where.not(facility_group: nil)
     end

@@ -12,6 +12,7 @@ class Facility < ApplicationRecord
   friendly_id :name, use: :slugged
 
   belongs_to :facility_group, optional: true
+  belongs_to :facility_region_info, -> { with_discarded }, primary_key: :id, foreign_key: :id
 
   has_many :phone_number_authentications, foreign_key: "registration_facility_id"
   has_many :users, through: :phone_number_authentications
@@ -50,11 +51,7 @@ class Facility < ApplicationRecord
     foreign_key: "assigned_facility_id"
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
-  scope :with_block_region_id, -> {
-    joins("INNER JOIN regions facility_regions ON facility_regions.source_id = facilities.id")
-      .joins("INNER JOIN regions block_region ON block_region.path @> facility_regions.path AND block_region.region_type = 'block'")
-      .select("block_region.id AS block_region_id, facilities.*")
-  }
+  scope :with_region_info, -> { joins(:facility_region_info).select("*") }
 
   enum facility_size: {
     community: "community",
