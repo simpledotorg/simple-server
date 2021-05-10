@@ -21,7 +21,7 @@ RSpec.feature "test medication list detail page functionality", type: :feature d
       protocol.select_protocol(var_protocol.name)
 
       protocol_show.click_edit_medication_list_button
-      protocol_update.update_protocol_followup_days("10")
+      protocol_update.update_medication_list_followup_days("10")
 
       # assertion
       protocol_show.verify_successful_message("Medication list was successfully updated.")

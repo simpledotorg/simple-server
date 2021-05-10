@@ -1,11 +1,11 @@
 module AdminPage
   module Protocols
     class Index < ApplicationPage
-      ADD_NEW_PROTOCOL = {css: "a.btn-success"}.freeze
+      ADD_NEW_MEDICATION_LIST = {css: "a.btn-success"}.freeze
       CLOSE_BUTTON = {css: "button.close"}.freeze
 
-      def click_add_new_protocol
-        click(ADD_NEW_PROTOCOL)
+      def click_add_new_medication_list
+        click(ADD_NEW_MEDICATION_LIST)
       end
 
       def click_edit_protocol_link(name)
