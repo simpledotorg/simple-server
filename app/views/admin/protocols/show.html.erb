@@ -1,21 +1,21 @@
 <div class="page-header">
   <div class="page-title">
     <nav class="breadcrumb">
-      <%= link_to "Protocols", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %>
+      <%= link_to "Medication lists", admin_protocols_path, class: "#{active_controller?("admin/protocols")}" %>
       <i class="fas fa-chevron-right"></i> <%= @protocol.name %>
     </nav>
     <h1 class="page-title">
       <%= @protocol.name %>
     </h1>
     <p id="Follow up days">
-      <strong>Follow up days:</strong> <%= @protocol.follow_up_days %>
+      <strong>Follow-up days:</strong> <%= @protocol.follow_up_days %>
     </p>
   </div>
   <nav class="page-nav">
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-      <%= link_to "Edit protocol", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-outline-primary", id: "Edit protocol" %>
-      <%= link_to new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success", id: "Add protocol drug" do %>
-        <i class="fas fa-plus mr-1"></i> Add protocol drug
+      <%= link_to "Edit medication list", edit_admin_protocol_path(@protocol), class: "btn btn-sm btn-outline-primary", id: "Edit medication list" %>
+      <%= link_to new_admin_protocol_protocol_drug_path(@protocol), class: "btn btn-sm btn-success", id: "Add medication" do %>
+        <i class="fas fa-plus mr-1"></i> Add medication
       <% end %>
     <% end %>
   </nav>
