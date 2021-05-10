@@ -8,16 +8,16 @@ module Seed
     attr_reader :counts
     attr_reader :facility
     attr_reader :patient_info
-    attr_reader :user
+    attr_reader :user_ids
     delegate :scale_factor, to: :config
 
     # TODO add some backdated BPs before the facility bday
-    def initialize(config:, facility:, user:)
+    def initialize(config:, facility:, user_ids:)
       @logger = Rails.logger.child(class: self.class.name)
       @counts = {}
       @config = config
       @facility = facility
-      @user = user
+      @user_ids = user_ids
       @patient_info = @facility.assigned_patients.pluck(:id, :recorded_at)
       @logger.debug "Starting #{self.class} with #{config.type} configuration"
     end
@@ -70,29 +70,30 @@ module Seed
             patient_id: patient_id,
             recorded_at: bp_time,
             updated_at: bp_time,
-            user_id: user.id
+            user_id: user_ids.sample
           }
           control_trait = rand(100) < controlled_percentage_threshold ? :under_control : :hypertensive
           bps << FactoryBot.attributes_for(:blood_pressure, control_trait, bp_attributes)
         end
       end
-      result = BloodPressure.import(bps, returning: [:id, :recorded_at, :patient_id])
+      result = BloodPressure.import(bps, returning: [:id, :recorded_at, :patient_id, :user_id])
       counts[:blood_pressure] = result.ids.size
 
       encounters = []
       result.results.each do |row|
-        bp_id, recorded_at, patient_id = *row
+        bp_id, recorded_at, patient_id, user_id = *row
         encounters << {
           blood_pressure_id: bp_id,
           created_at: recorded_at,
-          id: SecureRandom.uuid,
           device_created_at: recorded_at,
           device_updated_at: recorded_at,
           encountered_on: recorded_at,
           facility_id: facility.id,
+          id: SecureRandom.uuid,
           patient_id: patient_id,
+          timezone_offset: 0,
           updated_at: recorded_at,
-          timezone_offset: 0
+          user_id: user_id
         }
       end
       observations = encounters.each_with_object([]) { |encounter, arry|
@@ -102,7 +103,7 @@ module Seed
           observable_id: encounter.delete(:blood_pressure_id),
           observable_type: "BloodPressure",
           updated_at: encounter[:encountered_on],
-          user_id: user.id
+          user_id: encounter.delete(:user_id)
         }
       }
 
