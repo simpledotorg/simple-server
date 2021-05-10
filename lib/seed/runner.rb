@@ -63,14 +63,13 @@ module Seed
       Facility.find_in_batches(batch_size: 100) do |facilities|
         options = parallel_options(progress)
         batch_result = Parallel.map(facilities, options) { |facility|
-          registration_user_ids = facility.users.pluck(:id)
-          raise "No facility users found to use for registration" if registration_user_ids.blank?
-          result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
+          user = facility.users.find_by!(role: config.seed_generated_active_user_role)
+          result, patient_info = PatientSeeder.call(facility, user, config: config, logger: logger)
 
-          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
+          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user: user)
           result.merge! bp_result
 
-          appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
+          appt_result = create_appts(patient_info, user)
           result[:appointment] = appt_result.ids.size
           result
         }
@@ -112,13 +111,13 @@ module Seed
       )
     end
 
-    def create_appts(patient_info, facility:, user_ids:)
+    def create_appts(patient_info, user)
+      facility = user.facility
       attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), attrs|
         number_appointments = config.rand_or_max(0..1) # some patients dont get appointments
         next if number_appointments == 0
         scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
-        created_at = Faker::Time.between(from: 4.months.ago, to: 1.day.ago)
-        user_id = user_ids.sample
+        created_at = Faker::Time.between(from: user.created_at, to: 1.day.ago)
         hsh = {
           creation_facility_id: facility.id,
           facility_id: facility.id,
@@ -126,7 +125,7 @@ module Seed
           scheduled_date: scheduled_date,
           created_at: created_at,
           updated_at: created_at,
-          user_id: user_id
+          user_id: user.id
         }
         attrs << FactoryBot.attributes_for(:appointment, hsh)
       }

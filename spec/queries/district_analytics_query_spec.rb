@@ -1,15 +1,13 @@
 require "rails_helper"
 
 RSpec.describe DistrictAnalyticsQuery do
-  let(:organization) { create(:organization) }
+  let!(:organization) { create(:organization) }
   let!(:facility_group) { create(:facility_group, name: "Bathinda", organization: organization) }
   let!(:facility_1) { create(:facility, facility_group: facility_group) }
   let!(:facility_2) { create(:facility, facility_group: facility_group) }
   let!(:facility_3) { create(:facility, facility_group: facility_group) }
   let!(:analytics) { DistrictAnalyticsQuery.new(facility_group, :month, 5) }
   let!(:current_month) { Date.current.beginning_of_month }
-
-  let(:user) { create(:admin, :manager, :with_access, resource: organization, organization: organization) }
 
   let(:four_months_back) { current_month - 4.months }
   let(:three_months_back) { current_month - 3.months }
@@ -28,7 +26,6 @@ RSpec.describe DistrictAnalyticsQuery do
             3,
             :hypertension,
             registration_facility: facility_1,
-            registration_user: user,
             assigned_facility: facility_2
           )
         }
@@ -42,7 +39,6 @@ RSpec.describe DistrictAnalyticsQuery do
             3,
             :hypertension,
             registration_facility: facility_2,
-            registration_user: user,
             assigned_facility: facility_3
           )
         }
@@ -54,7 +50,6 @@ RSpec.describe DistrictAnalyticsQuery do
           create(
             :patient,
             :without_hypertension,
-            registration_user: user,
             registration_facility: facility_2
           )
         end
@@ -64,11 +59,11 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         Timecop.travel(month + 1.month) do
           patients_1.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_1, user: user)
+            create(:blood_pressure, patient: patient, facility: facility_1)
           end
 
           patients_2.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_2, user: user)
+            create(:blood_pressure, patient: patient, facility: facility_2)
           end
         end
 
@@ -77,11 +72,11 @@ RSpec.describe DistrictAnalyticsQuery do
         #
         Timecop.travel(month + 2.months) do
           patients_1.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_1, user: user)
+            create(:blood_pressure, patient: patient, facility: facility_1)
           end
 
           patients_2.each do |patient|
-            create(:blood_pressure, patient: patient, facility: facility_2, user: user)
+            create(:blood_pressure, patient: patient, facility: facility_2)
           end
         end
       end
@@ -115,10 +110,7 @@ RSpec.describe DistrictAnalyticsQuery do
               one_month_back => 3
             }
           },
-          facility_3.id => {
-            total_assigned_patients: 6,
-            total_registered_patients: 0
-          }
+          facility_3.id => {total_assigned_patients: 6}
         }
 
         expect(analytics.call).to eq(expected_result)
@@ -157,9 +149,15 @@ RSpec.describe DistrictAnalyticsQuery do
         it "groups patients by registration facility" do
           expected_result =
             {
-              facility_1.id => {total_registered_patients: 6},
-              facility_2.id => {total_registered_patients: 6},
-              facility_3.id => {total_registered_patients: 0}
+              facility_1.id =>
+                {
+                  total_registered_patients: 6
+                },
+
+              facility_2.id =>
+                {
+                  total_registered_patients: 6
+                }
             }
 
           expect(analytics.total_registered_patients).to eq(expected_result)
@@ -205,7 +203,9 @@ RSpec.describe DistrictAnalyticsQuery do
 
   context "when there is no data available" do
     it "returns nil for all analytics queries" do
-      expect(analytics.total_registered_patients[facility_1.id]).to eq(total_registered_patients: 0)
+      expect(analytics.total_registered_patients).to eq(nil)
+      expect(analytics.registered_patients_by_period).to eq(nil)
+      expect(analytics.follow_up_patients_by_period).to eq(nil)
     end
   end
 
@@ -216,16 +216,15 @@ RSpec.describe DistrictAnalyticsQuery do
           :patient,
           2,
           :hypertension,
-          registration_facility: facility_2,
-          registration_user: user
+          registration_facility: facility_2
         )
       end
     end
 
     before do
       Timecop.travel(three_months_back) do
-        create(:blood_pressure, patient: patients.first, facility: facility_2, user: user)
-        create(:blood_pressure, patient: patients.second, facility: facility_2, user: user)
+        create(:blood_pressure, patient: patients.first, facility: facility_2)
+        create(:blood_pressure, patient: patients.second, facility: facility_2)
       end
 
       patients.first.discard_data
