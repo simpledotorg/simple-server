@@ -203,14 +203,15 @@ module Reports
       end
     end
 
+    # Returns Follow ups per Region / Period. Takes an optional group_by clause (commonly used to group by `blood_pressures.user_id`)
     memoize def hypertension_follow_ups(group_by: nil)
-      regions.each_with_object({}) do |region, hsh|
-        items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-        cache.fetch_multi(*items, force: bust_cache?) do |entry|
-          region = entry.region
-          hsh[region.slug] = FollowUpsQuery.new(region, period_type, group_by: group_by).hypertension
-        end
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        FollowUpsQuery.new(entry.region, period_type, group_by: group_by).hypertension
       end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
     end
 
     # This method currently always returns the "excluding LTFU denominator".

@@ -287,7 +287,7 @@
               </td>
             <% end %>
           </tr>
-          <% @accessible_facilities.order(:name).each do |resource| %>
+          <% @facility_regions.each do |resource| %>
             <% slug = resource.region.slug %>
             <% next unless @repository.earliest_patient_recorded_at[resource.slug] %>
             <tr>
