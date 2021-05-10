@@ -54,7 +54,6 @@ class Reports::RegionsController < AdminController
   end
 
   def details
-    @show_current_period = true
     @period = Period.month(Time.current)
     @period_range = Range.new(@period.advance(months: -5), @period)
 
