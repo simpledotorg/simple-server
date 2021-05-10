@@ -39,6 +39,8 @@ class PatientImport::Importer
 
       if records.all?(&:persisted?)
         AuditLog.create_logs_async(admin, records, "import", Time.current)
+        log_params = {patient_id: patient.id, facility_id: facility.id, user_id: admin.id}
+        Rails.logger.info("Patient imported: #{log_params.to_json}")
       else
         raise "Patient import failed"
       end
