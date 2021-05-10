@@ -1,10 +1,12 @@
 <div class="page-header">
-  <h1 class="page-title">Protocols</h1>
+  <h1 class="page-title">
+    Medications
+  </h1>
   <nav class="page-nav">
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
       <%= link_to new_admin_protocol_path, class: "btn btn-sm btn-success" do %>
-      <i class="fas fa-plus mr-1"></i> Add protocol
-    <% end %>
+        <i class="fas fa-plus mr-1"></i> Add medication list 
+      <% end %>
     <% end %>
   </nav>
 </div>
