@@ -287,31 +287,30 @@
               </td>
             <% end %>
           </tr>
-          <% current_admin.accessible_facilities(:view_reports).order(:name).each do |resource| %>
+          <% @accessible_facilities.order(:name).each do |resource| %>
             <% slug = resource.region.slug %>
-            <% if @dashboard_analytics[resource.id].present? %>
-              <tr>
-                <td class="row-title">
-                  <%= link_to resource.name, reports_region_facility_details_path(resource.region) %>
-                </td>
+            <% next unless @repository.earliest_patient_recorded_at[resource.slug] %>
+            <tr>
+              <td class="row-title">
+                <%= link_to resource.name, reports_region_facility_details_path(resource.region) %>
+              </td>
+              <td class="ta-center">
+                <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients_count[slug][@period]) %>
+              </td>
+              <td class="ta-center">
+                <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[slug][@period]) %>
+              </td>
+              <% @period_range.each do |period| %>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@repository.cumulative_assigned_patients_count[slug][@period]) %>
+                  <%= number_or_dash_with_delimiter @repository.registration_counts[slug][period] %>
                 </td>
+              <% end %>
+              <% @period_range.each do |period| %>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@repository.cumulative_registrations[slug][@period]) %>
+                  <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups[slug][period]) %>
                 </td>
-                <% @period_range.each do |period| %>
-                  <td class="ta-center">
-                    <%= number_or_dash_with_delimiter @repository.registration_counts[slug][period] %>
-                  </td>
-                <% end %>
-                <% @period_range.each do |period| %>
-                  <td class="ta-center">
-                    <%= number_or_dash_with_delimiter(@repository.hypertension_follow_ups[slug][period]) %>
-                  </td>
-                <% end %>
-              </tr>
-            <% end %>
+              <% end %>
+            </tr>
           <% end %>
         </tbody>
       </table>

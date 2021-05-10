@@ -205,7 +205,11 @@ module Reports
 
     memoize def hypertension_follow_ups(group_by: nil)
       regions.each_with_object({}) do |region, hsh|
-        hsh[region.slug] = FollowUpsQuery.new(region, period_type, group_by: group_by).hypertension
+        items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+        cache.fetch_multi(*items, force: bust_cache?) do |entry|
+          region = entry.region
+          hsh[region.slug] = FollowUpsQuery.new(region, period_type, group_by: group_by).hypertension
+        end
       end
     end
 
