@@ -1,6 +1,6 @@
 require "features_helper"
 
-RSpec.feature "test protocol detail page functionality", type: :feature do
+RSpec.feature "test medication list detail page functionality", type: :feature do
   let(:owner) { create(:admin, :power_user) }
   let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
   let!(:var_protocol_drug) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol) }
@@ -16,20 +16,20 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
     visit admin_protocols_path
   end
 
-  context "protocol show page" do
-    it "edit protocol" do
+  context "medication list show page" do
+    it "edit medication list" do
       protocol.select_protocol(var_protocol.name)
 
       protocol_show.click_edit_medication_list_button
       protocol_update.update_protocol_followup_days("10")
 
       # assertion
-      protocol_show.verify_successful_message("Protocol was successfully updated.")
+      protocol_show.verify_successful_message("Medication list was successfully updated.")
       protocol_show.verify_updated_followup_days("10")
       protocol_show.click_message_cross_button
     end
 
-    it "should create new protocol drug " do
+    it "should create new medication" do
       protocol.select_protocol(var_protocol.name)
 
       protocol_show.click_new_medication_button
@@ -40,7 +40,7 @@ RSpec.feature "test protocol detail page functionality", type: :feature do
       expect(page).to have_content("test_drug")
     end
 
-    it "should edit protocol drug" do
+    it "should edit medication" do
       protocol.select_protocol(var_protocol.name)
       protocol_show.click_edit_protocol_drug_button(var_protocol_drug.name)
       AdminPage::ProtocolDrugs::Edit.new.edit_protocol_drug_info("50mg", "AXDFC")
