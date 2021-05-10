@@ -91,7 +91,7 @@
                   <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
                 </td>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter @repository.cumulative_registration_counts_by_user[@region.slug][@period][resource.id] %>
+                  <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
                 </td>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">
@@ -179,7 +179,7 @@
                   <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
                 </td>
                 <td class="ta-center">
-                  <%= number_or_dash_with_delimiter(@repository.cumulative_registration_counts_by_user[@region.slug][@period][resource.id]) %>
+                  <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, @region.slug, resource.id)) %>
                 </td>
                 <% @period_range.each do |period| %>
                   <td class="ta-center">

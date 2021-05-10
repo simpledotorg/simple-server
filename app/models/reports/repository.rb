@@ -140,35 +140,6 @@ module Reports
       }
     end
 
-    # Returns counts of the cumulative Registration counts done by Users within a Region.
-    # Returns a nested Hash structure in the following shape:
-    # {
-    #   slug => {
-    # .   period => {
-    # .     user_id_1 => cumulative_count,
-    # .     user_id_2 => cumulative_count,
-    # .  }
-    # }
-    #
-    memoize def cumulative_registration_counts_by_user
-      registration_counts_by_user.each_with_object({}) do |(slug, period_counts), totals|
-        totals[slug] = {}
-        # collect all the user ids in a region that we need to count for
-        user_ids = period_counts.each_with_object(Set.new) { |(period, user_counts), user_ids| user_ids.merge(user_counts.keys) }
-        # now sum up the running totals of registration counts for all those users for all periods
-        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
-        range.each do |period|
-          totals[slug][period] ||= Hash.new(0)
-          user_ids.each do |user_id|
-            current = period_counts.dig(period, user_id) || 0
-            previous = totals.dig(slug, period.previous, user_id) || 0
-            totals[slug][period][user_id] = current + previous
-          end
-        end
-        totals
-      end
-    end
-
     memoize def ltfu_counts
       region_period_cached_query(__method__) do |entry|
         facility_ids = entry.region.facility_ids
