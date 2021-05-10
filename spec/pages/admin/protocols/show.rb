@@ -32,22 +32,22 @@ module AdminPage
         click(NEW_MEDICATION_BUTTON)
       end
 
-      def click_edit_protocol_drug_button(drug_name)
-        within(:xpath, "//div[@name='" + drug_name + "']") do
+      def click_edit_medication_button(medication_name)
+        within(:xpath, "//div[@name='" + medication_name + "']") do
           find(:css, "a.btn-outline-primary").click
         end
       end
 
-      def delete_protocol_drug(protocol_name)
-        within(:xpath, "//div[@name='" + protocol_name + "']") do
+      def delete_medication(medication_list_name)
+        within(:xpath, "//div[@name='" + medication_list_name + "']") do
           page.accept_alert do
             find("a.btn-outline-danger").click
           end
         end
 
         # assertion
-        page.has_no_content?(protocol_name)
-        page.has_content?("Protocol was successfully deleted.")
+        page.has_no_content?(medication_list_name)
+        page.has_content?("Medication list was successfully deleted")
       end
     end
   end

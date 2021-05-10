@@ -2,13 +2,13 @@ require "features_helper"
 
 RSpec.feature "test medication list detail page functionality", type: :feature do
   let(:owner) { create(:admin, :power_user) }
-  let!(:var_protocol) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
-  let!(:var_protocol_drug) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_protocol) }
+  let!(:var_medication_list) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
+  let!(:var_medication) { create(:protocol_drug, name: "test_Drug_01", dosage: "10mg", rxnorm_code: "code", protocol: var_medication_list) }
 
-  protocol = AdminPage::Protocols::Index.new
-  protocol_show = AdminPage::Protocols::Show.new
-  protocol_update = AdminPage::Protocols::Edit.new
-  new_drug = AdminPage::ProtocolDrugs::New.new
+  medication_list = AdminPage::Protocols::Index.new
+  medication_list_show = AdminPage::Protocols::Show.new
+  medication_list_update = AdminPage::Protocols::Edit.new
+  new_medication = AdminPage::ProtocolDrugs::New.new
 
   before(:each) do
     visit root_path
@@ -18,32 +18,32 @@ RSpec.feature "test medication list detail page functionality", type: :feature d
 
   context "medication list show page" do
     it "edit medication list" do
-      protocol.select_protocol(var_protocol.name)
+      medication_list.select_medication_list(var_medication_list.name)
 
-      protocol_show.click_edit_medication_list_button
-      protocol_update.update_medication_list_followup_days("10")
+      medication_list_show.click_edit_medication_list_button
+      medication_list_update.update_medication_list_followup_days("10")
 
       # assertion
-      protocol_show.verify_successful_message("Medication list was successfully updated.")
-      protocol_show.verify_updated_followup_days("10")
-      protocol_show.click_message_cross_button
+      medication_list_show.verify_successful_message("Medication list was successfully updated.")
+      medication_list_show.verify_updated_followup_days("10")
+      medication_list_show.click_message_cross_button
     end
 
     it "should create new medication" do
-      protocol.select_protocol(var_protocol.name)
+      medication_list.select_medication_list(var_medication_list.name)
 
-      protocol_show.click_new_medication_button
-      new_drug.add_new_protocol_drug("test_drug", "10mg", "AXDSC")
+      medication_list_show.click_new_medication_button
+      new_medication.add_new_medication("test_drug", "10mg", "AXDSC")
 
       # assertion
-      protocol_show.verify_successful_message("Protocol drug was successfully created.")
+      medication_list_show.verify_successful_message("Medication was successfully created")
       expect(page).to have_content("test_drug")
     end
 
     it "should edit medication" do
-      protocol.select_protocol(var_protocol.name)
-      protocol_show.click_edit_protocol_drug_button(var_protocol_drug.name)
-      AdminPage::ProtocolDrugs::Edit.new.edit_protocol_drug_info("50mg", "AXDFC")
+      medication_list.select_medication_list(var_medication_list.name)
+      medication_list_show.click_edit_medication_button(var_medication.name)
+      AdminPage::ProtocolDrugs::Edit.new.edit_medication_info("50mg", "AXDFC")
     end
   end
 end

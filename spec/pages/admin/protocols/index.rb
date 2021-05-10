@@ -8,17 +8,17 @@ module AdminPage
         click(ADD_NEW_MEDICATION_LIST)
       end
 
-      def click_edit_protocol_link(name)
+      def click_edit_medication_list_link(name)
         within(:xpath, "//div[@id='" + name + "']") do
           find(:css, "a.btn-outline-primary").click
         end
       end
 
-      def select_protocol(name)
+      def select_medication_list(name)
         find(:xpath, "//a[text()='" + name + "']").click
       end
 
-      def delete_protocol(name)
+      def delete_medication_list(name)
         within(:xpath, "//div[@id='" + name + "']") do
           page.accept_alert do
             find("a.btn-outline-danger").click
