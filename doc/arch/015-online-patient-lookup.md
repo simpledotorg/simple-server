@@ -107,7 +107,7 @@ Passport app lookup API more clearly.~~
 ### Access restrictions
 Access for this API will be restricted to the state that the user is
 registered in. Trying to lookup a patient that resides outside the
-state will return 403.
+state will return 404.
 
 If a patient has travelled across states, and has records in both
 states corresponding to the same identifier, then only the patients

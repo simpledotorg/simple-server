@@ -100,21 +100,10 @@ class Api::V4::Schema
       }
     end
 
-    def retention
-      {
-        type: :object,
-        properties: {
-          type: {type: :string, enum: Api::V4::PatientsController::RETENTION_TYPES.values},
-          duration_seconds: {type: :integer}
-        }
-      }
-    end
-
     def lookup_response
       {
         type: :object,
         properties: {
-          retention: retention,
           patients: {"$ref" => "#/definitions/lookup_patients"}
         }
       }

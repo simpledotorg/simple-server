@@ -10,17 +10,16 @@ class Api::V4::PatientsController < APIController
       .syncable_patients
       .where(id: identifiers.pluck(:patient_id))
 
-    render(
-      json: Oj.dump({
-        patients: patients.map { |patient| transform_to_response(patient) },
-        # TODO: retention information can be patient specific
-        retention: {
-          type: RETENTION_TYPES[:temporary],
-          duration_seconds: DEFAULT_RETENTION_DURATION
-        }
-      }, mode: :compat),
-      status: :ok
-    )
+    if patients.empty?
+      render json: {}, status: :not_found
+    else
+      render(
+        json: Oj.dump({
+          patients: patients.map { |patient| transform_to_response(patient) },
+        }, mode: :compat),
+        status: :ok
+      )
+    end
   end
 
   private
@@ -28,13 +27,26 @@ class Api::V4::PatientsController < APIController
   def transform_to_response(patient)
     Api::V3::PatientTransformer.to_nested_response(patient).merge(
       {
+        medical_history: Api::V3::MedicalHistoryTransformer.to_response(patient.medical_history),
         appointments: patient.appointments.map { |appointment| Api::V3::AppointmentTransformer.to_response(appointment) },
         blood_pressures: patient.blood_pressures.map { |blood_pressure| Api::V3::BloodPressureTransformer.to_response(blood_pressure) },
         blood_sugars: patient.blood_sugars.map { |blood_sugar| Api::V4::BloodSugarTransformer.to_response(blood_sugar) },
-        medical_history: Api::V3::MedicalHistoryTransformer.to_response(patient.medical_history),
-        prescription_drugs: patient.prescription_drugs.map { |prescription_drug| Api::V3::PrescriptionDrugTransformer.to_response(prescription_drug) }
-      # teleconsultations: patient.teleconsultations.map { |teleconsultation| Api::V4::TeleconsultationTransformer.to_response(teleconsultation) }
+        prescription_drugs: patient.prescription_drugs.map { |prescription_drug| Api::V3::PrescriptionDrugTransformer.to_response(prescription_drug) },
+        retention: retention(patient)
       }
     )
+  end
+
+  def retention(patient)
+    if current_sync_region.syncable_patients.exists?(patient.id)
+      {
+        type: RETENTION_TYPES[:permanent]
+      }
+    else
+      {
+        type: RETENTION_TYPES[:temporary],
+        duration_seconds: DEFAULT_RETENTION_DURATION
+      }
+    end
   end
 end

@@ -90,6 +90,16 @@ class Api::V4::Models
       }
     end
 
+    def retention
+      {
+        type: :object,
+        properties: {
+          type: {type: :string, enum: Api::V4::PatientsController::RETENTION_TYPES.values},
+          duration_seconds: {type: :integer}
+        }
+      }
+    end
+
     def lookup_patient
       Api::V3::Models.nested_patient.deep_merge(
         properties: {
@@ -98,8 +108,10 @@ class Api::V4::Models
           blood_sugars: {"$ref" => "#/definitions/blood_sugars"},
           medical_history: {"$ref" => "#/definitions/medical_history"},
           prescription_drugs: {"$ref" => "#/definitions/prescription_drugs"},
+          retention: retention
         },
-        description: "Sync a single patient to a device"
+        description: "Sync a single patient to a device",
+        required: %w[appointments blood_pressures blood_sugars medical_history prescription_drugs retention]
       )
     end
 

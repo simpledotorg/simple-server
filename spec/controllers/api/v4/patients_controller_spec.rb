@@ -9,8 +9,6 @@ end
 
 RSpec.describe Api::V4::PatientsController, type: :controller do
   describe "#lookup" do
-    render_views
-
     it "returns patient in expected response schema" do
       patient = create(:patient)
       set_headers(patient.registration_user, patient.registration_facility)
@@ -56,30 +54,56 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(response_data[:patients].count).to eq 2
     end
 
-    it "returns retention information" do
-      patient = create(:patient)
-      set_headers(patient.registration_user, patient.registration_facility)
+    it "sets the retention as temporary and specifies the duration when patient is outside syncable region" do
+      facility_group = create(:facility_group, name: "fg2", state: "State 1")
 
-      get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
-      response_data = JSON.parse(response.body).with_indifferent_access
-      expect(response_data[:retention]).to eq({type: "temporary", duration_seconds: 3600}.with_indifferent_access)
-    end
+      facility_1 = create(:facility, name: "facility1", facility_group: facility_group, zone: "Block XYZ")
+      facility_2 = create(:facility, name: "facility2", facility_group: facility_group, zone: "Block 123")
 
-    xit "sets the retention type to be permanent when the patient is syncable to the user" do
+      patient_1 = create(:patient, registration_facility: facility_1)
+      patient_2 = create(:patient, registration_facility: facility_2)
+
+      identifier = patient_1.business_identifiers.first.identifier
+      patient_2.business_identifiers.first.update(identifier: identifier)
+
+      user = create(:user, registration_facility: facility_1)
+      set_headers(user, facility_1)
+      request.env["HTTP_X_SYNC_REGION_ID"] = facility_1.region.block_region.id
+
+      get :lookup, params: {identifier: identifier}, as: :json
+      response_patients = JSON.parse(response.body).with_indifferent_access[:patients]
+      response_patient_1 = response_patients.find { |patients| patients[:id] == patient_1.id }
+      response_patient_2 = response_patients.find { |patients| patients[:id] == patient_2.id }
+
+      expect(response_patient_1[:retention]).to eq({type: "permanent"}.with_indifferent_access)
+      expect(response_patient_2[:retention]).to eq({type: "temporary", duration_seconds: described_class::DEFAULT_RETENTION_DURATION}.with_indifferent_access)
     end
 
     it "validates state level access" do
-      patient = create(:patient)
-      patient_from_another_state = create(:patient)
+      # 2 patients from the same state
+      facility_group_state_1 = create(:facility_group, state: "State 1")
+      facility_1 = create(:facility, facility_group: facility_group_state_1)
+      facility_2 = create(:facility, facility_group: facility_group_state_1)
+      patient = create(:patient, registration_facility: facility_1)
+      patient_from_same_state = create(:patient, registration_facility: facility_2)
+
+      # one patient from another state
+      facility_group_state_2 = create(:facility_group, state: "State 2")
+      facility_3 = create(:facility, facility_group: facility_group_state_2)
+      patient_from_another_state = create(:patient, registration_facility: facility_3)
+
       patient_from_another_state.business_identifiers.first.update(
+        identifier: patient.business_identifiers.first.identifier
+      )
+      patient_from_same_state.business_identifiers.first.update(
         identifier: patient.business_identifiers.first.identifier
       )
       set_headers(patient.registration_user, patient.registration_facility)
 
       get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
       response_data = JSON.parse(response.body).with_indifferent_access
-      expect(response_data[:patients].count).to eq 1
-      expect(response_data[:patients].first[:id]).to eq patient.id
+      expect(response_data[:patients].count).to eq 2
+      expect(response_data[:patients].pluck(:id)).to match_array([patient.id, patient_from_same_state.id])
     end
   end
 end
