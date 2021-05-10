@@ -169,7 +169,6 @@ module Reports
       end
     end
 
-
     memoize def ltfu_counts
       region_period_cached_query(__method__) do |entry|
         facility_ids = entry.region.facility_ids

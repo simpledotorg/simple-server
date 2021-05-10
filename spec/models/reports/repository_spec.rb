@@ -312,7 +312,8 @@ RSpec.describe Reports::Repository, type: :model do
         }
 
         expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
-          Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1})
+          Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
+        })
         expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
         expect(repo.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(expected_grouped_by_user)
         expect(repo_2.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(expected_grouped_by_user)
