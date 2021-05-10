@@ -22,8 +22,8 @@ module Reports
     attr_reader :control_rate_query
     attr_reader :earliest_patient_data_query
     attr_reader :no_bp_measure_query
-    attr_reader :periods
     attr_reader :period_type
+    attr_reader :periods
     attr_reader :regions
 
     delegate :cache, :logger, to: Rails
@@ -58,6 +58,8 @@ module Reports
       end
     end
 
+    # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
+    # are the basis for control rates. These counts DO include lost to follow up.
     memoize def adjusted_patient_counts_with_ltfu
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
@@ -67,6 +69,8 @@ module Reports
       end
     end
 
+    # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
+    # are the basis for control rates. These counts DO NOT include lost to follow up.
     memoize def adjusted_patient_counts
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
@@ -106,6 +110,42 @@ module Reports
       end
     end
 
+    memoize def registration_counts_by_user
+      region_entries = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+      region_entries.each_with_object({}) do |region_entry, sum|
+        sum[region_entry.slug] = RegisteredPatientsQuery.new.count(region_entry.region, period_type, group_by: :registration_user_id)
+      end
+    end
+
+    # Returns counts of the cumulative Registration counts done by Users within a Region.
+    # Returns a nested Hash structure in the following shape:
+    # {
+    #   slug => {
+    # .   period => {
+    # .     user_id_1 => cumulative_count,
+    # .     user_id_2 => cumulative_count,
+    # .  }
+    # }
+    #
+    memoize def cumulative_registration_counts_by_user
+      registration_counts_by_user.each_with_object({}) do |(slug, period_counts), totals|
+        totals[slug] = {}
+        # collect all the user ids in a region that we need to count for
+        user_ids = period_counts.each_with_object(Set.new) { |(period, user_counts), user_ids| user_ids.merge(user_counts.keys) }
+        # now sum up the running totals of registration counts for all those users for all periods
+        range = Range.new(earliest_patient_recorded_at_period[slug], periods.end)
+        range.each do |period|
+          totals[slug][period] ||= Hash.new(0)
+          user_ids.each do |user_id|
+            current = period_counts.dig(period, user_id) || 0
+            previous = totals.dig(slug, period.previous, user_id) || 0
+            totals[slug][period][user_id] = current + previous
+          end
+        end
+        totals
+      end
+    end
+
     # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
     # fast and easy via the underlying query.
     memoize def complete_registration_counts
@@ -125,26 +165,26 @@ module Reports
     end
 
     memoize def ltfu_counts
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         facility_ids = entry.region.facility_ids
         Patient.for_reports.where(assigned_facility: facility_ids).ltfu_as_of(entry.period.end).count
       end
     end
 
     memoize def controlled_patients_count
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         control_rate_query.controlled(entry.region, entry.period).count
       end
     end
 
     memoize def uncontrolled_patients_count
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         control_rate_query.uncontrolled(entry.region, entry.period).count
       end
     end
 
     memoize def missed_visits
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         slug = entry.slug
         patient_count = denominator(entry.region, entry.period)
         controlled = controlled_patients_count[slug][entry.period]
@@ -154,11 +194,18 @@ module Reports
       end
     end
 
+    # We determine this rate via subtraction from 100 instead of via division to avoid confusing rounding errors.
     memoize def missed_visits_rate
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         remaining_percentages = controlled_patients_rate[slug][period] + uncontrolled_patients_rate[slug][period] + visited_without_bp_taken_rate[slug][period]
         100 - remaining_percentages
+      end
+    end
+
+    memoize def hypertension_follow_ups(group_by: nil)
+      regions.each_with_object({}) do |region, hsh|
+        hsh[region.slug] = FollowUpsQuery.new(region, period_type, group_by: group_by).hypertension
       end
     end
 
@@ -171,15 +218,15 @@ module Reports
     end
 
     memoize def controlled_patients_rate
-      cached_query(__method__) do |entry|
-        controlled = controlled_patients_count[entry.region.slug][entry.period]
+      region_period_cached_query(__method__) do |entry|
+        controlled = controlled_patients_count[entry.slug][entry.period]
         total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
     end
 
     memoize def uncontrolled_patients_rate
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         controlled = uncontrolled_patients_count[entry.region.slug][entry.period]
         total = denominator(entry.region, entry.period)
         percentage(controlled, total)
@@ -187,14 +234,14 @@ module Reports
     end
 
     memoize def visited_without_bp_taken
-      cached_query(__method__) do |entry|
+      region_period_cached_query(__method__) do |entry|
         no_bp_measure_query.call(entry.region, entry.period)
       end
     end
 
     memoize def visited_without_bp_taken_rate
-      cached_query(__method__) do |entry|
-        controlled = visited_without_bp_taken[entry.region.slug][entry.period]
+      region_period_cached_query(__method__) do |entry|
+        controlled = visited_without_bp_taken[entry.slug][entry.period]
         total = denominator(entry.region, entry.period)
         percentage(controlled, total)
       end
@@ -209,7 +256,7 @@ module Reports
     #     region_2_slug: { period_1: value, period_2: value }
     #   }
     #
-    def cached_query(calculation, &block)
+    def region_period_cached_query(calculation, &block)
       items = cache_entries(calculation)
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
