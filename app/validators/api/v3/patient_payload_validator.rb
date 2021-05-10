@@ -20,7 +20,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :could_not_contact_reason,
     :call_result,
     :reminder_consent,
-    :deleted_reason
+    :deleted_reason,
+    :skip_facility_authorization
   )
 
   attr_writer :request_user_id
@@ -28,8 +29,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
   validate :validate_schema, unless: -> { FeatureToggle.enabled?("SKIP_API_VALIDATION") }
   validate :presence_of_age
   validate :past_date_of_birth
-  validate :authorized_assigned_facility
-  validate :authorized_registration_facility
+  validate :authorized_assigned_facility, unless: :skip_facility_authorization
+  validate :authorized_registration_facility, unless: :skip_facility_authorization
 
   def presence_of_age
     unless date_of_birth.present? || (age.present? && age_updated_at.present?)

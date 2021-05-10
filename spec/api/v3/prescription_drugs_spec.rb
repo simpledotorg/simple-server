@@ -9,7 +9,7 @@ describe "PrescriptionDrugs v3 API", swagger_doc: "v3/swagger.json" do
       parameter name: "HTTP_X_FACILITY_ID", in: :header, type: :uuid
       parameter name: :prescription_drugs, in: :body, schema: Api::V3::Schema.prescription_drug_sync_from_user_request
 
-      response "200", "blood pressures created" do
+      response "200", "prescription drugs created" do
         let(:request_user) { FactoryBot.create(:user) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }
@@ -50,7 +50,7 @@ describe "PrescriptionDrugs v3 API", swagger_doc: "v3/swagger.json" do
         end
       end
 
-      response "200", "blood pressures received" do
+      response "200", "prescription drugs received" do
         let(:request_user) { FactoryBot.create(:user) }
         let(:request_facility) { FactoryBot.create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }

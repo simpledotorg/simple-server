@@ -12,7 +12,8 @@ class Api::V3::PrescriptionDrugPayloadValidator < Api::V3::PayloadValidator
     :duration_in_days,
     :teleconsultation_id,
     :created_at,
-    :updated_at
+    :updated_at,
+    :deleted_at
   )
 
   validate :validate_schema
