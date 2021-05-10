@@ -103,18 +103,41 @@ module Reports
       end
     end
 
+    # Returns registration counts per region / period
     memoize def registration_counts
       complete_registration_counts.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result| region_result[period] = result[period] if result[period] }
-        results[entry.region.slug] = values
+        result.default = 0
+        results[entry.region.slug] = result
       end
     end
 
-    memoize def registration_counts_by_user
-      region_entries = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      region_entries.each_with_object({}) do |region_entry, sum|
-        sum[region_entry.slug] = RegisteredPatientsQuery.new.count(region_entry.region, period_type, group_by: :registration_user_id)
+    # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
+    # fast and easy via the underlying query.
+    memoize def complete_registration_counts
+      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
+      cache.fetch_multi(*items, force: bust_cache?) { |entry|
+        RegisteredPatientsQuery.new.count(entry.region, period_type)
+      }
+    end
+
+    memoize def cumulative_registrations
+      complete_registration_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
+        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
+        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
+          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
+        }
       end
+    end
+
+    # Returns registration counts per region / period counted by registration_user
+    memoize def registration_counts_by_user
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :registration_user_id, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        RegisteredPatientsQuery.new.count(entry.region, period_type, group_by: :registration_user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
     end
 
     # Returns counts of the cumulative Registration counts done by Users within a Region.
@@ -146,23 +169,6 @@ module Reports
       end
     end
 
-    # Returns the full range of registered patient counts for a Region. We do this via one SQL query for each Region, because its
-    # fast and easy via the underlying query.
-    memoize def complete_registration_counts
-      items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
-      cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        RegisteredPatientsQuery.new.count(entry.region, period_type)
-      }
-    end
-
-    memoize def cumulative_registrations
-      complete_registration_counts.each_with_object({}) do |(region_entry, patient_counts), totals|
-        range = Range.new(patient_counts.keys.first || periods.first, periods.end)
-        totals[region_entry.slug] = range.each_with_object(Hash.new(0)) { |period, sum|
-          sum[period] = sum[period.previous] + patient_counts.fetch(period, 0)
-        }
-      end
-    end
 
     memoize def ltfu_counts
       region_period_cached_query(__method__) do |entry|

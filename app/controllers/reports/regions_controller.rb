@@ -57,8 +57,11 @@ class Reports::RegionsController < AdminController
     @period = Period.month(Time.current)
     @period_range = Range.new(@period.advance(months: -5), @period)
 
-    @facility_regions = authorize { current_admin.accessible_facility_regions(:view_reports).order(:name) }
-    regions = [@region, @facility_regions].flatten
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, @region.facility_regions].flatten
+    end
     @repository = Reports::Repository.new(regions, periods: @period_range)
 
     @dashboard_analytics = @region.dashboard_analytics(period: @period.type,

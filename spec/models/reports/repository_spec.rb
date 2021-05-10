@@ -85,7 +85,7 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.assigned_patients_count[slug][july_2020]).to eq(0)
       expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.registration_counts[slug][july_2020]).to eq(0)
+      expect(repo.registration_counts[slug][july_2020.to_period]).to eq(0)
     end
 
     it "can count registrations and cumulative registrations by user" do
@@ -105,6 +105,7 @@ RSpec.describe Reports::Repository, type: :model do
       repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
       expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
       expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
+      expect(repo.registration_counts_by_user[facility_1.slug][july_2020.to_period][user_2.id]).to eq(1)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2018.to_period][user.id]).to eq(2)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2020.to_period][user.id]).to eq(6)
       expect(repo.cumulative_registration_counts_by_user[facility_1.slug][july_2018.to_period][user_2.id]).to eq(0)
