@@ -72,7 +72,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
       twilio = create(:twilio_sms_delivery_detail, :failed, communication: previous_communication)
 
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
       expect {
         described_class.perform_async(reminder.id, communication_type)
@@ -82,8 +81,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "updates the appointment reminder status to 'sent'" do
       mock_successful_delivery
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.error")
 
       expect {
         described_class.perform_async(reminder.id, communication_type)
@@ -155,6 +152,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "reports an error and does not create a communication if the appointment notification status is not 'scheduled'" do
       appointment_reminder = create(:appointment_reminder, status: "pending")
+
       expect(Sentry).to receive(:capture_message)
       expect {
         described_class.perform_async(appointment_reminder.id, communication_type)
