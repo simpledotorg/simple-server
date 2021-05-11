@@ -5,7 +5,7 @@ class AppointmentNotification::Worker
   sidekiq_options queue: :high
 
   DEFAULT_LOCALE = :en
-  
+
   def metrics
     @metrics ||= Metrics.with_object(self)
   end

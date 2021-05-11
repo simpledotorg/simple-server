@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
-
   before do
     Flipper.enable(:appointment_reminders)
     allow(Statsd.instance).to receive(:increment).with(anything)
