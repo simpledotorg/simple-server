@@ -98,8 +98,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { reminder.reload.status }.from("scheduled").to("sent")
     end
 
-    # these tests are duplicative and should be simplified
-
     it "selects the message language based on patient address" do
       mock_successful_delivery
       reminder.patient.address.update(state: "punjab")
@@ -108,48 +106,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         {
           facility_name: reminder.appointment.facility.name,
           locale: "pa-Guru-IN"
-        }
-      )
-
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
-        reminder.patient.latest_mobile_number,
-        localized_message,
-        "https://localhost/api/v3/twilio_sms_delivery"
-      )
-      described_class.perform_async(reminder.id)
-      described_class.drain
-    end
-
-    it "defaults to English if the patient has no address" do
-      mock_successful_delivery
-
-      reminder.patient.update!(address_id: nil)
-      localized_message = I18n.t(
-        reminder.message,
-        {
-          facility_name: reminder.appointment.facility.name,
-          locale: "en"
-        }
-      )
-
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
-        reminder.patient.latest_mobile_number,
-        localized_message,
-        "https://localhost/api/v3/twilio_sms_delivery"
-      )
-      described_class.perform_async(reminder.id)
-      described_class.drain
-    end
-
-    it "defaults to English if patient's address is invalid" do
-      mock_successful_delivery
-
-      reminder.patient.address.update!(state: "Unknown State")
-      localized_message = I18n.t(
-        reminder.message,
-        {
-          facility_name: reminder.appointment.facility.name,
-          locale: "en"
         }
       )
 

@@ -66,7 +66,7 @@ RSpec.describe NotificationService do
       expect(notification_service.failed?).to be_falsey
     end
 
-    it "is true when twilio raises and error" do
+    it "is true when twilio raises an error" do
       notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
       expect(notification_service.failed?).to be_truthy
     end

@@ -7,7 +7,7 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
 
     before { Flipper.enable(:appointment_reminders) }
 
-    it "does not scheduled anything if appointment_reminders flag is off" do
+    it "does not schedule anything if appointment_reminders flag is off" do
       create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 
       Flipper.disable(:appointment_reminders)
