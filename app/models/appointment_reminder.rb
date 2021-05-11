@@ -10,6 +10,7 @@ class AppointmentReminder < ApplicationRecord
 
   enum status: {
     pending: "pending",
+    scheduled: "scheduled",
     sent: "sent",
     cancelled: "cancelled"
   }, _prefix: true
