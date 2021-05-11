@@ -7,7 +7,7 @@ module AdminPage
       UPDATE_MEDICATION_BUTTON = {css: "input.btn-primary"}.freeze
       MEDICATION_LIST_NAME_HEADING = {css: "h1"}.freeze
 
-      def edit_protocol_drug_info(dosage, code)
+      def edit_medication_info(dosage, code)
         present?(MEDICATION_LIST_NAME_HEADING)
         type(MEDICATION_DOSAGE, dosage)
         type(RX_NORM_CODE, code)
