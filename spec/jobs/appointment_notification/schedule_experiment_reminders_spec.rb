@@ -8,7 +8,7 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
     before { Flipper.enable(:appointment_reminders) }
 
     it "does not scheduled anything if appointment_reminders flag is off" do
-      reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
+      create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 
       Flipper.disable(:appointment_reminders)
       expect(AppointmentNotification::Worker).not_to receive(:perform_at)
@@ -16,12 +16,12 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
     end
 
     it "schedules the worker to send all pending appointment reminders with a remind_on of today" do
-      yesterday_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today - 1.day, status: "pending")
-      today_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
-      tomorrow_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today + 1.day, status: "pending")
-      scheduled_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "scheduled")
-      sent_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "sent")
-      cancelled_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "cancelled")
+      _yesterday_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today - 1.day, status: "pending")
+      _today_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
+      _tomorrow_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today + 1.day, status: "pending")
+      _scheduled_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "scheduled")
+      _sent_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "sent")
+      _cancelled_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "cancelled")
 
       expect(AppointmentNotification::Worker).to receive(:perform_at).exactly(1).times
 
@@ -30,7 +30,7 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
 
     # only doing this because i couldn't test both expectations in the last specs
     it "schedules the worker with the appointment reminder's id" do
-      today_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
+      create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 
       Timecop.freeze do
         next_messaging_time = Communication.next_messaging_time
@@ -40,7 +40,7 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
     end
 
     it "updates the reminder status to 'scheduled'" do
-      today_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
+      create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 
       expect {
         described_class.perform_now

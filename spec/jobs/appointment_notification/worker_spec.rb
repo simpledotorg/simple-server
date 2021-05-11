@@ -82,7 +82,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       mock_successful_delivery
 
       previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
-      twilio = create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
+      create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
       expect_any_instance_of(NotificationService).to receive(:send_sms)
       described_class.perform_async(reminder.id)
