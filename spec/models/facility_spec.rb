@@ -154,22 +154,33 @@ RSpec.describe Facility, type: :model do
         expected_output = {
           second_follow_up_date.to_date.beginning_of_month => 1
         }
+        expected_repo_output = {
+          Period.month(second_follow_up_date) => 1
+        }
+
+        region = facility.region
+        periods = Range.new(registration_date.to_period, second_follow_up_date.to_period)
+        repository = Reports::Repository.new(region, periods: periods)
 
         expect(facility.hypertension_follow_ups_by_period(:month).count).to eq(expected_output)
+        expect(repository.hypertension_follow_ups[facility.region.slug]).to eq(expected_repo_output)
       end
 
       it "counts the patients' hypertension follow ups at the facility only" do
-        facilities = create_list(:facility, 2)
+        facility_1, facility_2 = create_list(:facility, 2)
+        regions = [facility_1.region, facility_2.region]
+        periods = (3.months.ago.to_period..1.month.ago.to_period)
+
         patient = create(:patient, :hypertension, recorded_at: 10.months.ago)
 
-        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facilities.first, patient: patient)
-        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facilities.second, patient: patient)
+        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient)
+        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient)
 
-        expect(facilities.first.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
-        expect(facilities.second.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
+        expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[1.month.ago.beginning_of_month.to_date]).to eq 0
+        expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[3.months.ago.beginning_of_month.to_date]).to eq 0
 
-        expect(facilities.first.hypertension_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
-        expect(facilities.second.hypertension_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
+        expect(facility_1.hypertension_follow_ups_by_period(:month, last: 4).count[3.month.ago.beginning_of_month.to_date]).to eq 1
+        expect(facility_2.hypertension_follow_ups_by_period(:month, last: 4).count[1.months.ago.beginning_of_month.to_date]).to eq 1
       end
     end
 

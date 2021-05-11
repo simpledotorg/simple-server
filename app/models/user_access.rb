@@ -84,7 +84,7 @@ class UserAccess
   def accessible_facilities(action)
     resources_for(Facility, action)
       .union(Facility.where(facility_group: accessible_facility_groups(action)))
-      .includes(facility_group: :organization)
+      .includes(:region, facility_group: :organization)
   end
 
   def accessible_district_regions(action)
