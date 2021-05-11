@@ -26,7 +26,7 @@ class NotificationService
   end
 
   def failed?
-    !error.nil?
+    error.present?
   end
 
   private

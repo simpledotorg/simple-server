@@ -18,7 +18,6 @@ class AppointmentReminder < ApplicationRecord
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
-  # may need to change the existing notifications
   def localized_message
     I18n.t(
       message,

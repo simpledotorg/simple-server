@@ -9,14 +9,13 @@ RSpec.describe NotificationService do
   let(:recipient_phone_number) { "8585858585" }
   let(:expected_sms_recipient_phone_number) { "+918585858585" }
 
-  # this name no longer makes sense
-  def mock_successful_delivery
+  def stub_client
     allow(notification_service).to receive(:client).and_return(twilio_client)
   end
 
   describe "#send_sms" do
     it "correctly calls the Twilio API" do
-      mock_successful_delivery
+      stub_client
 
       expect(twilio_client).to receive_message_chain("messages.create").with(
         from: sender_phone_number,
@@ -38,7 +37,7 @@ RSpec.describe NotificationService do
 
   describe "#send_whatsapp" do
     it "correctly calls the Twilio API" do
-      mock_successful_delivery
+      stub_client
 
       expect(twilio_client).to receive_message_chain("messages.create").with(
         from: "whatsapp:#{sender_phone_number}",
@@ -61,7 +60,7 @@ RSpec.describe NotificationService do
   describe "#failed?" do
     it "is false when no error has been raised" do
       expect(notification_service.failed?).to be_falsey
-      mock_successful_delivery
+      stub_client
       allow(twilio_client).to receive_message_chain("messages.create")
       notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
       expect(notification_service.failed?).to be_falsey
@@ -84,7 +83,7 @@ RSpec.describe NotificationService do
     end
 
     it "adds the correct country code" do
-      mock_successful_delivery
+      stub_client
 
       expect(notification_service.parse_phone_number("98765 43210")).to eq("+8809876543210")
     end

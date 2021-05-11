@@ -42,6 +42,7 @@ RSpec.describe AppointmentNotificationService do
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointment_relation)
       }.to change { overdue_appointment.appointment_reminders.count }.by(1)
+      expect(overdue_appointment.appointment_reminders.last.status).to eq("scheduled")
     end
 
     it "should skip reminders for appointments that already have an appointment reminder" do

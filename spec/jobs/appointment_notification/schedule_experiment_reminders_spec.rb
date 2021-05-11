@@ -24,11 +24,10 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
       _cancelled_reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "cancelled")
 
       expect(AppointmentNotification::Worker).to receive(:perform_at).exactly(1).times
-
       described_class.perform_now
     end
 
-    # only doing this because i couldn't test both expectations in the last specs
+    # can't be tested in the previous spec because the expectations collide
     it "schedules the worker with the appointment reminder's id" do
       reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 

@@ -31,7 +31,7 @@ class AppointmentNotificationService
       appointment: appointment,
       patient: appointment.patient,
       remind_on: appointment.remind_on,
-      status: "pending",
+      status: "scheduled",
       message: "sms.appointment_reminders.#{communication_type}"
     )
   end
