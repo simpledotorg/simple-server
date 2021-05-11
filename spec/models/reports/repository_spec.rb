@@ -60,7 +60,7 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.registration_counts).to eq(expected)
     end
 
-    fit "gets assigned and registration counts for a range of periods" do
+    it "gets assigned and registration counts for a range of periods" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
       facility_1, facility_2 = facilities.take(2)
 
@@ -321,7 +321,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "creates cache keys" do
       repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"))
-      cache_keys = repo.send(:cache_entries, :controlled).map(&:cache_key)
+      cache_keys = repo.send(:cache_entries_v1, :controlled).map(&:cache_key)
       cache_keys.each do |key|
         expect(key).to include("controlled")
       end
@@ -345,16 +345,16 @@ RSpec.describe Reports::Repository, type: :model do
       3.times { _result = repo.controlled_patients_rate }
     end
 
-    fit "caches region_period entries only as far back as there is data" do
+    it "caches region_period entries only as far back as there is data" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      keys = repo.send(:cache_entries_v1, :controlled)
-      pp keys.map(&:cache_key)
-      pp keys.size
+      v1_keys = repo.send(:cache_entries_v1, :controlled)
+      expect(v1_keys.size).to eq(25)
       keys = repo.send(:cache_entries_v2, :controlled)
-      # pp keys
-      pp keys.size
+      periods = keys.map(&:period)
+      expected_periods = (jan_2019.to_period..july_2020.to_period).to_a
+      expect(periods).to eq(expected_periods)
     end
 
     it "will not ignore memoization when bust_cache is true" do
