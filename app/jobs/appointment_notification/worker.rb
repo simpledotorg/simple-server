@@ -5,10 +5,22 @@ class AppointmentNotification::Worker
   sidekiq_options queue: :high
 
   DEFAULT_LOCALE = :en
+  
+  def metrics
+    @metrics ||= Metrics.with_object(self)
+  end
 
   def perform(appointment_reminder_id, communication_type)
+    metrics.increment("attempts")
+    unless Flipper.enabled?(:appointment_reminders)
+      metrics.increment("skipped.feature_disabled")
+      return
+    end
     reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
-    return if reminder.appointment.previously_communicated_via?(communication_type)
+    if reminder.appointment.previously_communicated_via?(communication_type)
+      metrics.increment("skipped.previously_communicated")
+      return
+    end
     if reminder.status != "scheduled"
       report_error("scheduled appointment reminder has invalid status")
       return
@@ -27,19 +39,24 @@ class AppointmentNotification::Worker
           reminder.patient.latest_mobile_number,
           appointment_message(reminder),
           callback_url
-        )
+        ).tap do |response|
+          metrics.increment("sent.whatsapp")
+        end
       else
         notification_service.send_sms(
           reminder.patient.latest_mobile_number,
           appointment_message(reminder),
           callback_url
-        )
+        ).tap do |response|
+          metrics.increment("sent.sms")
+        end
       end
       ActiveRecord::Base.transaction do
         create_communication(reminder, communication_type, response)
         reminder.status_sent!
       end
     rescue Twilio::REST::TwilioError => e
+      metrics.increment(:error)
       report_error(e)
     end
   end
@@ -74,14 +91,12 @@ class AppointmentNotification::Worker
   end
 
   def report_error(e)
-    Sentry.capture_message(
-      "Error while processing appointment notifications",
+    Sentry.capture_message("Error while processing appointment notifications",
       extra: {
         exception: e.to_s
       },
       tags: {
         type: "appointment-notification-job"
-      }
-    )
+      })
   end
 end

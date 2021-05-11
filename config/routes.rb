@@ -171,6 +171,8 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
+    get "regions/:report_scope/:id/monthly_district_data_report",
+      to: "regions#monthly_district_data_report", as: :region_monthly_district_data
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics
   end
 
@@ -204,9 +206,12 @@ Rails.application.routes.draw do
         post "upload"
       end
     end
+
     resources :facility_groups, except: [:index] do
       resources :facilities
     end
+
+    resources :patient_imports, only: [:new, :create]
 
     resources :protocols do
       resources :protocol_drugs

@@ -1,6 +1,12 @@
 require "rails_helper"
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
+
+  before do
+    Flipper.enable(:appointment_reminders)
+    allow(Statsd.instance).to receive(:increment).with(anything)
+  end
+
   describe "#perform" do
     let(:reminder) { create(:appointment_reminder, status: "scheduled", message: "sms.appointment_reminders.missed_visit_whatsapp_reminder") }
     let(:communication_type) { "missed_visit_whatsapp_reminder" }
@@ -15,6 +21,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "sends a whatsapp message when communication_type is whatsapp" do
       mock_successful_delivery
 
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
       described_class.perform_async(reminder.id, communication_type)
       described_class.drain
@@ -25,6 +32,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(notification_service).to receive(:status).and_return("sent")
       allow(notification_service).to receive(:sid).and_return("12345")
 
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
       expect_any_instance_of(NotificationService).to receive(:send_sms)
       described_class.perform_async(reminder.id, "missed_visit_sms_reminder")
       described_class.drain
@@ -65,6 +73,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
       twilio = create(:twilio_sms_delivery_detail, :failed, communication: previous_communication)
 
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
       expect {
         described_class.perform_async(reminder.id, communication_type)
@@ -74,6 +83,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "updates the appointment reminder status to 'sent'" do
       mock_successful_delivery
+
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.error")
 
       expect {
         described_class.perform_async(reminder.id, communication_type)

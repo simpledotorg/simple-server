@@ -4,7 +4,7 @@ module Reports
 
     # The default period we report on is the current month.
     def self.default_period
-      Period.month(Date.current.beginning_of_month)
+      Period.month(Time.current.in_time_zone(Period::ANALYTICS_TIME_ZONE))
     end
 
     def self.call(*args)
@@ -38,6 +38,10 @@ module Reports
       result.calculate_missed_visits_percentages(calc_range)
       result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
       result.calculate_period_info(calc_range)
+
+      # This is a temporary hack to refresh repository's missed visits from the RegionCacheWarmer.
+      # We should deprecate result.rb and move all calculations to Repository.
+      repository.missed_visits
 
       result
     end

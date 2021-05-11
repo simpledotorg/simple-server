@@ -7,7 +7,10 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     return head :not_found unless twilio_message
 
     twilio_message.update(update_params)
+
     communication_type = twilio_message.communication.communication_type
+    event = [communication_type, twilio_message.result].join(".")
+    metrics.increment(event)
 
     if communication_type == "missed_visit_whatsapp_reminder" && twilio_message.unsuccessful?
       appointment_reminder_id = twilio_message.communication.appointment_reminder_id
@@ -19,6 +22,10 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
   end
 
   private
+
+  def metrics
+    @metrics ||= Metrics.with_prefix("twilio_callback")
+  end
 
   def update_params
     details = {result: message_status}
