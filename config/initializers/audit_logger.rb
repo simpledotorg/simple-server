@@ -4,5 +4,5 @@ class AuditLogFormatter
   end
 end
 
-::AuditLogger ||= Logger.new("#{Rails.root}/log/audit.log")
+::AuditLogger = Logger.new("#{Rails.root}/log/audit.log")
 ::AuditLogger.formatter ||= AuditLogFormatter.new
