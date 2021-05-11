@@ -30,21 +30,21 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
 
     # only doing this because i couldn't test both expectations in the last specs
     it "schedules the worker with the appointment reminder's id" do
-      create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
+      reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 
       Timecop.freeze do
         next_messaging_time = Communication.next_messaging_time
-        expect(AppointmentNotification::Worker).to receive(:perform_at).with(next_messaging_time, today_reminder.id).exactly(1).times
+        expect(AppointmentNotification::Worker).to receive(:perform_at).with(next_messaging_time, reminder.id).exactly(1).times
         described_class.perform_now
       end
     end
 
     it "updates the reminder status to 'scheduled'" do
-      create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
+      reminder = create(:appointment_reminder, appointment: appointment, remind_on: today, status: "pending")
 
       expect {
         described_class.perform_now
-      }.to change { today_reminder.reload.status }.from("pending").to("scheduled")
+      }.to change { reminder.reload.status }.from("pending").to("scheduled")
     end
   end
 end
