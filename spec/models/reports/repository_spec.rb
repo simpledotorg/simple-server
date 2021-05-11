@@ -345,12 +345,15 @@ RSpec.describe Reports::Repository, type: :model do
       3.times { _result = repo.controlled_patients_rate }
     end
 
-    it "caches region_period entries only as far back as there is data" do
+    fit "caches region_period entries only as far back as there is data" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      keys = repo.send(:cache_entries, :controlled)
-      pp keys
+      keys = repo.send(:cache_entries_v1, :controlled)
+      pp keys.map(&:cache_key)
+      pp keys.size
+      keys = repo.send(:cache_entries_v2, :controlled)
+      # pp keys
       pp keys.size
     end
 
