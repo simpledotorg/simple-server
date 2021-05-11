@@ -15,8 +15,8 @@ so:
   sms:
     request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
-      missed_visit_whatsapp_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
+      missed_visit_sms_reminder: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
+      missed_visit_whatsapp_reminder: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
     patient_request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta BP Passport\n%{app_signature}"
   dashboard:
     graphics:
