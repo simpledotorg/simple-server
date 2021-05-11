@@ -239,6 +239,7 @@ module Reports
     #
     def region_period_cached_query(calculation, &block)
       items = cache_entries(calculation)
+      pp items
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
       cached_results.each_with_object({}) do |(entry, count), results|
         results[entry.region.slug] ||= Hash.new(0)
@@ -248,8 +249,16 @@ module Reports
       end
     end
 
-    def cache_entries(calculation)
+    def cache_entries_v1(calculation)
       combinations = regions.to_a.product(periods.to_a)
+      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation) }
+    end
+
+    def cache_entries_v2(calculation)
+      combinations = regions.each_with_object([]) do |region, sum|
+        periods_with_data = periods.select { |period| period >= earliest_patient_recorded_at_period[region.slug] }
+        sum << periods_with_data.to_a.map { |period| [region, period] }
+      end
       combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation) }
     end
 
