@@ -48,4 +48,3 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
     end
   end
 end
- 
