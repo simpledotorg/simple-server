@@ -90,7 +90,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "can count registrations and cumulative registrations by user" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
-      facility_1, _facility_2 = facilities.take(2)
+      facility_1 = facilities.first
       user_2 = create(:user)
 
       default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
