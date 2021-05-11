@@ -2,8 +2,8 @@ class Medication < ActiveYaml::Base
   set_root_path "config/data"
   set_filename "medications"
 
-  CREATED_TIME ||= File.ctime("config/data/medications.yml").in_time_zone("UTC")
-  UPDATED_TIME ||= File.mtime("config/data/medications.yml").in_time_zone("UTC")
+  CREATED_TIME = File.ctime("config/data/medications.yml").in_time_zone("UTC")
+  UPDATED_TIME = File.mtime("config/data/medications.yml").in_time_zone("UTC")
 
   CATEGORIES = {
     hypertension_ccb: "Hypertension: CCB",
