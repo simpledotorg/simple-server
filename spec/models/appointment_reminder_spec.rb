@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe AppointmentReminder, type: :model do
-
   let(:appointment_reminder) { create(:appointment_reminder) }
 
   describe "associations" do
@@ -22,7 +21,7 @@ describe AppointmentReminder, type: :model do
       appointment_reminder.patient.address.update(state: "punjab")
       expected_message = I18n.t(
         appointment_reminder.message,
-        assigned_facility_name: appointment_reminder.appointment.facility.name,
+        facility_name: appointment_reminder.appointment.facility.name,
         patient_name: appointment_reminder.patient.full_name,
         appointment_date: appointment_reminder.appointment.scheduled_date,
         locale: "pa-Guru-IN"
@@ -34,7 +33,7 @@ describe AppointmentReminder, type: :model do
       appointment_reminder.patient.update!(address_id: nil)
       expected_message = I18n.t(
         appointment_reminder.message,
-        assigned_facility_name: appointment_reminder.appointment.facility.name,
+        facility_name: appointment_reminder.appointment.facility.name,
         patient_name: appointment_reminder.patient.full_name,
         appointment_date: appointment_reminder.appointment.scheduled_date,
         locale: "en"
@@ -46,7 +45,7 @@ describe AppointmentReminder, type: :model do
       appointment_reminder.patient.address.update!(state: "Unknown State")
       expected_message = I18n.t(
         appointment_reminder.message,
-        assigned_facility_name: appointment_reminder.appointment.facility.name,
+        facility_name: appointment_reminder.appointment.facility.name,
         patient_name: appointment_reminder.patient.full_name,
         appointment_date: appointment_reminder.appointment.scheduled_date,
         locale: "en"

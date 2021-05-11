@@ -3,7 +3,7 @@ require "tasks/scripts/message_patients"
 
 RSpec.describe MessagePatients do
   let(:message) { "Your health is important." }
-  let(:patients) { create_list(:patient, 2)}
+  let(:patients) { create_list(:patient, 2) }
   let(:patient) { create(:patient) }
 
   describe "#call" do

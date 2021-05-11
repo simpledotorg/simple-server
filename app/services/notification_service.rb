@@ -36,17 +36,15 @@ class NotificationService
   end
 
   def send_twilio_message(sender_number, recipient_number, message, callback_url = nil)
-    begin
-      @response = client.messages.create(
-        from: sender_number,
-        to: recipient_number,
-        status_callback: callback_url,
-        body: message
-      )
-    rescue Twilio::REST::TwilioError => e
-      report_error(e)
-      @error = :exception
-    end
+    @response = client.messages.create(
+      from: sender_number,
+      to: recipient_number,
+      status_callback: callback_url,
+      body: message
+    )
+  rescue Twilio::REST::TwilioError => e
+    report_error(e)
+    @error = :exception
   end
 
   def twilio_account_sid
