@@ -1,4 +1,6 @@
 ---
+# Whenever this list of canonical medications is updated, please notify the Simple Operations team (Meg Farrell) to
+# update the list of common medications in any patient data entry spreadsheets that have been distributed.
 - id: e9865df7-39b5-4fb8-8ab3-354f87a5d369
   name: Amlodipine
   composition:
