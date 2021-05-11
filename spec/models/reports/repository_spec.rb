@@ -85,10 +85,30 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.assigned_patients_count[slug][july_2020]).to eq(0)
       expect(repo.registration_counts[slug][Period.month("August 2018")]).to eq(2)
       expect(repo.registration_counts[slug][Period.month("Jan 2019")]).to eq(2)
-      expect(repo.registration_counts[slug][july_2020]).to eq(0)
+      expect(repo.registration_counts[slug][july_2020.to_period]).to eq(0)
     end
 
-    it "gets registration and assigned patient counts for branch new regions with no data" do
+    it "can count registrations and cumulative registrations by user" do
+      facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+      facility_1, facility_2 = facilities.take(2)
+      user_2 = create(:user)
+
+      default_attrs = {registration_facility: facility_1, assigned_facility: facility_1, registration_user: user}
+      jan_1_2018 = Period.month("January 1 2018")
+      _facility_1_registered_before_repository_range = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_1_2018.value))
+      _facility_1_registered_in_jan_2019 = create_list(:patient, 2, default_attrs.merge(recorded_at: jan_2019))
+      _facility_1_registered_in_august_2018 = create_list(:patient, 2, default_attrs.merge(recorded_at: Time.parse("August 10th 2018")))
+      _user_2_registered = create(:patient, full_name: "other user", recorded_at: jan_2019, registration_facility: facility_1, registration_user: user_2)
+
+      refresh_views
+
+      repo = Reports::Repository.new(facility_1.region, periods: (july_2018.to_period..july_2020.to_period))
+      expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user.id]).to eq(2)
+      expect(repo.registration_counts_by_user[facility_1.slug][jan_2019.to_period][user_2.id]).to eq(1)
+      expect(repo.registration_counts_by_user[facility_1.slug][july_2020.to_period]).to be_nil
+    end
+
+    it "gets registration and assigned patient counts for brand new regions with no data" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
       expect(repo.registration_counts).to eq({facility_1.slug => {}})
@@ -256,6 +276,46 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
+  context "follow ups" do
+    it "returns correct per region results with optional group_by" do
+      facility_1, facility_2 = create_list(:facility, 2)
+      regions = [facility_1.region, facility_2.region]
+
+      Timecop.freeze("May 10th 2021") do
+        periods = (6.months.ago.to_period..1.month.ago.to_period)
+        patient_1, patient_2 = create_list(:patient, 2, :hypertension, recorded_at: 10.months.ago)
+        user_1 = create(:user)
+        user_2 = create(:user)
+
+        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_1, user: user_1)
+        create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+        create(:blood_pressure, :with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
+        create(:blood_pressure, :with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+
+        repo = Reports::Repository.new(regions, periods: periods)
+        repo_2 = Reports::Repository.new(regions, periods: periods)
+
+        expected_grouped_by_user = {
+          Period.month("February 1st 2021") => {
+            user_1.id => 1,
+            user_2.id => 1
+          },
+          Period.month("March 1st 2021") => {
+            user_1.id => 0,
+            user_2.id => 1
+          }
+        }
+
+        expect(repo.hypertension_follow_ups[facility_1.region.slug]).to eq({
+          Period.month("February 1st 2021") => 2, Period.month("March 1st 2021") => 1
+        })
+        expect(repo.hypertension_follow_ups[facility_2.region.slug]).to eq({Period.month("April 1st 2021") => 1})
+        expect(repo.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(expected_grouped_by_user)
+        expect(repo_2.hypertension_follow_ups(group_by: "blood_pressures.user_id")[facility_1.region.slug]).to eq(expected_grouped_by_user)
+      end
+    end
+  end
+
   context "caching" do
     let(:facility_1) { create(:facility, name: "facility-1") }
 
@@ -278,8 +338,8 @@ RSpec.describe Reports::Repository, type: :model do
 
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
 
-      allow(repo).to receive(:cached_query).and_call_original
-      expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(1).times.and_call_original
+      allow(repo).to receive(:region_period_cached_query).and_call_original
+      expect(repo).to receive(:region_period_cached_query).with(:controlled_patients_count).exactly(1).times.and_call_original
 
       3.times { _result = repo.controlled_patients_count }
       3.times { _result = repo.controlled_patients_rate }
@@ -296,7 +356,7 @@ RSpec.describe Reports::Repository, type: :model do
 
       RequestStore[:bust_cache] = true
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      expect(repo).to receive(:cached_query).with(:controlled_patients_count).exactly(1).times
+      expect(repo).to receive(:region_period_cached_query).with(:controlled_patients_count).exactly(1).times
 
       3.times { _result = repo.controlled_patients_count }
     end

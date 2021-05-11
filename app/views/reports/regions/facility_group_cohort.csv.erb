@@ -65,7 +65,7 @@ end) %>
     "Facility type",
     "Total registered patients"
   ]
-  dates = dates_for_periods(@period.type, 3, include_current_period: @show_current_period)
+  dates = dates_for_periods(@period.type, 3, include_current_period: true)
   ["Follow up patients", "Registered patients"].each do |metric|
     dates.each do |date|
       headers << "#{metric} #{format_period(@period.type, date)}"

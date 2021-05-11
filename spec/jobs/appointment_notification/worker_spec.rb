@@ -1,158 +1,180 @@
 require "rails_helper"
-require "sidekiq/testing"
 
 RSpec.describe AppointmentNotification::Worker, type: :job do
-  let(:facility_name) { "Simple Facility" }
-  let(:appointment_scheduled_date) { Date.new(2018, 1, 1) }
-  let(:appointment) do
-    create(:appointment,
-      facility: create(:facility, name: facility_name),
-      scheduled_date: appointment_scheduled_date)
-  end
-
-  let(:appointment_phone_number) { appointment.patient.latest_mobile_number }
-  let(:communication_type) { "missed_visit_sms_reminder" }
-  let(:locale) { "en" }
-  let(:expected_message) { "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre." }
-  let(:callback_url) { "https://localhost/api/v3/twilio_sms_delivery" }
-
   before do
     Flipper.enable(:appointment_reminders)
-    notification_response = double("NotificationServiceResponse")
-    allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_response)
-    allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_response)
-    allow(notification_response).to receive(:sid).and_return(SecureRandom.uuid)
-    allow(notification_response).to receive(:status).and_return("queued")
     allow(Statsd.instance).to receive(:increment).with(anything)
   end
 
   describe "#perform" do
-    context "when communication_type is SMS" do
-      it "sends a reminder SMS" do
-        expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
+    let(:reminder) { create(:appointment_reminder, status: "scheduled", message: "sms.appointment_reminders.missed_visit_whatsapp_reminder") }
+    let(:communication_type) { "missed_visit_whatsapp_reminder" }
+    let(:notification_service) { double }
 
-        described_class.perform_async(appointment.id, "missed_visit_sms_reminder", locale)
-        described_class.drain
-      end
+    def mock_successful_delivery
+      allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_return(notification_service)
+      allow(notification_service).to receive(:status).and_return("sent")
+      allow(notification_service).to receive(:sid).and_return("12345")
     end
 
-    context "when communication_type is WhatsApp" do
-      it "sends a reminder WhatsApp" do
-        expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
-        expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
+    it "sends a whatsapp message when communication_type is whatsapp" do
+      mock_successful_delivery
 
-        described_class.perform_async(appointment.id, "missed_visit_whatsapp_reminder", locale)
-        described_class.drain
-      end
+      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
+      expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
+      described_class.perform_async(reminder.id, communication_type)
+      described_class.drain
     end
 
-    it "records a Communication log if successful" do
+    it "sends sms when communication_type is sms" do
+      allow_any_instance_of(NotificationService).to receive(:send_sms).and_return(notification_service)
+      allow(notification_service).to receive(:status).and_return("sent")
+      allow(notification_service).to receive(:sid).and_return("12345")
+
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
+      expect_any_instance_of(NotificationService).to receive(:send_sms)
+      described_class.perform_async(reminder.id, "missed_visit_sms_reminder")
+      described_class.drain
+    end
+
+    it "creates a Communication with twilio response status and sid" do
+      mock_successful_delivery
+
+      expect(Communication).to receive(:create_with_twilio_details!).with(
+        appointment: reminder.appointment,
+        appointment_reminder: reminder,
+        twilio_sid: "12345",
+        twilio_msg_status: "sent",
+        communication_type: communication_type
+      ).and_call_original
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async(reminder.id, communication_type)
         described_class.drain
       }.to change { Communication.count }.by(1)
     end
 
-    it "does not send if Appointment is missing" do
+    it "does not create a NotificationService or Communication if appointment has previously been successfully communicated" do
+      mock_successful_delivery
+
+      previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
+      twilio = create(:twilio_sms_delivery_detail, :sent, communication: previous_communication)
+
+      expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
       expect {
-        described_class.perform_async("12345", communication_type, locale)
+        described_class.perform_async(reminder.id, communication_type)
         described_class.drain
       }.not_to change { Communication.count }
     end
 
-    it "does not send if Communication already sent" do
-      expect_any_instance_of(Appointment).to receive(:previously_communicated_via?).and_return(true)
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
+    it "creates a NotificationService and Communication if attempt has previously been made and failed" do
+      mock_successful_delivery
+
+      previous_communication = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment)
+      twilio = create(:twilio_sms_delivery_detail, :failed, communication: previous_communication)
+
+      expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
+      expect {
+        described_class.perform_async(reminder.id, communication_type)
+        described_class.drain
+      }.to change { Communication.count }.by(1)
+    end
+
+    it "updates the appointment reminder status to 'sent'" do
+      mock_successful_delivery
 
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async(reminder.id, communication_type)
+        described_class.drain
+      }.to change { reminder.reload.status }.from("scheduled").to("sent")
+    end
+
+    it "selects the message language based on patient address" do
+      mock_successful_delivery
+      reminder.patient.address.update(state: "punjab")
+      localized_message = I18n.t(
+        reminder.message,
+        {
+          facility_name: reminder.appointment.facility.name,
+          locale: "pa-Guru-IN"
+        }
+      )
+
+      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
+        reminder.patient.latest_mobile_number,
+        localized_message,
+        "https://localhost/api/v3/twilio_sms_delivery"
+      )
+      described_class.perform_async(reminder.id, communication_type)
+      described_class.drain
+    end
+
+    it "defaults to English if the patient has no address" do
+      mock_successful_delivery
+
+      reminder.patient.update!(address_id: nil)
+      localized_message = I18n.t(
+        reminder.message,
+        {
+          facility_name: reminder.appointment.facility.name,
+          locale: "en"
+        }
+      )
+
+      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
+        reminder.patient.latest_mobile_number,
+        localized_message,
+        "https://localhost/api/v3/twilio_sms_delivery"
+      )
+      described_class.perform_async(reminder.id, communication_type)
+      described_class.drain
+    end
+
+    it "defaults to English if patient's address is invalid" do
+      mock_successful_delivery
+
+      reminder.patient.address.update!(state: "Unknown State")
+      localized_message = I18n.t(
+        reminder.message,
+        {
+          facility_name: reminder.appointment.facility.name,
+          locale: "en"
+        }
+      )
+
+      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
+        reminder.patient.latest_mobile_number,
+        localized_message,
+        "https://localhost/api/v3/twilio_sms_delivery"
+      )
+      described_class.perform_async(reminder.id, communication_type)
+      described_class.drain
+    end
+
+    it "reports an error and does not create a communication if the appointment notification status is not 'scheduled'" do
+      appointment_reminder = create(:appointment_reminder, status: "pending")
+
+      expect(Sentry).to receive(:capture_message)
+      expect {
+        described_class.perform_async(appointment_reminder.id, communication_type)
         described_class.drain
       }.not_to change { Communication.count }
+      expect(appointment_reminder.reload.status).to eq("pending")
     end
 
-    it "does not record a Communication log if any errors occur" do
-      allow_any_instance_of(NotificationService).to receive(:send_sms).and_raise(Twilio::REST::TwilioError)
-      allow_any_instance_of(NotificationService).to receive(:send_whatsapp).and_raise(Twilio::REST::TwilioError)
-
-      expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.error")
-
+    it "reports an error and does not create a communication if an error is received from twilio" do
+      expect(Sentry).to receive(:capture_message)
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async(reminder.id, communication_type)
         described_class.drain
       }.not_to change { Communication.count }
+      expect(reminder.reload.status).to eq("scheduled")
     end
 
-    describe "uses message translations" do
-      context "when locale is set" do
-        context "when communication_type is SMS" do
-          it "should have the message text in Marathi" do
-            locale = "mr-IN"
-            expected_message = "आमचा Simple Facility येथील कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा."
-
-            expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
-
-            described_class.perform_async(appointment.id, "missed_visit_sms_reminder", locale)
-            described_class.drain
-          end
-        end
-
-        context "when communication_type is WhatsApp" do
-          it "should have the message text in Marathi" do
-            locale = "mr-IN"
-            expected_message = "आमचा Simple Facility येथील कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा."
-
-            expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(appointment_phone_number, expected_message, callback_url)
-
-            described_class.perform_async(appointment.id, "missed_visit_whatsapp_reminder", locale)
-            described_class.drain
-          end
-        end
-      end
-
-      context "when locale is not set" do
-        it "localizes the message based on patient address" do
-          appointment.patient.address.update!(state: "Maharashtra")
-
-          expected_message = "आमचा Simple Facility येथील कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रामधून आपले औषध घ्या. आपल्या ANM किंवा ASHA शी संपर्क साधा."
-
-          expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
-
-          described_class.perform_async(appointment.id, "missed_visit_sms_reminder")
-          described_class.drain
-        end
-
-        it "defaults to English if address is missing" do
-          appointment.patient.update!(address: nil)
-
-          expected_message = "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
-
-          expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
-
-          described_class.perform_async(appointment.id, "missed_visit_sms_reminder")
-          described_class.drain
-        end
-
-        it "defaults to English if address state is unrecognized" do
-          appointment.patient.address.update!(state: "Unknown State")
-
-          expected_message = "Our staff at Simple Facility are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
-
-          expect_any_instance_of(NotificationService).to receive(:send_sms).with(appointment_phone_number, expected_message, callback_url)
-
-          described_class.perform_async(appointment.id, "missed_visit_sms_reminder")
-          described_class.drain
-        end
-      end
-    end
-
-    it "should raise an error if locale is invalid" do
-      locale = "fr"
-
+    it "raises an error if appointment reminder is not found" do
       expect {
-        described_class.perform_async(appointment.id, communication_type, locale)
+        described_class.perform_async("does-not-exist", communication_type)
         described_class.drain
-      }.to raise_error(I18n::InvalidLocale)
+      }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
