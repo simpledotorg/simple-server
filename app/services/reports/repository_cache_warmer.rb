@@ -24,5 +24,4 @@ class Reports::RepositoryCacheWarmer
       repository.hypertension_follow_ups
     end
   end
-
 end
