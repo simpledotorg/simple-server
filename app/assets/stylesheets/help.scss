@@ -231,6 +231,37 @@ html, body {
     margin-top: 0.2em;
   }
 
+  a.app-button {
+    display: block;
+    background: #333;
+    border-radius: 3px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 14px 0;
+    text-align: center;
+    box-shadow:
+    0 2px 3px rgba(0,0,0,0.2),
+    0 3px 0 #000;
+
+    div {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    svg {
+      vertical-align: middle;
+      height: 34px;
+      margin: -3px 4px 0 0;
+      width: auto;
+      display: inline-block;
+    }
+
+    .svg-container {
+      display: inline-block;
+    }
+  }
+
   a.support-button {
     display: block;
     margin: 16px 0 0 0;
@@ -272,20 +303,6 @@ html, body {
     color: #1f5177;
   }
 
-  .app-button {
-    display: block;
-    margin: 0.7em 0;
-    background: #333;
-    border-radius: 3px;
-    color: #fff;
-    font-weight: bold;
-    font-size: 20px;
-    padding: 14px 0;
-    text-align: center;
-    box-shadow:
-    0 2px 3px rgba(0,0,0,0.2),
-    0 3px 0 #000;
-  }
 
 
   caption {
@@ -382,3 +399,5 @@ html, body {
   color: rgba(0,0,0,0.2);
   padding: 24px 8px;
 }
+
+.mb-16px { margin-bottom: 16px; }
