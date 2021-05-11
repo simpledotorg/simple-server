@@ -4,6 +4,7 @@ describe Communication, type: :model do
   context "Associations" do
     it { should belong_to(:user).optional }
     it { should belong_to(:appointment) }
+    it { should belong_to(:appointment_reminder).optional }
     it { should belong_to(:detailable).optional }
   end
 

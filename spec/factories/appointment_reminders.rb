@@ -3,7 +3,7 @@ FactoryBot.define do
     id { SecureRandom.uuid }
     remind_on { Date.current + 3.days }
     status { "pending" }
-    message { "Your appointment is in three days" }
+    message { "set01.basic" }
     association :appointment, factory: :appointment
     association :patient, factory: :patient
     association :experiment, factory: :experiment
