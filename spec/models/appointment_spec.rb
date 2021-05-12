@@ -47,14 +47,16 @@ describe Appointment, type: :model do
 
     describe ".overdue_by" do
       let(:recently_overdue_appointment) { create(:appointment, scheduled_date: 2.days.ago, status: :scheduled) }
-      let(:overdue_appointment) { create(:appointment, scheduled_date: 3.days.ago, status: :scheduled) }
-      let(:upcoming_appointment) { create(:appointment, scheduled_date: 1.day.from_now, status: :scheduled) }
+      let(:overdue_appointment) { create(:appointment, :overdue) }
+      let(:upcoming_appointment) { create(:appointment) }
 
-      it "includes overdue appointments that are overdue by the specified number" do
-        overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
-        create(:appointment, scheduled_date: 2.days.ago, status: :scheduled)
-        create(:appointment, scheduled_date: 4.days.ago, status: :scheduled)
-        expect(Appointment.overdue_by(3)).to match_array(overdue_appointment)
+      it "includes overdue appointments that are overdue by 3 or more days" do
+        expect(Appointment.overdue_by(3)).not_to include(recently_overdue_appointment)
+        expect(Appointment.overdue_by(3)).to include(overdue_appointment)
+      end
+
+      it "excludes non-overdue appointments" do
+        expect(Appointment.overdue).not_to include(upcoming_appointment)
       end
     end
 
@@ -65,17 +67,24 @@ describe Appointment, type: :model do
     end
 
     describe ".eligible_for_reminders" do
-      it "includes only appointments overdue by days_overdue" do
-        overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
-        create(:appointment, scheduled_date: 2.days.ago, status: :scheduled)
-        create(:appointment, scheduled_date: 4.days.ago, status: :scheduled)
+      it "includes only appointments overdue by at least days_overdue" do
+        _not_overdue = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled)
+        overdue = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
+        more_overdue = create(:appointment, scheduled_date: 4.days.ago, status: :scheduled)
 
-        expect(described_class.eligible_for_reminders(days_overdue: 3)).to match_array([overdue_appointment])
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to match_array([overdue, more_overdue])
       end
 
       it "excludes appointments that have appointment reminders" do
         overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
         create(:appointment_reminder, appointment: overdue_appointment)
+
+        expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
+      end
+
+      it "excludes appointments that have communications" do
+        overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
+        create(:communication, appointment: overdue_appointment)
 
         expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
       end
