@@ -2,7 +2,7 @@
   <div class="col-md-6">
     <%= bootstrap_form_with(model: [:admin, @protocol], local: true, label_errors: true) do |form| %>
       <%= form.text_field :name, id: "medication_list_name" %>
-      <%= form.number_field :follow_up_days, id: "medication_list_follow_up_days", help: "Default number of days displayed in the mobile app when scheduling a new patient appointment" %>
+      <%= form.number_field :follow_up_days, label: "Follow-up days", id: "medication_list_follow_up_days", help: "Default number of days displayed in the mobile app when scheduling a new patient appointment" %>
       <%= form.primary("Save medication list") %>
     <% end %>
   </div>
