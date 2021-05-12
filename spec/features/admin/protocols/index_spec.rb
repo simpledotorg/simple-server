@@ -2,7 +2,7 @@ require "features_helper"
 
 RSpec.feature "test protocol screen functionality", type: :feature do
   let(:owner) { create(:admin, :power_user) }
-  let!(:var_medication_list) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
+  let!(:medication_list) { create(:protocol, name: "PunjabTestProtocol", follow_up_days: "20") }
 
   medication_list_new = AdminPage::Protocols::New.new
   medication_list_page = AdminPage::Protocols::Index.new
@@ -26,14 +26,14 @@ RSpec.feature "test protocol screen functionality", type: :feature do
     end
 
     it "edit medication list" do
-      medication_list_page.click_edit_medication_list_link(var_medication_list.name)
+      medication_list_page.click_edit_medication_list_link(medication_list.name)
       AdminPage::Protocols::Edit.new.update_medication_list_followup_days(40)
       medication_list_show.verify_updated_followup_days("40")
 
       visit admin_protocols_path
 
       # assertion at landing page
-      within(:xpath, "//div[@id='" + var_medication_list.name + "']") do
+      within(:xpath, "//div[@id='" + medication_list.name + "']") do
         expect(page).to have_content("Edit")
         expect(page).to have_selector("a.btn-outline-danger")
         expect(page).to have_content("40")
