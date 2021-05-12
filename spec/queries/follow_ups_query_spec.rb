@@ -33,9 +33,6 @@ RSpec.describe FollowUpsQuery do
 
     it "counts the patients' hypertension follow ups at the facility only" do
       facility_1, facility_2 = create_list(:facility, 2)
-      regions = [facility_1.region, facility_2.region]
-      periods = (3.months.ago.to_period..1.month.ago.to_period)
-
       patient = create(:patient, :hypertension, recorded_at: 10.months.ago)
 
       create(:blood_pressure, :with_encounter, recorded_at: 3.months.ago, facility: facility_1, patient: patient)

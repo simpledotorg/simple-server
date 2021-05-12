@@ -9,6 +9,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
     create(:patient,
       assigned_facility: facility,
       registration_facility: registration_facility,
+      age: 50,
       status: "dead",
       address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
   }

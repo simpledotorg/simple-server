@@ -168,8 +168,8 @@ RSpec.describe Facility, type: :model do
 
       it "counts the patients' hypertension follow ups at the facility only" do
         facility_1, facility_2 = create_list(:facility, 2)
-        regions = [facility_1.region, facility_2.region]
-        periods = (3.months.ago.to_period..1.month.ago.to_period)
+        _regions = [facility_1.region, facility_2.region]
+        _periods = (3.months.ago.to_period..1.month.ago.to_period)
 
         patient = create(:patient, :hypertension, recorded_at: 10.months.ago)
 

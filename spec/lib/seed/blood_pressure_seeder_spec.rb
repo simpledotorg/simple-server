@@ -5,7 +5,7 @@ RSpec.describe Seed::BloodPressureSeeder do
 
   it "creates BPs and related objects" do
     facility = create(:facility)
-    user = create(:user, registration_facility: facility)
+    _user = create(:user, registration_facility: facility)
     patients = create_list(:patient, 2, assigned_facility: facility)
     expected_count = config.max_bps_to_create * 2
 
