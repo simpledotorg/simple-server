@@ -321,7 +321,7 @@ RSpec.describe Reports::Repository, type: :model do
 
     it "creates cache keys" do
       repo = Reports::Repository.new(facility_1, periods: Period.month("June 1 2019")..Period.month("Jan 1 2020"))
-      cache_keys = repo.send(:cache_entries_v1, :controlled).map(&:cache_key)
+      cache_keys = repo.send(:cache_entries, :controlled).map(&:cache_key)
       cache_keys.each do |key|
         expect(key).to include("controlled")
       end
@@ -346,12 +346,10 @@ RSpec.describe Reports::Repository, type: :model do
     end
 
     it "caches region_period entries only as far back as there is data" do
-      controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+      _controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
 
       repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
-      v1_keys = repo.send(:cache_entries_v1, :controlled)
-      expect(v1_keys.size).to eq(25)
-      keys = repo.send(:cache_entries_v2, :controlled)
+      keys = repo.send(:cache_entries, :controlled)
       periods = keys.map(&:period)
       expected_periods = (jan_2019.to_period..july_2020.to_period).to_a
       expect(periods).to eq(expected_periods)

@@ -240,22 +240,13 @@ module Reports
     #
     def region_period_cached_query(calculation, &block)
       results = regions.each_with_object({}) { |region, hsh| hsh[region.slug] = Hash.new(0) }
-      items = cache_entries_v2(calculation)
+      items = cache_entries(calculation)
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
-      cached_results.each do |(entry, count)|
-        # next if earliest_patient_recorded_at_period[entry.slug].nil?
-        # next if entry.period < earliest_patient_recorded_at_period[entry.slug]
-        results[entry.region.slug][entry.period] = count
-      end
+      cached_results.each { |(entry, count)| results[entry.region.slug][entry.period] = count }
       results
     end
 
-    def cache_entries_v1(calculation)
-      combinations = regions.to_a.product(periods.to_a)
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation) }
-    end
-
-    def cache_entries_v2(calculation)
+    def cache_entries(calculation)
       combinations = regions.each_with_object([]) do |region, sum|
         earliest_period = earliest_patient_recorded_at_period[region.slug]
         next if earliest_period.nil?
