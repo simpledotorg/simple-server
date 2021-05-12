@@ -246,6 +246,9 @@ module Reports
       results
     end
 
+    # Generate all necessary region period cache entries, only going back to the earliest
+    # patient registration date for Periods. This ensures that we don't create many cache entries
+    # with 0 data for newer Regions.
     def cache_entries(calculation)
       combinations = regions.each_with_object([]) do |region, sum|
         earliest_period = earliest_patient_recorded_at_period[region.slug]
