@@ -2,6 +2,20 @@ require "rails_helper"
 require "tasks/scripts/split_bathinda_and_mansa"
 
 RSpec.describe SplitBathindaAndMansa do
+  it "creates an access to the new FGs for users who had access to Bathinda and Mansa" do
+    user = create(:admin, :viewer_all)
+    organization = create(:organization)
+    bathinda_and_mansa = create(:facility_group, name: "Bathinda and Mansa", organization: organization, state: "Punjab")
+    bathinda = create(:facility_group, name: "Bathinda", organization: organization, state: "Punjab")
+    mansa = create(:facility_group, name: "Mansa", organization: organization, state: "Punjab")
+
+    create(:access, user: user, resource: bathinda_and_mansa)
+    described_class.call
+
+    expect(Access.find_by(user: user, resource: bathinda)).to be_present
+    expect(Access.find_by(user: user, resource: mansa)).to be_present
+  end
+
   it "sets the facility group on the facilities" do
     organization = create(:organization)
     bathinda_and_mansa = create(:facility_group, name: "Bathinda and Mansa", organization: organization, state: "Punjab")

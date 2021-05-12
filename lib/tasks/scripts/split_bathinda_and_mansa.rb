@@ -3,9 +3,15 @@ module SplitBathindaAndMansa
     ActiveRecord::Base.transaction do
       bathinda_and_mansa = FacilityGroup.find_by!(name: "Bathinda and Mansa")
 
-      # Create these facility groups in IHCI before running this rake task
+      # These facility groups need to be created before running this rake task
       bathinda = FacilityGroup.find_by!(name: "Bathinda")
       mansa = FacilityGroup.find_by!(name: "Mansa")
+
+      Access.where(resource_id: bathinda_and_mansa.id).each do |access|
+        Access.create(access.slice(:resource_type, :user_id).merge(resource_id: bathinda.id))
+        Access.create(access.slice(:resource_type, :user_id).merge(resource_id: mansa.id))
+        access.discard
+      end
 
       bathinda_facilities = bathinda_and_mansa.facilities.where(district: "Bathinda")
       bathinda_facilities.each { |facility| facility.update!(facility_group_id: bathinda.id) }
