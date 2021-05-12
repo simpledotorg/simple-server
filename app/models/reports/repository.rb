@@ -74,6 +74,7 @@ module Reports
     memoize def adjusted_patient_counts
       cumulative_assigned_patients_count.each_with_object({}) do |(entry, result), results|
         values = periods.each_with_object(Hash.new(0)) { |period, region_result|
+          next unless result.key?(period.adjusted_period)
           region_result[period] = result[period.adjusted_period] - ltfu_counts[entry][period]
         }
         results[entry] = values
@@ -238,15 +239,15 @@ module Reports
     #   }
     #
     def region_period_cached_query(calculation, &block)
+      results = regions.each_with_object({}) { |region, hsh| hsh[region.slug] = Hash.new(0) }
       items = cache_entries_v2(calculation)
-      # pp items
       cached_results = cache.fetch_multi(*items, force: bust_cache?) { |entry| block.call(entry) }
-      cached_results.each_with_object({}) do |(entry, count), results|
-        results[entry.region.slug] ||= Hash.new(0)
-        next if earliest_patient_recorded_at_period[entry.slug].nil?
-        next if entry.period < earliest_patient_recorded_at_period[entry.slug]
+      cached_results.each do |(entry, count)|
+        # next if earliest_patient_recorded_at_period[entry.slug].nil?
+        # next if entry.period < earliest_patient_recorded_at_period[entry.slug]
         results[entry.region.slug][entry.period] = count
       end
+      results
     end
 
     def cache_entries_v1(calculation)
