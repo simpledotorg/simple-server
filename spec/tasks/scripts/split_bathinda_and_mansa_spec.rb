@@ -60,8 +60,12 @@ RSpec.describe SplitBathindaAndMansa do
     described_class.call
 
     facilities.map(&:reload)
-    expect(facilities.first.region.block_region.parent).to eq bathinda.region
-    expect(facilities.second.region.block_region.parent).to eq mansa.region
+
+    bathinda_facility_region = facilities.first.region
+    mansa_facility_region = facilities.second.region
+
+    expect(bathinda_facility_region.block_region.parent).to eq bathinda.region
+    expect(mansa_facility_region.block_region.parent).to eq mansa.region
   end
 
   it "reparents the facility regions correctly" do
@@ -76,7 +80,11 @@ RSpec.describe SplitBathindaAndMansa do
     described_class.call
 
     facilities.map(&:reload)
-    expect(facilities.first.region.district_region).to eq bathinda.region
-    expect(facilities.second.region.district_region).to eq mansa.region
+
+    bathinda_facility_region = facilities.first.region
+    mansa_facility_region = facilities.second.region
+
+    expect(bathinda_facility_region.district_region).to eq bathinda.region
+    expect(mansa_facility_region.district_region).to eq mansa.region
   end
 end
