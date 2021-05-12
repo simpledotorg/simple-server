@@ -7,9 +7,9 @@ RSpec.describe SplitBathindaAndMansa do
     bathinda_and_mansa = create(:facility_group, name: "Bathinda and Mansa", organization: organization, state: "Punjab")
     bathinda = create(:facility_group, name: "Bathinda", organization: organization, state: "Punjab")
     mansa = create(:facility_group, name: "Mansa", organization: organization, state: "Punjab")
-    facilities =
+    _facilities =
       [create(:facility, district: "Bathinda", block: "Bathinda block", facility_group: bathinda_and_mansa),
-       create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
+        create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
 
     described_class.call
 
@@ -21,11 +21,11 @@ RSpec.describe SplitBathindaAndMansa do
   it "doesn't change the sync_region_id (block id) of the facilities" do
     organization = create(:organization)
     bathinda_and_mansa = create(:facility_group, name: "Bathinda and Mansa", organization: organization, state: "Punjab")
-    bathinda = create(:facility_group, name: "Bathinda", organization: organization, state: "Punjab")
-    mansa = create(:facility_group, name: "Mansa", organization: organization, state: "Punjab")
+    _bathinda = create(:facility_group, name: "Bathinda", organization: organization, state: "Punjab")
+    _mansa = create(:facility_group, name: "Mansa", organization: organization, state: "Punjab")
     facilities =
       [create(:facility, district: "Bathinda", block: "Bathinda block", facility_group: bathinda_and_mansa),
-       create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
+        create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
 
     original_blocks = facilities.map(&:block)
     described_class.call
@@ -41,7 +41,7 @@ RSpec.describe SplitBathindaAndMansa do
     mansa = create(:facility_group, name: "Mansa", organization: organization, state: "Punjab")
     facilities =
       [create(:facility, district: "Bathinda", block: "Bathinda block", facility_group: bathinda_and_mansa),
-       create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
+        create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
 
     described_class.call
 
@@ -57,7 +57,7 @@ RSpec.describe SplitBathindaAndMansa do
     mansa = create(:facility_group, name: "Mansa", organization: organization, state: "Punjab")
     facilities =
       [create(:facility, district: "Bathinda", block: "Bathinda block", facility_group: bathinda_and_mansa),
-       create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
+        create(:facility, district: "Mansa", block: "Mansa block", facility_group: bathinda_and_mansa)]
 
     described_class.call
 
