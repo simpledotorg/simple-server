@@ -15,7 +15,7 @@
 
     <div class="row">
       <div class="col-md-8">
-        <%= form.select "Category", 
+        <%= form.select "Category",
                         ProtocolDrug.drug_categories.map { |k, v| [v, k] },
                         {include_blank: true},
                         required: false %>
