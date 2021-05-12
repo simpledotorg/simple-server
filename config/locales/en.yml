@@ -62,7 +62,7 @@ en:
     monthly_registered_patients: "Hypertension patients registered during a month in %{region_name}."
     total_registered_patients: "Total hypertension patients registered in %{region_name}."
   assigned_patients_copy:
-    total_assigned_patients: "Hypertension patients assigned to %{region_name}."
+    total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   denominator_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
   denominator_with_ltfu_copy: "Hypertension patients assigned to %{region_name}, registered before the last 3 months. Dead patients are excluded."
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
