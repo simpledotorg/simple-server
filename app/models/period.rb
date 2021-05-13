@@ -1,8 +1,4 @@
 class Period
-  def self.formatter(period_type)
-    lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
-  end
-
   REGISTRATION_BUFFER_MONTHS = 3
   ANALYTICS_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 
@@ -33,6 +29,11 @@ class Period
     else
       raise ArgumentError, "unknown quarter value #{value} #{value.class}"
     end
+  end
+
+  # Return the common formatteer so groupdate can return Period keys instead of dates
+  def self.formatter(period_type)
+    lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
   end
 
   def initialize(attributes = {})

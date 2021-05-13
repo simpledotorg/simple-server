@@ -12,6 +12,7 @@ module Reports
         periods
       end
       @period_type = @periods.first.type
+      raise ArgumentError, "Quarter periods not supported" if @period_type != :month
 
       @assigned_patients_query = AssignedPatientsQuery.new
       @control_rate_query = ControlRateQuery.new
@@ -19,8 +20,6 @@ module Reports
       @follow_ups_query = FollowUpsQuery.new
       @no_bp_measure_query = NoBPMeasureQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
-
-      raise ArgumentError, "Quarter periods not supported" if @period_type != :month
     end
 
     attr_reader :assigned_patients_query
