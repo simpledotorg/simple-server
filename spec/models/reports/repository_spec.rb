@@ -345,6 +345,16 @@ RSpec.describe Reports::Repository, type: :model do
       3.times { _result = repo.controlled_patients_rate }
     end
 
+    it "caches region_period entries only as far back as there is data" do
+      _controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
+
+      repo = Reports::Repository.new(facility_1.region, periods: july_2020_range)
+      keys = repo.send(:cache_entries, :controlled)
+      periods = keys.map(&:period)
+      expected_periods = (jan_2019.to_period..july_2020.to_period).to_a
+      expect(periods).to eq(expected_periods)
+    end
+
     it "will not ignore memoization when bust_cache is true" do
       controlled_in_jan = create_list(:patient, 2, full_name: "controlled", recorded_at: jan_2019, assigned_facility: facility_1, registration_user: user)
       Timecop.freeze(jan_2020) do
@@ -363,6 +373,19 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "legacy control specs" do
+    it "works for very old dates" do
+      facility_1 = create(:facility)
+      patient = create(:patient, registration_facility: facility_1, recorded_at: jan_2020.advance(months: -4))
+      create(:blood_pressure, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: facility_1)
+      refresh_views
+
+      ten_years_ago = patient.recorded_at.advance(years: -10).to_period
+      range = ten_years_ago..(ten_years_ago.advance(months: 12))
+      repo = Reports::Repository.new(facility_1, periods: range)
+      expect(repo.adjusted_patient_counts[facility_1.slug]).to eq({})
+      expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
+    end
+
     it "returns same results as ControlRateService" do
       facilities = FactoryBot.create_list(:facility, 3, facility_group: facility_group_1)
       facility_1, facility_2, facility_3 = *facilities.take(3)
