@@ -160,7 +160,6 @@ RSpec.describe PatientsExporter, type: :model do
     let(:patient_batch) { Patient.where(id: patient.id) }
 
     it "generates a CSV of patient records" do
-      skip "intermittent test blocking deploys"
       travel_to now do
         MaterializedPatientSummary.refresh
 
