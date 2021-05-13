@@ -2,9 +2,8 @@
   <div class="col-md-6">
     <%= bootstrap_form_with(model: [:admin, protocol], local: true, label_errors: true) do |form| %>
       <%= form.text_field :name, id: :protocol_name %>
-      <%= form.number_field :follow_up_days, id: :protocol_follow_up_days %>
-
-      <%= form.primary %>
+      <%= form.number_field :follow_up_days, id: :protocol_follow_up_days, help: "Note: Usually 28 days to ensure patients aren't reminded to return on days when facilities are closed." %>
+      <%= form.primary("Save protocol") %>
     <% end %>
   </div>
 </div>

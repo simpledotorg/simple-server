@@ -44,7 +44,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
       describe "stores appointment_type correctly" do
         let(:request_key) { model.to_s.underscore.pluralize }
         let(:new_records) { (1..3).map { build_payload.call } }
-        let(:new_records_payload) { Hash[request_key, new_records] }
+        let(:new_records_payload) { {request_key => new_records} }
 
         it "creates new records with appointment_type" do
           post(:sync_from_user, params: new_records_payload, as: :json)
@@ -62,7 +62,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
         it "returns an error for new records without appointment_type" do
           records_with_no_appointment_type = (1..3).map { build_payload.call.except(:appointment_type) }
-          records_payload_with_no_appointment_type = Hash[request_key, records_with_no_appointment_type]
+          records_payload_with_no_appointment_type = {request_key => records_with_no_appointment_type}
 
           post(:sync_from_user, params: records_payload_with_no_appointment_type, as: :json)
 
@@ -75,7 +75,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
         it "defaults the creation_facility to the facility_id if creation_facility is not a part of the payload" do
           records_with_no_creation_facility = (1..3).map { build_payload.call.except(:creation_facility_id) }
-          records_payload_with_no_creation_facility = Hash[request_key, records_with_no_creation_facility]
+          records_payload_with_no_creation_facility = {request_key => records_with_no_creation_facility}
 
           post(:sync_from_user, params: records_payload_with_no_creation_facility, as: :json)
           expect(response).to have_http_status(200)
@@ -91,7 +91,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
             record[:appointment_type] = %w[manuall automat foo].sample
           end
 
-          records_payload_with_bad_appointment_type = Hash[request_key, records_with_invalid_appointment_type]
+          records_payload_with_bad_appointment_type = {request_key => records_with_invalid_appointment_type}
 
           post(:sync_from_user, params: records_payload_with_bad_appointment_type, as: :json)
 
@@ -134,9 +134,7 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
 
       before { set_authentication_headers }
 
-      context "region-level sync is turned on" do
-        before { enable_flag(:block_level_sync, request_user) }
-
+      context "region-level sync" do
         context "when X_SYNC_REGION_ID is blank (support for old apps)" do
           it "sends facility group records irrespective of process_token's sync_region_id" do
             facility_group_records = [
@@ -286,34 +284,6 @@ RSpec.describe Api::V3::AppointmentsController, type: :controller do
               response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
               expect(response_record_ids).to match_array block_records.map(&:id)
               expect(non_block_records).not_to include(*response_record_ids)
-            end
-          end
-        end
-      end
-
-      context "when region-level sync is turned off" do
-        it "sends facility group records irrespective of X_SYNC_REGION_ID and process_token's sync_region_id" do
-          facility_group_records = [
-            *create_record_list(2, patient: patient_in_request_facility, facility: request_facility),
-            *create_record_list(2, patient: patient_in_same_block, facility: facility_in_same_block),
-            *create_record_list(2, patient: patient_in_other_block, facility: facility_in_other_block)
-          ]
-
-          other_facility_group_records = create_record_list(2, patient: patient_in_other_facility_group, facility: facility_in_other_group)
-
-          requested_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id, "invalid_id"]
-          process_token_sync_region_ids = [nil, request_facility.region.block_region.id, request_facility.facility_group_id]
-
-          requested_sync_region_ids.each do |requested_sync_region_id|
-            process_token_sync_region_ids.each do |process_token_sync_region_id|
-              request.env["HTTP_X_SYNC_REGION_ID"] = requested_sync_region_id
-              process_token = make_process_token(sync_region_id: process_token_sync_region_id)
-
-              get :sync_to_user, params: {process_token: process_token}
-
-              response_record_ids = JSON(response.body)[response_key].map { |r| r["id"] }
-              expect(response_record_ids).to match_array facility_group_records.map(&:id)
-              expect(other_facility_group_records).not_to include(*response_record_ids)
             end
           end
         end

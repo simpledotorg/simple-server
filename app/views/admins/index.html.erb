@@ -2,9 +2,9 @@
   <h1 class="page-title">Admins</h1>
   <nav class="page-nav">
     <div class="dropdown">
-      <%= link_to "Invite admin",
-          new_email_authentication_invitation_path,
-          class: "btn btn-sm btn-primary" %>
+      <%= link_to new_email_authentication_invitation_path, class: "btn btn-sm btn-success" do %>
+        <i class="fas fa-plus mr-1"></i> Invite admin
+      <% end %>
     </div>
   </nav>
 </div>

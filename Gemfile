@@ -8,7 +8,7 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
-gem "rails", "5.2.5"
+gem "rails", "5.2.6"
 
 gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
@@ -91,7 +91,7 @@ group :development, :test do
   gem "capistrano", "3.11.0"
   gem "capistrano-db-tasks", require: false
   gem "capistrano-multiconfig", require: true
-  gem "capistrano-passenger"
+  gem "capistrano-passenger", "0.2.1"
   gem "capistrano-rails"
   gem "capistrano-rails-console", require: false
   gem "capistrano-rbenv"
