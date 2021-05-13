@@ -7,6 +7,12 @@ def set_headers(user, facility)
   request.headers["Accept"] = "application/json"
 end
 
+RSpec::Matchers.define :a_patient_lookup_audit_log do |expected_log|
+  match do |actual_log|
+    (expected_log.to_a - JSON.parse(actual_log, symbolize_names: true).to_a).empty?
+  end
+end
+
 RSpec.describe Api::V4::PatientsController, type: :controller do
   describe "#lookup" do
     it "returns patient in expected response schema" do
@@ -104,6 +110,19 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       response_data = JSON.parse(response.body).with_indifferent_access
       expect(response_data[:patients].count).to eq 2
       expect(response_data[:patients].pluck(:id)).to match_array([patient.id, patient_from_same_state.id])
+    end
+
+    it "triggers an audit log" do
+      patient = create(:patient)
+      set_headers(patient.registration_user, patient.registration_facility)
+
+      expect(PatientLookupAuditLogJob).to receive(:perform_async).with(a_patient_lookup_audit_log(
+        user_id: patient.registration_user.id,
+        facility_id: patient.registration_facility.id,
+        patient_ids: [patient.id],
+        identifier: patient.business_identifiers.first.identifier
+      ))
+      get :lookup, params: {identifier: patient.business_identifiers.first.identifier}, as: :json
     end
   end
 end

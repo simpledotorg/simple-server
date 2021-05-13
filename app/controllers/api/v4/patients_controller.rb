@@ -10,16 +10,15 @@ class Api::V4::PatientsController < APIController
       .syncable_patients
       .where(id: identifiers.pluck(:patient_id))
 
-    if patients.empty?
-      render json: {}, status: :not_found
-    else
-      render(
-        json: Oj.dump({
-          patients: patients.map { |patient| transform_to_response(patient) },
-        }, mode: :compat),
-        status: :ok
-      )
-    end
+    return render json: {}, status: :not_found if patients.empty?
+
+    trigger_audit_log(patients)
+    render(
+      json: Oj.dump({
+        patients: patients.map { |patient| transform_to_response(patient) },
+      }, mode: :compat),
+      status: :ok
+    )
   end
 
   private
@@ -48,5 +47,17 @@ class Api::V4::PatientsController < APIController
         duration_seconds: DEFAULT_RETENTION_DURATION
       }
     end
+  end
+
+  def trigger_audit_log(patients)
+    PatientLookupAuditLogJob.perform_async(
+      {
+        user_id: current_user.id,
+        facility_id: current_facility.id,
+        identifier: params[:identifier],
+        patient_ids: patients.pluck(:id),
+        time: Time.current
+      }.to_json
+    )
   end
 end
