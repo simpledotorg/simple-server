@@ -1,7 +1,9 @@
 class Api::V4::PatientsController < APIController
-  DEFAULT_RETENTION_DURATION = 3600
+  DEFAULT_RETENTION_DURATION_SECONDS = 3600
   RETENTION_TYPES = {temporary: "temporary", permanent: "permanent"}
+
   skip_before_action :validate_current_facility_belongs_to_users_facility_group, only: [:lookup]
+  before_action :validate_identifier_presence, only: [:lookup]
 
   def lookup
     identifiers = PatientBusinessIdentifier.where(identifier: params[:identifier])
@@ -44,7 +46,7 @@ class Api::V4::PatientsController < APIController
     else
       {
         type: RETENTION_TYPES[:temporary],
-        duration_seconds: DEFAULT_RETENTION_DURATION
+        duration_seconds: DEFAULT_RETENTION_DURATION_SECONDS
       }
     end
   end
@@ -59,5 +61,9 @@ class Api::V4::PatientsController < APIController
         time: Time.current
       }.to_json
     )
+  end
+
+  def validate_identifier_presence
+    head :bad_request if params[:identifier].strip.blank?
   end
 end

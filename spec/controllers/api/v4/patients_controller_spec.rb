@@ -26,6 +26,14 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       expect(JSON::Validator.validate(expected_schema, response_data)).to eq(true)
     end
 
+    it "returns bad request if identifier is not present in the request" do
+      patient = create(:patient)
+      set_headers(patient.registration_user, patient.registration_facility)
+
+      get :lookup, params: {identifier: ""}, as: :json
+      expect(response.status).to eq 400
+    end
+
     it "returns all information about a patient" do
       patient = create(:patient)
       add_visits(2, patient: patient, facility: patient.registration_facility, user: patient.registration_user)
@@ -82,7 +90,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       response_patient_2 = response_patients.find { |patients| patients[:id] == patient_2.id }
 
       expect(response_patient_1[:retention]).to eq({type: "permanent"}.with_indifferent_access)
-      expect(response_patient_2[:retention]).to eq({type: "temporary", duration_seconds: described_class::DEFAULT_RETENTION_DURATION}.with_indifferent_access)
+      expect(response_patient_2[:retention]).to eq({type: "temporary", duration_seconds: described_class::DEFAULT_RETENTION_DURATION_SECONDS}.with_indifferent_access)
     end
 
     it "validates state level access" do
