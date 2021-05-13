@@ -63,6 +63,11 @@
                   <i class="fas fa-user-md main-menu-icon"></i> Mobile app users
                 <% end %>
               <% end %>
+              <% if current_admin.power_user?  %>
+                <%= link_to (new_admin_patient_import_path), class: "dropdown-item #{active_controller?("admin/patient_imports")}", id: "patient-import" do %>
+                  <i class="fas fa-upload main-menu-icon"></i> Patient import
+                <% end %>
+              <% end %>
               <% if current_admin.power_user? %>
                 <%= link_to ("/sidekiq"), class: "dropdown-item #{active_controller?("sidekiq")}" do %>
                   <i class="fas fa-running main-menu-icon"></i> Sidekiq
@@ -75,12 +80,12 @@
               <% end %>
               <% if current_admin.power_user? %>
                 <%= link_to admin_error_traces_path, class: "dropdown-item #{active_controller?("admin/error_traces")}" do %>
-                  <i class="fas fa-wrench main-menu-icon"></i> Error Traces
+                  <i class="fas fa-wrench main-menu-icon"></i> Error traces
                 <% end %>
               <% end %>
               <% if current_admin.accessible_facilities(:manage).any? %>
                 <%= link_to admin_deduplication_path, class: "dropdown-item #{active_controller?("admin/deduplicate_patients")}" do %>
-                  <i class="fas fa-share-alt main-menu-icon"></i> Merge Duplicate Patients
+                  <i class="fas fa-share-alt main-menu-icon"></i> Merge duplicate patients
                 <% end %>
               <% end %>
             <% end %>
@@ -96,7 +101,7 @@
                 Legal
               </h6>
               <a href="https://www.simple.org/privacy/" class="dropdown-item" target="_blank">
-                <i class="fas fa-external-link-alt main-menu-icon"></i> Privacy Policy
+                <i class="fas fa-external-link-alt main-menu-icon"></i> Privacy policy
               </a>
               <a href="https://www.simple.org/license/" class="dropdown-item" target="_blank">
                 <i class="fas fa-external-link-alt main-menu-icon"></i> License
