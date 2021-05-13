@@ -15,7 +15,7 @@ class Api::V4::PatientsController < APIController
     trigger_audit_log(patients)
     render(
       json: Oj.dump({
-        patients: patients.map { |patient| transform_to_response(patient) },
+        patients: patients.map { |patient| transform_to_response(patient) }
       }, mode: :compat),
       status: :ok
     )
