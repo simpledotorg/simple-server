@@ -73,11 +73,7 @@ have the same identifier. The response contract will be similar to
 App](https://api.simple.org/api-docs#tag/Patient/paths/~1patient/get):
 
 ````
-{"retention": {
-    "type": "temporary",
-    "duration_seconds": 3600
- }
- "patients": [{
+{ "patients": [{
     "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "full_name": "string",
     "age": 0,
@@ -93,7 +89,11 @@ App](https://api.simple.org/api-docs#tag/Patient/paths/~1patient/get):
     "blood_sugars": [],
     "appointments": [],
     "medications": [],
-    "business_identifiers": []
+    "business_identifiers": [],
+    "retention": {
+      "type": "temporary", // or "permanent"
+      "duration_seconds": 3600
+    }
   }]
 }
 ````
