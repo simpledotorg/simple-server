@@ -27,10 +27,10 @@ RSpec.describe NotificationService do
       notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
     end
 
-    it "captures errors in Sentry and returns the symbol :exception when there is a twilio error" do
+    it "captures exceptions in Sentry and sets 'error' to the exception" do
       expect(Sentry).to receive(:capture_message)
       notification_service.send_sms(recipient_phone_number, "test sms message", fake_callback_url)
-      expect(notification_service.error).to eq(:exception)
+      expect(notification_service.error.class).to eq(Twilio::REST::RestError)
       expect(notification_service.response).to eq(nil)
     end
   end
@@ -49,10 +49,10 @@ RSpec.describe NotificationService do
       notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
     end
 
-    it "captures errors in Sentry and returns the symbol :exception when there is a twilio error" do
+    it "captures errors in Sentry and sets 'error' to the exception" do
       expect(Sentry).to receive(:capture_message)
       notification_service.send_whatsapp(recipient_phone_number, "test whatsapp message", fake_callback_url)
-      expect(notification_service.error).to eq(:exception)
+      expect(notification_service.error.class).to eq(Twilio::REST::RestError)
       expect(notification_service.response).to eq(nil)
     end
   end

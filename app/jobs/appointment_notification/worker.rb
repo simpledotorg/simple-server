@@ -21,7 +21,7 @@ class AppointmentNotification::Worker
       return
     end
 
-    unless reminder.status == "scheduled"
+    unless reminder.status_scheduled?
       metrics.increment("skipped.not_scheduled")
       return
     end

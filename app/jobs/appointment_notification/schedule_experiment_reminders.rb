@@ -7,8 +7,8 @@ class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
     reminders = AppointmentReminder.due_today
     next_messaging_time = Communication.next_messaging_time
     reminders.each do |reminder|
-      AppointmentNotification::Worker.perform_at(next_messaging_time, reminder.id)
       reminder.status_scheduled!
+      AppointmentNotification::Worker.perform_at(next_messaging_time, reminder.id)
     end
   end
 end

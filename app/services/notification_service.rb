@@ -42,9 +42,9 @@ class NotificationService
       status_callback: callback_url,
       body: message
     )
-  rescue Twilio::REST::TwilioError => e
-    report_error(e)
-    @error = :exception
+  rescue Twilio::REST::TwilioError => exception
+    @error = exception
+    report_error(exception)
   end
 
   def twilio_account_sid

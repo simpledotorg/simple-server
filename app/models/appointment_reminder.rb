@@ -52,7 +52,8 @@ class AppointmentReminder < ApplicationRecord
     "missed_visit_sms_reminder"
   end
 
-  # this is temporary. will be replaced by facility address localization
+  # this is temporary. will be replaced as part of:
+  # https://app.clubhouse.io/simpledotorg/story/2639/respect-translations-for-existing-patient-reminder-messages
   def patient_locale(patient)
     patient.address&.locale || :en
   end

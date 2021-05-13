@@ -65,9 +65,9 @@ class Appointment < ApplicationRecord
     overdue_by(days_overdue)
       .joins(:patient)
       .merge(Patient.contactable)
-      .includes(:communications)
+      .left_joins(:communications)
       .where(communications: {id: nil})
-      .includes(:appointment_reminders)
+      .left_joins(:appointment_reminders)
       .where(appointment_reminders: {id: nil})
   end
 

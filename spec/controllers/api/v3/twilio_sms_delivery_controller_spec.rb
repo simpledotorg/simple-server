@@ -138,49 +138,6 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
           post :create, params: params
         end
-
-        # it "schedules a fallback SMS if a whatsapp message failed" do
-        #   expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
-        #   session_id = SecureRandom.uuid
-        #   fallback_time = 5.minutes.from_now
-        #   appointment_reminder = create(:appointment_reminder)
-        #   communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
-        #   create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
-
-        #   allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
-
-        #   params = base_callback_params.merge(
-        #     "MessageSid" => session_id,
-        #     "MessageStatus" => "failed"
-        #   )
-
-        #   expect(AppointmentNotification::Worker).to receive(:perform_at).with(
-        #     fallback_time,
-        #     communication.appointment_reminder_id
-        #   )
-
-        #   set_twilio_signature_header(callback_url, params)
-        #   post :create, params: params
-        # end
-
-        # it "does not schedule a fallback SMS if an SMS failed" do
-        #   session_id = SecureRandom.uuid
-        #   fallback_time = 5.minutes.from_now
-        #   communication = create(:communication, :missed_visit_sms_reminder)
-        #   create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
-
-        #   allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
-
-        #   params = base_callback_params.merge(
-        #     "MessageSid" => session_id,
-        #     "MessageStatus" => "failed"
-        #   )
-
-        #   expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-
-        #   set_twilio_signature_header(callback_url, params)
-        #   post :create, params: params
-        # end
       end
     end
 
