@@ -250,11 +250,11 @@ module Reports
     # patient registration date for Periods. This ensures that we don't create many cache entries
     # with 0 data for newer Regions.
     def cache_entries(calculation)
-      combinations = regions.each_with_object([]) do |region, sum|
+      combinations = regions.each_with_object([]) do |region, results|
         earliest_period = earliest_patient_recorded_at_period[region.slug]
         next if earliest_period.nil?
         periods_with_data = periods.select { |period| period >= earliest_period }
-        sum.concat(periods_with_data.to_a.map { |period| [region, period] })
+        results.concat(periods_with_data.to_a.map { |period| [region, period] })
       end
       combinations.map { |region, period| Reports::RegionPeriodEntry.new(region, period, calculation) }
     end
