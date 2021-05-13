@@ -24,8 +24,8 @@ class SplitBathindaAndMansa
 
   def create_accesses
     Access.where(resource_id: @bathinda_and_mansa.id).each do |access|
-      Access.create(access.slice(:resource_type, :user_id).merge(resource_id: @bathinda.id))
-      Access.create(access.slice(:resource_type, :user_id).merge(resource_id: @mansa.id))
+      Access.create!(access.slice(:resource_type, :user_id).merge(resource_id: @bathinda.id))
+      Access.create!(access.slice(:resource_type, :user_id).merge(resource_id: @mansa.id))
       access.discard
     end
   end
@@ -56,6 +56,8 @@ class SplitBathindaAndMansa
 
   def delete_bathinda_and_mansa
     raise "Bathinda and Mansa still has #{@bathinda_and_mansa.reload.facilities.count} facilities" if @bathinda_and_mansa.facilities.count > 0
+    rails "Bathinda and Mansa still has #{@bathinda_and_mansa.reload.region.facility_regions.count} facility regions" if @bathinda_and_mansa.region.facility_regions.count > 0
+    rails "Bathinda and Mansa still has #{@bathinda_and_mansa.reload.region.block_regions.count} block regions" if @bathinda_and_mansa.region.block_regions.count > 0
     @bathinda_and_mansa.discard
   end
 end
