@@ -1,9 +1,8 @@
 class RegisteredPatientsQuery
   def count(region, period_type, group_by: nil)
-    formatter = lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
     query = region.registered_patients
       .with_hypertension
-      .group_by_period(period_type, :recorded_at, {format: formatter})
+      .group_by_period(period_type, :recorded_at, {format: Period.formatter(period_type)})
 
     if group_by.present?
       results = query.group(group_by).count

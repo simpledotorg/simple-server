@@ -1,12 +1,15 @@
 <div class="page-header">
-  <h1 class="page-title">Protocols</h1>
+  <h1 class="page-title">
+    Medications
+  </h1>
   <nav class="page-nav">
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
       <%= link_to new_admin_protocol_path, class: "btn btn-sm btn-success" do %>
-      <i class="fas fa-plus mr-1"></i> Add protocol
-    <% end %>
+        <i class="fas fa-plus mr-1"></i> Medication list
+      <% end %>
     <% end %>
   </nav>
+  <p>Common anti-hypertensive and diabetes medications and dosages are listed in the Simple app, so that healthcare workers can quickly select a patient's current medications. The default "follow-up" period is also configurable. If different regions have different medications or follow-up periods create separate medication lists.</p>
 </div>
 
 <% @protocols.each do |protocol| %>
