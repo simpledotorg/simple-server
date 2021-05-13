@@ -1,4 +1,8 @@
 class Period
+  def self.formatter(period_type)
+    lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
+  end
+
   REGISTRATION_BUFFER_MONTHS = 3
   ANALYTICS_TIME_ZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 

@@ -6,25 +6,32 @@ module Reports
 
     def initialize(regions, periods:)
       @regions = Array(regions)
-      @no_bp_measure_query = NoBPMeasureQuery.new
-      @control_rate_query = ControlRateQuery.new
-      @earliest_patient_data_query = EarliestPatientDataQuery.new
-
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
       else
         periods
       end
       @period_type = @periods.first.type
+
+      @assigned_patients_query = AssignedPatientsQuery.new
+      @control_rate_query = ControlRateQuery.new
+      @earliest_patient_data_query = EarliestPatientDataQuery.new
+      @follow_ups_query = FollowUpsQuery.new
+      @no_bp_measure_query = NoBPMeasureQuery.new
+      @registered_patients_query = RegisteredPatientsQuery.new
+
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
     end
 
+    attr_reader :assigned_patients_query
     attr_reader :control_rate_query
     attr_reader :earliest_patient_data_query
+    attr_reader :follow_ups_query
     attr_reader :no_bp_measure_query
     attr_reader :period_type
     attr_reader :periods
     attr_reader :regions
+    attr_reader :registered_patients_query
 
     delegate :cache, :logger, to: Rails
 
@@ -88,7 +95,7 @@ module Reports
     memoize def complete_assigned_patients_counts
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
       cache.fetch_multi(*items, force: bust_cache?) { |region_entry|
-        AssignedPatientsQuery.new.count(region_entry.region, period_type)
+        assigned_patients_query.count(region_entry.region, period_type)
       }
     end
 
@@ -117,7 +124,7 @@ module Reports
     memoize def complete_registration_counts
       items = regions.map { |region| RegionEntry.new(region, __method__, period_type: period_type) }
       cache.fetch_multi(*items, force: bust_cache?) { |entry|
-        RegisteredPatientsQuery.new.count(entry.region, period_type)
+        registered_patients_query.count(entry.region, period_type)
       }
     end
 
@@ -134,7 +141,7 @@ module Reports
     memoize def registration_counts_by_user
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :registration_user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        RegisteredPatientsQuery.new.count(entry.region, period_type, group_by: :registration_user_id)
+        registered_patients_query.count(entry.region, period_type, group_by: :registration_user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
@@ -184,7 +191,7 @@ module Reports
     memoize def hypertension_follow_ups(group_by: nil)
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: group_by, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
-        FollowUpsQuery.new(entry.region, period_type, group_by: group_by).hypertension
+        follow_ups_query.hypertension(entry.region, period_type, group_by: group_by)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts

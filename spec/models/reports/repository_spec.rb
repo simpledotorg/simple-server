@@ -383,6 +383,7 @@ RSpec.describe Reports::Repository, type: :model do
       range = ten_years_ago..(ten_years_ago.advance(months: 12))
       repo = Reports::Repository.new(facility_1, periods: range)
       expect(repo.adjusted_patient_counts[facility_1.slug]).to eq({})
+      expect(repo.cumulative_registrations[facility_1.slug]).to eq({})
     end
 
     it "returns same results as ControlRateService" do
