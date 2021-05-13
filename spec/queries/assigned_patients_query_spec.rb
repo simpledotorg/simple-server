@@ -21,7 +21,7 @@ RSpec.describe AssignedPatientsQuery do
     expect(result.size).to eq(2)
     expect(result).to eq({
       1.month.ago.to_period => 1,
-      2.month.ago.to_period => 1,
+      2.month.ago.to_period => 1
     })
   end
 end
