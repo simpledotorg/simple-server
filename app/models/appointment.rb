@@ -41,6 +41,8 @@ class Appointment < ApplicationRecord
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
 
+  after_update :cancel_reminders, if: proc { |appt| appt.saved_changes["status"] && !appt.status_scheduled? }
+
   scope :for_sync, -> { with_discarded }
 
   def self.between(start_date, end_date)
@@ -95,12 +97,6 @@ class Appointment < ApplicationRecord
     scheduled? && scheduled_date > 30.days.ago
   end
 
-  def cancel_reason_is_present_if_cancelled
-    if status == :cancelled && !cancel_reason.present?
-      errors.add(:cancel_reason, "should be present for cancelled appointments")
-    end
-  end
-
   def mark_remind_to_call_later
     self.remind_on = 7.days.from_now
   end
@@ -153,5 +149,18 @@ class Appointment < ApplicationRecord
 
   def previously_communicated_via?(communication_type)
     communications.latest_by_type(communication_type)&.attempted?
+  end
+
+  private
+
+  def cancel_reason_is_present_if_cancelled
+    if status == :cancelled && !cancel_reason.present?
+      errors.add(:cancel_reason, "should be present for cancelled appointments")
+    end
+  end
+
+  def cancel_reminders
+    reminders = appointment_reminders.where(status: ["pending", "scheduled"])
+    reminders.update_all(status: "cancelled")
   end
 end
