@@ -1,4 +1,4 @@
-ti-ET:
+ti:
   date:
     month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቕምቲ", "ሕዳር", "ታሕሳስ"]
     abbr_month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቅምቲ", "ሕዳር", "ታሕ"]
@@ -15,8 +15,8 @@ ti-ET:
   sms:
     request_otp: "<#> %{otp} ቀሊል ናይ መፍለዪ ኮድኩም እዩ\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ብኽብረትካ ናይ ጸቕጢ ደም ኣፋውስካ ምውሳድ ቀጽል። መድሓኒትካ ካብ ዝቐርበካ ማእከል ላብራቶሪ ውሰድ። ምስ ናትካ ANM ወይ ASHA ተራኸብ።"
-      missed_visit_whatsapp_reminder: "ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ብኽብረትካ ናይ ጸቕጢ ደም ኣፋውስካ ምውሳድ ቀጽል። መድሓኒትካ ካብ ዝቐርበካ ማእከል ላብራቶሪ ውሰድ። ምስ ናትካ ANM ወይ ASHA ተራኸብ።"
+      missed_visit_sms_reminder: "ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ብኽብረትካ ናይ ጸቕጢ ደም ኣፋውስካ ምውሳድ ቀጽል። መድሓኒትካ ካብ ዝቐርበካ ማእከል ላብራቶሪ ውሰድ።"
+      missed_visit_whatsapp_reminder: "ኣብ %{facility_name} ዘለዉ ኣባላትና ብዛዕባኻን/ኺን ጥዕናኻን/ኺን ይሓስቡ ኣለዉ። ብኽብረትካ ናይ ጸቕጢ ደም ኣፋውስካ ምውሳድ ቀጽል። መድሓኒትካ ካብ ዝቐርበካ ማእከል ላብራቶሪ ውሰድ።"
     patient_request_otp: "<#> %{otp} ናይ BP ፓስፖርት መፍለዪ መረጋገጺ እዩ\n%{app_signature}"
   dashboard:
     graphics:
