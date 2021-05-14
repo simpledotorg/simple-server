@@ -50,7 +50,7 @@
               <% end %>
               <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
                 <%= link_to (admin_protocols_path), class: "dropdown-item #{active_controller?("admin/protocols")}" do %>
-                  <i class="fas fa-prescription-bottle-alt main-menu-icon"></i> Protocol medications
+                  <i class="fas fa-prescription-bottle-alt main-menu-icon"></i> Mobile app medications
                 <% end %>
               <% end %>
               <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>

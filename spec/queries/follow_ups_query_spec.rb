@@ -59,12 +59,12 @@ RSpec.describe FollowUpsQuery do
         create(:blood_pressure, recorded_at: "March 20th 2021", facility: facility_1, patient: patient, user: user_2)
         create(:blood_pressure, recorded_at: 1.month.ago, facility: facility_2, patient: patient)
 
-        query = described_class.new(facility_1, :month, group_by: "blood_pressures.user_id")
+        result = described_class.new.hypertension(facility_1, :month, group_by: "blood_pressures.user_id")
         expected = {
           Period.month("Feb 1st 2021") => {user_1.id => 1, user_2.id => 0},
           Period.month("March 1st 2021") => {user_1.id => 2, user_2.id => 1}
         }
-        expect(query.hypertension).to eq(expected)
+        expect(result).to eq(expected)
       end
     end
   end
