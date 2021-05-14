@@ -4,17 +4,13 @@ FactoryBot.define do
                     male: %w[Abhishek Aditya Amit Ankit Deepak Mahesh Rahul Rohit Shyam Yash],
                     transgender: %w[Bharathi Madhu Bharathi Manabi Anjum Vani Riya Shreya Kiran Amit]}
 
-    transient do
-      has_date_of_birth? { false }
-    end
-
     id { SecureRandom.uuid }
     gender { Seed::Gender.random_gender }
     full_name { common_names[gender.to_sym].sample + " " + common_names[gender.to_sym].sample }
     status { Patient::STATUSES[0] }
-    date_of_birth { rand(18..80).years.ago if has_date_of_birth? }
-    age { rand(18..100) unless has_date_of_birth? }
-    age_updated_at { Time.current }
+    date_of_birth { nil }
+    age { rand(18..100) }
+    age_updated_at { 1.second.ago }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     recorded_at { device_created_at }
@@ -31,6 +27,12 @@ FactoryBot.define do
     end
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }
+
+    trait(:with_dob) do
+      date_of_birth { rand(18..80).years.ago }
+      age { nil }
+      age_updated_at { nil }
+    end
 
     trait :without_hypertension do
       medical_history { build(:medical_history, :hypertension_no, patient_id: id) }
