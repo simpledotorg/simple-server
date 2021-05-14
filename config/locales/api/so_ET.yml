@@ -1,4 +1,4 @@
-so-ET:
+so:
   date:
     month_names: [~, "Janaayo ", "Febraayo ", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoobar", "Noofember", "Diseember"]
     abbr_month_names: [~, "Janaayo", "Febraayo", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoober", "Noofember", "Diseember"]
@@ -15,8 +15,8 @@ so-ET:
   sms:
     request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
     appointment_reminders:
-      missed_visit_sms_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
-      missed_visit_whatsapp_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
+      missed_visit_sms_reminder: "Shaqalaheene %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."
+      missed_visit_whatsapp_reminder: "Shaqaalaha %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."
     patient_request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta BP Passport\n%{app_signature}"
   dashboard:
     graphics:
