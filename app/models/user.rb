@@ -246,8 +246,8 @@ class User < ApplicationRecord
     power_user_access? && email_authentication.present?
   end
 
-  def block_level_sync?
-    feature_enabled?(:block_level_sync) && !can_teleconsult?
+  def district_level_sync?
+    can_teleconsult?
   end
 
   def flipper_id

@@ -142,20 +142,20 @@ class Facility < ApplicationRecord
   end
 
   def hypertension_follow_ups_by_period(*args)
-    patients
-      .hypertension_follow_ups_by_period(*args)
-      .where(blood_pressures: {facility: self})
+    patients.hypertension_follow_ups_by_period(*args).where(blood_pressures: {facility: self})
   end
 
   def diabetes_follow_ups_by_period(*args)
-    patients
-      .diabetes_follow_ups_by_period(*args)
-      .where(blood_sugars: {facility: self})
+    patients.diabetes_follow_ups_by_period(*args).where(blood_sugars: {facility: self})
   end
 
   # For compatibility w/ parent FacilityGroups
   def facilities
     [self]
+  end
+
+  def facility_ids
+    [id]
   end
 
   def child_region_type

@@ -7,8 +7,8 @@
     <% end %>
 
     <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
-      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-primary" do %>
-        <i class="fas fa-plus mr-1"></i> Facility group
+      <%= link_to new_admin_facility_group_path, class: "btn btn-sm btn-success" do %>
+        <i class="fas fa-plus mr-1"></i> <%= t("facility_group").capitalize %>
       <% end %>
     <% end %>
   </div>
@@ -28,12 +28,12 @@
       <div class="card">
         <div class="row">
           <div class="col-8">
-            <h3><span class="heading-label">Facility group</span><%= facility_group.name %></h3>
+            <h3><span class="heading-label"><%= t("facility_group").capitalize %></span><%= facility_group.name %></h3>
           </div>
 
           <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
             <div class="col-4 text-right">
-              <strong><%= link_to 'Edit group', edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
+              <strong><%= link_to "Edit #{t("facility_group")}", edit_admin_facility_group_path(facility_group), class: "btn btn-sm btn-outline-primary" %></strong>
             </div>
           <% end %>
         </div>
@@ -44,8 +44,7 @@
           <div class="col-md-4">
             <% if current_admin.accessible_facility_groups(:manage).find_by_id(facility_group) %>
               <%= link_to new_admin_facility_group_facility_path(facility_group), class: "btn btn-sm btn-outline-success" do %>
-                <i class="fas fa-plus mr-1"></i>
-                Add a facility
+                <i class="fas fa-plus mr-1"></i> Facility
               <% end %>
             <% end %>
           </div>
@@ -53,12 +52,12 @@
 
         <% @facilities.dig(facility_group)&.sort_by(&:name)&.each do |facility| %>
           <div class="row card-row">
-            <div class="col-md-4">
+            <div class="col-md-5">
               <h5 class="pb-md-0 pb-1">
                 <%= link_to facility.name, [:admin, facility_group, facility], class: "d-block" %>
               </h5>
             </div>
-            <div class="col-md-1"><span class="text-muted"><%= facility.facility_type %></span></div>
+            <div class="col-md-2"><span class="text-muted"><%= facility.facility_type %></span></div>
             <div class="col-md-2">
               <span class="text-muted"><%= facility.localized_facility_size || "No size set" %></span></div>
             <div class="col-md-2">

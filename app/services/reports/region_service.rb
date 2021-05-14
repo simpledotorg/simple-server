@@ -4,7 +4,7 @@ module Reports
 
     # The default period we report on is the current month.
     def self.default_period
-      Period.month(Date.current.beginning_of_month)
+      Period.month(Time.current.in_time_zone(Period::ANALYTICS_TIME_ZONE))
     end
 
     def self.call(*args)
@@ -31,13 +31,17 @@ module Reports
       result.calculate_percentages(:visited_without_bp_taken)
       result.calculate_percentages(:visited_without_bp_taken, with_ltfu: true)
 
-      start_period = [result.earliest_registration_period, range.begin].compact.max
+      start_period = [repository.earliest_patient_recorded_at_period[region.slug], range.begin].compact.max
       calc_range = (start_period..range.end)
       result.calculate_missed_visits(calc_range)
       result.calculate_missed_visits(calc_range, with_ltfu: true)
       result.calculate_missed_visits_percentages(calc_range)
       result.calculate_missed_visits_percentages(calc_range, with_ltfu: true)
       result.calculate_period_info(calc_range)
+
+      # This is a temporary hack to refresh repository's missed visits from the RegionCacheWarmer.
+      # We should deprecate result.rb and move all calculations to Repository.
+      repository.missed_visits
 
       result
     end

@@ -123,7 +123,7 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
         expect(response).to have_http_status(200)
       end
 
-      it "should report metrics to new relic" do
+      it "should report metrics" do
         expect(Statsd.instance).to receive(:increment).with("exotel_call_sessions.call_type.call_attempt")
         expect(Statsd.instance).to receive(:increment).with("exotel_call_sessions.call_status.completed")
 

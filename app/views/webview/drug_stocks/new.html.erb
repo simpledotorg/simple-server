@@ -41,7 +41,7 @@
 
           <div class="form-group">
             <div class="form-row">
-              <% choices = last_n_months(n: 6, inclusive: true).map { |d| [d.to_date.to_s(:mon_year), d.to_date.end_of_month] }
+              <% choices = last_n_months(n: 6, inclusive: (Date.current.end_of_month - Date.current).to_i < 8).map { |d| [d.to_date.to_s(:mon_year), d.to_date.end_of_month] }
               %>
               <%= form.select :for_end_of_month, choices, { selected: @for_end_of_month }, { id: "for_end_of_month", class: "card-dropdown" } %>
             </div>
