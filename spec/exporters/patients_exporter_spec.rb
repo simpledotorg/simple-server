@@ -150,9 +150,8 @@ RSpec.describe PatientsExporter, type: :model do
 
   describe "#csv" do
     it "generates a CSV of patient records" do
-      travel_to(Time.current) do
+      Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
-        MaterializedPatientSummary.refresh
 
         actual_csv = timestamp.to_csv + headers.to_csv + fields.to_csv
         expect(subject.csv(Patient.all).to_s.strip).to eq(actual_csv.to_s.strip)
@@ -160,7 +159,7 @@ RSpec.describe PatientsExporter, type: :model do
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      travel_to(Time.current) do
+      Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
 
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
