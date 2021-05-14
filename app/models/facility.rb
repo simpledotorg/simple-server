@@ -232,21 +232,26 @@ class Facility < ApplicationRecord
     I18n.t("activerecord.facility.facility_size.#{facility_size}", default: facility_size.capitalize)
   end
 
+  def locale
+    LOCALE_MAP.dig(country, state) || LOCALE_MAP.dig(country, "default") || LOCALE_MAP["default"]
+  end
+
   LOCALE_MAP = {
     "Bangladesh" => { "default" => "bn_BD" },
+    "default" => "en",
     "Ethiopia" => {
-      "default" => "am_ET",
       "Addis Ababa" => "am_ET",
       "Amhara" => "am_ET",
+      "default" => "am_ET",
       "Dire Dawa" => "am_ET",
       "Oromia" => "or_ET",
       "Somali" => "so_ET",
       "Tigray" => "ti_ET"
     },
     "India" => {
-      "default" => "hi_IN",
       "Andhra Pradesh" => "te_IN",
       "Bihar" => "hi_IN",
+      "default" => "hi_IN",
       "Jharkhand" => "hi_IN",
       "Karnataka" => "kn_IN",
       "Maharashtra" => "mr_IN",
@@ -261,7 +266,4 @@ class Facility < ApplicationRecord
       "West Bengal" => "bn_IN"
     }
   }.freeze
-  def locale
-    LOCALE_MAP[country][state] || LOCALE_MAP[country]["default"]
-  end
 end

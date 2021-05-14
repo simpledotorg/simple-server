@@ -441,5 +441,10 @@ RSpec.describe Facility, type: :model do
       facility = create(:facility, country: "India", state: "Wyoming")
       expect(facility.locale).to eq "hi_IN"
     end
+
+    it "defaults to English if the country is not found" do
+      facility = create(:facility, country: "Pakistan")
+      expect(facility.locale).to eq "en"
+    end
   end
 end
