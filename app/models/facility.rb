@@ -233,37 +233,37 @@ class Facility < ApplicationRecord
   end
 
   def locale
-    LOCALE_MAP.dig(country, state) || LOCALE_MAP.dig(country, "default") || LOCALE_MAP["default"]
+    LOCALE_MAP.dig(country.downcase, state.downcase) || LOCALE_MAP.dig(country.downcase, "default") || LOCALE_MAP["default"]
   end
 
   LOCALE_MAP = {
-    "Bangladesh" => { "default" => "bn_BD" },
+    "bangladesh" => {"default" => "bn-BD"},
     "default" => "en",
-    "Ethiopia" => {
-      "Addis Ababa" => "am_ET",
-      "Amhara" => "am_ET",
-      "default" => "am_ET",
-      "Dire Dawa" => "am_ET",
-      "Oromia" => "or_ET",
-      "Somali" => "so_ET",
-      "Tigray" => "ti_ET"
+    "ethiopia" => {
+      "addis ababa" => "am-ET",
+      "amhara" => "am-ET",
+      "default" => "am-ET",
+      "dire dawa" => "am-ET",
+      "oromia" => "or-ET",
+      "somali" => "so-ET",
+      "tigray" => "ti-ET"
     },
-    "India" => {
-      "Andhra Pradesh" => "te_IN",
-      "Bihar" => "hi_IN",
-      "default" => "hi_IN",
-      "Jharkhand" => "hi_IN",
-      "Karnataka" => "kn_IN",
-      "Maharashtra" => "mr_IN",
-      "Nagaland" => "en",
-      "Puducherry" => "ta_IN",
-      "Punjab" => "pa_Guru_IN",
-      "Rajasthan" => "hi_IN",
-      "Sikkim" => "hi_IN",
-      "Tamil Nadu" => "ta_IN",
-      "Telangana" => "te_IN",
-      "Uttar Pradesh" => "hi_IN",
-      "West Bengal" => "bn_IN"
+    "india" => {
+      "andhra pradesh" => "te-IN",
+      "bihar" => "hi-IN",
+      "default" => "hi-IN",
+      "jharkhand" => "hi-IN",
+      "karnataka" => "kn-IN",
+      "maharashtra" => "mr-IN",
+      "nagaland" => "en",
+      "puducherry" => "ta-IN",
+      "punjab" => "pa-Guru-IN",
+      "rajasthan" => "hi-IN",
+      "sikkim" => "hi-IN",
+      "tamil nadu" => "ta-IN",
+      "telangana" => "te-IN",
+      "uttar pradesh" => "hi-IN",
+      "west bengal" => "bn-IN"
     }
   }.freeze
 end
