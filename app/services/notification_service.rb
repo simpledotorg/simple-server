@@ -1,6 +1,7 @@
 class NotificationService
   DEFAULT_LOCALE = :en
 
+  attr_reader :response, :error
   def client
     @client ||= Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
   end
@@ -24,6 +25,10 @@ class NotificationService
     default_country_code + parsed_number
   end
 
+  def failed?
+    error.present?
+  end
+
   private
 
   def default_country_code
@@ -31,12 +36,15 @@ class NotificationService
   end
 
   def send_twilio_message(sender_number, recipient_number, message, callback_url = nil)
-    client.messages.create(
+    @response = client.messages.create(
       from: sender_number,
       to: recipient_number,
       status_callback: callback_url,
       body: message
     )
+  rescue Twilio::REST::TwilioError => exception
+    @error = exception
+    report_error(exception)
   end
 
   def twilio_account_sid
@@ -49,5 +57,17 @@ class NotificationService
 
   def twilio_sender_number
     ENV.fetch("TWILIO_PHONE_NUMBER")
+  end
+
+  def report_error(e)
+    Sentry.capture_message(
+      "Error while processing notification",
+      extra: {
+        exception: e.to_s
+      },
+      tags: {
+        type: "notification-service"
+      }
+    )
   end
 end

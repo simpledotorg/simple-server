@@ -2,73 +2,39 @@ require "rails_helper"
 
 RSpec.describe AppointmentNotificationService do
   describe "#send_after_missed_visit" do
-    let(:overdue_appointment) { create(:appointment, :overdue, remind_on: Date.current) }
-    let(:overdue_appointment_relation) do
-      Appointment.where(id: overdue_appointment.id).includes(patient: [:phone_numbers], facility: {facility_group: :organization})
-    end
-    let(:overdue_appointments) do
-      overdue_appointment_ids = create_list(:appointment, 2, :overdue, remind_on: Date.current)
-      Appointment.where(id: overdue_appointment_ids)
-        .includes(patient: [:phone_numbers], facility: {facility_group: :organization})
-    end
-    let(:recently_overdue_appointments) do
-      recently_overdue_appointment_ids = create_list(:appointment, 2, scheduled_date: 1.day.ago, status: :scheduled, remind_on: Date.current)
-      Appointment.where(id: recently_overdue_appointment_ids)
-        .includes(patient: [:phone_numbers], facility: {facility_group: :organization})
-    end
+    let(:overdue_appointment) { create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current) }
 
     before do
       allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
     end
 
-    it "spawns a reminder job for each appointment with a remind_on of today" do
+    it "spawns a reminder job for each appointment that is overdue by at least 3 daysjj" do
+      create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
+      create(:appointment, scheduled_date: 4.days.ago, remind_on: Date.current)
+
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(overdue_appointments.count)
+        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
+      }.to change(AppointmentNotification::Worker.jobs, :size).by(2)
     end
 
-    it "ignores appointments which are recently overdue (< 3 days)" do
+    it "does not schedule for appointments that are overdue by fewer than 3 days, have an appointment reminder, or have a communication" do
+      _recently_overdue_appointment_ids = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled, remind_on: 2.days.ago)
+      appointment_with_reminder = create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
+      create(:appointment_reminder, appointment: appointment_with_reminder)
+      appointment_with_communication = create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
+      create(:appointment_reminder, appointment: appointment_with_communication)
+
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: recently_overdue_appointments)
+        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
       }.to change(AppointmentNotification::Worker.jobs, :size).by(0)
     end
 
-    it "spawns reminder jobs for each appointment with a remind_on before today" do
-      ids = create(:appointment, :overdue, remind_on: 100.days.ago)
-      appointments = Appointment.where(id: ids)
-      expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: appointments)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(1)
-    end
-
     it "creates appointment reminders for provided appointments" do
-      expect(overdue_appointment.appointment_reminders).to be_empty
-      AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointment_relation)
-      expect(overdue_appointment.appointment_reminders).not_to be_empty
-    end
-
-    it "should send reminders for appointments for which previous reminders of the type failed" do
-      overdue_appointments.each do |appointment|
-        communication = FactoryBot.create(:communication, communication_type: "missed_visit_sms_reminder",
-                                                          detailable: create(:twilio_sms_delivery_detail, :failed))
-        appointment.communications << communication
-      end
-
+      overdue_appointment
       expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
-      }.to change(AppointmentNotification::Worker.jobs, :size).by(overdue_appointments.count)
-    end
-
-    it "should skip reminders for appointments for which previous reminders have succeeded" do
-      overdue_appointments.each do |appointment|
-        communication = FactoryBot.create(:communication, communication_type: "missed_visit_sms_reminder",
-                                                          detailable: create(:twilio_sms_delivery_detail, :sent))
-        appointment.communications << communication
-      end
-
-      expect {
-        AppointmentNotificationService.send_after_missed_visit(appointments: overdue_appointments)
-      }.not_to change(AppointmentNotification::Worker.jobs, :size)
+        AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
+      }.to change { overdue_appointment.appointment_reminders.count }.by(1)
+      expect(overdue_appointment.appointment_reminders.last.status).to eq("scheduled")
     end
 
     it "should only send reminders to patients who are eligible" do
@@ -87,8 +53,12 @@ RSpec.describe AppointmentNotificationService do
         create(:patient, phone_numbers: [invalid_number])
       ]
 
-      eligible_appointments = eligible_patients.map { |patient| create(:appointment, :overdue, patient: patient, remind_on: Date.current) }
-      ineligible_appointments = ineligible_patients.map { |patient| create(:appointment, :overdue, patient: patient, remind_on: Date.current) }
+      eligible_appointments = eligible_patients.map do |patient|
+        create(:appointment, scheduled_date: 3.days.ago, patient: patient, remind_on: Date.current)
+      end
+      ineligible_appointments = ineligible_patients.map do |patient|
+        create(:appointment, scheduled_date: 3.days.ago, patient: patient, remind_on: Date.current)
+      end
 
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: Appointment.where(id: eligible_appointments))
