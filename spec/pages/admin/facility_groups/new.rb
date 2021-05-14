@@ -18,7 +18,7 @@ module AdminPage
         find(:xpath, "//select[@name='facility_group[state]']").find(:option, value).select_option
       end
 
-      def select_protocol_name_dropdown(value)
+      def select_medication_list_name_dropdown(value)
         find(:xpath, "//select[@name='facility_group[protocol_id]']").find(:option, value).select_option
       end
 
@@ -26,7 +26,7 @@ module AdminPage
         select_organisation_name_dropdown(org_name)
         type(FACILITY_NAME, name)
         select_state_dropdown(state) if state
-        select_protocol_name_dropdown(protocol_name)
+        select_medication_list_name_dropdown(protocol_name)
         click(CREATE_FACILITY_GROUP_BUTTON)
       end
 
@@ -34,7 +34,7 @@ module AdminPage
         select_organisation_name_dropdown(org_name)
         type(FACILITY_NAME, name)
         select_state_dropdown(state) if state
-        select_protocol_name_dropdown(protocol_name)
+        select_medication_list_name_dropdown(protocol_name)
         click(CREATE_FACILITY_GROUP_BUTTON)
       end
 

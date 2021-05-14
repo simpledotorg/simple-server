@@ -112,7 +112,7 @@ Reports = function (withLtfu) {
       const registrationsNode = cardNode.querySelector("[data-registrations]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]");
 
-      const rate = controlledGraphRate[period] + "%";
+      const rate = this.formatPercentage(controlledGraphRate[period]);
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = adjustedPatients[period];
       const totalPatients = controlledGraphNumerator[period];
@@ -217,7 +217,7 @@ Reports = function (withLtfu) {
       const registrationsNode = cardNode.querySelector("[data-registrations]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
 
-      const rate = uncontrolledGraphRate[period] + "%";
+      const rate = this.formatPercentage(uncontrolledGraphRate[period]);
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = adjustedPatients[period];
       const totalPatients = uncontrolledGraphNumerator[period];
@@ -322,7 +322,7 @@ Reports = function (withLtfu) {
       const registrationsNode = cardNode.querySelector("[data-registrations]");
       const registrationsPeriodEndNode = cardNode.querySelector("[data-registrations-period-end]")
 
-      const rate = missedVisitsGraphRate[period] + "%";
+      const rate = this.formatPercentage(missedVisitsGraphRate[period]);
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = adjustedPatients[period];
       const totalPatients = missedVisitsGraphNumerator[period];
@@ -594,10 +594,10 @@ Reports = function (withLtfu) {
       const registrationPeriodEndNodes = cardNode.querySelectorAll("[data-registrations-period-end]");
       const adjustedPatientCountsNodes = cardNode.querySelectorAll("[data-adjusted-registrations]");
 
-      const missedVisitsRate = data.missedVisitsRate[period] + "%";
-      const visitButNoBPMeasureRate = data.visitButNoBPMeasureRate[period] + "%";
-      const uncontrolledRate = data.uncontrolledRate[period] + "%";
-      const controlledRate = data.controlRate[period] + "%";
+      const missedVisitsRate = this.formatPercentage(data.missedVisitsRate[period]);
+      const visitButNoBPMeasureRate = this.formatPercentage(data.visitButNoBPMeasureRate[period]);
+      const uncontrolledRate = this.formatPercentage(data.uncontrolledRate[period]);
+      const controlledRate = this.formatPercentage(data.controlRate[period]);
 
       const periodInfo = data.periodInfo[period];
       const adjustedPatientCounts = data.adjustedPatientCounts[period];
@@ -716,5 +716,9 @@ Reports = function (withLtfu) {
     }
 
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  this.formatPercentage = (number) => {
+    return (number || 0) + "%";
   }
 }
