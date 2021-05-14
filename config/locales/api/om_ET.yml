@@ -15,6 +15,7 @@ om-ET:
   sms:
     request_otp: "<#> %{otp}koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}"
     appointment_reminders:
+      # Whatsapp templates need to be uploaded to Twilio and approved if the Whatsapp reminder message here is updated.
       missed_visit_sms_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
       missed_visit_whatsapp_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu."
     patient_request_otp: "<#>%{otp}koodii Paaspoortii mirkaneeffannaa PB keetiti\n%{app_signature}"

@@ -15,6 +15,7 @@ kn-IN:
   sms:
     request_otp: "<#> %{otp} ಎನ್ನುವುದು ನಿಮ್ಮ ಸಿಂಪಲ್ ಪರಿಶೀಲನೆ ಕೋಡ್ ಆಗಿದೆ\n%{app_signature}"
     appointment_reminders:
+      # Whatsapp templates need to be uploaded to Twilio and approved if the Whatsapp reminder message here is updated.
       missed_visit_sms_reminder: "%{facility_name} ನಲ್ಲಿರುವ ನಮ್ಮ ಸಿಬ್ಬಂದಿ ನಿಮ್ಮ ಮತ್ತು ನಿಮ್ಮ ಹೃದಯದ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಯೋಚಿಸುತ್ತಿದ್ದಾರೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಬ್ಲಡ್ ಪ್ರೆಶರ್ ಔಷಧಗಳನ್ನು ಮುಂದುವರೆಸಿ. ನಿಮ್ಮ ಹತ್ತಿರದ ಉಪ ಕೇಂದ್ರದಿಂದ ನಿಮ್ಮ ಔಷಧವನ್ನು ಪಡೆದುಕೊಳ್ಳಿ."
       missed_visit_whatsapp_reminder: "%{facility_name} ನಲ್ಲಿರುವ ನಮ್ಮ ಸಿಬ್ಬಂದಿ ನಿಮ್ಮ ಮತ್ತು ನಿಮ್ಮ ಹೃದಯದ ಆರೋಗ್ಯದ ಬಗ್ಗೆ ಯೋಚಿಸುತ್ತಿದ್ದಾರೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಬ್ಲಡ್ ಪ್ರೆಶರ್ ಔಷಧಗಳನ್ನು ಮುಂದುವರೆಸಿ. ನಿಮ್ಮ ಹತ್ತಿರದ ಉಪ ಕೇಂದ್ರದಿಂದ ನಿಮ್ಮ ಔಷಧವನ್ನು ಪಡೆದುಕೊಳ್ಳಿ."
     patient_request_otp: "<#> %{otp} ಎನ್ನುವುದು ನಿಮ್ಮ ಬಿಪಿ ಪಾಸ್‌ಪೋರ್ಟ್ ಪರಿಶೀಲನೆ ಕೋಡ್ ಆಗಿದೆ\n%{app_signature}"

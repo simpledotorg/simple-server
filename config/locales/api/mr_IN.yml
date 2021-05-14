@@ -15,6 +15,7 @@ mr-IN:
   sms:
     request_otp: "<#> %{otp} तुमचा सिम्पल व्हेरिफिकेशन कोड आहे\n%{app_signature}"
     appointment_reminders:
+      # Whatsapp templates need to be uploaded to Twilio and approved if the Whatsapp reminder message here is updated.
       missed_visit_sms_reminder: "आमचे %{facility_name} चे कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रातून तुमचे औषध घ्या."
       missed_visit_whatsapp_reminder: "आमचे %{facility_name} चे कर्मचारी तुमच्याबद्दल आणि तुमच्या ह्रदयाच्या आरोग्याबद्दल विचार करीत आहेत. कृपया आपल्या रक्तदाबाची औषधे चालू ठेवा. जवळच्या उपकेंद्रातून तुमचे औषध घ्या."
     patient_request_otp: "<#> %{otp} तुमचा बीपी पासपोर्ट व्हेरिफिकेशन कोड आहे\n%{app_signature}"

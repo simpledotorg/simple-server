@@ -15,6 +15,7 @@ so-ET:
   sms:
     request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
     appointment_reminders:
+      # Whatsapp templates need to be uploaded to Twilio and approved if the Whatsapp reminder message here is updated.
       missed_visit_sms_reminder: "Shaqalaheene %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."
       missed_visit_whatsapp_reminder: "Shaqaalaha %{facility_name} waxay ka fikirayaan adiga iyo caafimaadkaaga. Fadlan sii wad dawooyinka dhiikarka. Waxa aad ka qaadataa dawadaada xarunta kuugu dhaw."
     patient_request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta BP Passport\n%{app_signature}"

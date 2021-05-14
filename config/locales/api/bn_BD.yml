@@ -15,6 +15,7 @@ bn-BD:
   sms:
     request_otp: "<#> %{otp} হল আপনার সিম্পিল যাচাইকরণ কোড\n%{app_signature}"
     appointment_reminders:
+      # Whatsapp templates need to be uploaded to Twilio and approved if the Whatsapp reminder message here is updated.
       missed_visit_sms_reminder: "%{facility_name}-এ আমাদের কর্মী আপনার এবং আপনার হৃদযন্ত্রের স্বাস্থ্যের কথা চিন্তা করছেন। অনুগ্রহ করে আপনার রক্তচাপের ওষুধগুলো চালিয়ে যান। একেবারে কাছের সহায়ক কেন্দ্রটি থেকে আপনার ওষুধ সংগ্রহ করুন।"
       missed_visit_whatsapp_reminder: "%{facility_name}-এ আমাদের কর্মী আপনার এবং আপনার হৃদযন্ত্রের স্বাস্থ্যের কথা চিন্তা করছেন। অনুগ্রহ করে আপনার রক্তচাপের ওষুধগুলো চালিয়ে যান। একেবারে কাছের সহায়ক কেন্দ্রটি থেকে আপনার ওষুধ সংগ্রহ করুন।"
     patient_request_otp: "<#> %{otp} হল আপনার বিপি পাসপোর্ট যাচাইকরণ কোড\n%{app_signature}"
