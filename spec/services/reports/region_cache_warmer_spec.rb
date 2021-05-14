@@ -15,7 +15,11 @@ RSpec.describe Reports::RegionCacheWarmer, type: :model do
   end
 
   it "completes successfully" do
-    create_list(:patient, 2)
+    facility_group = create(:facility_group)
+    facility_1, facility_2 = create_list(:facility, 2, facility_group: facility_group)
+    user = create(:user, organization: facility_group.organization)
+    create(:patient, registration_facility: facility_1, registration_user: user)
+    create(:patient, registration_facility: facility_2, registration_user: user)
     Reports::RegionCacheWarmer.call
   end
 

@@ -4,16 +4,18 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
 
   def create
     twilio_message = TwilioSmsDeliveryDetail.find_by(session_id: message_session_id)
+    return head :not_found unless twilio_message
 
     twilio_message.update(update_params)
 
     communication_type = twilio_message.communication.communication_type
-    appointment_id = twilio_message.communication.appointment_id
     event = [communication_type, twilio_message.result].join(".")
     metrics.increment(event)
 
     if communication_type == "missed_visit_whatsapp_reminder" && twilio_message.unsuccessful?
-      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, appointment_id, "missed_visit_sms_reminder")
+      appointment_reminder_id = twilio_message.communication.appointment_reminder_id
+
+      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, appointment_reminder_id, "missed_visit_sms_reminder")
     end
 
     head :ok
