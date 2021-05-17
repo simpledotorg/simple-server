@@ -49,6 +49,9 @@ records that:
 - should be retained temporarily
 - and have passed their retention time period: `now > retain_until`
 
+If a `temporary` record is synced via the sync API, then the retention
+type should be set to `permanent`.
+
 We will treat manual and automatic syncs in the same way, and
 configure the retention period to suit the needs of showing patients
 in the recent list, etc.
