@@ -10,7 +10,6 @@ class Appointment < ApplicationRecord
   belongs_to :facility
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
-  has_many :communications
   has_many :notifications
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
@@ -67,8 +66,6 @@ class Appointment < ApplicationRecord
     overdue_by(days_overdue)
       .joins(:patient)
       .merge(Patient.contactable)
-      .left_joins(:communications)
-      .where(communications: {id: nil})
       .left_joins(:notifications)
       .where(notifications: {id: nil})
   end
@@ -148,7 +145,8 @@ class Appointment < ApplicationRecord
   end
 
   def previously_communicated_via?(communication_type)
-    communications.latest_by_type(communication_type)&.attempted?
+    matching_notifications = notifications.includes(:communications).where(:communications => {communication_type: communication_type})
+    matching_notifications.any? { |n| n.communication.attempted? }
   end
 
   private
