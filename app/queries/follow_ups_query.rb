@@ -1,17 +1,10 @@
 class FollowUpsQuery
-  def initialize(region, period_type, group_by: nil)
-    @region = region
-    @period_type = period_type
-    @group_by = group_by
-    @formatter = lambda { |v| @period_type == :quarter ? Period.quarter(v) : Period.month(v) }
-  end
-
-  def hypertension
+  def hypertension(region, period_type, group_by: nil)
     query = Patient.joins(:blood_pressures)
-      .where("patients.recorded_at < #{BloodPressure.date_to_period_sql("blood_pressures.recorded_at", @period_type)}")
-      .group_by_period(@period_type, "blood_pressures.recorded_at", format: @formatter)
+      .where("patients.recorded_at < #{BloodPressure.date_to_period_sql("blood_pressures.recorded_at", period_type)}")
+      .group_by_period(period_type, "blood_pressures.recorded_at", format: Period.formatter(period_type))
       .distinct
-      .where(blood_pressures: {facility_id: @region.facility_ids})
+      .where(blood_pressures: {facility_id: region.facility_ids})
       .with_hypertension
     if group_by.present?
       results = query.group(group_by).count
