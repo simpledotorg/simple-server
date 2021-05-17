@@ -1,5 +1,5 @@
 class Notification < ApplicationRecord
-  belongs_to :appointment
+  belongs_to :appointment, optional: true
   belongs_to :patient
   belongs_to :experiment, class_name: "Experimentation::Experiment", optional: true
   belongs_to :reminder_template, class_name: "Experimentation::ReminderTemplate", optional: true

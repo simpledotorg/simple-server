@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :communication do
     id { SecureRandom.uuid }
-    appointment
+    patient { nil }
     notification { nil }
     user
     communication_type { :manual_call }

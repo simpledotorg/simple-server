@@ -4,7 +4,7 @@ describe Notification, type: :model do
   let(:notification) { create(:notification) }
 
   describe "associations" do
-    it { should belong_to(:appointment) }
+    it { should belong_to(:appointment).optional }
     it { should belong_to(:patient) }
     it { should belong_to(:experiment).optional }
     it { should belong_to(:reminder_template).optional }
