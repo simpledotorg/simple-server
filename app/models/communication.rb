@@ -2,7 +2,7 @@ class Communication < ApplicationRecord
   include Mergeable
   include Hashable
 
-  belongs_to :appointment
+  belongs_to :appointment, optional: true
   belongs_to :appointment_reminder, optional: true
   belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_17_195627) do
+ActiveRecord::Schema.define(version: 2021_05_17_201622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -147,7 +147,7 @@ ActiveRecord::Schema.define(version: 2021_05_17_195627) do
   end
 
   create_table "communications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "appointment_id", null: false
+    t.uuid "appointment_id"
     t.uuid "user_id"
     t.string "communication_type"
     t.datetime "device_created_at", null: false
