@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe AppointmentNotification::Worker, type: :job do
   describe "#perform" do
     before do
-      Flipper.enable(:appointment_reminders)
+      Flipper.enable(:notifications)
       allow(Statsd.instance).to receive(:increment).with(anything)
     end
 
-    let(:reminder) { create(:appointment_reminder, status: "scheduled", message: "sms.appointment_reminders.missed_visit_whatsapp_reminder") }
+    let(:reminder) { create(:notification, status: "scheduled", message: "sms.notifications.missed_visit_whatsapp_reminder") }
     let(:communication_type) { "missed_visit_whatsapp_reminder" }
 
     def mock_successful_delivery
@@ -20,8 +20,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(twilio_client).to receive_message_chain("messages.create")
     end
 
-    it "logs when appointment_reminders flag is disabled" do
-      Flipper.disable(:appointment_reminders)
+    it "logs when notifications flag is disabled" do
+      Flipper.disable(:notifications)
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.feature_disabled")
       expect {
@@ -40,7 +40,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "sends sms when reminder's next_communication_type is sms" do
-      create(:communication, appointment_reminder: reminder, communication_type: "missed_visit_whatsapp_reminder")
+      create(:communication, notification: reminder, communication_type: "missed_visit_whatsapp_reminder")
 
       mock_successful_delivery
 
@@ -55,7 +55,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
       expect(Communication).to receive(:create_with_twilio_details!).with(
         appointment: reminder.appointment,
-        appointment_reminder: reminder,
+        notification: reminder,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
         communication_type: communication_type
@@ -67,8 +67,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "does not create a NotificationService or Communication if reminder has been previously attempted by all available methods" do
-      create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
-      create(:communication, :missed_visit_sms_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
+      create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, notification: reminder)
+      create(:communication, :missed_visit_sms_reminder, appointment: reminder.appointment, notification: reminder)
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
       expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
@@ -81,7 +81,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "does not attempt to resend the same communication type even if previous attempt failed" do
       mock_successful_delivery
 
-      previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, appointment_reminder: reminder)
+      previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, appointment: reminder.appointment, notification: reminder)
       create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
       expect_any_instance_of(NotificationService).to receive(:send_sms)
@@ -120,14 +120,14 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "does not create a communication or update reminder status if the appointment reminder status is not 'scheduled'" do
-      appointment_reminder = create(:appointment_reminder, status: "pending")
+      notification = create(:notification, status: "pending")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.not_scheduled")
       expect {
-        described_class.perform_async(appointment_reminder.id)
+        described_class.perform_async(notification.id)
         described_class.drain
       }.not_to change { Communication.count }
-      expect(appointment_reminder.reload.status).to eq("pending")
+      expect(notification.reload.status).to eq("pending")
     end
 
     it "does not create a communication or update reminder status if an error is received from twilio" do

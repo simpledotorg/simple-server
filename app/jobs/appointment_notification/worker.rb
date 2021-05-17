@@ -10,11 +10,11 @@ class AppointmentNotification::Worker
 
   def perform(appointment_reminder_id)
     metrics.increment("attempts")
-    unless Flipper.enabled?(:appointment_reminders)
+    unless Flipper.enabled?(:notifications)
       metrics.increment("skipped.feature_disabled")
       return
     end
-    reminder = AppointmentReminder.includes(:appointment, :patient).find(appointment_reminder_id)
+    reminder = Notification.includes(:appointment, :patient).find(appointment_reminder_id)
     communication_type = reminder.next_communication_type
     unless communication_type
       metrics.increment("skipped.previously_communicated")
@@ -63,7 +63,7 @@ class AppointmentNotification::Worker
   def create_communication(reminder, communication_type, response)
     Communication.create_with_twilio_details!(
       appointment: reminder.appointment,
-      appointment_reminder: reminder,
+      notification: reminder,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
       communication_type: communication_type

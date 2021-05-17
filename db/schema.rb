@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_17_201622) do
+ActiveRecord::Schema.define(version: 2021_05_17_213259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -45,23 +45,6 @@ ActiveRecord::Schema.define(version: 2021_05_17_201622) do
     t.string "zone"
     t.index ["deleted_at"], name: "index_addresses_on_deleted_at"
     t.index ["zone"], name: "index_addresses_on_zone"
-  end
-
-  create_table "appointment_reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.date "remind_on", null: false
-    t.string "status", null: false
-    t.string "message", null: false
-    t.uuid "experiment_id"
-    t.uuid "reminder_template_id"
-    t.uuid "patient_id", null: false
-    t.uuid "appointment_id", null: false
-    t.datetime "deleted_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["appointment_id"], name: "index_appointment_reminders_on_appointment_id"
-    t.index ["experiment_id"], name: "index_appointment_reminders_on_experiment_id"
-    t.index ["patient_id"], name: "index_appointment_reminders_on_patient_id"
-    t.index ["reminder_template_id"], name: "index_appointment_reminders_on_reminder_template_id"
   end
 
   create_table "appointments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -157,11 +140,11 @@ ActiveRecord::Schema.define(version: 2021_05_17_201622) do
     t.datetime "deleted_at"
     t.string "detailable_type"
     t.bigint "detailable_id"
-    t.uuid "appointment_reminder_id"
+    t.uuid "notification_id"
     t.index ["appointment_id"], name: "index_communications_on_appointment_id"
-    t.index ["appointment_reminder_id"], name: "index_communications_on_appointment_reminder_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
+    t.index ["notification_id"], name: "index_communications_on_notification_id"
     t.index ["user_id"], name: "index_communications_on_user_id"
   end
 
@@ -368,6 +351,23 @@ ActiveRecord::Schema.define(version: 2021_05_17_201622) do
     t.index ["patient_id", "updated_at"], name: "index_medical_histories_on_patient_id_and_updated_at"
     t.index ["patient_id"], name: "index_medical_histories_on_patient_id"
     t.index ["user_id"], name: "index_medical_histories_on_user_id"
+  end
+
+  create_table "notifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "remind_on", null: false
+    t.string "status", null: false
+    t.string "message", null: false
+    t.uuid "experiment_id"
+    t.uuid "reminder_template_id"
+    t.uuid "patient_id", null: false
+    t.uuid "appointment_id", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_notifications_on_appointment_id"
+    t.index ["experiment_id"], name: "index_notifications_on_experiment_id"
+    t.index ["patient_id"], name: "index_notifications_on_patient_id"
+    t.index ["reminder_template_id"], name: "index_notifications_on_reminder_template_id"
   end
 
   create_table "observations", force: :cascade do |t|
@@ -650,14 +650,10 @@ ActiveRecord::Schema.define(version: 2021_05_17_201622) do
   end
 
   add_foreign_key "accesses", "users"
-  add_foreign_key "appointment_reminders", "appointments"
-  add_foreign_key "appointment_reminders", "experiments"
-  add_foreign_key "appointment_reminders", "patients"
-  add_foreign_key "appointment_reminders", "reminder_templates"
   add_foreign_key "appointments", "facilities"
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
-  add_foreign_key "communications", "appointment_reminders"
+  add_foreign_key "communications", "notifications"
   add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
   add_foreign_key "drug_stocks", "users"
@@ -665,6 +661,10 @@ ActiveRecord::Schema.define(version: 2021_05_17_201622) do
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
+  add_foreign_key "notifications", "appointments"
+  add_foreign_key "notifications", "experiments"
+  add_foreign_key "notifications", "patients"
+  add_foreign_key "notifications", "reminder_templates"
   add_foreign_key "observations", "encounters"
   add_foreign_key "observations", "users"
   add_foreign_key "patient_phone_numbers", "patients"

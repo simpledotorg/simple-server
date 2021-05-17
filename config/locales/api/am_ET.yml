@@ -14,7 +14,7 @@ am-ET:
       account_locked: "መለያዎ ለሚቀጥሉት %{minutes} ደቂቃዎች ተቆልፏል። እባክዎ ይቆዩ እና እንደገና ይሞክሩ።"
   sms:
     request_otp: "<#>%{otp}የእርስዎ ሲምፕል መተግበሪያ የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"
-    appointment_reminders:
+    notifications:
       missed_visit_sms_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
       missed_visit_whatsapp_reminder: "በ %{facility_name} ያሉት ሰራተኞቻችን ስለ እርስዎ እና የልብዎ ጤንነት እያሰቡ ይገኛሉ። እባክዎ የደም ግፊት መድሃኒቶችዎን ይቀጥሉ። መድሃኒትዎን ከቅርቡ ጤና ተቋም ይውሰዱ። ANM ወይም ASHA ያግኙ።"
     patient_request_otp: "<#>%{otp} የእርስዎ ያደም ግፊት ፓስፖርት የማረጋገጫ የሚስጥር ቁጥር ነው\n%{app_signature}"

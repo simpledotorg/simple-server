@@ -14,7 +14,7 @@ pa-Guru-IN:
       account_locked: "ਤੁਹਾਡਾ ਖਾਤਾ ਅਗਲੇ %{minutes} ਮਿੰਟਾਂ ਲਈ ਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
   sms:
     request_otp: "<#> %{otp} ਤੁਹਾਡਾ ਆਸਾਨ ਤਸਦੀਕ ਕੋਡ ਹੈ\n%{app_signature}"
-    appointment_reminders:
+    notifications:
       missed_visit_sms_reminder: "%{facility_name} ਵਿਖੇ ਸਾਡਾ ਸਟਾਫ਼ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਬਲੱਡ ਸ਼ੂਗਰ ਦਵਾਈਆਂ ਜਾਰੀ ਰੱਖੋ। ਨਜ਼ਦੀਕੀ ਉਪ ਕੇਂਦਰ ਤੋਂ ਆਪਣੀ ਦਵਾਈ ਇਕੱਤਰ ਕਰੋ। ਆਪਣੀ ANM ਜਾਂ ASHA ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
       missed_visit_whatsapp_reminder: "%{facility_name} ਵਿਖੇ ਸਾਡਾ ਸਟਾਫ਼ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਬਲੱਡ ਸ਼ੂਗਰ ਦਵਾਈਆਂ ਜਾਰੀ ਰੱਖੋ। ਨਜ਼ਦੀਕੀ ਉਪ ਕੇਂਦਰ ਤੋਂ ਆਪਣੀ ਦਵਾਈ ਇਕੱਤਰ ਕਰੋ। ਆਪਣੀ ANM ਜਾਂ ASHA ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
     patient_request_otp: "<#> %{otp} ਤੁਹਾਡੀ ਬੀਪੀ ਪਾਸਪੋਰਟ ਤਸਦੀਕੀ ਕੋਡ ਹੈ\n%{app_signature}"

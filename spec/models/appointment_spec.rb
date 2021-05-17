@@ -7,7 +7,7 @@ describe Appointment, type: :model do
     it { should belong_to(:patient).optional }
     it { should belong_to(:facility) }
     it { should have_many(:communications) }
-    it { should have_many(:appointment_reminders) }
+    it { should have_many(:notifications) }
   end
 
   context "Validations" do
@@ -77,7 +77,7 @@ describe Appointment, type: :model do
 
       it "excludes appointments that have appointment reminders" do
         overdue_appointment = create(:appointment, scheduled_date: 3.days.ago, status: :scheduled)
-        create(:appointment_reminder, appointment: overdue_appointment)
+        create(:notification, appointment: overdue_appointment)
 
         expect(described_class.eligible_for_reminders(days_overdue: 3)).to be_empty
       end
@@ -314,7 +314,7 @@ describe Appointment, type: :model do
   describe "appointment reminder cancellation" do
     it "does not cancel reminders when appointment status is changed to 'scheduled'" do
       appointment.update!(status: nil)
-      reminder = create(:appointment_reminder, appointment: appointment, status: "pending")
+      reminder = create(:notification, appointment: appointment, status: "pending")
 
       expect {
         appointment.update!(status: "scheduled")
@@ -322,7 +322,7 @@ describe Appointment, type: :model do
     end
 
     it "cancels reminders when an appointment status is changed to 'visited'" do
-      reminder = create(:appointment_reminder, appointment: appointment, status: "pending")
+      reminder = create(:notification, appointment: appointment, status: "pending")
 
       expect {
         appointment.update!(status: "visited")
@@ -330,7 +330,7 @@ describe Appointment, type: :model do
     end
 
     it "cancels reminders when an appointment status is changed to 'cancelled'" do
-      reminder = create(:appointment_reminder, appointment: appointment, status: "pending")
+      reminder = create(:notification, appointment: appointment, status: "pending")
 
       expect {
         appointment.update!(status: "cancelled")
@@ -338,7 +338,7 @@ describe Appointment, type: :model do
     end
 
     it "does not cancel sent reminders" do
-      reminder = create(:appointment_reminder, appointment: appointment, status: "sent")
+      reminder = create(:notification, appointment: appointment, status: "sent")
 
       expect {
         appointment.update!(status: "visited")

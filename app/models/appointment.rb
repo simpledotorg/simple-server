@@ -11,7 +11,7 @@ class Appointment < ApplicationRecord
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
   has_many :communications
-  has_many :appointment_reminders
+  has_many :notifications
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
@@ -69,8 +69,8 @@ class Appointment < ApplicationRecord
       .merge(Patient.contactable)
       .left_joins(:communications)
       .where(communications: {id: nil})
-      .left_joins(:appointment_reminders)
-      .where(appointment_reminders: {id: nil})
+      .left_joins(:notifications)
+      .where(notifications: {id: nil})
   end
 
   def days_overdue
@@ -160,7 +160,7 @@ class Appointment < ApplicationRecord
   end
 
   def cancel_reminders
-    reminders = appointment_reminders.where(status: ["pending", "scheduled"])
+    reminders = notifications.where(status: ["pending", "scheduled"])
     reminders.update_all(status: "cancelled")
   end
 end

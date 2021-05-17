@@ -99,9 +99,9 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
 
         it "logs failure and does not queue a retry when there is no next communication type" do
           session_id = SecureRandom.uuid
-          appointment_reminder = create(:appointment_reminder)
-          create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
-          communication = create(:communication, :missed_visit_sms_reminder, appointment_reminder: appointment_reminder)
+          notification = create(:notification)
+          create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+          communication = create(:communication, :missed_visit_sms_reminder, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
 
           params = base_callback_params.merge(
@@ -119,8 +119,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         it "logs failure and schedules a new attempt if the first attempt failed and there is a next communication type" do
           session_id = SecureRandom.uuid
           fallback_time = 5.minutes.from_now
-          appointment_reminder = create(:appointment_reminder)
-          communication = create(:communication, :missed_visit_whatsapp_reminder, appointment_reminder: appointment_reminder)
+          notification = create(:notification)
+          communication = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
 
           params = base_callback_params.merge(

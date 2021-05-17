@@ -128,13 +128,13 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment1)
+      reminder1 = Notification.find_by(patient: patient, appointment: upcoming_appointment1)
       expect(reminder1).to be_truthy
-      reminder2 = AppointmentReminder.find_by(patient: patient, appointment: upcoming_appointment2)
+      reminder2 = Notification.find_by(patient: patient, appointment: upcoming_appointment2)
       expect(reminder2).to be_truthy
-      unexpected_reminder1 = AppointmentReminder.find_by(patient: patient, appointment: old_appointment)
+      unexpected_reminder1 = Notification.find_by(patient: patient, appointment: old_appointment)
       expect(unexpected_reminder1).to be_falsey
-      unexpected_reminder2 = AppointmentReminder.find_by(patient: patient, appointment: far_future_appointment)
+      unexpected_reminder2 = Notification.find_by(patient: patient, appointment: far_future_appointment)
       expect(unexpected_reminder2).to be_falsey
     end
 
@@ -152,7 +152,7 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1, reminder2, reminder3 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
+      reminder1, reminder2, reminder3 = patient1.notifications.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(appointment_date - 3.days)
       expect(reminder2.remind_on).to eq(appointment_date)
       expect(reminder3.remind_on).to eq(appointment_date + 3.days)
@@ -178,7 +178,7 @@ describe ExperimentControlService, type: :model do
           ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
         rescue ActiveRecord::RecordInvalid
         end
-      }.to_not change { AppointmentReminder.count }
+      }.to_not change { Notification.count }
       expect(experiment.reload.state).to eq("new")
     end
 
@@ -241,7 +241,7 @@ describe ExperimentControlService, type: :model do
       ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30)
 
       today = Date.current
-      reminder1, reminder2 = patient1.appointment_reminders.sort_by { |ar| ar.remind_on }
+      reminder1, reminder2 = patient1.notifications.sort_by { |ar| ar.remind_on }
       expect(reminder1.remind_on).to eq(today)
       expect(reminder2.remind_on).to eq(today + 3.days)
     end
@@ -258,8 +258,8 @@ describe ExperimentControlService, type: :model do
 
       expect {
         ExperimentControlService.start_stale_patient_experiment(experiment.name, 0, 30, patients_per_day: 1)
-      }.to change { AppointmentReminder.count }.by(3)
-      reminder_dates = AppointmentReminder.group(:remind_on).count
+      }.to change { Notification.count }.by(3)
+      reminder_dates = Notification.group(:remind_on).count
       expect(reminder_dates[Date.current]).to eq(1)
       expect(reminder_dates[Date.current.advance(days: 1)]).to eq(1)
       expect(reminder_dates[Date.current.advance(days: 2)]).to eq(1)
@@ -283,7 +283,7 @@ describe ExperimentControlService, type: :model do
           ExperimentControlService.start_stale_patient_experiment(experiment.name, 1, 31)
         rescue ActiveRecord::RecordInvalid
         end
-      }.to_not change { AppointmentReminder.count }
+      }.to_not change { Notification.count }
       expect(experiment.reload.state).to eq("new")
     end
 

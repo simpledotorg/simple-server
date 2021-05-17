@@ -20,9 +20,9 @@ RSpec.describe AppointmentNotificationService do
     it "does not schedule for appointments that are overdue by fewer than 3 days, have an appointment reminder, or have a communication" do
       _recently_overdue_appointment_ids = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled, remind_on: 2.days.ago)
       appointment_with_reminder = create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
-      create(:appointment_reminder, appointment: appointment_with_reminder)
+      create(:notification, appointment: appointment_with_reminder)
       appointment_with_communication = create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
-      create(:appointment_reminder, appointment: appointment_with_communication)
+      create(:notification, appointment: appointment_with_communication)
 
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
@@ -33,8 +33,8 @@ RSpec.describe AppointmentNotificationService do
       overdue_appointment
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)
-      }.to change { overdue_appointment.appointment_reminders.count }.by(1)
-      expect(overdue_appointment.appointment_reminders.last.status).to eq("scheduled")
+      }.to change { overdue_appointment.notifications.count }.by(1)
+      expect(overdue_appointment.notifications.last.status).to eq("scheduled")
     end
 
     it "should only send reminders to patients who are eligible" do
@@ -64,10 +64,10 @@ RSpec.describe AppointmentNotificationService do
         AppointmentNotificationService.send_after_missed_visit(appointments: Appointment.where(id: eligible_appointments))
       }.to change(AppointmentNotification::Worker.jobs, :size).by(2)
       eligible_appointments.each do |appointment|
-        expect(appointment.appointment_reminders.count).to eq(1)
+        expect(appointment.notifications.count).to eq(1)
       end
       ineligible_appointments.each do |appointment|
-        expect(appointment.appointment_reminders.count).to eq(0)
+        expect(appointment.notifications.count).to eq(0)
       end
     end
   end
