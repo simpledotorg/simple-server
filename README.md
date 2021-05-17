@@ -86,7 +86,7 @@ To run [simple-android](https://github.com/simpledotorg/simple-android/) app wit
 use [ngrok](https://ngrok.com).
 
 ```bash
-brew cask install ngrok
+brew install --cask ngrok
 rails server
 ngrok http 3000
 ```
@@ -103,6 +103,15 @@ In the `.env.development.local` (you can create this file if it doesn't exist),
 ```
 SIMPLE_SERVER_HOST=<HTTPS URL>
 SIMPLE_SERVER_HOST_PROTOCOL=https
+```
+
+In the server repo, open `app/views/api/manifests/show.json.jbuilder`. Change:
+```
+json.endpoint "#{ENV["SIMPLE_SERVER_HOST_PROTOCOL"]}://#{ENV["SIMPLE_SERVER_HOST"]}/api/"
+```
+to:
+```
+json.endpoint "<HTTPS URL>/api/"
 ```
 
 #### Workers
