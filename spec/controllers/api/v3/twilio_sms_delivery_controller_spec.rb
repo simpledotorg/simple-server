@@ -132,7 +132,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           allow(Communication).to receive(:next_messaging_time).and_return(fallback_time)
           expect(AppointmentNotification::Worker).to receive(:perform_at).with(
             fallback_time,
-            communication.appointment_reminder_id
+            communication.notification.id
           )
           expect(Statsd.instance).to receive(:increment).with("twilio_callback.missed_visit_whatsapp_reminder.failed")
 

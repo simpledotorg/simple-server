@@ -8,44 +8,44 @@ class AppointmentNotification::Worker
     @metrics ||= Metrics.with_object(self)
   end
 
-  def perform(appointment_reminder_id)
+  def perform(notification_id)
     metrics.increment("attempts")
     unless Flipper.enabled?(:notifications)
       metrics.increment("skipped.feature_disabled")
       return
     end
-    reminder = Notification.includes(:appointment, :patient).find(appointment_reminder_id)
-    communication_type = reminder.next_communication_type
+    notification = Notification.includes(:appointment, :patient).find(notification_id)
+    communication_type = notification.next_communication_type
     unless communication_type
       metrics.increment("skipped.previously_communicated")
       return
     end
 
-    unless reminder.status_scheduled?
+    unless notification.status_scheduled?
       metrics.increment("skipped.not_scheduled")
       return
     end
 
-    send_message(reminder, communication_type)
+    send_message(notification, communication_type)
   end
 
   private
 
-  def send_message(reminder, communication_type)
+  def send_message(notification, communication_type)
     notification_service = NotificationService.new
 
     if communication_type == "missed_visit_whatsapp_reminder"
       notification_service.send_whatsapp(
-        reminder.patient.latest_mobile_number,
-        reminder.localized_message,
+        notification.patient.latest_mobile_number,
+        notification.localized_message,
         callback_url
       ).tap do |response|
         metrics.increment("sent.whatsapp")
       end
     else
       notification_service.send_sms(
-        reminder.patient.latest_mobile_number,
-        reminder.localized_message,
+        notification.patient.latest_mobile_number,
+        notification.localized_message,
         callback_url
       ).tap do |response|
         metrics.increment("sent.sms")
@@ -55,15 +55,15 @@ class AppointmentNotification::Worker
     return if notification_service.failed?
 
     ActiveRecord::Base.transaction do
-      create_communication(reminder, communication_type, notification_service.response)
-      reminder.status_sent!
+      create_communication(notification, communication_type, notification_service.response)
+      notification.status_sent!
     end
   end
 
-  def create_communication(reminder, communication_type, response)
+  def create_communication(notification, communication_type, response)
     Communication.create_with_twilio_details!(
-      appointment: reminder.appointment,
-      notification: reminder,
+      patient: notification.patient,
+      notification: notification,
       twilio_sid: response.sid,
       twilio_msg_status: response.status,
       communication_type: communication_type

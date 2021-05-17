@@ -15,9 +15,8 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     reminder = twilio_message.communication.notification
     communication_type = reminder&.next_communication_type
     if twilio_message.unsuccessful? && communication_type
-      appointment_reminder_id = twilio_message.communication.appointment_reminder_id
-
-      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, appointment_reminder_id)
+      notification = twilio_message.communication.notification
+      AppointmentNotification::Worker.perform_at(Communication.next_messaging_time, notification.id)
     end
 
     head :ok
