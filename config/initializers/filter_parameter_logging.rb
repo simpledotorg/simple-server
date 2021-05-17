@@ -33,6 +33,8 @@ module ParameterFiltering
         when String
           value.replace(SANITIZED_VALUE)
         else
+          # This is supposed to mutate value, but it doesn't
+          # and so integers (and floats etc.) are getting logged.
           value.to_s.replace(SANITIZED_VALUE)
         end
       end
