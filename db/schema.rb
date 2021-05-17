@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_14_060816) do
+ActiveRecord::Schema.define(version: 2021_05_17_195627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -597,7 +597,6 @@ ActiveRecord::Schema.define(version: 2021_05_14_060816) do
   end
 
   create_table "treatment_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "index", null: false
     t.string "description", null: false
     t.uuid "experiment_id", null: false
     t.datetime "created_at", null: false
