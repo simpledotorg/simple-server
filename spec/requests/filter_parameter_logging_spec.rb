@@ -29,7 +29,7 @@ RSpec.describe "Filter parameter logging spec", type: :request do
     patients.each do |patient|
       expect(output).to_not match(/\b#{patient.full_name}\b/)
       expect(output).to_not match(/\b#{patient.date_of_birth}\b/) if patient.date_of_birth
-      expect(output).to_not match(/\b#{patient.age}\b/)
+      expect(output).to match(/\b#{patient.age}\b/)
       if patient.address
         expect(output).to_not match(/\b#{patient.address.street_address}\b/)
         expect(output).to_not match(/\b#{patient.address.village_or_colony}\b/)
@@ -71,6 +71,8 @@ RSpec.describe "Filter parameter logging spec", type: :request do
         next
       when Array
         value.each { |v| check_payload(output, v) }
+        next
+      when Integer
         next
       when ActiveSupport::TimeWithZone
         # We have to search for a substring of the timestamp, because the log can contain a more precise

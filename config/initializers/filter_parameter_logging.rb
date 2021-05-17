@@ -40,4 +40,4 @@ module ParameterFiltering
   end
 end
 
-Rails.application.config.filter_parameters += [:password, :age, ParameterFiltering.filter]
+Rails.application.config.filter_parameters += [:password, ParameterFiltering.filter]
