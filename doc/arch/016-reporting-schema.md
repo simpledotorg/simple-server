@@ -1,4 +1,8 @@
-# Reporting ETL Pipeline
+# Reporting Schema
+
+## Status
+
+Accepted
 
 ## Context
 
@@ -9,23 +13,24 @@ disadvantages as we start to scale.
 
 Simple's application schema is optimized for application transactions like registering patients, recording BPs,
 updating patient info, or tracking overdue patients. As such, reporting queries grow complex. Asking questions like
-"latest BP in a month", "prescribed drugs as of a date", "current step of treatment protocol" involve complex clauses
-in the SQL queries.
-
-This complexity has a tangible impact on the quality of our reports. We risk data inconsistency as complex queries are
-more error-prone when reused in multiple places.
-
-
-### 2. Coupling
+"latest BP in a month", "prescribed drugs as of a date", "current step of treatment protocol" involve joins and
+duplicating indicator definitions across different code paths.
 
 When the application schema is used for reporting also, there is a tight coupling between application requirements and
 reporting requirements. Changes to the schema to optimize for reporting may have a negative impact on complexity in the
 application, and vice versa.
 
+This complexity has a tangible impact on the quality of our reports. We risk data inconsistency as complex queries are
+more error-prone when reused in multiple places.
+
+### 2. Performance
+
 In addition to complexity, performance is also a growing concern as we scale. Heavy reporting operations may strain the
 application's ability to write data to the database. Conversely, heavy application activity may impact our ability to
 generate reports in a performant manner. We currently use heavy layers of caching to mitigate these performance
-concerns, but the less caching we _need_ to do, the better.
+concerns, but the less caching we _need_ to do, the better. For example, we have faced several issues in the past where
+the same indicator is inconsistent across different touchpoints in our reports, specifically due to multiple layers of
+caching.
 
 ### Priorities and constraints
 
@@ -33,14 +38,39 @@ The upcoming changes to our reporting pipeline are quite new to us, so the prior
 Performance is a secondary concern, since we are not yet at a scale where we need to worry about it too much, and our
 caching strategy works well today.
 
+## Prior Art
+
+**tl;dr:** We have a good idea of the reporting schema we want.
+
+* [Reporting Questions](https://docs.google.com/document/d/1sib4fCWqSlfj4YmQds7zfyaDrf5i_xBvEKEpHZfjcEc/edit?pli=1#heading=h.gaha888r4whr):
+  The Simple team worked with Chris Doyle to formulate a handful of meaningful indicators ("Questions") that we want to be
+  able to answer easily with the new reporting pipeline.
+* [Proof-of-concept](https://github.com/simpledotorg/simple-etl): Chris Doyle worked on a proof-of-concept data
+  warehouse. This warehouse contains transformed data tables that let us answer the Reporting Questions with
+  straightforward SQL queries.
+  * [Schema](https://github.com/simpledotorg/simple-etl/blob/main/generate_dwh_fill.py): The schema of the reporting
+    tables
+  * [Questions](https://github.com/simpledotorg/simple-etl/tree/main/questions): The straightforward SQL queries to
+    answer the Reporting Questions using the reporting schema
+  * [Informational tables](https://github.com/simpledotorg/simple-etl/blob/main/create_info_tables.sql): Some
+    informational data mappings for prescription drugs etc, to help streamline the reporting tables.
+* [Metabase prototypes](https://metabase-sandbox.simple.org/dashboard/6): To validate our technical approach, queries
+  have been set up in Metabase to create the reporting schema, as well as answer the Reporting Questions.
+
 ## Decision
 
 We will introduce a set of reporting tables, implemented as materialized database views, to start powering our reporting
 requirements. This reporting schema will transform the data in our application tables into a more reports-friendly
 format, exposing convenient building blocks to build reports with straightforward SQL queries.
 
-Once the reporting tables are populated, we will use Metabase to create and maintain the SQL queries that run against
-the reporting tables to generate reports.
+Once the reporting tables are populated, we can do the following things:
+* Generate one-off reports in Metabase
+* Prototype new indicators and reports in Metabase
+* Migrate existing reports in the Simple dashboard to use the reporting tables wherever appropriate. The following
+  indicators may serve as good starting points:
+  * Registrations: It is a simple report and easy to verify
+  * Lost-to-follow-up breakdowns: It tests the more complex aspects of the reporting tables, but is fairly isolated.
+* Add new indicators and reports to the Simple Dashboard
 
 ```
  --------------------             ------------------------------------             ------------------
@@ -91,8 +121,12 @@ The important elements of our calendar will be:
   a single column. `GROUP BY (year, month)` is more awkward.
 
 The calendar table will usually be joined with Simple's application tables to populate the denormalized reporting
-tables. The calendar table will be implemented as a non-materialized database view, since it is fairly small and not
-expensive to compute when needed.
+tables. The data from Simple's application tables will be read in the local timezone (eg. `Asia/Kolkata` for India)
+_before_ being joined with the calendar table. The calendar table will be implemented as a non-materialized database
+view, since it is fairly small and not expensive to compute when needed.
+
+The calendar table will **not** support per-week or per-day records. This means the minimum resolution of our reporting
+schema will be **per-month**.
 
 ### Reports
 
@@ -121,7 +155,8 @@ considered.
 
 We could continue to generate the reporting tables by hand, but place them in a separate database. This would greatly
 alleviate performance problems. However, database performance is a secondary concern. Furthermore, the proposed approach
-will still set us up nicely to extract the reporting tables to a separate database in the future if necessary.
+will still set us up nicely to extract the reporting tables to a separate database in the future if necessary. It also
+defers the effort of setting up a true ETL pipeline to ship data to a different database.
 
 ### Rollup summary tables
 
@@ -135,16 +170,18 @@ on the schemas, since every change would require a backfill of data from the beg
 There's a high up-front cost and complexity to using a third-party tool. Additionally, there may be hidden constraints
 in such tools that we don't want to deal with while we're in an iterative stage of this effort.
 
-## Status
-
-Proposed
-
 ## Consequences
 
+* The reporting schema introduces a new way to build reports. If we do not converge existing reports to use the
+  reporting schema, then we will end up with _more_ fragmentation, not less, on how we build reports.
+* With a reporting schema, it is import to strike the right balance between application and SQL code.
+  For example, is "risk level" pre-computed in the reporting schema, or computed at query-time in the application? We
+  will need to be mindful of maintaining the right balance. Some criteria we could use are:
+  * How often will it change?
+  * How complex is it?
+  * How expensive is it to compute?
 * We will have more nightly cron tasks to refresh the reporting views. We need to monitor the performance of these
   refreshes closely to identify when database views are no longer a viable option for us.
-* We can start thinking of migrating existing dashboard reports to consume data from the reporting tables. Some good
-  candidates to start migrating could possibly be:
-  * Registrations: It is a simple report and easy to verify
-  * Lost-to-follow-up breakdowns: It tests the more complex aspects of the reporting tables, but is fairly isolated.
-* We will need to maintain and evolve the reporting schema as reporting requirements change.
+* We will additionally need to maintain and evolve the reporting schema as reporting requirements change.
+* We will not be able to use the reporting schema for indicators with a time granularity lower than per-month. Eg. daily
+  statistics in the Progress tab of the app.
