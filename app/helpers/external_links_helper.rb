@@ -9,7 +9,7 @@ module ExternalLinksHelper
   BANGLADESH_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1Ce2LIPlnByn-6LPhgbKUkhoGold3R5ciXtFbVXFOhaU/edit#slide=id.g25f6af9dd6_0_0"
   ETHIOPIA_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1GM57_sHZ53huaMCi1Vsg5O2aAjtXKWdLGvsvKzMROME/edit#slide=id.g25f6af9dd6_0_0"
   
-  TELEMEDICINE_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1wg0VlsEpBFWjSoqIUH5Jwj368g9Ku-IEj9DoujdqG5c/"
+  TELEMEDICINE_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1wg0VlsEpBFWjSoqIUH5Jwj368g9Ku-IEj9DoujdqG5c/edit?usp=sharing"
 
   TRAINING_VIDEO_ALL_CHAPTERS_YOUTUBE_LINK = "https://youtu.be/MC_45DoRw2g"
   TRAINING_VIDEO_ALL_CHAPTERS_DOWNLOAD_LINK = "https://drive.google.com/file/d/1XbQ9vejHXL8dXA0tuAyMvb0e9ToJR0yh/view?usp=sharing"
