@@ -17,38 +17,17 @@ describe AppointmentReminder, type: :model do
   end
 
   describe "#localized_message" do
-    it "localizes the message according to the patient's address" do
+    it "localizes the message according to the facility state, not the patient's address" do
       appointment_reminder.patient.address.update(state: "punjab")
-      expected_message = I18n.t(
-        appointment_reminder.message,
-        facility_name: appointment_reminder.appointment.facility.name,
-        patient_name: appointment_reminder.patient.full_name,
-        appointment_date: appointment_reminder.appointment.scheduled_date,
-        locale: "pa-Guru-IN"
-      )
-      expect(appointment_reminder.localized_message).to eq(expected_message)
-    end
+      facility = appointment_reminder.appointment.facility
+      facility.update(state: "Maharashtra")
 
-    it "defaults to English if the patient has no address" do
-      appointment_reminder.patient.update!(address_id: nil)
       expected_message = I18n.t(
         appointment_reminder.message,
         facility_name: appointment_reminder.appointment.facility.name,
         patient_name: appointment_reminder.patient.full_name,
         appointment_date: appointment_reminder.appointment.scheduled_date,
-        locale: "en"
-      )
-      expect(appointment_reminder.localized_message).to eq(expected_message)
-    end
-
-    it "defaults to English if the patient's address is invalid" do
-      appointment_reminder.patient.address.update!(state: "Unknown State")
-      expected_message = I18n.t(
-        appointment_reminder.message,
-        facility_name: appointment_reminder.appointment.facility.name,
-        patient_name: appointment_reminder.patient.full_name,
-        appointment_date: appointment_reminder.appointment.scheduled_date,
-        locale: "en"
+        locale: "mr-IN"
       )
       expect(appointment_reminder.localized_message).to eq(expected_message)
     end
