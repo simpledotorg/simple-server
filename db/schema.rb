@@ -1141,4 +1141,74 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
        JOIN patients p ON ((bp.patient_id = p.id)))
     ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
   SQL
+  create_view "encounters_over_time", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (e.patient_id, cal.month_date) cal.month_date,
+      cal.month,
+      cal.quarter,
+      cal.year,
+      e.encountered_on AS encountered_at,
+      p.recorded_at AS patient_registered_at,
+      e.id AS encounter_id,
+      e.patient_id,
+      p.assigned_facility_id AS patient_assigned_facility_id,
+      p.registration_facility_id AS patient_registration_facility_id,
+      e.facility_id AS encounter_facility_id,
+      ((date_part('year'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_registration,
+      ((date_part('year'::text, age((e.encountered_on)::timestamp with time zone, (cal.month_date)::timestamp with time zone)) * (12)::double precision) + date_part('month'::text, age((e.encountered_on)::timestamp with time zone, (cal.month_date)::timestamp with time zone))) AS months_since_encounter
+     FROM ((encounters e
+       LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, (e.encountered_on)::timestamp with time zone)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+       JOIN patients p ON ((e.patient_id = p.id)))
+    ORDER BY e.patient_id, cal.month_date, e.encountered_on DESC;
+  SQL
+  create_view "patient_states_over_time", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (p.id, cal.month_date) p.id,
+      p.recorded_at,
+      cal.month,
+      cal.year,
+      cal.month_date,
+      bpot.systolic,
+      bpot.diastolic,
+      bpot.blood_pressure_recorded_at AS bp_recorded_at,
+      eot.encountered_at,
+      p.assigned_facility_id AS patient_assigned_facility_id,
+      p.registration_facility_id AS patient_registration_facility_id,
+      ((date_part('year'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_registration,
+          CASE
+              WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 180) OR (bpot.diastolic >= 110))) THEN 'Stage 3'::text
+              WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 160) OR (bpot.diastolic >= 100))) THEN 'Stage 2'::text
+              WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 140) OR (bpot.diastolic >= 90))) THEN 'Stage 1'::text
+              WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic < 140) AND (bpot.diastolic < 90))) THEN 'Controlled'::text
+              WHEN ((mh.hypertension = 'yes'::text) AND (bpot.systolic IS NULL)) THEN 'Hypertensive Unknown Stage'::text
+              WHEN (mh.hypertension = 'unknown'::text) THEN 'Unknown'::text
+              WHEN (mh.hypertension = 'no'::text) THEN 'Not hypertensive'::text
+              ELSE 'Undefined'::text
+          END AS diagnosed_disease_state,
+          CASE
+              WHEN ((p.status)::text = 'dead'::text) THEN 'Not needed'::text
+              WHEN ((p.status)::text = 'migrated'::text) THEN 'Not needed'::text
+              WHEN (mh.hypertension = 'no'::text) THEN 'Not needed'::text
+              WHEN (eot.months_since_encounter < (3)::double precision) THEN 'Less than 3 months'::text
+              WHEN (eot.months_since_encounter < (6)::double precision) THEN 'Between 3 and 6 months'::text
+              WHEN (eot.months_since_encounter < (9)::double precision) THEN 'Between 6 and 9 months'::text
+              WHEN (eot.months_since_encounter < (12)::double precision) THEN 'Between 9 and 12 months'::text
+              WHEN (eot.months_since_encounter >= (12)::double precision) THEN 'More than 12 months'::text
+              WHEN (eot.months_since_encounter IS NULL) THEN 'No encounter'::text
+              ELSE 'Undefined'::text
+          END AS treatment_state,
+          CASE
+              WHEN (bpot.months_since_bp_observation < (3)::double precision) THEN 'Less than 3 months'::text
+              WHEN (bpot.months_since_bp_observation < (6)::double precision) THEN 'Between 3 and 6 months'::text
+              WHEN (bpot.months_since_bp_observation < (9)::double precision) THEN 'Between 6 and 9 months'::text
+              WHEN (bpot.months_since_bp_observation < (12)::double precision) THEN 'Between 9 and 12 months'::text
+              WHEN (bpot.months_since_bp_observation >= (12)::double precision) THEN 'More than 12 months'::text
+              WHEN (bpot.months_since_bp_observation IS NULL) THEN 'No measurement'::text
+              ELSE 'Undefined'::text
+          END AS bp_observation_state
+     FROM ((((patients p
+       LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+       LEFT JOIN blood_pressures_over_time bpot ON (((p.id = bpot.patient_id) AND (cal.month = bpot.month) AND (cal.year = bpot.year))))
+       LEFT JOIN encounters_over_time eot ON (((p.id = eot.patient_id) AND (cal.month = eot.month) AND (cal.year = eot.year))))
+       LEFT JOIN medical_histories mh ON ((p.id = mh.patient_id)))
+    ORDER BY p.id, cal.month_date;
+  SQL
 end
