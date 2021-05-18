@@ -1120,4 +1120,25 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       date_part('year'::text, month_dates.month_date) AS year
      FROM month_dates;
   SQL
+  create_view "blood_pressures_over_time", materialized: true, sql_definition: <<-SQL
+      SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
+      cal.month,
+      cal.quarter,
+      cal.year,
+      bp.recorded_at AS blood_pressure_recorded_at,
+      p.recorded_at AS patient_registered_at,
+      bp.id AS blood_pressure_id,
+      bp.patient_id,
+      bp.systolic,
+      bp.diastolic,
+      p.assigned_facility_id AS patient_assigned_facility_id,
+      p.registration_facility_id AS patient_registration_facility_id,
+      bp.facility_id AS blood_pressure_facility_id,
+      ((date_part('year'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_registration,
+      ((date_part('year'::text, age(bp.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(bp.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_bp_observation
+     FROM ((blood_pressures bp
+       LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+       JOIN patients p ON ((bp.patient_id = p.id)))
+    ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
+  SQL
 end
