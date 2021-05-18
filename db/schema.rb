@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_18_182324) do
+ActiveRecord::Schema.define(version: 2021_05_18_212747) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -141,12 +141,13 @@ ActiveRecord::Schema.define(version: 2021_05_18_182324) do
     t.bigint "detailable_id"
     t.uuid "notification_id"
     t.uuid "appointment_id"
-    t.uuid "patient_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
     t.index ["notification_id"], name: "index_communications_on_notification_id"
-    t.index ["patient_id"], name: "index_communications_on_patient_id"
     t.index ["user_id"], name: "index_communications_on_user_id"
+  end
+
+  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
   end
 
   create_table "deduplication_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -651,7 +652,6 @@ ActiveRecord::Schema.define(version: 2021_05_18_182324) do
   add_foreign_key "blood_sugars", "facilities"
   add_foreign_key "blood_sugars", "users"
   add_foreign_key "communications", "notifications"
-  add_foreign_key "communications", "patients"
   add_foreign_key "drug_stocks", "facilities"
   add_foreign_key "drug_stocks", "protocol_drugs"
   add_foreign_key "drug_stocks", "users"
