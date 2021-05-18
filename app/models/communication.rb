@@ -3,6 +3,7 @@ class Communication < ApplicationRecord
   include Hashable
 
   belongs_to :patient, optional: true
+  belongs_to :appointment, optional: true
   belongs_to :notification, optional: true
   belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true
