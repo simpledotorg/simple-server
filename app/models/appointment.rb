@@ -149,9 +149,7 @@ class Appointment < ApplicationRecord
       .where(communications: {communication_type: communication_type})
       .order(created_at: :desc)
       .first
-    if latest_notification
-      latest_notification.communications.any? { |c| c.attempted? }
-    end
+    latest_notification&.communications&.any? { |c| c.attempted? }
   end
 
   private
