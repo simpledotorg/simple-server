@@ -31,7 +31,12 @@ RSpec.describe DrugStocksReportExporter do
       "Patient days"
     ]
 
+    totals_row = [
+      "All",
+      *[nil] * 10
+    ]
+
     csv = described_class.csv(query)
-    expect(csv).to eq(headers_row_1.to_csv + headers_row_2.to_csv)
+    expect(csv).to eq(headers_row_1.to_csv + headers_row_2.to_csv + totals_row.to_csv)
   end
 end
