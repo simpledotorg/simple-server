@@ -10,7 +10,7 @@ class Appointment < ApplicationRecord
   belongs_to :facility
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
-  has_many :notifications
+  has_many :notifications, as: :subject
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date
     overdue status agreed_to_visit remind_on]
@@ -145,8 +145,13 @@ class Appointment < ApplicationRecord
   end
 
   def previously_communicated_via?(communication_type)
-    matching_notifications = notifications.includes(:communications).where(communications: {communication_type: communication_type})
-    matching_notifications.any? { |n| n.communication.attempted? }
+    latest_notification = notifications.includes(:communications)
+      .where(communications: {communication_type: communication_type})
+      .order(created_at: :desc)
+      .first
+    if latest_notification
+      latest_notification.communications.any? { |c| c.attempted? }
+    end
   end
 
   private
