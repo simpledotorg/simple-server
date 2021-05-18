@@ -13,6 +13,25 @@ RSpec.describe NotificationService do
     allow(notification_service).to receive(:client).and_return(twilio_client)
   end
 
+  describe "test mode vs production mode" do
+    it "uses the test twilio creds by default in test environment" do
+      twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
+      twilio_test_auth_token = ENV.fetch("TWILIO_TEST_AUTH_TOKEN")
+      expect(Twilio::REST::Client).to receive(:new).with(twilio_test_account_sid, twilio_test_auth_token).and_call_original
+      expect(notification_service.client).to be_instance_of(Twilio::REST::Client)
+      expect(notification_service.test_mode?).to be_truthy
+    end
+
+    it "uses the production twilio creds when SIMPLE_SERVER_ENV is production" do
+      stub_const("SIMPLE_SERVER_ENV", "production")
+      twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
+      twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
+      expect(Twilio::REST::Client).to receive(:new).with(twilio_account_sid, twilio_auth_token).and_call_original
+      expect(notification_service.client).to be_instance_of(Twilio::REST::Client)
+      expect(notification_service.test_mode?).to be_falsey
+    end
+  end
+
   describe "#send_sms" do
     it "correctly calls the Twilio API" do
       stub_client
