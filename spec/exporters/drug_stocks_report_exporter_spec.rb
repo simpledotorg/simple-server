@@ -17,7 +17,21 @@ RSpec.describe DrugStocksReportExporter do
       nil, nil
     ]
 
+    headers_row_2 = [
+      "Facilities",
+      "Losartan 50 mg",
+      "Telmisartan 40 mg",
+      "Telmisartan 80 mg",
+      "Patient days",
+      "Amlodipine 5 mg",
+      "Amlodipine 10 mg",
+      "Patient days",
+      "Chlorthalidone 12.5 mg",
+      "Hydrochlorothiazide 25 mg",
+      "Patient days"
+    ]
+
     csv = described_class.csv(query)
-    expect(csv).to eq(headers_row_1.to_csv)
+    expect(csv).to eq(headers_row_1.to_csv + headers_row_2.to_csv)
   end
 end

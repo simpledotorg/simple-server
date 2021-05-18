@@ -13,17 +13,27 @@ class DrugStocksReportExporter
 
   def csv
     CSV.generate(headers: true) do |csv|
-      csv << drug_categories_headers
+      csv << drug_categories_header
+      csv << drug_names_header
       csv
     end
   end
 
-  def drug_categories_headers
+  def drug_categories_header
     left_pad_size = 1
     left_padding_columns = [nil] * left_pad_size
 
     left_padding_columns + @drugs_by_category.flat_map do |category, drugs|
       [protocol_drug_labels[category][:full], [nil] * drugs.count].flatten
+    end
+  end
+
+  def drug_names_header
+    ["Facilities"] + @drugs_by_category.flat_map do |_category, drugs|
+      drug_columns = drugs.map do |drug|
+        "#{drug.name} #{drug.dosage}"
+      end
+      drug_columns << "Patient days"
     end
   end
 end
