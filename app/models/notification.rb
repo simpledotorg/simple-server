@@ -1,5 +1,5 @@
 class Notification < ApplicationRecord
-  belongs_to :appointment, optional: true
+  belongs_to :subject, optional: true, polymorphic: true
   belongs_to :patient
   belongs_to :experiment, class_name: "Experimentation::Experiment", optional: true
   belongs_to :reminder_template, class_name: "Experimentation::ReminderTemplate", optional: true
@@ -19,13 +19,18 @@ class Notification < ApplicationRecord
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }
 
   def localized_message
-    I18n.t(
-      message,
-      facility_name: appointment.facility.name,
-      patient_name: patient.full_name,
-      appointment_date: appointment.scheduled_date,
-      locale: appointment.facility.locale
-    )
+    case subject
+    when Appointment
+      I18n.t(
+        message,
+        facility_name: subject.facility.name,
+        patient_name: patient.full_name,
+        appointment_date: subject.scheduled_date,
+        locale: subject.facility.locale
+      )
+    else
+      raise ArgumentError, "Must provide some a subject or default behavior"
+    end
   end
 
   def next_communication_type

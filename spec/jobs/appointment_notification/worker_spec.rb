@@ -7,7 +7,12 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(Statsd.instance).to receive(:increment).with(anything)
     end
 
-    let(:notification) { create(:notification, status: "scheduled", message: "sms.notifications.missed_visit_whatsapp_reminder") }
+    let(:notification) {
+      create(:notification,
+        subject: create(:appointment),
+        status: "scheduled",
+        message: "sms.notifications.missed_visit_whatsapp_reminder")
+    }
     let(:communication_type) { "missed_visit_whatsapp_reminder" }
 
     def mock_successful_delivery
@@ -101,11 +106,11 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "localizes the message based on facility state, not patient address" do
       mock_successful_delivery
       notification.patient.address.update!(state: "maharashtra")
-      notification.appointment.facility.update!(state: "punjab")
+      notification.subject.facility.update!(state: "punjab")
       localized_message = I18n.t(
         notification.message,
         {
-          facility_name: notification.appointment.facility.name,
+          facility_name: notification.subject.facility.name,
           locale: "pa-Guru-IN"
         }
       )
