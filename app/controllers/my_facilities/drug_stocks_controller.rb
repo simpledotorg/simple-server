@@ -27,7 +27,7 @@ class MyFacilities::DrugStocksController < AdminController
 
     respond_to do |format|
       format.csv do
-        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report.csv"
+        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
       end
     end
   end
