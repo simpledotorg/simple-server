@@ -20,9 +20,9 @@ RSpec.describe AppointmentNotificationService do
     it "does not schedule for appointments that are overdue by fewer than 3 days, have an appointment reminder, or have a communication" do
       _recently_overdue_appointment_ids = create(:appointment, scheduled_date: 2.days.ago, status: :scheduled, remind_on: 2.days.ago)
       appointment_with_reminder = create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
-      create(:notification, appointment: appointment_with_reminder)
+      create(:notification, subject: appointment_with_reminder)
       appointment_with_communication = create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
-      create(:notification, appointment: appointment_with_communication)
+      create(:notification, subject: appointment_with_communication)
 
       expect {
         AppointmentNotificationService.send_after_missed_visit(appointments: common_org.appointments)

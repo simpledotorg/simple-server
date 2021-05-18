@@ -28,7 +28,7 @@ class AppointmentNotificationService
 
   def create_appointment_reminder(appointment)
     Notification.create!(
-      appointment: appointment,
+      subject: appointment,
       patient: appointment.patient,
       remind_on: appointment.remind_on,
       status: "scheduled",

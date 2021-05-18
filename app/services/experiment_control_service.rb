@@ -81,7 +81,7 @@ class ExperimentControlService
           message: template.message,
           experiment: group.experiment,
           reminder_template: template,
-          appointment: appointment,
+          subject: appointment,
           patient: patient
         )
       end

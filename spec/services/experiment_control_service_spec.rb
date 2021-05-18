@@ -128,13 +128,13 @@ describe ExperimentControlService, type: :model do
 
       ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
 
-      reminder1 = Notification.find_by(patient: patient, appointment: upcoming_appointment1)
+      reminder1 = Notification.find_by(patient: patient, subject: upcoming_appointment1)
       expect(reminder1).to be_truthy
-      reminder2 = Notification.find_by(patient: patient, appointment: upcoming_appointment2)
+      reminder2 = Notification.find_by(patient: patient, subject: upcoming_appointment2)
       expect(reminder2).to be_truthy
-      unexpected_reminder1 = Notification.find_by(patient: patient, appointment: old_appointment)
+      unexpected_reminder1 = Notification.find_by(patient: patient, subject: old_appointment)
       expect(unexpected_reminder1).to be_falsey
-      unexpected_reminder2 = Notification.find_by(patient: patient, appointment: far_future_appointment)
+      unexpected_reminder2 = Notification.find_by(patient: patient, subject: far_future_appointment)
       expect(unexpected_reminder2).to be_falsey
     end
 
