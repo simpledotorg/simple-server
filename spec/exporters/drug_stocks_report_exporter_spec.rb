@@ -7,6 +7,7 @@ RSpec.describe DrugStocksReportExporter do
     facility = create(:facility, facility_group: facility_group)
     query = DrugStocksQuery.new(facilities: [facility], for_end_of_month: Date.current.end_of_month)
 
+    timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
     headers_row_1 = [
       nil,
       "ARB Tablets",
@@ -36,7 +37,19 @@ RSpec.describe DrugStocksReportExporter do
       *[nil] * 10
     ]
 
+    facility_rows = [
+      facility.name,
+      *[nil] * 10
+    ]
+
     csv = described_class.csv(query)
-    expect(csv).to eq(headers_row_1.to_csv + headers_row_2.to_csv + totals_row.to_csv)
+    expected_csv =
+      timestamp.to_csv +
+      headers_row_1.to_csv +
+      headers_row_2.to_csv +
+      totals_row.to_csv +
+      facility_rows.to_csv
+
+    expect(csv).to eq(expected_csv)
   end
 end

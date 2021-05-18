@@ -14,11 +14,20 @@ class DrugStocksReportExporter
 
   def csv
     CSV.generate(headers: true) do |csv|
+      csv << timestamp
       csv << drug_categories_header
       csv << drug_names_header
       csv << total_stock_row
+      @report[:facilities].map do |(_facility_id, facility_report)|
+        csv << facility_row(facility_report)
+      end
+
       csv
     end
+  end
+
+  def timestamp
+    ["Report last updated at:", @report&.fetch(:last_updated_at)]
   end
 
   def drug_categories_header
@@ -32,7 +41,7 @@ class DrugStocksReportExporter
 
   def drug_names_header
     ["Facilities"] +
-      @drugs_by_category.flat_map do |_category, drugs|
+      @drugs_by_category.flat_map do |_drug_category, drugs|
         drug_columns = drugs.map do |drug|
           "#{drug.name} #{drug.dosage}"
         end
@@ -47,6 +56,19 @@ class DrugStocksReportExporter
 
         drugs.map do |drug|
           @report.dig(:all, drug_category, :drug_stocks, drug.rxnorm_code, :in_stock)
+        end << patient_days
+      end
+  end
+
+  def facility_row(facility_report)
+    facility_name = facility_report[:facility].name
+
+    [facility_name] +
+      @drugs_by_category.flat_map do |drug_category, drugs|
+        patient_days = facility_report.dig(drug_category, :patient_days)
+
+        drugs.map do |drug|
+          facility_report.dig(drug_category, :drug_stocks, drug.id)
         end << patient_days
       end
   end
