@@ -18,9 +18,7 @@ class DrugStocksReportExporter
       csv << drug_categories_header
       csv << drug_names_header
       csv << total_stock_row
-      @report[:facilities].map do |(_facility_id, facility_report)|
-        csv << facility_row(facility_report)
-      end
+      facility_rows.map { |row| csv << row }
 
       csv
     end
@@ -58,6 +56,12 @@ class DrugStocksReportExporter
           @report.dig(:all, drug_category, :drug_stocks, drug.rxnorm_code, :in_stock)
         end << patient_days
       end
+  end
+
+  def facility_rows
+    @report[:facilities].map do |(_facility_id, facility_report)|
+      facility_row(facility_report)
+    end
   end
 
   def facility_row(facility_report)
