@@ -188,6 +188,7 @@ Rails.application.routes.draw do
     get "facility_performance", to: "facility_performance#show"
     get "ranked_facilities", to: redirect("/my_facilities/facility_performance")
     get "drug_stocks", to: "drug_stocks#drug_stocks"
+    get "drug_stocks/download", to: "drug_stocks#download"
     get "drug_consumption", to: "drug_stocks#drug_consumption"
     post "drug_stocks", to: "drug_stocks#create"
     get "drug_stocks/:facility_id/new", to: "drug_stocks#new", as: :drug_stock_form
