@@ -145,7 +145,7 @@ class Appointment < ApplicationRecord
   end
 
   def previously_communicated_via?(communication_type)
-    matching_notifications = notifications.includes(:communications).where(:communications => {communication_type: communication_type})
+    matching_notifications = notifications.includes(:communications).where(communications: {communication_type: communication_type})
     matching_notifications.any? { |n| n.communication.attempted? }
   end
 
