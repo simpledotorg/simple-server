@@ -10,7 +10,7 @@ FactoryBot.define do
     status { Patient::STATUSES[0] }
     date_of_birth { nil }
     age { rand(18..100) }
-    age_updated_at { 1.second.ago }
+    age_updated_at { Time.current }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     recorded_at { device_created_at }
