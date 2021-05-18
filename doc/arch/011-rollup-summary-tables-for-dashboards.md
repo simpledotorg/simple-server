@@ -47,7 +47,7 @@ year
 * We will build out a backfill job to fill out these tables for all previous periods.
 
 ## Status
-Proposed
+Superseded by [016 Reporting Schema](./016-reporting-schema.md)
 
 ## Consequences
 
