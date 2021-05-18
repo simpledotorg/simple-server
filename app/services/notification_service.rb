@@ -6,6 +6,7 @@ class NotificationService
   attr_reader :response
   attr_reader :twilio_sender_number
 
+  # See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
   TWILIO_TEST_NUMBER = "+15005550006"
 
   def initialize
