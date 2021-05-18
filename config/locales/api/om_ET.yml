@@ -14,7 +14,7 @@ om-ET:
       account_locked: "Heddi kee yeroowwan %{minutes} daqiiqaawwan dhufaniif cufamee jira. Maaloo xiqqoo turii akkasumas deebisii yaali"
   sms:
     request_otp: "<#> %{otp}koodii mirkaneeffannaa kee isa salphaadha\n%{app_signature}"
-    notifications:
+    appointment_reminders:
       missed_visit_sms_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami."
       missed_visit_whatsapp_reminder: "Hojjattoonni keenya kan %{facility_name} waa’ee kee fii waa’e fayyummaa onnee keetii yaaddaa jiru. Maaloo dawaa dhiibbaa dhiigaa kee itti fufi. Dawaa kee jiddu gala dhiyeenyaa jiru irraa walitti qabadhu. ANM yookan ASHA kee qunnami."
     patient_request_otp: "<#>%{otp}koodii Paaspoortii mirkaneeffannaa PB keetiti\n%{app_signature}"

@@ -14,7 +14,7 @@ en:
       account_locked: "Your account has been locked for the next %{minutes} minutes. Please wait and try again."
   sms:
     request_otp: "<#> %{otp} is your Simple verification code\n%{app_signature}"
-    notifications:
+    appointment_reminders:
       missed_visit_sms_reminder: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
       missed_visit_whatsapp_reminder: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
     patient_request_otp: "<#> %{otp} is your BP Passport verification code\n%{app_signature}"

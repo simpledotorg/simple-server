@@ -14,7 +14,7 @@ so-ET:
       account_locked: "Xisaabtaada waa la xidhay %{minutes} daqiiqo ee soo socda. Fadlan sug oo isku day mar kale."
   sms:
     request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta ee Fudud\n%{app_signature}"
-    notifications:
+    appointment_reminders:
       missed_visit_sms_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
       missed_visit_whatsapp_reminder: "Shaqaalaheena %{facility_name} waxay ka fikirayaan caafimaadkaaga iyo adigaba. Fadlan waxa aad sii wadaa dawooyinka dhiikarga. Waxa aad ka qaataa dawooyinkaaga xarun hoodaaska kuugu dhaw. La xidhiidh ANM ama ASHA kaaga."
     patient_request_otp: "<#> %{otp} weeye koodhkaaga xaqiijinta BP Passport\n%{app_signature}"
