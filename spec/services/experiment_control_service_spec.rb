@@ -300,4 +300,70 @@ describe ExperimentControlService, type: :model do
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end
   end
+
+  describe "self.start_medication_reminder_experiment" do
+    let(:experiment) { create(:experiment, :with_treatment_group, experiment_type: "medication_reminder") }
+
+    it "excludes patients who have had blood pressure readings in the past 30 days" do
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+      patient2 = create(:patient)
+      create(:blood_pressure, patient: patient2, device_created_at: 30.days.ago)
+      patient3 = create(:patient)
+      create(:blood_pressure, patient: patient3, device_created_at: 29.days.ago)
+
+      ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+
+      expect(experiment.patients.include?(patient1)).to be_truthy
+      expect(experiment.patients.include?(patient2)).to be_falsey
+      expect(experiment.patients.include?(patient3)).to be_falsey
+    end
+
+    it "adds patients to treatment groups" do
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+
+      ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+
+      treatment_group = experiment.treatment_groups.first
+      expect(treatment_group.patients.include?(patient1)).to be_truthy
+    end
+
+    it "schedules notifications" do
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+
+      expect {
+        ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+      }.to change { patient1.notifications.count }.by(1)
+    end
+
+    it "schedules configured number of patients for each day of the experiment" do
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+      patient2 = create(:patient)
+      create(:blood_pressure, patient: patient2, device_created_at: 31.days.ago)
+
+      expect {
+        ExperimentControlService.start_medication_reminder_experiment(experiment.name, patients_per_day: 1)
+      }.to change { Notification.count }.by(1)
+    end
+
+    it "updates the experiment state" do
+      expect {
+        ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+      }.to change { experiment.reload.state }.from("new").to("running")
+    end
+
+    it "excludes anyone who's already in the experiment" do
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+      treatment_group = experiment.treatment_groups.first
+      treatment_group.patients << patient1
+
+      expect {
+        ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+      }.not_to change { Notification.count }
+    end
+  end
 end

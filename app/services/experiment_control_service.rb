@@ -4,15 +4,6 @@ class ExperimentControlService
   BATCH_SIZE = 100
 
   class << self
-    def current_patient_candidates(start_date, end_date)
-      Experimentation::Experiment.candidate_patients
-        .joins(:appointments)
-        .merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
-        .distinct
-        .pluck(:id)
-    end
-
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients")
       experiment_start = days_til_start.days.from_now.beginning_of_day
@@ -41,7 +32,7 @@ class ExperimentControlService
         end
       end
 
-      experiment.update!(state: "running")
+      experiment.running_state!
     end
 
     def start_stale_patient_experiment(name, days_til_start, days_til_end, patients_per_day: PATIENTS_PER_DAY)
@@ -67,10 +58,53 @@ class ExperimentControlService
         schedule_date += 1.day
       end
 
-      experiment.update!(state: "running")
+      experiment.running_state!
+    end
+
+    def start_medication_reminder_experiment(name, patients_per_day: PATIENTS_PER_DAY)
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "medication_reminder")
+
+      experiment.selecting_state!
+
+      eligible_ids = medication_reminder_patients(experiment)
+      if eligible_ids.any?
+        eligible_ids.shuffle!
+
+        daily_ids = eligible_ids.pop(patients_per_day)
+        daily_patients = Patient.where(id: daily_ids)
+        daily_patients.each do |patient|
+          group = experiment.random_treatment_group
+          schedule_reminders(patient, nil, group, Date.current)
+          group.patients << patient
+        end
+      end
+
+      experiment.running_state!
     end
 
     protected
+
+    def current_patient_candidates(start_date, end_date)
+      Experimentation::Experiment.candidate_patients
+        .joins(:appointments)
+        .merge(Appointment.status_scheduled)
+        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
+        .distinct
+        .pluck(:id)
+    end
+
+    def medication_reminder_patients(experiment)
+      Patient.with_hypertension
+        .contactable
+        .includes(treatment_group_memberships: [treatment_group: [:experiment]])
+        .where("experiments.id IS NULL OR NOT EXISTS (SELECT 1 FROM experiments WHERE experiments.id = ?)", experiment.id).references(:experiment)
+        .where(
+          "NOT EXISTS (SELECT 1 FROM blood_pressures WHERE blood_pressures.patient_id = patients.id AND blood_pressures.device_created_at > ?)",
+          30.days.ago.beginning_of_day
+        )
+        .distinct
+        .pluck(:id)
+    end
 
     def schedule_reminders(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|
