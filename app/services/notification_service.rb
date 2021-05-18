@@ -6,6 +6,8 @@ class NotificationService
   attr_reader :response
   attr_reader :twilio_sender_number
 
+  TWILIO_TEST_NUMBER = "+15005550006"
+
   def initialize
     @test_mode = !SimpleServer.env.production?
 
@@ -15,7 +17,7 @@ class NotificationService
     @twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
     @twilio_test_auth_token = ENV.fetch("TWILIO_TEST_AUTH_TOKEN")
 
-    @twilio_sender_number = ENV.fetch("TWILIO_PHONE_NUMBER")
+    @twilio_sender_number = test_mode? ? TWILIO_TEST_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
 
     @client = if @test_mode
       test_client
