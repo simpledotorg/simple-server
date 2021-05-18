@@ -1109,4 +1109,15 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
   add_index "latest_blood_pressures_per_patients", ["bp_id"], name: "index_latest_blood_pressures_per_patients", unique: true
   add_index "latest_blood_pressures_per_patients", ["patient_id"], name: "index_latest_bp_per_patient_patient_id"
 
+  create_view "calendar_months", sql_definition: <<-SQL
+      WITH month_dates AS (
+           SELECT date(generate_series.generate_series) AS month_date
+             FROM generate_series('2018-01-01 00:00:00+00'::timestamp with time zone, now(), '1 mon'::interval) generate_series(generate_series)
+          )
+   SELECT month_dates.month_date,
+      date_part('month'::text, month_dates.month_date) AS month,
+      date_part('quarter'::text, month_dates.month_date) AS quarter,
+      date_part('year'::text, month_dates.month_date) AS year
+     FROM month_dates;
+  SQL
 end
