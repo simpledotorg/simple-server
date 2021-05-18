@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_17_215935) do
+ActiveRecord::Schema.define(version: 2021_05_18_182324) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "ltree"
@@ -356,14 +356,15 @@ ActiveRecord::Schema.define(version: 2021_05_17_215935) do
     t.uuid "experiment_id"
     t.uuid "reminder_template_id"
     t.uuid "patient_id", null: false
-    t.uuid "appointment_id"
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["appointment_id"], name: "index_notifications_on_appointment_id"
+    t.string "subject_type"
+    t.uuid "subject_id"
     t.index ["experiment_id"], name: "index_notifications_on_experiment_id"
     t.index ["patient_id"], name: "index_notifications_on_patient_id"
     t.index ["reminder_template_id"], name: "index_notifications_on_reminder_template_id"
+    t.index ["subject_type", "subject_id"], name: "index_notifications_on_subject_type_and_subject_id"
   end
 
   create_table "observations", force: :cascade do |t|
@@ -658,7 +659,6 @@ ActiveRecord::Schema.define(version: 2021_05_17_215935) do
   add_foreign_key "exotel_phone_number_details", "patient_phone_numbers"
   add_foreign_key "facilities", "facility_groups"
   add_foreign_key "facility_groups", "organizations"
-  add_foreign_key "notifications", "appointments"
   add_foreign_key "notifications", "experiments"
   add_foreign_key "notifications", "patients"
   add_foreign_key "notifications", "reminder_templates"
