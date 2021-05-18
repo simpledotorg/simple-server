@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(version: 2021_05_17_215935) do
     t.string "detailable_type"
     t.bigint "detailable_id"
     t.uuid "notification_id"
+    t.uuid "appointment_id"
     t.uuid "patient_id"
     t.index ["deleted_at"], name: "index_communications_on_deleted_at"
     t.index ["detailable_type", "detailable_id"], name: "index_communications_on_detailable_type_and_detailable_id"
