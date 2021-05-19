@@ -1,9 +1,42 @@
 class NotificationService
   DEFAULT_LOCALE = :en
 
-  attr_reader :response, :error
-  def client
-    @client ||= Twilio::REST::Client.new(twilio_account_sid, twilio_auth_token)
+  attr_reader :client
+  attr_reader :error
+  attr_reader :response
+  attr_reader :twilio_sender_number
+
+  # See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
+  TWILIO_TEST_NUMBER = "+15005550006"
+
+  def initialize
+    @test_mode = !SimpleServer.env.production?
+
+    @twilio_account_sid = ENV.fetch("TWILIO_ACCOUNT_SID")
+    @twilio_auth_token = ENV.fetch("TWILIO_AUTH_TOKEN")
+
+    @twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
+    @twilio_test_auth_token = ENV.fetch("TWILIO_TEST_AUTH_TOKEN")
+
+    @twilio_sender_number = test_mode? ? TWILIO_TEST_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
+
+    @client = if @test_mode
+      test_client
+    else
+      prod_client
+    end
+  end
+
+  def test_mode?
+    @test_mode
+  end
+
+  def prod_client
+    @prod_client ||= Twilio::REST::Client.new(@twilio_account_sid, @twilio_auth_token)
+  end
+
+  def test_client
+    @test_client ||= Twilio::REST::Client.new(@twilio_test_account_sid, @twilio_test_auth_token)
   end
 
   def send_sms(recipient_number, message, callback_url = nil)
@@ -45,18 +78,6 @@ class NotificationService
   rescue Twilio::REST::TwilioError => exception
     @error = exception
     report_error(exception)
-  end
-
-  def twilio_account_sid
-    ENV.fetch("TWILIO_ACCOUNT_SID")
-  end
-
-  def twilio_auth_token
-    ENV.fetch("TWILIO_AUTH_TOKEN")
-  end
-
-  def twilio_sender_number
-    ENV.fetch("TWILIO_PHONE_NUMBER")
   end
 
   def report_error(e)

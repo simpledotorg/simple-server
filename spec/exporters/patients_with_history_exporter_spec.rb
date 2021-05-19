@@ -40,7 +40,6 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
         old_prescription_drug].flatten.sort_by(&:name)
     ]
   end
-  let!(:timestamp) { ["Report generated at:", now] }
   let(:headers) do
     [
       "Registration Date",
@@ -253,17 +252,18 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
   end
 
   describe "#csv" do
-    let(:now) { Time.current }
-    let(:patient_batch) { Patient.where(id: patient.id) }
-
     it "generates a CSV of patient records" do
-      travel_to now do
+      Timecop.freeze do
+        timestamp = ["Report generated at:", Time.current]
+
         expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
       end
     end
 
     it "generates a blank CSV (only headers) if no patients exist" do
-      travel_to now do
+      Timecop.freeze do
+        timestamp = ["Report generated at:", Time.current]
+
         expect(subject.csv(Patient.none)).to eq(timestamp.to_csv + headers.to_csv)
       end
     end
