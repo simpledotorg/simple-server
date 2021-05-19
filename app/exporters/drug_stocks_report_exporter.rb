@@ -72,7 +72,7 @@ class DrugStocksReportExporter
         patient_days = facility_report.dig(drug_category, :patient_days)
 
         drugs.map do |drug|
-          facility_report.dig(drug_category, :drug_stocks, drug.id)
+          facility_report.dig(drug_category, :drug_stocks, drug.id)&.in_stock
         end << patient_days
       end
   end
