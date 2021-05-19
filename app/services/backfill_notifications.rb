@@ -2,9 +2,10 @@ class BackfillNotifications
   def self.call
     Communication.find_each do |communication|
       unless communication&.appointment&.patient
-        Rails.logger.warn "skipping communication #{communcation.id} in the backfill, as there is no related patient"
+        Rails.logger.warn "skipping communication #{communication.id} in the backfill, as there is no related patient"
         next
       end
+      next if communication.notification
       notification = communication.build_notification
       notification.message = "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication.communication_type}"
       notification.subject = communication.appointment
