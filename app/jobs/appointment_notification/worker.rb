@@ -54,7 +54,7 @@ class AppointmentNotification::Worker
       end
     end
     logger.info class: self.class.name, msg: "send_message", failed: !!notification_service.failed?,
-                communication_type: communication_type, reminder_id: reminder.id
+                communication_type: communication_type, notification_id: notification.id
 
     return if notification_service.failed?
 
