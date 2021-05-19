@@ -3,6 +3,7 @@ class AppointmentNotification::Worker
   include Sidekiq::Worker
 
   sidekiq_options queue: :high
+  delegate :logger, to: Rails
 
   def metrics
     @metrics ||= Metrics.with_object(self)
@@ -11,6 +12,7 @@ class AppointmentNotification::Worker
   def perform(notification_id)
     metrics.increment("attempts")
     unless Flipper.enabled?(:notifications)
+      logger.info class: self.class.name, msg: "notifications feature is disabled"
       metrics.increment("skipped.feature_disabled")
       return
     end
@@ -51,6 +53,8 @@ class AppointmentNotification::Worker
         metrics.increment("sent.sms")
       end
     end
+    logger.info class: self.class.name, msg: "send_message", failed: !!notification_service.failed?,
+                communication_type: communication_type, reminder_id: reminder.id
 
     return if notification_service.failed?
 
