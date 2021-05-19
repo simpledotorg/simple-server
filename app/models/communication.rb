@@ -39,7 +39,8 @@ class Communication < ApplicationRecord
     send(communication_type).order(device_created_at: :desc).first
   end
 
-  def self.create_with_twilio_details!(patient:, twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
+  def self.create_with_twilio_details!(twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
+    patient = notification.patient
     transaction do
       sms_delivery_details =
         TwilioSmsDeliveryDetail.create!(session_id: twilio_sid,
@@ -47,7 +48,6 @@ class Communication < ApplicationRecord
                                         callee_phone_number: patient.latest_mobile_number)
       Communication.create!(communication_type: communication_type,
                             detailable: sms_delivery_details,
-                            patient: patient,
                             notification: notification,
                             device_created_at: DateTime.current,
                             device_updated_at: DateTime.current)
@@ -92,7 +92,6 @@ class Communication < ApplicationRecord
 
   def anonymized_data
     {id: hash_uuid(id),
-     patient_id: hash_uuid(patient.id),
      user_id: hash_uuid(user_id),
      created_at: created_at,
      communication_type: communication_type,

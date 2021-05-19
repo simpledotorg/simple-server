@@ -3,7 +3,6 @@ require "rails_helper"
 describe Communication, type: :model do
   context "Associations" do
     it { should belong_to(:user).optional }
-    it { should belong_to(:patient).optional }
     it { should belong_to(:notification).optional }
     it { should belong_to(:detailable).optional }
   end
@@ -51,11 +50,12 @@ describe Communication, type: :model do
     describe ".create_with_twilio_details!" do
       it "creates a communication with a TwilioSmsDeliveryDetail" do
         patient = create(:patient)
+        notification = create(:notification, patient: patient)
         expect {
-          Communication.create_with_twilio_details!(patient: patient,
-                                                    twilio_sid: SecureRandom.uuid,
+          Communication.create_with_twilio_details!(twilio_sid: SecureRandom.uuid,
                                                     twilio_msg_status: "sent",
-                                                    communication_type: :missed_visit_sms_reminder)
+                                                    communication_type: :missed_visit_sms_reminder,
+                                                    notification: notification)
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
       end
@@ -98,12 +98,10 @@ describe Communication, type: :model do
         patient = create(:patient)
         communication = create(:communication,
           :missed_visit_sms_reminder,
-          detailable: create(:twilio_sms_delivery_detail, :sent),
-          patient: patient)
+          detailable: create(:twilio_sms_delivery_detail, :sent))
 
         anonymised_data =
           {id: Hashable.hash_uuid(communication.id),
-           patient_id: Hashable.hash_uuid(communication.patient_id),
            user_id: Hashable.hash_uuid(communication.user_id),
            created_at: communication.created_at,
            communication_type: communication.communication_type,
