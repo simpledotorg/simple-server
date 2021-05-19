@@ -263,9 +263,10 @@ describe Appointment, type: :model do
     end
 
     it "returns falsey if there are non missed_visit_sms_reminder communications for the appointment" do
+      notification = create(:notification, subject: overdue_appointment)
       create(:communication,
         communication_type: :voip_call,
-        appointment: overdue_appointment)
+        notification: notification)
 
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to be_falsey
     end
@@ -274,7 +275,6 @@ describe Appointment, type: :model do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
         :missed_visit_sms_reminder,
-        appointment: overdue_appointment,
         detailable: create(:twilio_sms_delivery_detail, :undelivered))
 
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(false)
@@ -284,7 +284,6 @@ describe Appointment, type: :model do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
         :missed_visit_sms_reminder,
-        appointment: overdue_appointment,
         notification: notification,
         detailable: create(:twilio_sms_delivery_detail, :delivered))
 
