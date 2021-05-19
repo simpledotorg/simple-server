@@ -26,6 +26,7 @@ blocks:
         - name: RSpec
           parallelism: 8
           commands:
+            - cache clear
             - checkout
             - sem-service start postgres 10
             - sem-version ruby 2.6.6
