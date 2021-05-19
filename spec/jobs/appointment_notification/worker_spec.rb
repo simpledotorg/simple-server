@@ -59,7 +59,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       mock_successful_delivery
 
       expect(Communication).to receive(:create_with_twilio_details!).with(
-        patient: notification.patient,
         notification: notification,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
@@ -72,8 +71,8 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "does not create a NotificationService or Communication if notification has been previously attempted by all available methods" do
-      create(:communication, :missed_visit_whatsapp_reminder, patient: notification.patient, notification: notification)
-      create(:communication, :missed_visit_sms_reminder, patient: notification.patient, notification: notification)
+      create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
+      create(:communication, :missed_visit_sms_reminder, notification: notification)
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.previously_communicated")
       expect_any_instance_of(NotificationService).not_to receive(:send_whatsapp)
@@ -86,7 +85,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     it "does not attempt to resend the same communication type even if previous attempt failed" do
       mock_successful_delivery
 
-      previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, patient: notification.patient, notification: notification)
+      previous_whatsapp = create(:communication, :missed_visit_whatsapp_reminder, notification: notification)
       create(:twilio_sms_delivery_detail, :failed, communication: previous_whatsapp)
 
       expect_any_instance_of(NotificationService).to receive(:send_sms)
