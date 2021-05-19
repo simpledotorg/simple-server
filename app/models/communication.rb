@@ -38,7 +38,6 @@ class Communication < ApplicationRecord
     send(communication_type).order(device_created_at: :desc).first
   end
 
-
   def self.create_with_twilio_details!(appointment:, twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
     patient = notification.patient
     transaction do
