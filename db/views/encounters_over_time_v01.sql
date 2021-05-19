@@ -13,12 +13,12 @@ SELECT
     p.registration_facility_id AS patient_registration_facility_id,
     e.facility_id AS encounter_facility_id,
 
-    date_part('year', age(p.recorded_at, cal.month_date)) * 12 +
-    date_part('month', age(p.recorded_at, cal.month_date))
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
     AS months_since_registration,
 
-    date_part('year', age(e.encountered_on, cal.month_date)) * 12 +
-    date_part('month', age(e.encountered_on, cal.month_date))
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', e.encountered_on)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', e.encountered_on))
     AS months_since_encounter
 
 FROM encounters e

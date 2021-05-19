@@ -14,12 +14,12 @@ SELECT DISTINCT ON (bp.patient_id, cal.month_date)
     p.registration_facility_id AS patient_registration_facility_id,
     bp.facility_id             AS blood_pressure_facility_id,
 
-    date_part('year', age(p.recorded_at, cal.month_date)) * 12 +
-    date_part('month', age(p.recorded_at, cal.month_date))
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
     AS months_since_registration,
 
-    date_part('year', age(bp.recorded_at, cal.month_date)) * 12 +
-    date_part('month', age(bp.recorded_at, cal.month_date))
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', bp.recorded_at)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', bp.recorded_at))
     AS months_since_bp_observation
 
 FROM blood_pressures bp

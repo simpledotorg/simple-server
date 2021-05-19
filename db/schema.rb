@@ -1134,8 +1134,8 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       bp.facility_id AS blood_pressure_facility_id,
-      ((date_part('year'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_registration,
-      ((date_part('year'::text, age(bp.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(bp.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_bp_observation
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, bp.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, bp.recorded_at))) AS months_since_bp_observation
      FROM ((blood_pressures bp
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        JOIN patients p ON ((bp.patient_id = p.id)))
@@ -1153,8 +1153,8 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       e.facility_id AS encounter_facility_id,
-      ((date_part('year'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_registration,
-      ((date_part('year'::text, age((e.encountered_on)::timestamp with time zone, (cal.month_date)::timestamp with time zone)) * (12)::double precision) + date_part('month'::text, age((e.encountered_on)::timestamp with time zone, (cal.month_date)::timestamp with time zone))) AS months_since_encounter
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, e.encountered_on)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, e.encountered_on))) AS months_since_encounter
      FROM ((encounters e
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, (e.encountered_on)::timestamp with time zone)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        JOIN patients p ON ((e.patient_id = p.id)))
@@ -1163,6 +1163,7 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
   create_view "patient_states_over_time", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id,
       p.recorded_at,
+      p.deleted_at,
       cal.month,
       cal.year,
       cal.month_date,
@@ -1172,7 +1173,7 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       eot.encountered_at,
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
-      ((date_part('year'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone)) * (12)::double precision) + date_part('month'::text, age(p.recorded_at, (cal.month_date)::timestamp without time zone))) AS months_since_registration,
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
           CASE
               WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 180) OR (bpot.diastolic >= 110))) THEN 'Stage 3'::text
               WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 160) OR (bpot.diastolic >= 100))) THEN 'Stage 2'::text
