@@ -101,10 +101,12 @@ class ExperimentControlService
     end
 
     def medication_reminder_patients(experiment)
-      Patient.with_hypertension
+      Patient
+        .with_hypertension
         .contactable
         .includes(treatment_group_memberships: [treatment_group: [:experiment]])
-        .where("experiments.id IS NULL OR NOT EXISTS (SELECT 1 FROM experiments WHERE experiments.id = ?)", experiment.id).references(:experiment)
+        .where("experiments.id IS NULL OR experiments.id != ?", experiment.id)
+        .references(:experiment)
         .where(
           "NOT EXISTS (SELECT 1 FROM blood_pressures WHERE blood_pressures.patient_id = patients.id AND blood_pressures.device_created_at > ?)",
           30.days.ago.beginning_of_day

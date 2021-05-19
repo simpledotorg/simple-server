@@ -302,7 +302,7 @@ describe ExperimentControlService, type: :model do
   end
 
   describe "self.start_medication_reminder_experiment" do
-    let(:experiment) { create(:experiment, :with_treatment_group, experiment_type: "medication_reminder") }
+    let(:experiment) { create(:experiment, :with_treatment_group_and_template, experiment_type: "medication_reminder") }
 
     it "excludes patients who have had blood pressure readings in the past 30 days" do
       patient1 = create(:patient)
@@ -355,7 +355,7 @@ describe ExperimentControlService, type: :model do
       }.to change { experiment.reload.state }.from("new").to("running")
     end
 
-    it "excludes anyone who's already in the experiment" do
+    it "excludes anyone who's already in this experiment" do
       patient1 = create(:patient)
       create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
       treatment_group = experiment.treatment_groups.first
@@ -364,6 +364,17 @@ describe ExperimentControlService, type: :model do
       expect {
         ExperimentControlService.start_medication_reminder_experiment(experiment.name)
       }.not_to change { Notification.count }
+    end
+
+    it "includes patients who are in other experiments" do
+      experiment2 = create(:experiment, :with_treatment_group, start_date: 1.week.ago, end_date: 1.week.from_now)
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+      treatment_group = experiment2.treatment_groups.first
+      treatment_group.patients << patient1
+
+      ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+      expect(treatment_group.patients.include?(patient1)).to be_truthy
     end
   end
 end
