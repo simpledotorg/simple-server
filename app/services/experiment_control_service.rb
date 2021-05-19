@@ -61,6 +61,13 @@ class ExperimentControlService
       experiment.running_state!
     end
 
+    # This is not a scientific experiment like active and stale patient experiments. It does not need or have human study
+    # approval and we are not excluding patients under 18 years old. We are leveraging the experimentation framework to
+    # request patients to visit clinics to pick up enough blood pressure medication to last the current covid spike.
+    # We're using the experimentation framework for two reasons:
+    # 1) we want most of the same functionality, including batched daily notification scheduling and the ability to track
+    #    results by leveraging the experimentation and notification models
+    # 2) this is an excellent opportunity to real-world test the experimentation framework
     def start_medication_reminder_experiment(name, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "medication_reminder")
 
