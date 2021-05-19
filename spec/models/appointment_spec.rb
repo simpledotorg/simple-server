@@ -282,7 +282,7 @@ describe Appointment, type: :model do
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(false)
     end
 
-    fit "returns false if followup reminder SMS for the appointment were successful" do
+    it "returns false if followup reminder SMS for the appointment were successful" do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
         :missed_visit_sms_reminder,
