@@ -50,9 +50,11 @@ describe Communication, type: :model do
     describe ".create_with_twilio_details!" do
       it "creates a communication with a TwilioSmsDeliveryDetail" do
         patient = create(:patient)
-        notification = create(:notification, patient: patient)
+        appt = create(:appointment, patient: patient)
+        notification = create(:notification, subject: appt, patient: patient)
         expect {
-          Communication.create_with_twilio_details!(twilio_sid: SecureRandom.uuid,
+          Communication.create_with_twilio_details!(appointment: notification.subject,
+                                                    twilio_sid: SecureRandom.uuid,
                                                     twilio_msg_status: "sent",
                                                     communication_type: :missed_visit_sms_reminder,
                                                     notification: notification)
