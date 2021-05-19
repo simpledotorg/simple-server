@@ -18,7 +18,7 @@ class DrugStocksReportExporter
       csv << drug_categories_header
       csv << drug_names_header
       csv << total_stock_row
-      facility_rows.map { |row| csv << row }
+      facility_rows.each { |row| csv << row }
 
       csv
     end

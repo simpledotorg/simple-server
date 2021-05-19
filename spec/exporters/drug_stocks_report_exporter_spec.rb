@@ -6,6 +6,22 @@ RSpec.describe DrugStocksReportExporter do
     facility_group = create(:facility_group, protocol: protocol)
     facility = create(:facility, facility_group: facility_group)
     query = DrugStocksQuery.new(facilities: [facility], for_end_of_month: Date.current.end_of_month)
+    stocks_by_rxnorm = {
+      "329528" => {in_stock: 10000, received: 2000},
+      "329526" => {in_stock: 20000, received: 2000},
+      "316764" => {in_stock: 10000, received: 2000},
+      "316765" => {in_stock: 20000, received: 2000},
+      "979467" => {in_stock: 10000, received: 2000}
+    }
+
+    stocks_by_rxnorm.map do |(rxnorm_code, drug_stock)|
+      protocol_drug = protocol.protocol_drugs.find_by(rxnorm_code: rxnorm_code)
+      create(:drug_stock,
+        facility: facility,
+        protocol_drug: protocol_drug,
+        in_stock: drug_stock[:in_stock],
+        received: drug_stock[:received])
+    end
 
     timestamp = ["Report last updated at:", query.drug_stocks_report.fetch(:last_updated_at)]
     headers_row_1 = [
@@ -34,12 +50,16 @@ RSpec.describe DrugStocksReportExporter do
 
     totals_row = [
       "All",
-      *[nil] * 10
+      10000, 10000, 20000, "<patient days>",
+      10000, 20000, "<patient days>",
+      nil, nil, nil
     ]
 
     facility_rows = [
       facility.name,
-      *[nil] * 10
+      10000, 10000, 20000, "<patient days>",
+      10000, 20000, "<patient days>",
+      nil, nil, nil
     ]
 
     csv = described_class.csv(query)
