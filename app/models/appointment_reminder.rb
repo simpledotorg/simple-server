@@ -24,7 +24,7 @@ class AppointmentReminder < ApplicationRecord
       facility_name: appointment.facility.name,
       patient_name: patient.full_name,
       appointment_date: appointment.scheduled_date,
-      locale: patient_locale(patient)
+      locale: appointment.facility.locale
     )
   end
 
@@ -50,11 +50,5 @@ class AppointmentReminder < ApplicationRecord
 
   def backup_communication_method
     "missed_visit_sms_reminder"
-  end
-
-  # this is temporary. will be replaced as part of:
-  # https://app.clubhouse.io/simpledotorg/story/2639/respect-translations-for-existing-patient-reminder-messages
-  def patient_locale(patient)
-    patient.address&.locale || :en
   end
 end

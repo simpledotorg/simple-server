@@ -98,9 +98,10 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { reminder.reload.status }.from("scheduled").to("sent")
     end
 
-    it "selects the message language based on patient address" do
+    it "localizes the message based on facility state, not patient address" do
       mock_successful_delivery
-      reminder.patient.address.update(state: "punjab")
+      reminder.patient.address.update(state: "maharashtra")
+      reminder.appointment.facility.update(state: "punjab")
       localized_message = I18n.t(
         reminder.message,
         {
