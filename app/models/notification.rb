@@ -5,6 +5,10 @@ class Notification < ApplicationRecord
   belongs_to :reminder_template, class_name: "Experimentation::ReminderTemplate", optional: true
   has_many :communications
 
+  # We have 'sms' in our appointment reminder message keys due to legacy reasons, even though
+  # they also sometimes point to whatsapp messages
+  APPOINTMENT_REMINDER_MSG_PREFIX = "sms.appointment_reminders"
+
   validates :status, presence: true
   validates :remind_on, presence: true
   validates :message, presence: true
