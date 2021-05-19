@@ -39,7 +39,8 @@ class Communication < ApplicationRecord
     send(communication_type).order(device_created_at: :desc).first
   end
 
-  def self.create_with_twilio_details!(twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
+
+  def self.create_with_twilio_details!(appointment:, twilio_sid:, twilio_msg_status:, communication_type:, notification: nil)
     patient = notification.patient
     transaction do
       sms_delivery_details =
@@ -48,6 +49,7 @@ class Communication < ApplicationRecord
                                         callee_phone_number: patient.latest_mobile_number)
       Communication.create!(communication_type: communication_type,
                             detailable: sms_delivery_details,
+                            appointment: appointment,
                             notification: notification,
                             device_created_at: DateTime.current,
                             device_updated_at: DateTime.current)

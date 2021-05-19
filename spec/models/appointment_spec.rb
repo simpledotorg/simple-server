@@ -266,6 +266,7 @@ describe Appointment, type: :model do
       notification = create(:notification, subject: overdue_appointment)
       create(:communication,
         communication_type: :voip_call,
+        appointment: overdue_appointment,
         notification: notification)
 
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to be_falsey
@@ -275,15 +276,17 @@ describe Appointment, type: :model do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
         :missed_visit_sms_reminder,
+        appointment: overdue_appointment,
         detailable: create(:twilio_sms_delivery_detail, :undelivered))
 
       expect(overdue_appointment.previously_communicated_via?(:missed_visit_sms_reminder)).to eq(false)
     end
 
-    it "returns false if followup reminder SMS for the appointment were successful" do
+    fit "returns false if followup reminder SMS for the appointment were successful" do
       notification = create(:notification, subject: overdue_appointment)
       notification.communications << create(:communication,
         :missed_visit_sms_reminder,
+        appointment_id: overdue_appointment.id,
         notification: notification,
         detailable: create(:twilio_sms_delivery_detail, :delivered))
 
