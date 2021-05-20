@@ -2,8 +2,8 @@ class AppointmentNotification::MissedVisitJob < ApplicationJob
   queue_as :high
 
   def perform
-    unless Flipper.enabled?(:appointment_reminders)
-      logger.info class: self.class.name, msg: "appointment_reminders feature is disabled"
+    unless Flipper.enabled?(:notifications)
+      logger.info class: self.class.name, msg: "notifications feature is disabled"
       return
     end
 
