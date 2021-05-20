@@ -44,27 +44,21 @@ class ExperimentControlService
       experiment.update!(state: "running")
     end
 
-    def start_stale_patient_experiment(name, days_til_start, days_til_end, patients_per_day: PATIENTS_PER_DAY)
+    def start_stale_patient_experiment(name, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
-      total_days = days_til_end - days_til_start + 1
-      start_date = days_til_start.days.from_now.to_date
+      experiment.selecting_state!
+      today = Date.current
 
-      experiment.update!(state: "selecting", start_date: start_date, end_date: days_til_end.days.from_now.to_date)
-
-      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date)
-      eligible_ids.shuffle!
-
-      schedule_date = start_date
-      total_days.times do
+      eligible_ids = Experimentation::StalePatientSelection.call(start_date: today)
+      if eligible_ids.any?
+        eligible_ids.shuffle!
         daily_ids = eligible_ids.pop(patients_per_day)
-        break if daily_ids.empty?
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
-          schedule_reminders(patient, patient.appointments.last, group, schedule_date)
+          schedule_reminders(patient, patient.appointments.last, group, today)
           group.patients << patient
         end
-        schedule_date += 1.day
       end
 
       experiment.update!(state: "running")
