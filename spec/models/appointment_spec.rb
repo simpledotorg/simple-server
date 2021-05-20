@@ -316,6 +316,30 @@ describe Appointment, type: :model do
     end
   end
 
+  describe "creating reminders" do
+    it "creates scheduled reminder for appointment and patient" do
+      notification = appointment.notifications.create_reminder(remind_on: 2.days.from_now.beginning_of_day,
+                                                               message: "some.message.key")
+      expect(notification.patient).to eq(appointment.patient)
+      expect(notification.remind_on).to eq(2.days.from_now.beginning_of_day)
+      expect(notification.message).to eq("some.message.key")
+      expect(notification).to be_status_scheduled
+    end
+
+    it "merges any extra options into notification" do
+      experiment = create(:experiment)
+      notification = appointment.notifications.create_reminder(remind_on: 2.days.from_now.beginning_of_day,
+                                                               message: "some.message.key",
+                                                               status: :pending,
+                                                               experiment: experiment)
+      expect(notification.patient).to eq(appointment.patient)
+      expect(notification.remind_on).to eq(2.days.from_now.beginning_of_day)
+      expect(notification.message).to eq("some.message.key")
+      expect(notification.experiment).to eq(experiment)
+      expect(notification).to be_status_pending
+    end
+  end
+
   describe "appointment reminder cancellation" do
     it "does not cancel reminders when appointment status is changed to 'scheduled'" do
       appointment.update!(status: nil)

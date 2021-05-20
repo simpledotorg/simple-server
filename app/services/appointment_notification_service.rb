@@ -21,7 +21,7 @@ class AppointmentNotificationService
     eligible_appointments.each do |appointment|
       notification = appointment.notifications.create_reminder(
         remind_on: next_messaging_time,
-        communication_type: communication_type
+        message: "#{Appointment::REMINDER_MESSAGE_PREFIX}.#{communication_type}"
       )
       AppointmentNotification::Worker.perform_at(next_messaging_time, notification.id)
     end

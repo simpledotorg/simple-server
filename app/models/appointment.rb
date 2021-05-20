@@ -15,12 +15,14 @@ class Appointment < ApplicationRecord
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
   has_many :notifications, as: :subject do
-    def create_reminder(remind_on:, communication_type:)
+    def create_reminder(remind_on:, **extra)
       appt = proxy_association.owner
-      create!(patient: appt.patient,
-              remind_on: remind_on,
-              status: "scheduled",
-              message: "#{REMINDER_MESSAGE_PREFIX}.#{communication_type}")
+      attributes = {
+        patient: appt.patient,
+        remind_on: remind_on,
+        status: "scheduled",
+      }.merge(extra)
+      create!(attributes)
     end
   end
 
