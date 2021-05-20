@@ -19,14 +19,14 @@ class AppointmentNotificationService
     next_messaging_time = Communication.next_messaging_time
 
     eligible_appointments.each do |appointment|
-      notification = create_appointment_reminder(appointment, remind_on: next_messaging_time)
+      notification = create_notification(appointment, remind_on: next_messaging_time)
       AppointmentNotification::Worker.perform_at(next_messaging_time, notification.id)
     end
   end
 
   private
 
-  def create_appointment_reminder(appointment, remind_on:)
+  def create_notification(appointment, remind_on:)
     Notification.create!(
       subject: appointment,
       patient: appointment.patient,
