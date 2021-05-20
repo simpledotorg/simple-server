@@ -11,7 +11,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       create(:notification,
         subject: create(:appointment),
         status: "scheduled",
-        message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.missed_visit_whatsapp_reminder")
+        message: "#{Appointment::REMINDER_MESSAGE_PREFIX}.missed_visit_whatsapp_reminder")
     }
     let(:communication_type) { "missed_visit_whatsapp_reminder" }
 

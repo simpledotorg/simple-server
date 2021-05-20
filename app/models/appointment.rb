@@ -5,12 +5,25 @@ class Appointment < ApplicationRecord
   include Mergeable
   include Hashable
 
+  # We have 'sms' in our appointment reminder message keys due to legacy reasons, even though
+  # they also sometimes point to whatsapp messages
+  REMINDER_MESSAGE_PREFIX = "sms.appointment_reminders"
+
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
   belongs_to :facility
   belongs_to :creation_facility, class_name: "Facility", optional: true
 
-  has_many :notifications, as: :subject
+  has_many :notifications, as: :subject do
+    def create_reminder(remind_on:, communication_type:)
+      appt = proxy_association.owner
+      create!(patient: appt.patient,
+              remind_on: remind_on,
+              status: "scheduled",
+              message: "#{REMINDER_MESSAGE_PREFIX}.#{communication_type}")
+    end
+  end
+
   has_many :communications
 
   ANONYMIZED_DATA_FIELDS = %w[id patient_id created_at registration_facility_name user_id scheduled_date

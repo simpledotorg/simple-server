@@ -7,7 +7,7 @@ class BackfillNotifications
       end
       next if communication.notification
       notification = communication.build_notification
-      notification.message = "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.#{communication.communication_type}"
+      notification.message = "#{Appointment::REMINDER_MESSAGE_PREFIX}.#{communication.communication_type}"
       notification.subject = communication.appointment
       notification.patient = communication.appointment.patient
       # We are going to assume all past communications have been sent, and their
