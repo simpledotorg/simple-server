@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe Experimentation::MedicationReminderService, type: :model do
-
   describe "self.schedule_daily_notifications" do
     let(:experiment) { create(:experiment, :with_treatment_group_and_template, experiment_type: "medication_reminder") }
 
