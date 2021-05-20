@@ -54,7 +54,18 @@ SELECT
         WHEN bpot.months_since_bp_observation IS null THEN 'No measurement'
         ELSE 'Undefined'
         END
-        AS bp_observation_state
+        AS bp_observation_state,
+
+    (
+      (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
+      (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at)) >= 12
+
+      AND (bpot.months_since_bp_observation IS NULL OR bpot.months_since_bp_observation >= 12)
+      AND mh.hypertension = 'yes'
+      AND p.status <> 'dead'
+      AND p.deleted_at IS NULL
+    ) AS lost_to_follow_up
+
 FROM patients p
 -- Only fetch BPs that happened on or before the selected calendar month
 -- We use year and month comparisons to avoid timezone errors
