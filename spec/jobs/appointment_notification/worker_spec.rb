@@ -25,7 +25,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(twilio_client).to receive_message_chain("messages.create")
     end
 
-    it "logs when notifications and live_experiment flags are disabled" do
+    it "logs but creates nothing when notifications and live_experiment flags are disabled" do
       Flipper.disable(:notifications)
       Flipper.disable(:live_experiment)
 
@@ -45,7 +45,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       }.to change { Communication.count }.by(1)
     end
 
-    it "creates communications when notifications is enabled" do
+    it "creates communications when live_experiment is enabled" do
       Flipper.disable(:notifications)
       Flipper.enable(:live_experiment)
 
