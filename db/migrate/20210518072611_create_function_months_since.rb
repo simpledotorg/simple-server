@@ -14,6 +14,6 @@ class CreateFunctionMonthsSince < ActiveRecord::Migration[5.2]
   end
 
   def down
-    connection.execute('DROP FUNCTION months_since;')
+    connection.execute("DROP FUNCTION months_since;")
   end
 end
