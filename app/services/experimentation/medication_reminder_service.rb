@@ -7,7 +7,7 @@
 # 2) this is an excellent opportunity to real-world test the experimentation framework
 module Experimentation
   class MedicationReminderService
-    PATIENTS_PER_DAY = 10_000.freeze
+    PATIENTS_PER_DAY = 10_000
 
     class << self
       def schedule_daily_notifications(patients_per_day: PATIENTS_PER_DAY)
