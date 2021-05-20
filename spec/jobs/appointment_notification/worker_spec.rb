@@ -48,7 +48,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       mock_successful_delivery
       allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
 
-
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
       expect_any_instance_of(NotificationService).to receive(:send_sms)
       described_class.perform_async(notification.id)
