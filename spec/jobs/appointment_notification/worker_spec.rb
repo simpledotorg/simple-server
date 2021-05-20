@@ -13,7 +13,6 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         status: "scheduled",
         message: "#{Notification::APPOINTMENT_REMINDER_MSG_PREFIX}.missed_visit_whatsapp_reminder")
     }
-    let(:communication_type) { "missed_visit_whatsapp_reminder" }
 
     def mock_successful_delivery
       response_double = double
@@ -37,6 +36,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
 
     it "sends a whatsapp message when notification's next_communication_type is whatsapp" do
       mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_whatsapp_reminder")
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.whatsapp")
       expect_any_instance_of(NotificationService).to receive(:send_whatsapp)
@@ -45,9 +45,9 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     end
 
     it "sends sms when notification's next_communication_type is sms" do
-      create(:communication, notification: notification, communication_type: "missed_visit_whatsapp_reminder")
-
       mock_successful_delivery
+      allow_any_instance_of(Notification).to receive(:next_communication_type).and_return("missed_visit_sms_reminder")
+
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.sent.sms")
       expect_any_instance_of(NotificationService).to receive(:send_sms)
@@ -63,7 +63,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         notification: notification,
         twilio_sid: "12345",
         twilio_msg_status: "sent",
-        communication_type: communication_type
+        communication_type: "missed_visit_sms_reminder"
       ).and_call_original
       expect {
         described_class.perform_async(notification.id)
@@ -115,7 +115,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         }
       )
 
-      expect_any_instance_of(NotificationService).to receive(:send_whatsapp).with(
+      expect_any_instance_of(NotificationService).to receive(:send_sms).with(
         notification.patient.latest_mobile_number,
         localized_message,
         "https://localhost/api/v3/twilio_sms_delivery"
