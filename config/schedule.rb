@@ -19,6 +19,12 @@ every :day, at: local("12:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:whitelist_patient_phone_numbers"
 end
 
+every :day, at: local("12:30 am").utc, roles: [:cron] do
+  if Flipper.enabled?(:live_experiment)
+    runner "ExperimentControlService.start_medication_reminder_experiment('name')"
+  end
+end
+
 every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:update_all_patients_phone_number_details"
 end

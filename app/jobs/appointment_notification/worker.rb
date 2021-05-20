@@ -11,7 +11,7 @@ class AppointmentNotification::Worker
 
   def perform(notification_id)
     metrics.increment("attempts")
-    unless Flipper.enabled?(:notifications)
+    unless Flipper.enabled?(:notifications) || Flipper.enabled?(:live_experiment)
       logger.info class: self.class.name, msg: "notifications feature is disabled"
       metrics.increment("skipped.feature_disabled")
       return

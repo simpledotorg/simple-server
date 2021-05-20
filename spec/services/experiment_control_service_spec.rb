@@ -304,6 +304,19 @@ describe ExperimentControlService, type: :model do
   describe "self.start_medication_reminder_experiment" do
     let(:experiment) { create(:experiment, :with_treatment_group_and_template, experiment_type: "medication_reminder") }
 
+    before { Flipper.enable(:live_experiment) }
+
+    it "does nothing if the feature flag is not enabled" do
+      Flipper.disable(:live_experiment)
+
+      patient1 = create(:patient)
+      create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)
+
+      ExperimentControlService.start_medication_reminder_experiment(experiment.name)
+      expect(experiment.reload.state).to eq("new")
+      expect(Notification.count).to eq(0)
+    end
+
     it "excludes patients who have had blood pressure readings in the past 30 days" do
       patient1 = create(:patient)
       create(:blood_pressure, patient: patient1, device_created_at: 31.days.ago)

@@ -25,14 +25,36 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       allow(twilio_client).to receive_message_chain("messages.create")
     end
 
-    it "logs when notifications flag is disabled" do
+    it "logs when notifications and live_experiment flags are disabled" do
       Flipper.disable(:notifications)
+      Flipper.disable(:live_experiment)
 
       expect(Statsd.instance).to receive(:increment).with("appointment_notification.worker.skipped.feature_disabled")
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
       }.not_to change { Communication.count }
+    end
+
+    it "creates communications when notifications is enabled" do
+      mock_successful_delivery
+
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.to change { Communication.count }.by(1)
+    end
+
+    it "creates communications when notifications is enabled" do
+      Flipper.disable(:notifications)
+      Flipper.enable(:live_experiment)
+
+      mock_successful_delivery
+
+      expect {
+        described_class.perform_async(notification.id)
+        described_class.drain
+      }.to change { Communication.count }.by(1)
     end
 
     it "sends a whatsapp message when notification's next_communication_type is whatsapp" do

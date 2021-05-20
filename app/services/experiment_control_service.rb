@@ -69,8 +69,9 @@ class ExperimentControlService
     #    results by leveraging the experimentation and notification models
     # 2) this is an excellent opportunity to real-world test the experimentation framework
     def start_medication_reminder_experiment(name, patients_per_day: PATIENTS_PER_DAY)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "medication_reminder")
+      return unless Flipper.enabled?(:live_experiment)
 
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "medication_reminder")
       experiment.selecting_state!
 
       eligible_ids = medication_reminder_patients(experiment)
