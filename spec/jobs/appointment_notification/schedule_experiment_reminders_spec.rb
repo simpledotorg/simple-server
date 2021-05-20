@@ -5,12 +5,12 @@ RSpec.describe AppointmentNotification::ScheduleExperimentReminders, type: :job 
     let(:appointment) { create(:appointment) }
     let(:today) { Date.current }
 
-    before { Flipper.enable(:live_experiment) }
+    before { Flipper.enable(:experiment) }
 
-    it "does not schedule anything if live_experiment flag is off" do
+    it "does not schedule anything if experiment flag is off" do
       create(:notification, subject: appointment, remind_on: today, status: "pending")
 
-      Flipper.disable(:live_experiment)
+      Flipper.disable(:experiment)
       expect(AppointmentNotification::Worker).not_to receive(:perform_at)
       described_class.perform_now
     end

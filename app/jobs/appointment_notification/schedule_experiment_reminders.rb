@@ -2,7 +2,7 @@ class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
   queue_as :high
 
   def perform
-    return unless Flipper.enabled?(:live_experiment)
+    return unless Flipper.enabled?(:experiment)
 
     reminders = Notification.due_today
     next_messaging_time = Communication.next_messaging_time
