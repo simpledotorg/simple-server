@@ -23,7 +23,6 @@ class MyFacilities::DrugStocksController < AdminController
 
   def download
     create_drug_report
-    @report = @query.drug_consumption_report
 
     respond_to do |format|
       format.csv do
