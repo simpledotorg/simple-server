@@ -1206,7 +1206,8 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
               WHEN (bpot.months_since_bp_observation >= (12)::double precision) THEN 'More than 12 months'::text
               WHEN (bpot.months_since_bp_observation IS NULL) THEN 'No measurement'::text
               ELSE 'Undefined'::text
-          END AS bp_observation_state
+          END AS bp_observation_state,
+      (((((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) >= (12)::double precision) AND ((bpot.months_since_bp_observation IS NULL) OR (bpot.months_since_bp_observation >= (12)::double precision)) AND (mh.hypertension = 'yes'::text) AND ((p.status)::text <> 'dead'::text) AND (p.deleted_at IS NULL)) AS lost_to_follow_up
      FROM ((((patients p
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        LEFT JOIN blood_pressures_over_time bpot ON (((p.id = bpot.patient_id) AND (cal.month = bpot.month) AND (cal.year = bpot.year))))
