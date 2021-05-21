@@ -37,7 +37,7 @@ end
 
 every :day, at: local("02:30 am").utc, roles: [:cron] do
   if Flipper.enabled?(:experiment)
-    runner "ExperimentControlService.start_medication_reminder_experiment"
+    runner "Experimentation::MedicationReminderService.schedule_daily_notifications"
   end
 end
 
