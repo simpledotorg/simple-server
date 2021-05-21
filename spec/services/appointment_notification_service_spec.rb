@@ -82,4 +82,14 @@ RSpec.describe AppointmentNotificationService do
       end
     end
   end
+
+  context "production client" do
+    it "can send through an optional arg to override the notification client to use production" do
+      appointment = create(:appointment)
+      expect_any_instance_of(NotificationService).to receive(:prod_client).and_return(double("Twilio::REST::Client"))
+      AppointmentNotificationService.send_after_missed_visit(appointments: [appointment], production_override: true)
+      AppointmentNotification::Worker.drain
+    end
+
+  end
 end

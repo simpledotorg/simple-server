@@ -7,8 +7,7 @@ class AppointmentNotification::MissedVisitJob < ApplicationJob
       return
     end
 
-    Organization.all.each do |organization|
-      AppointmentNotificationService.send_after_missed_visit(appointments: organization.appointments)
-    end
+    eligible_appointments = Appointment.eligible_for_reminders(days_overdue: 3)
+    AppointmentNotificationService.send_after_missed_visit(eligible_appointments)
   end
 end
