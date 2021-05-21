@@ -13,7 +13,7 @@ module Experimentation
       def schedule_daily_notifications(patients_per_day: PATIENTS_PER_DAY)
         return unless Flipper.enabled?(:experiment)
 
-        experiment = Experimentation::Experiment.find_by!(experiment_type: "medication_reminder")
+        experiment = Experimentation::Experiment.find_by!(state: [:new, :running], experiment_type: "medication_reminder")
         experiment.selecting_state!
 
         eligible_ids = medication_reminder_patients(experiment)
