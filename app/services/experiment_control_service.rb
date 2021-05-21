@@ -5,7 +5,7 @@ class ExperimentControlService
 
   class << self
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients")
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients", state: :new)
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
 
@@ -36,7 +36,7 @@ class ExperimentControlService
     end
 
     def schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
       experiment.selecting_state!
       today = Date.current
 
