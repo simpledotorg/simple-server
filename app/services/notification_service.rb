@@ -4,10 +4,12 @@ class NotificationService
   attr_reader :client
   attr_reader :error
   attr_reader :response
-  attr_reader :twilio_sender_number
+  attr_reader :twilio_sender_sms_number
+  attr_reader :twilio_sender_whatsapp_number
 
   # See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
-  TWILIO_TEST_NUMBER = "+15005550006"
+  TWILIO_TEST_SMS_NUMBER = "+15005550006"
+  TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
   def initialize
     @test_mode = !SimpleServer.env.production?
@@ -18,7 +20,8 @@ class NotificationService
     @twilio_test_account_sid = ENV.fetch("TWILIO_TEST_ACCOUNT_SID")
     @twilio_test_auth_token = ENV.fetch("TWILIO_TEST_AUTH_TOKEN")
 
-    @twilio_sender_number = test_mode? ? TWILIO_TEST_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
+    @twilio_sender_sms_number = test_mode? ? TWILIO_TEST_SMS_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
+    @twilio_sender_whatsapp_number = test_mode? ? TWILIO_TEST_WHATSAPP_NUMBER : ENV.fetch("TWILIO_PHONE_NUMBER")
 
     @client = if @test_mode
       test_client
@@ -40,14 +43,14 @@ class NotificationService
   end
 
   def send_sms(recipient_number, message, callback_url = nil)
-    sender_number = twilio_sender_number
+    sender_number = twilio_sender_sms_number
     recipient_number = parse_phone_number(recipient_number)
 
     send_twilio_message(sender_number, recipient_number, message, callback_url)
   end
 
   def send_whatsapp(recipient_number, message, callback_url = nil)
-    sender_number = "whatsapp:" + twilio_sender_number
+    sender_number = "whatsapp:" + twilio_sender_whatsapp_number
     recipient_number = "whatsapp:" + parse_phone_number(recipient_number)
 
     send_twilio_message(sender_number, recipient_number, message, callback_url)
