@@ -436,7 +436,15 @@
         ],
         "responses": {
           "200": {
-            "description": "patient lookup successful"
+            "description": "patient lookup successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patients": {
+                  "$ref": "#/definitions/lookup_patients"
+                }
+              }
+            }
           },
           "404": {
             "description": "No patients found with this identifier"

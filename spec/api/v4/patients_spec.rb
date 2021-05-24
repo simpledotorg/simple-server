@@ -17,7 +17,7 @@ describe "Patient Lookup v4 API", swagger_doc: "v4/swagger.json" do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
         let(:patient) { create(:patient, registration_user: request_user, registration_facility: request_facility) }
         let(:identifier) { patient.business_identifiers.first.identifier }
-
+        schema Api::V4::Schema.lookup_response
         run_test!
       end
 
