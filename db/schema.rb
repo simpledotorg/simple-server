@@ -1134,8 +1134,8 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       bp.facility_id AS blood_pressure_facility_id,
-      months_since(p.recorded_at, (cal.month_date)::timestamp without time zone) AS months_since_registration,
-      months_since(bp.recorded_at, (cal.month_date)::timestamp without time zone) AS months_since_bp_observation
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
+      (((date_part('year'::text, cal.month_date) - date_part('year'::text, bp.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, bp.recorded_at))) AS months_since_bp_observation
      FROM ((blood_pressures bp
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        JOIN patients p ON ((bp.patient_id = p.id)))
@@ -1199,15 +1199,15 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
               ELSE 'Undefined'::text
           END AS treatment_state,
           CASE
-              WHEN (bpot.months_since_bp_observation < 3) THEN 'Less than 3 months'::text
-              WHEN (bpot.months_since_bp_observation < 6) THEN 'Between 3 and 6 months'::text
-              WHEN (bpot.months_since_bp_observation < 9) THEN 'Between 6 and 9 months'::text
-              WHEN (bpot.months_since_bp_observation < 12) THEN 'Between 9 and 12 months'::text
-              WHEN (bpot.months_since_bp_observation >= 12) THEN 'More than 12 months'::text
+              WHEN (bpot.months_since_bp_observation < (3)::double precision) THEN 'Less than 3 months'::text
+              WHEN (bpot.months_since_bp_observation < (6)::double precision) THEN 'Between 3 and 6 months'::text
+              WHEN (bpot.months_since_bp_observation < (9)::double precision) THEN 'Between 6 and 9 months'::text
+              WHEN (bpot.months_since_bp_observation < (12)::double precision) THEN 'Between 9 and 12 months'::text
+              WHEN (bpot.months_since_bp_observation >= (12)::double precision) THEN 'More than 12 months'::text
               WHEN (bpot.months_since_bp_observation IS NULL) THEN 'No measurement'::text
               ELSE 'Undefined'::text
           END AS bp_observation_state,
-      (((((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) >= (12)::double precision) AND ((bpot.months_since_bp_observation IS NULL) OR (bpot.months_since_bp_observation >= 12)) AND (mh.hypertension = 'yes'::text) AND ((p.status)::text <> 'dead'::text) AND (p.deleted_at IS NULL)) AS lost_to_follow_up
+      (((((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) >= (12)::double precision) AND ((bpot.months_since_bp_observation IS NULL) OR (bpot.months_since_bp_observation >= (12)::double precision)) AND (mh.hypertension = 'yes'::text) AND ((p.status)::text <> 'dead'::text) AND (p.deleted_at IS NULL)) AS lost_to_follow_up
      FROM ((((patients p
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        LEFT JOIN blood_pressures_over_time bpot ON (((p.id = bpot.patient_id) AND (cal.month = bpot.month) AND (cal.year = bpot.year))))

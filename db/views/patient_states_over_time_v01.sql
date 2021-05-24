@@ -14,7 +14,10 @@ SELECT
     eot.encountered_at AS encountered_at,
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
-    bpot.months_since_registration AS months_since_registration,
+
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
+    AS months_since_registration,
 
     CASE
         WHEN mh.hypertension = 'yes' AND (bpot.systolic >= 180 OR bpot.diastolic >= 110) THEN 'Stage 3'

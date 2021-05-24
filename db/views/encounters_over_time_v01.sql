@@ -12,8 +12,14 @@ SELECT
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
     e.facility_id AS encounter_facility_id,
-    months_since(p.recorded_at, cal.month_date) AS months_since_registration,
-    months_since(e.encountered_on, cal.month_date) AS months_since_encounter
+
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
+    AS months_since_registration,
+
+    (DATE_PART('year', cal.month_date) - DATE_PART('year', e.encountered_on)) * 12 +
+    (DATE_PART('month', cal.month_date) - DATE_PART('month', e.encountered_on))
+    AS months_since_encounter
 
 FROM encounters e
 -- Only fetch Encounters that happened on or before the selected calendar month
