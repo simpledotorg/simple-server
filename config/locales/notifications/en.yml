@@ -27,3 +27,5 @@ en:
       emotional_guilt: "You are late for your BP measure. When untreated, high BP has high costs for your whole community. %{patient_name}, please visit %{facility_name} as soon as possible for a BP measure and medicines."
       professional_request: "You are late for your BP measure. Your doctor wishes to remind you to get your BP measured. %{patient_name}, please visit %{facility_name} as soon as possible for a BP measure and medicines."
       response: "You are late for your BP measure. %{patient_name}, please visit %{facility_name} as soon as possible for a BP measure and medicines. Click this link to let us know that you will attend:"
+    covid:
+      medication_reminder: "Dear %{patient_name}: Our staff at %{facility_name} are thinking of you and your heart health during this COVID emergency. It is very important to continue your BP medicines. Collect your free medicine from the nearest sub center or health wellness center. Contact your ANM or ASHA."
