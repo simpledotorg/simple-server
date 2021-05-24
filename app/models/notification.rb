@@ -41,9 +41,7 @@ class Notification < ApplicationRecord
     if preferred_communication_method && !previously_communicated_by?(preferred_communication_method)
       return preferred_communication_method
     end
-    unless previously_communicated_by?(backup_communication_method)
-      return backup_communication_method
-    end
+    return backup_communication_method unless previously_communicated_by?(backup_communication_method)
     nil
   end
 
@@ -54,7 +52,7 @@ class Notification < ApplicationRecord
   end
 
   def preferred_communication_method
-    CountryConfig.current[:name] == "India" ? "missed_visit_whatsapp_reminder" : nil
+    Flipper.enabled?(:whatsapp_appointment_reminders) ? "missed_visit_whatsapp_reminder" : nil
   end
 
   def backup_communication_method

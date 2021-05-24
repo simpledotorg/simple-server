@@ -49,6 +49,9 @@ records that:
 - should be retained temporarily
 - and have passed their retention time period: `now > retain_until`
 
+If a `temporary` record is synced via the sync API, then the retention
+type should be set to `permanent`.
+
 We will treat manual and automatic syncs in the same way, and
 configure the retention period to suit the needs of showing patients
 in the recent list, etc.
@@ -73,11 +76,7 @@ have the same identifier. The response contract will be similar to
 App](https://api.simple.org/api-docs#tag/Patient/paths/~1patient/get):
 
 ````
-{"retention": {
-    "type": "temporary",
-    "duration_seconds": 3600
- }
- "patients": [{
+{ "patients": [{
     "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
     "full_name": "string",
     "age": 0,
@@ -93,7 +92,11 @@ App](https://api.simple.org/api-docs#tag/Patient/paths/~1patient/get):
     "blood_sugars": [],
     "appointments": [],
     "medications": [],
-    "business_identifiers": []
+    "business_identifiers": [],
+    "retention": {
+      "type": "temporary", // or "permanent"
+      "duration_seconds": 3600
+    }
   }]
 }
 ````
@@ -107,7 +110,7 @@ Passport app lookup API more clearly.~~
 ### Access restrictions
 Access for this API will be restricted to the state that the user is
 registered in. Trying to lookup a patient that resides outside the
-state will return 403.
+state will return 404.
 
 If a patient has travelled across states, and has records in both
 states corresponding to the same identifier, then only the patients

@@ -35,7 +35,9 @@ describe Notification, type: :model do
   end
 
   describe "#next_communication_type" do
-    context "in India" do
+    context "when WhatsApp flag is on" do
+      before { Flipper.enable(:whatsapp_appointment_reminders) }
+
       it "returns missed_visit_whatsapp_reminder if it has no whatsapp communications" do
         expect(notification.next_communication_type).to eq("missed_visit_whatsapp_reminder")
       end
@@ -52,11 +54,7 @@ describe Notification, type: :model do
       end
     end
 
-    context "outside of India" do
-      before :each do
-        allow(CountryConfig).to receive(:current).and_return(CountryConfig.for(:BD))
-      end
-
+    context "when WhatsApp flag is off" do
       it "returns missed_visit_sms_reminder if it has no sms communication" do
         expect(notification.next_communication_type).to eq("missed_visit_sms_reminder")
       end
