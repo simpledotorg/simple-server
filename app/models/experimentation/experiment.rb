@@ -6,6 +6,7 @@ module Experimentation
     validates :name, presence: true, uniqueness: true
     validates :state, presence: true
     validates :experiment_type, presence: true
+    validates :experiment_type, uniqueness: true, if: proc { |experiment| experiment.experiment_type == "medication_reminder" }
     validate :date_range, if: proc { |experiment| experiment.start_date_changed? || experiment.end_date_changed? }
     validate :one_active_experiment_per_type
 
