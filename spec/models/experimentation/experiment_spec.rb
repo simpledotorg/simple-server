@@ -5,6 +5,8 @@ RSpec.describe Experimentation::Experiment, type: :model do
 
   describe "associations" do
     it { should have_many(:treatment_groups) }
+    it { should have_many(:patients).through(:treatment_groups) }
+    it { should have_many(:notifications) }
   end
 
   describe "validations" do

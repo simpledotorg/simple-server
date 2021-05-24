@@ -55,6 +55,16 @@ class ExperimentControlService
       experiment.running_state!
     end
 
+    def terminate_experiment(name)
+      experiment = Experimentation::Experiment.find_by!(name: name)
+      experiment.complete_state!
+
+      notifications = experiment.notifications.where(status: ["pending", "scheduled"])
+      notifications.find_each do |notification|
+        notification.status_cancelled!
+      end
+    end
+
     protected
 
     def current_patient_candidates(start_date, end_date)

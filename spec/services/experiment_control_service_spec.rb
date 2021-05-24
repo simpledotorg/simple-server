@@ -317,4 +317,32 @@ describe ExperimentControlService, type: :model do
       }.to change { Experimentation::TreatmentGroupMembership.count }.by(1)
     end
   end
+
+  describe "self.terminate_experiment" do
+    it "raises error if experiment is not found" do
+      expect {
+        ExperimentControlService.terminate_experiment("fake")
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "changes experiment state to 'complete'" do
+      experiment = create(:experiment, state: "running")
+      expect {
+        ExperimentControlService.terminate_experiment(experiment.name)
+      }.to change { experiment.reload.state }.from("running").to("complete")
+    end
+
+    it "changes pending and scheduled notification statuses to 'cancelled'" do
+      experiment = create(:experiment)
+      patient = create(:patient)
+      pending_notification = create(:notification, experiment: experiment, patient: patient, status: "pending")
+      scheduled_notification = create(:notification, experiment: experiment, patient: patient, status: "scheduled")
+      sent_notification = create(:notification, experiment: experiment, patient: patient, status: "sent")
+
+      ExperimentControlService.terminate_experiment(experiment.name)
+      expect(pending_notification.reload.status).to eq("cancelled")
+      expect(scheduled_notification.reload.status).to eq("cancelled")
+      expect(sent_notification.reload.status).to eq("sent")
+    end
+  end
 end
