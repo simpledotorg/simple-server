@@ -8,6 +8,7 @@ class NotificationService
   attr_reader :twilio_sender_whatsapp_number
 
   # See https://www.twilio.com/docs/iam/test-credentials#test-sms-messages-parameters-From
+  # https://www.twilio.com/docs/whatsapp/sandbox#what-is-the-twilio-sandbox-for-whatsapp
   TWILIO_TEST_SMS_NUMBER = "+15005550006"
   TWILIO_TEST_WHATSAPP_NUMBER = "+14155238886"
 
