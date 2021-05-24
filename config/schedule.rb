@@ -35,18 +35,6 @@ every :day, at: local("02:00 am"), roles: [:cron] do
   runner "PatientDeduplication::Runner.new(PatientDeduplication::Strategies.identifier_and_full_name_match).perform"
 end
 
-every :day, at: local("02:30 am").utc, roles: [:cron] do
-  if Flipper.enabled?(:experiment)
-    runner "Experimentation::MedicationReminderService.schedule_daily_notifications(patients_per_day: 100)"
-  end
-end
-
-every :day, at: local("03:00 am").utc, roles: [:cron] do
-  if Flipper.enabled?(:experiment)
-    runner "AppointmentNotification::ScheduleExperimentReminders.perform_later"
-  end
-end
-
 every :day, at: local("04:00 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
