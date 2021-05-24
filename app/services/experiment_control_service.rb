@@ -4,17 +4,8 @@ class ExperimentControlService
   BATCH_SIZE = 100
 
   class << self
-    def current_patient_candidates(start_date, end_date)
-      Experimentation::Experiment.candidate_patients
-        .joins(:appointments)
-        .merge(Appointment.status_scheduled)
-        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
-        .distinct
-        .pluck(:id)
-    end
-
     def start_current_patient_experiment(name, days_til_start, days_til_end, percentage_of_patients = 100)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients")
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "current_patients", state: :new)
       experiment_start = days_til_start.days.from_now.beginning_of_day
       experiment_end = days_til_end.days.from_now.end_of_day
 
@@ -41,11 +32,11 @@ class ExperimentControlService
         end
       end
 
-      experiment.update!(state: "running")
+      experiment.running_state!
     end
 
     def schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)
-      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
+      experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients", state: [:new, :running])
       experiment.selecting_state!
       today = Date.current
 
@@ -61,10 +52,19 @@ class ExperimentControlService
         end
       end
 
-      experiment.update!(state: "running")
+      experiment.running_state!
     end
 
     protected
+
+    def current_patient_candidates(start_date, end_date)
+      Experimentation::Experiment.candidate_patients
+        .joins(:appointments)
+        .merge(Appointment.status_scheduled)
+        .where("appointments.scheduled_date BETWEEN ? and ?", start_date, end_date)
+        .distinct
+        .pluck(:id)
+    end
 
     def schedule_notifications(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|

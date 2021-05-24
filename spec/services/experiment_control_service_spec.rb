@@ -187,6 +187,14 @@ describe ExperimentControlService, type: :model do
         ExperimentControlService.start_current_patient_experiment(experiment.name, 35, 5)
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
+
+    it "raises not found if the experiment's state is not 'new'" do
+      experiment = create(:experiment, state: "running")
+
+      expect {
+        ExperimentControlService.start_current_patient_experiment(experiment.name, 5, 35)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe "self.schedule_daily_stale_patient_notifications" do
@@ -271,6 +279,17 @@ describe ExperimentControlService, type: :model do
       }.to raise_error(ActiveRecord::RecordInvalid)
       expect(Notification.count).to eq(0)
       expect(experiment.reload.state).to eq("new")
+    end
+
+    it "raises not found if the experiment state is not new or running" do
+      experiment = create(:experiment, experiment_type: "stale_patients", state: "selecting")
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+      experiment.update!(state: "complete")
+      expect {
+        ExperimentControlService.schedule_daily_stale_patient_notifications(experiment.name)
+      }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "only schedules reminders for PATIENTS_PER_DAY by default" do

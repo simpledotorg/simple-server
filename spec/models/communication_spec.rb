@@ -97,7 +97,7 @@ describe Communication, type: :model do
   context "anonymised data for communications" do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for the communication" do
-        patient = create(:patient)
+        create(:patient)
         communication = create(:communication,
           :missed_visit_sms_reminder,
           detailable: create(:twilio_sms_delivery_detail, :sent))
