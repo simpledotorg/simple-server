@@ -35,7 +35,7 @@ class ExperimentControlService
         patients.each do |patient|
           group = experiment.random_treatment_group
           patient.appointments.each do |appointment|
-            schedule_reminders(patient, appointment, group, appointment.scheduled_date)
+            schedule_notifications(patient, appointment, group, appointment.scheduled_date)
           end
           group.patients << patient
         end
@@ -44,27 +44,21 @@ class ExperimentControlService
       experiment.update!(state: "running")
     end
 
-    def start_stale_patient_experiment(name, days_til_start, days_til_end, patients_per_day: PATIENTS_PER_DAY)
+    def schedule_daily_stale_patient_notifications(name, patients_per_day: PATIENTS_PER_DAY)
       experiment = Experimentation::Experiment.find_by!(name: name, experiment_type: "stale_patients")
-      total_days = days_til_end - days_til_start + 1
-      start_date = days_til_start.days.from_now.to_date
+      experiment.selecting_state!
+      today = Date.current
 
-      experiment.update!(state: "selecting", start_date: start_date, end_date: days_til_end.days.from_now.to_date)
-
-      eligible_ids = Experimentation::StalePatientSelection.call(start_date: start_date)
-      eligible_ids.shuffle!
-
-      schedule_date = start_date
-      total_days.times do
+      eligible_ids = Experimentation::StalePatientSelection.call(start_date: today)
+      if eligible_ids.any?
+        eligible_ids.shuffle!
         daily_ids = eligible_ids.pop(patients_per_day)
-        break if daily_ids.empty?
         daily_patients = Patient.where(id: daily_ids).includes(:appointments)
         daily_patients.each do |patient|
           group = experiment.random_treatment_group
-          schedule_reminders(patient, patient.appointments.last, group, schedule_date)
+          schedule_notifications(patient, patient.appointments.last, group, today)
           group.patients << patient
         end
-        schedule_date += 1.day
       end
 
       experiment.update!(state: "running")
@@ -72,16 +66,16 @@ class ExperimentControlService
 
     protected
 
-    def schedule_reminders(patient, appointment, group, schedule_date)
+    def schedule_notifications(patient, appointment, group, schedule_date)
       group.reminder_templates.each do |template|
         remind_on = schedule_date + template.remind_on_in_days.days
-        AppointmentReminder.create!(
+        Notification.create!(
           remind_on: remind_on,
           status: "pending",
           message: template.message,
           experiment: group.experiment,
           reminder_template: template,
-          appointment: appointment,
+          subject: appointment,
           patient: patient
         )
       end
