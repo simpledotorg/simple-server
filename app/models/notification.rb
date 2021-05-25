@@ -41,7 +41,7 @@ class Notification < ApplicationRecord
         locale: patient.assigned_facility.locale
       )
     else
-      raise ArgumentError, "Must provide some a subject or default behavior"
+      raise ArgumentError, "Must provide a subject or a default behavior for a notification"
     end
   end
 
