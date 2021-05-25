@@ -3,8 +3,7 @@ require "rails_helper"
 describe Communication, type: :model do
   context "Associations" do
     it { should belong_to(:user).optional }
-    it { should belong_to(:appointment) }
-    it { should belong_to(:appointment_reminder).optional }
+    it { should belong_to(:notification).optional }
     it { should belong_to(:detailable).optional }
   end
 
@@ -49,14 +48,16 @@ describe Communication, type: :model do
     end
 
     describe ".create_with_twilio_details!" do
-      let(:appointment) { create(:appointment) }
-
       it "creates a communication with a TwilioSmsDeliveryDetail" do
+        patient = create(:patient)
+        appt = create(:appointment, patient: patient)
+        notification = create(:notification, subject: appt, patient: patient)
         expect {
-          Communication.create_with_twilio_details!(appointment: appointment,
+          Communication.create_with_twilio_details!(appointment: notification.subject,
                                                     twilio_sid: SecureRandom.uuid,
                                                     twilio_msg_status: "sent",
-                                                    communication_type: :missed_visit_sms_reminder)
+                                                    communication_type: :missed_visit_sms_reminder,
+                                                    notification: notification)
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
       end
@@ -96,14 +97,13 @@ describe Communication, type: :model do
   context "anonymised data for communications" do
     describe "anonymized_data" do
       it "correctly retrieves the anonymised data for the communication" do
+        create(:patient)
         communication = create(:communication,
           :missed_visit_sms_reminder,
           detailable: create(:twilio_sms_delivery_detail, :sent))
 
         anonymised_data =
           {id: Hashable.hash_uuid(communication.id),
-           appointment_id: Hashable.hash_uuid(communication.appointment_id),
-           patient_id: Hashable.hash_uuid(communication.appointment.patient_id),
            user_id: Hashable.hash_uuid(communication.user_id),
            created_at: communication.created_at,
            communication_type: communication.communication_type,

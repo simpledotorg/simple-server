@@ -2,9 +2,9 @@ class AppointmentNotification::ScheduleExperimentReminders < ApplicationJob
   queue_as :high
 
   def perform
-    return unless Flipper.enabled?(:appointment_reminders)
+    return unless Flipper.enabled?(:experiment)
 
-    reminders = AppointmentReminder.due_today
+    reminders = Notification.due_today
     next_messaging_time = Communication.next_messaging_time
     reminders.each do |reminder|
       reminder.status_scheduled!
