@@ -5,6 +5,7 @@ describe Communication, type: :model do
     it { should belong_to(:user).optional }
     it { should belong_to(:notification).optional }
     it { should belong_to(:detailable).optional }
+    it { should belong_to(:appointment).optional }
   end
 
   context "Validations" do
