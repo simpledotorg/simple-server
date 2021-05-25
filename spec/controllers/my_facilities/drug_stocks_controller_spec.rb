@@ -95,7 +95,7 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
     end
   end
 
-  describe "#download" do
+  describe "#download_drug_stocks_report" do
     #  it calls DrugStocksReportExporter with the right query object
   end
 

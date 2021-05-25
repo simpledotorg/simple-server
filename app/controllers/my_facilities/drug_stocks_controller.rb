@@ -21,7 +21,7 @@ class MyFacilities::DrugStocksController < AdminController
     @report = @query.drug_consumption_report
   end
 
-  def download
+  def download_drug_stock
     create_drug_report
 
     respond_to do |format|
