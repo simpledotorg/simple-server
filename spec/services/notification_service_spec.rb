@@ -3,7 +3,8 @@ require "rails_helper"
 RSpec.describe NotificationService do
   let(:twilio_client) { double("TwilioClientDouble") }
   let(:fake_callback_url) { "http://localhost/callback" }
-  let(:sender_phone_number) { ENV.fetch("TWILIO_PHONE_NUMBER") }
+  let(:sender_sms_phone_number) { described_class::TWILIO_TEST_SMS_NUMBER }
+  let(:sender_whatsapp_phone_number) { described_class::TWILIO_TEST_WHATSAPP_NUMBER }
 
   subject(:notification_service) { NotificationService.new }
   let(:recipient_phone_number) { "8585858585" }
@@ -37,7 +38,7 @@ RSpec.describe NotificationService do
       stub_client
 
       expect(twilio_client).to receive_message_chain("messages.create").with(
-        from: sender_phone_number,
+        from: sender_sms_phone_number,
         to: expected_sms_recipient_phone_number,
         status_callback: fake_callback_url,
         body: "test sms message"
@@ -59,7 +60,7 @@ RSpec.describe NotificationService do
       stub_client
 
       expect(twilio_client).to receive_message_chain("messages.create").with(
-        from: "whatsapp:#{sender_phone_number}",
+        from: "whatsapp:#{sender_whatsapp_phone_number}",
         to: "whatsapp:#{expected_sms_recipient_phone_number}",
         status_callback: fake_callback_url,
         body: "test whatsapp message"
