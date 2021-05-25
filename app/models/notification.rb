@@ -32,6 +32,14 @@ class Notification < ApplicationRecord
         appointment_date: subject.scheduled_date,
         locale: subject.facility.locale
       )
+    when nil
+      # this is a temporary fix. we need to figure out a better way of making the message more flexible
+      I18n.t(
+        message,
+        facility_name: patient.assigned_facility.name,
+        patient_name: patient.full_name,
+        locale: patient.assigned_facility.locale
+      )
     else
       raise ArgumentError, "Must provide some a subject or default behavior"
     end
