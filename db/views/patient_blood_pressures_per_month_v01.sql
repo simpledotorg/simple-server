@@ -1,11 +1,12 @@
 -- Only most recent BP per patient per month. BPs are ordered appropriately below.
 SELECT DISTINCT ON (bp.patient_id, cal.month_date)
     cal.month_date,
+    cal.month_string,
     cal.month,
     cal.quarter,
     cal.year,
-    bp.recorded_at             AS blood_pressure_recorded_at,
-    p.recorded_at              AS patient_registered_at,
+    bp.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS blood_pressure_recorded_at,
+    p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS patient_registered_at,
     bp.id                      AS blood_pressure_id,
     bp.patient_id,
     bp.systolic,
@@ -14,12 +15,12 @@ SELECT DISTINCT ON (bp.patient_id, cal.month_date)
     p.registration_facility_id AS patient_registration_facility_id,
     bp.facility_id             AS blood_pressure_facility_id,
 
-    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
-    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
+    (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+    (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
     AS months_since_registration,
 
-    (DATE_PART('year', cal.month_date) - DATE_PART('year', bp.recorded_at)) * 12 +
-    (DATE_PART('month', cal.month_date) - DATE_PART('month', bp.recorded_at))
+    (cal.year - DATE_PART('year', bp.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+    (cal.month - DATE_PART('month', bp.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
     AS months_since_bp_observation
 
 FROM blood_pressures bp

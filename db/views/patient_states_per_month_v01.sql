@@ -1,12 +1,17 @@
 SELECT
     DISTINCT ON (p.id, month_date)
     p.id,
-    p.recorded_at,
+    p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) as recorded_at,
     p.deleted_at,
     p.status,
+    p.gender,
+    p.age,
+    p.age_updated_at,
+    p.date_of_birth,
     cal.month,
     cal.year,
     cal.month_date,
+    cal.month_string,
     bpot.systolic,
     bpot.diastolic,
     mh.hypertension as hypertension,
@@ -15,8 +20,8 @@ SELECT
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
 
-    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
-    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
+    (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+    (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
     AS months_since_registration,
 
     CASE
@@ -43,7 +48,7 @@ SELECT
         WHEN eot.months_since_encounter IS null THEN 'No encounter'
         ELSE 'Undefined'
         END
-        AS treatment_state,
+        AS time_since_last_visit,
 
     CASE
         WHEN bpot.months_since_bp_observation < 3 THEN 'Less than 3 months'
@@ -54,11 +59,11 @@ SELECT
         WHEN bpot.months_since_bp_observation IS null THEN 'No measurement'
         ELSE 'Undefined'
         END
-        AS bp_observation_state,
+        AS time_since_last_bp,
 
     (
-      (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
-      (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at)) >= 12
+      (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+      (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) >= 12
 
       AND (bpot.months_since_bp_observation IS NULL OR bpot.months_since_bp_observation >= 12)
       AND mh.hypertension = 'yes'
@@ -71,9 +76,9 @@ FROM patients p
 -- We use year and month comparisons to avoid timezone errors
 LEFT OUTER JOIN calendar_months cal
     ON to_char(p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= to_char(cal.month_date, 'YYYY-MM')
-LEFT OUTER JOIN blood_pressures_over_time bpot
+LEFT OUTER JOIN patient_blood_pressures_per_month bpot
     ON p.id = bpot.patient_id AND cal.month = bpot.month AND cal.year = bpot.year
-LEFT OUTER JOIN encounters_over_time eot
+LEFT OUTER JOIN patient_encounters_per_month eot
     ON p.id = eot.patient_id AND cal.month = eot.month AND cal.year = eot.year
 LEFT OUTER JOIN medical_histories mh
     ON p.id = mh.patient_id

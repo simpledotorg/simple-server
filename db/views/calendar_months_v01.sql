@@ -5,6 +5,7 @@ WITH month_dates AS (
 
 SELECT
     month_date,
+    to_char(month_date, 'YYYY-MM') as month_string,
     EXTRACT(MONTH from month_date) as month,
     EXTRACT(QUARTER from month_date) as quarter,
     EXTRACT(YEAR FROM month_date) as year

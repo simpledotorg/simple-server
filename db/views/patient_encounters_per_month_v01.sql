@@ -2,23 +2,24 @@
 SELECT
     DISTINCT ON (e.patient_id, cal.month_date)
     cal.month_date,
+    cal.month_string,
     cal.month,
     cal.quarter,
     cal.year,
-    e.encountered_on AS encountered_at,
-    p.recorded_at AS patient_registered_at,
+    e.encountered_on AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS encountered_at,
+    p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')) AS patient_registered_at,
     e.id AS encounter_id,
     e.patient_id,
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
     e.facility_id AS encounter_facility_id,
 
-    (DATE_PART('year', cal.month_date) - DATE_PART('year', p.recorded_at)) * 12 +
-    (DATE_PART('month', cal.month_date) - DATE_PART('month', p.recorded_at))
+    (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+    (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
     AS months_since_registration,
 
-    (DATE_PART('year', cal.month_date) - DATE_PART('year', e.encountered_on)) * 12 +
-    (DATE_PART('month', cal.month_date) - DATE_PART('month', e.encountered_on))
+    (cal.year - DATE_PART('year', e.encountered_on AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+    (cal.month - DATE_PART('month', e.encountered_on AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
     AS months_since_encounter
 
 FROM encounters e

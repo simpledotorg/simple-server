@@ -1115,18 +1115,20 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
              FROM generate_series('2018-01-01 00:00:00+00'::timestamp with time zone, now(), '1 mon'::interval) generate_series(generate_series)
           )
    SELECT month_dates.month_date,
+      to_char((month_dates.month_date)::timestamp with time zone, 'YYYY-MM'::text) AS month_string,
       date_part('month'::text, month_dates.month_date) AS month,
       date_part('quarter'::text, month_dates.month_date) AS quarter,
       date_part('year'::text, month_dates.month_date) AS year
      FROM month_dates;
   SQL
-  create_view "blood_pressures_over_time", materialized: true, sql_definition: <<-SQL
+  create_view "patient_blood_pressures_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
+      cal.month_string,
       cal.month,
       cal.quarter,
       cal.year,
-      bp.recorded_at AS blood_pressure_recorded_at,
-      p.recorded_at AS patient_registered_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at)) AS blood_pressure_recorded_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)) AS patient_registered_at,
       bp.id AS blood_pressure_id,
       bp.patient_id,
       bp.systolic,
@@ -1134,40 +1136,46 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       bp.facility_id AS blood_pressure_facility_id,
-      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
-      (((date_part('year'::text, cal.month_date) - date_part('year'::text, bp.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, bp.recorded_at))) AS months_since_bp_observation
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at))))) AS months_since_bp_observation
      FROM ((blood_pressures bp
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        JOIN patients p ON ((bp.patient_id = p.id)))
     ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC;
   SQL
-  create_view "encounters_over_time", materialized: true, sql_definition: <<-SQL
+  create_view "patient_encounters_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (e.patient_id, cal.month_date) cal.month_date,
+      cal.month_string,
       cal.month,
       cal.quarter,
       cal.year,
-      e.encountered_on AS encountered_at,
-      p.recorded_at AS patient_registered_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, (e.encountered_on)::timestamp with time zone)) AS encountered_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)) AS patient_registered_at,
       e.id AS encounter_id,
       e.patient_id,
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
       e.facility_id AS encounter_facility_id,
-      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
-      (((date_part('year'::text, cal.month_date) - date_part('year'::text, e.encountered_on)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, e.encountered_on))) AS months_since_encounter
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, (e.encountered_on)::timestamp with time zone)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, (e.encountered_on)::timestamp with time zone))))) AS months_since_encounter
      FROM ((encounters e
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, (e.encountered_on)::timestamp with time zone)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
        JOIN patients p ON ((e.patient_id = p.id)))
     ORDER BY e.patient_id, cal.month_date, e.encountered_on DESC;
   SQL
-  create_view "patient_states_over_time", materialized: true, sql_definition: <<-SQL
+  create_view "patient_states_per_month", materialized: true, sql_definition: <<-SQL
       SELECT DISTINCT ON (p.id, cal.month_date) p.id,
-      p.recorded_at,
+      timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)) AS recorded_at,
       p.deleted_at,
       p.status,
+      p.gender,
+      p.age,
+      p.age_updated_at,
+      p.date_of_birth,
       cal.month,
       cal.year,
       cal.month_date,
+      cal.month_string,
       bpot.systolic,
       bpot.diastolic,
       mh.hypertension,
@@ -1175,7 +1183,7 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
       eot.encountered_at,
       p.assigned_facility_id AS patient_assigned_facility_id,
       p.registration_facility_id AS patient_registration_facility_id,
-      (((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) AS months_since_registration,
+      (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
           CASE
               WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 180) OR (bpot.diastolic >= 110))) THEN 'Stage 3'::text
               WHEN ((mh.hypertension = 'yes'::text) AND ((bpot.systolic >= 160) OR (bpot.diastolic >= 100))) THEN 'Stage 2'::text
@@ -1197,7 +1205,7 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
               WHEN (eot.months_since_encounter >= (12)::double precision) THEN 'More than 12 months'::text
               WHEN (eot.months_since_encounter IS NULL) THEN 'No encounter'::text
               ELSE 'Undefined'::text
-          END AS treatment_state,
+          END AS time_since_last_visit,
           CASE
               WHEN (bpot.months_since_bp_observation < (3)::double precision) THEN 'Less than 3 months'::text
               WHEN (bpot.months_since_bp_observation < (6)::double precision) THEN 'Between 3 and 6 months'::text
@@ -1206,12 +1214,12 @@ ActiveRecord::Schema.define(version: 2021_06_03_193527) do
               WHEN (bpot.months_since_bp_observation >= (12)::double precision) THEN 'More than 12 months'::text
               WHEN (bpot.months_since_bp_observation IS NULL) THEN 'No measurement'::text
               ELSE 'Undefined'::text
-          END AS bp_observation_state,
-      (((((date_part('year'::text, cal.month_date) - date_part('year'::text, p.recorded_at)) * (12)::double precision) + (date_part('month'::text, cal.month_date) - date_part('month'::text, p.recorded_at))) >= (12)::double precision) AND ((bpot.months_since_bp_observation IS NULL) OR (bpot.months_since_bp_observation >= (12)::double precision)) AND (mh.hypertension = 'yes'::text) AND ((p.status)::text <> 'dead'::text) AND (p.deleted_at IS NULL)) AS lost_to_follow_up
+          END AS time_since_last_bp,
+      (((((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) >= (12)::double precision) AND ((bpot.months_since_bp_observation IS NULL) OR (bpot.months_since_bp_observation >= (12)::double precision)) AND (mh.hypertension = 'yes'::text) AND ((p.status)::text <> 'dead'::text) AND (p.deleted_at IS NULL)) AS lost_to_follow_up
      FROM ((((patients p
        LEFT JOIN calendar_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-       LEFT JOIN blood_pressures_over_time bpot ON (((p.id = bpot.patient_id) AND (cal.month = bpot.month) AND (cal.year = bpot.year))))
-       LEFT JOIN encounters_over_time eot ON (((p.id = eot.patient_id) AND (cal.month = eot.month) AND (cal.year = eot.year))))
+       LEFT JOIN patient_blood_pressures_per_month bpot ON (((p.id = bpot.patient_id) AND (cal.month = bpot.month) AND (cal.year = bpot.year))))
+       LEFT JOIN patient_encounters_per_month eot ON (((p.id = eot.patient_id) AND (cal.month = eot.month) AND (cal.year = eot.year))))
        LEFT JOIN medical_histories mh ON ((p.id = mh.patient_id)))
     ORDER BY p.id, cal.month_date;
   SQL
