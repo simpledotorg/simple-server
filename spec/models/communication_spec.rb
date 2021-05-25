@@ -62,6 +62,18 @@ describe Communication, type: :model do
         }.to change { Communication.count }.by(1)
           .and change { TwilioSmsDeliveryDetail.count }.by(1)
       end
+
+      it "does not require an appointment or notification" do
+        patient = create(:patient)
+        expect {
+          Communication.create_with_twilio_details!(appointment: nil,
+                                                    twilio_sid: SecureRandom.uuid,
+                                                    twilio_msg_status: "sent",
+                                                    communication_type: :missed_visit_sms_reminder,
+                                                    notification: nil)
+        }.to change { Communication.count }.by(1)
+          .and change { TwilioSmsDeliveryDetail.count }.by(1)
+      end
     end
   end
 
