@@ -10,6 +10,8 @@ class DrugStocksQuery
     @latest_drug_stocks = DrugStock.latest_for_facilities(@facilities, @for_end_of_month)
   end
 
+  attr_reader :for_end_of_month
+
   def protocol_drugs_by_category
     @protocol_drugs_by_category ||= @protocol.protocol_drugs
       .where(stock_tracked: true)

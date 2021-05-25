@@ -12,13 +12,23 @@ class MyFacilities::DrugStocksController < AdminController
   before_action :drug_stocks_enabled?
 
   def drug_stocks
-    drug_report
+    create_drug_report
     @report = @query.drug_stocks_report
   end
 
   def drug_consumption
-    drug_report
+    create_drug_report
     @report = @query.drug_consumption_report
+  end
+
+  def download_drug_stock
+    create_drug_report
+
+    respond_to do |format|
+      format.csv do
+        send_data DrugStocksReportExporter.csv(@query), filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
+      end
+    end
   end
 
   def new
@@ -35,7 +45,7 @@ class MyFacilities::DrugStocksController < AdminController
 
   private
 
-  def drug_report
+  def create_drug_report
     @facilities = filter_facilities
       .where.not(facility_size: :community)
       .includes(facility_group: :protocol_drugs)

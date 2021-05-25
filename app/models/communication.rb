@@ -2,7 +2,7 @@ class Communication < ApplicationRecord
   include Mergeable
   include Hashable
 
-  belongs_to :appointment
+  belongs_to :appointment, optional: true
   belongs_to :notification, optional: true
   belongs_to :user, optional: true
   belongs_to :detailable, polymorphic: true, optional: true
@@ -51,7 +51,7 @@ class Communication < ApplicationRecord
                                             device_created_at: DateTime.current,
                                             device_updated_at: DateTime.current)
       logger.info class: self.class.name, msg: "create_with_twilio_details", communication: communication.id,
-                  communication_type: communication_type, appointment_id: appointment.id, result: twilio_msg_status
+                  communication_type: communication_type, appointment_id: appointment&.id, result: twilio_msg_status
     end
   end
 
